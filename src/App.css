@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.list-item {
+  padding-left: 8px !important;
+  border-bottom: 1px solid lightgray !important;
+  width: 100%;
+}
+
+.list-item.selected {
+  padding-left: 6px !important;
+  border-left: 2px solid #0070d6;
+  background-color: #0070d624;
+}
