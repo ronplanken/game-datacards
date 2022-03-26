@@ -1,18 +1,5 @@
 import { DeleteFilled } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  Collapse,
-  Form,
-  Input,
-  Popconfirm,
-  Row,
-  Select,
-  Space,
-  Switch,
-} from 'antd';
+import { Button, Card, Checkbox, Col, Collapse, Form, Input, Popconfirm, Row, Select, Space, Switch } from 'antd';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -174,7 +161,16 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
           </Select>
         </Form.Item>
       </Panel>
-      <Panel header='Datasheets' key='2'>
+      <Panel
+        header='Datasheets'
+        key='2'
+        extra={
+          <div>
+            ({`${selectedCard?.datasheet?.filter((sheet) => sheet.active).length} / ${selectedCard?.datasheet?.length}`}
+            )
+          </div>
+        }
+      >
         {selectedCard.datasheet.map((sheet, index) => {
           return (
             <Card
@@ -299,7 +295,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
                 active: true,
                 id: `custom${newDatasheets.length + 1}`,
               });
-              console.log(newDatasheets);
+              // console.log(newDatasheets);
               return { ...current, datasheet: newDatasheets };
             })
           }
@@ -317,7 +313,15 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
           value={selectedCard.unit_composition}
         />
       </Panel>
-      <Panel header='Weapon profiles' key='4'>
+      <Panel
+        header='Weapon profiles'
+        key='4'
+        extra={
+          <div>
+            ({`${selectedCard?.wargear?.filter((sheet) => sheet.active).length} / ${selectedCard?.wargear?.length}`})
+          </div>
+        }
+      >
         {selectedCard.wargear.map((wargear, index) => {
           return (
             <Card
@@ -343,7 +347,19 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
           );
         })}
       </Panel>
-      <Panel header='Abilities' key='5'>
+      <Panel
+        header='Abilities'
+        key='5'
+        extra={
+          <div>
+            (
+            {`${selectedCard?.abilities?.filter((sheet) => sheet.showAbility).length} / ${
+              selectedCard?.abilities?.length
+            }`}
+            )
+          </div>
+        }
+      >
         {selectedCard.abilities.map((ability, index) => {
           return (
             <Card
@@ -398,7 +414,19 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
           );
         })}
       </Panel>
-      <Panel header='Keywords' key='6'>
+      <Panel
+        header='Keywords'
+        key='6'
+        extra={
+          <div>
+            (
+            {`${selectedCard?.keywords?.filter((sheet) => sheet.active).length} / ${
+              selectedCard?.keywords?.length
+            }`}
+            )
+          </div>
+        }
+      >
         {selectedCard.keywords.map((keyword, index) => {
           return (
             <Row justify='space-between' align='middle' key={`ability-${keyword.keyword}-${index}`}>

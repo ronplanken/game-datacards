@@ -3,7 +3,7 @@ import { UnitType } from './UnitType';
 import { WeaponStatline } from './WeaponStatline';
 
 export const UnitCard = ({ unit }) => {
-  console.log(unit);
+  // console.log(unit);
   return (
     <div
       style={{
