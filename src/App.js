@@ -29,6 +29,7 @@ import NewWindow from 'react-new-window';
 import './App.css';
 import { UnitCard } from './Pages/UnitCard';
 import { UnitCardEditor } from './Pages/UnitCardEditor';
+import gtag from 'ga-gtag';
 
 const { Header, Content } = Layout;
 const { Option } = Select;
@@ -195,7 +196,11 @@ function App() {
               type={'text'}
               icon={<QuestionCircleOutlined />}
               style={{ color: 'white' }}
-              onClick={() =>
+              onClick={() => {
+                gtag('event', 'Show help', {
+                  event_category: 'Actions',
+                });
+
                 Modal.info({
                   title: 'Game Datacards',
                   width: 850,
@@ -203,29 +208,53 @@ function App() {
                     <div>
                       <p>
                         The Game Datacards website is a tool to help Tabletop Wargaming players around the world create
-                        their own custom datacards.
+                        their own custom datacards for printing.
                       </p>
+                      <b>Thank you to:</b>
                       <ul>
                         <li>
                           <p>External data sources are powered by Wahapedia.</p>
                         </li>
                         <li>
                           <p>
-                            Carddyarn esign &amp; Icons are created by Locequen. (
+                            Card design &amp; icons are created by Locequen. (
                             <Typography.Link link='https://github.com/Locequen/40k-Data-Card'>
                               Locequen / 40k-Data-Card on Github
-                            </Typography.Link>
+                            </Typography.Link>)
+                          </p>
+                        </li>
+                      </ul>
+
+                      <b>Planned features:</b>
+                      <ul>
+                        <li>
+                          <p>More external datasources (OPR and more games)</p>
+                        </li>
+                        <li>
+                          <p>Ability to export / import cards.</p>
+                        </li>
+                        <li>
+                          <p>Add more pages to the card builder.</p>
+                        </li>
+                        <li>
+                          <p>Reorder cards saved in the card builder.</p>
+                        </li>
+                        <li>
+                          <p>
+                            After an selected card has been changed, make sure to let the user know they have to press
+                            the "update card" button.
                           </p>
                         </li>
                       </ul>
 
                       <Collapse defaultActiveKey={'0.3.0'}>
-                        <Panel header={'Version 0.3.0'} key={'0.3.0'}>
+                        <Panel header={'Version 0.3.1'} key={'0.3.1'}>
                           <b>Changelog</b>
                           <ul>
                             <li>Added a search option to the unit list.</li>
                             <li>Units are now sorted by alphabetical order.</li>
                             <li>Made more fields on the card truncate or have a maximum shown length.</li>
+                            <li><b>0.3.1: </b>Removed html tags from descriptions and abilities.</li>
                           </ul>
                         </Panel>
                         <Panel header={'Version 0.2.0'} key={'0.2.0'}>
@@ -243,8 +272,8 @@ function App() {
                     </div>
                   ),
                   onOk() {},
-                })
-              }
+                });
+              }}
             />
           </Col>
         </Row>
@@ -269,7 +298,13 @@ function App() {
                       <Button
                         type={'text'}
                         shape={'circle'}
-                        onClick={() => setShowPrint(true)}
+                        onClick={() => {
+                          gtag('event', 'Print', {
+                            event_category: 'Saved Cards',
+                            value: cards.length,
+                          });
+                          setShowPrint(true);
+                        }}
                         icon={<PrinterOutlined />}
                       />
                     </Tooltip>
@@ -298,6 +333,10 @@ function App() {
                                 localStorage.setItem('cards', JSON.stringify(newCards));
                                 return newCards;
                               });
+                              gtag('event', 'Update', {
+                                event_category: 'Saved Cards',
+                                value: cards.length,
+                              });
                               message.success('Card has been updated');
                             }}
                           ></Button>
@@ -307,7 +346,11 @@ function App() {
                             icon={<DeleteOutlined />}
                             type={'text'}
                             shape={'circle'}
-                            onClick={() =>
+                            onClick={() => {
+                              gtag('event', 'Delete', {
+                                event_category: 'Saved Cards',
+                                value: cards.length,
+                              });
                               confirm({
                                 title: 'Are you sure you want to delete this card?',
                                 icon: <ExclamationCircleOutlined />,
@@ -323,8 +366,8 @@ function App() {
                                     setSelectedTreeKey(null);
                                     return newCards;
                                   }),
-                              })
-                            }
+                              });
+                            }}
                           />
                         </Tooltip>
                       </>
@@ -337,6 +380,10 @@ function App() {
                           shape={'circle'}
                           onClick={() => {
                             setCards((currentCards) => {
+                              gtag('event', 'Added', {
+                                event_category: 'Saved Cards',
+                                value: cards.length,
+                              });
                               if (!selectedCard) {
                                 return;
                               }
@@ -408,7 +455,13 @@ function App() {
                           <Select
                             loading={isLoading}
                             style={{ width: '100%' }}
-                            onChange={(value) => setSelectedFaction(factions.find((faction) => faction.id === value))}
+                            onChange={(value) => {
+                              gtag('event', 'Faction', {
+                                event_category: 'Sources',
+                                value: value,
+                              });
+                              setSelectedFaction(factions.find((faction) => faction.id === value));
+                            }}
                             placeholder='Select a faction'
                           >
                             {factions.map((faction, index) => (
@@ -440,6 +493,10 @@ function App() {
                     <List.Item
                       key={`list-${card.id}`}
                       onClick={() => {
+                        gtag('event', 'Unit', {
+                          event_category: 'Sources',
+                          value: card.name,
+                        });
                         setSelectedCard(card);
                         setSelectedTreeKey(null);
                       }}

@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Mobile from './Mobile';
+
+const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {isMobile ? <Mobile /> : <App />}
   </React.StrictMode>,
   document.getElementById('root')
 );

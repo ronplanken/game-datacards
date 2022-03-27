@@ -1,5 +1,19 @@
 import { DeleteFilled } from '@ant-design/icons';
-import { Button, Card, Checkbox, Col, Collapse, Form, Input, Popconfirm, Row, Select, Space, Switch } from 'antd';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  Collapse,
+  Form,
+  Input,
+  Popconfirm,
+  Row,
+  Select,
+  Space,
+  Switch,
+  Tooltip,
+} from 'antd';
 
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -90,7 +104,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
               </div>
               <TextArea
                 type='text'
-                value={profile.abilities}
+                value={profile.abilities.replace(/(<([^>]+)>)/gi, '')}
                 name='abilities'
                 onChange={(e) => handleProfileChange(e, index, pindex)}
               />
@@ -309,7 +323,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
               return { ...current, unit_composition: e.target.value };
             })
           }
-          value={selectedCard.unit_composition}
+          value={selectedCard.unit_composition.replace(/(<([^>]+)>)/gi, '')}
         />
       </Panel>
       <Panel
@@ -396,7 +410,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
                   <Col span={22}>
                     <TextArea
                       type='text'
-                      value={ability.description}
+                      value={ability.description.replace(/(<([^>]+)>)/gi, '')}
                       name='description'
                       onChange={(e) => {
                         setSelectedCard((current) => {
@@ -418,11 +432,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
         key='6'
         extra={
           <div>
-            (
-            {`${selectedCard?.keywords?.filter((sheet) => sheet.active).length} / ${
-              selectedCard?.keywords?.length
-            }`}
-            )
+            ({`${selectedCard?.keywords?.filter((sheet) => sheet.active).length} / ${selectedCard?.keywords?.length}`})
           </div>
         }
       >
