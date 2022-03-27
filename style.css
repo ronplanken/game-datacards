@@ -425,6 +425,15 @@
   border-bottom: 2px solid #777273;
 }
 
+.abilities {
+  max-height: 10.2em;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .footer {
   position: absolute;
   text-transform: uppercase;
@@ -436,6 +445,12 @@
   text-align: center;
   padding-left: 15px;
   padding-right: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 4.5em;
 }
 
 body {
