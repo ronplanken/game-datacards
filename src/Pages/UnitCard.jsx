@@ -89,7 +89,9 @@ export const UnitCard = ({ unit }) => {
               if (wargear.profiles.length > 1) {
                 return (
                   <>
-                    <div className='description' key={`profile-${index}-description`}>{wargear.name}</div>
+                    <div className='description' key={`profile-${index}-description`}>
+                      {wargear.name}
+                    </div>
                     {wargear.profiles.map((profile, pindex) => {
                       return <WeaponStatline profile={profile} key={`profile-${index}-${pindex}`} />;
                     })}
@@ -99,18 +101,23 @@ export const UnitCard = ({ unit }) => {
               return <WeaponStatline profile={wargear.profiles[0]} key={`profile-${index}`} />;
             })}
           </div>
-          {unit.abilities.map((ability, index) => {
-            return (
-              ability.showAbility && (
-                <div className='description' key={`ability-${ability.name}-description-${index}`}>
-                  <b>{ability.name}</b>
-                  {ability.showDescription && <>: {ability.description.replace(/(<([^>]+)>)/gi, '')}</>}
-                </div>
-              )
-            );
-          })}
+          <div className='abilities'>
+            {unit.abilities.map((ability, index) => {
+              return (
+                ability.showAbility && (
+                  <div className='description' key={`ability-${ability.name}-description-${index}`}>
+                    <b>{ability.name}</b>
+                    {ability.showDescription && <>: {ability.description.replace(/(<([^>]+)>)/gi, '')}</>}
+                  </div>
+                )
+              );
+            })}
+          </div>
           <div className='footer'>
-            <p> {unit.keywords.filter((keyword) => keyword.active).map((keyword) => keyword.keyword).join(', ')}</p>
+            {unit.keywords
+              .filter((keyword) => keyword.active)
+              .map((keyword) => keyword.keyword)
+              .join(', ')}
           </div>
         </div>
       </div>

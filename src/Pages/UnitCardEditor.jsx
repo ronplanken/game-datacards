@@ -295,7 +295,6 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
                 active: true,
                 id: `custom${newDatasheets.length + 1}`,
               });
-              // console.log(newDatasheets);
               return { ...current, datasheet: newDatasheets };
             })
           }

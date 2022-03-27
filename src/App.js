@@ -1,23 +1,40 @@
-import { Button, Col, Layout, List, Row, Select, Tooltip, Tree, Typography, Modal } from 'antd';
+import {
+  AppstoreAddOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+  FileOutlined,
+  PrinterOutlined,
+  ProfileOutlined,
+  QuestionCircleOutlined,
+  SaveOutlined,
+} from '@ant-design/icons';
+import {
+  Button,
+  Col,
+  Collapse,
+  Input,
+  Layout,
+  List,
+  message,
+  Modal,
+  Row,
+  Select,
+  Tooltip,
+  Tree,
+  Typography,
+} from 'antd';
 import 'antd/dist/antd.min.css';
 import { useEffect, useState } from 'react';
+import NewWindow from 'react-new-window';
 import './App.css';
 import { UnitCard } from './Pages/UnitCard';
 import { UnitCardEditor } from './Pages/UnitCardEditor';
 
-import NewWindow from 'react-new-window';
-import {
-  FileOutlined,
-  ProfileOutlined,
-  AppstoreAddOutlined,
-  PrinterOutlined,
-  DeleteOutlined,
-  SaveOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons';
 const { Header, Content } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
+const { Panel } = Collapse;
+
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
@@ -62,6 +79,8 @@ function App() {
   const [isLoading, setLoading] = useState(false);
 
   const [showPrint, setShowPrint] = useState(false);
+
+  const [searchText, setSearchText] = useState(undefined);
 
   const [selectedTreeKey, setSelectedTreeKey] = useState(null);
 
@@ -113,7 +132,7 @@ function App() {
           .filter((model) => model.datasheet_id === row.id)
           .filter(onlyUnique)
           .map((model, index) => {
-            return { ...model, active: index === 0 ? true: false };
+            return { ...model, active: index === 0 ? true : false };
           });
         const linkedWargear = [
           ...new Map(
@@ -127,7 +146,7 @@ function App() {
         linkedWargear.forEach((wargear, index) => {
           row['wargear'][index] = dataWargear.find((gear) => gear.id === wargear.wargear_id);
           if (row['wargear'][index]) {
-            row['wargear'][index]['active'] = index === 0 ? true: false;
+            row['wargear'][index]['active'] = index === 0 ? true : false;
             row['wargear'][index]['profiles'] = dataWargearList.filter(
               (wargearList) => wargearList.wargear_id === wargear.wargear_id
             );
@@ -138,39 +157,97 @@ function App() {
         linkedAbilities.forEach((ability, index) => {
           row['abilities'].push(dataAbilities.find((abilityInfo) => abilityInfo.id === ability.ability_id));
         });
-        row['abilities'] = row['abilities'].map((ability,index) => {
-          return { ...ability, showDescription: false, showAbility: index === 0 ? true: false  };
+        row['abilities'] = row['abilities'].map((ability, index) => {
+          return { ...ability, showDescription: false, showAbility: index === 0 ? true : false };
         });
         return row;
       });
       mappedSheets.shift();
-
       dataFactions.map((faction) => {
-        faction['datasheets'] = mappedSheets.filter((datasheet) => datasheet.faction_id === faction.id);
+        faction['datasheets'] = mappedSheets
+          .filter((datasheet) => datasheet.faction_id === faction.id)
+          .sort((a, b) => {
+            return a.name.localeCompare(b.name);
+          });
         return faction;
       });
 
       setFactions(dataFactions);
-      // console.log(JSON.stringify(dataFactions).length);
-      //localStorage.setItem('factions', JSON.stringify(dataFactions));
       setLoading(false);
     }
     setLoading(true);
-    // const dataFactions = localStorage.getItem('factions');
-    // if (!dataFactions) {
     fetchData();
-    // } else {
-    //   setFactions(JSON.parse(dataFactions));
-    //   setLoading(false);
-    // }
   }, []);
 
   return (
     <Layout>
       <Header>
-        <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, marginTop: '8px' }}>
-          Game Datacards
-        </Typography.Title>
+        <Row style={{ justifyContent: 'space-between' }}>
+          <Col>
+            <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, marginTop: '8px' }}>
+              Game Datacards
+            </Typography.Title>
+          </Col>
+          <Col>
+            <Button
+              size='large'
+              shape='circle'
+              type={'text'}
+              icon={<QuestionCircleOutlined />}
+              style={{ color: 'white' }}
+              onClick={() =>
+                Modal.info({
+                  title: 'Game Datacards',
+                  width: 850,
+                  content: (
+                    <div>
+                      <p>
+                        The Game Datacards website is a tool to help Tabletop Wargaming players around the world create
+                        their own custom datacards.
+                      </p>
+                      <ul>
+                        <li>
+                          <p>External data sources are powered by Wahapedia.</p>
+                        </li>
+                        <li>
+                          <p>
+                            Carddyarn esign &amp; Icons are created by Locequen. (
+                            <Typography.Link link='https://github.com/Locequen/40k-Data-Card'>
+                              Locequen / 40k-Data-Card on Github
+                            </Typography.Link>
+                          </p>
+                        </li>
+                      </ul>
+
+                      <Collapse defaultActiveKey={'0.3.0'}>
+                        <Panel header={'Version 0.3.0'} key={'0.3.0'}>
+                          <b>Changelog</b>
+                          <ul>
+                            <li>Added a search option to the unit list.</li>
+                            <li>Units are now sorted by alphabetical order.</li>
+                            <li>Made more fields on the card truncate or have a maximum shown length.</li>
+                          </ul>
+                        </Panel>
+                        <Panel header={'Version 0.2.0'} key={'0.2.0'}>
+                          <b>Changelog</b>
+                          <ul>
+                            <li>Updated the Page menu to use an icon bar instead of text buttons.</li>
+                            <li>Having a "broken" card in your page will now allow you to select and delete it.</li>
+                            <li>
+                              The default selection of external data set cards now includes less data visible by
+                              Default.
+                            </li>
+                          </ul>
+                        </Panel>
+                      </Collapse>
+                    </div>
+                  ),
+                  onOk() {},
+                })
+              }
+            />
+          </Col>
+        </Row>
       </Header>
       <Content>
         <Row>
@@ -214,14 +291,15 @@ function App() {
                             icon={<SaveOutlined />}
                             type={'text'}
                             shape={'circle'}
-                            onClick={() =>
+                            onClick={() => {
                               setCards((currentCards) => {
                                 const newCards = [...currentCards];
                                 newCards[selectedTreeKey.split('-')[1]] = selectedCard;
                                 localStorage.setItem('cards', JSON.stringify(newCards));
                                 return newCards;
-                              })
-                            }
+                              });
+                              message.success('Card has been updated');
+                            }}
                           ></Button>
                         </Tooltip>
                         <Tooltip title={'Remove selected card'}>
@@ -284,7 +362,6 @@ function App() {
                       showIcon={true}
                       blockNode
                       onSelect={(selectedKeys, info) => {
-                        console.log(selectedKeys);
                         if (selectedKeys.length === 0 && selectedTreeKey.includes('page')) {
                           setSelectedTreeKey(null);
                           return;
@@ -315,27 +392,57 @@ function App() {
                   bordered
                   size='small'
                   loading={isLoading}
-                  dataSource={selectedFaction?.datasheets}
+                  dataSource={
+                    searchText
+                      ? selectedFaction?.datasheets.filter((sheet) =>
+                          sheet.name.toLowerCase().includes(searchText.toLowerCase())
+                        )
+                      : selectedFaction?.datasheets
+                  }
                   style={{ overflowY: 'auto', height: 'calc(100vh - 398px)' }}
                   locale={{ emptyText: selectedFaction ? 'No datasheets found' : 'No faction selected' }}
                   header={
-                    <Select
-                      loading={isLoading}
-                      style={{ width: '100%' }}
-                      onChange={(value) => setSelectedFaction(factions.find((faction) => faction.id === value))}
-                      placeholder='Select a faction'
-                    >
-                      {factions.map((faction, index) => (
-                        <Option value={faction.id} key={`${faction.id}-${index}`}>
-                          {faction.name}
-                        </Option>
-                      ))}
-                    </Select>
+                    <>
+                      <Row style={{ marginBottom: '4px' }}>
+                        <Col span={24}>
+                          <Select
+                            loading={isLoading}
+                            style={{ width: '100%' }}
+                            onChange={(value) => setSelectedFaction(factions.find((faction) => faction.id === value))}
+                            placeholder='Select a faction'
+                          >
+                            {factions.map((faction, index) => (
+                              <Option value={faction.id} key={`${faction.id}-${index}`}>
+                                {faction.name}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={24}>
+                          <Input.Search
+                            placeholder={'Search'}
+                            onSearch={(value) => {
+                              if (value.length > 0) {
+                                setSearchText(value);
+                              } else {
+                                setSearchText(undefined);
+                              }
+                            }}
+                            allowClear={true}
+                          />
+                        </Col>
+                      </Row>
+                    </>
                   }
                   renderItem={(card) => (
                     <List.Item
                       key={`list-${card.id}`}
-                      onClick={() => setSelectedCard(card)}
+                      onClick={() => {
+                        setSelectedCard(card);
+                        setSelectedTreeKey(null);
+                      }}
                       className={`list-item ${
                         selectedCard && !selectedCard.isCustom && selectedCard.id === card.id ? 'selected' : ''
                       }`}

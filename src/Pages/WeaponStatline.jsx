@@ -7,13 +7,13 @@ export const WeaponStatline = ({ profile }) => {
   return (
     <div className='weapon'>
       <div className='weapon_profile'>
-        <div className='left' id='value' style={{ whiteSpace: 'nowrap' }}>
+        <div className='left' id='value' style={{ whiteSpace: profile.wrapName ? 'wrap' : 'nowrap' , overflow: "hidden", textOverflow: "ellipsis"}}>
           {profile.name.replace('(melee)', '').replace('(shooting)', '')}
         </div>
-        <div className='center' id='value' style={{ whiteSpace: 'nowrap' }}>
+        <div className='center' id='value' style={{ whiteSpace: 'nowrap', overflow: "hidden", textOverflow: "ellipsis" }}>
           {profile.Range === 'Melee' ? <div style={{ width: 11, height: 11 }} className='melee'></div> : profile.Range}
         </div>
-        <div className='center' id='value' style={{ whiteSpace: 'nowrap' }}>
+        <div className='center' id='value' style={{ whiteSpace: 'nowrap', overflow: "hidden", textOverflow: "ellipsis"  }}>
           <WeaponStatProfile type={profile.type} />
         </div>
         <div className='center' id='value'>
