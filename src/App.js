@@ -247,14 +247,16 @@ function App() {
                         </li>
                       </ul>
 
-                      <Collapse defaultActiveKey={'0.3.0'}>
-                        <Panel header={'Version 0.3.1'} key={'0.3.1'}>
+                      <Collapse defaultActiveKey={'0.3.2'}>
+                        <Panel header={'Version 0.3.2'} key={'0.3.2'}>
                           <b>Changelog</b>
                           <ul>
                             <li>Added a search option to the unit list.</li>
                             <li>Units are now sorted by alphabetical order.</li>
                             <li>Made more fields on the card truncate or have a maximum shown length.</li>
                             <li><b>0.3.1: </b>Removed html tags from descriptions and abilities.</li>
+                            <li><b>0.3.2: </b>Added an example card to the mobile landingpage.</li>
+                            <li><b>0.3.2: </b>Made all text fields optional and not prone to crash if they were non-existant.</li>
                           </ul>
                         </Panel>
                         <Panel header={'Version 0.2.0'} key={'0.2.0'}>

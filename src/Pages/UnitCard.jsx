@@ -21,40 +21,42 @@ export const UnitCard = ({ unit }) => {
             </div>
             <div className='name'>{unit.name}</div>
           </div>
-          <div className='labels heading'>
-            <div className='center label'>
-              <div className='movement' id='icon' title='Movement' alt-text='Movement'></div>
+          {unit.datasheet?.length > 0 && (
+            <div className='labels heading'>
+              <div className='center label'>
+                <div className='movement' id='icon' title='Movement' alt-text='Movement'></div>
+              </div>
+              <div className='center label'>
+                <div className='weaponskill' id='icon' title='Weapon Skill' alt-text='Weapon Skill'></div>
+              </div>
+              <div className='center label'>
+                <div className='ballisticskill' id='icon' title='Ballistic Skill' alt-text='Ballistic Skill'></div>
+              </div>
+              <div className='center label'>
+                <div className='strength' id='icon' title='Strength' alt-text='Strength'></div>
+              </div>
+              <div className='center label'>
+                <div className='toughness' id='icon' title='Toughness' alt-text='Toughness'></div>
+              </div>
+              <div className='center label'>
+                <div className='wounds' id='icon' title='Wounds' alt-text='Wounds'></div>
+              </div>
+              <div className='center label'>
+                <div className='attacks' id='icon' title='Attacks' alt-text='Attacks'></div>
+              </div>
+              <div className='center label'>
+                <div className='leadership' id='icon' title='Leadership' alt-text='Leadership'></div>
+              </div>
+              <div className='center label'>
+                <div className='save' id='icon' title='Save' alt-text='Save'></div>
+              </div>
+              <div className='center label'>
+                <div className='inv' id='icon' title='Invulnerable' alt-text='Save'></div>
+              </div>
             </div>
-            <div className='center label'>
-              <div className='weaponskill' id='icon' title='Weapon Skill' alt-text='Weapon Skill'></div>
-            </div>
-            <div className='center label'>
-              <div className='ballisticskill' id='icon' title='Ballistic Skill' alt-text='Ballistic Skill'></div>
-            </div>
-            <div className='center label'>
-              <div className='strength' id='icon' title='Strength' alt-text='Strength'></div>
-            </div>
-            <div className='center label'>
-              <div className='toughness' id='icon' title='Toughness' alt-text='Toughness'></div>
-            </div>
-            <div className='center label'>
-              <div className='wounds' id='icon' title='Wounds' alt-text='Wounds'></div>
-            </div>
-            <div className='center label'>
-              <div className='attacks' id='icon' title='Attacks' alt-text='Attacks'></div>
-            </div>
-            <div className='center label'>
-              <div className='leadership' id='icon' title='Leadership' alt-text='Leadership'></div>
-            </div>
-            <div className='center label'>
-              <div className='save' id='icon' title='Save' alt-text='Save'></div>
-            </div>
-            <div className='center label'>
-              <div className='inv' id='icon' title='Invulnerable' alt-text='Save'></div>
-            </div>
-          </div>
+          )}
           <div className='profile'>
-            {unit.datasheet.map((datasheet, index) => {
+            {unit.datasheet?.map((datasheet, index) => {
               if (datasheet.active) {
                 return <UnitStatline statline={datasheet} key={`datasheet-${index}`} />;
               } else {
@@ -62,27 +64,29 @@ export const UnitCard = ({ unit }) => {
               }
             })}
           </div>
-          <div className='description'>{unit.unit_composition.replace(/(<([^>]+)>)/gi, '')}</div>
-          <div className='weapons heading'>
-            <div className='left label'>WEAPON</div>
-            <div className='center label'>
-              <div className='range' id='icon' title='Range' alt-text='Range'></div>
+          <div className='description'>{unit.unit_composition?.replace(/(<([^>]+)>)/gi, '')}</div>
+          {unit.wargear?.length > 0 && (
+            <div className='weapons heading'>
+              <div className='left label'>WEAPON</div>
+              <div className='center label'>
+                <div className='range' id='icon' title='Range' alt-text='Range'></div>
+              </div>
+              <div className='center label'>
+                <div className='type' id='icon' title='Type' alt-text='Type'></div>
+              </div>
+              <div className='center label'>
+                <div className='strength' id='icon' title='Type' alt-text='Type'></div>
+              </div>
+              <div className='center label'>
+                <div className='ap' id='icon' title='Type' alt-text='Type'></div>
+              </div>
+              <div className='center label'>
+                <div className='dmg' id='icon' title='Type' alt-text='Type'></div>
+              </div>
             </div>
-            <div className='center label'>
-              <div className='type' id='icon' title='Type' alt-text='Type'></div>
-            </div>
-            <div className='center label'>
-              <div className='strength' id='icon' title='Type' alt-text='Type'></div>
-            </div>
-            <div className='center label'>
-              <div className='ap' id='icon' title='Type' alt-text='Type'></div>
-            </div>
-            <div className='center label'>
-              <div className='dmg' id='icon' title='Type' alt-text='Type'></div>
-            </div>
-          </div>
+          )}
           <div className='profile'>
-            {unit.wargear.map((wargear, index) => {
+            {unit.wargear?.map((wargear, index) => {
               if (!wargear.active) {
                 return <></>;
               }
@@ -102,12 +106,12 @@ export const UnitCard = ({ unit }) => {
             })}
           </div>
           <div className='abilities'>
-            {unit.abilities.map((ability, index) => {
+            {unit.abilities?.map((ability, index) => {
               return (
                 ability.showAbility && (
                   <div className='description' key={`ability-${ability.name}-description-${index}`}>
                     <b>{ability.name}</b>
-                    {ability.showDescription && <>: {ability.description.replace(/(<([^>]+)>)/gi, '')}</>}
+                    {ability.showDescription && <>: {ability.description?.replace(/(<([^>]+)>)/gi, '')}</>}
                   </div>
                 )
               );
@@ -115,7 +119,7 @@ export const UnitCard = ({ unit }) => {
           </div>
           <div className='footer'>
             {unit.keywords
-              .filter((keyword) => keyword.active)
+              ?.filter((keyword) => keyword.active)
               .map((keyword) => keyword.keyword)
               .join(', ')}
           </div>

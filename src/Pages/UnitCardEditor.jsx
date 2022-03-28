@@ -104,7 +104,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
               </div>
               <TextArea
                 type='text'
-                value={profile.abilities.replace(/(<([^>]+)>)/gi, '')}
+                value={profile.abilities?.replace(/(<([^>]+)>)/gi, '')}
                 name='abilities'
                 onChange={(e) => handleProfileChange(e, index, pindex)}
               />
@@ -323,7 +323,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
               return { ...current, unit_composition: e.target.value };
             })
           }
-          value={selectedCard.unit_composition.replace(/(<([^>]+)>)/gi, '')}
+          value={selectedCard.unit_composition?.replace(/(<([^>]+)>)/gi, '')}
         />
       </Panel>
       <Panel
@@ -410,7 +410,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
                   <Col span={22}>
                     <TextArea
                       type='text'
-                      value={ability.description.replace(/(<([^>]+)>)/gi, '')}
+                      value={ability.description?.replace(/(<([^>]+)>)/gi, '')}
                       name='description'
                       onChange={(e) => {
                         setSelectedCard((current) => {
