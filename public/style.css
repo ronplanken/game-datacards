@@ -451,6 +451,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 4.5em;
+  width: 100%;
 }
 
 body {
