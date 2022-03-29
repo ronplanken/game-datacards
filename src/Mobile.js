@@ -1,5 +1,5 @@
 import { Layout, Typography } from 'antd';
-import { UnitCard } from './Pages/UnitCard';
+import { UnitCard } from './Components/UnitCard';
 
 const { Header, Content } = Layout;
 

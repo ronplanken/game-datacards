@@ -26,7 +26,7 @@ export const WeaponStatline = ({ profile }) => {
           {profile.D}
         </div>
       </div>
-      {profile.abilities && <div className='weapon_desc'>{profile.abilities.replace(/(<([^>]+)>)/gi, '')}</div>}
+      {profile.abilities && <div className='weapon_desc'>{profile.abilities}</div>}
     </div>
   );
 };

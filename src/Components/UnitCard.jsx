@@ -64,7 +64,7 @@ export const UnitCard = ({ unit }) => {
               }
             })}
           </div>
-          <div className='description'>{unit.unit_composition?.replace(/(<([^>]+)>)/gi, '')}</div>
+          <div className='description'>{unit.unit_composition}</div>
           {unit.wargear?.length > 0 && (
             <div className='weapons heading'>
               <div className='left label'>WEAPON</div>
@@ -111,7 +111,7 @@ export const UnitCard = ({ unit }) => {
                 ability.showAbility && (
                   <div className='description' key={`ability-${ability.name}-description-${index}`}>
                     <b>{ability.name}</b>
-                    {ability.showDescription && <>: {ability.description?.replace(/(<([^>]+)>)/gi, '')}</>}
+                    {ability.showDescription && <>: {ability.description}</>}
                   </div>
                 )
               );

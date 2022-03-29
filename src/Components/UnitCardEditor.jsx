@@ -12,7 +12,6 @@ import {
   Select,
   Space,
   Switch,
-  Tooltip,
 } from 'antd';
 
 const { Panel } = Collapse;
@@ -104,7 +103,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
               </div>
               <TextArea
                 type='text'
-                value={profile.abilities?.replace(/(<([^>]+)>)/gi, '')}
+                value={profile.abilities}
                 name='abilities'
                 onChange={(e) => handleProfileChange(e, index, pindex)}
               />
@@ -323,7 +322,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
               return { ...current, unit_composition: e.target.value };
             })
           }
-          value={selectedCard.unit_composition?.replace(/(<([^>]+)>)/gi, '')}
+          value={selectedCard.unit_composition}
         />
       </Panel>
       <Panel
@@ -410,7 +409,7 @@ export const UnitCardEditor = ({ selectedCard, setSelectedCard }) => {
                   <Col span={22}>
                     <TextArea
                       type='text'
-                      value={ability.description?.replace(/(<([^>]+)>)/gi, '')}
+                      value={ability.description}
                       name='description'
                       onChange={(e) => {
                         setSelectedCard((current) => {
