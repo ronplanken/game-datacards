@@ -44,7 +44,13 @@ export const About = () => {
         </li>
       </ul>
 
-      <Collapse defaultActiveKey={'0.4.0'}>
+      <Collapse defaultActiveKey={'0.5.0'}>
+        <Panel header={'Version 0.5.0'} key={'0.5.0'}>
+          <b>Changelog</b>
+          <ul>
+            <li>Added more printing options.</li>
+          </ul>
+        </Panel>
         <Panel header={'Version 0.4.0'} key={'0.4.0'}>
           <b>Changelog</b>
           <ul>

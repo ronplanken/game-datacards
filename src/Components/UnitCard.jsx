@@ -1,19 +1,13 @@
-import { UnitStatline } from './UnitStatline';
-import { UnitType } from './UnitType';
-import { WeaponStatline } from './WeaponStatline';
+import { UnitStatline } from './UnitCard/UnitStatline';
+import { UnitType } from './UnitCard/UnitType';
+import { WeaponStatline } from './UnitCard/WeaponStatline';
 
-export const UnitCard = ({ unit }) => {
-  // console.log(unit);
+export const UnitCard = ({ unit, style, cardStyle }) => {
   return (
     <div
-      style={{
-        paddingTop: '32px',
-        justifyContent: 'center',
-        justifyItems: 'center',
-        display: 'flex',
-      }}
+      style={{ paddingTop: '32px', justifyContent: 'center', justifyItems: 'center', display: 'flex', ...style}}
     >
-      <div className='page'>
+      <div className='page' style={cardStyle}>
         <div className='frame'>
           <div className='header'>
             <div className='role'>

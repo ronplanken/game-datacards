@@ -8,28 +8,33 @@ import {
   UploadOutlined,
   InboxOutlined,
   FileOutlined,
+  CopyOutlined,
 } from '@ant-design/icons';
-import { Button, Card, Col, message, Modal, Row, Tooltip, Upload } from 'antd';
+import { Button, Col, message, Modal, Row, Tooltip } from 'antd';
 import Dragger from 'antd/lib/upload/Dragger';
-import gtag from 'ga-gtag';
-import clone from 'just-clone';
 import React from 'react';
+import { useCardStorage } from '../Hooks/useCardStorage';
+import { v4 as uuidv4 } from 'uuid';
 
 const { confirm } = Modal;
 
-export const Toolbar = ({
-  setShowPrint,
-  selectedTreeKey,
-  setSelectedTreeKey,
-  cards,
-  setCards,
-  selectedCard,
-  setSelectedCard,
-}) => {
+export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) => {
   const [uploadFile, setUploadFile] = React.useState(null);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
   const [fileList, setFileList] = React.useState([]);
+
+  const {
+    cardStorage,
+    activeCard,
+    setActiveCard,
+    activeCategory,
+    setActiveCategory,
+    addCardToCategory,
+    removeCardFromCategory,
+    saveActiveCard,
+    cardUpdated,
+  } = useCardStorage();
 
   return (
     <Row>
@@ -48,7 +53,7 @@ export const Toolbar = ({
           visible={isModalVisible}
           okButtonProps={{ disabled: !uploadFile }}
           onOk={() => {
-            if (cards) {
+            if (cardStorage) {
               confirm({
                 title: 'Are you sure you want to import this file?',
                 content: 'This will overwrite your current cards.',
@@ -57,15 +62,16 @@ export const Toolbar = ({
                 okType: 'danger',
                 cancelText: 'No',
                 onOk: () => {
-                  setCards(uploadFile.cards);
-                  localStorage.setItem('cards', JSON.stringify(cards));
+                  // setCards(uploadFile.cards);
+                  localStorage.setItem('cards', JSON.stringify(uploadFile.cards));
                   setFileList([]);
                   setUploadFile(null);
                   setIsModalVisible(false);
                 },
               });
             } else {
-              setCards(uploadFile.cards);
+              // setCards(uploadFile.cards);
+              localStorage.setItem('cards', JSON.stringify(uploadFile.cards));
               setFileList([]);
               setUploadFile(null);
               setIsModalVisible(false);
@@ -192,31 +198,23 @@ export const Toolbar = ({
           <Button
             type={'text'}
             shape={'circle'}
-            disabled={!(cards && cards.length > 0)}
+            disabled={!(activeCategory && activeCategory.cards.length > 0)}
             onClick={() => {
-              gtag('event', 'Print', {
-                event_category: 'Saved Cards',
-                value: cards.length,
-              });
               setShowPrint(true);
             }}
             icon={<PrinterOutlined />}
           />
         </Tooltip>
-        <Tooltip title={'Export cards to JSON'} placement='bottomLeft'>
+        <Tooltip title={'Export category to JSON'} placement='bottomLeft'>
           <Button
             type={'text'}
             shape={'circle'}
-            disabled={!(cards && cards.length > 0)}
+            disabled={!(activeCategory && activeCategory.cards.length > 0)}
             onClick={() => {
-              gtag('event', 'DataExport', {
-                event_category: 'Saved Cards',
-                value: cards.length,
-              });
               const exportData = {
-                cards,
+                category: activeCategory,
                 createdAt: new Date().toISOString(),
-                version: '0.4.0',
+                version: process.env.REACT_APP_VERSION,
                 website: 'https://game-datacards.eu',
               };
               const url = window.URL.createObjectURL(
@@ -224,7 +222,7 @@ export const Toolbar = ({
               );
               const link = document.createElement('a');
               link.href = url;
-              link.setAttribute('download', `game-datacards-${new Date().toISOString()}.json`);
+              link.setAttribute('download', `${activeCategory.name}-${new Date().toISOString()}.json`);
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -232,16 +230,12 @@ export const Toolbar = ({
             icon={<DownloadOutlined />}
           />
         </Tooltip>
-        <Tooltip title={'Import cards from JSON'} placement='bottomLeft'>
+        <Tooltip title={'Import category from JSON'} placement='bottomLeft'>
           <Button
             type={'text'}
             shape={'circle'}
             icon={<UploadOutlined />}
             onClick={() => {
-              gtag('event', 'DataImport', {
-                event_category: 'Saved Cards',
-                value: cards.length,
-              });
               setIsModalVisible(true);
             }}
           />
@@ -257,24 +251,16 @@ export const Toolbar = ({
           borderBottom: '1px solid #E5E5E5',
         }}
       >
-        {selectedTreeKey && (
+        {selectedTreeKey && selectedTreeKey.includes('card') && (
           <>
             <Tooltip title={'Update selected card'} placement='bottom'>
               <Button
                 icon={<SaveOutlined />}
                 type={'text'}
                 shape={'circle'}
+                disabled={!cardUpdated}
                 onClick={() => {
-                  setCards((currentCards) => {
-                    const newCards = [...currentCards];
-                    newCards[selectedTreeKey.split('-')[1]] = selectedCard;
-                    localStorage.setItem('cards', JSON.stringify(newCards));
-                    return newCards;
-                  });
-                  gtag('event', 'Update', {
-                    event_category: 'Saved Cards',
-                    value: cards.length,
-                  });
+                  saveActiveCard();
                   message.success('Card has been updated');
                 }}
               ></Button>
@@ -285,54 +271,49 @@ export const Toolbar = ({
                 type={'text'}
                 shape={'circle'}
                 onClick={() => {
-                  gtag('event', 'Delete', {
-                    event_category: 'Saved Cards',
-                    value: cards.length,
-                  });
                   confirm({
                     title: 'Are you sure you want to delete this card?',
                     icon: <ExclamationCircleOutlined />,
                     okText: 'Yes',
                     okType: 'danger',
                     cancelText: 'No',
-                    onOk: () =>
-                      setCards((currentCards) => {
-                        const newCards = [...currentCards];
-                        newCards.splice(selectedTreeKey.split('-')[1], 1);
-                        localStorage.setItem('cards', JSON.stringify(newCards));
-                        setSelectedCard(null);
-                        setSelectedTreeKey(null);
-                        return newCards;
-                      }),
+                    onOk: () => {
+                      removeCardFromCategory(activeCard.uuid);
+                      setActiveCard(null);
+                      setSelectedTreeKey(null);
+                    },
                   });
                 }}
               />
             </Tooltip>
           </>
         )}
-        {selectedCard && (
-          <Tooltip title='Add card to page' placement='bottomRight'>
+        {activeCard && !activeCard.isCustom && (
+          <Tooltip title='Add card to category' placement='bottomRight'>
             <Button
               icon={<AppstoreAddOutlined />}
               type={'text'}
               shape={'circle'}
               onClick={() => {
-                setCards((currentCards) => {
-                  gtag('event', 'Added', {
-                    event_category: 'Saved Cards',
-                    value: cards.length,
-                  });
-
-                  if (!selectedCard) {
-                    return;
-                  }
-
-                  const copiedCard = clone(selectedCard);
-                  const newCards = [...currentCards, { ...copiedCard, isCustom: true }];
-                  localStorage.setItem('cards', JSON.stringify(newCards));
-                  setSelectedTreeKey(`${selectedCard.id}-${currentCards.length}`);
-                  return newCards;
-                });
+                const newCard = { ...activeCard, isCustom: true, uuid: uuidv4() };
+                addCardToCategory(newCard);
+                setActiveCard(newCard)
+                setSelectedTreeKey(`card-${newCard.uuid}`);
+              }}
+            />
+          </Tooltip>
+        )}
+        {activeCard && activeCard.isCustom && (
+          <Tooltip title='Duplicate card' placement='bottomRight'>
+            <Button
+              icon={<CopyOutlined />}
+              type={'text'}
+              shape={'circle'}
+              onClick={() => {
+                const newCard = { ...activeCard, name: `${activeCard.name} Copy`, isCustom: true, uuid: uuidv4() };
+                addCardToCategory(newCard);
+                setActiveCard(newCard)
+                setSelectedTreeKey(`card-${newCard.uuid}`);
               }}
             />
           </Tooltip>

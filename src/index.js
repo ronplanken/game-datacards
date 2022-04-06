@@ -1,15 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Mobile from './Mobile';
+import { BrowserRouter } from 'react-router-dom';
+import { AppRoutes } from './Routes/AppRoutes';
+import { CardStorageProviderComponent } from './Hooks/useCardStorage';
 
-const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+const isMobile = window.matchMedia('only screen and (max-width: 760px)').matches;
 
 ReactDOM.render(
   <React.StrictMode>
-    {isMobile ? <Mobile /> : <App />}
+    <CardStorageProviderComponent>
+      <BrowserRouter>{isMobile ? <Mobile /> : <AppRoutes />}</BrowserRouter>
+    </CardStorageProviderComponent>
   </React.StrictMode>,
   document.getElementById('root')
 );
