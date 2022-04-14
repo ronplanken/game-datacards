@@ -19,7 +19,10 @@ export const parseStorageJson = (savedJson) => {
   try {
     const parsedJson = JSON.parse(savedJson.replace(/(<([^>]+)>)/gi, ''));
     if (parsedJson.version !== process.env.REACT_APP_VERSION) {
-      return { ...defaultCategories, categories: [{ ...defaultCategories.categories[0], cards: parsedJson }] };
+      const newCards = parsedJson.map((card) => {
+        return { ...card, uuid: uuidv4() };
+      });
+      return { ...defaultCategories, categories: [{ ...defaultCategories.categories[0], cards: newCards }] };
     } else {
       return parsedJson;
     }
@@ -27,4 +30,3 @@ export const parseStorageJson = (savedJson) => {
     return defaultCategories;
   }
 };
-

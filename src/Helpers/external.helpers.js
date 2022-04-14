@@ -34,6 +34,9 @@ export const get40KData = async () => {
   const dataKeywords = await readCsv(
     'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_keywords.json'
   );
+  const dataDamage = await readCsv(
+    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_damage.json'
+  );
   const dataFactions = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Factions.json');
   const sheets = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets.json');
 
@@ -54,6 +57,20 @@ export const get40KData = async () => {
       .map((model, index) => {
         return { ...model, active: index === 0 ? true : false };
       });
+
+    const linkedDamageTable = dataDamage.filter((damage) => damage.datasheet_id === row.id);
+    for (let index = 1; index < linkedDamageTable.length; index++) {
+      const cols = linkedDamageTable[0];
+      const newRow = {};
+
+      newRow['W'] = linkedDamageTable[index]['Col1'];
+      newRow[cols['Col2']] = linkedDamageTable[index]['Col2'];
+      newRow[cols['Col3']] = linkedDamageTable[index]['Col3'];
+      newRow[cols['Col4']] = linkedDamageTable[index]['Col4'];
+      newRow[cols['Col5']] = linkedDamageTable[index]['Col5'];
+      row['datasheet'].push(newRow);
+    }
+
     const linkedWargear = [
       ...new Map(
         dataDatasheetWargear

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { message } from 'antd';
 import { parseStorageJson } from '../Helpers/cardstorage.helpers';
 import clone from 'just-clone';
+import { v4 as uuidv4 } from 'uuid';
 
 const CardStorageContext = React.createContext(undefined);
 
@@ -16,7 +17,12 @@ export function useCardStorage() {
 export const CardStorageProviderComponent = (props) => {
   const [cardStorage, setCardStorage] = React.useState(() => {
     try {
-      return parseStorageJson(localStorage.getItem('storage'));
+      const oldStorage = localStorage.getItem('cards');
+      const newStorage = localStorage.getItem('storage');
+      if (oldStorage && !newStorage) {
+        return parseStorageJson(oldStorage);
+      }
+      return parseStorageJson(newStorage);
     } catch (e) {
       message.error('An error occored while trying to load your cards.');
       return [];
@@ -46,7 +52,6 @@ export const CardStorageProviderComponent = (props) => {
   };
 
   const saveActiveCard = () => {
-    console.log(activeCard);
     if (!activeCard) {
       return;
     }
@@ -68,19 +73,67 @@ export const CardStorageProviderComponent = (props) => {
     const copiedCard = clone(card);
     if (!categoryId) {
       setCardStorage((prevStorage) => {
-        prevStorage.categories[0].cards.push(copiedCard);
+        const newStorage = clone(prevStorage);
+        newStorage.categories[0].cards.push(copiedCard);
         return {
-          ...prevStorage,
+          ...newStorage,
         };
       });
     } else {
       setCardStorage((prevStorage) => {
-        prevStorage.categories.find((cat) => cat.uuid === categoryId).push(copiedCard);
+        const newStorage = clone(prevStorage);
+        newStorage.categories.find((cat) => cat.uuid === categoryId).push(copiedCard);
         return {
-          ...prevStorage,
+          ...newStorage,
         };
       });
     }
+  };
+
+  const importCategory = (category) => {
+    if (!category) {
+      return;
+    }
+    if (!category.cards) {
+      return;
+    }
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      newStorage.categories.push(category);
+      return {
+        ...newStorage,
+      };
+    });
+  };
+  const addCategory = (categoryName) => {
+    if (!categoryName) {
+      return;
+    }
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      newStorage.categories.push({
+        uuid: uuidv4(),
+        name: categoryName,
+        cards: [],
+      });
+      return {
+        ...newStorage,
+      };
+    });
+  };
+
+  const renameCategory = (categoryId, newCategoryName) => {
+    if (!categoryId || !newCategoryName) {
+      return;
+    }
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const index = newStorage.categories.findIndex((cat) => cat.uuid === categoryId);
+      newStorage.categories[index] = { ...newStorage.categories[index], name: newCategoryName };
+      return {
+        ...newStorage,
+      };
+    });
   };
 
   const removeCardFromCategory = (cardId, categoryId) => {
@@ -89,24 +142,48 @@ export const CardStorageProviderComponent = (props) => {
     }
     if (!categoryId) {
       setCardStorage((prevStorage) => {
-        const newCards = prevStorage.categories[0].cards.filter((card) => card.uuid !== cardId);
-        prevStorage.categories[0].cards = newCards;
+        const newStorage = clone(prevStorage);
+        const newCards = newStorage.categories[0].cards.filter((card) => card.uuid !== cardId);
+        newStorage.categories[0].cards = newCards;
         return {
-          ...prevStorage,
-          categories: [...prevStorage.categories],
+          ...newStorage,
+          categories: [...newStorage.categories],
         };
       });
     } else {
       setCardStorage((prevStorage) => {
-        const category = prevStorage.categories.find((cat) => cat.uuid === categoryId);
-        const newCards = category.cards.filter((card) => card.uuid !== cardId);
-        category.cards = newCards;
+        const newStorage = clone(prevStorage);
+        const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryId);
+        const newCards = newStorage.categories[catIndex].cards.filter((card) => card.uuid !== cardId);
+        newStorage.categories[0].cards = newCards;
         return {
-          ...prevStorage,
-          categories: [...prevStorage.categories, category],
+          ...newStorage,
+          categories: [...newStorage.categories],
         };
       });
     }
+  };
+  const removeCategory = (categoryId) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const newCategories = newStorage.categories.filter((cat) => cat.uuid !== categoryId);
+      return {
+        ...newStorage,
+        categories: [...newCategories],
+      };
+    });
+  };
+
+  const updateCategory = (category, uuid) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const newCategories = newStorage.categories;
+      newCategories[newStorage.categories.findIndex((cat) => cat.uuid === uuid)] = category;
+      return {
+        ...newStorage,
+        categories: [...newCategories],
+      };
+    });
   };
 
   const context = {
@@ -120,6 +197,11 @@ export const CardStorageProviderComponent = (props) => {
     setActiveCategory,
     addCardToCategory,
     removeCardFromCategory,
+    importCategory,
+    renameCategory,
+    removeCategory,
+    addCategory,
+    updateCategory,
   };
 
   return <CardStorageContext.Provider value={context}>{props.children}</CardStorageContext.Provider>;

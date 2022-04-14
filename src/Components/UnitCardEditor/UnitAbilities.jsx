@@ -62,7 +62,7 @@ export function UnitAbilities() {
           >
             {ability.showAbility && (
               <Row justify='space-between' align='middle'>
-                <Col span={2} justify='center'>
+                <Col span={2} justify='center' style={{ textAlign: 'center' }}>
                   <Switch
                     checked={ability.showDescription}
                     onChange={(value) => {

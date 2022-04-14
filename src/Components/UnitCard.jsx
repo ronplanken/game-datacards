@@ -1,12 +1,11 @@
+import ReactMarkdown from 'react-markdown';
 import { UnitStatline } from './UnitCard/UnitStatline';
 import { UnitType } from './UnitCard/UnitType';
 import { WeaponStatline } from './UnitCard/WeaponStatline';
 
 export const UnitCard = ({ unit, style, cardStyle }) => {
   return (
-    <div
-      style={{ paddingTop: '32px', justifyContent: 'center', justifyItems: 'center', display: 'flex', ...style}}
-    >
+    <div style={{ paddingTop: '32px', justifyContent: 'center', justifyItems: 'center', display: 'flex', ...style }}>
       <div className='page' style={cardStyle}>
         <div className='frame'>
           <div className='header'>
@@ -15,7 +14,7 @@ export const UnitCard = ({ unit, style, cardStyle }) => {
             </div>
             <div className='name'>{unit.name}</div>
           </div>
-          {unit.datasheet?.length > 0 && (
+          {unit.datasheet?.filter( (sheet) => sheet.active).length > 0 && (
             <div className='labels heading'>
               <div className='center label'>
                 <div className='movement' id='icon' title='Movement' alt-text='Movement'></div>
@@ -58,8 +57,10 @@ export const UnitCard = ({ unit, style, cardStyle }) => {
               }
             })}
           </div>
-          <div className='description'>{unit.unit_composition}</div>
-          {unit.wargear?.length > 0 && (
+          <div className='description'>
+            <ReactMarkdown>{unit.unit_composition}</ReactMarkdown>
+          </div>
+          {unit.wargear?.filter( (sheet) => sheet.active).length > 0 && (
             <div className='weapons heading'>
               <div className='left label'>WEAPON</div>
               <div className='center label'>
@@ -104,8 +105,10 @@ export const UnitCard = ({ unit, style, cardStyle }) => {
               return (
                 ability.showAbility && (
                   <div className='description' key={`ability-${ability.name}-description-${index}`}>
-                    <b>{ability.name}</b>
-                    {ability.showDescription && <>: {ability.description}</>}
+                    {!ability.showDescription && <b>{ability.name}</b>}
+                    {ability.showDescription && (
+                      <ReactMarkdown>{`**${ability.name}** : ${ability.description}`}</ReactMarkdown>
+                    )}
                   </div>
                 )
               );

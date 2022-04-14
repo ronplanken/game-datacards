@@ -394,6 +394,10 @@
   line-height: 14px;
 }
 
+.description p {
+  margin-bottom: 0;
+}
+
 .selections_header {
   margin: 4px 8px 0px;
   padding: 0 4px;

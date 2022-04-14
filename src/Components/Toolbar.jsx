@@ -1,22 +1,18 @@
 import {
-  AppstoreAddOutlined,
   DeleteOutlined,
-  ExclamationCircleOutlined,
   PrinterOutlined,
   SaveOutlined,
   DownloadOutlined,
   UploadOutlined,
   InboxOutlined,
   FileOutlined,
-  CopyOutlined,
+  FolderAddOutlined,
 } from '@ant-design/icons';
 import { Button, Col, message, Modal, Row, Tooltip } from 'antd';
 import Dragger from 'antd/lib/upload/Dragger';
 import React from 'react';
 import { useCardStorage } from '../Hooks/useCardStorage';
 import { v4 as uuidv4 } from 'uuid';
-
-const { confirm } = Modal;
 
 export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) => {
   const [uploadFile, setUploadFile] = React.useState(null);
@@ -25,21 +21,17 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
   const [fileList, setFileList] = React.useState([]);
 
   const {
-    cardStorage,
-    activeCard,
-    setActiveCard,
     activeCategory,
-    setActiveCategory,
-    addCardToCategory,
-    removeCardFromCategory,
     saveActiveCard,
+    importCategory,
     cardUpdated,
+    addCategory,
   } = useCardStorage();
 
   return (
     <Row>
       <Col
-        span={8}
+        span={10}
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -53,29 +45,15 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
           visible={isModalVisible}
           okButtonProps={{ disabled: !uploadFile }}
           onOk={() => {
-            if (cardStorage) {
-              confirm({
-                title: 'Are you sure you want to import this file?',
-                content: 'This will overwrite your current cards.',
-                icon: <ExclamationCircleOutlined />,
-                okText: 'Yes',
-                okType: 'danger',
-                cancelText: 'No',
-                onOk: () => {
-                  // setCards(uploadFile.cards);
-                  localStorage.setItem('cards', JSON.stringify(uploadFile.cards));
-                  setFileList([]);
-                  setUploadFile(null);
-                  setIsModalVisible(false);
-                },
-              });
-            } else {
-              // setCards(uploadFile.cards);
-              localStorage.setItem('cards', JSON.stringify(uploadFile.cards));
-              setFileList([]);
-              setUploadFile(null);
-              setIsModalVisible(false);
+            if (uploadFile.version === '0.4.0') {
+              importCategory({ uuid: uuidv4(), name: 'Imported Cards', cards: uploadFile.cards });
             }
+            if (uploadFile.version === '0.5.0') {
+              importCategory(uploadFile.category);
+            }
+            setFileList([]);
+            setUploadFile(null);
+            setIsModalVisible(false);
           }}
           onCancel={() => {
             setIsModalVisible(false);
@@ -142,7 +120,6 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                 );
               }}
               beforeUpload={(file) => {
-                setUploadFile(file);
                 var reader = new FileReader();
 
                 reader.onload = function (event) {
@@ -152,7 +129,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                       setFileList([
                         {
                           uid: '-1',
-                          name: file.name,
+                          name: `${file.name} [ver. ${importedJson.version}]`,
                           status: 'success',
                           size: file.size,
                         },
@@ -194,7 +171,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             </Dragger>
           </div>
         </Modal>
-        <Tooltip title={'Print cards'} placement='bottomLeft'>
+        <Tooltip title={'Print cards from category'} placement='bottomLeft'>
           <Button
             type={'text'}
             shape={'circle'}
@@ -211,8 +188,15 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             shape={'circle'}
             disabled={!(activeCategory && activeCategory.cards.length > 0)}
             onClick={() => {
+              const exportCategory = {
+                ...activeCategory,
+                uuid: uuidv4(),
+                cards: activeCategory.cards.map((card) => {
+                  return { ...card, uuid: uuidv4() };
+                }),
+              };
               const exportData = {
-                category: activeCategory,
+                category: exportCategory,
                 createdAt: new Date().toISOString(),
                 version: process.env.REACT_APP_VERSION,
                 website: 'https://game-datacards.eu',
@@ -240,15 +224,27 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             }}
           />
         </Tooltip>
+        <Tooltip title={'Add new category'} placement='bottomLeft'>
+          <Button
+            type={'text'}
+            shape={'circle'}
+            icon={<FolderAddOutlined />}
+            onClick={() => {
+              addCategory('New Category');
+            }}
+          />
+        </Tooltip>
       </Col>
       <Col
-        span={16}
+        span={14}
         style={{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'end',
           background: 'white',
           borderBottom: '1px solid #E5E5E5',
+          alignItems: 'center',
+          paddingRight: '4px',
         }}
       >
         {selectedTreeKey && selectedTreeKey.includes('card') && (
@@ -256,67 +252,18 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             <Tooltip title={'Update selected card'} placement='bottom'>
               <Button
                 icon={<SaveOutlined />}
-                type={'text'}
-                shape={'circle'}
+                type={'ghost'}
+                size={'small'}
                 disabled={!cardUpdated}
                 onClick={() => {
                   saveActiveCard();
                   message.success('Card has been updated');
                 }}
-              ></Button>
-            </Tooltip>
-            <Tooltip title={'Remove selected card'} placement='bottomRight'>
-              <Button
-                icon={<DeleteOutlined />}
-                type={'text'}
-                shape={'circle'}
-                onClick={() => {
-                  confirm({
-                    title: 'Are you sure you want to delete this card?',
-                    icon: <ExclamationCircleOutlined />,
-                    okText: 'Yes',
-                    okType: 'danger',
-                    cancelText: 'No',
-                    onOk: () => {
-                      removeCardFromCategory(activeCard.uuid);
-                      setActiveCard(null);
-                      setSelectedTreeKey(null);
-                    },
-                  });
-                }}
-              />
+              >
+                save
+              </Button>
             </Tooltip>
           </>
-        )}
-        {activeCard && !activeCard.isCustom && (
-          <Tooltip title='Add card to category' placement='bottomRight'>
-            <Button
-              icon={<AppstoreAddOutlined />}
-              type={'text'}
-              shape={'circle'}
-              onClick={() => {
-                const newCard = { ...activeCard, isCustom: true, uuid: uuidv4() };
-                addCardToCategory(newCard);
-                setActiveCard(newCard)
-                setSelectedTreeKey(`card-${newCard.uuid}`);
-              }}
-            />
-          </Tooltip>
-        )}
-        {activeCard && activeCard.isCustom && (
-          <Tooltip title='Duplicate card' placement='bottomRight'>
-            <Button
-              icon={<CopyOutlined />}
-              type={'text'}
-              shape={'circle'}
-              onClick={() => {
-                const newCard = { ...activeCard, name: `${activeCard.name} Copy`, isCustom: true, uuid: uuidv4() };
-                addCardToCategory(newCard);
-                setActiveCard(newCard)
-                setSelectedTreeKey(`card-${newCard.uuid}`);
-              }}
-            />
-          </Tooltip>
         )}
       </Col>
     </Row>

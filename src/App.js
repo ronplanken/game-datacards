@@ -1,28 +1,31 @@
-import { TreeCategory } from './Components/TreeCategory';
-import { TreeItem } from './Components/TreeItem';
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Col, Form, Input, Layout, List, Menu, message, Modal, Row, Select, Typography } from 'antd';
+import {
+  AppstoreAddOutlined,
+  ExclamationCircleOutlined,
+  QuestionCircleOutlined,
+  PrinterOutlined,
+} from '@ant-design/icons';
+import { Button, Col, Form, Input, Layout, List, Modal, Row, Select, Typography } from 'antd';
 import 'antd/dist/antd.min.css';
-import { useEffect, useState } from 'react';
+import clone from 'just-clone';
+import split from 'just-split';
+import { useEffect, useRef, useState } from 'react';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import NewWindow from 'react-new-window';
+import { v4 as uuidv4 } from 'uuid';
 import './App.css';
 import { About } from './Components/About';
 import { Toolbar } from './Components/Toolbar';
+import { TreeCategory } from './Components/TreeCategory';
+import { TreeItem } from './Components/TreeItem';
 import { UnitCard } from './Components/UnitCard';
 import { UnitCardEditor } from './Components/UnitCardEditor';
-import { useCardStorage } from './Hooks/useCardStorage';
 import { get40KData } from './Helpers/external.helpers';
+import { getBackgroundColor, getMinHeight, move, reorder } from './Helpers/treeview.helpers';
+import { useCardStorage } from './Hooks/useCardStorage';
 
 const { Header, Content } = Layout;
 const { Option } = Select;
-
-const menu = (
-  <Menu>
-    <Menu.Item key='1'>1st menu item</Menu.Item>
-    <Menu.Item key='2'>2nd menu item</Menu.Item>
-    <Menu.Item key='3'>3rd menu item</Menu.Item>
-  </Menu>
-);
+const { confirm } = Modal;
 
 function App() {
   const [selectedFaction, setSelectedFaction] = useState(null);
@@ -39,7 +42,10 @@ function App() {
   const [cardsPerRow, setCardsPerRow] = useState(3);
   const [cardScaling, setCardScaling] = useState(100);
 
-  const { cardStorage, activeCard, setActiveCard, cardUpdated, saveActiveCard } = useCardStorage();
+  const printRef = useRef(null);
+
+  const { cardStorage, activeCard, setActiveCard, cardUpdated, addCardToCategory, updateCategory, activeCategory } =
+    useCardStorage();
 
   useEffect(() => {
     async function fetchData() {
@@ -91,25 +97,69 @@ function App() {
                 <Row>
                   <Col span={24}>
                     <div style={{ height: '300px', overflow: 'auto', background: 'white' }}>
-                      {cardStorage.categories.map((category, categoryIndex) => {
-                        return (
-                          <div key={`category-${category.name}-${categoryIndex}`}>
-                            <TreeCategory
-                              category={category}
-                              selectedTreeIndex={selectedTreeIndex}
-                              setSelectedTreeIndex={setSelectedTreeIndex}
-                            />
-                            {category.cards.map((card, cardIndex) => (
-                              <TreeItem
-                                card={card}
-                                category={category}
-                                selectedTreeIndex={selectedTreeIndex}
-                                setSelectedTreeIndex={setSelectedTreeIndex}
-                              />
-                            ))}
-                          </div>
-                        );
-                      })}
+                      <DragDropContext
+                        onDragEnd={(result) => {
+                          const { source, destination } = result;
+
+                          // dropped outside the list
+                          if (!destination) {
+                            return;
+                          }
+                          const sInd = source.droppableId;
+                          const dInd = destination.droppableId;
+                          if (sInd === dInd) {
+                            const sourceCat = clone(cardStorage.categories.find((cat) => cat.uuid === sInd));
+                            sourceCat.cards = reorder(sourceCat.cards, source.index, destination.index);
+                            updateCategory(sourceCat, sInd);
+                          } else {
+                            const sourceCat = clone(cardStorage.categories.find((cat) => cat.uuid === sInd));
+                            const destCat = clone(cardStorage.categories.find((cat) => cat.uuid === dInd));
+
+                            const newCategories = move(sourceCat.cards, destCat.cards, source, destination);
+                            sourceCat.cards = newCategories[sInd];
+                            destCat.cards = newCategories[dInd];
+
+                            updateCategory(sourceCat, sInd);
+                            updateCategory(destCat, dInd);
+                          }
+                        }}
+                      >
+                        {cardStorage.categories.map((category, categoryIndex) => {
+                          return (
+                            <div key={`category-${category.name}-${categoryIndex}`}>
+                              <Droppable key={`${category.uuid}-droppable`} droppableId={category.uuid}>
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    style={{
+                                      minHeight: getMinHeight(snapshot),
+                                      backgroundColor: getBackgroundColor(snapshot),
+                                    }}
+                                  >
+                                    <TreeCategory
+                                      category={category}
+                                      selectedTreeIndex={selectedTreeIndex}
+                                      setSelectedTreeIndex={setSelectedTreeIndex}
+                                    />
+                                    {category.cards.map((card, cardIndex) => (
+                                      <TreeItem
+                                        card={card}
+                                        category={category}
+                                        selectedTreeIndex={selectedTreeIndex}
+                                        setSelectedTreeIndex={setSelectedTreeIndex}
+                                        index={cardIndex}
+                                        key={`${category.uuid}-item-${cardIndex}`}
+                                      />
+                                    ))}
+                                    {provided.placeholder}
+                                  </div>
+                                )}
+                              </Droppable>
+                            </div>
+                          );
+                        })}
+                      </DragDropContext>
                     </div>
                   </Col>
                 </Row>
@@ -171,8 +221,23 @@ function App() {
                     <List.Item
                       key={`list-${card.id}`}
                       onClick={() => {
-                        setActiveCard(card);
-                        setSelectedTreeIndex(null);
+                        if (cardUpdated) {
+                          confirm({
+                            title: 'You have unsaved changes',
+                            content: 'Are you sure you want to discard your changes?',
+                            icon: <ExclamationCircleOutlined />,
+                            okText: 'Yes',
+                            okType: 'danger',
+                            cancelText: 'No',
+                            onOk: () => {
+                              setActiveCard(card);
+                              setSelectedTreeIndex(null);
+                            },
+                          });
+                        } else {
+                          setActiveCard(card);
+                          setSelectedTreeIndex(null);
+                        }
                       }}
                       className={`list-item ${
                         activeCard && !activeCard.isCustom && activeCard.id === card.id ? 'selected' : ''
@@ -193,6 +258,27 @@ function App() {
                 </Col>
               )}
             </Row>
+            <Row style={{ overflow: 'hidden', justifyContent: 'center' }}>
+              {activeCard && !activeCard.isCustom && (
+                <Col
+                  span={9}
+                  style={{ overflow: 'hidden', justifyContent: 'center', display: 'flex', marginTop: '16px' }}
+                >
+                  <Button
+                    icon={<AppstoreAddOutlined />}
+                    type={'primary'}
+                    onClick={() => {
+                      const newCard = { ...activeCard, isCustom: true, uuid: uuidv4() };
+                      addCardToCategory(newCard);
+                      setActiveCard(newCard);
+                      setSelectedTreeIndex(`card-${newCard.uuid}`);
+                    }}
+                  >
+                    Add card to category
+                  </Button>
+                </Col>
+              )}
+            </Row>
           </Col>
           {activeCard && (
             <Col span={9} style={{ overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
@@ -202,7 +288,7 @@ function App() {
         </Row>
       </Content>
       {showPrint && (
-        <NewWindow onUnload={() => setShowPrint(false)} center='screen' features={{ width: '500px' }} title='Datacards'>
+        <NewWindow onUnload={() => setShowPrint(false)} ref={printRef} center='screen' features={{ width: '500px' }} title='Datacards'>
           <style>
             {`@media print
           {    
@@ -215,8 +301,8 @@ function App() {
           <div className={'no-print'} style={{ marginTop: '32px', padding: '32px' }}>
             <Form layout='vertical'>
               <Row gutter={16}>
-                <Col span={8}>
-                  <Form.Item label={'Number of cards per page:'}>
+                <Col span={3}>
+                  <Form.Item label={'Cards per page:'}>
                     <Input
                       type={'number'}
                       value={cardsPerPage}
@@ -226,8 +312,8 @@ function App() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={8}>
-                  <Form.Item label={'Number of cards per row:'}>
+                <Col span={3}>
+                  <Form.Item label={'Cards per row:'}>
                     <Input
                       type={'number'}
                       value={cardsPerRow}
@@ -237,8 +323,8 @@ function App() {
                     />
                   </Form.Item>
                 </Col>
-                <Col span={8}>
-                  <Form.Item label={'Scaling size of cards:'}>
+                <Col span={3}>
+                  <Form.Item label={'Scaling of cards:'}>
                     <Input
                       type={'number'}
                       value={cardScaling}
@@ -248,10 +334,17 @@ function App() {
                     />
                   </Form.Item>
                 </Col>
+                <Col span={4}>
+                  <Form.Item label={'Print'}>
+                    <Button type='primary' icon={ <PrinterOutlined />} size={"medium"} onClick={() => printRef.current.window.print()}>
+                      Print
+                    </Button>
+                  </Form.Item>
+                </Col>
               </Row>
             </Form>
           </div>
-          {/* {split(cards, cardsPerPage).map((row) => {
+          {split(activeCategory.cards, cardsPerPage).map((row) => {
             return (
               <div
                 className='flex'
@@ -271,7 +364,7 @@ function App() {
                 })}
               </div>
             );
-          })} */}
+          })}
         </NewWindow>
       )}
     </Layout>
