@@ -1,103 +1,131 @@
-import { useParams } from 'react-router-dom';
-import { addDoc, collection, doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import { UnitCard } from '../Components/UnitCard';
-
-import '../App.css';
+import { ForkOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
+import { Badge, Button, Col, Layout, Row, Space, Tooltip, Typography } from 'antd';
 import { Content, Header } from 'antd/lib/layout/layout';
-import { Button, Col, Layout, Row, Space, Typography } from 'antd';
-
-import { ForkOutlined, QuestionCircleOutlined, HeartOutlined, HeartTwoTone, ShareAltOutlined } from '@ant-design/icons';
-import { CodeJson } from '../Icons/CodeJson';
-
-const isMobile = window.matchMedia('only screen and (max-width: 760px)').matches;
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyBRdhA0nJqt2XZwaBWEoRrHxN77sOH2rkY',
-  authDomain: 'game-datacards.firebaseapp.com',
-  projectId: 'game-datacards',
-  storageBucket: 'game-datacards.appspot.com',
-  messagingSenderId: '563260328800',
-  appId: '1:563260328800:web:485d1b84a522870bb7ac05',
-  measurementId: 'G-9GRBWJ0BJ8',
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-const db = getFirestore(app);
+import clone from 'just-clone';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
+import '../App.css';
+import { UnitCard } from '../Components/UnitCard';
+import { useCardStorage } from '../Hooks/useCardStorage';
+import { useFirebase } from '../Hooks/useFirebase';
 
 export const Shared = () => {
   const { Id } = useParams();
+  const navigate = useNavigate();
 
-  const [cards, setCards] = useState([]);
+  const { getCategory, likeCategory } = useFirebase();
 
-  // Add a new document in collection "cities"
-  // useEffect(() => {
-  // const lsCards = localStorage.getItem('cards');
-  // const cards = JSON.parse(lsCards.replace(/(<([^>]+)>)/gi, ''));
-  // const cleanCards = cards.map((card) => {
-  //   delete card.link;
-  //   return {
-  //     ...card,
-  //     datasheet: card.datasheet
-  //       .filter((sheet) => sheet.active)
-  //       .map((sheet) => {
-  //         delete sheet.link;
-  //         return sheet;
-  //       }),
-  //     keywords: card.keywords.filter((keyword) => keyword.active),
-  //     wargear: card.wargear.filter((wargear) => wargear.active),
-  //     abilities: card.abilities.filter((ability) => ability.showAbility),
-  //   };
-  // });
-  // addDoc(collection(db, 'shares'), { cards: cleanCards });
-  // }, []);
+  const [historyStorage, setHistoryStorage] = useState({ liked: [] });
+
+  const [sharedStorage, setSharedStorage] = useState();
+
+  const { importCategory } = useCardStorage();
+
+  useEffect(() => {
+    const localShareStorage = localStorage.getItem('historyStorage');
+    if (localShareStorage) {
+      setHistoryStorage(JSON.parse(localShareStorage));
+    }
+  }, []);
+
+  useEffect(() => {
+    document.title = `Shared ${sharedStorage?.category?.name || ''} - Game Datacards`;
+  }, [sharedStorage]);
+
+  useEffect(() => {
+    localStorage.setItem('historyStorage', JSON.stringify(historyStorage));
+  }, [historyStorage]);
 
   useEffect(() => {
     if (Id) {
-      getDoc(doc(db, 'shares', Id)).then((dc) => {
-        setCards(dc.data().cards);
+      getCategory(Id).then((cat) => {
+        setSharedStorage(cat);
       });
     }
-  }, [Id]);
+  }, [Id, getCategory]);
 
   return (
     <Layout>
       <Header>
         <Row style={{ justifyContent: 'space-between' }}>
           <Col>
-            <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, marginTop: '8px' }}>
-              Game Datacards
+            <Link to={'/'}>
+              <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
+                Game Datacards
+              </Typography.Title>
+            </Link>
+          </Col>
+          <Col>
+            <Typography.Title level={3} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
+              {sharedStorage?.category?.name}
             </Typography.Title>
           </Col>
           <Col>
+            <Space style={{ marginRight: '16px' }}>
+              {/* <Button
+                className='button-bar'
+                type='ghost'
+                shape='circle'
+                size='large'
+                icon={<ShareAltOutlined style={{ fontSize: '20px' }} />}
+              /> */}
+              {historyStorage.liked.includes(Id) ? (
+                <Badge count={sharedStorage?.likes} offset={[-4, 14]} size='small' color={'blue'} overflowCount={999}>
+                  <Tooltip title={'You have already liked this set.'}>
+                    <Button
+                      className='button-bar'
+                      type='text'
+                      size='large'
+                      disabled={true}
+                      icon={<HeartFilled style={{ color: '#40a9ff', cursor: 'cursor' }} />}
+                    />
+                  </Tooltip>
+                </Badge>
+              ) : (
+                <Badge count={sharedStorage?.likes} offset={[-4, 14]} size='small' color={'blue'} overflowCount={999}>
+                  <Button
+                    className='button-bar'
+                    type='ghost'
+                    size='large'
+                    icon={<HeartOutlined />}
+                    onClick={() => {
+                      const newStorage = clone(historyStorage);
+                      newStorage.liked.push(Id);
+                      setHistoryStorage(newStorage);
+                      setSharedStorage((prev) => {
+                        return { ...prev, likes: prev.likes + 1 };
+                      });
+                      likeCategory(Id);
+                    }}
+                  />
+                </Badge>
+              )}
+            </Space>
             <Space>
-              <Button
-                className='button-bar'
-                style={{ fontSize: '24px' }}
-                type='text'
-                shape='circle'
-                size='large'
-                icon={<ShareAltOutlined />}
-              />
-              <Button
-                className='button-bar'
-                style={{ fontSize: '24px' }}
-                type='text'
-                shape='circle'
-                size='large'
-                icon={<HeartOutlined />}
-              />
-              <Button className='button-bar' type='ghost' icon={<CodeJson />}>
+              {/* <Button className='button-bar' type='ghost' size='large' icon={<CodeJson />}>
                 Embed
-              </Button>
-              <Button className='button-bar' type='ghost' icon={<ForkOutlined />}>
-                Fork
+              </Button> */}
+              <Button
+                className='button-bar'
+                type='ghost'
+                size='large'
+                icon={<ForkOutlined />}
+                onClick={() => {
+                  const cloneCategory = {
+                    ...sharedStorage.category,
+                    name: `Imported ${sharedStorage.category.name}`,
+                    uuid: uuidv4(),
+                    cards: sharedStorage.category.cards.map((card) => {
+                      return { ...card, uuid: uuidv4() };
+                    }),
+                  };
+
+                  importCategory(cloneCategory);
+                  navigate('/');
+                }}
+              >
+                Clone
               </Button>
             </Space>
           </Col>
@@ -105,7 +133,7 @@ export const Shared = () => {
       </Header>
       <Content>
         <div className='flex' style={{ pageBreakAfter: 'always', gridTemplateColumns: `1fr 1fr 1fr` }}>
-          {cards.map((card, index) => {
+          {sharedStorage?.category?.cards?.map((card, index) => {
             return <UnitCard unit={card} key={`${card.name}-${index}`} />;
           })}
         </div>

@@ -3,17 +3,20 @@ import {
   ExclamationCircleOutlined,
   QuestionCircleOutlined,
   PrinterOutlined,
+  ShareAltOutlined,
 } from '@ant-design/icons';
-import { Button, Col, Form, Input, Layout, List, Modal, Row, Select, Typography } from 'antd';
+import { Button, Col, Form, Input, Layout, List, Modal, Row, Select, Space, Tooltip, Typography } from 'antd';
 import 'antd/dist/antd.min.css';
 import clone from 'just-clone';
 import split from 'just-split';
 import { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import NewWindow from 'react-new-window';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './App.css';
 import { About } from './Components/About';
+import { ShareModal } from './Components/ShareModal';
 import { Toolbar } from './Components/Toolbar';
 import { TreeCategory } from './Components/TreeCategory';
 import { TreeItem } from './Components/TreeItem';
@@ -22,6 +25,7 @@ import { UnitCardEditor } from './Components/UnitCardEditor';
 import { get40KData } from './Helpers/external.helpers';
 import { getBackgroundColor, getMinHeight, move, reorder } from './Helpers/treeview.helpers';
 import { useCardStorage } from './Hooks/useCardStorage';
+import { useFirebase } from './Hooks/useFirebase';
 
 const { Header, Content } = Layout;
 const { Option } = Select;
@@ -41,6 +45,10 @@ function App() {
   const [cardsPerPage, setCardsPerPage] = useState(9);
   const [cardsPerRow, setCardsPerRow] = useState(3);
   const [cardScaling, setCardScaling] = useState(100);
+
+  const { shareCategory } = useFirebase();
+
+  const navigate = useNavigate();
 
   const printRef = useRef(null);
 
@@ -62,25 +70,29 @@ function App() {
       <Header>
         <Row style={{ justifyContent: 'space-between' }}>
           <Col>
-            <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, marginTop: '8px' }}>
+            <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
               Game Datacards
             </Typography.Title>
           </Col>
           <Col>
-            <Button
-              size='large'
-              shape='circle'
-              type={'text'}
-              icon={<QuestionCircleOutlined />}
-              style={{ color: 'white' }}
-              onClick={() => {
-                Modal.info({
-                  title: 'Game Datacards',
-                  width: 850,
-                  content: <About />,
-                });
-              }}
-            />
+            <Space>
+              {activeCategory && activeCategory.cards.length > 0 && <ShareModal />}
+              <Button
+                size='large'
+                type={'ghost'}
+                icon={<QuestionCircleOutlined />}
+                style={{ color: 'white' }}
+                onClick={() => {
+                  Modal.info({
+                    title: 'Game Datacards',
+                    width: 850,
+                    content: <About />,
+                  });
+                }}
+              >
+                About
+              </Button>
+            </Space>
           </Col>
         </Row>
       </Header>
@@ -288,7 +300,13 @@ function App() {
         </Row>
       </Content>
       {showPrint && (
-        <NewWindow onUnload={() => setShowPrint(false)} ref={printRef} center='screen' features={{ width: '500px' }} title='Datacards'>
+        <NewWindow
+          onUnload={() => setShowPrint(false)}
+          ref={printRef}
+          center='screen'
+          features={{ width: '500px' }}
+          title='Datacards'
+        >
           <style>
             {`@media print
           {    
@@ -336,7 +354,12 @@ function App() {
                 </Col>
                 <Col span={4}>
                   <Form.Item label={'Print'}>
-                    <Button type='primary' icon={ <PrinterOutlined />} size={"medium"} onClick={() => printRef.current.window.print()}>
+                    <Button
+                      type='primary'
+                      icon={<PrinterOutlined />}
+                      size={'medium'}
+                      onClick={() => printRef.current.window.print()}
+                    >
                       Print
                     </Button>
                   </Form.Item>

@@ -34,7 +34,8 @@ export const CardStorageProviderComponent = (props) => {
   const [activeCategory, setActiveCategory] = React.useState(null);
 
   useEffect(() => {
-    localStorage.setItem('storage', JSON.stringify(cardStorage));
+    const version = process.env.REACT_APP_VERSION;
+    localStorage.setItem('storage', JSON.stringify({ ...cardStorage, version }));
   }, [cardStorage]);
 
   const updateActiveCard = (card) => {
@@ -155,11 +156,8 @@ export const CardStorageProviderComponent = (props) => {
         const newStorage = clone(prevStorage);
         const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryId);
         const newCards = newStorage.categories[catIndex].cards.filter((card) => card.uuid !== cardId);
-        newStorage.categories[0].cards = newCards;
-        return {
-          ...newStorage,
-          categories: [...newStorage.categories],
-        };
+        newStorage.categories[catIndex].cards = newCards;
+        return newStorage;
       });
     }
   };

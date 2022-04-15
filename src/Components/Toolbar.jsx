@@ -1,37 +1,30 @@
 import {
   DeleteOutlined,
-  PrinterOutlined,
-  SaveOutlined,
   DownloadOutlined,
-  UploadOutlined,
-  InboxOutlined,
   FileOutlined,
   FolderAddOutlined,
+  InboxOutlined,
+  PrinterOutlined,
+  SaveOutlined,
+  UploadOutlined,
 } from '@ant-design/icons';
 import { Button, Col, message, Modal, Row, Tooltip } from 'antd';
 import Dragger from 'antd/lib/upload/Dragger';
 import React from 'react';
-import { useCardStorage } from '../Hooks/useCardStorage';
 import { v4 as uuidv4 } from 'uuid';
+import { useCardStorage } from '../Hooks/useCardStorage';
 
 export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) => {
   const [uploadFile, setUploadFile] = React.useState(null);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
   const [fileList, setFileList] = React.useState([]);
-
-  const {
-    activeCategory,
-    saveActiveCard,
-    importCategory,
-    cardUpdated,
-    addCategory,
-  } = useCardStorage();
+  const { activeCategory, saveActiveCard, importCategory, cardUpdated, addCategory } = useCardStorage();
 
   return (
     <Row>
       <Col
-        span={10}
+        span={12}
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -236,7 +229,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
         </Tooltip>
       </Col>
       <Col
-        span={14}
+        span={12}
         style={{
           display: 'flex',
           flexDirection: 'row',

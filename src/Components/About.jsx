@@ -27,24 +27,22 @@ export const About = () => {
 
       <b>Planned features:</b>
       <ul>
-        <li>
-          <p>More external datasources (OPR and more games)</p>
-        </li>
-        <li>
-          <p>Add more pages to the card builder.</p>
-        </li>
-        <li>
-          <p>Reorder cards saved in the card builder.</p>
-        </li>
-        <li>
-          <p>
-            After an selected card has been changed, make sure to let the user know they have to press the "update card"
-            button.
-          </p>
-        </li>
+        <li>More external datasources (OPR and more games)</li>
+        <li>Armylist creation?</li>
       </ul>
 
-      <Collapse defaultActiveKey={'0.5.0'}>
+      <Collapse defaultActiveKey={'1.0.0'}>
+        <Panel header={'Version 1.0.0'} key={'1.0.0'}>
+          <b>Changelog</b>
+          <ul>
+            <li>Added ability to fully customize all sections on the card.</li>
+            <li>Auto-hide the header for empty sections on a card.</li>
+            <li>Added a sharing page to share your setup with other players.</li>
+            <li>Added the ability to add / delete / rename categories.</li>
+            <li>Added the ability to drag &amp; drop cards into categories.</li>
+            <li>Added an prompt when changing to a different card and not saving.</li>
+          </ul>
+        </Panel>
         <Panel header={'Version 0.5.0'} key={'0.5.0'}>
           <b>Changelog</b>
           <ul>

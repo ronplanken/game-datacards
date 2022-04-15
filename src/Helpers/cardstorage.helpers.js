@@ -19,6 +19,9 @@ export const parseStorageJson = (savedJson) => {
   try {
     const parsedJson = JSON.parse(savedJson.replace(/(<([^>]+)>)/gi, ''));
     if (parsedJson.version !== process.env.REACT_APP_VERSION) {
+      if (parsedJson.categories) {
+        return parsedJson;
+      }
       const newCards = parsedJson.map((card) => {
         return { ...card, uuid: uuidv4() };
       });

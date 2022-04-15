@@ -6,13 +6,16 @@ import Mobile from './Mobile';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './Routes/AppRoutes';
 import { CardStorageProviderComponent } from './Hooks/useCardStorage';
+import { FirebaseProviderComponent } from './Hooks/useFirebase';
 
 const isMobile = window.matchMedia('only screen and (max-width: 760px)').matches;
 
 ReactDOM.render(
   <React.StrictMode>
     <CardStorageProviderComponent>
-      <BrowserRouter>{isMobile ? <Mobile /> : <AppRoutes />}</BrowserRouter>
+      <FirebaseProviderComponent>
+        <BrowserRouter>{isMobile ? <Mobile /> : <AppRoutes />}</BrowserRouter>
+      </FirebaseProviderComponent>
     </CardStorageProviderComponent>
   </React.StrictMode>,
   document.getElementById('root')
