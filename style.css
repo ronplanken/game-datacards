@@ -38,6 +38,7 @@
   /*-webkit-border-radius: 17px;
   border-radius: 17px;*/
   background-color: #e2e2dd;
+  overflow: hidden;
 }
 
 .background-frame {
@@ -428,10 +429,10 @@
 }
 
 .abilities {
-  max-height: 10.2em;
+  /* max-height: 10.2em;
   display: -webkit-box;
   -webkit-line-clamp: 10;
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical; */
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -442,7 +443,6 @@
   font-size: 10px;
   font-weight: 700;
   text-align: center;
-  left: 0;
   bottom: 8px;
   text-align: center;
   padding-left: 15px;
@@ -453,7 +453,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 4.5em;
-  width: 100%;
+  background: #E2E2DD;
+  z-index:10;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  width: calc(100% - 30px);
+  left: 0;
 }
 
 body {
