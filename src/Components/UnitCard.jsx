@@ -3,9 +3,9 @@ import { UnitStatline } from './UnitCard/UnitStatline';
 import { UnitType } from './UnitCard/UnitType';
 import { WeaponStatline } from './UnitCard/WeaponStatline';
 
-export const UnitCard = ({ unit, style, cardStyle }) => {
+export const UnitCard = ({ unit, style, cardStyle, paddingTop = '32px' }) => {
   return (
-    <div style={{ paddingTop: '32px', justifyContent: 'center', justifyItems: 'center', display: 'flex', ...style }}>
+    <div style={{ paddingTop, justifyContent: 'center', justifyItems: 'center', display: 'flex' }}>
       <div className='page' style={cardStyle}>
         <div className='frame'>
           <div className='header'>

@@ -83,3 +83,11 @@
 .tree-item-container.selected:hover {
   background-color: #a2dfff;
 }
+.dots {
+  bottom: -80px !important;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  background: #001529;
+}

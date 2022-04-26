@@ -1,5 +1,5 @@
 import { ForkOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
-import { Badge, Button, Col, Layout, Row, Space, Tooltip, Typography } from 'antd';
+import { Badge, Button, Col, Grid, Layout, Row, Space, Tooltip, Typography } from 'antd';
 import { Content, Header } from 'antd/lib/layout/layout';
 import clone from 'just-clone';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,10 @@ import '../App.css';
 import { UnitCard } from '../Components/UnitCard';
 import { useCardStorage } from '../Hooks/useCardStorage';
 import { useFirebase } from '../Hooks/useFirebase';
+
+import { Carousel } from 'antd';
+
+const { useBreakpoint } = Grid;
 
 export const Shared = () => {
   const { Id } = useParams();
@@ -21,6 +25,8 @@ export const Shared = () => {
   const [sharedStorage, setSharedStorage] = useState();
 
   const { importCategory } = useCardStorage();
+
+  const screens = useBreakpoint();
 
   useEffect(() => {
     const localShareStorage = localStorage.getItem('historyStorage');
@@ -44,32 +50,36 @@ export const Shared = () => {
       });
     }
   }, [Id, getCategory]);
-
+  console.log(screens);
   return (
     <Layout>
       <Header>
         <Row style={{ justifyContent: 'space-between' }}>
-          <Col>
-            <Link to={'/'}>
-              <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
+          {(screens.sm) && (
+            <Col>
+              <Link to={'/'}>
+                <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
+                  Game Datacards
+                </Typography.Title>
+              </Link>
+            </Col>
+          )}
+          {(screens.xs) && (
+            <Col>
+              <Typography.Title level={3} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
                 Game Datacards
               </Typography.Title>
-            </Link>
-          </Col>
-          <Col>
-            <Typography.Title level={3} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
-              {sharedStorage?.category?.name}
-            </Typography.Title>
-          </Col>
+            </Col>
+          )}
+          {(screens.lg) && (
+            <Col>
+              <Typography.Title level={3} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
+                {sharedStorage?.category?.name}
+              </Typography.Title>
+            </Col>
+          )}
           <Col>
             <Space style={{ marginRight: '16px' }}>
-              {/* <Button
-                className='button-bar'
-                type='ghost'
-                shape='circle'
-                size='large'
-                icon={<ShareAltOutlined style={{ fontSize: '20px' }} />}
-              /> */}
               {historyStorage.liked.includes(Id) ? (
                 <Badge count={sharedStorage?.likes} offset={[-4, 14]} size='small' color={'blue'} overflowCount={999}>
                   <Tooltip title={'You have already liked this set.'}>
@@ -102,41 +112,56 @@ export const Shared = () => {
                 </Badge>
               )}
             </Space>
-            <Space>
-              {/* <Button className='button-bar' type='ghost' size='large' icon={<CodeJson />}>
+            {(screens.lg) && (
+              <Space>
+                {/* <Button className='button-bar' type='ghost' size='large' icon={<CodeJson />}>
                 Embed
               </Button> */}
-              <Button
-                className='button-bar'
-                type='ghost'
-                size='large'
-                icon={<ForkOutlined />}
-                onClick={() => {
-                  const cloneCategory = {
-                    ...sharedStorage.category,
-                    name: `Imported ${sharedStorage.category.name}`,
-                    uuid: uuidv4(),
-                    cards: sharedStorage.category.cards.map((card) => {
-                      return { ...card, uuid: uuidv4() };
-                    }),
-                  };
+                <Button
+                  className='button-bar'
+                  type='ghost'
+                  size='large'
+                  icon={<ForkOutlined />}
+                  onClick={() => {
+                    const cloneCategory = {
+                      ...sharedStorage.category,
+                      name: `Imported ${sharedStorage.category.name}`,
+                      uuid: uuidv4(),
+                      cards: sharedStorage.category.cards.map((card) => {
+                        return { ...card, uuid: uuidv4() };
+                      }),
+                    };
 
-                  importCategory(cloneCategory);
-                  navigate('/');
-                }}
-              >
-                Clone
-              </Button>
-            </Space>
+                    importCategory(cloneCategory);
+                    navigate('/');
+                  }}
+                >
+                  Clone
+                </Button>
+              </Space>
+            )}
           </Col>
         </Row>
       </Header>
-      <Content>
-        <div className='flex' style={{ pageBreakAfter: 'always', gridTemplateColumns: `1fr 1fr 1fr` }}>
-          {sharedStorage?.category?.cards?.map((card, index) => {
-            return <UnitCard unit={card} key={`${card.name}-${index}`} />;
-          })}
-        </div>
+      <Content style={{ minHeight: "calc(100vh - 64px)"}}>
+        {!screens.xs && (
+          <Row>
+            {sharedStorage?.category?.cards?.map((card, index) => {
+              return (
+                <Col span={8} lg={8} md={12} sm={12} xs={24}>
+                  <UnitCard unit={card} key={`${card.name}-${index}`} />
+                </Col>
+              );
+            })}
+          </Row>
+        )}
+        {screens.xs && (
+          <Carousel dots={{ className: "dots" }}>
+            {sharedStorage?.category?.cards?.map((card, index) => {
+              return <UnitCard unit={card} key={`${card.name}-${index}`} style={{ display: "flex !important", color: "pink" }} />;
+            })}
+          </Carousel>
+        )}
       </Content>
     </Layout>
   );

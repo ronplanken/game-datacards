@@ -365,6 +365,14 @@ function App() {
                   </Form.Item>
                 </Col>
               </Row>
+              <Row>
+                <Col span={12}>
+                  <Typography.Paragraph>
+                    When printing the cards make sure to enable the "Background graphics" option in order to print the
+                    icons and borders.
+                  </Typography.Paragraph>
+                </Col>
+              </Row>
             </Form>
           </div>
           {split(activeCategory.cards, cardsPerPage).map((row) => {
@@ -378,9 +386,7 @@ function App() {
                     <UnitCard
                       unit={card}
                       key={`${card.id}-${index}`}
-                      style={{
-                        paddingTop: '8px',
-                      }}
+                      paddingTop='8px'
                       cardStyle={{ transformOrigin: '0% 0%', transform: `scale(${cardScaling / 100})` }}
                     />
                   );

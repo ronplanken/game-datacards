@@ -12,12 +12,12 @@ export const About = () => {
       <b>Thank you to:</b>
       <ul>
         <li>
-          <p>External data sources are powered by Wahapedia.</p>
+          <p>External data sources are powered by <Typography.Link href='https://wahapedia.ru/'>Wahapedia</Typography.Link>.</p>
         </li>
         <li>
           <p>
             Card design &amp; icons are created by Locequen. (
-            <Typography.Link link='https://github.com/Locequen/40k-Data-Card'>
+            <Typography.Link href='https://github.com/Locequen/40k-Data-Card'>
               Locequen / 40k-Data-Card on Github
             </Typography.Link>
             )
@@ -31,10 +31,13 @@ export const About = () => {
         <li>Armylist creation?</li>
       </ul>
 
-      <Collapse defaultActiveKey={'1.0.0'}>
-        <Panel header={'Version 1.0.0'} key={'1.0.0'}>
+      <Collapse defaultActiveKey={'1.0.1'}>
+        <Panel header={'Version 1.0.1'} key={'1.0.1'}>
           <b>Changelog</b>
           <ul>
+            <li><b>1.0.1: </b>Added mobile view for Shared page. </li>
+            <li><b>1.0.1: </b>Added an help message on the print screen.</li>
+            <li><b>1.0.1: </b>Made the abilities block have unlimited height on the card. (Will be clipped if larger then the card)</li>
             <li>Added ability to fully customize all sections on the card.</li>
             <li>Auto-hide the header for empty sections on a card.</li>
             <li>Added a sharing page to share your setup with other players.</li>
