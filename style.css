@@ -2,41 +2,43 @@
   display: grid;
 }
 
-.page {
+.page.card {
   display: grid;
   position: relative;
-  place-items: center;
-  height: 405px;
+  height: 410px;
   width: 295px;
   background-color: #D0D0D0;
-  /*background-color: #606060;*/
   padding: 8px;
   margin-right: 4px;
 }
 
-.background-page {
+.page.sheet {
   display: grid;
   position: relative;
-  place-items: center;
-  height: 378px;
-  width: 295px;
+  height: 210mm;
+  width: 148mm;
   background-color: #D0D0D0;
-  /*background-color: #606060;*/
   padding: 8px;
   margin-right: 4px;
+  margin-bottom: 4px;
 }
 
-.frame {
+.page.sheet > .frame {
   display: block;
-  /*height: 498px;
-  width: 354px;*/
-  height: 385px;
-  width: 275px;
-  /*box-shadow: 0 19px 38px      rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);*/
+  height: calc(100% - 4.5em);
+  width: 100%;
   background: black;
   border-radius: 13.5px;
-  /*-webkit-border-radius: 17px;
-  border-radius: 17px;*/
+  background-color: #e2e2dd;
+  overflow: hidden;
+}
+
+.page.card > .frame {
+  display: block;
+  height: 385px;
+  width: 275px;
+  background: black;
+  border-radius: 13.5px;
   background-color: #e2e2dd;
   overflow: hidden;
 }
@@ -251,9 +253,24 @@
   margin-right: 2px;
 }
 
-.name {
+.page.card .name {
   float: right;
   width: 210px;
+  min-height: 32x;
+  padding: 8px 0 0 0;
+  line-height: 15px;
+  text-transform: uppercase;
+  vertical-align: middle;
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  border-bottom: 2px solid #000;
+}
+
+.page.sheet .name {
+  float: right;
+  width: calc(100% - 40px);
   min-height: 32x;
   padding: 8px 0 0 0;
   line-height: 15px;
@@ -295,19 +312,31 @@
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
-.weapons {
+.page.card .weapons {
   grid-template-columns: 113px 40px 40px 22px 22px 22px;
   font-size: 12px;
 }
 
-.weapon_profile {
+.page.card .weapon_profile {
   display: grid;
   grid-template-columns: 113px 40px 40px 22px 22px 22px;
   font-size: 11px;
 }
+
 .weapon_edit_profile {
   display: grid;
   grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  font-size: 11px;
+}
+
+.page.sheet .weapons {
+  grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr;
+  font-size: 12px;
+}
+
+.page.sheet .weapon_profile {
+  display: grid;
+  grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr;
   font-size: 11px;
 }
 
@@ -429,10 +458,6 @@
 }
 
 .abilities {
-  /* max-height: 10.2em;
-  display: -webkit-box;
-  -webkit-line-clamp: 10;
-  -webkit-box-orient: vertical; */
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -458,7 +483,7 @@
   margin-left: 15px;
   margin-right: 15px;
   margin-bottom: 4px;
-  border-radius: 8px;
+  border-radius: 13.5px;
   width: calc(100% - 30px);
   left: 0;
 }
