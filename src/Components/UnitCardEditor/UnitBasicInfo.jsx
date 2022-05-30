@@ -9,26 +9,32 @@ export function UnitBasicInfo() {
 
   return (
     <>
+      <Form.Item label={'Variant'}>
+        <Select value={activeCard.variant || 'card'} onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}>
+          <Option value='card'>Card</Option>
+          <Option value='sheet'>Sheet</Option>
+        </Select>
+      </Form.Item>
       <Form.Item label={'Name'}>
-          <Input
-            type={'text'}
-            value={activeCard.name}
-            onChange={(e) => updateActiveCard({ ...activeCard, name: e.target.value })}
-          />
-        </Form.Item>
-        <Form.Item label={'Type'}>
-          <Select value={activeCard.role} onChange={(value) => updateActiveCard({ ...activeCard, role: value })}>
-            <Option value='HQ'>HQ</Option>
-            <Option value='Elites'>Elites</Option>
-            <Option value='Heavy Support'>Heavy Support</Option>
-            <Option value='Fast Attack'>Fast Attack</Option>
-            <Option value='Dedicated Transport'>Dedicated Transport</Option>
-            <Option value='Flyers'>Flyers</Option>
-            <Option value='Fortifications'>Fortifications</Option>
-            <Option value='Lords of War'>Lords of War</Option>
-            <Option value='Unknown'>Unknown</Option>
-          </Select>
-        </Form.Item>
+        <Input
+          type={'text'}
+          value={activeCard.name}
+          onChange={(e) => updateActiveCard({ ...activeCard, name: e.target.value })}
+        />
+      </Form.Item>
+      <Form.Item label={'Type'}>
+        <Select value={activeCard.role} onChange={(value) => updateActiveCard({ ...activeCard, role: value })}>
+          <Option value='HQ'>HQ</Option>
+          <Option value='Elites'>Elites</Option>
+          <Option value='Heavy Support'>Heavy Support</Option>
+          <Option value='Fast Attack'>Fast Attack</Option>
+          <Option value='Dedicated Transport'>Dedicated Transport</Option>
+          <Option value='Flyers'>Flyers</Option>
+          <Option value='Fortifications'>Fortifications</Option>
+          <Option value='Lords of War'>Lords of War</Option>
+          <Option value='Unknown'>Unknown</Option>
+        </Select>
+      </Form.Item>
     </>
   );
 }

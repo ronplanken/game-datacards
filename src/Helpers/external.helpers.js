@@ -18,6 +18,9 @@ export const get40KData = async () => {
   const dataDatasheetAbilities = await readCsv(
     'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_abilities.json'
   );
+  const dataStratagems = await readCsv(
+    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Stratagems.json'
+  );
   const dataAbilities = await readCsv(
     'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Abilities.json'
   );
@@ -40,7 +43,13 @@ export const get40KData = async () => {
   const dataFactions = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Factions.json');
   const sheets = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets.json');
 
+  const mappedStratagems = dataStratagems.map((stratagem) => {
+    stratagem['type'] = 'stratagem';
+    return stratagem;
+  });
+
   const mappedSheets = sheets.map((row) => {
+    row['type'] = 'datasheet';
     row['keywords'] = [
       ...new Map(
         dataKeywords
@@ -103,6 +112,11 @@ export const get40KData = async () => {
   dataFactions.map((faction) => {
     faction['datasheets'] = mappedSheets
       .filter((datasheet) => datasheet.faction_id === faction.id)
+      .sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+    faction['stratagems'] = mappedStratagems
+      .filter((stratagem) => stratagem.faction_id === faction.id)
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       });

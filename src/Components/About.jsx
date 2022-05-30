@@ -31,10 +31,12 @@ export const About = () => {
         <li>Armylist creation?</li>
       </ul>
 
-      <Collapse defaultActiveKey={'1.0.1'}>
-        <Panel header={'Version 1.0.1'} key={'1.0.1'}>
+      <Collapse defaultActiveKey={'1.0.2'}>
+        <Panel header={'Version 1.0.2'} key={'1.0.2'}>
           <b>Changelog</b>
           <ul>
+            <li><b>1.0.2: </b>Fixed a crash when saving a newly added card. </li>
+            <li><b>1.0.2: </b>Added card Variants. </li>
             <li><b>1.0.1: </b>Added mobile view for Shared page. </li>
             <li><b>1.0.1: </b>Added an help message on the print screen.</li>
             <li><b>1.0.1: </b>Made the abilities block have unlimited height on the card. (Will be clipped if larger then the card)</li>

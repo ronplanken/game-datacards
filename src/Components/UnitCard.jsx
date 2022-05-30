@@ -3,10 +3,10 @@ import { UnitStatline } from './UnitCard/UnitStatline';
 import { UnitType } from './UnitCard/UnitType';
 import { WeaponStatline } from './UnitCard/WeaponStatline';
 
-export const UnitCard = ({ unit, style, cardStyle, paddingTop = '32px' }) => {
+export const UnitCard = ({ unit, style, cardStyle, paddingTop = '32px'}) => {
   return (
     <div style={{ paddingTop, justifyContent: 'center', justifyItems: 'center', display: 'flex' }}>
-      <div className='page' style={cardStyle}>
+      <div className={`page ${unit.variant || 'card'}`} style={cardStyle}>
         <div className='frame'>
           <div className='header'>
             <div className='role'>

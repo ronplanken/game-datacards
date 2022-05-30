@@ -41,7 +41,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             if (uploadFile.version === '0.4.0') {
               importCategory({ uuid: uuidv4(), name: 'Imported Cards', cards: uploadFile.cards });
             }
-            if (uploadFile.version === '0.5.0' || uploadFile.version === '1.0.0' || uploadFile.version === '1.0.1') {
+            if (uploadFile.version === '0.5.0' || uploadFile.version === '1.0.0' || uploadFile.version === '1.0.1' || uploadFile.version === '1.0.2') {
               importCategory(uploadFile.category);
             }
             setFileList([]);

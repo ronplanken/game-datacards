@@ -1,11 +1,10 @@
 import {
   AppstoreAddOutlined,
   ExclamationCircleOutlined,
-  QuestionCircleOutlined,
   PrinterOutlined,
-  ShareAltOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
-import { Button, Col, Form, Input, Layout, List, Modal, Row, Select, Space, Tooltip, Typography } from 'antd';
+import { Button, Col, Divider, Form, Input, Layout, List, Modal, Row, Select, Space, Typography } from 'antd';
 import 'antd/dist/antd.min.css';
 import clone from 'just-clone';
 import split from 'just-split';
@@ -17,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import './App.css';
 import { About } from './Components/About';
 import { ShareModal } from './Components/ShareModal';
+import { StratagemCard } from './Components/StratagemCard';
 import { Toolbar } from './Components/Toolbar';
 import { TreeCategory } from './Components/TreeCategory';
 import { TreeItem } from './Components/TreeItem';
@@ -33,6 +33,7 @@ const { confirm } = Modal;
 
 function App() {
   const [selectedFaction, setSelectedFaction] = useState(null);
+  const [selectedContentType, setSelectedContentType] = useState('datasheets');
   const [factions, setFactions] = useState([]);
   const [isLoading, setLoading] = useState(false);
 
@@ -52,8 +53,16 @@ function App() {
 
   const printRef = useRef(null);
 
-  const { cardStorage, activeCard, setActiveCard, cardUpdated, addCardToCategory, updateCategory, activeCategory } =
-    useCardStorage();
+  const {
+    cardStorage,
+    activeCard,
+    setActiveCard,
+    cardUpdated,
+    addCardToCategory,
+    updateCategory,
+    activeCategory,
+    setActiveCategory,
+  } = useCardStorage();
 
   useEffect(() => {
     async function fetchData() {
@@ -64,6 +73,21 @@ function App() {
     setLoading(true);
     fetchData();
   }, []);
+
+  const getDataSourceType = () => {
+    if (selectedContentType === 'datasheets') {
+      return searchText
+        ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
+        : selectedFaction?.datasheets;
+    }
+    if (selectedContentType === 'stratagems') {
+      return searchText
+        ? selectedFaction?.stratagems.filter((stratagem) =>
+            stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : selectedFaction?.stratagems;
+    }
+  };
 
   return (
     <Layout>
@@ -183,13 +207,7 @@ function App() {
                   bordered
                   size='small'
                   loading={isLoading}
-                  dataSource={
-                    searchText
-                      ? selectedFaction?.datasheets.filter((sheet) =>
-                          sheet.name.toLowerCase().includes(searchText.toLowerCase())
-                        )
-                      : selectedFaction?.datasheets
-                  }
+                  dataSource={getDataSourceType()}
                   style={{ overflowY: 'auto', height: 'calc(100vh - 398px)' }}
                   locale={{ emptyText: selectedFaction ? 'No datasheets found' : 'No faction selected' }}
                   header={
@@ -214,6 +232,11 @@ function App() {
                       </Row>
                       <Row>
                         <Col span={24}>
+                          <Divider style={{ marginTop: 4, marginBottom: 8 }} />
+                        </Col>
+                      </Row>
+                      <Row style={{ marginBottom: '4px' }}>
+                        <Col span={24}>
                           <Input.Search
                             placeholder={'Search'}
                             onSearch={(value) => {
@@ -227,6 +250,28 @@ function App() {
                           />
                         </Col>
                       </Row>
+                      {selectedFaction && (
+                        <Row style={{ marginBottom: '4px' }}>
+                          <Col span={24}>
+                            <Select
+                              loading={isLoading}
+                              style={{ width: '100%' }}
+                              onChange={(value) => {
+                                setSelectedContentType(value);
+                              }}
+                              placeholder='Select a type'
+                              value={selectedContentType}
+                            >
+                              <Option value={'datasheets'} key={`datasheets`}>
+                                Datasheets
+                              </Option>
+                              <Option value={'stratagems'} key={`stratagems`}>
+                                Stratagems
+                              </Option>
+                            </Select>
+                          </Col>
+                        </Row>
+                      )}
                     </>
                   }
                   renderItem={(card) => (
@@ -265,9 +310,12 @@ function App() {
           <Col span={9} style={{ display: 'flex', flexDirection: 'column' }}>
             <Row style={{ overflow: 'hidden' }}>
               {activeCard && (
-                <Col span={24}>
-                  <UnitCard unit={activeCard} />
-                </Col>
+                <>
+                  <Col span={24}>
+                    {activeCard.type === 'datasheet' && <UnitCard unit={activeCard} />}
+                    {activeCard.type === 'stratagem' && <StratagemCard stratagem={activeCard} />}
+                  </Col>
+                </>
               )}
             </Row>
             <Row style={{ overflow: 'hidden', justifyContent: 'center' }}>
@@ -281,8 +329,11 @@ function App() {
                     type={'primary'}
                     onClick={() => {
                       const newCard = { ...activeCard, isCustom: true, uuid: uuidv4() };
+                      const cat = { ...cardStorage.categories[0] };
                       addCardToCategory(newCard);
                       setActiveCard(newCard);
+                      console.log(cat);
+                      setActiveCategory(cat);
                       setSelectedTreeIndex(`card-${newCard.uuid}`);
                     }}
                   >
