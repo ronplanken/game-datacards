@@ -17,6 +17,7 @@ import './App.css';
 import { About } from './Components/About';
 import { ShareModal } from './Components/ShareModal';
 import { StratagemCard } from './Components/StratagemCard';
+import { StratagemEditor } from './Components/StratagemEditor';
 import { Toolbar } from './Components/Toolbar';
 import { TreeCategory } from './Components/TreeCategory';
 import { TreeItem } from './Components/TreeItem';
@@ -312,8 +313,8 @@ function App() {
               {activeCard && (
                 <>
                   <Col span={24}>
-                    {activeCard.type === 'datasheet' && <UnitCard unit={activeCard} />}
-                    {activeCard.type === 'stratagem' && <StratagemCard stratagem={activeCard} />}
+                    {activeCard.cardType === 'datasheet' && <UnitCard unit={activeCard} />}
+                    {activeCard.cardType === 'stratagem' && <StratagemCard stratagem={activeCard} />}
                   </Col>
                 </>
               )}
@@ -332,7 +333,6 @@ function App() {
                       const cat = { ...cardStorage.categories[0] };
                       addCardToCategory(newCard);
                       setActiveCard(newCard);
-                      console.log(cat);
                       setActiveCategory(cat);
                       setSelectedTreeIndex(`card-${newCard.uuid}`);
                     }}
@@ -345,7 +345,8 @@ function App() {
           </Col>
           {activeCard && (
             <Col span={9} style={{ overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
-              <UnitCardEditor />
+              {activeCard.cardType === 'datasheet' && <UnitCardEditor />}
+              {activeCard.cardType === 'stratagem' && <StratagemEditor />}
             </Col>
           )}
         </Row>

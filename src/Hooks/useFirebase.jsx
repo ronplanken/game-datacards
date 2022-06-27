@@ -34,29 +34,33 @@ export const FirebaseProviderComponent = (props) => {
   const shareCategory = (category) => {
     const cleanCards = category.cards.map((card) => {
       delete card.link;
-      return {
-        ...card,
-        datasheet: card.datasheet
-          .filter((sheet) => sheet.active)
-          .map((sheet) => {
-            delete sheet.link;
-            return sheet;
-          }),
-        keywords: card.keywords.filter((keyword) => keyword.active),
-        wargear: card.wargear.filter((wargear) => wargear.active),
-        abilities: card.abilities.filter((ability) => ability.showAbility),
-      };
+      if (card.cardType === 'datasheet') {
+        return {
+          ...card,
+          datasheet: card.datasheet
+            .filter((sheet) => sheet.active)
+            .map((sheet) => {
+              delete sheet.link;
+              return sheet;
+            }),
+          keywords: card.keywords.filter((keyword) => keyword.active),
+          wargear: card.wargear.filter((wargear) => wargear.active),
+          abilities: card.abilities.filter((ability) => ability.showAbility),
+        };
+      }
+      return card;
     });
-    console.log(category);
-    return addDoc(collection(db, 'shares'), {
+
+    const newDoc = {
       category: { ...category, cards: cleanCards },
       description: '',
       likes: 0,
       views: 0,
-      version: process.env.REACT_APP_VERSION,
+      version: process.env.REACT_APP_VERSION || 'dev',
       createdAt: new Date().toISOString(),
       website: 'https://game-datacards.eu',
-    });
+    };
+    return addDoc(collection(db, 'shares'), newDoc);
   };
 
   const getCategory = async (Id) => {

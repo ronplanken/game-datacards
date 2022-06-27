@@ -136,6 +136,12 @@
   color: white;
   text-align: center;
   overflow: hidden;
+  font-weight: 600;
+  line-height: 16px;
+  font-size: 1.2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .stratagem:after {
@@ -291,6 +297,12 @@
   font-weight: 700;
   letter-spacing: -1px;
   border-bottom: 2px solid #000;
+}
+
+.stratagem_type {
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 .page.sheet .name {

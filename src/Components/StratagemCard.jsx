@@ -1,7 +1,4 @@
 import ReactMarkdown from 'react-markdown';
-import { UnitStatline } from './UnitCard/UnitStatline';
-import { UnitType } from './UnitCard/UnitType';
-import { WeaponStatline } from './UnitCard/WeaponStatline';
 
 export const StratagemCard = ({ stratagem, style, cardStyle, paddingTop = '32px' }) => {
   return (
@@ -11,10 +8,12 @@ export const StratagemCard = ({ stratagem, style, cardStyle, paddingTop = '32px'
           <div className='header'>
             <div className='role'>
               <div className='stratagem'>
-                {stratagem.cp_cost}CP
+                <span>{stratagem.cp_cost}CP</span>
               </div>
             </div>
-            <div className='name'>{stratagem.name}</div>
+            <div className='name'>
+              {stratagem.name} <div className='stratagem_type'>{stratagem.type}</div>
+            </div>
           </div>
           <div className='description'>
             <ReactMarkdown>{stratagem.description}</ReactMarkdown>

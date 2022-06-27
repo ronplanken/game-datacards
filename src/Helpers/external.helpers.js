@@ -44,12 +44,12 @@ export const get40KData = async () => {
   const sheets = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets.json');
 
   const mappedStratagems = dataStratagems.map((stratagem) => {
-    stratagem['type'] = 'stratagem';
+    stratagem['cardType'] = 'stratagem';
     return stratagem;
   });
 
   const mappedSheets = sheets.map((row) => {
-    row['type'] = 'datasheet';
+    row['cardType'] = 'datasheet';
     row['keywords'] = [
       ...new Map(
         dataKeywords
@@ -76,7 +76,9 @@ export const get40KData = async () => {
       newRow[cols['Col2']] = linkedDamageTable[index]['Col2'];
       newRow[cols['Col3']] = linkedDamageTable[index]['Col3'];
       newRow[cols['Col4']] = linkedDamageTable[index]['Col4'];
-      newRow[cols['Col5']] = linkedDamageTable[index]['Col5'];
+      if (cols['Col5']) {
+        newRow[cols['Col5']] = linkedDamageTable[index]['Col5'];
+      }
       row['datasheet'].push(newRow);
     }
 
