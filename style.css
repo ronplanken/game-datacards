@@ -324,14 +324,12 @@
 }
 
 .stratagem_description {
-  background: #dee3e0;
-  margin: 4px 5px;
+  margin: 8px 8px;
   margin-top: 16px;
   padding: 0 4px;
   vertical-align: middle;
   font-family: 'Heebo', sans-serif;
   font-size: 13px;
-  font-weight: 700px;
   text-align: justify;
   letter-spacing: 0px;
   line-height: 14px;
