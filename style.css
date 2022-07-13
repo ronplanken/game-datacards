@@ -66,6 +66,12 @@
   margin: 0 8px;
 }
 
+.stratagem_header {
+  display: block;
+  height: auto;
+  margin: 0 8px;
+}
+
 .role {
   position: relative;
   float: left;
