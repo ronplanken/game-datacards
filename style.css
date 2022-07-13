@@ -23,7 +23,7 @@
   margin-bottom: 4px;
 }
 
-.page.sheet > .frame {
+.page.sheet>.frame {
   display: block;
   height: calc(100% - 4.5em);
   width: 100%;
@@ -33,7 +33,7 @@
   overflow: hidden;
 }
 
-.page.card > .frame {
+.page.card>.frame {
   display: block;
   height: 385px;
   width: 275px;
@@ -129,6 +129,37 @@
 
 .unknown {
   background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Unknown.svg");
+}
+
+.stratagem {
+  z-index: 2;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  font-weight: 600;
+  line-height: 16px;
+  font-size: 1.2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.stratagem:after {
+
+  content: '';
+  position: absolute;
+
+  width: 100px;
+  height: 100px;
+  top: -67px;
+  right: -50px;
+
+  background-color: #000000;
+  transform-origin: 0% 0%;
+  transform: rotate(45deg);
+
+  z-index: -1;
+  /* background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Stratagem.svg"); */
 }
 
 .elites {
@@ -268,6 +299,38 @@
   border-bottom: 2px solid #000;
 }
 
+.stratagem_type {
+  font-family: 'Heebo', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  border-bottom: 2px solid #000;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 8px;
+}
+.stratagem_name {
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.stratagem_description {
+  background: #dee3e0;
+  margin: 4px 5px;
+  margin-top: 16px;
+  padding: 0 4px;
+  vertical-align: middle;
+  font-family: 'Heebo', sans-serif;
+  font-size: 13px;
+  font-weight: 700px;
+  text-align: justify;
+  letter-spacing: 0px;
+  line-height: 14px;
+}
+
 .page.sheet .name {
   float: right;
   width: calc(100% - 40px);
@@ -299,13 +362,14 @@
   vertical-align: middle;
   border-bottom: 2px solid #777273;
 }
+
 .edit_line {
   display: grid;
   background: #b6beba;
   grid-template-rows: 32px;
   vertical-align: middle;
   border-bottom: 2px solid #777273;
-  }
+}
 
 .labels {
   font-weight: 600;
@@ -391,11 +455,11 @@
   background: #dee3e0;
 }
 
-.weapon:nth-of-type(even) + .weapon_desc {
+.weapon:nth-of-type(even)+.weapon_desc {
   background: #dee3e0;
 }
 
-.weapon:nth-of-type(odd) + .weapon_desc {
+.weapon:nth-of-type(odd)+.weapon_desc {
   background: #fff;
 }
 
@@ -479,7 +543,7 @@
   text-overflow: ellipsis;
   max-height: 4.5em;
   background: #E2E2DD;
-  z-index:10;
+  z-index: 10;
   margin-left: 15px;
   margin-right: 15px;
   margin-bottom: 4px;
@@ -487,6 +551,32 @@
   width: calc(100% - 30px);
   left: 0;
 }
+.stratagem_footer {
+  border-top: 2px solid #000;
+  position: absolute;
+  text-transform: uppercase;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  bottom: 16px;
+  text-align: center;
+  padding-left: 15px;
+  padding-right: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 4.5em;
+  background: #E2E2DD;
+  z-index: 10;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 4px;
+  width: calc(100% - 30px);
+  left: 0;
+}
+
 
 body {
   font-family: system-ui, sans-serif;
