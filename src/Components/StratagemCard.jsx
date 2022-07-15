@@ -5,21 +5,16 @@ export const StratagemCard = ({ stratagem, style, cardStyle, paddingTop = '32px'
     <div style={{ paddingTop, justifyContent: 'center', justifyItems: 'center', display: 'flex' }}>
       <div className={`page ${stratagem.variant || 'card'}`} style={cardStyle}>
         <div className='frame'>
-          <div className='header'>
-            <div className='role'>
-              <div className='stratagem'>
-                <span>{stratagem.cp_cost}CP</span>
-              </div>
-            </div>
-            <div className='name'>
-              {stratagem.name} <div className='stratagem_type'>{stratagem.type}</div>
-            </div>
+          <div className='stratagem_header'>
+            <div className='stratagem_type'>{stratagem.type.split('–')[1] || "Stratagem"}</div>
+            <div className='stratagem_name'>{stratagem.name}</div>
           </div>
-          <div className='description'>
+          <div className='stratagem_description'>
             <ReactMarkdown>{stratagem.description}</ReactMarkdown>
           </div>
+          <div className='stratagem_footer'>{stratagem.cp_cost} COMMAND POINT(S)</div>
         </div>
       </div>
     </div>
   );
-};
+};  

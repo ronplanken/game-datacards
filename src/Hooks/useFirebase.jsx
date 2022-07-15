@@ -1,4 +1,4 @@
-import { getAnalytics } from 'firebase/analytics';
+import { getAnalytics, logEvent } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { addDoc, collection, doc, getDoc, getFirestore, increment, updateDoc } from 'firebase/firestore';
 import React, { useState } from 'react';
@@ -63,6 +63,14 @@ export const FirebaseProviderComponent = (props) => {
     return addDoc(collection(db, 'shares'), newDoc);
   };
 
+  const logLocalEvent = () => {
+    logEvent(analytics, 'select_content', {
+      content_type: 'image',
+      content_id: 'P12453',
+      items: [{ name: 'Kittens' }],
+    });
+  };
+
   const getCategory = async (Id) => {
     if (!Id) {
       return null;
@@ -92,6 +100,7 @@ export const FirebaseProviderComponent = (props) => {
     shareCategory,
     getCategory,
     likeCategory,
+    logLocalEvent,
   };
 
   return <FirebaseContext.Provider value={context}>{props.children}</FirebaseContext.Provider>;

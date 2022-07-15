@@ -12,7 +12,9 @@ export function UnitBasicInfo() {
       <Form.Item label={'Variant'}>
         <Select value={activeCard.variant || 'card'} onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}>
           <Option value='card'>Card</Option>
+          <Option value='card-no-icons'>Card (No Icons)</Option>
           <Option value='sheet'>Sheet</Option>
+          <Option value='sheet-no-icons'>Sheet (No Icons)</Option>
         </Select>
       </Form.Item>
       <Form.Item label={'Name'}>

@@ -1,4 +1,10 @@
-import { ExclamationCircleOutlined, ProfileOutlined, DeleteOutlined, CopyOutlined } from '@ant-design/icons';
+import {
+  OneToOneOutlined,
+  ExclamationCircleOutlined,
+  ProfileOutlined,
+  DeleteOutlined,
+  CopyOutlined,
+} from '@ant-design/icons';
 import { Dropdown, Menu, message, Modal } from 'antd';
 import React from 'react';
 import { useCardStorage } from '../Hooks/useCardStorage';
@@ -100,7 +106,9 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               }}
               className={'tree-item'}
             >
-              <ProfileOutlined /> {card.name}
+              {card.cardType === 'datasheet' && <ProfileOutlined />}
+              {card.cardType === 'stratagem' && <OneToOneOutlined />}
+              &nbsp;{card.name}
             </div>
           </div>
         </Dropdown>

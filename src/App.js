@@ -1,20 +1,30 @@
+import { AppstoreAddOutlined, ExclamationCircleOutlined, PrinterOutlined } from '@ant-design/icons';
 import {
-  AppstoreAddOutlined,
-  ExclamationCircleOutlined,
-  PrinterOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons';
-import { Button, Col, Divider, Form, Input, Layout, List, Modal, Row, Select, Space, Typography } from 'antd';
+  Button,
+  Col,
+  Divider,
+  Form,
+  Image,
+  Input,
+  Layout,
+  List,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Tooltip,
+  Typography,
+} from 'antd';
 import 'antd/dist/antd.min.css';
 import clone from 'just-clone';
 import split from 'just-split';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import NewWindow from 'react-new-window';
-import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import './App.css';
-import { About } from './Components/About';
+import { AboutModal } from './Components/AboutModal';
+import { SettingsModal } from './Components/SettingsModal';
 import { ShareModal } from './Components/ShareModal';
 import { StratagemCard } from './Components/StratagemCard';
 import { StratagemEditor } from './Components/StratagemEditor';
@@ -23,20 +33,23 @@ import { TreeCategory } from './Components/TreeCategory';
 import { TreeItem } from './Components/TreeItem';
 import { UnitCard } from './Components/UnitCard';
 import { UnitCardEditor } from './Components/UnitCardEditor';
-import { get40KData } from './Helpers/external.helpers';
+import { WelcomeWizard } from './Components/WelcomeWizard';
 import { getBackgroundColor, getMinHeight, move, reorder } from './Helpers/treeview.helpers';
 import { useCardStorage } from './Hooks/useCardStorage';
-import { useFirebase } from './Hooks/useFirebase';
+import { useDataSourceStorage } from './Hooks/useDataSourceStorage';
+import { Discord } from './Icons/Discord';
+import logo from './Images/logo.png';
+import './style.less';
 
 const { Header, Content } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
 
 function App() {
-  const [selectedFaction, setSelectedFaction] = useState(null);
+  const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
+
   const [selectedContentType, setSelectedContentType] = useState('datasheets');
-  const [factions, setFactions] = useState([]);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const [showPrint, setShowPrint] = useState(false);
 
@@ -48,12 +61,7 @@ function App() {
   const [cardsPerRow, setCardsPerRow] = useState(3);
   const [cardScaling, setCardScaling] = useState(100);
 
-  const { shareCategory } = useFirebase();
-
-  const navigate = useNavigate();
-
   const printRef = useRef(null);
-
   const {
     cardStorage,
     activeCard,
@@ -64,16 +72,6 @@ function App() {
     activeCategory,
     setActiveCategory,
   } = useCardStorage();
-
-  useEffect(() => {
-    async function fetchData() {
-      const dataFactions = await get40KData();
-      setFactions(dataFactions);
-      setLoading(false);
-    }
-    setLoading(true);
-    fetchData();
-  }, []);
 
   const getDataSourceType = () => {
     if (selectedContentType === 'datasheets') {
@@ -92,31 +90,31 @@ function App() {
 
   return (
     <Layout>
+      <WelcomeWizard />
       <Header>
         <Row style={{ justifyContent: 'space-between' }}>
           <Col>
-            <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
-              Game Datacards
-            </Typography.Title>
+            <Space size={'large'}>
+              <Image preview={false} src={logo} width={50} />
+              <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
+                Game Datacards
+              </Typography.Title>
+            </Space>
           </Col>
           <Col>
             <Space>
               {activeCategory && activeCategory.cards.length > 0 && <ShareModal />}
-              <Button
-                size='large'
-                type={'ghost'}
-                icon={<QuestionCircleOutlined />}
-                style={{ color: 'white' }}
-                onClick={() => {
-                  Modal.info({
-                    title: 'Game Datacards',
-                    width: 850,
-                    content: <About />,
-                  });
-                }}
-              >
-                About
-              </Button>
+              <AboutModal />
+              <Tooltip title={'Join us on discord!'} placement='bottomRight'>
+                <Button
+                  className='button-bar'
+                  type='ghost'
+                  size='large'
+                  icon={<Discord />}
+                  onClick={() => window.open('https://discord.gg/anfn4qTYC4', '_blank')}
+                ></Button>
+              </Tooltip>
+              <SettingsModal />
             </Space>
           </Col>
         </Row>
@@ -213,29 +211,34 @@ function App() {
                   locale={{ emptyText: selectedFaction ? 'No datasheets found' : 'No faction selected' }}
                   header={
                     <>
-                      <Row style={{ marginBottom: '4px' }}>
-                        <Col span={24}>
-                          <Select
-                            loading={isLoading}
-                            style={{ width: '100%' }}
-                            onChange={(value) => {
-                              setSelectedFaction(factions.find((faction) => faction.id === value));
-                            }}
-                            placeholder='Select a faction'
-                          >
-                            {factions.map((faction, index) => (
-                              <Option value={faction.id} key={`${faction.id}-${index}`}>
-                                {faction.name}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col span={24}>
-                          <Divider style={{ marginTop: 4, marginBottom: 8 }} />
-                        </Col>
-                      </Row>
+                      {dataSource.data.length > 1 && (
+                        <>
+                          <Row style={{ marginBottom: '4px' }}>
+                            <Col span={24}>
+                              <Select
+                                loading={isLoading}
+                                style={{ width: '100%' }}
+                                onChange={(value) => {
+                                  updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
+                                }}
+                                placeholder='Select a faction'
+                                value={dataSource?.data[selectedFactionIndex]?.name}
+                              >
+                                {dataSource.data.map((faction, index) => (
+                                  <Option value={faction.id} key={`${faction.id}-${index}`}>
+                                    {faction.name}
+                                  </Option>
+                                ))}
+                              </Select>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col span={24}>
+                              <Divider style={{ marginTop: 4, marginBottom: 8 }} />
+                            </Col>
+                          </Row>
+                        </>
+                      )}
                       <Row style={{ marginBottom: '4px' }}>
                         <Col span={24}>
                           <Input.Search
@@ -308,7 +311,7 @@ function App() {
               </Col>
             </Row>
           </Col>
-          <Col span={9} style={{ display: 'flex', flexDirection: 'column' }}>
+          <Col span={9} style={{ display: 'flex', flexDirection: 'column' }} className={'data-40k'}>
             <Row style={{ overflow: 'hidden' }}>
               {activeCard && (
                 <>
@@ -376,7 +379,7 @@ function App() {
                     <Input
                       type={'number'}
                       value={cardsPerPage}
-                      min={3}
+                      min={1}
                       max={9}
                       onChange={(e) => setCardsPerPage(Number(e.target.value))}
                     />
@@ -398,8 +401,8 @@ function App() {
                     <Input
                       type={'number'}
                       value={cardScaling}
-                      min={50}
-                      max={150}
+                      min={25}
+                      max={250}
                       onChange={(e) => setCardScaling(Number(e.target.value))}
                     />
                   </Form.Item>
@@ -430,17 +433,29 @@ function App() {
           {split(activeCategory.cards, cardsPerPage).map((row) => {
             return (
               <div
-                className='flex'
+                className='flex data-40k'
                 style={{ pageBreakAfter: 'always', gridTemplateColumns: `${cardsPerRow}fr `.repeat(cardsPerRow) }}
               >
                 {row.map((card, index) => {
                   return (
-                    <UnitCard
-                      unit={card}
-                      key={`${card.id}-${index}`}
-                      paddingTop='8px'
-                      cardStyle={{ transformOrigin: '0% 0%', transform: `scale(${cardScaling / 100})` }}
-                    />
+                    <>
+                      {card.cardType === 'datasheet' && (
+                        <UnitCard
+                          unit={card}
+                          key={`${card.id}-${index}`}
+                          paddingTop='8px'
+                          cardStyle={{ transformOrigin: '0% 0%', transform: `scale(${cardScaling / 100})` }}
+                        />
+                      )}
+                      {card.cardType === 'stratagem' && (
+                        <StratagemCard
+                          stratagem={card}
+                          key={`${card.id}-${index}`}
+                          paddingTop='8px'
+                          cardStyle={{ transformOrigin: '0% 0%', transform: `scale(${cardScaling / 100})` }}
+                        />
+                      )}
+                    </>
                   );
                 })}
               </div>

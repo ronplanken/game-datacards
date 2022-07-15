@@ -11,6 +11,7 @@ import { useCardStorage } from '../Hooks/useCardStorage';
 import { useFirebase } from '../Hooks/useFirebase';
 
 import { Carousel } from 'antd';
+import { StratagemCard } from '../Components/StratagemCard';
 
 const { useBreakpoint } = Grid;
 
@@ -55,7 +56,7 @@ export const Shared = () => {
     <Layout>
       <Header>
         <Row style={{ justifyContent: 'space-between' }}>
-          {(screens.sm) && (
+          {screens.sm && (
             <Col>
               <Link to={'/'}>
                 <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
@@ -64,14 +65,14 @@ export const Shared = () => {
               </Link>
             </Col>
           )}
-          {(screens.xs) && (
+          {screens.xs && (
             <Col>
               <Typography.Title level={3} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
                 Game Datacards
               </Typography.Title>
             </Col>
           )}
-          {(screens.lg) && (
+          {screens.lg && (
             <Col>
               <Typography.Title level={3} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
                 {sharedStorage?.category?.name}
@@ -112,7 +113,7 @@ export const Shared = () => {
                 </Badge>
               )}
             </Space>
-            {(screens.lg) && (
+            {screens.lg && (
               <Space>
                 {/* <Button className='button-bar' type='ghost' size='large' icon={<CodeJson />}>
                 Embed
@@ -143,22 +144,40 @@ export const Shared = () => {
           </Col>
         </Row>
       </Header>
-      <Content style={{ minHeight: "calc(100vh - 64px)"}}>
+      <Content style={{ minHeight: 'calc(100vh - 64px)' }} className='data-40k'>
         {!screens.xs && (
           <Row>
             {sharedStorage?.category?.cards?.map((card, index) => {
               return (
                 <Col span={8} lg={8} md={12} sm={12} xs={24}>
-                  <UnitCard unit={card} key={`${card.name}-${index}`} />
+                  {card.cardType === 'datasheet' && <UnitCard unit={card} key={`${card.name}-${index}`} />}
+                  {card.cardType === 'stratagem' && <StratagemCard stratagem={card} key={`${card.name}-${index}`} />}
                 </Col>
               );
             })}
           </Row>
         )}
         {screens.xs && (
-          <Carousel dots={{ className: "dots" }}>
+          <Carousel dots={{ className: 'dots' }}>
             {sharedStorage?.category?.cards?.map((card, index) => {
-              return <UnitCard unit={card} key={`${card.name}-${index}`} style={{ display: "flex !important", color: "pink" }} />;
+              return (
+                <>
+                  {card.cardType === 'datasheet' && (
+                    <UnitCard
+                      unit={card}
+                      key={`${card.name}-${index}`}
+                      style={{ display: 'flex !important', color: 'pink' }}
+                    />
+                  )}
+                  {card.cardType === 'stratagem' && (
+                    <StratagemCard
+                      stratagem={card}
+                      key={`${card.name}-${index}`}
+                      style={{ display: 'flex !important'}}
+                    />
+                  )}
+                </>
+              );
             })}
           </Carousel>
         )}

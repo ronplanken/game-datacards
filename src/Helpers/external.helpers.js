@@ -15,33 +15,44 @@ const readCsv = async (file) => {
 };
 
 export const get40KData = async () => {
+  const lastUpdated = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Last_update.json?${new Date().getTime()}`
+  );
   const dataDatasheetAbilities = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_abilities.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_abilities.json?${new Date().getTime()}`
   );
   const dataStratagems = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Stratagems.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Stratagems.json?${new Date().getTime()}`
   );
   const dataAbilities = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Abilities.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Abilities.json?${new Date().getTime()}`
   );
   const dataDatasheetWargear = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_wargear.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_wargear.json?${new Date().getTime()}`
   );
   const dataWargearList = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Wargear_list.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Wargear_list.json?${new Date().getTime()}`
   );
-  const dataWargear = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Wargear.json');
+  const dataWargear = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Wargear.json?${new Date().getTime()}`
+  );
   const dataModels = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_models.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_models.json?${new Date().getTime()}`
   );
   const dataKeywords = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_keywords.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_keywords.json?${new Date().getTime()}`
   );
   const dataDamage = await readCsv(
-    'https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets_damage.json'
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_damage.json?${new Date().getTime()}`
   );
-  const dataFactions = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Factions.json');
-  const sheets = await readCsv('https://raw.githubusercontent.com/ronplanken/40k-jsons/main/json/Datasheets.json');
+  const dataFactions = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Factions.json?${new Date().getTime()}`
+  );
+  const sheets = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets.json?${new Date().getTime()}`
+  );
+
+  dataFactions.sort((a, b) => a.name.localeCompare(b.name));
 
   const mappedStratagems = dataStratagems.map((stratagem) => {
     stratagem['cardType'] = 'stratagem';
@@ -50,6 +61,7 @@ export const get40KData = async () => {
 
   const mappedSheets = sheets.map((row) => {
     row['cardType'] = 'datasheet';
+    row['source'] = '40k';
     row['keywords'] = [
       ...new Map(
         dataKeywords
@@ -125,5 +137,118 @@ export const get40KData = async () => {
     return faction;
   });
 
-  return dataFactions;
+  return {
+    data: dataFactions,
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: lastUpdated[0].last_update,
+    lastCheckedForUpdate: new Date().toISOString(),
+  };
+};
+
+export const getBasicData = () => {
+  return {
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: new Date().toISOString(),
+    lastCheckedForUpdate: new Date().toISOString(),
+    data: [
+      {
+        id: 'basic',
+        link: 'https://game-datacard.eu',
+        name: 'Basic Cards',
+        datasheets: [
+          {
+            name: 'Basic Card',
+            role: 'Unknown',
+            source: 'basic',
+            unit_composition: 'Basic unit description you can customize to your needs. Empty this field to hide it',
+            id: '000000001',
+            faction_id: 'basic',
+            cardType: 'datasheet',
+            abilities: [
+              {
+                description: 'ability description',
+                faction_id: 'basic',
+                id: '000000101',
+                is_other_wargear: 'false',
+                name: 'Basic ability',
+                showAbility: true,
+                showDescription: false,
+                type: 'Abilities',
+              },
+            ],
+            keywords: [
+              {
+                active: true,
+                datasheet_id: '000010201',
+                is_faction_keyword: 'false',
+                keyword: 'Basic Card',
+                model: 'Basic Card',
+              },
+            ],
+            datasheet: [
+              {
+                A: '3',
+                BS: '3+',
+                Cost: '',
+                Ld: '9',
+                M: '6"',
+                S: '3',
+                Sv: '3+',
+                T: '3',
+                W: '5',
+                WS: '3+',
+                active: true,
+                base_size: '32mm',
+                base_size_descr: '',
+                cost_description: '',
+                cost_including_wargear: 'true',
+                datasheet_id: '000010101',
+                line: '1',
+                models_per_unit: '1',
+                name: 'Basic Card',
+              },
+            ],
+            wargear: [
+              {
+                active: true,
+                description: '',
+                faction_id: 'AS',
+                faction_name: 'Basic Wargear Option',
+                id: '000010301',
+                is_relic: 'false',
+                legend: '',
+                name: 'Basic Weapon',
+                profiles: [
+                  {
+                    AP: '0',
+                    D: '1',
+                    Range: '12"',
+                    S: '4',
+                    abilities: '',
+                    line: '1',
+                    name: 'Basic Weapon',
+                    type: 'Pistol 1',
+                    wargear_id: '000001135',
+                  },
+                ],
+                source_id: '',
+                type: 'Ranged Weapons',
+              },
+            ],
+          },
+        ],
+        stratagems: [
+          {
+            cardType: 'stratagem',
+            cp_cost: '1',
+            description: 'This is an example description. You can even use _markdown_ in this text!',
+            faction_id: 'basic',
+            id: '000006084006',
+            name: 'THE BASIC STRAT',
+            type: 'Just another stratagem',
+          },
+        ],
+      },
+    ],
+  };
 };

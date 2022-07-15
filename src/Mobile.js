@@ -11,7 +11,7 @@ function Mobile() {
           Game Datacards
         </Typography.Title>
       </Header>
-      <Content style={{ height: 'calc(100vh - 64px)' }}>
+      <Content style={{ height: 'calc(100vh - 64px)' }} className='data-40k'>
         <Typography.Title level={4} style={{ marginBottom: 0, marginTop: '8px', textAlign: 'center' }}>
           Mobile is not yet supported... <br />
           Coming soon(ish)&trade;

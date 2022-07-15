@@ -103,19 +103,19 @@ export function UnitWeapons() {
         <div className='weapon_edit_profile edit_heading' key={`profile-header-${index}`}>
           <div className='left label'>DESCRIPTION</div>
           <div className='center label'>
-            <div className='range' id='icon' title='Range' alt-text='Range'></div>
+            <div className='range icon'  title='Range' alt-text='Range'></div>
           </div>
           <div className='center label'>
-            <div className='type' id='icon' title='Type' alt-text='Type'></div>
+            <div className='type icon'  title='Type' alt-text='Type'></div>
           </div>
           <div className='center label'>
-            <div className='strength' id='icon' title='Type' alt-text='Type'></div>
+            <div className='strength icon'  title='Type' alt-text='Type'></div>
           </div>
           <div className='center label'>
-            <div className='ap' id='icon' title='Type' alt-text='Type'></div>
+            <div className='ap icon'  title='Type' alt-text='Type'></div>
           </div>
           <div className='center label'>
-            <div className='dmg' id='icon' title='Type' alt-text='Type'></div>
+            <div className='dmg icon'  title='Type' alt-text='Type'></div>
           </div>
         </div>
         {profiles}

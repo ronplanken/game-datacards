@@ -59,9 +59,6 @@ export function UnitKeywords() {
                               }}
                             >
                               <Typography.Text
-                                ellipsis={{
-                                  rows: 1,
-                                }}
                                 editable={{
                                   onChange: (value) => {
                                     const newKeywords = [...activeCard.keywords];

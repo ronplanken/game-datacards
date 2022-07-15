@@ -68,39 +68,39 @@ export function UnitDatasheets() {
                 <>
                   <div className='labels edit_heading'>
                     <div className='center label'>
-                      <div className='movement' id='icon' title='Movement' alt-text='Movement'></div>
+                      <div className='movement icon'  title='Movement' alt-text='Movement'></div>
                     </div>
                     <div className='center label'>
-                      <div className='weaponskill' id='icon' title='Weapon Skill' alt-text='Weapon Skill'></div>
+                      <div className='weaponskill icon'  title='Weapon Skill' alt-text='Weapon Skill'></div>
                     </div>
                     <div className='center label'>
                       <div
-                        className='ballisticskill'
-                        id='icon'
+                        className='ballisticskill icon'
+                        
                         title='Ballistic Skill'
                         alt-text='Ballistic Skill'
                       ></div>
                     </div>
                     <div className='center label'>
-                      <div className='strength' id='icon' title='Strength' alt-text='Strength'></div>
+                      <div className='strength icon'  title='Strength' alt-text='Strength'></div>
                     </div>
                     <div className='center label'>
-                      <div className='toughness' id='icon' title='Toughness' alt-text='Toughness'></div>
+                      <div className='toughness icon'  title='Toughness' alt-text='Toughness'></div>
                     </div>
                     <div className='center label'>
-                      <div className='wounds' id='icon' title='Wounds' alt-text='Wounds'></div>
+                      <div className='wounds icon'  title='Wounds' alt-text='Wounds'></div>
                     </div>
                     <div className='center label'>
-                      <div className='attacks' id='icon' title='Attacks' alt-text='Attacks'></div>
+                      <div className='attacks icon'  title='Attacks' alt-text='Attacks'></div>
                     </div>
                     <div className='center label'>
-                      <div className='leadership' id='icon' title='Leadership' alt-text='Leadership'></div>
+                      <div className='leadership icon'  title='Leadership' alt-text='Leadership'></div>
                     </div>
                     <div className='center label'>
-                      <div className='save' id='icon' title='Save' alt-text='Save'></div>
+                      <div className='save icon'  title='Save' alt-text='Save'></div>
                     </div>
                     <div className='center label'>
-                      <div className='inv' id='icon' title='Invulnerable' alt-text='Save'></div>
+                      <div className='inv icon'  title='Invulnerable' alt-text='Save'></div>
                     </div>
                   </div>
                   <div className='labels edit_line'>

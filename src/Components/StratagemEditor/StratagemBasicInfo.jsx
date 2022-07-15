@@ -1,25 +1,21 @@
-import { Form, Input, Select } from 'antd';
+import { Form, Input } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import React from 'react';
 import { useCardStorage } from '../../Hooks/useCardStorage';
-
-const { Option } = Select;
 
 export function StratagemBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
     <>
-      <Form.Item label={'Variant'}>
-        <Select
-          value={activeCard.variant || 'card'}
-          onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}
-        >
-          <Option value='card'>Card</Option>
-          <Option value='sheet'>Sheet</Option>
-        </Select>
-      </Form.Item>
       <Form.Item label={'Name'}>
+        <Input
+          type={'text'}
+          value={activeCard.name}
+          onChange={(e) => updateActiveCard({ ...activeCard, name: e.target.value })}
+        />
+      </Form.Item>
+      <Form.Item label={'Type'}>
         <Input
           type={'text'}
           value={activeCard.name}

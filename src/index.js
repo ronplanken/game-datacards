@@ -7,16 +7,22 @@ import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './Routes/AppRoutes';
 import { CardStorageProviderComponent } from './Hooks/useCardStorage';
 import { FirebaseProviderComponent } from './Hooks/useFirebase';
+import { SettingsStorageProviderComponent } from './Hooks/useSettingsStorage';
+import { DataSourceStorageProviderComponent } from './Hooks/useDataSourceStorage';
 
 ReactDOM.render(
   <React.StrictMode>
-    <CardStorageProviderComponent>
-      <FirebaseProviderComponent>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </FirebaseProviderComponent>
-    </CardStorageProviderComponent>
+    <SettingsStorageProviderComponent>
+      <DataSourceStorageProviderComponent>
+        <CardStorageProviderComponent>
+          <FirebaseProviderComponent>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </FirebaseProviderComponent>
+        </CardStorageProviderComponent>
+      </DataSourceStorageProviderComponent>
+    </SettingsStorageProviderComponent>
   </React.StrictMode>,
   document.getElementById('root')
 );
