@@ -1,0 +1,26 @@
+name: Automated Tests and Linting
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.4.2
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install packages
+        run: yarn install
+
+      - name: Autogenerate GraphQL
+        run: yarn codegen
+
+      - name: Run Typescript Checks
+        run: yarn lint
+
+      - name: Run Tests
+        run: yarn test:ci
