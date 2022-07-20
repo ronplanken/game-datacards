@@ -26,7 +26,7 @@ jobs:
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-cache-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
 
@@ -34,8 +34,8 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: NODE_ENV=production yarn install --production=false --immutable --immutable-cache --check-cache
 
-      - name: Run Linting
-        run: yarn lint 
+      #- name: Run Linting
+      #  run: yarn lint 
 
       - name: Run Tests
         run: yarn test:ci
