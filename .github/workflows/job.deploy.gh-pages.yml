@@ -1,42 +1,37 @@
-name: Automated Build
-
+name: Deploy to Github Pages
 on:
-  workflow_run:
-    workflows: ["Automated Tests and Linting"]
-    types:
-      - completed
+  workflow_call:
 
 permissions:
-  issues: read
-  contents: read
-  checks: write
-
-concurrency:
-  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
-  cancel-in-progress: true
+  contents: write
+  pages: write
 
 jobs:
-  build:
+  deploy:
+    name: Github Pages
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: main
-      - name: Check Yarn Cache
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v3
+      - name: Check Yarn cache
+        uses: actions/cache@v3
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-
       - name: Install packages
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --immutable --immutable-cache --check-cache
-      - run: yarn predeploy
+      - name: Build
+        run: yarn predeploy
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4.3.4
+        with:
+          branch: gh-pages
+          folder: build
+          git-config-name: github-actions
+          git-config-email: github-actions@github.com

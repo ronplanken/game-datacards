@@ -1,14 +1,24 @@
 name: Automated Tests and Linting
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
   Run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.2
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
 
-      - name: Get Yarn Cache
+      - name: Check Yarn Cache
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
@@ -21,9 +31,10 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install packages
-        run: yarn install
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install --immutable --immutable-cache --check-cache
 
-      - name: Run Typescript Checks
+      - name: Run Linting
         run: yarn lint
 
       - name: Run Tests
