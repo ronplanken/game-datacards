@@ -31,7 +31,9 @@
     "deploy": "echo 'game-datacards.eu' > ./build/CNAME && gh-pages -d build",
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test"
+    "test": "craco test",
+    "test:ci": "CI=true craco test",
+    "lint": "eslint --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -54,6 +56,17 @@
   "devDependencies": {
     "@craco/craco": "^6.4.5",
     "craco-less": "^2.0.0",
-    "gh-pages": "^3.2.3"
+    "eslint": ">=5.16.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.30.1",
+    "gh-pages": "^3.2.3",
+    "prettier": "^2.7.1"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "react-markdown": "<rootDir>/node_modules/react-markdown/react-markdown.min.js"
+    }
   }
 }

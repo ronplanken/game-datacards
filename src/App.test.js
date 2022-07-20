@@ -1,8 +1,20 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { render, screen } from "@testing-library/react";
+import App from "./App";
+import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
+import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
+import { FirebaseProviderComponent } from "./Hooks/useFirebase";
+import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+xtest("renders appjs", () => {
+  render(
+    <SettingsStorageProviderComponent>
+      <DataSourceStorageProviderComponent>
+        <CardStorageProviderComponent>
+          <FirebaseProviderComponent>
+            <App />
+          </FirebaseProviderComponent>
+        </CardStorageProviderComponent>
+      </DataSourceStorageProviderComponent>
+    </SettingsStorageProviderComponent>
+  );
 });

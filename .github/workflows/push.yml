@@ -3,7 +3,7 @@ name: Automated Tests and Linting
 on: [push]
 
 jobs:
-  OnPush:
+  Run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.4.2
