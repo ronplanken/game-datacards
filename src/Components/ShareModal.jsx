@@ -1,8 +1,8 @@
-import { LinkOutlined, ShareAltOutlined } from '@ant-design/icons';
-import { Button, Col, message, Modal, Row, Tooltip, Typography } from 'antd';
-import React from 'react';
-import { useCardStorage } from '../Hooks/useCardStorage';
-import { useFirebase } from '../Hooks/useFirebase';
+import { LinkOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { Button, Col, message, Modal, Row, Tooltip, Typography } from "antd";
+import React from "react";
+import { useCardStorage } from "../Hooks/useCardStorage";
+import { useFirebase } from "../Hooks/useFirebase";
 
 export const ShareModal = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -15,13 +15,13 @@ export const ShareModal = () => {
   return (
     <>
       <Modal
-        title='Share your datacard set'
-        width={'600px'}
+        title="Share your datacard set"
+        width={"600px"}
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={
           <Button
-            type='primary'
+            type="primary"
             onClick={() => {
               setIsModalVisible(false);
             }}
@@ -33,8 +33,9 @@ export const ShareModal = () => {
         <Row gutter={8}>
           <Col span={24}>
             <Typography.Paragraph>
-              Share your datacard set with others by generating and sharing the following link. When sharing your
-              datacard set only active sections will be saved.
+              Share your datacard set with others by generating and sharing the
+              following link. When sharing your datacard set only active
+              sections will be saved.
             </Typography.Paragraph>
           </Col>
         </Row>
@@ -42,19 +43,22 @@ export const ShareModal = () => {
           <Col span={19}>
             <div
               style={{
-                borderRadius: '2px',
-                paddingLeft: '8px',
-                border: '1px solid #D9D9D9',
-                height: '32px',
-                lineHeight: '2em',
+                borderRadius: "2px",
+                paddingLeft: "8px",
+                border: "1px solid #D9D9D9",
+                height: "32px",
+                lineHeight: "2em",
               }}
             >
               {shareId ? (
-                <Typography.Link target={'_blank'} href={`https://game-datacards.eu/shared/${shareId}`}>
+                <Typography.Link
+                  target={"_blank"}
+                  href={`https://game-datacards.eu/shared/${shareId}`}
+                >
                   https://game-datacards.eu/shared/{shareId}
                 </Typography.Link>
               ) : (
-                <Typography.Text italic type='secondary'>
+                <Typography.Text italic type="secondary">
                   Click generate for a link...
                 </Typography.Text>
               )}
@@ -62,13 +66,15 @@ export const ShareModal = () => {
           </Col>
           {shareId && (
             <Col span={5}>
-              <Tooltip title='Copy to clipboard'>
+              <Tooltip title="Copy to clipboard">
                 <Button
                   icon={<LinkOutlined />}
-                  type={'primary'}
+                  type={"primary"}
                   onClick={() => {
-                    navigator.clipboard.writeText(`https://game-datacards.eu/shared/${shareId}`);
-                    message.success('Link has been copied');
+                    navigator.clipboard.writeText(
+                      `https://game-datacards.eu/shared/${shareId}`
+                    );
+                    message.success("Link has been copied");
                   }}
                 >
                   Copy
@@ -79,7 +85,7 @@ export const ShareModal = () => {
           {!shareId && (
             <Col span={5}>
               <Button
-                type={'primary'}
+                type={"primary"}
                 loading={isGenerating}
                 onClick={async () => {
                   setIsGenerating(true);
@@ -95,21 +101,22 @@ export const ShareModal = () => {
         </Row>
         <Row gutter={8}>
           <Col span={24}>
-            <Typography.Text type='secondary' style={{ fontSize: '0.9em' }}>
-              Please note that the link is a snapshot of the current set and will not be automatically updated.
+            <Typography.Text type="secondary" style={{ fontSize: "0.9em" }}>
+              Please note that the link is a snapshot of the current set and
+              will not be automatically updated.
             </Typography.Text>
           </Col>
         </Row>
       </Modal>
-      <Tooltip title={'Share category'} placement='bottomLeft'>
+      <Tooltip title={"Share category"} placement="bottomLeft">
         <Button
-          type={'ghost'}
+          type={"ghost"}
           icon={<ShareAltOutlined />}
-          size={'large'}
+          size={"large"}
           onClick={() => {
             setIsModalVisible(true);
           }}
-          className={'button-bar'}
+          className={"button-bar"}
         >
           Share
         </Button>

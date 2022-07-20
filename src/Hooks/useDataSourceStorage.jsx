@@ -1,20 +1,22 @@
-import localForage from 'localforage';
-import React, { useEffect } from 'react';
-import { get40KData, getBasicData } from '../Helpers/external.helpers';
-import { useSettingsStorage } from './useSettingsStorage';
+import localForage from "localforage";
+import React, { useEffect } from "react";
+import { get40KData, getBasicData } from "../Helpers/external.helpers";
+import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
 
 export function useDataSourceStorage() {
   const context = React.useContext(DataSourceStorageContext);
   if (context === undefined) {
-    throw new Error('`useDataSourceStorage` must be used with an `DataSourceStorageProvider`');
+    throw new Error(
+      "`useDataSourceStorage` must be used with an `DataSourceStorageProvider`"
+    );
   }
   return context;
 }
 
 var dataStore = localForage.createInstance({
-  name: 'data',
+  name: "data",
 });
 
 export const DataSourceStorageProviderComponent = (props) => {
@@ -29,8 +31,8 @@ export const DataSourceStorageProviderComponent = (props) => {
       if (!dataStore) {
         return;
       }
-      if (settings.selectedDataSource === '40k') {
-        const storedData = await dataStore.getItem('40k');
+      if (settings.selectedDataSource === "40k") {
+        const storedData = await dataStore.getItem("40k");
         if (storedData) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
@@ -39,11 +41,11 @@ export const DataSourceStorageProviderComponent = (props) => {
 
         const dataFactions = await get40KData();
 
-        dataStore.setItem('40k', dataFactions);
+        dataStore.setItem("40k", dataFactions);
 
         setDataSource(dataFactions);
       }
-      if (settings.selectedDataSource === 'basic') {
+      if (settings.selectedDataSource === "basic") {
         const basicData = getBasicData();
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
@@ -53,21 +55,25 @@ export const DataSourceStorageProviderComponent = (props) => {
   }, [settings]);
 
   useEffect(() => {
-    setSelectedFactionIndex(dataSource?.data?.findIndex((faction) => faction?.id === selectedFaction?.id));
+    setSelectedFactionIndex(
+      dataSource?.data?.findIndex(
+        (faction) => faction?.id === selectedFaction?.id
+      )
+    );
   }, [dataSource, selectedFaction]);
 
   const checkForUpdate = async () => {
     if (!dataStore) {
       return;
     }
-    if (settings.selectedDataSource === '40k') {
+    if (settings.selectedDataSource === "40k") {
       const dataFactions = await get40KData();
 
-      dataStore.setItem('40k', dataFactions);
+      dataStore.setItem("40k", dataFactions);
 
       setDataSource(dataFactions);
     }
-    if (settings.selectedDataSource === 'basic') {
+    if (settings.selectedDataSource === "basic") {
       const basicData = getBasicData();
       setDataSource(basicData);
       setSelectedFaction(basicData.data[0]);
@@ -75,12 +81,21 @@ export const DataSourceStorageProviderComponent = (props) => {
   };
 
   useEffect(() => {
-    setSelectedFactionIndex(dataSource?.data?.findIndex((faction) => faction?.id === selectedFaction?.id));
+    setSelectedFactionIndex(
+      dataSource?.data?.findIndex(
+        (faction) => faction?.id === selectedFaction?.id
+      )
+    );
   }, [dataSource, selectedFaction]);
 
   const updateSelectedFaction = (faction) => {
     setSelectedFaction(faction);
-    updateSettings({ ...settings, selectedFactionIndex: dataSource?.data?.findIndex((f) => f?.id === faction?.id) });
+    updateSettings({
+      ...settings,
+      selectedFactionIndex: dataSource?.data?.findIndex(
+        (f) => f?.id === faction?.id
+      ),
+    });
   };
   const updateSelectedFactionWithIndex = (index) => {
     setSelectedFaction(dataSource.data[index]);
@@ -88,8 +103,12 @@ export const DataSourceStorageProviderComponent = (props) => {
 
   const clearData = () => {
     dataStore.clear();
-    updateSettings({ ...settings, selectedDataSource: 'basic', selectedFactionIndex: 0 });
-    localStorage.setItem('storage', undefined);
+    updateSettings({
+      ...settings,
+      selectedDataSource: "basic",
+      selectedFactionIndex: 0,
+    });
+    localStorage.setItem("storage", undefined);
   };
 
   const context = {
@@ -103,5 +122,9 @@ export const DataSourceStorageProviderComponent = (props) => {
     clearData,
   };
 
-  return <DataSourceStorageContext.Provider value={context}>{props.children}</DataSourceStorageContext.Provider>;
+  return (
+    <DataSourceStorageContext.Provider value={context}>
+      {props.children}
+    </DataSourceStorageContext.Provider>
+  );
 };

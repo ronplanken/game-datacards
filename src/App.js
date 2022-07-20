@@ -1,4 +1,8 @@
-import { AppstoreAddOutlined, ExclamationCircleOutlined, PrinterOutlined } from '@ant-design/icons';
+import {
+  AppstoreAddOutlined,
+  ExclamationCircleOutlined,
+  PrinterOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -14,41 +18,51 @@ import {
   Space,
   Tooltip,
   Typography,
-} from 'antd';
-import 'antd/dist/antd.min.css';
-import clone from 'just-clone';
-import split from 'just-split';
-import { useRef, useState } from 'react';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import NewWindow from 'react-new-window';
-import { v4 as uuidv4 } from 'uuid';
-import './App.css';
-import { AboutModal } from './Components/AboutModal';
-import { SettingsModal } from './Components/SettingsModal';
-import { ShareModal } from './Components/ShareModal';
-import { StratagemCard } from './Components/StratagemCard';
-import { StratagemEditor } from './Components/StratagemEditor';
-import { Toolbar } from './Components/Toolbar';
-import { TreeCategory } from './Components/TreeCategory';
-import { TreeItem } from './Components/TreeItem';
-import { UnitCard } from './Components/UnitCard';
-import { UnitCardEditor } from './Components/UnitCardEditor';
-import { WelcomeWizard } from './Components/WelcomeWizard';
-import { getBackgroundColor, getMinHeight, move, reorder } from './Helpers/treeview.helpers';
-import { useCardStorage } from './Hooks/useCardStorage';
-import { useDataSourceStorage } from './Hooks/useDataSourceStorage';
-import { Discord } from './Icons/Discord';
-import logo from './Images/logo.png';
-import './style.less';
+} from "antd";
+import "antd/dist/antd.min.css";
+import clone from "just-clone";
+import split from "just-split";
+import { useRef, useState } from "react";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import NewWindow from "react-new-window";
+import { v4 as uuidv4 } from "uuid";
+import "./App.css";
+import { AboutModal } from "./Components/AboutModal";
+import { SettingsModal } from "./Components/SettingsModal";
+import { ShareModal } from "./Components/ShareModal";
+import { StratagemCard } from "./Components/StratagemCard";
+import { StratagemEditor } from "./Components/StratagemEditor";
+import { Toolbar } from "./Components/Toolbar";
+import { TreeCategory } from "./Components/TreeCategory";
+import { TreeItem } from "./Components/TreeItem";
+import { UnitCard } from "./Components/UnitCard";
+import { UnitCardEditor } from "./Components/UnitCardEditor";
+import { WelcomeWizard } from "./Components/WelcomeWizard";
+import {
+  getBackgroundColor,
+  getMinHeight,
+  move,
+  reorder,
+} from "./Helpers/treeview.helpers";
+import { useCardStorage } from "./Hooks/useCardStorage";
+import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
+import { Discord } from "./Icons/Discord";
+import logo from "./Images/logo.png";
+import "./style.less";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
 
 function App() {
-  const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
+  const {
+    dataSource,
+    selectedFactionIndex,
+    selectedFaction,
+    updateSelectedFaction,
+  } = useDataSourceStorage();
 
-  const [selectedContentType, setSelectedContentType] = useState('datasheets');
+  const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
 
   const [showPrint, setShowPrint] = useState(false);
@@ -74,12 +88,14 @@ function App() {
   } = useCardStorage();
 
   const getDataSourceType = () => {
-    if (selectedContentType === 'datasheets') {
+    if (selectedContentType === "datasheets") {
       return searchText
-        ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
+        ? selectedFaction?.datasheets.filter((sheet) =>
+            sheet.name.toLowerCase().includes(searchText.toLowerCase())
+          )
         : selectedFaction?.datasheets;
     }
-    if (selectedContentType === 'stratagems') {
+    if (selectedContentType === "stratagems") {
       return searchText
         ? selectedFaction?.stratagems.filter((stratagem) =>
             stratagem.name.toLowerCase().includes(searchText.toLowerCase())
@@ -92,26 +108,33 @@ function App() {
     <Layout>
       <WelcomeWizard />
       <Header>
-        <Row style={{ justifyContent: 'space-between' }}>
+        <Row style={{ justifyContent: "space-between" }}>
           <Col>
-            <Space size={'large'}>
+            <Space size={"large"}>
               <Image preview={false} src={logo} width={50} />
-              <Typography.Title level={2} style={{ color: 'white', marginBottom: 0, lineHeight: '4rem' }}>
+              <Typography.Title
+                level={2}
+                style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}
+              >
                 Game Datacards
               </Typography.Title>
             </Space>
           </Col>
           <Col>
             <Space>
-              {activeCategory && activeCategory.cards.length > 0 && <ShareModal />}
+              {activeCategory && activeCategory.cards.length > 0 && (
+                <ShareModal />
+              )}
               <AboutModal />
-              <Tooltip title={'Join us on discord!'} placement='bottomRight'>
+              <Tooltip title={"Join us on discord!"} placement="bottomRight">
                 <Button
-                  className='button-bar'
-                  type='ghost'
-                  size='large'
+                  className="button-bar"
+                  type="ghost"
+                  size="large"
                   icon={<Discord />}
-                  onClick={() => window.open('https://discord.gg/anfn4qTYC4', '_blank')}
+                  onClick={() =>
+                    window.open("https://discord.gg/anfn4qTYC4", "_blank")
+                  }
                 ></Button>
               </Tooltip>
               <SettingsModal />
@@ -131,7 +154,13 @@ function App() {
                 />
                 <Row>
                   <Col span={24}>
-                    <div style={{ height: '300px', overflow: 'auto', background: 'white' }}>
+                    <div
+                      style={{
+                        height: "300px",
+                        overflow: "auto",
+                        background: "white",
+                      }}
+                    >
                       <DragDropContext
                         onDragEnd={(result) => {
                           const { source, destination } = result;
@@ -143,14 +172,35 @@ function App() {
                           const sInd = source.droppableId;
                           const dInd = destination.droppableId;
                           if (sInd === dInd) {
-                            const sourceCat = clone(cardStorage.categories.find((cat) => cat.uuid === sInd));
-                            sourceCat.cards = reorder(sourceCat.cards, source.index, destination.index);
+                            const sourceCat = clone(
+                              cardStorage.categories.find(
+                                (cat) => cat.uuid === sInd
+                              )
+                            );
+                            sourceCat.cards = reorder(
+                              sourceCat.cards,
+                              source.index,
+                              destination.index
+                            );
                             updateCategory(sourceCat, sInd);
                           } else {
-                            const sourceCat = clone(cardStorage.categories.find((cat) => cat.uuid === sInd));
-                            const destCat = clone(cardStorage.categories.find((cat) => cat.uuid === dInd));
+                            const sourceCat = clone(
+                              cardStorage.categories.find(
+                                (cat) => cat.uuid === sInd
+                              )
+                            );
+                            const destCat = clone(
+                              cardStorage.categories.find(
+                                (cat) => cat.uuid === dInd
+                              )
+                            );
 
-                            const newCategories = move(sourceCat.cards, destCat.cards, source, destination);
+                            const newCategories = move(
+                              sourceCat.cards,
+                              destCat.cards,
+                              source,
+                              destination
+                            );
                             sourceCat.cards = newCategories[sInd];
                             destCat.cards = newCategories[dInd];
 
@@ -159,41 +209,53 @@ function App() {
                           }
                         }}
                       >
-                        {cardStorage.categories.map((category, categoryIndex) => {
-                          return (
-                            <div key={`category-${category.name}-${categoryIndex}`}>
-                              <Droppable key={`${category.uuid}-droppable`} droppableId={category.uuid}>
-                                {(provided, snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                    style={{
-                                      minHeight: getMinHeight(snapshot),
-                                      backgroundColor: getBackgroundColor(snapshot),
-                                    }}
-                                  >
-                                    <TreeCategory
-                                      category={category}
-                                      selectedTreeIndex={selectedTreeIndex}
-                                      setSelectedTreeIndex={setSelectedTreeIndex}
-                                    />
-                                    {category.cards.map((card, cardIndex) => (
-                                      <TreeItem
-                                        card={card}
+                        {cardStorage.categories.map(
+                          (category, categoryIndex) => {
+                            return (
+                              <div
+                                key={`category-${category.name}-${categoryIndex}`}
+                              >
+                                <Droppable
+                                  key={`${category.uuid}-droppable`}
+                                  droppableId={category.uuid}
+                                >
+                                  {(provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.droppableProps}
+                                      style={{
+                                        minHeight: getMinHeight(snapshot),
+                                        backgroundColor:
+                                          getBackgroundColor(snapshot),
+                                      }}
+                                    >
+                                      <TreeCategory
                                         category={category}
                                         selectedTreeIndex={selectedTreeIndex}
-                                        setSelectedTreeIndex={setSelectedTreeIndex}
-                                        index={cardIndex}
-                                        key={`${category.uuid}-item-${cardIndex}`}
+                                        setSelectedTreeIndex={
+                                          setSelectedTreeIndex
+                                        }
                                       />
-                                    ))}
-                                    {provided.placeholder}
-                                  </div>
-                                )}
-                              </Droppable>
-                            </div>
-                          );
-                        })}
+                                      {category.cards.map((card, cardIndex) => (
+                                        <TreeItem
+                                          card={card}
+                                          category={category}
+                                          selectedTreeIndex={selectedTreeIndex}
+                                          setSelectedTreeIndex={
+                                            setSelectedTreeIndex
+                                          }
+                                          index={cardIndex}
+                                          key={`${category.uuid}-item-${cardIndex}`}
+                                        />
+                                      ))}
+                                      {provided.placeholder}
+                                    </div>
+                                  )}
+                                </Droppable>
+                              </div>
+                            );
+                          }
+                        )}
                       </DragDropContext>
                     </div>
                   </Col>
@@ -204,28 +266,41 @@ function App() {
               <Col span={24}>
                 <List
                   bordered
-                  size='small'
+                  size="small"
                   loading={isLoading}
                   dataSource={getDataSourceType()}
-                  style={{ overflowY: 'auto', height: 'calc(100vh - 398px)' }}
-                  locale={{ emptyText: selectedFaction ? 'No datasheets found' : 'No faction selected' }}
+                  style={{ overflowY: "auto", height: "calc(100vh - 398px)" }}
+                  locale={{
+                    emptyText: selectedFaction
+                      ? "No datasheets found"
+                      : "No faction selected",
+                  }}
                   header={
                     <>
                       {dataSource.data.length > 1 && (
                         <>
-                          <Row style={{ marginBottom: '4px' }}>
+                          <Row style={{ marginBottom: "4px" }}>
                             <Col span={24}>
                               <Select
                                 loading={isLoading}
-                                style={{ width: '100%' }}
+                                style={{ width: "100%" }}
                                 onChange={(value) => {
-                                  updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
+                                  updateSelectedFaction(
+                                    dataSource.data.find(
+                                      (faction) => faction.id === value
+                                    )
+                                  );
                                 }}
-                                placeholder='Select a faction'
-                                value={dataSource?.data[selectedFactionIndex]?.name}
+                                placeholder="Select a faction"
+                                value={
+                                  dataSource?.data[selectedFactionIndex]?.name
+                                }
                               >
                                 {dataSource.data.map((faction, index) => (
-                                  <Option value={faction.id} key={`${faction.id}-${index}`}>
+                                  <Option
+                                    value={faction.id}
+                                    key={`${faction.id}-${index}`}
+                                  >
                                     {faction.name}
                                   </Option>
                                 ))}
@@ -234,15 +309,17 @@ function App() {
                           </Row>
                           <Row>
                             <Col span={24}>
-                              <Divider style={{ marginTop: 4, marginBottom: 8 }} />
+                              <Divider
+                                style={{ marginTop: 4, marginBottom: 8 }}
+                              />
                             </Col>
                           </Row>
                         </>
                       )}
-                      <Row style={{ marginBottom: '4px' }}>
+                      <Row style={{ marginBottom: "4px" }}>
                         <Col span={24}>
                           <Input.Search
-                            placeholder={'Search'}
+                            placeholder={"Search"}
                             onSearch={(value) => {
                               if (value.length > 0) {
                                 setSearchText(value);
@@ -255,21 +332,21 @@ function App() {
                         </Col>
                       </Row>
                       {selectedFaction && (
-                        <Row style={{ marginBottom: '4px' }}>
+                        <Row style={{ marginBottom: "4px" }}>
                           <Col span={24}>
                             <Select
                               loading={isLoading}
-                              style={{ width: '100%' }}
+                              style={{ width: "100%" }}
                               onChange={(value) => {
                                 setSelectedContentType(value);
                               }}
-                              placeholder='Select a type'
+                              placeholder="Select a type"
                               value={selectedContentType}
                             >
-                              <Option value={'datasheets'} key={`datasheets`}>
+                              <Option value={"datasheets"} key={`datasheets`}>
                                 Datasheets
                               </Option>
-                              <Option value={'stratagems'} key={`stratagems`}>
+                              <Option value={"stratagems"} key={`stratagems`}>
                                 Stratagems
                               </Option>
                             </Select>
@@ -284,12 +361,13 @@ function App() {
                       onClick={() => {
                         if (cardUpdated) {
                           confirm({
-                            title: 'You have unsaved changes',
-                            content: 'Are you sure you want to discard your changes?',
+                            title: "You have unsaved changes",
+                            content:
+                              "Are you sure you want to discard your changes?",
                             icon: <ExclamationCircleOutlined />,
-                            okText: 'Yes',
-                            okType: 'danger',
-                            cancelText: 'No',
+                            okText: "Yes",
+                            okType: "danger",
+                            cancelText: "No",
                             onOk: () => {
                               setActiveCard(card);
                               setSelectedTreeIndex(null);
@@ -301,7 +379,11 @@ function App() {
                         }
                       }}
                       className={`list-item ${
-                        activeCard && !activeCard.isCustom && activeCard.id === card.id ? 'selected' : ''
+                        activeCard &&
+                        !activeCard.isCustom &&
+                        activeCard.id === card.id
+                          ? "selected"
+                          : ""
                       }`}
                     >
                       {card.name}
@@ -311,28 +393,45 @@ function App() {
               </Col>
             </Row>
           </Col>
-          <Col span={9} style={{ display: 'flex', flexDirection: 'column' }} className={'data-40k'}>
-            <Row style={{ overflow: 'hidden' }}>
+          <Col
+            span={9}
+            style={{ display: "flex", flexDirection: "column" }}
+            className={"data-40k"}
+          >
+            <Row style={{ overflow: "hidden" }}>
               {activeCard && (
                 <>
                   <Col span={24}>
-                    {activeCard.cardType === 'datasheet' && <UnitCard unit={activeCard} />}
-                    {activeCard.cardType === 'stratagem' && <StratagemCard stratagem={activeCard} />}
+                    {activeCard.cardType === "datasheet" && (
+                      <UnitCard unit={activeCard} />
+                    )}
+                    {activeCard.cardType === "stratagem" && (
+                      <StratagemCard stratagem={activeCard} />
+                    )}
                   </Col>
                 </>
               )}
             </Row>
-            <Row style={{ overflow: 'hidden', justifyContent: 'center' }}>
+            <Row style={{ overflow: "hidden", justifyContent: "center" }}>
               {activeCard && !activeCard.isCustom && (
                 <Col
                   span={9}
-                  style={{ overflow: 'hidden', justifyContent: 'center', display: 'flex', marginTop: '16px' }}
+                  style={{
+                    overflow: "hidden",
+                    justifyContent: "center",
+                    display: "flex",
+                    marginTop: "16px",
+                  }}
                 >
                   <Button
                     icon={<AppstoreAddOutlined />}
-                    type={'primary'}
+                    type={"primary"}
                     onClick={() => {
-                      const newCard = { ...activeCard, isCustom: true, uuid: uuidv4() };
+                      const newCard = {
+                        ...activeCard,
+                        isCustom: true,
+                        uuid: uuidv4(),
+                      };
                       const cat = { ...cardStorage.categories[0] };
                       addCardToCategory(newCard);
                       setActiveCard(newCard);
@@ -347,9 +446,12 @@ function App() {
             </Row>
           </Col>
           {activeCard && (
-            <Col span={9} style={{ overflowY: 'auto', height: 'calc(100vh - 64px)' }}>
-              {activeCard.cardType === 'datasheet' && <UnitCardEditor />}
-              {activeCard.cardType === 'stratagem' && <StratagemEditor />}
+            <Col
+              span={9}
+              style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
+            >
+              {activeCard.cardType === "datasheet" && <UnitCardEditor />}
+              {activeCard.cardType === "stratagem" && <StratagemEditor />}
             </Col>
           )}
         </Row>
@@ -358,9 +460,9 @@ function App() {
         <NewWindow
           onUnload={() => setShowPrint(false)}
           ref={printRef}
-          center='screen'
-          features={{ width: '500px' }}
-          title='Datacards'
+          center="screen"
+          features={{ width: "500px" }}
+          title="Datacards"
         >
           <style>
             {`@media print
@@ -371,13 +473,16 @@ function App() {
               }
           }`}
           </style>
-          <div className={'no-print'} style={{ marginTop: '32px', padding: '32px' }}>
-            <Form layout='vertical'>
+          <div
+            className={"no-print"}
+            style={{ marginTop: "32px", padding: "32px" }}
+          >
+            <Form layout="vertical">
               <Row gutter={16}>
                 <Col span={3}>
-                  <Form.Item label={'Cards per page:'}>
+                  <Form.Item label={"Cards per page:"}>
                     <Input
-                      type={'number'}
+                      type={"number"}
                       value={cardsPerPage}
                       min={1}
                       max={9}
@@ -386,9 +491,9 @@ function App() {
                   </Form.Item>
                 </Col>
                 <Col span={3}>
-                  <Form.Item label={'Cards per row:'}>
+                  <Form.Item label={"Cards per row:"}>
                     <Input
-                      type={'number'}
+                      type={"number"}
                       value={cardsPerRow}
                       min={1}
                       max={4}
@@ -397,9 +502,9 @@ function App() {
                   </Form.Item>
                 </Col>
                 <Col span={3}>
-                  <Form.Item label={'Scaling of cards:'}>
+                  <Form.Item label={"Scaling of cards:"}>
                     <Input
-                      type={'number'}
+                      type={"number"}
                       value={cardScaling}
                       min={25}
                       max={250}
@@ -408,11 +513,11 @@ function App() {
                   </Form.Item>
                 </Col>
                 <Col span={4}>
-                  <Form.Item label={'Print'}>
+                  <Form.Item label={"Print"}>
                     <Button
-                      type='primary'
+                      type="primary"
                       icon={<PrinterOutlined />}
-                      size={'medium'}
+                      size={"medium"}
                       onClick={() => printRef.current.window.print()}
                     >
                       Print
@@ -423,36 +528,47 @@ function App() {
               <Row>
                 <Col span={12}>
                   <Typography.Paragraph>
-                    When printing the cards make sure to enable the "Background graphics" option in order to print the
-                    icons and borders.
+                    When printing the cards make sure to enable the
+                    &quote;Background graphics&quote; option in order to print
+                    the icons and borders.
                   </Typography.Paragraph>
                 </Col>
               </Row>
             </Form>
           </div>
-          {split(activeCategory.cards, cardsPerPage).map((row) => {
+          {split(activeCategory.cards, cardsPerPage).map((row, RowIndex) => {
             return (
               <div
-                className='flex data-40k'
-                style={{ pageBreakAfter: 'always', gridTemplateColumns: `${cardsPerRow}fr `.repeat(cardsPerRow) }}
+                className="flex data-40k"
+                key={`print-${RowIndex}`}
+                style={{
+                  pageBreakAfter: "always",
+                  gridTemplateColumns: `${cardsPerRow}fr `.repeat(cardsPerRow),
+                }}
               >
                 {row.map((card, index) => {
                   return (
                     <>
-                      {card.cardType === 'datasheet' && (
+                      {card.cardType === "datasheet" && (
                         <UnitCard
                           unit={card}
                           key={`${card.id}-${index}`}
-                          paddingTop='8px'
-                          cardStyle={{ transformOrigin: '0% 0%', transform: `scale(${cardScaling / 100})` }}
+                          paddingTop="8px"
+                          cardStyle={{
+                            transformOrigin: "0% 0%",
+                            transform: `scale(${cardScaling / 100})`,
+                          }}
                         />
                       )}
-                      {card.cardType === 'stratagem' && (
+                      {card.cardType === "stratagem" && (
                         <StratagemCard
                           stratagem={card}
                           key={`${card.id}-${index}`}
-                          paddingTop='8px'
-                          cardStyle={{ transformOrigin: '0% 0%', transform: `scale(${cardScaling / 100})` }}
+                          paddingTop="8px"
+                          cardStyle={{
+                            transformOrigin: "0% 0%",
+                            transform: `scale(${cardScaling / 100})`,
+                          }}
                         />
                       )}
                     </>

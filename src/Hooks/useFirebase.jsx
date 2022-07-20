@@ -1,16 +1,24 @@
-import { getAnalytics, logEvent } from 'firebase/analytics';
-import { initializeApp } from 'firebase/app';
-import { addDoc, collection, doc, getDoc, getFirestore, increment, updateDoc } from 'firebase/firestore';
-import React, { useState } from 'react';
+import { getAnalytics, logEvent } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  increment,
+  updateDoc,
+} from "firebase/firestore";
+import React, { useState } from "react";
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyBRdhA0nJqt2XZwaBWEoRrHxN77sOH2rkY',
-  authDomain: 'game-datacards.firebaseapp.com',
-  projectId: 'game-datacards',
-  storageBucket: 'game-datacards.appspot.com',
-  messagingSenderId: '563260328800',
-  appId: '1:563260328800:web:485d1b84a522870bb7ac05',
-  measurementId: 'G-9GRBWJ0BJ8',
+  apiKey: "AIzaSyBRdhA0nJqt2XZwaBWEoRrHxN77sOH2rkY",
+  authDomain: "game-datacards.firebaseapp.com",
+  projectId: "game-datacards",
+  storageBucket: "game-datacards.appspot.com",
+  messagingSenderId: "563260328800",
+  appId: "1:563260328800:web:485d1b84a522870bb7ac05",
+  measurementId: "G-9GRBWJ0BJ8",
 };
 
 const FirebaseContext = React.createContext(undefined);
@@ -18,7 +26,7 @@ const FirebaseContext = React.createContext(undefined);
 export function useFirebase() {
   const context = React.useContext(FirebaseContext);
   if (context === undefined) {
-    throw new Error('`useFirebase` must be used with an `FirebaseProvider`');
+    throw new Error("`useFirebase` must be used with an `FirebaseProvider`");
   }
   return context;
 }
@@ -34,7 +42,7 @@ export const FirebaseProviderComponent = (props) => {
   const shareCategory = (category) => {
     const cleanCards = category.cards.map((card) => {
       delete card.link;
-      if (card.cardType === 'datasheet') {
+      if (card.cardType === "datasheet") {
         return {
           ...card,
           datasheet: card.datasheet
@@ -53,21 +61,21 @@ export const FirebaseProviderComponent = (props) => {
 
     const newDoc = {
       category: { ...category, cards: cleanCards },
-      description: '',
+      description: "",
       likes: 0,
       views: 0,
-      version: process.env.REACT_APP_VERSION || 'dev',
+      version: process.env.REACT_APP_VERSION || "dev",
       createdAt: new Date().toISOString(),
-      website: 'https://game-datacards.eu',
+      website: "https://game-datacards.eu",
     };
-    return addDoc(collection(db, 'shares'), newDoc);
+    return addDoc(collection(db, "shares"), newDoc);
   };
 
   const logLocalEvent = () => {
-    logEvent(analytics, 'select_content', {
-      content_type: 'image',
-      content_id: 'P12453',
-      items: [{ name: 'Kittens' }],
+    logEvent(analytics, "select_content", {
+      content_type: "image",
+      content_id: "P12453",
+      items: [{ name: "Kittens" }],
     });
   };
 
@@ -75,7 +83,7 @@ export const FirebaseProviderComponent = (props) => {
     if (!Id) {
       return null;
     }
-    const docRef = doc(db, 'shares', Id);
+    const docRef = doc(db, "shares", Id);
     const category = await getDoc(docRef);
 
     await updateDoc(docRef, {
@@ -89,7 +97,7 @@ export const FirebaseProviderComponent = (props) => {
       return null;
     }
 
-    const docRef = doc(db, 'shares', Id);
+    const docRef = doc(db, "shares", Id);
 
     return updateDoc(docRef, {
       likes: increment(1),
@@ -103,5 +111,9 @@ export const FirebaseProviderComponent = (props) => {
     logLocalEvent,
   };
 
-  return <FirebaseContext.Provider value={context}>{props.children}</FirebaseContext.Provider>;
+  return (
+    <FirebaseContext.Provider value={context}>
+      {props.children}
+    </FirebaseContext.Provider>
+  );
 };

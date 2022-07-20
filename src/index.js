@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
 
-import { BrowserRouter } from 'react-router-dom';
-import { AppRoutes } from './Routes/AppRoutes';
-import { CardStorageProviderComponent } from './Hooks/useCardStorage';
-import { FirebaseProviderComponent } from './Hooks/useFirebase';
-import { SettingsStorageProviderComponent } from './Hooks/useSettingsStorage';
-import { DataSourceStorageProviderComponent } from './Hooks/useDataSourceStorage';
+import { BrowserRouter } from "react-router-dom";
+import { AppRoutes } from "./Routes/AppRoutes";
+import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
+import { FirebaseProviderComponent } from "./Hooks/useFirebase";
+import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
+import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -24,7 +24,7 @@ ReactDOM.render(
       </DataSourceStorageProviderComponent>
     </SettingsStorageProviderComponent>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function

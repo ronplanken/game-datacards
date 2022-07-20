@@ -1,9 +1,9 @@
-import { Button, Checkbox, Col, Row, Typography } from 'antd';
-import React from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useCardStorage } from '../../Hooks/useCardStorage';
+import { Button, Checkbox, Col, Row, Typography } from "antd";
+import React from "react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useCardStorage } from "../../Hooks/useCardStorage";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export function UnitKeywords() {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -24,11 +24,15 @@ export function UnitKeywords() {
             return;
           }
 
-          const newKeywords = reorder(activeCard.keywords, result.source.index, result.destination.index);
+          const newKeywords = reorder(
+            activeCard.keywords,
+            result.source.index,
+            result.destination.index
+          );
           updateActiveCard({ ...activeCard, keywords: newKeywords });
         }}
       >
-        <Droppable droppableId='droppable-keywords'>
+        <Droppable droppableId="droppable-keywords">
           {(provided, snapshot) => {
             return (
               <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -41,29 +45,38 @@ export function UnitKeywords() {
                     >
                       {(drag) => (
                         <Row
-                          justify='space-between'
-                          align='middle'
+                          justify="space-between"
+                          align="middle"
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
                         >
-                          <Col span={22} justify='center'>
+                          <Col span={22} justify="center">
                             <Checkbox
                               checked={keyword.active}
                               onChange={(e) => {
                                 updateActiveCard(() => {
                                   const newKeywords = [...activeCard.keywords];
-                                  newKeywords[index]['active'] = e.target.checked;
-                                  return { ...activeCard, keywords: newKeywords };
+                                  newKeywords[index]["active"] =
+                                    e.target.checked;
+                                  return {
+                                    ...activeCard,
+                                    keywords: newKeywords,
+                                  };
                                 });
                               }}
                             >
                               <Typography.Text
                                 editable={{
                                   onChange: (value) => {
-                                    const newKeywords = [...activeCard.keywords];
-                                    newKeywords[index]['keyword'] = value;
-                                    updateActiveCard({ ...activeCard, keywords: newKeywords });
+                                    const newKeywords = [
+                                      ...activeCard.keywords,
+                                    ];
+                                    newKeywords[index]["keyword"] = value;
+                                    updateActiveCard({
+                                      ...activeCard,
+                                      keywords: newKeywords,
+                                    });
                                   },
                                 }}
                               >
@@ -83,9 +96,9 @@ export function UnitKeywords() {
         </Droppable>
       </DragDropContext>
       <Button
-        type='dashed'
+        type="dashed"
         style={{
-          width: '100%',
+          width: "100%",
           marginTop: 4,
         }}
         onClick={() =>
@@ -96,7 +109,7 @@ export function UnitKeywords() {
               custom: true,
               active: true,
               is_faction_keyword: false,
-              model: '',
+              model: "",
               id: uuidv4(),
             });
             return { ...activeCard, keywords: newKeywords };

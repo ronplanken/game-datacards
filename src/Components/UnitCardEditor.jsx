@@ -1,10 +1,10 @@
-import { Collapse, Input } from 'antd';
-import { useCardStorage } from '../Hooks/useCardStorage';
-import { UnitAbilities } from './UnitCardEditor/UnitAbilities';
-import { UnitBasicInfo } from './UnitCardEditor/UnitBasicInfo';
-import { UnitDatasheets } from './UnitCardEditor/UnitDatasheets';
-import { UnitKeywords } from './UnitCardEditor/UnitKeywords';
-import { UnitWeapons } from './UnitCardEditor/UnitWeapons';
+import { Collapse, Input } from "antd";
+import { useCardStorage } from "../Hooks/useCardStorage";
+import { UnitAbilities } from "./UnitCardEditor/UnitAbilities";
+import { UnitBasicInfo } from "./UnitCardEditor/UnitBasicInfo";
+import { UnitDatasheets } from "./UnitCardEditor/UnitDatasheets";
+import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
+import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 
 const { Panel } = Collapse;
 const { TextArea } = Input;
@@ -13,22 +13,26 @@ export const UnitCardEditor = () => {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
-    <Collapse defaultActiveKey={['1']}>
-      <Panel header='Basic information' style={{ width: '100%' }} key='1'>
+    <Collapse defaultActiveKey={["1"]}>
+      <Panel header="Basic information" style={{ width: "100%" }} key="1">
         <UnitBasicInfo />
       </Panel>
       <Panel
-        header='Datasheets'
-        key='2'
+        header="Datasheets"
+        key="2"
         extra={
           <div>
-            ({`${activeCard?.datasheet?.filter((sheet) => sheet.active).length} / ${activeCard?.datasheet?.length}`})
+            (
+            {`${
+              activeCard?.datasheet?.filter((sheet) => sheet.active).length
+            } / ${activeCard?.datasheet?.length}`}
+            )
           </div>
         }
       >
         <UnitDatasheets />
       </Panel>
-      <Panel header='Unit composition' key='3'>
+      <Panel header="Unit composition" key="3">
         <TextArea
           onChange={(e) =>
             updateActiveCard(() => {
@@ -39,23 +43,29 @@ export const UnitCardEditor = () => {
         />
       </Panel>
       <Panel
-        header='Weapon profiles'
-        key='4'
+        header="Weapon profiles"
+        key="4"
         extra={
           <div>
-            ({`${activeCard?.wargear?.filter((sheet) => sheet.active).length} / ${activeCard?.wargear?.length}`})
+            (
+            {`${
+              activeCard?.wargear?.filter((sheet) => sheet.active).length
+            } / ${activeCard?.wargear?.length}`}
+            )
           </div>
         }
       >
         <UnitWeapons />
       </Panel>
       <Panel
-        header='Abilities'
-        key='5'
+        header="Abilities"
+        key="5"
         extra={
           <div>
             (
-            {`${activeCard?.abilities?.filter((sheet) => sheet.showAbility).length} / ${activeCard?.abilities?.length}`}
+            {`${
+              activeCard?.abilities?.filter((sheet) => sheet.showAbility).length
+            } / ${activeCard?.abilities?.length}`}
             )
           </div>
         }
@@ -63,11 +73,15 @@ export const UnitCardEditor = () => {
         <UnitAbilities />
       </Panel>
       <Panel
-        header='Keywords'
-        key='6'
+        header="Keywords"
+        key="6"
         extra={
           <div>
-            ({`${activeCard?.keywords?.filter((sheet) => sheet.active).length} / ${activeCard?.keywords?.length}`})
+            (
+            {`${
+              activeCard?.keywords?.filter((sheet) => sheet.active).length
+            } / ${activeCard?.keywords?.length}`}
+            )
           </div>
         }
       >

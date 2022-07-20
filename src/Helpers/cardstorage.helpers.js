@@ -1,11 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const defaultCategories = {
   version: process.env.REACT_APP_VERSION,
   categories: [
     {
       uuid: uuidv4(),
-      name: 'My Cards',
+      name: "My Cards",
       cards: [],
     },
   ],
@@ -17,7 +17,7 @@ export const parseStorageJson = (savedJson) => {
   }
 
   try {
-    const parsedJson = JSON.parse(savedJson.replace(/(<([^>]+)>)/gi, ''));
+    const parsedJson = JSON.parse(savedJson.replace(/(<([^>]+)>)/gi, ""));
     if (parsedJson.version !== process.env.REACT_APP_VERSION) {
       if (parsedJson.categories) {
         return parsedJson;
@@ -25,7 +25,10 @@ export const parseStorageJson = (savedJson) => {
       const newCards = parsedJson.map((card) => {
         return { ...card, uuid: uuidv4() };
       });
-      return { ...defaultCategories, categories: [{ ...defaultCategories.categories[0], cards: newCards }] };
+      return {
+        ...defaultCategories,
+        categories: [{ ...defaultCategories.categories[0], cards: newCards }],
+      };
     } else {
       return parsedJson;
     }

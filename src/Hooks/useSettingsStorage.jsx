@@ -1,5 +1,5 @@
-import { message } from 'antd';
-import React, { useEffect } from 'react';
+import { message } from "antd";
+import React, { useEffect } from "react";
 
 const SettingsStorageContext = React.createContext(undefined);
 
@@ -13,7 +13,9 @@ const defaultSettings = {
 export function useSettingsStorage() {
   const context = React.useContext(SettingsStorageContext);
   if (context === undefined) {
-    throw new Error('`useSettingsStorage` must be used with an `SettingsStorageProvider`');
+    throw new Error(
+      "`useSettingsStorage` must be used with an `SettingsStorageProvider`"
+    );
   }
   return context;
 }
@@ -21,20 +23,20 @@ export function useSettingsStorage() {
 export const SettingsStorageProviderComponent = (props) => {
   const [localSettings, setLocalSettings] = React.useState(() => {
     try {
-      const settings = localStorage.getItem('settings');
+      const settings = localStorage.getItem("settings");
       if (settings) {
         return JSON.parse(settings);
       }
       return defaultSettings;
     } catch (e) {
-      message.error('An error occored while trying to load your settings.');
+      message.error("An error occored while trying to load your settings.");
       return defaultSettings;
     }
   });
 
   const updateSettings = (newSettings) => {
     setLocalSettings(newSettings);
-    localStorage.setItem('settings', JSON.stringify(newSettings));
+    localStorage.setItem("settings", JSON.stringify(newSettings));
   };
 
   const context = {
@@ -42,5 +44,9 @@ export const SettingsStorageProviderComponent = (props) => {
     updateSettings,
   };
 
-  return <SettingsStorageContext.Provider value={context}>{props.children}</SettingsStorageContext.Provider>;
+  return (
+    <SettingsStorageContext.Provider value={context}>
+      {props.children}
+    </SettingsStorageContext.Provider>
+  );
 };
