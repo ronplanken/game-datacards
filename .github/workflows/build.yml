@@ -39,5 +39,6 @@ jobs:
 
       - name: Install packages
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: NODE_ENV=production yarn install --production=false --immutable --immutable-cache --check-cache
+      - name: Build Game Datacards
       - run: yarn predeploy
