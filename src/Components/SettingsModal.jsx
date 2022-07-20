@@ -352,8 +352,8 @@ export const SettingsModal = () => {
                         buttons.
                       </li>
                       <li>
-                        Having a "broken" card in your page will now allow you
-                        to select and delete it.
+                        Having a &quote;broken&quote; card in your page will now
+                        allow you to select and delete it.
                       </li>
                       <li>
                         The default selection of external data set cards now
