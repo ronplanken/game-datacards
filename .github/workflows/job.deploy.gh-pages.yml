@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install packages
-        run: NODE_ENV=production yarn --production=false --immutable --immutable-cache --check-cache -prefer-offline
+        run: NODE_ENV=production yarn --production=false --immutable --immutable-cache --check-cache --prefer-offline
 
       - name: Build
         run: yarn predeploy
