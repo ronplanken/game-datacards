@@ -1,7 +1,8 @@
 name: Deploy to Github Pages
 on:
   workflow_call:
-
+  workflow_dispatch:
+  
 permissions:
   contents: write
   pages: write
