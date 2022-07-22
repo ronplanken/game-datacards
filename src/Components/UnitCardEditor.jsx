@@ -3,6 +3,7 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import { UnitAbilities } from "./UnitCardEditor/UnitAbilities";
 import { UnitBasicInfo } from "./UnitCardEditor/UnitBasicInfo";
 import { UnitDatasheets } from "./UnitCardEditor/UnitDatasheets";
+import { UnitDescription } from './UnitCardEditor/UnitDescription';
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 
@@ -32,15 +33,8 @@ export const UnitCardEditor = () => {
       >
         <UnitDatasheets />
       </Panel>
-      <Panel header="Unit composition" key="3">
-        <TextArea
-          onChange={(e) =>
-            updateActiveCard(() => {
-              return { ...activeCard, unit_composition: e.target.value };
-            })
-          }
-          value={activeCard.unit_composition}
-        />
+      <Panel header="Description" key="3">
+        <UnitDescription />
       </Panel>
       <Panel
         header="Weapon profiles"
