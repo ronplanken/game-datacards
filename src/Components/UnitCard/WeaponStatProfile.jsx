@@ -3,7 +3,6 @@ export const WeaponStatProfile = ({ type }) => {
     if (!weaponType) {
       return <></>;
     }
-
     if (weaponType.includes("Melee")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -35,11 +34,27 @@ export const WeaponStatProfile = ({ type }) => {
         </div>
       );
     }
+    if (weaponType.includes("Grenade")) {
+      return (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span className="weapon-icon grenade"></span>
+          {weaponType.replace("Grenade", "")}
+        </div>
+      );
+    }
     if (weaponType.includes("Rapid Fire")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
           <span className="weapon-icon rapid-fire"></span>
           {weaponType.replace("Rapid Fire", "")}
+        </div>
+      );
+    }
+    if (weaponType.includes("Dakka")) {
+      return (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span className="weapon-icon dakka"></span>
+          {weaponType.replace("Dakka", "")}
         </div>
       );
     }
