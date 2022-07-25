@@ -12,6 +12,537 @@
   background-color: #000000aa;
 }
 
+.data-necromunda .ganger {
+  .page {
+    height: 75mm;
+    width: 110mm;
+    padding: 8px;
+    border-radius: 16px;
+    background-image: url("./Images/necromunda-background.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+  }
+  .header {
+    padding: 10px;
+    height: 48px;
+    border-top-left-radius: 8px;
+    background-color: #ffffff88;
+
+    .name {
+      font-size: 20px;
+      font-family: "Passion One", cursive;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .type {
+      font-size: 16px;
+      font-family: "Passion One", cursive;
+      letter-spacing: 1px;
+      margin-left: 8px;
+    }
+  }
+
+  .cost {
+    top: -4px;
+    position: relative;
+    background-image: url("./Images/necromunda-gear.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+    text-align: center;
+    padding-top: 8px;
+    font-family: "Passion One", cursive;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .cost::after {
+    position: absolute;
+    width: 100%;
+    content: "CREDITS";
+    font-size: 9px;
+    text-align: center;
+    left: 0;
+    bottom: 10px;
+  }
+  .wargear {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    column-gap: 4px;
+    font-size: 10px;
+    margin-top: 8px;
+
+    .title {
+      padding-left: 4px;
+      background-color: #ffffff88;
+      text-transform: uppercase;
+    }
+    .options {
+      padding-left: 4px;
+      background-color: #ffffff88;
+    }
+  }
+  .rules {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    column-gap: 4px;
+    font-size: 10px;
+    margin-top: 2px;
+
+    .title {
+      padding-left: 4px;
+      background-color: #ffffff88;
+      text-transform: uppercase;
+    }
+    .options {
+      padding-left: 4px;
+      background-color: #ffffff88;
+    }
+  }
+  .abilities {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    column-gap: 4px;
+    font-size: 10px;
+    margin-top: 2px;
+
+    .title {
+      padding-left: 4px;
+      background-color: #ffffff88;
+      text-transform: uppercase;
+    }
+    .options {
+      padding-left: 4px;
+      background-color: #ffffff88;
+    }
+  }
+
+  .weapons {
+    .legend {
+      display: grid;
+      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
+      column-gap: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      padding-right: 2px;
+
+      margin-top: 6px;
+
+      div {
+        text-align: center;
+      }
+
+      :nth-child(1) {
+        text-align: left;
+        padding-left: 4px;
+        border-right: 1px solid black;
+      }
+      :nth-child(3) {
+        border-right: 1px solid black;
+      }
+      :nth-child(5) {
+        border-right: 1px solid black;
+      }
+      :last-child {
+        text-align: left;
+        border-left: 1px solid black;
+        padding-left: 4px;
+      }
+    }
+    .line {
+      display: grid;
+      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
+      column-gap: 2px;
+      font-size: 10px;
+      padding-right: 2px;
+      padding-top: 2px;
+
+      div {
+        background-color: #ffffffaa;
+        text-align: center;
+      }
+
+      :nth-child(1) {
+        text-align: left;
+        border-right: 1px solid black;
+        padding-right: 8px;
+        padding-left: 4px;
+      }
+      :nth-child(3) {
+        border-right: 1px solid black;
+      }
+      :nth-child(5) {
+        border-right: 1px solid black;
+      }
+      :last-child {
+        text-align: left;
+        border-left: 1px solid black;
+        padding-left: 4px;
+      }
+    }
+  }
+
+  .datasheet {
+    .legend {
+      display: grid;
+      grid-template-columns: 8fr 5fr;
+      border-bottom: 2px solid #a05236;
+      font-size: 11px;
+
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        color: darkred;
+        font-weight: 600;
+        padding-right: 2px;
+      }
+
+      .data {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        padding-left: 4px;
+        padding-right: 4px;
+        color: darkred;
+        font-weight: 600;
+        background-color: #c2ada399;
+      }
+    }
+    .line {
+      display: grid;
+      grid-template-columns: 8fr 5fr;
+      font-size: 11px;
+
+      .data {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        background-color: #c2ada399;
+        padding-right: 4px;
+        padding-left: 4px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+
+        div {
+          background-color: #ffffffaa;
+        }
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        padding-right: 2px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+
+        div {
+          background-color: #ffffffaa;
+        }
+      }
+    }
+  }
+}
+
+.data-necromunda .vehicle {
+  .page {
+    height: 75mm;
+    width: 110mm;
+    padding: 8px;
+    border-radius: 16px;
+    background-image: url("./Images/necromunda-background.jpg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+  }
+  .header {
+    padding: 10px;
+    height: 48px;
+    border-top-left-radius: 8px;
+    background-color: #ffffff88;
+
+    .name {
+      font-size: 20px;
+      font-family: "Passion One", cursive;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .type {
+      font-size: 16px;
+      font-family: "Passion One", cursive;
+      letter-spacing: 1px;
+      margin-left: 8px;
+    }
+  }
+
+  .cost {
+    top: -4px;
+    position: relative;
+    background-image: url("./Images/necromunda-gear.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+    text-align: center;
+    padding-top: 8px;
+    font-family: "Passion One", cursive;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .cost::after {
+    position: absolute;
+    width: 100%;
+    content: "CREDITS";
+    font-size: 9px;
+    text-align: center;
+    left: 0;
+    bottom: 10px;
+  }
+  .wargear {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    column-gap: 4px;
+    font-size: 10px;
+    margin-top: 8px;
+
+    .title {
+      padding-left: 4px;
+      background-color: #ffffff88;
+      text-transform: uppercase;
+    }
+    .options {
+      padding-left: 4px;
+      background-color: #ffffff88;
+    }
+  }
+  .rules {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    column-gap: 4px;
+    font-size: 10px;
+    margin-top: 2px;
+
+    .title {
+      padding-left: 4px;
+      background-color: #ffffff88;
+      text-transform: uppercase;
+    }
+    .options {
+      padding-left: 4px;
+      background-color: #ffffff88;
+    }
+  }
+  .abilities {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    column-gap: 4px;
+    font-size: 10px;
+    margin-top: 2px;
+
+    .title {
+      padding-left: 4px;
+      background-color: #ffffff88;
+      text-transform: uppercase;
+    }
+    .options {
+      padding-left: 4px;
+      background-color: #ffffff88;
+    }
+  }
+
+  .weapons {
+    .legend {
+      display: grid;
+      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
+      column-gap: 2px;
+      font-size: 10px;
+      font-weight: 600;
+      padding-right: 2px;
+
+      margin-top: 6px;
+
+      div {
+        text-align: center;
+      }
+
+      :nth-child(1) {
+        text-align: left;
+        padding-left: 4px;
+        border-right: 1px solid black;
+      }
+      :nth-child(3) {
+        border-right: 1px solid black;
+      }
+      :nth-child(5) {
+        border-right: 1px solid black;
+      }
+      :last-child {
+        text-align: left;
+        border-left: 1px solid black;
+        padding-left: 4px;
+      }
+    }
+    .line {
+      display: grid;
+      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
+      column-gap: 2px;
+      font-size: 10px;
+      padding-right: 2px;
+      padding-top: 2px;
+
+      div {
+        background-color: #ffffffaa;
+        text-align: center;
+      }
+
+      :nth-child(1) {
+        text-align: left;
+        border-right: 1px solid black;
+        padding-right: 8px;
+        padding-left: 4px;
+      }
+      :nth-child(3) {
+        border-right: 1px solid black;
+      }
+      :nth-child(5) {
+        border-right: 1px solid black;
+      }
+      :last-child {
+        text-align: left;
+        border-left: 1px solid black;
+        padding-left: 4px;
+      }
+    }
+  }
+
+  .datasheet {
+    .categories {
+      display: grid;
+      grid-template-columns: 1fr 6fr 5fr;
+      font-size: 10px;
+      height: 11px;
+
+      :nth-child(1) {
+        border-right: 2px solid #a05236;
+      }
+      :nth-child(2) {
+        text-align: center;
+        border-right: 2px solid #a05236;
+      }
+      :nth-child(3) {
+        text-align: center;
+      }
+    }
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 3fr 3fr 5fr;
+      border-bottom: 2px solid #a05236;
+      font-size: 11px;
+
+      .movement {
+        display: grid;
+        grid-template-columns: 1fr;
+        column-gap: 8px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        color: darkred;
+        font-weight: 600;
+        padding-right: 2px;
+      }
+      .toughness {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        color: darkred;
+        font-weight: 600;
+        font-size: 9px;
+        padding-right: 2px;
+        padding-top: 2px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 8px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        color: darkred;
+        font-weight: 600;
+        padding-right: 2px;
+      }
+
+      .crew {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+        column-gap: 8px;
+        text-align: center;
+        padding-left: 4px;
+        padding-right: 4px;
+        color: darkred;
+        font-weight: 600;
+        background-color: #c2ada399;
+      }
+    }
+    .line {
+      display: grid;
+      grid-template-columns: 1fr 3fr 3fr 5fr;
+      font-size: 11px;
+
+      div {
+        background-color: #ffffff66;
+        text-align: center;
+      }
+
+      .movement {
+        display: grid;
+        grid-template-columns: 1fr;
+        column-gap: 2px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        padding-right: 2px;
+      }
+      .toughness {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        padding-right: 2px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        border-right: 2px solid #a05236;
+        padding-right: 2px;
+      }
+
+      .crew {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+        column-gap: 2px;
+        text-align: center;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+    }
+  }
+}
+
 .welcome-container {
   border-radius: 4px;
   width: 1000px;
@@ -24,11 +555,11 @@
 }
 
 .welcome-cover {
-  height: '510px';
+  height: "510px";
 }
 
 .welcome-cover::before {
-  content: ' ';
+  content: " ";
   display: block;
   position: absolute;
   left: 0;
@@ -36,17 +567,81 @@
   width: 100%;
   height: 510px;
   opacity: 0.05;
-  background-image: url('./Images/logo_large.png');
+  background-image: url("./Images/logo_large.png");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
 
-.data-40k {
+.data-40k,
+.data-basic {
   .stratagem_header {
     display: block;
     height: auto;
     margin: 0 8px;
+  }
+
+  .frame {
+    display: block;
+    height: 385px;
+    width: 275px;
+    background: black;
+    border-radius: 13.5px;
+    background-color: #e2e2dd;
+    overflow: hidden;
+
+    .knights::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      bottom: 90px;
+      width: 100%;
+      height: 150px;
+      opacity: 0.03;
+      background-image: url("./Images/knights.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    .basic::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      bottom: 90px;
+      width: 100%;
+      height: 150px;
+      opacity: 0.03;
+      background-image: url("./Images/logo_large.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+  }
+
+  .secondary_description {
+    margin: 8px 8px;
+    margin-top: 16px;
+    padding: 0 4px;
+    vertical-align: middle;
+    font-family: "Heebo", sans-serif;
+    font-size: 13px;
+    text-align: justify;
+    letter-spacing: 0px;
+    line-height: 14px;
+
+    p {
+      margin-bottom: 4px;
+    }
+
+    ul {
+      padding-left: 16px;
+
+      p {
+        margin-bottom: 2px;
+      }
+    }
   }
 
   .role {
@@ -66,15 +661,15 @@
   }
 
   .hq {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/HQ.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/HQ.svg");
   }
 
   .troops {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Troops.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Troops.svg");
   }
 
   .unknown {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Unknown.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Unknown.svg");
   }
 
   .stratagem {
@@ -91,7 +686,7 @@
   }
 
   .stratagem:after {
-    content: '';
+    content: "";
     position: absolute;
 
     width: 100px;
@@ -108,31 +703,31 @@
   }
 
   .elites {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Elites.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Elites.svg");
   }
 
   .fast-attack {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Fast-Attack.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Fast-Attack.svg");
   }
 
   .dedicated-transport {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Dedicated-Transport.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Dedicated-Transport.svg");
   }
 
   .flyer {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Flyer.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Flyer.svg");
   }
 
   .heavy-support {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy-Support.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy-Support.svg");
   }
 
   .fortification {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Fortification.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Fortification.svg");
   }
 
   .lord-of-war {
-    background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Lord-of-War.svg');
+    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Lord-of-War.svg");
   }
 
   .label > div {
@@ -146,7 +741,7 @@
   }
 
   .stratagem_type {
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 12px;
     font-weight: 600;
     border-bottom: 2px solid #000;
@@ -155,7 +750,7 @@
     margin-top: 8px;
   }
   .stratagem_name {
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 16px;
     font-weight: 600;
     text-transform: uppercase;
@@ -168,7 +763,7 @@
     margin-top: 16px;
     padding: 0 4px;
     vertical-align: middle;
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 13px;
     text-align: justify;
     letter-spacing: 0px;
@@ -188,7 +783,7 @@
     padding: 0 12px;
     margin-bottom: 4px;
     vertical-align: middle;
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 12px;
     font-weight: 700px;
     text-align: justify;
@@ -242,7 +837,7 @@
 
   #value {
     vertical-align: middle;
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 12px;
     letter-spacing: 0px;
   }
@@ -252,7 +847,7 @@
     margin: 4px 5px;
     padding: 0 4px;
     vertical-align: middle;
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 12px;
     font-weight: 700px;
     text-align: justify;
@@ -269,7 +864,7 @@
     margin: 4px 8px 0px;
     padding: 0 4px;
     vertical-align: middle;
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 12px;
     font-weight: 600;
     text-align: justify;
@@ -284,7 +879,7 @@
     margin: 0px 8px 0px 8px;
     padding: 0 4px;
     vertical-align: middle;
-    font-family: 'Heebo', sans-serif;
+    font-family: "Heebo", sans-serif;
     font-size: 11px;
     font-weight: 600px;
     text-align: justify;
@@ -391,7 +986,7 @@
       line-height: 15px;
       text-transform: uppercase;
       vertical-align: middle;
-      font-family: 'Heebo', sans-serif;
+      font-family: "Heebo", sans-serif;
       font-size: 16px;
       font-weight: 700;
       letter-spacing: -1px;
@@ -399,14 +994,14 @@
     }
 
     .movement::after {
-      content: 'M';
+      content: "M";
       font-size: 11px;
       display: block;
       margin-top: -2px;
     }
 
     .weaponskill::after {
-      content: 'WS';
+      content: "WS";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -414,7 +1009,7 @@
     }
 
     .ballisticskill::after {
-      content: 'BS';
+      content: "BS";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -422,7 +1017,7 @@
     }
 
     .toughness::after {
-      content: 'T';
+      content: "T";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -430,7 +1025,7 @@
     }
 
     .wounds::after {
-      content: 'W';
+      content: "W";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -438,7 +1033,7 @@
     }
 
     .attacks::after {
-      content: 'A';
+      content: "A";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -446,7 +1041,7 @@
     }
 
     .leadership::after {
-      content: 'Ld';
+      content: "Ld";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -454,7 +1049,7 @@
     }
 
     .save::after {
-      content: 'Sv';
+      content: "Sv";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -462,7 +1057,7 @@
     }
 
     .inv::after {
-      content: 'Inv';
+      content: "Inv";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -470,7 +1065,7 @@
     }
 
     .ap::after {
-      content: 'AP';
+      content: "AP";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -478,7 +1073,7 @@
     }
 
     .dmg::after {
-      content: 'D';
+      content: "D";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -486,7 +1081,7 @@
     }
 
     .range::after {
-      content: 'Rng';
+      content: "Rng";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -495,7 +1090,7 @@
     }
 
     .strength::after {
-      content: 'S';
+      content: "S";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -503,7 +1098,7 @@
     }
 
     .type::after {
-      content: 'Type';
+      content: "Type";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -512,7 +1107,7 @@
     }
 
     .assault-weapon::after {
-      content: 'As';
+      content: "As";
       font-size: 12px;
       display: block;
       margin-top: -3px;
@@ -521,7 +1116,7 @@
     }
 
     .grenade::after {
-      content: 'Gr';
+      content: "Gr";
       font-size: 12px;
       display: block;
       margin-top: -3px;
@@ -530,7 +1125,7 @@
     }
 
     .dakka::after {
-      content: 'Dk';
+      content: "Dk";
       font-size: 12px;
       display: block;
       margin-top: -3px;
@@ -539,7 +1134,7 @@
     }
 
     .heavy-weapon::after {
-      content: 'Hv';
+      content: "Hv";
       font-size: 12px;
       display: block;
       margin-top: -3px;
@@ -548,7 +1143,7 @@
     }
 
     .melee::after {
-      content: 'Me';
+      content: "Me";
       font-size: 12px;
       display: block;
       margin-top: -3px;
@@ -557,7 +1152,7 @@
     }
 
     .pistol::after {
-      content: 'Ps';
+      content: "Ps";
       font-size: 12px;
       display: block;
       margin-top: -3px;
@@ -566,7 +1161,7 @@
     }
 
     .rapid-fire::after {
-      content: 'Rf';
+      content: "Rf";
       font-size: 12px;
       display: block;
       margin-top: -3px;
@@ -575,7 +1170,7 @@
     }
 
     .user::after {
-      content: 'Us';
+      content: "Us";
       font-size: 11px;
       display: block;
       margin-top: -3px;
@@ -611,6 +1206,96 @@
     }
   }
 
+  .edit_heading {
+    .movement {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Move.svg");
+    }
+
+    .weaponskill {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/WeaponSkill.svg");
+    }
+
+    .ballisticskill {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
+    }
+
+    .toughness {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+    }
+
+    .wounds {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Wounds.svg");
+    }
+
+    .attacks {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Attacks.svg");
+    }
+
+    .leadership {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Leadership.svg");
+    }
+
+    .save {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Save.svg");
+    }
+
+    .inv {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Invuln.svg");
+    }
+
+    .ap {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/ArmourPenetration.svg");
+    }
+
+    .dmg {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Damage.svg");
+    }
+
+    .range {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Range.svg");
+    }
+
+    .strength {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Strength.svg");
+    }
+
+    .type {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Type.svg");
+    }
+
+    .assault-weapon {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Assault.svg");
+    }
+
+    .grenade {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Grenade.svg");
+    }
+
+    .dakka {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg");
+    }
+
+    .heavy-weapon {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy.svg");
+    }
+
+    .melee {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
+    }
+
+    .pistol {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Pistol.svg");
+    }
+
+    .rapid-fire {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg");
+    }
+
+    .user {
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/User.svg");
+    }
+  }
+
   .page.card {
     display: grid;
     position: relative;
@@ -638,7 +1323,7 @@
       line-height: 15px;
       text-transform: uppercase;
       vertical-align: middle;
-      font-family: 'Heebo', sans-serif;
+      font-family: "Heebo", sans-serif;
       font-size: 16px;
       font-weight: 700;
       letter-spacing: -1px;
@@ -646,91 +1331,91 @@
     }
 
     .movement {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Move.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Move.svg");
     }
 
     .weaponskill {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/WeaponSkill.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/WeaponSkill.svg");
     }
 
     .ballisticskill {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
     }
 
     .toughness {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
     }
 
     .wounds {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Wounds.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Wounds.svg");
     }
 
     .attacks {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Attacks.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Attacks.svg");
     }
 
     .leadership {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Leadership.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Leadership.svg");
     }
 
     .save {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Save.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Save.svg");
     }
 
     .inv {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Invuln.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Invuln.svg");
     }
 
     .ap {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/ArmourPenetration.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/ArmourPenetration.svg");
     }
 
     .dmg {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Damage.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Damage.svg");
     }
 
     .range {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Range.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Range.svg");
     }
 
     .strength {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Strength.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Strength.svg");
     }
 
     .type {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Type.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Type.svg");
     }
 
     .assault-weapon {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Assault.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Assault.svg");
     }
 
     .grenade {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Grenade.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Grenade.svg");
     }
 
     .dakka {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg");
     }
 
     .heavy-weapon {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy.svg");
     }
 
     .melee {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
     }
 
     .pistol {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Pistol.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Pistol.svg");
     }
 
     .rapid-fire {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg");
     }
 
     .user {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/User.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/User.svg");
     }
 
     .frame {
@@ -778,7 +1463,7 @@
       line-height: 15px;
       text-transform: uppercase;
       vertical-align: middle;
-      font-family: 'Heebo', sans-serif;
+      font-family: "Heebo", sans-serif;
       font-size: 16px;
       font-weight: 700;
       letter-spacing: -1px;
@@ -795,91 +1480,91 @@
     }
 
     .movement {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Move.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Move.svg");
     }
 
     .weaponskill {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/WeaponSkill.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/WeaponSkill.svg");
     }
 
     .ballisticskill {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
     }
 
     .toughness {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
     }
 
     .wounds {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Wounds.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Wounds.svg");
     }
 
     .attacks {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Attacks.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Attacks.svg");
     }
 
     .leadership {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Leadership.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Leadership.svg");
     }
 
     .save {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Save.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Save.svg");
     }
 
     .inv {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Invuln.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Invuln.svg");
     }
 
     .ap {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/ArmourPenetration.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/ArmourPenetration.svg");
     }
 
     .dmg {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Damage.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Damage.svg");
     }
 
     .range {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Range.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Range.svg");
     }
 
     .strength {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Strength.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Strength.svg");
     }
 
     .type {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Type.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Type.svg");
     }
 
     .assault-weapon {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Assault.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Assault.svg");
     }
 
     .grenade {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Grenade.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Grenade.svg");
     }
 
     .dakka {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Dakka.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Dakka.svg");
     }
 
     .heavy-weapon {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy.svg");
     }
 
     .melee {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
     }
 
     .pistol {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Pistol.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Pistol.svg");
     }
 
     .rapid-fire {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/RapidFire.svg");
     }
 
     .user {
-      background-image: url('https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/User.svg');
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/User.svg");
     }
 
     .frame {
@@ -910,7 +1595,7 @@
       line-height: 15px;
       text-transform: uppercase;
       vertical-align: middle;
-      font-family: 'Heebo', sans-serif;
+      font-family: "Heebo", sans-serif;
       font-size: 16px;
       font-weight: 700;
       letter-spacing: -1px;
@@ -927,14 +1612,14 @@
     }
 
     .movement::after {
-      content: 'M';
+      content: "M";
       font-size: 11px;
       display: block;
       margin-top: -2px;
     }
 
     .weaponskill::after {
-      content: 'WS';
+      content: "WS";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -942,7 +1627,7 @@
     }
 
     .ballisticskill::after {
-      content: 'BS';
+      content: "BS";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -950,7 +1635,7 @@
     }
 
     .toughness::after {
-      content: 'T';
+      content: "T";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -958,7 +1643,7 @@
     }
 
     .wounds::after {
-      content: 'W';
+      content: "W";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -966,7 +1651,7 @@
     }
 
     .attacks::after {
-      content: 'A';
+      content: "A";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -974,7 +1659,7 @@
     }
 
     .leadership::after {
-      content: 'Ld';
+      content: "Ld";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -982,7 +1667,7 @@
     }
 
     .save::after {
-      content: 'Sv';
+      content: "Sv";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -990,7 +1675,7 @@
     }
 
     .inv::after {
-      content: 'Inv';
+      content: "Inv";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -998,7 +1683,7 @@
     }
 
     .ap::after {
-      content: 'AP';
+      content: "AP";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -1006,7 +1691,7 @@
     }
 
     .dmg::after {
-      content: 'D';
+      content: "D";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -1014,7 +1699,7 @@
     }
 
     .range::after {
-      content: 'Range';
+      content: "Range";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -1023,7 +1708,7 @@
     }
 
     .strength::after {
-      content: 'S';
+      content: "S";
       font-size: 11px;
       display: block;
       margin-top: -2px;
@@ -1031,7 +1716,7 @@
     }
 
     .type::after {
-      content: 'Type';
+      content: "Type";
       font-size: 11px;
       display: block;
       margin-top: -2px;

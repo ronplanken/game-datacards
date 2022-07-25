@@ -1,6 +1,6 @@
 import localForage from "localforage";
 import React, { useEffect } from "react";
-import { get40KData, getBasicData } from "../Helpers/external.helpers";
+import { get40KData, getBasicData, getNecromundaBasicData } from "../Helpers/external.helpers";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
@@ -50,6 +50,11 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
       }
+      if (settings.selectedDataSource === "necromunda") {
+        const basicData = getNecromundaBasicData();
+        setDataSource(basicData);
+        setSelectedFaction(basicData.data[0]);
+      }
     };
     fetch();
   }, [settings]);
@@ -75,6 +80,11 @@ export const DataSourceStorageProviderComponent = (props) => {
     }
     if (settings.selectedDataSource === "basic") {
       const basicData = getBasicData();
+      setDataSource(basicData);
+      setSelectedFaction(basicData.data[0]);
+    }
+    if (settings.selectedDataSource === "necromunda") {
+      const basicData = getNecromundaBasicData();
       setDataSource(basicData);
       setSelectedFaction(basicData.data[0]);
     }

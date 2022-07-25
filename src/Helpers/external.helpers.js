@@ -79,9 +79,7 @@ export const get40KData = async () => {
         return { ...model, active: index === 0 ? true : false };
       });
 
-    const linkedDamageTable = dataDamage.filter(
-      (damage) => damage.datasheet_id === row.id
-    );
+    const linkedDamageTable = dataDamage.filter((damage) => damage.datasheet_id === row.id);
     for (let index = 1; index < linkedDamageTable.length; index++) {
       const cols = linkedDamageTable[0];
       const newRow = {};
@@ -99,39 +97,25 @@ export const get40KData = async () => {
     const linkedWargear = [
       ...new Map(
         dataDatasheetWargear
-          .filter(
-            (wargear) =>
-              wargear.datasheet_id === row.id &&
-              wargear.is_index_wargear === "false"
-          )
+          .filter((wargear) => wargear.datasheet_id === row.id && wargear.is_index_wargear === "false")
           .map((item) => [item["wargear_id"], item])
       ).values(),
     ];
 
     row["wargear"] = [];
     linkedWargear.forEach((wargear, index) => {
-      row["wargear"][index] = clone(
-        dataWargear.find((gear) => gear.id === wargear.wargear_id)
-      );
+      row["wargear"][index] = clone(dataWargear.find((gear) => gear.id === wargear.wargear_id));
       if (row["wargear"][index]) {
         row["wargear"][index]["active"] = index === 0 ? true : false;
         row["wargear"][index]["profiles"] = clone(
-          dataWargearList.filter(
-            (wargearList) => wargearList.wargear_id === wargear.wargear_id
-          )
+          dataWargearList.filter((wargearList) => wargearList.wargear_id === wargear.wargear_id)
         );
       }
     });
-    const linkedAbilities = dataDatasheetAbilities.filter(
-      (ability) => ability.datasheet_id === row.id
-    );
+    const linkedAbilities = dataDatasheetAbilities.filter((ability) => ability.datasheet_id === row.id);
     row["abilities"] = [];
     linkedAbilities.forEach((ability, index) => {
-      row["abilities"].push(
-        dataAbilities.find(
-          (abilityInfo) => abilityInfo.id === ability.ability_id
-        )
-      );
+      row["abilities"].push(dataAbilities.find((abilityInfo) => abilityInfo.id === ability.ability_id));
     });
     row["abilities"] = row["abilities"].map((ability, index) => {
       return {
@@ -180,8 +164,7 @@ export const getBasicData = () => {
             name: "Basic Card",
             role: "Unknown",
             source: "basic",
-            unit_composition:
-              "Basic unit description you can customize to your needs. Empty this field to hide it",
+            unit_composition: "Basic unit description you can customize to your needs. Empty this field to hide it",
             id: "000000001",
             faction_id: "basic",
             cardType: "datasheet",
@@ -261,10 +244,336 @@ export const getBasicData = () => {
         stratagems: [
           {
             cardType: "stratagem",
+            source: "basic",
             cp_cost: "1",
-            description:
-              "This is an example description. You can even use _markdown_ in this text!",
+            description: "This is an example description. You can even use _markdown_ in this text!",
             faction_id: "basic",
+            id: "000006084006",
+            name: "THE BASIC STRAT",
+            type: "Just another stratagem",
+          },
+        ],
+        secondaries: [
+          {
+            cardType: "secondary",
+            source: "basic",
+            description: "Score 3 victory points at the end of the battle for each enemy **CHARACTER** unit that is destroyed. At the end of the battle, if the enemy WARLORD is destroyed, score 1 extra victory point.",
+            faction: "basic",
+            id: "000006084106",
+            name: "ASSASSINATION",
+            type: "End Game Objective",
+            category: "PURGE THE ENEMY",
+          },
+          {
+            "cardType": "secondary",
+            "source": "basic",
+            "name": "BRING IT DOWN",
+            "description": "At the end of the battle, score victory points for each enemy **MONSTER** or **VEHICLE** model that is destroyed, as follows: \n\r* Score 1 victory point for each of those destroyed models with a Wounds characteristic of 9 or less. \n\r* Score 2 victory points for each of those destroyed models with a Wounds characteristic of 10-14. \n\r* Score 3 victory points for each of those destroyed models with a Wounds characteristic of 15-19. \n\r* Score 4 victory points for each of those destroyed models with a Wounds characteristic of 20 or more.",
+            "category": "PURGE THE ENEMY",
+            "type": "End Game Objective",
+            "faction": "basic",
+            "id": "5a9ed34b-bd69-4c6c-80a1-015d8712589c"
+          }
+        ],
+      },
+    ],
+  };
+};
+
+export const getNecromundaBasicData = () => {
+  return {
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: new Date().toISOString(),
+    lastCheckedForUpdate: new Date().toISOString(),
+    data: [
+      {
+        id: "necromunda",
+        link: "https://game-datacard.eu",
+        name: "Necromunda Gang Cards",
+        datasheets: [
+          {
+            name: "Gang Card",
+            type: "Unknown",
+            source: "necromunda",
+            id: "000000001",
+            cost: "100",
+            faction_id: "necromunda",
+            cardType: "ganger",
+            rules: [
+              {
+                active: true,
+                name: "Rule 1",
+                id: "000010601",
+              },
+            ],
+            skills: [
+              {
+                active: true,
+                name: "Ability 1",
+                id: "000010701",
+              },
+            ],
+            wargear: [
+              {
+                active: true,
+                name: "Gear 1",
+                id: "000010801",
+              },
+            ],
+            weapons: [
+              {
+                active: true,
+                id: "000010301",
+                name: "Basic Weapon",
+                profiles: [
+                  {
+                    id: "000010302",
+                    name: "Basic Weapon",
+                    S: "0",
+                    L: "1",
+                    S2: '12"',
+                    L2: "4",
+                    STR: "2",
+                    AP: "1",
+                    D: "1",
+                    AM: "1",
+                    traits: [
+                      {
+                        id: "000010321",
+                        active: true,
+                        name: "Basic Weapon",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            datasheet: {
+              M: "9",
+              WS: "2+",
+              BS: "2+",
+              S: "9",
+              T: "9",
+              W: "9",
+              I: "2+",
+              A: "9",
+              LD: "9+",
+              CL: "9+",
+              WIL: "9+",
+              INT: "9+",
+              EXP: "0",
+            },
+          },
+          {
+            name: "Empty Card",
+            type: "",
+            source: "necromunda",
+            id: "000000003",
+            cost: "",
+            faction_id: "necromunda",
+            cardType: "ganger",
+            rules: [
+              {
+                active: true,
+                name: "",
+                id: "000010601",
+              },
+            ],
+            skills: [
+              {
+                active: true,
+                name: "",
+                id: "000010701",
+              },
+            ],
+            wargear: [
+              {
+                active: true,
+                name: "",
+                id: "000010801",
+              },
+            ],
+            weapons: [
+              {
+                active: true,
+                id: "000010301",
+                name: "-",
+                profiles: [
+                  {
+                    id: "000010302",
+                    name: "",
+                    S: "",
+                    L: "",
+                    S2: '',
+                    L2: "",
+                    STR: "",
+                    AP: "",
+                    D: "",
+                    AM: "",
+                    traits: [
+                      {
+                        id: "000010321",
+                        active: true,
+                        name: "",
+                      },
+                    ],
+                  },
+                  {
+                    id: "000010302",
+                    name: "",
+                    S: "",
+                    L: "",
+                    S2: '',
+                    L2: "",
+                    STR: "",
+                    AP: "",
+                    D: "",
+                    AM: "",
+                    traits: [
+                      {
+                        id: "000010321",
+                        active: true,
+                        name: "",
+                      },
+                    ],
+                  },
+                  {
+                    id: "000010302",
+                    name: "",
+                    S: "",
+                    L: "",
+                    S2: '',
+                    L2: "",
+                    STR: "",
+                    AP: "",
+                    D: "",
+                    AM: "",
+                    traits: [
+                      {
+                        id: "000010321",
+                        active: true,
+                        name: "",
+                      },
+                    ],
+                  },
+                  {
+                    id: "000010302",
+                    name: "",
+                    S: "",
+                    L: "",
+                    S2: '',
+                    L2: "",
+                    STR: "",
+                    AP: "",
+                    D: "",
+                    AM: "",
+                    traits: [
+                      {
+                        id: "000010321",
+                        active: true,
+                        name: "",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            datasheet: {
+              M: "",
+              WS: "",
+              BS: "",
+              S: "",
+              T: "",
+              W: "",
+              I: "",
+              A: "",
+              LD: "",
+              CL: "",
+              WIL: "",
+              INT: "",
+              EXP: "-",
+            },
+          },
+          {
+            name: "Vehicle Card",
+            type: "Unknown",
+            source: "necromunda",
+            id: "000000002",
+            cost: "100",
+            faction_id: "necromunda",
+            cardType: "vehicle",
+            rules: [
+              {
+                active: true,
+                name: "Rule 1",
+                id: "000010601",
+              },
+            ],
+            skills: [
+              {
+                active: true,
+                name: "Ability 1",
+                id: "000010701",
+              },
+            ],
+            wargear: [
+              {
+                active: true,
+                name: "Gear 1",
+                id: "000010801",
+              },
+            ],
+            weapons: [
+              {
+                active: true,
+                id: "000010301",
+                name: "Basic Weapon",
+                profiles: [
+                  {
+                    id: "000010302",
+                    name: "Basic Weapon",
+                    S: "0",
+                    L: "1",
+                    S2: '12"',
+                    L2: "4",
+                    STR: "2",
+                    AP: "1",
+                    D: "1",
+                    AM: "1",
+                    traits: [
+                      {
+                        id: "000010321",
+                        active: true,
+                        name: "Basic Weapon",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+            datasheet: {
+              M: "9",
+              FRONT: "2+",
+              SIDE: "2+",
+              REAR: "2+",
+              HP: "2+",
+              HND: "2+",
+              SV: "2+",
+              BS: "2+",
+              LD: "9+",
+              CL: "9+",
+              WIL: "9+",
+              INT: "9+",
+              EXP: "0",
+            },
+          },
+        ],
+        stratagems: [
+          {
+            cardType: "stratagem",
+            cp_cost: "1",
+            description: "This is an example description. You can even use _markdown_ in this text!",
+            faction_id: "necromunda",
             id: "000006084006",
             name: "THE BASIC STRAT",
             type: "Just another stratagem",
