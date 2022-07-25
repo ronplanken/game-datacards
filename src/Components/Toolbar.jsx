@@ -10,26 +10,17 @@ import {
 } from "@ant-design/icons";
 import { Button, Col, message, Modal, Row, Tooltip } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
+import { compare } from "compare-versions";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
 
-export const Toolbar = ({
-  setShowPrint,
-  selectedTreeKey,
-  setSelectedTreeKey,
-}) => {
+export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) => {
   const [uploadFile, setUploadFile] = React.useState(null);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
   const [fileList, setFileList] = React.useState([]);
-  const {
-    activeCategory,
-    saveActiveCard,
-    importCategory,
-    cardUpdated,
-    addCategory,
-  } = useCardStorage();
+  const { activeCategory, saveActiveCard, importCategory, cardUpdated, addCategory } = useCardStorage();
 
   return (
     <Row>
@@ -41,28 +32,28 @@ export const Toolbar = ({
           justifyContent: "start",
           background: "white",
           borderBottom: "1px solid #E5E5E5",
-        }}
-      >
+        }}>
         <Modal
           title="Import Game Datacards"
           visible={isModalVisible}
           okButtonProps={{ disabled: !uploadFile }}
           onOk={() => {
-            if (uploadFile.version === "0.4.0") {
+            if (compare(uploadFile.version, "0.4.0", "=")) {
               importCategory({
                 uuid: uuidv4(),
                 name: "Imported Cards",
                 cards: uploadFile.cards,
               });
             }
-            if (
-              uploadFile.version === "0.5.0" ||
-              uploadFile.version === "1.0.0" ||
-              uploadFile.version === "1.0.1" ||
-              uploadFile.version === "1.0.2" ||
-              uploadFile.version === "1.1.0" ||
-              uploadFile.version === "1.2.0"
-            ) {
+            if (compare(uploadFile.version, "0.5.0", ">=") && compare(uploadFile.version, "1.2.0", "<=")) {
+              importCategory({
+                ...uploadFile.category,
+                cards: uploadFile.category.cards.map((card) => {
+                  return { ...card, source: "40k" };
+                }),
+              });
+            }
+            if (compare(uploadFile.version, "1.3.0", ">=")) {
               importCategory(uploadFile.category);
             }
             setFileList([]);
@@ -73,8 +64,7 @@ export const Toolbar = ({
             setIsModalVisible(false);
             setFileList([]);
             setUploadFile(null);
-          }}
-        >
+          }}>
           <div>
             <Dragger
               fileList={fileList}
@@ -92,8 +82,7 @@ export const Toolbar = ({
                       borderRadius: 4,
                     }}
                     align={"middle"}
-                    justify={"space-around"}
-                  >
+                    justify={"space-around"}>
                     <Col>
                       <FileOutlined style={{ fontSize: "18px" }} />
                     </Col>
@@ -112,12 +101,7 @@ export const Toolbar = ({
                     </Col>
                   </Row>
                 ) : (
-                  <Tooltip
-                    title={
-                      "This file cannot be read as an Game Datacards export."
-                    }
-                    color={"red"}
-                  >
+                  <Tooltip title={"This file cannot be read as an Game Datacards export."} color={"red"}>
                     <Row
                       style={{
                         marginTop: "4px",
@@ -126,8 +110,7 @@ export const Toolbar = ({
                         borderRadius: 4,
                       }}
                       align={"middle"}
-                      justify={"space-around"}
-                    >
+                      justify={"space-around"}>
                       <Col>
                         <FileOutlined style={{ fontSize: "18px" }} />
                       </Col>
@@ -154,10 +137,7 @@ export const Toolbar = ({
                 reader.onload = function (event) {
                   try {
                     const importedJson = JSON.parse(event.target.result);
-                    if (
-                      importedJson.website &&
-                      importedJson.website === "https://game-datacards.eu"
-                    ) {
+                    if (importedJson.website && importedJson.website === "https://game-datacards.eu") {
                       setFileList([
                         {
                           uid: "-1",
@@ -193,17 +173,12 @@ export const Toolbar = ({
                 reader.readAsText(file);
 
                 return false;
-              }}
-            >
+              }}>
               <p className="ant-upload-drag-icon">
                 <InboxOutlined />
               </p>
-              <p className="ant-upload-text">
-                Click or drag file to this area to upload
-              </p>
-              <p className="ant-upload-hint">
-                Support for a single file upload. Only .json files.
-              </p>
+              <p className="ant-upload-text">Click or drag file to this area to upload</p>
+              <p className="ant-upload-hint">Support for a single file upload. Only .json files.</p>
             </Dragger>
           </div>
         </Modal>
@@ -244,10 +219,7 @@ export const Toolbar = ({
               );
               const link = document.createElement("a");
               link.href = url;
-              link.setAttribute(
-                "download",
-                `${activeCategory.name}-${new Date().toISOString()}.json`
-              );
+              link.setAttribute("download", `${activeCategory.name}-${new Date().toISOString()}.json`);
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -286,8 +258,7 @@ export const Toolbar = ({
           borderBottom: "1px solid #E5E5E5",
           alignItems: "center",
           paddingRight: "4px",
-        }}
-      >
+        }}>
         {selectedTreeKey && selectedTreeKey.includes("card") && (
           <>
             <Tooltip title={"Update selected card"} placement="bottom">
@@ -299,8 +270,7 @@ export const Toolbar = ({
                 onClick={() => {
                   saveActiveCard();
                   message.success("Card has been updated");
-                }}
-              >
+                }}>
                 save
               </Button>
             </Tooltip>
