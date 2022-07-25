@@ -56,20 +56,26 @@ export const GangerCard = ({ unit, paddingTop = "32px" }) => {
             </div>
           </div>
         </div>
+
         <div className="weapons">
-          <div className="legend">
-            <div>Weapon</div>
-            <div>S</div>
-            <div>L</div>
-            <div>S</div>
-            <div>L</div>
-            <div>Str</div>
-            <div>Ap</div>
-            <div>D</div>
-            <div>Am</div>
-            <div>Traits</div>
-          </div>
+          {unit.weapons?.filter((sheet) => sheet.active).length > 0 && (
+            <div className="legend">
+              <div>Weapon</div>
+              <div>S</div>
+              <div>L</div>
+              <div>S</div>
+              <div>L</div>
+              <div>Str</div>
+              <div>Ap</div>
+              <div>D</div>
+              <div>Am</div>
+              <div>Traits</div>
+            </div>
+          )}
           {unit.weapons.map((weapon, index) => {
+            if (!weapon.active) {
+              return <></>;
+            }
             if (weapon.profiles.length > 1) {
               return weapon.profiles.map((profile, pIndex) => (
                 <div className="line" key={`weapon-${index}-${pIndex}`}>
@@ -90,7 +96,7 @@ export const GangerCard = ({ unit, paddingTop = "32px" }) => {
                   </div>
                 </div>
               ));
-            } else {
+            } else if (weapon.profiles[0]) {
               return (
                 <div className="line" key={`weapon-${index}`}>
                   <div>{weapon.name}</div>
@@ -111,6 +117,7 @@ export const GangerCard = ({ unit, paddingTop = "32px" }) => {
                 </div>
               );
             }
+            return <></>;
           })}
         </div>
         <div className="wargear">

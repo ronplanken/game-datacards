@@ -4,7 +4,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 const { Option } = Select;
 
-export function GangerBasicInfo() {
+export function VehicleBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (

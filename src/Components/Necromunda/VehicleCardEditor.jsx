@@ -1,25 +1,25 @@
 import { Collapse, Input } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { GangerBasicInfo } from "./GangerCardEditor/GangerBasicInfo";
-import { GangerDatasheets } from "./GangerCardEditor/GangerDatasheets";
-import { GangerWargear } from "./GangerCardEditor/GangerWargear";
-import { GangerSkills } from './GangerCardEditor/GangerSkills';
-import { GangerWeapons } from "./GangerCardEditor/GangerWeapons";
-import { GangerRules } from './GangerCardEditor/GangerRules';
+import { VehicleDatasheet } from "./VehicleCardEditor/VehicleDatasheets";
+import { VehicleWargear } from "./VehicleCardEditor/VehicleWargear";
+import { VehicleSkills } from './VehicleCardEditor/VehicleSkills';
+import { VehicleWeapons } from "./VehicleCardEditor/VehicleWeapons";
+import { VehicleRules } from './VehicleCardEditor/VehicleRules';
+import { VehicleBasicInfo } from './VehicleCardEditor/VehicleBasicInfo';
 
 const { Panel } = Collapse;
 const { TextArea } = Input;
 
-export const GangerCardEditor = () => {
+export const VehicleCardEditor = () => {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
     <Collapse defaultActiveKey={["1"]}>
       <Panel header="Basic information" style={{ width: "100%" }} key="1">
-        <GangerBasicInfo />
+        <VehicleBasicInfo />
       </Panel>
       <Panel header="Datasheet" key="2">
-        <GangerDatasheets />
+        <VehicleDatasheet />
       </Panel>
       <Panel
         header="Weapon profiles"
@@ -29,7 +29,7 @@ export const GangerCardEditor = () => {
             ({`${activeCard?.weapons?.filter((sheet) => sheet.active).length} / ${activeCard?.weapons?.length}`})
           </div>
         }>
-        <GangerWeapons />
+        <VehicleWeapons />
       </Panel>
       <Panel
         header="Wargear"
@@ -39,7 +39,7 @@ export const GangerCardEditor = () => {
             ({`${activeCard?.wargear?.filter((sheet) => sheet.active).length} / ${activeCard?.wargear?.length}`})
           </div>
         }>
-        <GangerWargear />
+        <VehicleWargear />
       </Panel>
       <Panel
         header="Abilities"
@@ -49,7 +49,7 @@ export const GangerCardEditor = () => {
             ({`${activeCard?.skills?.filter((sheet) => sheet.active).length} / ${activeCard?.skills?.length}`})
           </div>
         }>
-        <GangerSkills />
+        <VehicleSkills />
       </Panel>
       <Panel
         header="Rules"
@@ -59,7 +59,7 @@ export const GangerCardEditor = () => {
             ({`${activeCard?.rules?.filter((sheet) => sheet.active).length} / ${activeCard?.rules?.length}`})
           </div>
         }>
-        <GangerRules />
+        <VehicleRules />
       </Panel>
     </Collapse>
   );

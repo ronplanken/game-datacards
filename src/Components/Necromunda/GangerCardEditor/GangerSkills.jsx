@@ -5,7 +5,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 import { v4 as uuidv4 } from "uuid";
 
-export function UnitKeywords() {
+export function GangerSkills() {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   const reorder = (list, startIndex, endIndex) => {
@@ -24,23 +24,23 @@ export function UnitKeywords() {
             return;
           }
 
-          const newKeywords = reorder(
-            activeCard.keywords,
+          const newSkills = reorder(
+            activeCard.skills,
             result.source.index,
             result.destination.index
           );
-          updateActiveCard({ ...activeCard, keywords: newKeywords });
+          updateActiveCard({ ...activeCard, skills: newSkills });
         }}
       >
-        <Droppable droppableId="droppable-keywords">
+        <Droppable droppableId="droppable-skills">
           {(provided, snapshot) => {
             return (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {activeCard.keywords.map((keyword, index) => {
+                {activeCard.skills.map((gear, index) => {
                   return (
                     <Draggable
-                      key={`ability-${keyword.keyword}-${index}`}
-                      draggableId={`ability-${keyword.keyword}-${index}`}
+                      key={`ability-${gear.name}-${index}`}
+                      draggableId={`ability-${gear.name}-${index}`}
                       index={index}
                     >
                       {(drag) => (
@@ -53,15 +53,15 @@ export function UnitKeywords() {
                         >
                           <Col span={22} justify="center">
                             <Checkbox
-                              checked={keyword.active}
+                              checked={gear.active}
                               onChange={(e) => {
                                 updateActiveCard(() => {
-                                  const newKeywords = [...activeCard.keywords];
-                                  newKeywords[index]["active"] =
+                                  const newSkills = [...activeCard.skills];
+                                  newSkills[index]["active"] =
                                     e.target.checked;
                                   return {
                                     ...activeCard,
-                                    keywords: newKeywords,
+                                    skills: newSkills,
                                   };
                                 });
                               }}
@@ -69,18 +69,18 @@ export function UnitKeywords() {
                               <Typography.Text
                                 editable={{
                                   onChange: (value) => {
-                                    const newKeywords = [
-                                      ...activeCard.keywords,
+                                    const newSkills = [
+                                      ...activeCard.skills,
                                     ];
-                                    newKeywords[index]["keyword"] = value;
+                                    newSkills[index]["name"] = value;
                                     updateActiveCard({
                                       ...activeCard,
-                                      keywords: newKeywords,
+                                      skills: newSkills,
                                     });
                                   },
                                 }}
                               >
-                                {keyword.keyword}
+                                {gear.name}
                               </Typography.Text>
                             </Checkbox>
                           </Col>
@@ -103,20 +103,18 @@ export function UnitKeywords() {
         }}
         onClick={() =>
           updateActiveCard(() => {
-            const newKeywords = [...activeCard.keywords];
-            newKeywords.push({
-              keyword: `New keyword ${newKeywords.length + 1}`,
+            const newSkills = [...activeCard.skills];
+            newSkills.push({
+              name: `New skills ${newSkills.length + 1}`,
               custom: true,
               active: true,
-              is_faction_keyword: false,
-              model: "",
               id: uuidv4(),
             });
-            return { ...activeCard, keywords: newKeywords };
+            return { ...activeCard, skills: newSkills };
           })
         }
       >
-        Add new keyword
+        Add new skills
       </Button>
     </>
   );
