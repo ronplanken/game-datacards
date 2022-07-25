@@ -12,7 +12,7 @@ import {
 import TextArea from "antd/lib/input/TextArea";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 export function UnitAbilities() {
   const { activeCard, updateActiveCard } = useCardStorage();

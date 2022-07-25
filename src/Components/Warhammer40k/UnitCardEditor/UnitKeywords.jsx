@@ -1,7 +1,7 @@
 import { Button, Checkbox, Col, Row, Typography } from "antd";
 import React from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 import { v4 as uuidv4 } from "uuid";
 

@@ -1,7 +1,7 @@
 import { Form, Input } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import React from "react";
-import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 export function StratagemBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
