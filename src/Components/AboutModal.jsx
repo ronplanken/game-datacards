@@ -9,7 +9,7 @@ export const AboutModal = () => {
 
   const showWizard = () => {
     setIsModalVisible(false);
-    updateSettings({ ...settings, wizardCompleted: undefined });
+    updateSettings({ ...settings, wizardCompleted: "1.1.0" });
   };
 
   return (

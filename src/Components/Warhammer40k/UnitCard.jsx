@@ -3,7 +3,7 @@ import { UnitStatline } from "./UnitCard/UnitStatline";
 import { UnitType } from "./UnitCard/UnitType";
 import { WeaponStatline } from "./UnitCard/WeaponStatline";
 
-export const UnitCard = ({ unit, style, cardStyle, paddingTop = "32px" }) => {
+export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
   return (
     <div
       style={{

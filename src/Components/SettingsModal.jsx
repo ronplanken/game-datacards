@@ -1,5 +1,19 @@
-import { SettingOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Collapse, Modal, Popconfirm, Row, Space, Switch, Tabs, Tooltip, Typography } from "antd";
+import { SettingOutlined, ExclamationCircleFilled } from "@ant-design/icons";
+import {
+  Badge,
+  Button,
+  Card,
+  Col,
+  Collapse,
+  Modal,
+  Popconfirm,
+  Row,
+  Space,
+  Switch,
+  Tabs,
+  Tooltip,
+  Typography,
+} from "antd";
 import React from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
@@ -159,7 +173,6 @@ export const SettingsModal = () => {
                 <Card
                   type={"inner"}
                   size={"small"}
-                  disabled={true}
                   title={"Necromunda"}
                   bodyStyle={{ padding: 0 }}
                   style={{ marginBottom: "16px" }}
@@ -199,7 +212,64 @@ export const SettingsModal = () => {
           <TabPane tab="Changelog" key="4">
             <Row>
               <Col span={23}>
-                <Collapse defaultActiveKey={"1.2.0"}>
+                <Collapse defaultActiveKey={"1.3.0"}>
+                  <Panel header={"Version 1.3.0"} key={"1.3.0"}>
+                    <b>06-08-2022</b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Added basic Necromunda card support.</strong>
+                          <br />A ganger and a vehicle card (empty and/or editable) are now available. You can use these
+                          cards by switching to the Necromunda Datasource.
+                        </li>
+                        <li>
+                          <strong>Added Warhammer 40k secondary support. </strong>
+                          <br />
+                          When the datasource has secondaries enabled you can find them in the dropdown select list in
+                          the card viewer. <i>Be sure to check for datasource updates.</i>
+                        </li>
+                        <li>
+                          <strong>Window to show changes for a new version. </strong>
+                          <br />
+                          The panel are you are currently looking at 😅
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Datasources:</strong> Some changes have been made to the stored cards format. If you
+                          experience any issues please let us know on Discord.
+                        </li>
+                        <li>
+                          <strong>Icons:</strong> Changed the icons based on the card type.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Warhammer 40K:</strong> The card editor icons are no longer missing.
+                        </li>
+                        <li>
+                          <strong>Warhammer 40K:</strong> Added proper Grenade &amp; Dakka icons
+                        </li>
+                        <li>
+                          <strong>Warhammer 40K:</strong> You can now toggle the unit composition on/off
+                        </li>
+                        <li>
+                          <strong>Basic:</strong> Basic Stratagem and Secondary now actually show up when selected.
+                        </li>
+                        <li>
+                          <strong>All:</strong> Cleaned up the styling and added print + share support for all types of
+                          cards.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.2.0"} key={"1.2.0"}>
                     <b>15-07-2022</b>
                     <ul>
@@ -296,6 +366,7 @@ export const SettingsModal = () => {
         </Tabs>
       </Modal>
       <Tooltip title={`Configuration`} placement="bottomLeft">
+        {/* <Badge dot style={{ color: "#f5222d", width: "12px", height: "12px" }}> */}
         <Button
           type={"ghost"}
           icon={<SettingOutlined />}
@@ -303,7 +374,9 @@ export const SettingsModal = () => {
           size={"large"}
           onClick={() => {
             setIsModalVisible(true);
-          }}></Button>
+          }}
+        />
+        {/* </Badge> */}
       </Tooltip>
     </>
   );

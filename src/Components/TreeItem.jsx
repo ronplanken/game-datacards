@@ -1,32 +1,19 @@
-import {
-  OneToOneOutlined,
-  ExclamationCircleOutlined,
-  ProfileOutlined,
-  DeleteOutlined,
-  CopyOutlined,
-} from "@ant-design/icons";
+import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Dropdown, Menu, message, Modal } from "antd";
 import React from "react";
-import { useCardStorage } from "../Hooks/useCardStorage";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
+import { useCardStorage } from "../Hooks/useCardStorage";
+import { Datacard } from "../Icons/Datacard";
+import { Ganger } from "../Icons/Ganger";
+import { Secondary } from "../Icons/Secondary";
+import { Stratagem } from "../Icons/Stratagem";
+import { Vehicle } from '../Icons/Vehicle';
 
 const { confirm } = Modal;
 
-export function TreeItem({
-  card,
-  category,
-  selectedTreeIndex,
-  setSelectedTreeIndex,
-  index,
-}) {
-  const {
-    setActiveCard,
-    setActiveCategory,
-    cardUpdated,
-    removeCardFromCategory,
-    addCardToCategory,
-  } = useCardStorage();
+export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeIndex, index }) {
+  const { setActiveCard, setActiveCategory, cardUpdated, removeCardFromCategory, addCardToCategory } = useCardStorage();
   const cardIndex = `card-${card.uuid}`;
 
   const menu = (
@@ -43,8 +30,7 @@ export function TreeItem({
           };
           addCardToCategory(newCard);
           setActiveCard(newCard);
-        }}
-      >
+        }}>
         Duplicate
       </Menu.Item>
       <Menu.Divider />
@@ -65,8 +51,7 @@ export function TreeItem({
               message.success("Card has been deleted.");
             },
           });
-        }}
-      >
+        }}>
         Delete
       </Menu.Item>
     </Menu>
@@ -85,18 +70,11 @@ export function TreeItem({
   };
 
   return (
-    <Draggable
-      key={`${cardIndex}-draggable`}
-      draggableId={card.uuid}
-      index={index}
-    >
+    <Draggable key={`${cardIndex}-draggable`} draggableId={card.uuid} index={index}>
       {(provided, snapshot) => (
         <Dropdown overlay={menu} trigger={["contextMenu"]}>
           <div
-            className={[
-              "tree-item-container",
-              selectedTreeIndex === cardIndex ? "selected" : "",
-            ].join(" ")}
+            className={["tree-item-container", selectedTreeIndex === cardIndex ? "selected" : ""].join(" ")}
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
@@ -108,8 +86,7 @@ export function TreeItem({
               display: "flex",
               width: "100%",
               ...provided.draggableProps.style,
-            }}
-          >
+            }}>
             <div
               onClick={() => {
                 if (cardUpdated) {
@@ -128,10 +105,14 @@ export function TreeItem({
                   onSelect();
                 }
               }}
-              className={"tree-item"}
-            >
-              {card.cardType === "datasheet" && <ProfileOutlined />}
-              {card.cardType === "stratagem" && <OneToOneOutlined />}
+              className={"tree-item"}>
+              {card.cardType === "datasheet" && <Datacard />}
+              {card.cardType === "stratagem" && <Stratagem />}
+              {card.cardType === "secondary" && <Secondary />}
+              {card.cardType === "ganger" && <Ganger />}
+              {card.cardType === "vehicle" && <Vehicle />}
+              {card.cardType === "empty-ganger" && <Ganger />}
+              {card.cardType === "empty-vehicle" && <Vehicle />}
               &nbsp;{card.name}
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { Col } from "antd";
 import { useCardStorage } from '../../Hooks/useCardStorage';
+import { SecondaryEditor } from './SecondaryEditor';
 import { StratagemEditor } from "./StratagemEditor";
 import { UnitCardEditor } from "./UnitCardEditor";
 
@@ -11,6 +12,7 @@ export const Warhammer40KCardEditor = () => {
       <Col span={24} className="data-40k">
         {activeCard.cardType === "datasheet" && <UnitCardEditor />}
         {activeCard.cardType === "stratagem" && <StratagemEditor />}
+        {activeCard.cardType === "secondary" && <SecondaryEditor />}
       </Col>
     )
   );

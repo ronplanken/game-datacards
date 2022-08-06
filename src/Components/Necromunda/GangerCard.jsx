@@ -1,4 +1,4 @@
-export const GangerCard = ({ unit, paddingTop = "32px" }) => {
+export const GangerCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
   return (
     <div
       className="ganger"
@@ -8,7 +8,7 @@ export const GangerCard = ({ unit, paddingTop = "32px" }) => {
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className="page">
+      <div className={`page ${unit.variant || "card"}`} style={cardStyle}>
         <div style={{ display: "grid", gridTemplateColumns: "9fr 1fr", columnGap: "8px" }}>
           <div className="header">
             <span className="name">{unit.name}</span>

@@ -52,10 +52,16 @@ export const get40KData = async () => {
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets.json?${new Date().getTime()}`
   );
 
+  const secondaries = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Secondaries.json?${new Date().getTime()}`
+  );
+
   dataFactions.sort((a, b) => a.name.localeCompare(b.name));
+  secondaries.sort((a, b) => a.category.localeCompare(b.category));
 
   const mappedStratagems = dataStratagems.map((stratagem) => {
     stratagem["cardType"] = "stratagem";
+    stratagem["source"] = "40k";
     return stratagem;
   });
 
@@ -138,9 +144,12 @@ export const get40KData = async () => {
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       });
+    faction["secondaries"] = secondaries.filter((secondary) => {
+      return secondary.faction === "basic" || secondary.faction === faction.id;
+    });
     return faction;
   });
-
+  
   return {
     data: dataFactions,
     version: process.env.REACT_APP_VERSION,
@@ -252,28 +261,6 @@ export const getBasicData = () => {
             name: "THE BASIC STRAT",
             type: "Just another stratagem",
           },
-        ],
-        secondaries: [
-          {
-            cardType: "secondary",
-            source: "basic",
-            description: "Score 3 victory points at the end of the battle for each enemy **CHARACTER** unit that is destroyed. At the end of the battle, if the enemy WARLORD is destroyed, score 1 extra victory point.",
-            faction: "basic",
-            id: "000006084106",
-            name: "ASSASSINATION",
-            type: "End Game Objective",
-            category: "PURGE THE ENEMY",
-          },
-          {
-            "cardType": "secondary",
-            "source": "basic",
-            "name": "BRING IT DOWN",
-            "description": "At the end of the battle, score victory points for each enemy **MONSTER** or **VEHICLE** model that is destroyed, as follows: \n\r* Score 1 victory point for each of those destroyed models with a Wounds characteristic of 9 or less. \n\r* Score 2 victory points for each of those destroyed models with a Wounds characteristic of 10-14. \n\r* Score 3 victory points for each of those destroyed models with a Wounds characteristic of 15-19. \n\r* Score 4 victory points for each of those destroyed models with a Wounds characteristic of 20 or more.",
-            "category": "PURGE THE ENEMY",
-            "type": "End Game Objective",
-            "faction": "basic",
-            "id": "5a9ed34b-bd69-4c6c-80a1-015d8712589c"
-          }
         ],
       },
     ],

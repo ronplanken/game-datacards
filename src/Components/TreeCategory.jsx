@@ -107,7 +107,7 @@ export function TreeCategory({
           }}
         >
           <div className={"tree-item"}>
-            <FolderOutlined /> {category.name}
+            <FolderOutlined />&nbsp;{category.name}
           </div>
         </div>
       </Dropdown>

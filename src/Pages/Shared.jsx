@@ -1,25 +1,15 @@
 import { ForkOutlined, HeartFilled, HeartOutlined } from "@ant-design/icons";
-import {
-  Badge,
-  Button,
-  Carousel,
-  Col,
-  Grid,
-  Image,
-  Layout,
-  Row,
-  Space,
-  Tooltip,
-  Typography,
-} from "antd";
+import { Badge, Button, Carousel, Col, Grid, Image, Layout, Row, Space, Tooltip, Typography } from "antd";
 import { Content, Header } from "antd/lib/layout/layout";
 import clone from "just-clone";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import "../App.css";
-import { StratagemCard } from '../Components/Warhammer40k/StratagemCard';
-import { UnitCard } from '../Components/Warhammer40k/UnitCard';
+import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
+import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
+import { StratagemCard } from "../Components/Warhammer40k/StratagemCard";
+import { UnitCard } from "../Components/Warhammer40k/UnitCard";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
 import logo from "../Images/logo.png";
@@ -30,7 +20,7 @@ export const Shared = () => {
   const { Id } = useParams();
   const navigate = useNavigate();
 
-  const { getCategory, likeCategory } = useFirebase();
+  const { getCategory, likeCategory, logScreenView } = useFirebase();
 
   const [historyStorage, setHistoryStorage] = useState({ liked: [] });
 
@@ -48,9 +38,7 @@ export const Shared = () => {
   }, []);
 
   useEffect(() => {
-    document.title = `Shared ${
-      sharedStorage?.category?.name || ""
-    } - Game Datacards`;
+    document.title = `Shared ${sharedStorage?.category?.name || ""} - Game Datacards`;
   }, [sharedStorage]);
 
   useEffect(() => {
@@ -73,10 +61,7 @@ export const Shared = () => {
             <Col>
               <Space size={"large"}>
                 <Image preview={false} src={logo} width={50} />
-                <Typography.Title
-                  level={3}
-                  style={{ color: "white", marginBottom: 0, marginTop: "0px" }}
-                >
+                <Typography.Title level={3} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
                   Game Datacards
                 </Typography.Title>
               </Space>
@@ -86,10 +71,7 @@ export const Shared = () => {
             <Col>
               <Space size={"large"}>
                 <Image preview={false} src={logo} width={50} />
-                <Typography.Title
-                  level={3}
-                  style={{ color: "white", marginBottom: 0, marginTop: "0px" }}
-                >
+                <Typography.Title level={3} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
                   Game Datacards
                 </Typography.Title>
               </Space>
@@ -97,10 +79,7 @@ export const Shared = () => {
           )}
           {screens.lg && (
             <Col>
-              <Typography.Title
-                level={3}
-                style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}
-              >
+              <Typography.Title level={3} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
                 {sharedStorage?.category?.name}
               </Typography.Title>
             </Col>
@@ -108,35 +87,19 @@ export const Shared = () => {
           <Col>
             <Space>
               {historyStorage.liked.includes(Id) ? (
-                <Badge
-                  count={sharedStorage?.likes}
-                  offset={[-4, 14]}
-                  size="small"
-                  color={"blue"}
-                  overflowCount={999}
-                >
+                <Badge count={sharedStorage?.likes} offset={[-4, 14]} size="small" color={"blue"} overflowCount={999}>
                   <Tooltip title={"You have already liked this set."}>
                     <Button
                       className="button-bar"
                       type="text"
                       size="large"
                       disabled={true}
-                      icon={
-                        <HeartFilled
-                          style={{ color: "#40a9ff", cursor: "cursor" }}
-                        />
-                      }
+                      icon={<HeartFilled style={{ color: "#40a9ff", cursor: "cursor" }} />}
                     />
                   </Tooltip>
                 </Badge>
               ) : (
-                <Badge
-                  count={sharedStorage?.likes}
-                  offset={[-4, 14]}
-                  size="small"
-                  color={"blue"}
-                  overflowCount={999}
-                >
+                <Badge count={sharedStorage?.likes} offset={[-4, 14]} size="small" color={"blue"} overflowCount={999}>
                   <Button
                     className="button-bar"
                     type="ghost"
@@ -161,6 +124,7 @@ export const Shared = () => {
                   size="large"
                   icon={<ForkOutlined />}
                   onClick={() => {
+                    logScreenView("Clone cards");
                     const cloneCategory = {
                       ...sharedStorage.category,
                       name: `Imported ${sharedStorage.category.name}`,
@@ -172,8 +136,7 @@ export const Shared = () => {
 
                     importCategory(cloneCategory);
                     navigate("/");
-                  }}
-                >
+                  }}>
                   Clone
                 </Button>
               )}
@@ -181,7 +144,7 @@ export const Shared = () => {
           </Col>
         </Row>
       </Header>
-      <Content style={{ minHeight: "calc(100vh - 64px)" }} className="data-40k">
+      <Content style={{ minHeight: "calc(100vh - 64px)" }}>
         {!screens.xs && (
           <Row>
             {sharedStorage?.category?.cards?.map((card, index) => {
@@ -193,11 +156,10 @@ export const Shared = () => {
                   sm={12}
                   xs={24}
                   key={`${card.name}-${index}`}
-                >
-                  {card.cardType === "datasheet" && <UnitCard unit={card} />}
-                  {card.cardType === "stratagem" && (
-                    <StratagemCard stratagem={card} />
-                  )}
+                  className={`data-${card?.source}`}>
+                  {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
+                  {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
+                  {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
                 </Col>
               );
             })}
@@ -207,22 +169,11 @@ export const Shared = () => {
           <Carousel dots={{ className: "dots" }}>
             {sharedStorage?.category?.cards?.map((card, index) => {
               return (
-                <>
-                  {card.cardType === "datasheet" && (
-                    <UnitCard
-                      unit={card}
-                      key={`${card.name}-${index}`}
-                      style={{ display: "flex !important", color: "pink" }}
-                    />
-                  )}
-                  {card.cardType === "stratagem" && (
-                    <StratagemCard
-                      stratagem={card}
-                      key={`${card.name}-${index}`}
-                      style={{ display: "flex !important" }}
-                    />
-                  )}
-                </>
+                <div className={`data-${card?.source}`} key={`${card.name}-${index}`}>
+                  {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
+                  {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
+                  {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
+                </div>
               );
             })}
           </Carousel>

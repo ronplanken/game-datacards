@@ -9,6 +9,14 @@ export function VehicleBasicInfo() {
 
   return (
     <>
+      <Form.Item label={"Variant"}>
+        <Select
+          value={activeCard.variant || "card"}
+          onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}>
+          <Option value="card">Regular</Option>
+          <Option value="large">Large</Option>
+        </Select>
+      </Form.Item>
       <Form.Item label={"Name"}>
         <Input
           type={"text"}

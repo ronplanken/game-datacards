@@ -1,4 +1,4 @@
-export const VehicleCard = ({ unit, paddingTop = "32px" }) => {
+export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
   return (
     <div
       style={{
@@ -8,16 +8,16 @@ export const VehicleCard = ({ unit, paddingTop = "32px" }) => {
         display: "flex",
       }}
       className="vehicle">
-      <div className="page">
+      <div className={`page ${vehicle.variant || "card"}`} style={cardStyle}>
         <div style={{ display: "grid", gridTemplateColumns: "5fr 4fr 1fr", columnGap: "8px" }}>
           <div className="header">
-            <span className="name">{unit.name}</span>
+            <span className="name">{vehicle.name}</span>
           </div>
           <div className="header">
-            <span className="type">{unit.type || ""}</span>
+            <span className="type">{vehicle.type || ""}</span>
           </div>
             
-          <div className="cost">{unit.cost}</div>
+          <div className="cost">{vehicle.cost}</div>
         </div>
         <div className="datasheet">
           <div className="categories">
@@ -50,25 +50,25 @@ export const VehicleCard = ({ unit, paddingTop = "32px" }) => {
           </div>
           <div className="line">
             <div className="movement">
-              <div>{unit.datasheet.M}</div>
+              <div>{vehicle.datasheet.M}</div>
             </div>
             <div className="toughness">
-              <div>{unit.datasheet.FRONT}</div>
-              <div>{unit.datasheet.SIDE}</div>
-              <div>{unit.datasheet.REAR}</div>
+              <div>{vehicle.datasheet.FRONT}</div>
+              <div>{vehicle.datasheet.SIDE}</div>
+              <div>{vehicle.datasheet.REAR}</div>
             </div>
             <div className="stats">
-              <div>{unit.datasheet.HP}</div>
-              <div>{unit.datasheet.HND}</div>
-              <div>{unit.datasheet.SV}</div>
+              <div>{vehicle.datasheet.HP}</div>
+              <div>{vehicle.datasheet.HND}</div>
+              <div>{vehicle.datasheet.SV}</div>
             </div>
             <div className="crew">
-              <div>{unit.datasheet.BS}</div>
-              <div>{unit.datasheet.LD}</div>
-              <div>{unit.datasheet.CL}</div>
-              <div>{unit.datasheet.WIL}</div>
-              <div>{unit.datasheet.INT}</div>
-              <div>{unit.datasheet.EXP}</div>
+              <div>{vehicle.datasheet.BS}</div>
+              <div>{vehicle.datasheet.LD}</div>
+              <div>{vehicle.datasheet.CL}</div>
+              <div>{vehicle.datasheet.WIL}</div>
+              <div>{vehicle.datasheet.INT}</div>
+              <div>{vehicle.datasheet.EXP}</div>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ export const VehicleCard = ({ unit, paddingTop = "32px" }) => {
             <div>Am</div>
             <div>Traits</div>
           </div>
-          {unit.weapons.map((weapon, index) => {
+          {vehicle.weapons.map((weapon, index) => {
             if (weapon.profiles.length > 1) {
               return weapon.profiles.map((profile, pIndex) => (
                 <div className="line" key={`weapon-${index}-${pIndex}`}>
@@ -127,7 +127,7 @@ export const VehicleCard = ({ unit, paddingTop = "32px" }) => {
         <div className="wargear">
           <div className="title">Wargear</div>
           <div className="title">
-            {unit.wargear
+            {vehicle.wargear
               ?.filter((wargear) => wargear.active)
               .map((wargear) => wargear.name)
               .join(", ")}
@@ -136,7 +136,7 @@ export const VehicleCard = ({ unit, paddingTop = "32px" }) => {
         <div className="abilities">
           <div className="title">abilities</div>
           <div className="title">
-            {unit.skills
+            {vehicle.skills
               ?.filter((skill) => skill.active)
               .map((skill) => skill.name)
               .join(", ")}
@@ -145,7 +145,7 @@ export const VehicleCard = ({ unit, paddingTop = "32px" }) => {
         <div className="rules">
           <div className="title">rules</div>
           <div className="title">
-            {unit.rules
+            {vehicle.rules
               ?.filter((rule) => rule.active)
               .map((rule) => rule.name)
               .join(", ")}

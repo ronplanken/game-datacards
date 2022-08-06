@@ -36,9 +36,11 @@ import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { StratagemCard } from "./Components/Warhammer40k/StratagemCard";
 import { UnitCard } from "./Components/Warhammer40k/UnitCard";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
+import { WhatsNew } from "./Components/WhatsNew";
 import { getBackgroundColor, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
+import { AddCard } from './Icons/AddCard';
 import { Discord } from "./Icons/Discord";
 import logo from "./Images/logo.png";
 import "./style.less";
@@ -100,6 +102,7 @@ function App() {
   return (
     <Layout>
       <WelcomeWizard />
+      <WhatsNew />
       <Header>
         <Row style={{ justifyContent: "space-between" }}>
           <Col>
@@ -277,15 +280,21 @@ function App() {
                               }}
                               placeholder="Select a type"
                               value={selectedContentType}>
-                              <Option value={"datasheets"} key={`datasheets`}>
-                                Datasheets
-                              </Option>
-                              <Option value={"stratagems"} key={`stratagems`}>
-                                Stratagems
-                              </Option>
-                              <Option value={"secondaries"} key={`secondaries`}>
-                                Secondaries
-                              </Option>
+                              {selectedFaction?.datasheets && selectedFaction?.datasheets.length > 0 && (
+                                <Option value={"datasheets"} key={`datasheets`}>
+                                  Datasheets
+                                </Option>
+                              )}
+                              {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
+                                <Option value={"stratagems"} key={`stratagems`}>
+                                  Stratagems
+                                </Option>
+                              )}
+                              {selectedFaction?.secondaries && selectedFaction?.secondaries.length > 0 && (
+                                <Option value={"secondaries"} key={`secondaries`}>
+                                  Secondaries
+                                </Option>
+                              )}
                             </Select>
                           </Col>
                         </Row>
@@ -341,7 +350,7 @@ function App() {
                     marginTop: "16px",
                   }}>
                   <Button
-                    icon={<AppstoreAddOutlined />}
+                    icon={<AddCard />}
                     type={"primary"}
                     onClick={() => {
                       const newCard = {
@@ -447,7 +456,7 @@ function App() {
           {split(activeCategory.cards, cardsPerPage).map((row, RowIndex) => {
             return (
               <div
-                className="flex data-40k"
+                className="flex"
                 key={`print-${RowIndex}`}
                 style={{
                   pageBreakAfter: "always",
@@ -455,30 +464,13 @@ function App() {
                 }}>
                 {row.map((card, index) => {
                   return (
-                    <>
-                      {card.cardType === "datasheet" && (
-                        <UnitCard
-                          unit={card}
-                          key={`${card.id}-${index}`}
-                          paddingTop="8px"
-                          cardStyle={{
-                            transformOrigin: "0% 0%",
-                            transform: `scale(${cardScaling / 100})`,
-                          }}
-                        />
+                    <div className={`data-${card?.source}`} key={`${card.id}-${index}`}>
+                      {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />}
+                      {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />}
+                      {card?.source === "necromunda" && (
+                        <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />
                       )}
-                      {card.cardType === "stratagem" && (
-                        <StratagemCard
-                          stratagem={card}
-                          key={`${card.id}-${index}`}
-                          paddingTop="8px"
-                          cardStyle={{
-                            transformOrigin: "0% 0%",
-                            transform: `scale(${cardScaling / 100})`,
-                          }}
-                        />
-                      )}
-                    </>
+                    </div>
                   );
                 })}
               </div>

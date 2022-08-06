@@ -1,4 +1,4 @@
-export const EmptyVehicleCard = ({ paddingTop = "32px" }) => {
+export const EmptyVehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
   return (
     <div
       style={{
@@ -8,7 +8,7 @@ export const EmptyVehicleCard = ({ paddingTop = "32px" }) => {
         display: "flex",
       }}
       className="vehicle">
-      <div className="page">
+      <div className={`page ${vehicle.variant || "card"}`} style={cardStyle}>
         <div style={{ display: "grid", gridTemplateColumns: "5fr 4fr 1fr", columnGap: "8px" }}>
           <div className="header">
             <span className="name"></span>

@@ -63,6 +63,8 @@
 .tree-item {
   width: 100%;
   padding-left: 8px;
+  display: flex;
+  align-items: center;
 }
 
 .tree-item-container.selected  > .tree-item {

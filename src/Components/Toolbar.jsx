@@ -14,10 +14,13 @@ import { compare } from "compare-versions";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
+import { useFirebase } from '../Hooks/useFirebase';
 
 export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) => {
   const [uploadFile, setUploadFile] = React.useState(null);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
+
+  const { logScreenView } = useFirebase();
 
   const [fileList, setFileList] = React.useState([]);
   const { activeCategory, saveActiveCard, importCategory, cardUpdated, addCategory } = useCardStorage();
@@ -188,6 +191,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             shape={"circle"}
             disabled={!(activeCategory && activeCategory.cards.length > 0)}
             onClick={() => {
+              logScreenView("Print");
               setShowPrint(true);
             }}
             icon={<PrinterOutlined />}
@@ -199,6 +203,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             shape={"circle"}
             disabled={!(activeCategory && activeCategory.cards.length > 0)}
             onClick={() => {
+              logScreenView("Export Category");
               const exportCategory = {
                 ...activeCategory,
                 uuid: uuidv4(),
@@ -233,6 +238,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             shape={"circle"}
             icon={<UploadOutlined />}
             onClick={() => {
+              logScreenView("Import Category");
               setIsModalVisible(true);
             }}
           />
