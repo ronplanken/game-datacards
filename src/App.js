@@ -1,8 +1,4 @@
-import {
-  AppstoreAddOutlined,
-  ExclamationCircleOutlined,
-  PrinterOutlined,
-} from "@ant-design/icons";
+import { AppstoreAddOutlined, ExclamationCircleOutlined, PrinterOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -28,24 +24,23 @@ import NewWindow from "react-new-window";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 import { AboutModal } from "./Components/AboutModal";
+import { NecromundaCardDisplay } from "./Components/Necromunda/CardDisplay";
+import { NecromundaCardEditor } from "./Components/Necromunda/CardEditor";
 import { SettingsModal } from "./Components/SettingsModal";
 import { ShareModal } from "./Components/ShareModal";
-import { StratagemCard } from "./Components/StratagemCard";
-import { StratagemEditor } from "./Components/StratagemEditor";
 import { Toolbar } from "./Components/Toolbar";
 import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
-import { UnitCard } from "./Components/UnitCard";
-import { UnitCardEditor } from "./Components/UnitCardEditor";
+import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
+import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
+import { StratagemCard } from "./Components/Warhammer40k/StratagemCard";
+import { UnitCard } from "./Components/Warhammer40k/UnitCard";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
-import {
-  getBackgroundColor,
-  getMinHeight,
-  move,
-  reorder,
-} from "./Helpers/treeview.helpers";
+import { WhatsNew } from "./Components/WhatsNew";
+import { getBackgroundColor, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
+import { AddCard } from './Icons/AddCard';
 import { Discord } from "./Icons/Discord";
 import logo from "./Images/logo.png";
 import "./style.less";
@@ -55,12 +50,7 @@ const { Option } = Select;
 const { confirm } = Modal;
 
 function App() {
-  const {
-    dataSource,
-    selectedFactionIndex,
-    selectedFaction,
-    updateSelectedFaction,
-  } = useDataSourceStorage();
+  const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
 
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
@@ -90,9 +80,7 @@ function App() {
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
       return searchText
-        ? selectedFaction?.datasheets.filter((sheet) =>
-            sheet.name.toLowerCase().includes(searchText.toLowerCase())
-          )
+        ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
     }
     if (selectedContentType === "stratagems") {
@@ -102,29 +90,32 @@ function App() {
           )
         : selectedFaction?.stratagems;
     }
+    if (selectedContentType === "secondaries") {
+      return searchText
+        ? selectedFaction?.secondaries.filter((stratagem) =>
+            stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : selectedFaction?.secondaries;
+    }
   };
 
   return (
     <Layout>
       <WelcomeWizard />
+      <WhatsNew />
       <Header>
         <Row style={{ justifyContent: "space-between" }}>
           <Col>
             <Space size={"large"}>
               <Image preview={false} src={logo} width={50} />
-              <Typography.Title
-                level={2}
-                style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}
-              >
+              <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
                 Game Datacards
               </Typography.Title>
             </Space>
           </Col>
           <Col>
             <Space>
-              {activeCategory && activeCategory.cards.length > 0 && (
-                <ShareModal />
-              )}
+              {activeCategory && activeCategory.cards.length > 0 && <ShareModal />}
               <AboutModal />
               <Tooltip title={"Join us on discord!"} placement="bottomRight">
                 <Button
@@ -132,10 +123,7 @@ function App() {
                   type="ghost"
                   size="large"
                   icon={<Discord />}
-                  onClick={() =>
-                    window.open("https://discord.gg/anfn4qTYC4", "_blank")
-                  }
-                ></Button>
+                  onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}></Button>
               </Tooltip>
               <SettingsModal />
             </Space>
@@ -159,8 +147,7 @@ function App() {
                         height: "300px",
                         overflow: "auto",
                         background: "white",
-                      }}
-                    >
+                      }}>
                       <DragDropContext
                         onDragEnd={(result) => {
                           const { source, destination } = result;
@@ -172,90 +159,55 @@ function App() {
                           const sInd = source.droppableId;
                           const dInd = destination.droppableId;
                           if (sInd === dInd) {
-                            const sourceCat = clone(
-                              cardStorage.categories.find(
-                                (cat) => cat.uuid === sInd
-                              )
-                            );
-                            sourceCat.cards = reorder(
-                              sourceCat.cards,
-                              source.index,
-                              destination.index
-                            );
+                            const sourceCat = clone(cardStorage.categories.find((cat) => cat.uuid === sInd));
+                            sourceCat.cards = reorder(sourceCat.cards, source.index, destination.index);
                             updateCategory(sourceCat, sInd);
                           } else {
-                            const sourceCat = clone(
-                              cardStorage.categories.find(
-                                (cat) => cat.uuid === sInd
-                              )
-                            );
-                            const destCat = clone(
-                              cardStorage.categories.find(
-                                (cat) => cat.uuid === dInd
-                              )
-                            );
+                            const sourceCat = clone(cardStorage.categories.find((cat) => cat.uuid === sInd));
+                            const destCat = clone(cardStorage.categories.find((cat) => cat.uuid === dInd));
 
-                            const newCategories = move(
-                              sourceCat.cards,
-                              destCat.cards,
-                              source,
-                              destination
-                            );
+                            const newCategories = move(sourceCat.cards, destCat.cards, source, destination);
                             sourceCat.cards = newCategories[sInd];
                             destCat.cards = newCategories[dInd];
 
                             updateCategory(sourceCat, sInd);
                             updateCategory(destCat, dInd);
                           }
-                        }}
-                      >
-                        {cardStorage.categories.map(
-                          (category, categoryIndex) => {
-                            return (
-                              <div
-                                key={`category-${category.name}-${categoryIndex}`}
-                              >
-                                <Droppable
-                                  key={`${category.uuid}-droppable`}
-                                  droppableId={category.uuid}
-                                >
-                                  {(provided, snapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.droppableProps}
-                                      style={{
-                                        minHeight: getMinHeight(snapshot),
-                                        backgroundColor:
-                                          getBackgroundColor(snapshot),
-                                      }}
-                                    >
-                                      <TreeCategory
+                        }}>
+                        {cardStorage.categories.map((category, categoryIndex) => {
+                          return (
+                            <div key={`category-${category.name}-${categoryIndex}`}>
+                              <Droppable key={`${category.uuid}-droppable`} droppableId={category.uuid}>
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    style={{
+                                      minHeight: getMinHeight(snapshot),
+                                      backgroundColor: getBackgroundColor(snapshot),
+                                    }}>
+                                    <TreeCategory
+                                      category={category}
+                                      selectedTreeIndex={selectedTreeIndex}
+                                      setSelectedTreeIndex={setSelectedTreeIndex}
+                                    />
+                                    {category.cards.map((card, cardIndex) => (
+                                      <TreeItem
+                                        card={card}
                                         category={category}
                                         selectedTreeIndex={selectedTreeIndex}
-                                        setSelectedTreeIndex={
-                                          setSelectedTreeIndex
-                                        }
+                                        setSelectedTreeIndex={setSelectedTreeIndex}
+                                        index={cardIndex}
+                                        key={`${category.uuid}-item-${cardIndex}`}
                                       />
-                                      {category.cards.map((card, cardIndex) => (
-                                        <TreeItem
-                                          card={card}
-                                          category={category}
-                                          selectedTreeIndex={selectedTreeIndex}
-                                          setSelectedTreeIndex={
-                                            setSelectedTreeIndex
-                                          }
-                                          index={cardIndex}
-                                          key={`${category.uuid}-item-${cardIndex}`}
-                                        />
-                                      ))}
-                                      {provided.placeholder}
-                                    </div>
-                                  )}
-                                </Droppable>
-                              </div>
-                            );
-                          }
-                        )}
+                                    ))}
+                                    {provided.placeholder}
+                                  </div>
+                                )}
+                              </Droppable>
+                            </div>
+                          );
+                        })}
                       </DragDropContext>
                     </div>
                   </Col>
@@ -271,9 +223,7 @@ function App() {
                   dataSource={getDataSourceType()}
                   style={{ overflowY: "auto", height: "calc(100vh - 398px)" }}
                   locale={{
-                    emptyText: selectedFaction
-                      ? "No datasheets found"
-                      : "No faction selected",
+                    emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
                   }}
                   header={
                     <>
@@ -285,22 +235,12 @@ function App() {
                                 loading={isLoading}
                                 style={{ width: "100%" }}
                                 onChange={(value) => {
-                                  updateSelectedFaction(
-                                    dataSource.data.find(
-                                      (faction) => faction.id === value
-                                    )
-                                  );
+                                  updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
                                 }}
                                 placeholder="Select a faction"
-                                value={
-                                  dataSource?.data[selectedFactionIndex]?.name
-                                }
-                              >
+                                value={dataSource?.data[selectedFactionIndex]?.name}>
                                 {dataSource.data.map((faction, index) => (
-                                  <Option
-                                    value={faction.id}
-                                    key={`${faction.id}-${index}`}
-                                  >
+                                  <Option value={faction.id} key={`${faction.id}-${index}`}>
                                     {faction.name}
                                   </Option>
                                 ))}
@@ -309,9 +249,7 @@ function App() {
                           </Row>
                           <Row>
                             <Col span={24}>
-                              <Divider
-                                style={{ marginTop: 4, marginBottom: 8 }}
-                              />
+                              <Divider style={{ marginTop: 4, marginBottom: 8 }} />
                             </Col>
                           </Row>
                         </>
@@ -341,14 +279,22 @@ function App() {
                                 setSelectedContentType(value);
                               }}
                               placeholder="Select a type"
-                              value={selectedContentType}
-                            >
-                              <Option value={"datasheets"} key={`datasheets`}>
-                                Datasheets
-                              </Option>
-                              <Option value={"stratagems"} key={`stratagems`}>
-                                Stratagems
-                              </Option>
+                              value={selectedContentType}>
+                              {selectedFaction?.datasheets && selectedFaction?.datasheets.length > 0 && (
+                                <Option value={"datasheets"} key={`datasheets`}>
+                                  Datasheets
+                                </Option>
+                              )}
+                              {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
+                                <Option value={"stratagems"} key={`stratagems`}>
+                                  Stratagems
+                                </Option>
+                              )}
+                              {selectedFaction?.secondaries && selectedFaction?.secondaries.length > 0 && (
+                                <Option value={"secondaries"} key={`secondaries`}>
+                                  Secondaries
+                                </Option>
+                              )}
                             </Select>
                           </Col>
                         </Row>
@@ -362,8 +308,7 @@ function App() {
                         if (cardUpdated) {
                           confirm({
                             title: "You have unsaved changes",
-                            content:
-                              "Are you sure you want to discard your changes?",
+                            content: "Are you sure you want to discard your changes?",
                             icon: <ExclamationCircleOutlined />,
                             okText: "Yes",
                             okType: "danger",
@@ -379,13 +324,8 @@ function App() {
                         }
                       }}
                       className={`list-item ${
-                        activeCard &&
-                        !activeCard.isCustom &&
-                        activeCard.id === card.id
-                          ? "selected"
-                          : ""
-                      }`}
-                    >
+                        activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
+                      }`}>
                       {card.name}
                     </List.Item>
                   )}
@@ -393,24 +333,11 @@ function App() {
               </Col>
             </Row>
           </Col>
-          <Col
-            span={9}
-            style={{ display: "flex", flexDirection: "column" }}
-            className={"data-40k"}
-          >
+          <Col span={9} style={{ display: "flex", flexDirection: "column" }} className={`data-${activeCard?.source}`}>
             <Row style={{ overflow: "hidden" }}>
-              {activeCard && (
-                <>
-                  <Col span={24}>
-                    {activeCard.cardType === "datasheet" && (
-                      <UnitCard unit={activeCard} />
-                    )}
-                    {activeCard.cardType === "stratagem" && (
-                      <StratagemCard stratagem={activeCard} />
-                    )}
-                  </Col>
-                </>
-              )}
+              {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
+              {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
+              {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
             </Row>
             <Row style={{ overflow: "hidden", justifyContent: "center" }}>
               {activeCard && !activeCard.isCustom && (
@@ -421,10 +348,9 @@ function App() {
                     justifyContent: "center",
                     display: "flex",
                     marginTop: "16px",
-                  }}
-                >
+                  }}>
                   <Button
-                    icon={<AppstoreAddOutlined />}
+                    icon={<AddCard />}
                     type={"primary"}
                     onClick={() => {
                       const newCard = {
@@ -437,8 +363,7 @@ function App() {
                       setActiveCard(newCard);
                       setActiveCategory(cat);
                       setSelectedTreeIndex(`card-${newCard.uuid}`);
-                    }}
-                  >
+                    }}>
                     Add card to category
                   </Button>
                 </Col>
@@ -446,12 +371,10 @@ function App() {
             </Row>
           </Col>
           {activeCard && (
-            <Col
-              span={9}
-              style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
-            >
-              {activeCard.cardType === "datasheet" && <UnitCardEditor />}
-              {activeCard.cardType === "stratagem" && <StratagemEditor />}
+            <Col span={9} style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}>
+              {activeCard?.source === "40k" && <Warhammer40KCardEditor />}
+              {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
+              {activeCard?.source === "necromunda" && <NecromundaCardEditor />}
             </Col>
           )}
         </Row>
@@ -462,8 +385,7 @@ function App() {
           ref={printRef}
           center="screen"
           features={{ width: "500px" }}
-          title="Datacards"
-        >
+          title="Datacards">
           <style>
             {`@media print
           {    
@@ -473,10 +395,7 @@ function App() {
               }
           }`}
           </style>
-          <div
-            className={"no-print"}
-            style={{ marginTop: "32px", padding: "32px" }}
-          >
+          <div className={"no-print"} style={{ marginTop: "32px", padding: "32px" }}>
             <Form layout="vertical">
               <Row gutter={16}>
                 <Col span={3}>
@@ -518,8 +437,7 @@ function App() {
                       type="primary"
                       icon={<PrinterOutlined />}
                       size={"medium"}
-                      onClick={() => printRef.current.window.print()}
-                    >
+                      onClick={() => printRef.current.window.print()}>
                       Print
                     </Button>
                   </Form.Item>
@@ -528,9 +446,8 @@ function App() {
               <Row>
                 <Col span={12}>
                   <Typography.Paragraph>
-                    When printing the cards make sure to enable the
-                    &quote;Background graphics&quote; option in order to print
-                    the icons and borders.
+                    When printing the cards make sure to enable the &quote;Background graphics&quote; option in order to
+                    print the icons and borders.
                   </Typography.Paragraph>
                 </Col>
               </Row>
@@ -539,39 +456,21 @@ function App() {
           {split(activeCategory.cards, cardsPerPage).map((row, RowIndex) => {
             return (
               <div
-                className="flex data-40k"
+                className="flex"
                 key={`print-${RowIndex}`}
                 style={{
                   pageBreakAfter: "always",
                   gridTemplateColumns: `${cardsPerRow}fr `.repeat(cardsPerRow),
-                }}
-              >
+                }}>
                 {row.map((card, index) => {
                   return (
-                    <>
-                      {card.cardType === "datasheet" && (
-                        <UnitCard
-                          unit={card}
-                          key={`${card.id}-${index}`}
-                          paddingTop="8px"
-                          cardStyle={{
-                            transformOrigin: "0% 0%",
-                            transform: `scale(${cardScaling / 100})`,
-                          }}
-                        />
+                    <div className={`data-${card?.source}`} key={`${card.id}-${index}`}>
+                      {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />}
+                      {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />}
+                      {card?.source === "necromunda" && (
+                        <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />
                       )}
-                      {card.cardType === "stratagem" && (
-                        <StratagemCard
-                          stratagem={card}
-                          key={`${card.id}-${index}`}
-                          paddingTop="8px"
-                          cardStyle={{
-                            transformOrigin: "0% 0%",
-                            transform: `scale(${cardScaling / 100})`,
-                          }}
-                        />
-                      )}
-                    </>
+                    </div>
                   );
                 })}
               </div>

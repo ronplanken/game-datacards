@@ -1,5 +1,5 @@
 import { Image, Layout, Space, Typography } from "antd";
-import { UnitCard } from "./Components/UnitCard";
+import { UnitCard } from "./Components/Warhammer40k/UnitCard";
 import logo from "./Images/logo.png";
 
 const { Header, Content } = Layout;

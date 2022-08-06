@@ -1,5 +1,5 @@
 import { message } from "antd";
-import React, { useEffect } from "react";
+import React from "react";
 
 const SettingsStorageContext = React.createContext(undefined);
 
@@ -7,15 +7,13 @@ const defaultSettings = {
   version: process.env.REACT_APP_VERSION,
   selectedDataSource: undefined,
   selectedFactionIndex: 0,
-  wizardCompleted: undefined,
+  wizardCompleted: "0.0.0",
 };
 
 export function useSettingsStorage() {
   const context = React.useContext(SettingsStorageContext);
   if (context === undefined) {
-    throw new Error(
-      "`useSettingsStorage` must be used with an `SettingsStorageProvider`"
-    );
+    throw new Error("`useSettingsStorage` must be used with an `SettingsStorageProvider`");
   }
   return context;
 }
@@ -44,9 +42,5 @@ export const SettingsStorageProviderComponent = (props) => {
     updateSettings,
   };
 
-  return (
-    <SettingsStorageContext.Provider value={context}>
-      {props.children}
-    </SettingsStorageContext.Provider>
-  );
+  return <SettingsStorageContext.Provider value={context}>{props.children}</SettingsStorageContext.Provider>;
 };

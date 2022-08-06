@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 21.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   viewBox="0 0 765.62158 799.99999"
+   xml:space="preserve"
+   sodipodi:docname="Dark Angels [Imperium, Adeptus Astartes, Space Marines, Legion].svg"
+   width="765.62158"
+   height="800"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"><metadata
+   id="metadata13"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs11" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1017"
+   id="namedview9"
+   showgrid="false"
+   fit-margin-top="0"
+   fit-margin-left="0"
+   fit-margin-right="0"
+   fit-margin-bottom="0"
+   inkscape:zoom="0.25871519"
+   inkscape:cx="-44.724159"
+   inkscape:cy="456.1"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1" />
+<path
+   d="m 0,241.96448 c 77.439158,-0.0877 154.87832,-0.1754 232.31747,-0.1754 1.57861,13.94431 6.92831,44.90244 29.81803,75.59746 24.11751,32.36132 54.19864,46.39333 67.26595,51.56764 l -30.16883,277.3953 -76.56215,-27.80092 41.74523,-87.08616 c -5.43741,-3.2449 -11.13791,-6.75291 -16.92611,-10.69941 -6.13901,-4.1219 -11.83951,-8.24381 -17.10152,-12.27801 -22.80201,21.83732 -45.60403,43.76233 -68.40605,65.59965 l -50.16444,-54.81254 73.14186,-53.84784 c -4.385,-5.52511 -8.85771,-11.40101 -13.33041,-17.71541 -5.52511,-7.71761 -10.52401,-15.34752 -15.08441,-22.62662 -29.11642,14.11971 -58.145146,28.15172 -87.261568,42.27143 L 26.83622,385.17869 c 36.132427,-6.48981 72.264854,-12.97961 108.39728,-19.55712 -1.3155,-5.0866 -2.4556,-10.7871 -3.3326,-16.92611 -0.877,-6.139 -1.4032,-11.92721 -1.5786,-17.10151 -39.465032,0.2631 -78.930061,0.4385 -118.395091,0.7016 z"
+   id="path2"
+   inkscape:connector-curvature="0"
+   style="stroke-width:0.87700063" />
+<path
+   d="m 765.62157,241.96448 c -77.43915,-0.0877 -154.87831,-0.1754 -232.31747,-0.1754 -1.5786,13.94431 -6.92831,44.90244 -29.81802,75.59746 -24.11752,32.36132 -54.19864,46.39333 -67.26595,51.56764 l 30.16882,277.3953 76.56216,-27.80092 -41.65753,-87.08616 c 5.4374,-3.2449 11.1379,-6.75291 16.92611,-10.69941 6.139,-4.1219 11.83951,-8.24381 17.10151,-12.27801 22.80202,21.83732 45.60404,43.76233 68.40605,65.59965 l 50.16444,-54.81254 -73.14185,-53.84784 c 4.385,-5.52511 8.8577,-11.40101 13.33041,-17.71541 5.5251,-7.71761 10.524,-15.34752 15.08441,-22.62662 29.11642,14.11971 58.14514,28.15172 87.26156,42.27143 l 42.44683,-82.17496 c -36.13242,-6.48981 -72.26485,-12.97961 -108.39728,-19.55712 1.3155,-5.0866 2.4556,-10.7871 3.33261,-16.92611 0.877,-6.139 1.4032,-11.92721 1.5786,-17.10151 39.46503,0.2631 78.93006,0.4385 118.39509,0.7016 z"
+   id="path4"
+   inkscape:connector-curvature="0"
+   style="stroke-width:0.87700063" />
+<polygon
+   points="471.8,304.5 497.4,304.5 526.6,275.7 574,324.4 526.7,371.4 500.4,345.2 476.1,345.7 505.5,748.3 437.1,912.2 365.6,748.5 397.6,345.5 374.6,345.4 347.5,370.6 298.6,321.5 345.6,275.7 375.6,304.5 402.5,304.5 415,144 370.6,109.5 437,0 503.3,109.1 459.6,143.5 "
+   id="polygon6"
+   transform="scale(0.87700066)" />
+</svg>
