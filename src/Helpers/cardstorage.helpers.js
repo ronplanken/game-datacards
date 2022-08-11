@@ -1,4 +1,4 @@
-import compareVersions from "compare-versions";
+import { compare } from "compare-versions";
 import { v4 as uuidv4 } from "uuid";
 
 const defaultCategories = {
@@ -14,7 +14,7 @@ const defaultCategories = {
 
 const upgradeStoredCards = (parsedJson) => {
   //If older then version 1.2.x
-  if (compareVersions(parsedJson.version, "1.2.x") === -1) {
+  if (compare(parsedJson.version, "1.2.0", "<")) {
     if (parsedJson.categories) {
       return parsedJson;
     }
@@ -27,7 +27,7 @@ const upgradeStoredCards = (parsedJson) => {
     };
   }
   //Check if cards were saved with the previous version and add the source option.
-  if (compareVersions(parsedJson.version, "1.2.x") === 0) {
+  if (compare(parsedJson.version, "1.2.0", "=")) {
     return {
       ...parsedJson,
       categories: parsedJson.categories.map((cat) => {
@@ -40,7 +40,7 @@ const upgradeStoredCards = (parsedJson) => {
       }),
     };
   }
-}
+};
 export const parseStorageJson = (savedJson) => {
   if (!savedJson) {
     return defaultCategories;
@@ -49,14 +49,11 @@ export const parseStorageJson = (savedJson) => {
   try {
     const parsedJson = JSON.parse(savedJson.replace(/(<([^>]+)>)/gi, ""));
 
-    if (compareVersions(parsedJson.version, process.env.REACT_APP_VERSION) === 0) {
+    if (compare(parsedJson.version, "1.3.0", ">=")) {
       return parsedJson;
     }
-    if (compareVersions(parsedJson.version, process.env.REACT_APP_VERSION) === -1) {
+    if (compare(parsedJson.version, "1.3.0", "<")) {
       return upgradeStoredCards(parsedJson);
-    }
-    if (compareVersions(parsedJson.version, process.env.REACT_APP_VERSION) === 1) {
-      return parsedJson;
     }
   } catch (e) {
     return defaultCategories;
