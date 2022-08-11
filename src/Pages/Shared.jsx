@@ -8,8 +8,6 @@ import { v4 as uuidv4 } from "uuid";
 import "../App.css";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
-import { StratagemCard } from "../Components/Warhammer40k/StratagemCard";
-import { UnitCard } from "../Components/Warhammer40k/UnitCard";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
 import logo from "../Images/logo.png";

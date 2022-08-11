@@ -1,4 +1,4 @@
-import { AppstoreAddOutlined, ExclamationCircleOutlined, PrinterOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, PrinterOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -33,14 +33,12 @@ import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
 import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
-import { StratagemCard } from "./Components/Warhammer40k/StratagemCard";
-import { UnitCard } from "./Components/Warhammer40k/UnitCard";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { WhatsNew } from "./Components/WhatsNew";
 import { getBackgroundColor, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
-import { AddCard } from './Icons/AddCard';
+import { AddCard } from "./Icons/AddCard";
 import { Discord } from "./Icons/Discord";
 import logo from "./Images/logo.png";
 import "./style.less";
@@ -326,7 +324,7 @@ function App() {
                       className={`list-item ${
                         activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
                       }`}>
-                      {card.name}
+                      <div className={`${card.subfaction ? card.subfaction : ""}`}>{card.name}</div>
                     </List.Item>
                   )}
                 />
@@ -465,8 +463,12 @@ function App() {
                 {row.map((card, index) => {
                   return (
                     <div className={`data-${card?.source}`} key={`${card.id}-${index}`}>
-                      {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />}
-                      {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />}
+                      {card?.source === "40k" && (
+                        <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
+                      )}
+                      {card?.source === "basic" && (
+                        <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
+                      )}
                       {card?.source === "necromunda" && (
                         <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />
                       )}
