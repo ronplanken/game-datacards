@@ -97,6 +97,7 @@ export const get40KData = async () => {
       if (cols["Col5"]) {
         newRow[cols["Col5"]] = linkedDamageTable[index]["Col5"];
       }
+      newRow["name"] = `Wound profile ${linkedDamageTable[index]["Col1"]}`;
       row["datasheet"].push(newRow);
     }
 
@@ -147,9 +148,10 @@ export const get40KData = async () => {
     faction["secondaries"] = secondaries.filter((secondary) => {
       return secondary.faction === "basic" || secondary.faction === faction.id;
     });
+
     return faction;
   });
-  
+
   return {
     data: dataFactions,
     version: process.env.REACT_APP_VERSION,
@@ -356,7 +358,7 @@ export const getNecromundaBasicData = () => {
             },
           },
           {
-            name: "Empty fighter card",
+            name: "Fighter card (for pen & paper)",
             type: "",
             source: "necromunda",
             id: "000000003",
@@ -364,15 +366,7 @@ export const getNecromundaBasicData = () => {
             faction_id: "necromunda",
             cardType: "empty-ganger",
           },
-          {
-            name: "Empty vehicle card",
-            type: "",
-            source: "necromunda",
-            id: "000000004",
-            cost: "",
-            faction_id: "necromunda",
-            cardType: "empty-vehicle",
-          },
+
           {
             name: "Vehicle card",
             type: "Unknown",
@@ -449,6 +443,15 @@ export const getNecromundaBasicData = () => {
               INT: "9+",
               EXP: "0",
             },
+          },
+          {
+            name: "Vehicle card (for pen & paper)",
+            type: "",
+            source: "necromunda",
+            id: "000000004",
+            cost: "",
+            faction_id: "necromunda",
+            cardType: "empty-vehicle",
           },
         ],
         stratagems: [],
