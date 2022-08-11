@@ -6,17 +6,21 @@ import { GangerWargear } from "./GangerCardEditor/GangerWargear";
 import { GangerSkills } from './GangerCardEditor/GangerSkills';
 import { GangerWeapons } from "./GangerCardEditor/GangerWeapons";
 import { GangerRules } from './GangerCardEditor/GangerRules';
+import { GangerNotes } from './GangerCardEditor/GangerNotes';
 
 const { Panel } = Collapse;
 const { TextArea } = Input;
 
 export const GangerCardEditor = () => {
-  const { activeCard, updateActiveCard } = useCardStorage();
+  const { activeCard } = useCardStorage();
 
   return (
     <Collapse defaultActiveKey={["1"]}>
       <Panel header="Basic information" style={{ width: "100%" }} key="1">
         <GangerBasicInfo />
+      </Panel>
+      <Panel header="Notes" style={{ width: "100%" }} key="7">
+        <GangerNotes />
       </Panel>
       <Panel header="Datasheet" key="2">
         <GangerDatasheets />

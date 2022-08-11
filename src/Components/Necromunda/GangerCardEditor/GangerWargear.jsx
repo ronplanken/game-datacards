@@ -1,9 +1,10 @@
-import { Button, Checkbox, Col, Row, Typography } from "antd";
+import { DeleteFilled } from "@ant-design/icons";
+import MDEditor, { commands } from "@uiw/react-md-editor";
+import { Button, Card, Col, Popconfirm, Row, Space, Switch, Typography } from "antd";
 import React from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { useCardStorage } from "../../../Hooks/useCardStorage";
-
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
+import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 export function GangerWargear() {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -24,14 +25,9 @@ export function GangerWargear() {
             return;
           }
 
-          const newWargear = reorder(
-            activeCard.wargear,
-            result.source.index,
-            result.destination.index
-          );
+          const newWargear = reorder(activeCard.wargear, result.source.index, result.destination.index);
           updateActiveCard({ ...activeCard, wargear: newWargear });
-        }}
-      >
+        }}>
         <Droppable droppableId="droppable-wargear">
           {(provided, snapshot) => {
             return (
@@ -42,49 +38,89 @@ export function GangerWargear() {
                       key={`ability-${gear.name}-${index}`}
                       draggableId={`ability-${gear.name}-${index}`}
                       index={index}
-                    >
+                      >
                       {(drag) => (
-                        <Row
-                          justify="space-between"
-                          align="middle"
+                        <Card
+                          type={"inner"}
+                          size={"small"}
+                          title={
+                            <Typography.Text
+                              editable={{
+                                onChange: (value) => {
+                                  const newWargear = [...activeCard.wargear];
+                                  newWargear[index]["name"] = value;
+                                  updateActiveCard({
+                                    ...activeCard,
+                                    wargear: newWargear,
+                                  });
+                                },
+                              }}>
+                              {gear.name}
+                            </Typography.Text>
+                          }
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
-                        >
-                          <Col span={22} justify="center">
-                            <Checkbox
-                              checked={gear.active}
-                              onChange={(e) => {
-                                updateActiveCard(() => {
-                                  const newWargear = [...activeCard.wargear];
-                                  newWargear[index]["active"] =
-                                    e.target.checked;
-                                  return {
-                                    ...activeCard,
-                                    wargear: newWargear,
-                                  };
-                                });
-                              }}
-                            >
-                              <Typography.Text
-                                editable={{
-                                  onChange: (value) => {
-                                    const newWargear = [
-                                      ...activeCard.wargear,
-                                    ];
-                                    newWargear[index]["name"] = value;
+                          bodyStyle={{ padding: 0 }}
+                          extra={
+                            <Space>
+                              <Popconfirm
+                                title={"Are you sure you want to delete this wargear?"}
+                                placement="topRight"
+                                onConfirm={() =>
+                                  updateActiveCard(() => {
+                                    const newWargear = [...activeCard.wargear];
+                                    newWargear.splice(index, 1);
+                                    return { ...activeCard, wargear: newWargear };
+                                  })
+                                }>
+                                <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                              </Popconfirm>
+                              <Switch
+                                checked={gear.active}
+                                onChange={(value) => {
+                                  updateActiveCard(() => {
+                                    const newWargear = [...activeCard.wargear];
+                                    newWargear[index]["active"] = value;
+                                    return {
+                                      ...activeCard,
+                                      wargear: newWargear,
+                                    };
+                                  });
+                                }}
+                              />
+                            </Space>
+                          }>
+                          {gear.active && (
+                            <Row justify="space-between" align="middle">
+                              <Col span={24}>
+                                <MDEditor
+                                  preview="edit"
+                                  commands={[
+                                    commands.bold,
+                                    commands.italic,
+                                    commands.strikethrough,
+                                    commands.hr,
+                                    commands.divider,
+                                    commands.unorderedListCommand,
+                                    commands.orderedListCommand,
+                                    commands.divider,
+                                  ]}
+                                  extraCommands={[]}
+                                  value={gear.description}
+                                  onChange={(value) => {
+                                    const newWargear = [...activeCard.wargear];
+                                    newWargear[index]["description"] = value;
                                     updateActiveCard({
                                       ...activeCard,
                                       wargear: newWargear,
                                     });
-                                  },
-                                }}
-                              >
-                                {gear.name}
-                              </Typography.Text>
-                            </Checkbox>
-                          </Col>
-                        </Row>
+                                  }}
+                                />
+                              </Col>
+                            </Row>
+                          )}
+                        </Card>
                       )}
                     </Draggable>
                   );
@@ -106,14 +142,14 @@ export function GangerWargear() {
             const newWargear = [...activeCard.wargear];
             newWargear.push({
               name: `New wargear ${newWargear.length + 1}`,
+              description: `description`,
               custom: true,
               active: true,
               id: uuidv4(),
             });
             return { ...activeCard, wargear: newWargear };
           })
-        }
-      >
+        }>
         Add new wargear
       </Button>
     </>

@@ -1,4 +1,4 @@
-import ReactMarkdown from "react-markdown";
+import { MarkdownDisplay } from "../MarkdownDisplay";
 
 export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => {
   return (
@@ -17,7 +17,7 @@ export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => 
               <div className="stratagem_name">{secondary.name}</div>
             </div>
             <div className="secondary_description">
-              <ReactMarkdown>{secondary.description}</ReactMarkdown>
+              <MarkdownDisplay content={secondary.description} />
             </div>
             <div className="secondary_footer">{secondary.type || "Secondary"}</div>
           </div>

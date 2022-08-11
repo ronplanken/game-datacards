@@ -45,48 +45,40 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 1.3.0
+                Whats new in 1.3.1
               </h1>
             </div>
             <div className="welcome-cover">
               <>
                 <Row style={{ padding: "16px" }}>
                   <Col>
-                    <Typography.Paragraph style={{ fontSize: "20px" }}>
-                      Welcome to version 1.3.0. We have changed and added several things, please take a look at the
-                      changelog. As always, any idea&apos;s or suggestions can be discussed in our Discord! The focus for
-                      this release has been to add Necromunda cards as a datasource and add Warhammer 40k secondaries.
-                    </Typography.Paragraph>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Added basic Necromunda card support.</strong>
+                          <strong>Added a Markdown editor to all textfields.</strong>
                           <br />
-                          A ganger and a vehicle card (empty and/or editable) are now available. You can use these cards by switching to the Necromunda Datasource.
+                          All textarea have been replaced with a simple Markdown editor. This is in preparation to add a table that certain texts might have.
                         </li>
                         <li>
-                          <strong>Added Warhammer 40k secondary support. </strong>
+                          <strong>Note option added to Necromunda cards</strong>
                           <br />
-                          When the datasource has secondaries enabled you can find them in the dropdown select list in
-                          the card viewer. <i>Be sure to check for datasource updates.</i>
+                          Fighter &amp; Vehicle cards now have a <strong>Note</strong> section where you can write down stuff you want to remember but don&apos;t need to print on a card. Please note that this will also be shared when sharing your category.
                         </li>
-                        <li>
-                          <strong>Window to show changes for a new version. </strong>
-                          <br />
-                          The panel are you are currently looking at 😅
-                        </li>
+
                       </ul>
                     </Typography.Paragraph>
                     <Typography.Title level={5}>Changes</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Datasources:</strong> Some changes have been made to the stored cards format. If you
-                          experience any issues please let us know on Discord.
+                          <strong>Necromunda:</strong> Renamed the &quot;Gang card&quot; to &quot;Fighter card&quot; to better represent what kind of card it is.
                         </li>
                         <li>
-                          <strong>Icons:</strong> Changed the icons based on the card type.
+                          <strong>Necromunda:</strong> Wargear, rules and abilities are now textfields and are no longer uppercased. You have full control over the text in this field.
+                        </li>
+                        <li>
+                          <strong>Necromunda:</strong> You can now drag &amp; drop wargear, rules and abilities for Necromunda cards.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -94,19 +86,7 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Warhammer 40K:</strong> The card editor icons are no longer missing.
-                        </li>
-                        <li>
-                          <strong>Warhammer 40K:</strong> Added proper Grenade &amp; Dakka icons
-                        </li>
-                        <li>
-                          <strong>Warhammer 40K:</strong> You can now toggle the unit composition on/off
-                        </li>
-                        <li>
-                          <strong>Basic:</strong> Basic Stratagem and Secondary now actually show up when selected.
-                        </li>
-                        <li>
-                          <strong>All:</strong> Cleaned up the styling and added print + share support for all types of cards.
+                          <strong>Necromunda:</strong> Adding a new weapon to a card will no longer crash the website.
                         </li>
                       </ul>
                     </Typography.Paragraph>

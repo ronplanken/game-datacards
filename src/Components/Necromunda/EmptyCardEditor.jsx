@@ -1,5 +1,4 @@
 import { Collapse, Input } from "antd";
-import { useCardStorage } from "../../Hooks/useCardStorage";
 import { EmptyCardBasicInfo } from "./EmptyCardEditor/EmptyCardBasicInfo";
 
 const { Panel } = Collapse;

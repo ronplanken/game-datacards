@@ -279,17 +279,19 @@ export const getNecromundaBasicData = () => {
         name: "Necromunda Gang Cards",
         datasheets: [
           {
-            name: "Gang card",
+            name: "Fighter card",
             type: "Unknown",
             source: "necromunda",
             id: "000000001",
             cost: "100",
             faction_id: "necromunda",
             cardType: "ganger",
+            notes: "",
             rules: [
               {
                 active: true,
                 name: "Rule 1",
+                description: "Rule description",
                 id: "000010601",
               },
             ],
@@ -297,6 +299,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Ability 1",
+                description: "Ability description",
                 id: "000010701",
               },
             ],
@@ -304,6 +307,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Gear 1",
+                description: "Gear description",
                 id: "000010801",
               },
             ],
@@ -352,7 +356,7 @@ export const getNecromundaBasicData = () => {
             },
           },
           {
-            name: "Empty ganger card",
+            name: "Empty fighter card",
             type: "",
             source: "necromunda",
             id: "000000003",
@@ -377,10 +381,12 @@ export const getNecromundaBasicData = () => {
             cost: "100",
             faction_id: "necromunda",
             cardType: "vehicle",
+            notes: "",
             rules: [
               {
                 active: true,
                 name: "Rule 1",
+                description: "Rule description",
                 id: "000010601",
               },
             ],
@@ -388,6 +394,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Ability 1",
+                description: "Ability description",
                 id: "000010701",
               },
             ],
@@ -395,6 +402,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Gear 1",
+                description: "Gear description",
                 id: "000010801",
               },
             ],
@@ -443,17 +451,7 @@ export const getNecromundaBasicData = () => {
             },
           },
         ],
-        stratagems: [
-          {
-            cardType: "stratagem",
-            cp_cost: "1",
-            description: "This is an example description. You can even use _markdown_ in this text!",
-            faction_id: "necromunda",
-            id: "000006084006",
-            name: "THE BASIC STRAT",
-            type: "Just another stratagem",
-          },
-        ],
+        stratagems: [],
       },
     ],
   };

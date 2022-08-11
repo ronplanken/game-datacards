@@ -1,10 +1,9 @@
 import { DeleteFilled } from "@ant-design/icons";
 import { Button, Card, Input, Popconfirm, Space, Switch, Typography } from "antd";
-import TextArea from "antd/lib/input/TextArea";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
-import { GangerWeaponTraits } from './GangerWeaponTraits';
+import { GangerWeaponTraits } from "./GangerWeaponTraits";
 
 export function GangerWeapons() {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -110,7 +109,7 @@ export function GangerWeapons() {
                   </Popconfirm>
                 </div>
               </div>
-                <GangerWeaponTraits weaponIndex={index} profileIndex={pindex} />
+              <GangerWeaponTraits weaponIndex={index} profileIndex={pindex} />
             </div>
           );
         })}
