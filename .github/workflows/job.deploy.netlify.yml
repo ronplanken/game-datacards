@@ -14,6 +14,8 @@ on:
 permissions:
   contents: write
   pages: write
+  deployments: write
+  statuses: write
 
 jobs:
   deploy:
@@ -46,7 +48,7 @@ jobs:
         with:
           publish-dir: './build'
           production-branch: develop
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.SECRET_NAME }}
           deploy-message: "Deploy from GitHub Actions"
           enable-pull-request-comment: false
           enable-commit-comment: true
