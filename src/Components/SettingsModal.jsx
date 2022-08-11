@@ -212,7 +212,61 @@ export const SettingsModal = () => {
           <TabPane tab="Changelog" key="4">
             <Row>
               <Col span={23}>
-                <Collapse defaultActiveKey={"1.3.0"}>
+                <Collapse>
+                  <Panel header={"Version 1.3.1"} key={"1.3.1"}>
+                    <b>11-08-2022</b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Added a Markdown editor to all textfields.</strong>
+                          <br />
+                          All textarea&apos;s have been replaced with a simple Markdown editor. This is in preparation
+                          to add a table that certain texts might have.
+                        </li>
+                        <li>
+                          <strong>Note option added to Necromunda cards</strong>
+                          <br />
+                          Fighter &amp; Vehicle cards now have a <strong>Note</strong> section where you can write down
+                          stuff you want to remember but don&apos;t need to print on a card. Please note that this will
+                          also be shared when sharing your category.
+                        </li>
+                        <li>
+                          <strong>Drag &amp; Drop</strong>
+                          <br />
+                          All card types now have the ability to drag &amp; drop lines / cards in the card editor.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Necromunda:</strong> Renamed the <strong>Gang card</strong> to{" "}
+                          <strong>Fighter card</strong> to better represent what kind of card it is.
+                        </li>
+                        <li>
+                          <strong>Necromunda:</strong> Renamed the <strong>Empty Type Card</strong> to{" "}
+                          <strong>Type Card (for pen &amp; paper)</strong> to better represent what their purpose is.
+                        </li>
+                        <li>
+                          <strong>Necromunda:</strong> Wargear, rules and abilities are now textfields and are no longer
+                          uppercased. You have full control over the text in this field.
+                        </li>
+                        <li>
+                          <strong>40K:</strong> Newly added cards with multiple damage tables now have a proper title.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Necromunda:</strong> Adding a new weapon to a card will no longer crash the app.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.3.0"} key={"1.3.0"}>
                     <b>06-08-2022</b>
                     <Typography.Title level={5}>New Features</Typography.Title>

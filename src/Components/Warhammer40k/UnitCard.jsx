@@ -1,4 +1,4 @@
-import ReactMarkdown from "react-markdown";
+import { MarkdownDisplay } from "../MarkdownDisplay";
 import { UnitStatline } from "./UnitCard/UnitStatline";
 import { UnitType } from "./UnitCard/UnitType";
 import { WeaponStatline } from "./UnitCard/WeaponStatline";
@@ -65,7 +65,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
           </div>
           {unit.unit_composition_active && (
             <div className="description">
-              <ReactMarkdown>{unit.unit_composition}</ReactMarkdown>
+              <MarkdownDisplay content={unit.unit_composition} />
             </div>
           )}
           {unit.wargear?.filter((sheet) => sheet.active).length > 0 && (
@@ -123,7 +123,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
                   <div className="description" key={`ability-${ability.name}-description-${index}`}>
                     {!ability.showDescription && <b>{ability.name}</b>}
                     {ability.showDescription && (
-                      <ReactMarkdown>{`**${ability.name}** : ${ability.description}`}</ReactMarkdown>
+                      <MarkdownDisplay content={`**${ability.name}** : ${ability.description}`} />
                     )}
                   </div>
                 )

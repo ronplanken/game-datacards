@@ -97,6 +97,7 @@ export const get40KData = async () => {
       if (cols["Col5"]) {
         newRow[cols["Col5"]] = linkedDamageTable[index]["Col5"];
       }
+      newRow["name"] = `Wound profile ${linkedDamageTable[index]["Col1"]}`;
       row["datasheet"].push(newRow);
     }
 
@@ -147,9 +148,10 @@ export const get40KData = async () => {
     faction["secondaries"] = secondaries.filter((secondary) => {
       return secondary.faction === "basic" || secondary.faction === faction.id;
     });
+
     return faction;
   });
-  
+
   return {
     data: dataFactions,
     version: process.env.REACT_APP_VERSION,
@@ -279,17 +281,19 @@ export const getNecromundaBasicData = () => {
         name: "Necromunda Gang Cards",
         datasheets: [
           {
-            name: "Gang card",
+            name: "Fighter card",
             type: "Unknown",
             source: "necromunda",
             id: "000000001",
             cost: "100",
             faction_id: "necromunda",
             cardType: "ganger",
+            notes: "",
             rules: [
               {
                 active: true,
                 name: "Rule 1",
+                description: "Rule description",
                 id: "000010601",
               },
             ],
@@ -297,6 +301,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Ability 1",
+                description: "Ability description",
                 id: "000010701",
               },
             ],
@@ -304,6 +309,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Gear 1",
+                description: "Gear description",
                 id: "000010801",
               },
             ],
@@ -352,7 +358,7 @@ export const getNecromundaBasicData = () => {
             },
           },
           {
-            name: "Empty ganger card",
+            name: "Fighter card (for pen & paper)",
             type: "",
             source: "necromunda",
             id: "000000003",
@@ -360,15 +366,7 @@ export const getNecromundaBasicData = () => {
             faction_id: "necromunda",
             cardType: "empty-ganger",
           },
-          {
-            name: "Empty vehicle card",
-            type: "",
-            source: "necromunda",
-            id: "000000004",
-            cost: "",
-            faction_id: "necromunda",
-            cardType: "empty-vehicle",
-          },
+
           {
             name: "Vehicle card",
             type: "Unknown",
@@ -377,10 +375,12 @@ export const getNecromundaBasicData = () => {
             cost: "100",
             faction_id: "necromunda",
             cardType: "vehicle",
+            notes: "",
             rules: [
               {
                 active: true,
                 name: "Rule 1",
+                description: "Rule description",
                 id: "000010601",
               },
             ],
@@ -388,6 +388,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Ability 1",
+                description: "Ability description",
                 id: "000010701",
               },
             ],
@@ -395,6 +396,7 @@ export const getNecromundaBasicData = () => {
               {
                 active: true,
                 name: "Gear 1",
+                description: "Gear description",
                 id: "000010801",
               },
             ],
@@ -442,18 +444,17 @@ export const getNecromundaBasicData = () => {
               EXP: "0",
             },
           },
-        ],
-        stratagems: [
           {
-            cardType: "stratagem",
-            cp_cost: "1",
-            description: "This is an example description. You can even use _markdown_ in this text!",
+            name: "Vehicle card (for pen & paper)",
+            type: "",
+            source: "necromunda",
+            id: "000000004",
+            cost: "",
             faction_id: "necromunda",
-            id: "000006084006",
-            name: "THE BASIC STRAT",
-            type: "Just another stratagem",
+            cardType: "empty-vehicle",
           },
         ],
+        stratagems: [],
       },
     ],
   };

@@ -7,7 +7,6 @@ export function GangerDatasheets() {
 
   const handleSheetChange = (event) => {
     const newDatasheet = { ...activeCard.datasheet };
-    console.log(newDatasheet);
     newDatasheet[event.target.name] = event.target.value;
     updateActiveCard({ ...activeCard, datasheet: newDatasheet });
   };

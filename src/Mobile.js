@@ -10,10 +10,7 @@ function Mobile() {
       <Header>
         <Space size={"large"}>
           <Image preview={false} src={logo} width={50} />
-          <Typography.Title
-            level={3}
-            style={{ color: "white", marginBottom: 0, marginTop: "0px" }}
-          >
+          <Typography.Title level={3} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
             Game Datacards
           </Typography.Title>
         </Space>
@@ -26,10 +23,8 @@ function Mobile() {
             marginTop: "8px",
             textAlign: "center",
             padding: "6px",
-          }}
-        >
-          Mobile is only supported for viewing cards. Share a desktop card
-          category and open it on your device.
+          }}>
+          Mobile is only supported for viewing cards. Share a desktop card category and open it on your device.
         </Typography.Title>
         <UnitCard
           unit={{
@@ -50,8 +45,7 @@ function Mobile() {
                 Inv: "5++",
               },
             ],
-            unit_composition:
-              "This is an example Datacard. You can customize it to your needs!",
+            unit_composition: "This is an example Datacard. You can customize it to your needs!",
             wargear: [
               {
                 name: "Example wargear",
@@ -73,8 +67,7 @@ function Mobile() {
                 name: "Example ability",
                 showAbility: true,
                 showDescription: true,
-                description:
-                  "This is an example ability. Add anything you like as an text to your cards.",
+                description: "This is an example ability. Add anything you like as an text to your cards.",
               },
             ],
             keywords: [

@@ -1,5 +1,5 @@
+import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Col, Row, Space, Switch } from "antd";
-import TextArea from "antd/lib/input/TextArea";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
@@ -27,13 +27,25 @@ export function UnitDescription() {
       {activeCard.unit_composition_active && (
         <Row justify="space-between" align="middle">
           <Col span={24}>
-            <TextArea
+            <MDEditor
+              preview="edit"
+              commands={[
+                commands.bold,
+                commands.italic,
+                commands.strikethrough,
+                commands.hr,
+                commands.divider,
+                commands.unorderedListCommand,
+                commands.orderedListCommand,
+                commands.divider,
+              ]}
+              extraCommands={[]}
+              value={activeCard.unit_composition}
               onChange={(e) =>
                 updateActiveCard(() => {
-                  return { ...activeCard, unit_composition: e.target.value };
+                  return { ...activeCard, unit_composition: e };
                 })
               }
-              value={activeCard.unit_composition}
             />
           </Col>
         </Row>

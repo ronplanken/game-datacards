@@ -1,3 +1,5 @@
+import { MarkdownDisplay } from '../MarkdownDisplay';
+
 export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
   return (
     <div
@@ -105,14 +107,14 @@ export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
               return (
                 <div className="line" key={`weapon-${index}`}>
                   <div>{weapon.name}</div>
-                  <div>{weapon.profiles[0].S}</div>
-                  <div>{weapon.profiles[0].L}</div>
-                  <div>{weapon.profiles[0].S2}</div>
-                  <div>{weapon.profiles[0].L2}</div>
-                  <div>{weapon.profiles[0].STR}</div>
-                  <div>{weapon.profiles[0].AP}</div>
-                  <div>{weapon.profiles[0].D}</div>
-                  <div>{weapon.profiles[0].AM}</div>
+                  <div>{weapon.profiles[0]?.S}</div>
+                  <div>{weapon.profiles[0]?.L}</div>
+                  <div>{weapon.profiles[0]?.S2}</div>
+                  <div>{weapon.profiles[0]?.L2}</div>
+                  <div>{weapon.profiles[0]?.STR}</div>
+                  <div>{weapon.profiles[0]?.AP}</div>
+                  <div>{weapon.profiles[0]?.D}</div>
+                  <div>{weapon.profiles[0]?.AM}</div>
                   <div>
                     {weapon.profiles[0]?.traits
                       ?.filter((trait) => trait.active)
@@ -124,33 +126,46 @@ export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
             }
           })}
         </div>
-        <div className="wargear">
-          <div className="title">Wargear</div>
-          <div className="title">
-            {vehicle.wargear
-              ?.filter((wargear) => wargear.active)
-              .map((wargear) => wargear.name)
-              .join(", ")}
+        <div className="divider" />
+        {vehicle.wargear?.filter((wargear) => wargear.active).length > 0 && (
+          <div className="wargear">
+            <div className="title">Wargear</div>
+            <div className="options">
+              <MarkdownDisplay
+                content={vehicle.wargear
+                  ?.filter((wargear) => wargear.active)
+                  .map((wargear) => wargear.description)
+                  .join(", ")}
+              />
+            </div>
           </div>
-        </div>
-        <div className="abilities">
-          <div className="title">abilities</div>
-          <div className="title">
-            {vehicle.skills
-              ?.filter((skill) => skill.active)
-              .map((skill) => skill.name)
-              .join(", ")}
+        )}
+        {vehicle.skills?.filter((skill) => skill.active).length > 0 && (
+          <div className="abilities">
+            <div className="title">abilities</div>
+            <div className="options">
+              <MarkdownDisplay
+                content={vehicle.skills
+                  ?.filter((skill) => skill.active)
+                  .map((skill) => skill.description)
+                  .join(", ")}
+              />
+            </div>
           </div>
-        </div>
-        <div className="rules">
-          <div className="title">rules</div>
-          <div className="title">
-            {vehicle.rules
-              ?.filter((rule) => rule.active)
-              .map((rule) => rule.name)
-              .join(", ")}
+        )}
+        {vehicle.rules?.filter((rule) => rule.active).length > 0 && (
+          <div className="rules">
+            <div className="title">rules</div>
+            <div className="options">
+              <MarkdownDisplay
+                content={vehicle.rules
+                  ?.filter((rule) => rule.active)
+                  .map((rule) => rule.description)
+                  .join(", ")}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

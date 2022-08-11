@@ -1,4 +1,4 @@
-import ReactMarkdown from "react-markdown";
+import { MarkdownDisplay } from "../MarkdownDisplay";
 
 export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px" }) => {
   return (
@@ -17,7 +17,7 @@ export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px" }) => 
               <div className="stratagem_name">{stratagem.name}</div>
             </div>
             <div className="stratagem_description">
-              <ReactMarkdown>{stratagem.description}</ReactMarkdown>
+              <MarkdownDisplay content={stratagem.description} />
             </div>
             <div className="stratagem_footer">{stratagem.cp_cost} COMMAND POINT(S)</div>
           </div>
