@@ -1,5 +1,13 @@
-name: Deploy to Netlify
+name: Deploy develop to Netlify
+
 on:
+  push:
+    branches:
+      - develop
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - '**/*.md'
   workflow_call:
   workflow_dispatch:
   
@@ -47,3 +55,9 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         timeout-minutes: 1
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: "Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9"
+        with:
+          args: 'A new staging version has been deployed: {{ EVENT_PAYLOAD.head_commit.message }}. Check it out at: https://game-datacards-staging.netlify.app/'
