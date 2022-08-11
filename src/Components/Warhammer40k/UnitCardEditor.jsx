@@ -1,17 +1,16 @@
-import { Collapse, Input } from "antd";
+import { Collapse } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { UnitAbilities } from "./UnitCardEditor/UnitAbilities";
 import { UnitBasicInfo } from "./UnitCardEditor/UnitBasicInfo";
 import { UnitDatasheets } from "./UnitCardEditor/UnitDatasheets";
-import { UnitDescription } from './UnitCardEditor/UnitDescription';
+import { UnitDescription } from "./UnitCardEditor/UnitDescription";
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 
 const { Panel } = Collapse;
-const { TextArea } = Input;
 
 export const UnitCardEditor = () => {
-  const { activeCard, updateActiveCard } = useCardStorage();
+  const { activeCard } = useCardStorage();
 
   return (
     <Collapse defaultActiveKey={["1"]}>
@@ -23,14 +22,9 @@ export const UnitCardEditor = () => {
         key="2"
         extra={
           <div>
-            (
-            {`${
-              activeCard?.datasheet?.filter((sheet) => sheet.active).length
-            } / ${activeCard?.datasheet?.length}`}
-            )
+            ({`${activeCard?.datasheet?.filter((sheet) => sheet.active).length} / ${activeCard?.datasheet?.length}`})
           </div>
-        }
-      >
+        }>
         <UnitDatasheets />
       </Panel>
       <Panel header="Description" key="3">
@@ -41,14 +35,9 @@ export const UnitCardEditor = () => {
         key="4"
         extra={
           <div>
-            (
-            {`${
-              activeCard?.wargear?.filter((sheet) => sheet.active).length
-            } / ${activeCard?.wargear?.length}`}
-            )
+            ({`${activeCard?.wargear?.filter((sheet) => sheet.active).length} / ${activeCard?.wargear?.length}`})
           </div>
-        }
-      >
+        }>
         <UnitWeapons />
       </Panel>
       <Panel
@@ -57,13 +46,10 @@ export const UnitCardEditor = () => {
         extra={
           <div>
             (
-            {`${
-              activeCard?.abilities?.filter((sheet) => sheet.showAbility).length
-            } / ${activeCard?.abilities?.length}`}
+            {`${activeCard?.abilities?.filter((sheet) => sheet.showAbility).length} / ${activeCard?.abilities?.length}`}
             )
           </div>
-        }
-      >
+        }>
         <UnitAbilities />
       </Panel>
       <Panel
@@ -71,14 +57,9 @@ export const UnitCardEditor = () => {
         key="6"
         extra={
           <div>
-            (
-            {`${
-              activeCard?.keywords?.filter((sheet) => sheet.active).length
-            } / ${activeCard?.keywords?.length}`}
-            )
+            ({`${activeCard?.keywords?.filter((sheet) => sheet.active).length} / ${activeCard?.keywords?.length}`})
           </div>
-        }
-      >
+        }>
         <UnitKeywords />
       </Panel>
     </Collapse>

@@ -1,3 +1,4 @@
+import { MarkdownDisplay } from '../../MarkdownDisplay';
 import { WeaponStatProfile } from "./WeaponStatProfile";
 
 export const WeaponStatline = ({ profile, type = "card" }) => {
@@ -61,7 +62,9 @@ export const WeaponStatline = ({ profile, type = "card" }) => {
         </div>
       </div>
       {profile.abilities && (
-        <div className="weapon_desc">{profile.abilities}</div>
+        <div className="weapon_desc">
+          <MarkdownDisplay content={profile.abilities} />
+        </div>
       )}
     </div>
   );

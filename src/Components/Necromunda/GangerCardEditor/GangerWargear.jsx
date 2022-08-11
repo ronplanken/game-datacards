@@ -61,7 +61,7 @@ export function GangerWargear() {
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
-                          bodyStyle={{ padding: 0 }}
+                          bodyStyle={{ padding: 0, paddingBottom: "8px" }}
                           extra={
                             <Space>
                               <Popconfirm

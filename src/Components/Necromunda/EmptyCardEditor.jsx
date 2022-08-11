@@ -1,8 +1,7 @@
-import { Collapse, Input } from "antd";
+import { Collapse } from "antd";
 import { EmptyCardBasicInfo } from "./EmptyCardEditor/EmptyCardBasicInfo";
 
 const { Panel } = Collapse;
-const { TextArea } = Input;
 
 export const EmptyCardEditor = () => {
   return (

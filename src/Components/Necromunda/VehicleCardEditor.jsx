@@ -1,4 +1,4 @@
-import { Collapse, Input } from "antd";
+import { Collapse } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { VehicleBasicInfo } from "./VehicleCardEditor/VehicleBasicInfo";
 import { VehicleDatasheet } from "./VehicleCardEditor/VehicleDatasheets";
@@ -9,7 +9,6 @@ import { VehicleWargear } from "./VehicleCardEditor/VehicleWargear";
 import { VehicleWeapons } from "./VehicleCardEditor/VehicleWeapons";
 
 const { Panel } = Collapse;
-const { TextArea } = Input;
 
 export const VehicleCardEditor = () => {
   const { activeCard } = useCardStorage();

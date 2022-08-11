@@ -1,8 +1,7 @@
+import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Col, Row, Space, Switch } from "antd";
-import TextArea from "antd/lib/input/TextArea";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
-import MDEditor, { commands } from "@uiw/react-md-editor";
 
 export function UnitDescription() {
   const { activeCard, updateActiveCard } = useCardStorage();
