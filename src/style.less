@@ -674,7 +674,8 @@
     }
   }
 
-  @factions: AC,AE,AL,AS,AdM,BA,BL,BT,CD,CSM,CoB,DA,DG,DRU,DW,EC,GC,GK,HAR,IF,IH,IW,NEC,NL,ORK,QI,QT,RC,RG,SA,SM,SW,TAU,TS,TYR,UL,WB,WE,WS;
+  @factions: AC, AE, AL, AS, AdM, BA, BL, BT, CD, CSM, CoB, DA, DG, DRU, DW, EC, GC, GK, HAR, IF, IH, IW, NEC, NL, ORK,
+    QI, QT, RC, RG, SA, SM, SW, TAU, TS, TYR, UL, WB, WE, WS;
 
   .frame {
     display: block;
@@ -1974,4 +1975,19 @@
 
 body {
   font-family: system-ui, sans-serif;
+}
+
+.tree-item-container {
+  &.selected {
+    .tree-state {
+      padding-left: 5px;
+      padding-top: 2px;
+      width: 24px;
+    }
+  }
+  .tree-state {
+    padding-left: 9px;
+    padding-top: 2px;
+    width: 24px;
+  }
 }

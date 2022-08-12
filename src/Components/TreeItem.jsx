@@ -79,7 +79,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             style={{
-              paddingLeft: 24,
+              paddingLeft: 38,
               height: 24,
               fontSize: "14px",
               alignContent: "center",

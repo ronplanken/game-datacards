@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import {
+  CaretDownOutlined,
+  CaretRightOutlined,
   FolderOutlined,
+  FolderOpenOutlined,
   ExclamationCircleOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
@@ -9,19 +12,9 @@ import { Dropdown, Input, Menu, message, Modal } from "antd";
 
 const { confirm } = Modal;
 
-export function TreeCategory({
-  category,
-  selectedTreeIndex,
-  setSelectedTreeIndex,
-}) {
-  const {
-    cardStorage,
-    setActiveCard,
-    setActiveCategory,
-    removeCategory,
-    renameCategory,
-    cardUpdated,
-  } = useCardStorage();
+export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children }) {
+  const { cardStorage, setActiveCard, setActiveCategory, removeCategory, renameCategory, cardUpdated, updateCategory } =
+    useCardStorage();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState(category.name);
 
@@ -31,8 +24,7 @@ export function TreeCategory({
         key="1"
         onClick={() => {
           setIsModalVisible(true);
-        }}
-      >
+        }}>
         Rename
       </Menu.Item>
       <Menu.Item
@@ -42,8 +34,7 @@ export function TreeCategory({
         onClick={() => {
           confirm({
             title: "Are you sure you want to delete this category?",
-            content:
-              "This action cannot be undone and will delete all cards in the category.",
+            content: "This action cannot be undone and will delete all cards in the category.",
             icon: <ExclamationCircleOutlined />,
             okText: "Yes",
             okType: "danger",
@@ -53,8 +44,7 @@ export function TreeCategory({
               removeCategory(category.uuid);
             },
           });
-        }}
-      >
+        }}>
         Delete
       </Menu.Item>
     </Menu>
@@ -74,43 +64,54 @@ export function TreeCategory({
 
   return (
     <>
-      <Dropdown overlay={menu} trigger={["contextMenu"]}>
+      <>
         <div
           style={{
-            paddingLeft: 8,
+            paddingLeft: 4,
             height: 24,
             fontSize: "14px",
             alignContent: "center",
             display: "flex",
             width: "100%",
           }}
-          className={[
-            "tree-item-container",
-            selectedTreeIndex === `cat-${category.uuid}` ? "selected" : "",
-          ].join(" ")}
-          onClick={() => {
-            if (cardUpdated) {
-              confirm({
-                title: "You have unsaved changes",
-                content: "Are you sure you want to discard your changes?",
-                icon: <ExclamationCircleOutlined />,
-                okText: "Yes",
-                okType: "danger",
-                cancelText: "No",
-                onOk: () => {
-                  onSelect();
-                },
-              });
-            } else {
-              onSelect();
-            }
-          }}
-        >
-          <div className={"tree-item"}>
-            <FolderOutlined />&nbsp;{category.name}
-          </div>
+          className={["tree-item-container", selectedTreeIndex === `cat-${category.uuid}` ? "selected" : ""].join(" ")}>
+          <>
+            <div
+              className={"tree-state"}
+              onClick={() => {
+                updateCategory({ ...category, closed: !category.closed }, category.uuid);
+              }}>
+              {category.closed ? <CaretRightOutlined /> : <CaretDownOutlined />}
+            </div>
+            <Dropdown overlay={menu} trigger={["contextMenu"]}>
+              <div
+                className={"tree-item"}
+                onClick={() => {
+                  if (cardUpdated) {
+                    confirm({
+                      title: "You have unsaved changes",
+                      content: "Are you sure you want to discard your changes?",
+                      icon: <ExclamationCircleOutlined />,
+                      okText: "Yes",
+                      okType: "danger",
+                      cancelText: "No",
+                      onOk: () => {
+                        onSelect();
+                      },
+                    });
+                  } else {
+                    onSelect();
+                  }
+                }}>
+                &nbsp;
+                {category.closed ? <FolderOutlined /> : <FolderOpenOutlined />}
+                &nbsp;{category.name}
+              </div>
+            </Dropdown>
+          </>
         </div>
-      </Dropdown>
+        {!category.closed && children}
+      </>
       <Modal
         title="Rename category"
         visible={isModalVisible}
@@ -121,12 +122,8 @@ export function TreeCategory({
         }}
         onCancel={() => {
           setIsModalVisible(false);
-        }}
-      >
-        <Input
-          value={newCategoryName}
-          onChange={(e) => setNewCategoryName(e.target.value)}
-        />
+        }}>
+        <Input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} />
       </Modal>
     </>
   );
