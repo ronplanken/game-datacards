@@ -264,6 +264,9 @@ export const SettingsModal = () => {
                         <li>
                           <strong>Necromunda:</strong> Adding a new weapon to a card will no longer crash the app.
                         </li>
+                        <li>
+                          <strong>Basic:</strong> Stratagem type can now be edited instead of pointing towards the name of the card.
+                        </li>
                       </ul>
                     </Typography.Paragraph>
                   </Panel>

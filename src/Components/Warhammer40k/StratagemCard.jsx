@@ -13,7 +13,7 @@ export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px" }) => 
         <div className="frame">
           <div className={stratagem.subfaction_id ? stratagem.subfaction_id : stratagem.faction_id}>
             <div className="stratagem_header">
-              <div className="stratagem_type">{stratagem.type.split("–")[1] || "Stratagem"}</div>
+              <div className="stratagem_type">{stratagem.type.split("–")[1] || stratagem.type}</div>
               <div className="stratagem_name">{stratagem.name}</div>
             </div>
             <div className="stratagem_description">

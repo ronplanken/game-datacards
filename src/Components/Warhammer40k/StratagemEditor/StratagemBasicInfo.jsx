@@ -18,8 +18,8 @@ export function StratagemBasicInfo() {
       <Form.Item label={"Type"}>
         <Input
           type={"text"}
-          value={activeCard.name}
-          onChange={(e) => updateActiveCard({ ...activeCard, name: e.target.value })}
+          value={activeCard.type}
+          onChange={(e) => updateActiveCard({ ...activeCard, type: e.target.value })}
         />
       </Form.Item>
       <Form.Item label={"CP Cost"}>
