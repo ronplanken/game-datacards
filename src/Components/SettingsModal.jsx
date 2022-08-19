@@ -213,6 +213,63 @@ export const SettingsModal = () => {
             <Row>
               <Col span={23}>
                 <Collapse>
+                  {/* <Panel header={"Version 1.3.1"} key={"1.3.1"}>
+                    <b> DATE </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong> feature</strong>
+                          <br />
+                          description
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong> datasource:</strong> Description
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong> datasource:</strong> Description
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel> */}
+                  <Panel header={"Version 1.3.2"} key={"1.3.2"}>
+                    <b>18-08-2022</b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>You can now collapse categories.</strong>
+                          <br />
+                          By clicking on the arrow in front of a category you can collapse the category showing / hiding
+                          the cards. Click on the line itself will still select it.
+                        </li>
+                        <li>
+                          <strong>Backgrounds for unit cards</strong>
+                          <br />
+                          You can now select an optional background for unit cards (40k / Basic)
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Basic / 40K</strong> The faction select box now has full names instead of just a
+                          string.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.3.1"} key={"1.3.1"}>
                     <b>11-08-2022</b>
                     <Typography.Title level={5}>New Features</Typography.Title>

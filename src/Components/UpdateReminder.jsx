@@ -1,30 +1,19 @@
 import { Button, Col, Row, Typography } from "antd";
 import { compare } from "compare-versions";
 import React, { useEffect } from "react";
-import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 
-export const WhatsNew = () => {
-  const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
+export const UpdateReminder = () => {
+  const [isUpdateReminderVisible, setIsUpdateReminderVisible] = React.useState(false);
 
-  const { settings, updateSettings } = useSettingsStorage();
-
-  const closeWhatsNew = () => {
-    setIsWhatsNewVisible(false);
-    updateSettings({
-      ...settings,
-      wizardCompleted: process.env.REACT_APP_VERSION,
-    });
-  };
+  const { dataSource } = useDataSourceStorage();
 
   useEffect(() => {
-    if (
-      compare(settings.wizardCompleted, LAST_WIZARD_VERSION, ">=") &&
-      compare(settings.wizardCompleted, process.env.REACT_APP_VERSION, "<")
-    ) {
-      setIsWhatsNewVisible(true);
+    if (dataSource.lastUpdated && dataSource.lastUpdated) {
+
     }
-  }, [settings]);
+  }, [dataSource]);
 
   return (
     <>
@@ -59,8 +48,8 @@ export const WhatsNew = () => {
                         <li>
                           <strong>You can now collapse categories.</strong>
                           <br />
-                          By clicking on the arrow in front of a category you can collapse the category, showing / hiding
-                          the cards. Clicking anywhere else on the category itself will still select it.
+                          By clicking on the arrow in front of a category you can collapse the category, showing /
+                          hiding the cards. Clicking anywhere else on the category itself will still select it.
                         </li>
                         <li>
                           <strong>Backgrounds for unit cards</strong>
