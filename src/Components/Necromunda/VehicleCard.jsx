@@ -1,4 +1,4 @@
-import { MarkdownDisplay } from '../MarkdownDisplay';
+import { MarkdownDisplay } from "../MarkdownDisplay";
 
 export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
   return (
@@ -18,7 +18,7 @@ export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
           <div className="header">
             <span className="type">{vehicle.type || ""}</span>
           </div>
-            
+
           <div className="cost">{vehicle.cost}</div>
         </div>
         <div className="datasheet">
@@ -75,32 +75,42 @@ export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
           </div>
         </div>
         <div className="weapons">
-          <div className="legend">
-            <div>Weapon</div>
-            <div>S</div>
-            <div>L</div>
-            <div>S</div>
-            <div>L</div>
-            <div>Str</div>
-            <div>Ap</div>
-            <div>D</div>
-            <div>Am</div>
-            <div>Traits</div>
-          </div>
+          {vehicle.weapons?.filter((sheet) => sheet.active).length > 0 && (
+            <div className="legend">
+              <div>Weapon</div>
+              <div>S</div>
+              <div>L</div>
+              <div>S</div>
+              <div>L</div>
+              <div>Str</div>
+              <div>Ap</div>
+              <div>D</div>
+              <div>Am</div>
+              <div>Traits</div>
+            </div>
+          )}
           {vehicle.weapons.map((weapon, index) => {
+            if (!weapon.active) {
+              return <></>;
+            }
             if (weapon.profiles.length > 1) {
               return weapon.profiles.map((profile, pIndex) => (
                 <div className="line" key={`weapon-${index}-${pIndex}`}>
-                  <div>{weapon.name}</div>
-                  <div>4</div>
-                  <div>4</div>
-                  <div>4</div>
-                  <div>5</div>
-                  <div>5</div>
-                  <div>5</div>
-                  <div>5</div>
-                  <div>5</div>
-                  <div>Ranged</div>
+                  <div>{profile.name}</div>
+                  <div>{profile?.S}</div>
+                  <div>{profile?.L}</div>
+                  <div>{profile?.S2}</div>
+                  <div>{profile?.L2}</div>
+                  <div>{profile?.STR}</div>
+                  <div>{profile?.AP}</div>
+                  <div>{profile?.D}</div>
+                  <div>{profile?.AM}</div>
+                  <div>
+                    {profile?.traits
+                      ?.filter((trait) => trait.active)
+                      .map((trait) => trait.name)
+                      .join(", ")}
+                  </div>
                 </div>
               ));
             } else {

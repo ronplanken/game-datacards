@@ -81,17 +81,17 @@ export const GangerCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
             if (weapon.profiles.length > 1) {
               return weapon.profiles.map((profile, pIndex) => (
                 <div className="line" key={`weapon-${index}-${pIndex}`}>
-                  <div>{weapon.name}</div>
-                  <div>{weapon.profiles[pIndex].S}</div>
-                  <div>{weapon.profiles[pIndex].L}</div>
-                  <div>{weapon.profiles[pIndex].S2}</div>
-                  <div>{weapon.profiles[pIndex].L2}</div>
-                  <div>{weapon.profiles[pIndex].STR}</div>
-                  <div>{weapon.profiles[pIndex].AP}</div>
-                  <div>{weapon.profiles[pIndex].D}</div>
-                  <div>{weapon.profiles[pIndex].AM}</div>
+                  <div>{profile.name}</div>
+                  <div>{profile.S}</div>
+                  <div>{profile.L}</div>
+                  <div>{profile.S2}</div>
+                  <div>{profile.L2}</div>
+                  <div>{profile.STR}</div>
+                  <div>{profile.AP}</div>
+                  <div>{profile.D}</div>
+                  <div>{profile.AM}</div>
                   <div>
-                    {weapon.profiles[pIndex]?.traits
+                    {profile?.traits
                       ?.filter((trait) => trait.active)
                       .map((trait) => trait.name)
                       .join(", ")}

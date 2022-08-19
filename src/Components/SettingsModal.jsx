@@ -267,6 +267,9 @@ export const SettingsModal = () => {
                         <li>
                           <strong>Basic:</strong> Stratagem type can now be edited instead of pointing towards the name of the card.
                         </li>
+                        <li>
+                          <strong>Necromunda:</strong> Hiding a weapon will now actually hide the weapon.
+                        </li>
                       </ul>
                     </Typography.Paragraph>
                   </Panel>
