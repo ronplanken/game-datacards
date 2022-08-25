@@ -206,6 +206,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
               logScreenView("Export Category");
               const exportCategory = {
                 ...activeCategory,
+                closed: false,
                 uuid: uuidv4(),
                 cards: activeCategory.cards.map((card) => {
                   return { ...card, uuid: uuidv4() };

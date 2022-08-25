@@ -11,10 +11,10 @@ export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => 
       }}>
       <div className={`secondary ${secondary.variant || "card"}`} style={cardStyle}>
         <div className="frame">
-          <div className={secondary.subfaction ? secondary.subfaction : secondary.faction}>
-            <div className="secondary_header">
-              <div className="secondary_type">{secondary.category}</div>
-              <div className="secondary_name">{secondary.name}</div>
+          <div className={secondary.faction}>
+            <div className="stratagem_header">
+              <div className="stratagem_type">{secondary.category}</div>
+              <div className="stratagem_name">{secondary.name}</div>
             </div>
             <div className="secondary_description">
               <MarkdownDisplay content={secondary.description} />

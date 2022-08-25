@@ -32,6 +32,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -56,6 +57,7 @@
 .button-bar:hover {
   color: #40a9ff;
 }
+
 .button-bar:focus {
   color: #40a9ff;
 }
@@ -67,7 +69,7 @@
   align-items: center;
 }
 
-.tree-item-container.selected  > .tree-item {
+.tree-item-container.selected>.tree-item {
   width: 100%;
   padding-left: 4px;
 }
@@ -85,6 +87,7 @@
 .tree-item-container.selected:hover {
   background-color: #a2dfff;
 }
+
 .dots {
   bottom: -80px !important;
   padding-top: 1em;
