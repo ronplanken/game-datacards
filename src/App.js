@@ -31,6 +31,7 @@ import { ShareModal } from "./Components/ShareModal";
 import { Toolbar } from "./Components/Toolbar";
 import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
+import { UpdateReminder } from "./Components/UpdateReminder";
 import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
@@ -167,6 +168,7 @@ function App() {
                             const newCategories = move(sourceCat.cards, destCat.cards, source, destination);
                             sourceCat.cards = newCategories[sInd];
                             destCat.cards = newCategories[dInd];
+                            destCat.closed = false;
 
                             updateCategory(sourceCat, sInd);
                             updateCategory(destCat, dInd);
@@ -187,18 +189,18 @@ function App() {
                                     <TreeCategory
                                       category={category}
                                       selectedTreeIndex={selectedTreeIndex}
-                                      setSelectedTreeIndex={setSelectedTreeIndex}
-                                    />
-                                    {category.cards.map((card, cardIndex) => (
-                                      <TreeItem
-                                        card={card}
-                                        category={category}
-                                        selectedTreeIndex={selectedTreeIndex}
-                                        setSelectedTreeIndex={setSelectedTreeIndex}
-                                        index={cardIndex}
-                                        key={`${category.uuid}-item-${cardIndex}`}
-                                      />
-                                    ))}
+                                      setSelectedTreeIndex={setSelectedTreeIndex}>
+                                      {category.cards.map((card, cardIndex) => (
+                                        <TreeItem
+                                          card={card}
+                                          category={category}
+                                          selectedTreeIndex={selectedTreeIndex}
+                                          setSelectedTreeIndex={setSelectedTreeIndex}
+                                          index={cardIndex}
+                                          key={`${category.uuid}-item-${cardIndex}`}
+                                        />
+                                      ))}
+                                    </TreeCategory>
                                     {provided.placeholder}
                                   </div>
                                 )}

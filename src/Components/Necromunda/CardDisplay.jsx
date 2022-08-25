@@ -3,6 +3,8 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { EmptyGangerCard } from "./EmptyGangerCard";
 import { EmptyVehicleCard } from "./EmptyVehicleCard";
 import { GangerCard } from "./GangerCard";
+import { SecondaryCard } from "./SecondaryCard";
+import { StratagemCard } from "./StratagemCard";
 import { VehicleCard } from "./VehicleCard";
 
 export const NecromundaCardDisplay = ({ type, card, cardScaling }) => {
@@ -17,6 +19,8 @@ export const NecromundaCardDisplay = ({ type, card, cardScaling }) => {
             {activeCard.cardType === "vehicle" && <VehicleCard vehicle={activeCard} />}
             {activeCard.cardType === "empty-ganger" && <EmptyGangerCard unit={activeCard} />}
             {activeCard.cardType === "empty-vehicle" && <EmptyVehicleCard vehicle={activeCard} />}
+            {activeCard.cardType === "secondary" && <SecondaryCard secondary={activeCard} />}
+            {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
           </Col>
         </>
       )}
@@ -55,6 +59,26 @@ export const NecromundaCardDisplay = ({ type, card, cardScaling }) => {
           {card.cardType === "empty-vehicle" && (
             <EmptyVehicleCard
               vehicle={card}
+              paddingTop="8px"
+              cardStyle={{
+                transformOrigin: "0% 0%",
+                transform: `scale(${cardScaling / 100})`,
+              }}
+            />
+          )}
+          {card.cardType === "stratagem" && (
+            <StratagemCard
+              stratagem={card}
+              paddingTop="8px"
+              cardStyle={{
+                transformOrigin: "0% 0%",
+                transform: `scale(${cardScaling / 100})`,
+              }}
+            />
+          )}
+          {card.cardType === "secondary" && (
+            <SecondaryCard
+              secondary={card}
               paddingTop="8px"
               cardStyle={{
                 transformOrigin: "0% 0%",
