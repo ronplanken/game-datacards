@@ -12,7 +12,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`page ${unit.variant || "card"}`} style={cardStyle}>
+      <div className={`unit page ${unit.variant || "card"}`} style={cardStyle}>
         <div className="frame">
           <div className={unit.background || "NONE"}>
             <div className="header">

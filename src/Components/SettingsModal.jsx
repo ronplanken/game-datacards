@@ -243,7 +243,7 @@ export const SettingsModal = () => {
                     </Typography.Paragraph>
                   </Panel> */}
                   <Panel header={"Version 1.3.2"} key={"1.3.2"}>
-                    <b>18-08-2022</b>
+                    <b>25-08-2022</b>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
@@ -257,6 +257,11 @@ export const SettingsModal = () => {
                           <strong>Backgrounds for unit cards</strong>
                           <br />
                           You can now select an optional background for unit cards (40k / Basic)
+                        </li>
+                        <li>
+                          <strong>Necromunda has an empty action / stratagem card</strong>
+                          <br />
+                          You can now select an empty action / stratagem card from the Necromunda datasource.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -322,7 +327,8 @@ export const SettingsModal = () => {
                           <strong>Necromunda:</strong> Adding a new weapon to a card will no longer crash the app.
                         </li>
                         <li>
-                          <strong>Basic:</strong> Stratagem type can now be edited instead of pointing towards the name of the card.
+                          <strong>Basic:</strong> Stratagem type can now be edited instead of pointing towards the name
+                          of the card.
                         </li>
                         <li>
                           <strong>Necromunda:</strong> Hiding a weapon will now actually hide the weapon.

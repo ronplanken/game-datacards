@@ -1,0 +1,112 @@
+.flex {
+  display: grid;
+}
+
+.welcome-background {
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000aa;
+}
+
+.welcome-container {
+  border-radius: 4px;
+  width: 1000px;
+  height: 600px;
+  position: absolute;
+  background: white;
+  top: 45%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.whatsnew-container {
+  border-radius: 4px;
+  width: 800px;
+  position: absolute;
+  background: white;
+  top: 45%;
+  left: 50%;
+  padding-bottom: 48px;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.welcome-cover {
+  height: "510px";
+}
+
+.welcome-cover::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 90px;
+  width: 100%;
+  height: calc(100% - 180px);
+  opacity: 0.05;
+  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+
+.labels {
+  font-weight: 600;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.edit_heading {
+  display: grid;
+  background: #b6beba;
+  grid-template-rows: 14px;
+  vertical-align: middle;
+  border-bottom: 2px solid #777273;
+}
+
+.edit_line {
+  display: grid;
+  background: #b6beba;
+  grid-template-rows: 32px;
+  vertical-align: middle;
+  border-bottom: 2px solid #777273;
+}
+
+.weapon_edit_profile {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  font-size: 11px;
+}
+.ganger_weapon_profile {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  font-size: 11px;
+}
+
+.center {
+  display: grid;
+  place-items: center;
+  justify-content: center;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+}
+
+.tree-item-container {
+  &.selected {
+    .tree-state {
+      padding-left: 5px;
+      padding-top: 2px;
+      width: 24px;
+    }
+  }
+  .tree-state {
+    padding-left: 9px;
+    padding-top: 2px;
+    width: 24px;
+  }
+}

@@ -53,6 +53,7 @@ export function UnitBasicInfo() {
           value={activeCard.background || "NONE"}
           onChange={(value) => updateActiveCard({ ...activeCard, background: value })}>
           <Option value="NONE">None</Option>
+          <Option value="basic">Basic</Option>
           <Option value="AC">Adeptus Custodes</Option>
           <Option value="AE">Asuryani</Option>
           <Option value="AL">Alpha Legion</Option>
@@ -63,6 +64,7 @@ export function UnitBasicInfo() {
           <Option value="BL">Black Legion</Option>
           <Option value="BT">Black Templars</Option>
           <Option value="CD">Chaos Demons</Option>
+          <Option value="QT">Chaos Knights</Option>
           <Option value="CSM">Chaos Space Marines</Option>
           <Option value="CoB">Creations of Bile</Option>
           <Option value="DA">Dark Angels</Option>
@@ -75,12 +77,11 @@ export function UnitBasicInfo() {
           <Option value="HAR">Harlequins</Option>
           <Option value="IF">Imperial Fists</Option>
           <Option value="IH">Iron Hands</Option>
+          <Option value="QI">Imperial Knights</Option>
           <Option value="IW">Iron Warriors</Option>
           <Option value="NEC">Necrons</Option>
           <Option value="NL">Night Lords</Option>
           <Option value="ORK">Orks</Option>
-          <Option value="QI">Imperial Knights</Option>
-          <Option value="QT">Chaos Knights</Option>
           <Option value="RC">Red Corsairs</Option>
           <Option value="RG">Raven Guard</Option>
           <Option value="SA">Salamanders</Option>
@@ -93,7 +94,6 @@ export function UnitBasicInfo() {
           <Option value="WB">Word Bearers</Option>
           <Option value="WE">World Eaters</Option>
           <Option value="WS">White Scars</Option>
-          <Option value="basic">Basic</Option>
         </Select>
       </Form.Item>
     </>

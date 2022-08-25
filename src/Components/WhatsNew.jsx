@@ -67,6 +67,11 @@ export const WhatsNew = () => {
                           <br />
                           You can now select an optional background for unit cards (40k / Basic)
                         </li>
+                        <li>
+                          <strong>Necromunda has an empty action / stratagem card</strong>
+                          <br />
+                          You can now select an empty action / stratagem card from the Necromunda datasource.
+                        </li>
                       </ul>
                     </Typography.Paragraph>
                     <Typography.Title level={5}>Changes</Typography.Title>

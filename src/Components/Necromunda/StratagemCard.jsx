@@ -8,18 +8,19 @@ export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px" }) => 
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
-      }}>
-      <div className={`page ${stratagem.variant || "card"} stratagem`} style={cardStyle}>
+      }}
+      className="stratagem">
+      <div className={`page ${stratagem.variant || "card"}`} style={cardStyle}>
         <div className="frame">
-          <div className={stratagem.subfaction_id ? stratagem.subfaction_id : stratagem.faction_id}>
+          <div className={`${stratagem.faction}`}>
             <div className="stratagem_header">
-              <div className="stratagem_type">{stratagem.type.split("–")[1] || stratagem.type}</div>
+              <div className="stratagem_type">{stratagem.type}</div>
               <div className="stratagem_name">{stratagem.name}</div>
             </div>
             <div className="stratagem_description">
               <MarkdownDisplay content={stratagem.description} />
             </div>
-            <div className="stratagem_footer">{stratagem.cp_cost} COMMAND POINT(S)</div>
+            <div className="stratagem_footer">{stratagem.cost}</div>
           </div>
         </div>
       </div>

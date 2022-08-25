@@ -454,7 +454,18 @@ export const getNecromundaBasicData = () => {
             cardType: "empty-vehicle",
           },
         ],
-        stratagems: [],
+        stratagems: [
+          {
+            cardType: "stratagem",
+            cost: "cost of action",
+            description: "This is an example description. You can even use _markdown_ in this text!",
+            faction: "necromunda",
+            id: "000006084006",
+            name: "The basic action",
+            type: "Just another action",
+            source: "necromunda",
+          },
+        ],
       },
     ],
   };
