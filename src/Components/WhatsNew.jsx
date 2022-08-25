@@ -52,7 +52,6 @@ export const WhatsNew = () => {
               <>
                 <Row style={{ padding: "16px" }}>
                   <Col>
-                    <b>18-08-2022</b>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
