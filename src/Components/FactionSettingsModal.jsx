@@ -1,5 +1,5 @@
 import { SettingOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Row, Switch, Tabs, Typography } from "antd";
+import { Button, Card, Col, Row, Space, Switch, Tabs, Typography } from "antd";
 import { compare } from "compare-versions";
 import React, { useEffect } from "react";
 import * as ReactDOM from "react-dom";
@@ -26,14 +26,14 @@ export const FactionSettingsModal = () => {
                 style={{
                   backgroundColor: "#001529",
                   width: "100%",
-                  height: "90px",
+                  height: "60px",
                   textAlign: "center",
                 }}>
                 <h1
                   style={{
                     height: "100%",
-                    lineHeight: "90px",
-                    fontSize: "32px",
+                    lineHeight: "60px",
+                    fontSize: "24px",
                     color: "white",
                   }}>
                   {selectedFaction.name} settings
@@ -88,6 +88,17 @@ export const FactionSettingsModal = () => {
                     </Row>
                   </Tabs.TabPane>
                 </Tabs>
+                <Row style={{ padding: "8px", textAlign: "right" }}>
+                  <Col span={24}>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        setIsFactionSettingsVisible(false);
+                      }}>
+                      Close
+                    </Button>
+                  </Col>
+                </Row>
               </div>
             </div>
           </div>,
@@ -99,6 +110,7 @@ export const FactionSettingsModal = () => {
           padding: "0px",
         }}
         type="default"
+        disabled={!selectedFaction?.subfactions || selectedFaction?.subfactions.length === 0}
         onClick={() => setIsFactionSettingsVisible(true)}>
         <SettingOutlined />
       </Button>

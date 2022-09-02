@@ -172,8 +172,6 @@ export const get40KData = async () => {
     return faction;
   });
 
-  // mainFactions.map( (fac) => console.log(`${fac.id}: ${fac.subfactions.map( (sub) => sub.id).join(",")}`));
-  console.log(mainFactions);
   return {
     data: mainFactions,
     version: process.env.REACT_APP_VERSION,

@@ -43,6 +43,7 @@ export const UpdateReminder = () => {
               justifyContent: "center",
               alignItems: "center",
               cursor: "pointer",
+              zIndex: "9999"
             }}
             onClick={() => {
               setCheckingForUpdate(true);
