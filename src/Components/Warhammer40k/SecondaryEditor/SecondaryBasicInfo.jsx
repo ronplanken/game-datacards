@@ -2,6 +2,7 @@ import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Col, Form, Input, Row, Select } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { FactionSelect } from "../FactionSelect";
 
 const { Option } = Select;
 
@@ -67,99 +68,17 @@ export function SecondaryBasicInfo() {
         </Row>
       </Card>
       <Form.Item label={"Faction"}>
-        <Select
-          value={activeCard.faction || "basic"}
-          onChange={(value) => updateActiveCard({ ...activeCard, faction: value })}>
-          <Option value="basic">Basic</Option>
-          <Option value="AC">Adeptus Custodes</Option>
-          <Option value="AE">Asuryani</Option>
-          <Option value="AL">Alpha Legion</Option>
-          <Option value="AM">Astra Militarum</Option>
-          <Option value="AS">Adepta Sororitas</Option>
-          <Option value="AdM">Adeptus Mechanicus</Option>
-          <Option value="BA">Blood Angels</Option>
-          <Option value="BL">Black Legion</Option>
-          <Option value="BT">Black Templars</Option>
-          <Option value="CD">Chaos Demons</Option>
-          <Option value="QT">Chaos Knights</Option>
-          <Option value="CSM">Chaos Space Marines</Option>
-          <Option value="CoB">Creations of Bile</Option>
-          <Option value="DA">Dark Angels</Option>
-          <Option value="DG">Death Guard</Option>
-          <Option value="DRU">Drukhari</Option>
-          <Option value="DW">Deathwatch</Option>
-          <Option value="EC">Emperor&apos;s Children</Option>
-          <Option value="GC">Genestealer Cult</Option>
-          <Option value="GK">Grey Knights</Option>
-          <Option value="HAR">Harlequins</Option>
-          <Option value="IF">Imperial Fists</Option>
-          <Option value="IH">Iron Hands</Option>
-          <Option value="QI">Imperial Knights</Option>
-          <Option value="IW">Iron Warriors</Option>
-          <Option value="NEC">Necrons</Option>
-          <Option value="NL">Night Lords</Option>
-          <Option value="ORK">Orks</Option>
-          <Option value="RC">Red Corsairs</Option>
-          <Option value="RG">Raven Guard</Option>
-          <Option value="SA">Salamanders</Option>
-          <Option value="SM">Space Marines</Option>
-          <Option value="SW">Space Wolves</Option>
-          <Option value="TAU">Tau</Option>
-          <Option value="TS">Thousand Sons</Option>
-          <Option value="TYR">Tyranids</Option>
-          <Option value="UL">Ultramarines</Option>
-          <Option value="WB">Word Bearers</Option>
-          <Option value="WE">World Eaters</Option>
-          <Option value="WS">White Scars</Option>
-        </Select>
+        <FactionSelect
+          value={activeCard.faction_id || "basic"}
+          onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
+        />
       </Form.Item>
       {activeCard.subfaction && (
         <Form.Item label={"Subfaction"}>
-          <Select
-            value={activeCard.subfaction || "basic"}
-            onChange={(value) => updateActiveCard({ ...activeCard, subfaction: value })}>
-          <Option value="basic">Basic</Option>
-          <Option value="AC">Adeptus Custodes</Option>
-          <Option value="AE">Asuryani</Option>
-          <Option value="AL">Alpha Legion</Option>
-          <Option value="AM">Astra Militarum</Option>
-          <Option value="AS">Adepta Sororitas</Option>
-          <Option value="AdM">Adeptus Mechanicus</Option>
-          <Option value="BA">Blood Angels</Option>
-          <Option value="BL">Black Legion</Option>
-          <Option value="BT">Black Templars</Option>
-          <Option value="CD">Chaos Demons</Option>
-          <Option value="QT">Chaos Knights</Option>
-          <Option value="CSM">Chaos Space Marines</Option>
-          <Option value="CoB">Creations of Bile</Option>
-          <Option value="DA">Dark Angels</Option>
-          <Option value="DG">Death Guard</Option>
-          <Option value="DRU">Drukhari</Option>
-          <Option value="DW">Deathwatch</Option>
-          <Option value="EC">Emperor&apos;s Children</Option>
-          <Option value="GC">Genestealer Cult</Option>
-          <Option value="GK">Grey Knights</Option>
-          <Option value="HAR">Harlequins</Option>
-          <Option value="IF">Imperial Fists</Option>
-          <Option value="IH">Iron Hands</Option>
-          <Option value="QI">Imperial Knights</Option>
-          <Option value="IW">Iron Warriors</Option>
-          <Option value="NEC">Necrons</Option>
-          <Option value="NL">Night Lords</Option>
-          <Option value="ORK">Orks</Option>
-          <Option value="RC">Red Corsairs</Option>
-          <Option value="RG">Raven Guard</Option>
-          <Option value="SA">Salamanders</Option>
-          <Option value="SM">Space Marines</Option>
-          <Option value="SW">Space Wolves</Option>
-          <Option value="TAU">Tau</Option>
-          <Option value="TS">Thousand Sons</Option>
-          <Option value="TYR">Tyranids</Option>
-          <Option value="UL">Ultramarines</Option>
-          <Option value="WB">Word Bearers</Option>
-          <Option value="WE">World Eaters</Option>
-          <Option value="WS">White Scars</Option>
-          </Select>
+          <FactionSelect
+            value={activeCard.subfaction_id || "NONE"}
+            onChange={(value) => updateActiveCard({ ...activeCard, subfaction_id: value })}
+          />
         </Form.Item>
       )}
     </>

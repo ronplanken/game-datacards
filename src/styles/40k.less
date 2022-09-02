@@ -1,3 +1,31 @@
+@factions: AS, AC, AdM, AE, CA, AM, CD, QT, CSM, DG, DRU, GC, GK, HTL, QI, INQ, NEC, OA, ORK, RaH, RT, SM, TAU, TS, TL,
+  TYR, UN, CHAC, CHBT, CHBA, CHBR, CHCA, CHCR, CHCF, CHDA, CHDW, CHEM, CHEX, CHES, CHFA, CHFH, CHFT, CHHG, CHIF, CHIH,
+  CHLA, CHMW, CHME, CHMI, CHC0, CHNO, CHRA, CHRG, CHRS, CHSA, CHST, CHSO, CHSW, CHSP, CHTC, CHTK, CHUL, CHWS, CHWO, LGAL,
+  LGBL, LGCB, LGEC, LGIW, LGNL, LGRC, LGWB, LGWE, HAR;
+
+.list-item {
+  padding-left: 8px !important;
+  border-bottom: 1px solid lightgray !important;
+  width: 100%;
+
+  each(@factions, {
+    .@{value}::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      opacity: 0.3;
+      right: 8px;
+      margin-top: -4px;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+  });
+}
+
 .data-40k,
 .data-basic {
   .labels {
@@ -175,9 +203,6 @@
     background-color: #e2e2dd;
     overflow: hidden;
 
-    @factions: AC, AE, AL, AS, AdM, BA, BL, BT, CD, CSM, CoB, DA, DG, DRU, DW, EC, GC, GK, HAR, IF, IH, IW, NEC, NL, ORK,
-      QI, QT, RC, RG, SA, SM, SW, TAU, TS, TYR, UL, WB, WE, WS;
-
     each(@factions, {
       .@{value}::before {
         content: " ";
@@ -341,6 +366,18 @@
       text-align: justify;
       letter-spacing: 0px;
       line-height: 14px;
+
+      p {
+        margin-bottom: 4px;
+      }
+
+      ul {
+        padding-left: 16px;
+
+        p {
+          margin-bottom: 2px;
+        }
+      }
     }
   }
 

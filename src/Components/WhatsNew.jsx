@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 1.3.2
+                Whats new in 1.4.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,20 +56,22 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>You can now collapse categories.</strong>
+                          <strong>Full support for Wahapedia&apos;s secondaries &amp; subfactions.</strong>
                           <br />
-                          By clicking on the arrow in front of a category you can collapse the category, showing / hiding
-                          the cards. Clicking anywhere else on the category itself will still select it.
+                          Game-datacards.eu now has full support for all secondaries &amp; subfactions that are
+                          available in the Wahapedia datasource.{" "}
+                          <em>Please note that you need to update your datasources in order to use the latest data.</em>
                         </li>
                         <li>
-                          <strong>Backgrounds for unit cards</strong>
+                          <strong>Filter stratagems &amp; secondaries on subfaction</strong>
                           <br />
-                          You can now select an optional background for unit cards (40k / Basic)
+                          You can now select which subfactions you want to show for the stratagems &amp; secondaries
+                          using the new button next to the faction select. By default all subfactions are shown.
                         </li>
                         <li>
-                          <strong>Necromunda has an empty action / stratagem card</strong>
+                          <strong>Update reminder</strong>
                           <br />
-                          You can now select an empty action / stratagem card from the Necromunda datasource.
+                          An update reminder has been added to remind you to check for datasource updates.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -77,8 +79,12 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Basic / 40K</strong> The faction select box now has full names instead of just a
-                          string.
+                          <strong>40K</strong> Secondaries now have full table support if the text has them.
+                        </li>
+                        <li>
+                          <strong>40K</strong> Changes have been made to certain faction id fields. This might cause
+                          some backgrounds not working, if this occurs you can manually select a new background /
+                          faction.
                         </li>
                       </ul>
                     </Typography.Paragraph>

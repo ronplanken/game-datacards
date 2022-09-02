@@ -27,6 +27,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
   const [dataSource, setDataSource] = React.useState(getBasicData());
   const [selectedFaction, setSelectedFaction] = React.useState(null);
+  const [selectedSubFactions, setSelectedSubFactions] = React.useState([]);
   const [selectedFactionIndex, setSelectedFactionIndex] = React.useState(0);
 
   useEffect(() => {
@@ -132,6 +133,8 @@ export const DataSourceStorageProviderComponent = (props) => {
     selectedFactionIndex,
     selectedFaction,
     updateSelectedFaction,
+    selectedSubFactions,
+    setSelectedSubFactions,
     updateSelectedFactionWithIndex,
     checkForUpdate,
     clearData,

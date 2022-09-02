@@ -1,4 +1,5 @@
 import clone from "just-clone";
+import { v4 as uuidv4 } from "uuid";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -51,19 +52,31 @@ export const get40KData = async () => {
   const sheets = await readCsv(
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets.json?${new Date().getTime()}`
   );
-
-  const secondaries = await readCsv(
+  const dataSecondaries = await readCsv(
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Secondaries.json?${new Date().getTime()}`
   );
 
   dataFactions.sort((a, b) => a.name.localeCompare(b.name));
-  secondaries.sort((a, b) => a.category.localeCompare(b.category));
+
+  const mainFactions = dataFactions.filter((faction) => faction.is_subfaction === "false");
 
   const mappedStratagems = dataStratagems.map((stratagem) => {
     stratagem["cardType"] = "stratagem";
     stratagem["source"] = "40k";
+    if(stratagem.faction_id === stratagem.subfaction_id) {
+      stratagem["subfaction_id"] = undefined;
+    }
     return stratagem;
   });
+
+  const mappedSecondaries = dataSecondaries.map((secondary) => {
+    secondary["cardType"] = "secondary";
+    secondary["source"] = "40k";
+    secondary["id"] = uuidv4();
+    return secondary;
+  });
+
+  mappedSecondaries.sort((a, b) => a.category.localeCompare(b.category));
 
   const mappedSheets = sheets.map((row) => {
     row["cardType"] = "datasheet";
@@ -134,7 +147,9 @@ export const get40KData = async () => {
     return row;
   });
   mappedSheets.shift();
-  dataFactions.map((faction) => {
+  mainFactions.map((faction) => {
+    faction["subfactions"] = dataFactions.filter((subfaction) => subfaction.parent_id === faction.id);
+
     faction["datasheets"] = mappedSheets
       .filter((datasheet) => datasheet.faction_id === faction.id)
       .sort((a, b) => {
@@ -145,15 +160,20 @@ export const get40KData = async () => {
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       });
-    faction["secondaries"] = secondaries.filter((secondary) => {
-      return secondary.faction === "basic" || secondary.faction === faction.id;
+    faction["secondaries"] = mappedSecondaries.filter((secondary) => {
+      return (
+        secondary.game === "War Zone Nephilim: Grand Tournament" &&
+        (secondary.faction_id === "" ||
+          secondary.faction_id === faction.id ||
+          faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
+      );
     });
 
     return faction;
   });
 
   return {
-    data: dataFactions,
+    data: mainFactions,
     version: process.env.REACT_APP_VERSION,
     lastUpdated: lastUpdated[0].last_update,
     lastCheckedForUpdate: new Date().toISOString(),
