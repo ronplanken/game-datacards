@@ -1,4 +1,4 @@
-import { ExclamationCircleOutlined, PrinterOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, PrinterOutlined, SettingOutlined, FilterOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -14,6 +14,8 @@ import {
   Space,
   Tooltip,
   Typography,
+  Dropdown,
+  Menu,
 } from "antd";
 import "antd/dist/antd.min.css";
 import clone from "just-clone";
@@ -24,6 +26,7 @@ import NewWindow from "react-new-window";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 import { AboutModal } from "./Components/AboutModal";
+import { FactionSettingsModal } from "./Components/FactionSettingsModal";
 import { NecromundaCardDisplay } from "./Components/Necromunda/CardDisplay";
 import { NecromundaCardEditor } from "./Components/Necromunda/CardEditor";
 import { SettingsModal } from "./Components/SettingsModal";
@@ -31,14 +34,15 @@ import { ShareModal } from "./Components/ShareModal";
 import { Toolbar } from "./Components/Toolbar";
 import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
-import { UpdateReminder } from "./Components/UpdateReminder";
+import { UpdateReminder } from './Components/UpdateReminder';
 import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { WhatsNew } from "./Components/WhatsNew";
-import { getBackgroundColor, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
+import { getBackgroundColor, getListFactionId, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { AddCard } from "./Icons/AddCard";
 import { Discord } from "./Icons/Discord";
 import logo from "./Images/logo.png";
@@ -50,6 +54,7 @@ const { confirm } = Modal;
 
 function App() {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
@@ -83,18 +88,21 @@ function App() {
         : selectedFaction?.datasheets;
     }
     if (selectedContentType === "stratagems") {
+      const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
+        return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
+      });
       return searchText
-        ? selectedFaction?.stratagems.filter((stratagem) =>
-            stratagem.name.toLowerCase().includes(searchText.toLowerCase())
-          )
-        : selectedFaction?.stratagems;
+        ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
+        : filteredStratagems;
     }
     if (selectedContentType === "secondaries") {
+      const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
+        return !settings?.ignoredSubFactions?.includes(secondary.subfaction_id);
+      });
+
       return searchText
-        ? selectedFaction?.secondaries.filter((stratagem) =>
-            stratagem.name.toLowerCase().includes(searchText.toLowerCase())
-          )
-        : selectedFaction?.secondaries;
+        ? filteredSecondaries?.filter((secondary) => secondary.name.toLowerCase().includes(searchText.toLowerCase()))
+        : filteredSecondaries;
     }
   };
 
@@ -102,6 +110,7 @@ function App() {
     <Layout>
       <WelcomeWizard />
       <WhatsNew />
+      <UpdateReminder />
       <Header>
         <Row style={{ justifyContent: "space-between" }}>
           <Col>
@@ -233,7 +242,9 @@ function App() {
                             <Col span={24}>
                               <Select
                                 loading={isLoading}
-                                style={{ width: "100%" }}
+                                style={{
+                                  width: "calc(100% - 32px)",
+                                }}
                                 onChange={(value) => {
                                   updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
                                 }}
@@ -245,6 +256,7 @@ function App() {
                                   </Option>
                                 ))}
                               </Select>
+                              <FactionSettingsModal />
                             </Col>
                           </Row>
                           <Row>
@@ -326,7 +338,7 @@ function App() {
                       className={`list-item ${
                         activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
                       }`}>
-                      <div className={`${card.subfaction ? card.subfaction : ""}`}>{card.name}</div>
+                      <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
                     </List.Item>
                   )}
                 />

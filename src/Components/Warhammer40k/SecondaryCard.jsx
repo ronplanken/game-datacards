@@ -11,7 +11,7 @@ export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => 
       }}>
       <div className={`secondary ${secondary.variant || "card"}`} style={cardStyle}>
         <div className="frame">
-          <div className={secondary.subfaction ? secondary.subfaction : secondary.faction}>
+          <div className={secondary.faction_id ? secondary.faction_id : "basic"}>
             <div className="secondary_header">
               <div className="secondary_type">{secondary.category}</div>
               <div className="secondary_name">{secondary.name}</div>

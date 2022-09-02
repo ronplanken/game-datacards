@@ -242,6 +242,45 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 1.4.0"} key={"1.4.0"}>
+                    <b> 02-09-2022 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Full support for Wahapedia&apos;s secondaries &amp; subfactions.</strong>
+                          <br />
+                          Game-datacards.eu now has full support for all secondaries &amp; subfactions that are
+                          available in the Wahapedia datasource.{" "}
+                          <em>Please note that you need to update your datasources in order to use the latest data.</em>
+                        </li>
+                        <li>
+                          <strong>Filter stratagems &amp; secondaries on subfaction</strong>
+                          <br />
+                          You can now select which subfactions you want to show for the stratagems &amp; secondaries
+                          using the new button next to the faction select. By default all subfactions are shown.
+                        </li>
+                        <li>
+                          <strong>Update reminder</strong>
+                          <br />
+                          An update reminder has been added to remind you to check for datasource updates.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>40K</strong> Secondaries now have full table support if the text has them.
+                        </li>
+                        <li>
+                          <strong>40K</strong> Changes have been made to certain faction id fields. This might cause
+                          some backgrounds not working, if this occurs you can manually select a new background /
+                          faction.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.3.2"} key={"1.3.2"}>
                     <b>25-08-2022</b>
                     <Typography.Title level={5}>New Features</Typography.Title>
