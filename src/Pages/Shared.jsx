@@ -154,10 +154,11 @@ export const Shared = () => {
                   sm={12}
                   xs={24}
                   key={`${card.name}-${index}`}
-                  className={`data-${card?.source}`}>
+                  className={`data-${card?.source ? card?.source : "40k"}`}>
                   {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
                   {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
                   {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
+                  {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}
                 </Col>
               );
             })}
@@ -167,10 +168,11 @@ export const Shared = () => {
           <Carousel dots={{ className: "dots" }}>
             {sharedStorage?.category?.cards?.map((card, index) => {
               return (
-                <div className={`data-${card?.source}`} key={`${card.name}-${index}`}>
+                <div className={`data-${card?.source ? card?.source : "40k"}`} key={`${card.name}-${index}`}>
                   {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
                   {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
                   {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
+                  {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}
                 </div>
               );
             })}
