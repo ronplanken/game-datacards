@@ -97,7 +97,7 @@ function App() {
     }
     if (selectedContentType === "secondaries") {
       const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
-        return !settings?.ignoredSubFactions?.includes(secondary.subfaction_id);
+        return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
       });
 
       return searchText

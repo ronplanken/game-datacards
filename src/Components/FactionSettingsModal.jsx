@@ -88,7 +88,7 @@ export const FactionSettingsModal = () => {
                     </Row>
                   </Tabs.TabPane>
                 </Tabs>
-                <Row style={{ padding: "8px", textAlign: "right" }}>
+                <Row style={{ padding: "8px", textAlign: "right", borderTop: "1px solid #F0F0F0" }}>
                   <Col span={24}>
                     <Button
                       type="primary"
