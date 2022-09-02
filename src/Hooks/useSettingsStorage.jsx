@@ -7,6 +7,7 @@ const defaultSettings = {
   version: process.env.REACT_APP_VERSION,
   selectedDataSource: undefined,
   selectedFactionIndex: 0,
+  ignoredSubFactions: [],
   wizardCompleted: "0.0.0",
 };
 
