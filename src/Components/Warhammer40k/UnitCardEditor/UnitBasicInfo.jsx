@@ -17,10 +17,13 @@ export function UnitBasicInfo() {
             updateActiveCard({ ...activeCard, variant: value })
           }
         >
-          <Option value="card">Card</Option>
-          <Option value="card-no-icons">Card (No Icons)</Option>
-          <Option value="sheet">Sheet</Option>
-          <Option value="sheet-no-icons">Sheet (No Icons)</Option>
+          <Option value="card">Game-datacard</Option>
+          <Option value="playingcard">Playingcard</Option>
+          <Option value="poker">Poker / MTG</Option>
+          <Option value="sheet">Sheet (A5)</Option>
+          <Option value="a4">Sheet (A4)</Option>
+          <Option value="letter">Sheet (US Letter)</Option>
+          <Option value="letter-half">Sheet (Half US letter)</Option>
         </Select>
       </Form.Item>
       <Form.Item label={"Name"}>

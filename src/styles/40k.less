@@ -253,57 +253,7 @@
     }
   }
 
-  .role {
-    position: relative;
-    float: left;
-    width: 35px;
-    height: 35px;
-    padding-top: 8px;
-    div {
-      height: 35px;
-      width: 35px;
-      /*margin: auto 0;*/
-      position: absolute;
-      bottom: 0;
-    }
-    .hq {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/HQ.svg");
-    }
-
-    .troops {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Troops.svg");
-    }
-    .elites {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Elites.svg");
-    }
-
-    .fast-attack {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Fast-Attack.svg");
-    }
-
-    .dedicated-transport {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Dedicated-Transport.svg");
-    }
-
-    .flyer {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Flyer.svg");
-    }
-
-    .heavy-support {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Heavy-Support.svg");
-    }
-
-    .fortification {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Fortification.svg");
-    }
-
-    .lord-of-war {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Lord-of-War.svg");
-    }
-    .unknown {
-      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Unknown.svg");
-    }
-  }
+  
 
   .stratagem {
     .stratagem_footer {
@@ -381,11 +331,7 @@
     }
   }
 
-  .weapon-icon {
-    height: 11px;
-    width: 11px;
-    margin-right: 2px;
-  }
+
 
   .heading {
     display: grid;
@@ -490,10 +436,6 @@
       border: 1px solid #777273;
       padding: 4px;
     }
-  }
-
-  .description p {
-    margin-bottom: 0;
   }
 
   .selections_header {
@@ -912,8 +854,8 @@
   .page.card {
     display: grid;
     position: relative;
-    height: 410px;
-    width: 295px;
+    height: 8.89cm;
+    width: 5.71cm;
     background-color: #d0d0d0;
     padding: 8px;
     margin-right: 4px;
@@ -935,7 +877,7 @@
       background: #e2e2dd;
       z-index: 10;
       bottom: 0;
-      width: calc(295px - 32px);
+      width: calc(100% - 32px);
       transform: translateX(-50%) translateY(-10px);
       left: 50%;
     }
@@ -952,8 +894,8 @@
 
     .name {
       float: right;
-      width: 210px;
-      min-height: 32x;
+      width: 80%;
+      min-height: 32px;
       padding: 8px 0 0 0;
       line-height: 15px;
       text-transform: uppercase;
@@ -1061,23 +1003,6 @@
       border-radius: 13.5px;
       background-color: #e2e2dd;
       overflow: hidden;
-    }
-
-    .background-frame {
-      display: block;
-      /*height: 498px;
-    width: 354px;*/
-      height: 355px;
-      width: 255px;
-      /*box-shadow: 0 19px 38px      rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);*/
-      border-radius: 13.5px;
-      /*-webkit-border-radius: 17px;
-    border-radius: 17px;*/
-      background-color: white;
-      // background-image: url("./knights-bg.png");
-      background-size: 90%;
-      background-repeat: no-repeat;
-      background-position: center;
     }
   }
 

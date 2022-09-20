@@ -9,8 +9,7 @@ export const WeaponStatline = ({ profile, type = "card" }) => {
     <div className="weapon">
       <div className="weapon_profile">
         <div
-          className="left"
-          id="value"
+          className="left value"
           style={{
             whiteSpace: profile.wrapName ? "wrap" : "nowrap",
             overflow: "hidden",
@@ -20,8 +19,7 @@ export const WeaponStatline = ({ profile, type = "card" }) => {
           {profile.name.replace("(melee)", "").replace("(shooting)", "")}
         </div>
         <div
-          className="center"
-          id="value"
+          className="center value"
           style={{
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -35,8 +33,7 @@ export const WeaponStatline = ({ profile, type = "card" }) => {
           )}
         </div>
         <div
-          className="center"
-          id="value"
+          className="center value"
           style={{
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -51,13 +48,13 @@ export const WeaponStatline = ({ profile, type = "card" }) => {
             </div>
           )}
         </div>
-        <div className="center" id="value">
+        <div className="center value">
           {profile.S}
         </div>
-        <div className="center" id="value">
+        <div className="center value">
           {profile.AP}
         </div>
-        <div className="center" id="value">
+        <div className="center value">
           {profile.D}
         </div>
       </div>
