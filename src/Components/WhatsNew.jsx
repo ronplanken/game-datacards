@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 1.4.0
+                Whats new in 1.4.1
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,35 +56,16 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Full support for Wahapedia&apos;s secondaries &amp; subfactions.</strong>
+                          <strong>Full support for Wahapedia&apos;s Psychic Powers.</strong>
                           <br />
-                          Game-datacards.eu now has full support for all secondaries &amp; subfactions that are
-                          available in the Wahapedia datasource.{" "}
+                          Game-datacards.eu now has full support for all Psychic abilities that are available in the
+                          Wahapedia datasource.
                           <em>Please note that you need to update your datasources in order to use the latest data.</em>
                         </li>
                         <li>
-                          <strong>Filter stratagems &amp; secondaries on subfaction</strong>
+                          <strong>Datasheets can now show a header</strong>
                           <br />
-                          You can now select which subfactions you want to show for the stratagems &amp; secondaries
-                          using the new button next to the faction select. By default all subfactions are shown.
-                        </li>
-                        <li>
-                          <strong>Update reminder</strong>
-                          <br />
-                          An update reminder has been added to remind you to check for datasource updates.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Changes</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>40K</strong> Secondaries now have full table support if the text has them.
-                        </li>
-                        <li>
-                          <strong>40K</strong> Changes have been made to certain faction id fields. This might cause
-                          some backgrounds not working, if this occurs you can manually select a new background /
-                          faction.
+                          Using the new settings button on a datasheet you can toggle the header on/off.
                         </li>
                       </ul>
                     </Typography.Paragraph>
