@@ -53,6 +53,16 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling }) => {
                 }}
               />
             )}
+            {card.cardType === "psychic" && (
+              <PsychicCard
+                power={card}
+                paddingTop="8px"
+                cardStyle={{
+                  transformOrigin: "0% 0%",
+                  transform: `scale(${cardScaling / 100})`,
+                }}
+              />
+            )}
           </Col>
         </>
       )}
