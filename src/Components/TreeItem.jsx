@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { Datacard } from "../Icons/Datacard";
 import { Ganger } from "../Icons/Ganger";
+import { PsychicPower } from '../Icons/PsychicPower';
 import { Secondary } from "../Icons/Secondary";
 import { Stratagem } from "../Icons/Stratagem";
 import { Vehicle } from '../Icons/Vehicle';
@@ -109,6 +110,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               {card.cardType === "datasheet" && <Datacard />}
               {card.cardType === "stratagem" && <Stratagem />}
               {card.cardType === "secondary" && <Secondary />}
+              {card.cardType === "psychic" && <PsychicPower />}
               {card.cardType === "ganger" && <Ganger />}
               {card.cardType === "vehicle" && <Vehicle />}
               {card.cardType === "empty-ganger" && <Ganger />}

@@ -56,6 +56,16 @@ export const get40KData = async () => {
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Secondaries.json?${new Date().getTime()}`
   );
 
+  const dataPsychic = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/PsychicPowers.json?${new Date().getTime()}`
+  );
+
+  const mappedPsychicPowers = dataPsychic.map((power) => {
+    power["cardType"] = "psychic";
+    power["source"] = "40k";
+    return power;
+  });
+
   dataFactions.sort((a, b) => a.name.localeCompare(b.name));
 
   const mainFactions = dataFactions.filter((faction) => faction.is_subfaction === "false");
@@ -63,7 +73,7 @@ export const get40KData = async () => {
   const mappedStratagems = dataStratagems.map((stratagem) => {
     stratagem["cardType"] = "stratagem";
     stratagem["source"] = "40k";
-    if(stratagem.faction_id === stratagem.subfaction_id) {
+    if (stratagem.faction_id === stratagem.subfaction_id) {
       stratagem["subfaction_id"] = undefined;
     }
     return stratagem;
@@ -157,6 +167,11 @@ export const get40KData = async () => {
       });
     faction["stratagems"] = mappedStratagems
       .filter((stratagem) => stratagem.faction_id === faction.id)
+      .sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+    faction["psychicpowers"] = mappedPsychicPowers
+      .filter((power) => power.faction_id === faction.id)
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       });

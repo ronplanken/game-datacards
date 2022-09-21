@@ -104,6 +104,15 @@ function App() {
         ? filteredSecondaries?.filter((secondary) => secondary.name.toLowerCase().includes(searchText.toLowerCase()))
         : filteredSecondaries;
     }
+    if (selectedContentType === "psychicpowers") {
+      const filteredPowers = selectedFaction?.psychicpowers.filter((power) => {
+        return !settings?.ignoredSubFactions?.includes(power.faction_id);
+      });
+
+      return searchText
+        ? filteredPowers?.filter((power) => power.name.toLowerCase().includes(searchText.toLowerCase()))
+        : filteredPowers;
+    }
   };
 
   return (
@@ -305,6 +314,11 @@ function App() {
                               {selectedFaction?.secondaries && selectedFaction?.secondaries.length > 0 && (
                                 <Option value={"secondaries"} key={`secondaries`}>
                                   Secondaries
+                                </Option>
+                              )}
+                              {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
+                                <Option value={"psychicpowers"} key={`psychicpowers`}>
+                                  Psychic powers
                                 </Option>
                               )}
                             </Select>
