@@ -37,14 +37,21 @@
     transform: rotate(360deg);
   }
 }
-
-.list-item {
+.list-header {
   padding-left: 8px !important;
   border-bottom: 1px solid lightgray !important;
   width: 100%;
 }
 
-
+.list-item {
+  padding-left: 8px !important;
+  border-bottom: 1px solid lightgray !important;
+  width: 100%;
+  cursor: pointer;
+}
+.list-item:hover {
+  background-color: #006fd610;
+}
 
 .list-item.selected {
   padding-left: 6px !important;
