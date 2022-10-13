@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 1.4.1
+                Whats new in 1.4.2
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,18 +56,28 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Full support for Wahapedia&apos;s Psychic Powers.</strong>
-                          <br />
-                          Game-datacards.eu now has full support for all Psychic abilities that are available in the
-                          Wahapedia datasource.
+                          <strong>Datasheets can now be sorted by role.</strong>
+                          <br />A new setting has been added to the faction settings to sort and group all datasheets by
+                          their role.
                           <em>Please note that you need to update your datasources in order to use the latest data.</em>
                         </li>
                         <li>
-                          <strong>Datasheets can now show a header</strong>
+                          <strong>Basic stratagems have been added.</strong>
                           <br />
-                          Using the new settings button on a datasheet you can toggle the header on/off.
+                          Basic stratagems are now shown in addition to the faction stratagems. You have the option to
+                          hide these using the faction settings.
+                        </li>
+                        <li>
+                          <strong>Basic secondaries can now be filtered.</strong>
+                          <br />
+                          Basic secondaries are now shown as a seperate group. You have the option to hide these using
+                          the faction settings.
                         </li>
                       </ul>
+                      <em>
+                        Please note that you need to update your datasources in order to use the latest data. Not
+                        updating might cause errors.
+                      </em>
                     </Typography.Paragraph>
                   </Col>
                 </Row>

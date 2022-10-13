@@ -5,6 +5,16 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
+const BASIC_CORE_STRATAGEMS = [
+  "000002134002",
+  "000002134003",
+  "000002134004",
+  "000002134005",
+  "000002134006",
+  "000002134007",
+  "000002134008",
+];
+
 const readCsv = async (file) => {
   if (!file) {
     return;
@@ -75,6 +85,10 @@ export const get40KData = async () => {
     stratagem["source"] = "40k";
     if (stratagem.faction_id === stratagem.subfaction_id) {
       stratagem["subfaction_id"] = undefined;
+    }
+    if (BASIC_CORE_STRATAGEMS.includes(stratagem.id)) {
+      stratagem["source_id"] = "core";
+      stratagem["faction_id"] = "basic";
     }
     return stratagem;
   });
@@ -170,6 +184,11 @@ export const get40KData = async () => {
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       });
+    faction["basicStratagems"] = mappedStratagems
+      .filter((stratagem) => stratagem.faction_id === "basic")
+      .sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     faction["psychicpowers"] = mappedPsychicPowers
       .filter((power) => power.faction_id === faction.id)
       .sort((a, b) => {
@@ -178,10 +197,13 @@ export const get40KData = async () => {
     faction["secondaries"] = mappedSecondaries.filter((secondary) => {
       return (
         secondary.game === "War Zone Nephilim: Grand Tournament" &&
-        (secondary.faction_id === "" ||
-          secondary.faction_id === faction.id ||
+        (secondary.faction_id === faction.id ||
           faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
       );
+    });
+
+    faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {
+      return secondary.game === "War Zone Nephilim: Grand Tournament" && secondary.faction_id === "";
     });
 
     return faction;
@@ -200,6 +222,10 @@ export const getBasicData = () => {
     version: process.env.REACT_APP_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
+    noDatasheetOptions: true,
+    noStratagemOptions: true,
+    noSecondaryOptions: true,
+    noPsyhicOptions: true,
     data: [
       {
         id: "basic",
@@ -299,6 +325,35 @@ export const getBasicData = () => {
             type: "Just another stratagem",
           },
         ],
+        secondaries: [
+          {
+            cardType: "secondary",
+            category: "Secondary Category",
+            description: "This is an example description. You can even use _markdown_ in this text!",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            game: "basic",
+            id: "af7a5763-107e-472a-9dcd-9a5fd04170fc",
+            name: "BASIC SECONDARY",
+            source: "basic",
+            type: "Progressive Objective",
+          },
+        ],
+        psychicpowers: [
+          {
+            cardType: "psychic",
+            description: "**Description!:** This is an example description. You can even use _markdown_ in this text!",
+            faction_id: "basic",
+            faction_name: "Basic",
+            id: "773a31ed-5d2f-470b-b400-08134d753bbc",
+            legend: "",
+            name: "PSYCHIC POWER",
+            roll: "6",
+            source: "basic",
+            type: "Basic Discipline",
+          },
+        ],
       },
     ],
   };
@@ -309,6 +364,10 @@ export const getNecromundaBasicData = () => {
     version: process.env.REACT_APP_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
+    noDatasheetOptions: true,
+    noStratagemOptions: true,
+    noSecondaryOptions: true,
+    noPsyhicOptions: true,
     data: [
       {
         id: "necromunda",
@@ -318,6 +377,7 @@ export const getNecromundaBasicData = () => {
           {
             name: "Fighter card",
             type: "Unknown",
+            role: "Basic",
             source: "necromunda",
             id: "000000001",
             cost: "100",
@@ -395,6 +455,7 @@ export const getNecromundaBasicData = () => {
           {
             name: "Fighter card (for pen & paper)",
             type: "",
+            role: "Basic",
             source: "necromunda",
             id: "000000003",
             cost: "",
@@ -405,6 +466,7 @@ export const getNecromundaBasicData = () => {
           {
             name: "Vehicle card",
             type: "Unknown",
+            role: "Basic",
             source: "necromunda",
             id: "000000002",
             cost: "100",
@@ -482,6 +544,7 @@ export const getNecromundaBasicData = () => {
           {
             name: "Vehicle card (for pen & paper)",
             type: "",
+            role: "Basic",
             source: "necromunda",
             id: "000000004",
             cost: "",
