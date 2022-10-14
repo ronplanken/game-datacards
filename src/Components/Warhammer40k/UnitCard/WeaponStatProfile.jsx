@@ -6,14 +6,14 @@ export const WeaponStatProfile = ({ type }) => {
     if (weaponType.includes("Melee")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span className="weapon-icon melee"></span>
+          <span className="icon melee"></span>
         </div>
       );
     }
     if (weaponType.includes("Heavy")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span className="weapon-icon heavy-weapon"></span>
+          <span className="icon heavy-weapon"></span>
           {weaponType.replace("Heavy", "")}
         </div>
       );
@@ -21,7 +21,7 @@ export const WeaponStatProfile = ({ type }) => {
     if (weaponType.includes("Assault")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span className="weapon-icon assault-weapon"></span>
+          <span className="icon assault-weapon"></span>
           {weaponType.replace("Assault", "")}
         </div>
       );
@@ -29,7 +29,7 @@ export const WeaponStatProfile = ({ type }) => {
     if (weaponType.includes("Pistol")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span className="weapon-icon pistol"></span>
+          <span className="icon pistol"></span>
           {weaponType.replace("Pistol", "")}
         </div>
       );
@@ -37,7 +37,7 @@ export const WeaponStatProfile = ({ type }) => {
     if (weaponType.includes("Grenade")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span className="weapon-icon grenade"></span>
+          <span className="icon grenade"></span>
           {weaponType.replace("Grenade", "")}
         </div>
       );
@@ -45,7 +45,7 @@ export const WeaponStatProfile = ({ type }) => {
     if (weaponType.includes("Rapid Fire")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span className="weapon-icon rapid-fire"></span>
+          <span className="icon rapid-fire"></span>
           {weaponType.replace("Rapid Fire", "")}
         </div>
       );
@@ -53,7 +53,7 @@ export const WeaponStatProfile = ({ type }) => {
     if (weaponType.includes("Dakka")) {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <span className="weapon-icon dakka"></span>
+          <span className="icon dakka"></span>
           {weaponType.replace("Dakka", "")}
         </div>
       );
