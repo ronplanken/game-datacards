@@ -81,6 +81,30 @@ function App() {
     setActiveCategory,
   } = useCardStorage();
 
+  const categoryMenu = (
+    <Menu
+      onClick={(e) => {
+        const newCard = {
+          ...activeCard,
+          isCustom: true,
+          uuid: uuidv4(),
+        };
+        const cat = { ...cardStorage.categories.find( (c) => c.uuid === e.key)};
+        addCardToCategory(newCard, cat.uuid);
+        setActiveCard(newCard);
+        setActiveCategory(cat);
+        setSelectedTreeIndex(`card-${newCard.uuid}`);
+      }}
+      items={cardStorage.categories.map((cat, index) => {
+        if (index === 0) return;
+        return {
+          key: cat.uuid,
+          label: `Add to ${cat.name}`,
+        };
+      })}
+    />
+  );
+
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
       const filteredSheets = searchText
@@ -112,7 +136,7 @@ function App() {
           ? selectedFaction.basicStratagems?.filter((stratagem) =>
               stratagem.name.toLowerCase().includes(searchText.toLowerCase())
             )
-          : selectedFaction.basicStratagems;
+          : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
 
         return [
           { type: "header", name: "Basic stratagems" },
@@ -428,7 +452,8 @@ function App() {
                     display: "flex",
                     marginTop: "16px",
                   }}>
-                  <Button
+                  <Dropdown.Button
+                    overlay={categoryMenu}
                     icon={<AddCard />}
                     type={"primary"}
                     onClick={() => {
@@ -443,8 +468,8 @@ function App() {
                       setActiveCategory(cat);
                       setSelectedTreeIndex(`card-${newCard.uuid}`);
                     }}>
-                    Add card to category
-                  </Button>
+                    Add card to {cardStorage.categories[0].name}
+                  </Dropdown.Button>
                 </Col>
               )}
             </Row>

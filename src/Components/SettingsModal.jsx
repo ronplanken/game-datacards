@@ -264,6 +264,11 @@ export const SettingsModal = () => {
                           Basic secondaries are now shown as a seperate group. You have the option to hide these using
                           the faction settings.
                         </li>
+                        <li>
+                          <strong>Add cards to a specific category</strong>
+                          <br />
+                          You can now add a card to a specific category instead of just the first one.
+                        </li>
                       </ul>
                     </Typography.Paragraph>
                   </Panel>
