@@ -135,7 +135,7 @@ function App() {
             ? selectedFaction.basicSecondaries?.filter((secondary) =>
                 secondary.name.toLowerCase().includes(searchText.toLowerCase())
               )
-            : selectedFaction.basicSecondaries;
+            : selectedFaction.basicSecondaries ?? [{ name: "Update your datasources" }];
 
           return [
             { type: "header", name: "Basic secondaries" },
