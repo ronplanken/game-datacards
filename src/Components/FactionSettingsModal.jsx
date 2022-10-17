@@ -44,7 +44,7 @@ export const FactionSettingsModal = () => {
                   <Tabs.TabPane
                     tab="Subfactions"
                     key="1"
-                    style={{ marginTop: "8px", overflowY: "auto", maxHeight: "450px" }}>
+                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px", maxHeight: "450px" }}>
                     <Row style={{ paddingTop: "8px" }}>
                       <Col span={23}>
                         <Typography.Paragraph>
@@ -84,6 +84,93 @@ export const FactionSettingsModal = () => {
                               }></Card>
                           );
                         })}
+                      </Col>
+                    </Row>
+                  </Tabs.TabPane>
+                  <Tabs.TabPane
+                    tab="Datasheet options"
+                    key="2"
+                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px" }}>
+                    <Row style={{ paddingTop: "8px" }}>
+                      <Col span={23}>
+                        <Typography.Paragraph>Please select your preferred options here.</Typography.Paragraph>
+                      </Col>
+                    </Row>
+                    <Row style={{ paddingTop: "0px" }}>
+                      <Col span={23}>
+                        <Card
+                          type={"inner"}
+                          key={`display-01`}
+                          size={"small"}
+                          title={"Split datasheets by role"}
+                          bodyStyle={{ padding: 0 }}
+                          style={{ marginBottom: "8px", marginTop: "8px" }}
+                          extra={
+                            <Switch
+                              checked={settings.splitDatasheetsByRole}
+                              onChange={(value) => {
+                                updateSettings({ ...settings, splitDatasheetsByRole: value });
+                              }}
+                            />
+                          }></Card>
+                      </Col>
+                    </Row>
+                  </Tabs.TabPane>
+                  <Tabs.TabPane
+                    tab="Stratagem options"
+                    key="3"
+                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px" }}>
+                    <Row style={{ paddingTop: "8px" }}>
+                      <Col span={23}>
+                        <Typography.Paragraph>Please select your preferred options here.</Typography.Paragraph>
+                      </Col>
+                    </Row>
+                    <Row style={{ paddingTop: "0px" }}>
+                      <Col span={23}>
+                        <Card
+                          type={"inner"}
+                          key={`display-01`}
+                          size={"small"}
+                          title={"Hide basic stratagems"}
+                          bodyStyle={{ padding: 0 }}
+                          style={{ marginBottom: "8px", marginTop: "8px" }}
+                          extra={
+                            <Switch
+                              checked={settings.hideBasicStratagems}
+                              onChange={(value) => {
+                                updateSettings({ ...settings, hideBasicStratagems: value });
+                              }}
+                            />
+                          }></Card>
+                      </Col>
+                    </Row>
+                  </Tabs.TabPane>
+                  <Tabs.TabPane
+                    tab="Secondary options"
+                    key="4"
+                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px" }}>
+                    <Row style={{ paddingTop: "8px" }}>
+                      <Col span={23}>
+                        <Typography.Paragraph>Please select your preferred options here.</Typography.Paragraph>
+                      </Col>
+                    </Row>
+                    <Row style={{ paddingTop: "0px" }}>
+                      <Col span={23}>
+                        <Card
+                          type={"inner"}
+                          key={`display-01`}
+                          size={"small"}
+                          title={"Hide basic secondaries"}
+                          bodyStyle={{ padding: 0 }}
+                          style={{ marginBottom: "8px", marginTop: "8px" }}
+                          extra={
+                            <Switch
+                              checked={settings.hideBasicSecondaries}
+                              onChange={(value) => {
+                                updateSettings({ ...settings, hideBasicSecondaries: value });
+                              }}
+                            />
+                          }></Card>
                       </Col>
                     </Row>
                   </Tabs.TabPane>

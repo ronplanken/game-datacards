@@ -34,7 +34,7 @@ import { ShareModal } from "./Components/ShareModal";
 import { Toolbar } from "./Components/Toolbar";
 import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
-import { UpdateReminder } from './Components/UpdateReminder';
+import { UpdateReminder } from "./Components/UpdateReminder";
 import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
@@ -83,26 +83,68 @@ function App() {
 
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
-      return searchText
+      const filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
+      if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
+        const types = [...new Set(filteredSheets?.map((item) => item.role))];
+        let byRole = [];
+        types.map((role) => {
+          byRole = [...byRole, { type: "header", name: role }];
+          byRole = [...byRole, ...filteredSheets?.filter((sheet) => sheet.role === role)];
+        });
+        return byRole;
+      }
+      return filteredSheets;
     }
     if (selectedContentType === "stratagems") {
       const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
         return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
       });
-      return searchText
+      const mainStratagems = searchText
         ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
         : filteredStratagems;
+
+      if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
+        return mainStratagems;
+      } else {
+        const basicStratagems = searchText
+          ? selectedFaction.basicStratagems?.filter((stratagem) =>
+              stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+            )
+          : selectedFaction.basicStratagems;
+
+        return [
+          { type: "header", name: "Basic stratagems" },
+          ...basicStratagems,
+          { type: "header", name: "Faction stratagems" },
+          ...mainStratagems,
+        ];
+      }
     }
     if (selectedContentType === "secondaries") {
-      const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
-        return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
-      });
+      if (selectedContentType === "secondaries") {
+        const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
+          return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
+        });
 
-      return searchText
-        ? filteredSecondaries?.filter((secondary) => secondary.name.toLowerCase().includes(searchText.toLowerCase()))
-        : filteredSecondaries;
+        if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
+          return filteredSecondaries;
+        } else {
+          const basicSecondaries = searchText
+            ? selectedFaction.basicSecondaries?.filter((secondary) =>
+                secondary.name.toLowerCase().includes(searchText.toLowerCase())
+              )
+            : selectedFaction.basicSecondaries ?? [{ name: "Update your datasources" }];
+
+          return [
+            { type: "header", name: "Basic secondaries" },
+            ...basicSecondaries,
+            { type: "header", name: "Faction secondaries" },
+            ...filteredSecondaries,
+          ];
+        }
+      }
     }
     if (selectedContentType === "psychicpowers") {
       const filteredPowers = selectedFaction?.psychicpowers.filter((power) => {
@@ -327,34 +369,45 @@ function App() {
                       )}
                     </>
                   }
-                  renderItem={(card) => (
-                    <List.Item
-                      key={`list-${card.id}`}
-                      onClick={() => {
-                        if (cardUpdated) {
-                          confirm({
-                            title: "You have unsaved changes",
-                            content: "Are you sure you want to discard your changes?",
-                            icon: <ExclamationCircleOutlined />,
-                            okText: "Yes",
-                            okType: "danger",
-                            cancelText: "No",
-                            onOk: () => {
+                  renderItem={(card, index) => {
+                    if (card.type === "header") {
+                      return (
+                        <List.Item key={`list-header-${index}`} className={`list-header`}>
+                          {card.name}
+                        </List.Item>
+                      );
+                    }
+                    if (card.type !== "header") {
+                      return (
+                        <List.Item
+                          key={`list-${card.id}`}
+                          onClick={() => {
+                            if (cardUpdated) {
+                              confirm({
+                                title: "You have unsaved changes",
+                                content: "Are you sure you want to discard your changes?",
+                                icon: <ExclamationCircleOutlined />,
+                                okText: "Yes",
+                                okType: "danger",
+                                cancelText: "No",
+                                onOk: () => {
+                                  setActiveCard(card);
+                                  setSelectedTreeIndex(null);
+                                },
+                              });
+                            } else {
                               setActiveCard(card);
                               setSelectedTreeIndex(null);
-                            },
-                          });
-                        } else {
-                          setActiveCard(card);
-                          setSelectedTreeIndex(null);
-                        }
-                      }}
-                      className={`list-item ${
-                        activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                      }`}>
-                      <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
-                    </List.Item>
-                  )}
+                            }
+                          }}
+                          className={`list-item ${
+                            activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
+                          }`}>
+                          <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
+                        </List.Item>
+                      );
+                    }
+                  }}
                 />
               </Col>
             </Row>
