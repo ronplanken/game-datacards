@@ -59,7 +59,6 @@ export const WhatsNew = () => {
                           <strong>Datasheets can now be sorted by role.</strong>
                           <br />A new setting has been added to the faction settings to sort and group all datasheets by
                           their role.
-                          <em>Please note that you need to update your datasources in order to use the latest data.</em>
                         </li>
                         <li>
                           <strong>Basic stratagems have been added.</strong>
@@ -72,6 +71,11 @@ export const WhatsNew = () => {
                           <br />
                           Basic secondaries are now shown as a seperate group. You have the option to hide these using
                           the faction settings.
+                        </li>
+                        <li>
+                          <strong>Add cards to a specific category</strong>
+                          <br />
+                          You can now add a card to a specific category instead of just the first one.
                         </li>
                       </ul>
                       <em>
