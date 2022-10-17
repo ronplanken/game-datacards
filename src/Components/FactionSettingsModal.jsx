@@ -12,7 +12,7 @@ export const FactionSettingsModal = () => {
 
   const { selectedFaction } = useDataSourceStorage();
 
-  const { settings, updateSettings, ignoredSubFactions } = useSettingsStorage();
+  const { settings, updateSettings } = useSettingsStorage();
 
   return (
     <>
@@ -38,11 +38,19 @@ export const FactionSettingsModal = () => {
                 </h1>
               </div>
               <div className="factionsettings-cover">
-                <Tabs tabPosition="left">
+                <Tabs
+                  tabPosition="left"
+                  defaultActiveKey={() => {
+                    if (!selectedFaction?.subfactions || selectedFaction?.subfactions.length === 0) {
+                      return "2";
+                    }
+                    return "1";
+                  }}>
                   <Tabs.TabPane
                     tab="Subfactions"
                     key="1"
-                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px", maxHeight: "450px" }}>
+                    style={{ overflowY: "auto", minHeight: "350px", maxHeight: "450px" }}
+                    disabled={!selectedFaction?.subfactions || selectedFaction?.subfactions.length === 0}>
                     <Row style={{ paddingTop: "8px" }}>
                       <Col span={23}>
                         <Typography.Paragraph>
@@ -57,7 +65,7 @@ export const FactionSettingsModal = () => {
                         <Button.Group>
                           <Button
                             icon={<MinusSquareOutlined />}
-                            size={'small'}
+                            size={"small"}
                             title={"De-select all"}
                             onClick={() => {
                               const newSubFactions = settings.ignoredSubFactions ?? [];
@@ -70,7 +78,7 @@ export const FactionSettingsModal = () => {
                           <Button
                             icon={<PlusSquareOutlined />}
                             title={"Select all"}
-                            size={'small'}
+                            size={"small"}
                             onClick={() => {
                               const newSubFactions = settings.ignoredSubFactions ?? [];
 
@@ -118,10 +126,7 @@ export const FactionSettingsModal = () => {
                       })}
                     </Row>
                   </Tabs.TabPane>
-                  <Tabs.TabPane
-                    tab="Datasheet options"
-                    key="2"
-                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px" }}>
+                  <Tabs.TabPane tab="Datasheets" key="2" style={{ overflowY: "auto", minHeight: "350px" }}>
                     <Row style={{ paddingTop: "8px" }}>
                       <Col span={23}>
                         <Typography.Paragraph>Please select your preferred options here.</Typography.Paragraph>
@@ -147,10 +152,7 @@ export const FactionSettingsModal = () => {
                       </Col>
                     </Row>
                   </Tabs.TabPane>
-                  <Tabs.TabPane
-                    tab="Stratagem options"
-                    key="3"
-                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px" }}>
+                  <Tabs.TabPane tab="Stratagems" key="3" style={{ overflowY: "auto", minHeight: "350px" }}>
                     <Row style={{ paddingTop: "8px" }}>
                       <Col span={23}>
                         <Typography.Paragraph>Please select your preferred options here.</Typography.Paragraph>
@@ -176,10 +178,7 @@ export const FactionSettingsModal = () => {
                       </Col>
                     </Row>
                   </Tabs.TabPane>
-                  <Tabs.TabPane
-                    tab="Secondary options"
-                    key="4"
-                    style={{ marginTop: "8px", overflowY: "auto", minHeight: "350px" }}>
+                  <Tabs.TabPane tab="Secondaries" key="4" style={{ overflowY: "auto", minHeight: "350px" }}>
                     <Row style={{ paddingTop: "8px" }}>
                       <Col span={23}>
                         <Typography.Paragraph>Please select your preferred options here.</Typography.Paragraph>
@@ -228,7 +227,6 @@ export const FactionSettingsModal = () => {
           padding: "0px",
         }}
         type="default"
-        disabled={!selectedFaction?.subfactions || selectedFaction?.subfactions.length === 0}
         onClick={() => setIsFactionSettingsVisible(true)}>
         <SettingOutlined />
       </Button>
