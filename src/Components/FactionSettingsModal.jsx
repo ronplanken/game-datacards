@@ -1,11 +1,9 @@
-import { SettingOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Row, Space, Switch, Tabs, Typography } from "antd";
-import { compare } from "compare-versions";
-import React, { useEffect } from "react";
+import { SettingOutlined, PlusSquareOutlined, MinusSquareOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Row, Switch, Tabs, Typography } from "antd";
+import React from "react";
 import * as ReactDOM from "react-dom";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 
 const modalRoot = document.getElementById("modal-root");
 
@@ -49,17 +47,50 @@ export const FactionSettingsModal = () => {
                       <Col span={23}>
                         <Typography.Paragraph>
                           By default all subfactions are shown. If you want to hide certain subfactions you can toggle
-                          them here. This will filter stratagems &amp; secondaries.
+                          them here. This will filter stratagems &amp; secondaries. At the moment Datasheets cannot be
+                          filtered by subfaction yet because of datasource limitations.
                         </Typography.Paragraph>
                       </Col>
                     </Row>
                     <Row style={{ paddingTop: "0px" }}>
-                      <Col span={23}>
-                        {selectedFaction.subfactions.map((subfaction) => {
-                          return (
+                      <Col span={3} push={20} style={{ textAlign: "right" }}>
+                        <Button.Group>
+                          <Button
+                            icon={<MinusSquareOutlined />}
+                            size={'small'}
+                            title={"De-select all"}
+                            onClick={() => {
+                              const newSubFactions = settings.ignoredSubFactions ?? [];
+
+                              selectedFaction.subfactions.map((subfaction) => {
+                                newSubFactions.push(subfaction.id);
+                              });
+                              updateSettings({ ...settings, ignoredSubFactions: newSubFactions });
+                            }}></Button>
+                          <Button
+                            icon={<PlusSquareOutlined />}
+                            title={"Select all"}
+                            size={'small'}
+                            onClick={() => {
+                              const newSubFactions = settings.ignoredSubFactions ?? [];
+
+                              selectedFaction.subfactions.map((subfaction) => {
+                                newSubFactions.splice(
+                                  newSubFactions.findIndex((el) => el === subfaction.id),
+                                  1
+                                );
+                              });
+                              updateSettings({ ...settings, ignoredSubFactions: newSubFactions });
+                            }}></Button>
+                        </Button.Group>
+                      </Col>
+                    </Row>
+                    <Row style={{ paddingTop: "0px" }}>
+                      {selectedFaction.subfactions.map((subfaction) => {
+                        return (
+                          <Col span={23} key={`${selectedFaction.id}-${subfaction.id}`}>
                             <Card
                               type={"inner"}
-                              key={`${selectedFaction.id}-${subfaction.id}`}
                               size={"small"}
                               title={subfaction.name}
                               bodyStyle={{ padding: 0 }}
@@ -82,9 +113,9 @@ export const FactionSettingsModal = () => {
                                   }}
                                 />
                               }></Card>
-                          );
-                        })}
-                      </Col>
+                          </Col>
+                        );
+                      })}
                     </Row>
                   </Tabs.TabPane>
                   <Tabs.TabPane
