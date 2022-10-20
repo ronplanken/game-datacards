@@ -445,7 +445,7 @@ function App() {
             <Row style={{ overflow: "hidden", justifyContent: "center" }}>
               {activeCard && !activeCard.isCustom && (
                 <Col
-                  span={9}
+                  span={20}
                   style={{
                     overflow: "hidden",
                     justifyContent: "center",
