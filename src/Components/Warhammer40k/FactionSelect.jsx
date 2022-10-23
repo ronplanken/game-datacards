@@ -29,6 +29,7 @@ export const FactionSelect = ({value, onChange}) => {
       <Option value="CHIH">Iron Hands</Option>
       <Option value="QI">Imperial Knights</Option>
       <Option value="LGIW">Iron Warriors</Option>
+      <Option value="LoV">Leagues of Votann</Option>
       <Option value="NEC">Necrons</Option>
       <Option value="LGNL">Night Lords</Option>
       <Option value="ORK">Orks</Option>
