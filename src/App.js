@@ -34,7 +34,7 @@ import { ShareModal } from "./Components/ShareModal";
 import { Toolbar } from "./Components/Toolbar";
 import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
-import { UpdateReminder } from './Components/UpdateReminder';
+import { UpdateReminder } from "./Components/UpdateReminder";
 import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
@@ -81,28 +81,103 @@ function App() {
     setActiveCategory,
   } = useCardStorage();
 
+  const categoryMenu = (
+    <Menu
+      onClick={(e) => {
+        const newCard = {
+          ...activeCard,
+          isCustom: true,
+          uuid: uuidv4(),
+        };
+        const cat = { ...cardStorage.categories.find( (c) => c.uuid === e.key)};
+        addCardToCategory(newCard, cat.uuid);
+        setActiveCard(newCard);
+        setActiveCategory(cat);
+        setSelectedTreeIndex(`card-${newCard.uuid}`);
+      }}
+      items={cardStorage.categories.map((cat, index) => {
+        if (index === 0) return;
+        return {
+          key: cat.uuid,
+          label: `Add to ${cat.name}`,
+        };
+      })}
+    />
+  );
+
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
-      return searchText
+      const filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
+      if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
+        const types = [...new Set(filteredSheets?.map((item) => item.role))];
+        let byRole = [];
+        types.map((role) => {
+          byRole = [...byRole, { type: "header", name: role }];
+          byRole = [...byRole, ...filteredSheets?.filter((sheet) => sheet.role === role)];
+        });
+        return byRole;
+      }
+      return filteredSheets;
     }
     if (selectedContentType === "stratagems") {
       const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
         return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
       });
-      return searchText
+      const mainStratagems = searchText
         ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
         : filteredStratagems;
+
+      if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
+        return mainStratagems;
+      } else {
+        const basicStratagems = searchText
+          ? selectedFaction.basicStratagems?.filter((stratagem) =>
+              stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+            )
+          : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
+
+        return [
+          { type: "header", name: "Basic stratagems" },
+          ...basicStratagems,
+          { type: "header", name: "Faction stratagems" },
+          ...mainStratagems,
+        ];
+      }
     }
     if (selectedContentType === "secondaries") {
-      const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
-        return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
+      if (selectedContentType === "secondaries") {
+        const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
+          return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
+        });
+
+        if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
+          return filteredSecondaries;
+        } else {
+          const basicSecondaries = searchText
+            ? selectedFaction.basicSecondaries?.filter((secondary) =>
+                secondary.name.toLowerCase().includes(searchText.toLowerCase())
+              )
+            : selectedFaction.basicSecondaries ?? [{ name: "Update your datasources" }];
+
+          return [
+            { type: "header", name: "Basic secondaries" },
+            ...basicSecondaries,
+            { type: "header", name: "Faction secondaries" },
+            ...filteredSecondaries,
+          ];
+        }
+      }
+    }
+    if (selectedContentType === "psychicpowers") {
+      const filteredPowers = selectedFaction?.psychicpowers.filter((power) => {
+        return !settings?.ignoredSubFactions?.includes(power.faction_id);
       });
 
       return searchText
-        ? filteredSecondaries?.filter((secondary) => secondary.name.toLowerCase().includes(searchText.toLowerCase()))
-        : filteredSecondaries;
+        ? filteredPowers?.filter((power) => power.name.toLowerCase().includes(searchText.toLowerCase()))
+        : filteredPowers;
     }
   };
 
@@ -307,40 +382,56 @@ function App() {
                                   Secondaries
                                 </Option>
                               )}
+                              {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
+                                <Option value={"psychicpowers"} key={`psychicpowers`}>
+                                  Psychic powers
+                                </Option>
+                              )}
                             </Select>
                           </Col>
                         </Row>
                       )}
                     </>
                   }
-                  renderItem={(card) => (
-                    <List.Item
-                      key={`list-${card.id}`}
-                      onClick={() => {
-                        if (cardUpdated) {
-                          confirm({
-                            title: "You have unsaved changes",
-                            content: "Are you sure you want to discard your changes?",
-                            icon: <ExclamationCircleOutlined />,
-                            okText: "Yes",
-                            okType: "danger",
-                            cancelText: "No",
-                            onOk: () => {
+                  renderItem={(card, index) => {
+                    if (card.type === "header") {
+                      return (
+                        <List.Item key={`list-header-${index}`} className={`list-header`}>
+                          {card.name}
+                        </List.Item>
+                      );
+                    }
+                    if (card.type !== "header") {
+                      return (
+                        <List.Item
+                          key={`list-${card.id}`}
+                          onClick={() => {
+                            if (cardUpdated) {
+                              confirm({
+                                title: "You have unsaved changes",
+                                content: "Are you sure you want to discard your changes?",
+                                icon: <ExclamationCircleOutlined />,
+                                okText: "Yes",
+                                okType: "danger",
+                                cancelText: "No",
+                                onOk: () => {
+                                  setActiveCard(card);
+                                  setSelectedTreeIndex(null);
+                                },
+                              });
+                            } else {
                               setActiveCard(card);
                               setSelectedTreeIndex(null);
-                            },
-                          });
-                        } else {
-                          setActiveCard(card);
-                          setSelectedTreeIndex(null);
-                        }
-                      }}
-                      className={`list-item ${
-                        activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                      }`}>
-                      <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
-                    </List.Item>
-                  )}
+                            }
+                          }}
+                          className={`list-item ${
+                            activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
+                          }`}>
+                          <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
+                        </List.Item>
+                      );
+                    }
+                  }}
                 />
               </Col>
             </Row>
@@ -354,14 +445,15 @@ function App() {
             <Row style={{ overflow: "hidden", justifyContent: "center" }}>
               {activeCard && !activeCard.isCustom && (
                 <Col
-                  span={9}
+                  span={20}
                   style={{
                     overflow: "hidden",
                     justifyContent: "center",
                     display: "flex",
                     marginTop: "16px",
                   }}>
-                  <Button
+                  <Dropdown.Button
+                    overlay={categoryMenu}
                     icon={<AddCard />}
                     type={"primary"}
                     onClick={() => {
@@ -376,8 +468,8 @@ function App() {
                       setActiveCategory(cat);
                       setSelectedTreeIndex(`card-${newCard.uuid}`);
                     }}>
-                    Add card to category
-                  </Button>
+                    Add card to {cardStorage.categories[0].name}
+                  </Dropdown.Button>
                 </Col>
               )}
             </Row>

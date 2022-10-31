@@ -27,7 +27,7 @@ export const WeaponStatline = ({ profile, type = "card" }) => {
           }}
         >
           {profile.Range === "Melee" && !type.includes("sheet-no-icons") ? (
-            <div style={{ width: 11, height: 11 }} className="melee"></div>
+            <div style={{ width: 11, height: 11 }} className="icon melee"></div>
           ) : (
             profile.Range
           )}

@@ -242,6 +242,56 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 1.4.2"} key={"1.4.2"}>
+                    <b> 17-10-2022 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Datasheets can now be sorted by role.</strong>
+                          <br />A new setting has been added to the faction settings to sort and group all datasheets by
+                          their role.
+                        </li>
+                        <li>
+                          <strong>Basic stratagems have been added.</strong>
+                          <br />
+                          Basic stratagems are now shown in addition to the faction stratagems. You have the option to
+                          hide these using the faction settings.
+                        </li>
+                        <li>
+                          <strong>Basic secondaries can now be filtered.</strong>
+                          <br />
+                          Basic secondaries are now shown as a seperate group. You have the option to hide these using
+                          the faction settings.
+                        </li>
+                        <li>
+                          <strong>Add cards to a specific category</strong>
+                          <br />
+                          You can now add a card to a specific category instead of just the first one.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
+                  <Panel header={"Version 1.4.1"} key={"1.4.1"}>
+                    <b> 21-09-2022 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Full support for Wahapedia&apos;s Psychic Powers.</strong>
+                          <br />
+                          Game-datacards.eu now has full support for all Psychic abilities that are available in the
+                          Wahapedia datasource.
+                          <em>Please note that you need to update your datasources in order to use the latest data.</em>
+                        </li>
+                        <li>
+                          <strong>Datasheets can now show a header</strong>
+                          <br />
+                          Using the new settings button on a datasheet you can toggle the header on/off.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.4.0"} key={"1.4.0"}>
                     <b> 02-09-2022 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
