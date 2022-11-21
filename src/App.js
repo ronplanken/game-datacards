@@ -89,7 +89,7 @@ function App() {
           isCustom: true,
           uuid: uuidv4(),
         };
-        const cat = { ...cardStorage.categories.find( (c) => c.uuid === e.key)};
+        const cat = { ...cardStorage.categories.find((c) => c.uuid === e.key) };
         addCardToCategory(newCard, cat.uuid);
         setActiveCard(newCard);
         setActiveCategory(cat);
@@ -436,7 +436,7 @@ function App() {
               </Col>
             </Row>
           </Col>
-          <Col span={9} style={{ display: "flex", flexDirection: "column" }} className={`data-${activeCard?.source}`}>
+          <Col span={10} style={{ display: "flex", flexDirection: "column" }} className={`data-${activeCard?.source}`}>
             <Row style={{ overflow: "hidden" }}>
               {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
               {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
@@ -452,30 +452,49 @@ function App() {
                     display: "flex",
                     marginTop: "16px",
                   }}>
-                  <Dropdown.Button
-                    overlay={categoryMenu}
-                    icon={<AddCard />}
-                    type={"primary"}
-                    onClick={() => {
-                      const newCard = {
-                        ...activeCard,
-                        isCustom: true,
-                        uuid: uuidv4(),
-                      };
-                      const cat = { ...cardStorage.categories[0] };
-                      addCardToCategory(newCard);
-                      setActiveCard(newCard);
-                      setActiveCategory(cat);
-                      setSelectedTreeIndex(`card-${newCard.uuid}`);
-                    }}>
-                    Add card to {cardStorage.categories[0].name}
-                  </Dropdown.Button>
+                  {cardStorage.categories?.length > 1 ? (
+                    <Dropdown.Button
+                      overlay={categoryMenu}
+                      icon={<AddCard />}
+                      type={"primary"}
+                      onClick={() => {
+                        const newCard = {
+                          ...activeCard,
+                          isCustom: true,
+                          uuid: uuidv4(),
+                        };
+                        const cat = { ...cardStorage.categories[0] };
+                        addCardToCategory(newCard);
+                        setActiveCard(newCard);
+                        setActiveCategory(cat);
+                        setSelectedTreeIndex(`card-${newCard.uuid}`);
+                      }}>
+                      Add card to {cardStorage.categories[0].name}
+                    </Dropdown.Button>
+                  ) : (
+                    <Button
+                      type={"primary"}
+                      onClick={() => {
+                        const newCard = {
+                          ...activeCard,
+                          isCustom: true,
+                          uuid: uuidv4(),
+                        };
+                        const cat = { ...cardStorage.categories[0] };
+                        addCardToCategory(newCard);
+                        setActiveCard(newCard);
+                        setActiveCategory(cat);
+                        setSelectedTreeIndex(`card-${newCard.uuid}`);
+                      }}>
+                      Add card to {cardStorage.categories[0].name}
+                    </Button>
+                  )}
                 </Col>
               )}
             </Row>
           </Col>
           {activeCard && (
-            <Col span={9} style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}>
+            <Col span={8} style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}>
               {activeCard?.source === "40k" && <Warhammer40KCardEditor />}
               {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
               {activeCard?.source === "necromunda" && <NecromundaCardEditor />}

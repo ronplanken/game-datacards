@@ -1,13 +1,50 @@
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Card, Col, Form, Input, Row } from "antd";
+import { Card, Col, Form, Input, Row, Select } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+
+const { Option } = Select;
 
 export function PsychicPowerBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
     <>
+      <Form.Item label={"Variant"}>
+        <Select
+          value={activeCard.variant || "secondary"}
+          onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}>
+          <Option value="card">Game-datacard</Option>
+          <Option value="secondary">Game-datacard (Secondary)</Option>
+          <Option value="playingcard">Playingcard</Option>
+          <Option value="poker">Poker / MTG</Option>
+          <Option value="sheet">Sheet (A5)</Option>
+          <Option value="a4">Sheet (A4)</Option>
+          <Option value="letter">Sheet (US Letter)</Option>
+          <Option value="letter-half">Sheet (Half US letter)</Option>
+          <Option value="custom">Custom (Advanced)</Option>
+        </Select>
+      </Form.Item>
+      {activeCard.variant === "custom" && (
+        <>
+          <Form.Item label={"Custom height (cm)"}>
+            <Input
+              type={"text"}
+              placeholder={"Height in centimeters"}
+              value={activeCard.height}
+              onChange={(e) => updateActiveCard({ ...activeCard, height: e.target.value })}
+            />
+          </Form.Item>
+          <Form.Item label={"Custom width (cm)"}>
+            <Input
+              type={"text"}
+              placeholder={"Width in centimeters"}
+              value={activeCard.width}
+              onChange={(e) => updateActiveCard({ ...activeCard, width: e.target.value })}
+            />
+          </Form.Item>
+        </>
+      )}
       <Form.Item label={"Name"}>
         <Input
           type={"text"}
