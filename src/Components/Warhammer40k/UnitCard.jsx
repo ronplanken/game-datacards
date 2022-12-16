@@ -110,6 +110,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
                               profile={profile}
                               key={`profile-${index}-${pindex}`}
                               type={unit.variant || "card"}
+                              icons={unit.icons}
                             />
                           );
                         })}
@@ -121,6 +122,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
                       profile={wargear.profiles[0]}
                       key={`profile-${index}`}
                       type={unit.variant || "card"}
+                      icons={unit.icons}
                     />
                   );
                 })}
