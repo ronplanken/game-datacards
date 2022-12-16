@@ -1,3 +1,47 @@
+@media print {
+
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  .print-page {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    /* background-color: #0070d6; */
+    page-break-after: always;
+  }
+  .print-page:last-child {
+    page-break-after: avoid;
+  }
+
+  .printer {
+    /* background-color: green; */
+  }
+}
+
+@media screen {
+  .print-page {
+    margin: 16px;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    background-color: white;
+    scale: 1;
+    transform-origin: top left;
+    box-shadow: 3px 3px 8px 0 rgba(0, 0, 0, 0.75);
+    page-break-after: always;
+  }
+
+  .printer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    /* background-color: green; */
+  }
+}
+
 .App {
   text-align: center;
 }
