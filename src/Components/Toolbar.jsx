@@ -12,18 +12,21 @@ import { Button, Col, message, Modal, Row, Tooltip } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
 import { compare } from "compare-versions";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
-import { useFirebase } from '../Hooks/useFirebase';
+import { useFirebase } from "../Hooks/useFirebase";
 
 export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) => {
   const [uploadFile, setUploadFile] = React.useState(null);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
 
+  const navigate = useNavigate();
+
   const { logScreenView } = useFirebase();
 
   const [fileList, setFileList] = React.useState([]);
-  const { activeCategory, saveActiveCard, importCategory, cardUpdated, addCategory } = useCardStorage();
+  const { cardStorage, activeCategory, saveActiveCard, importCategory, cardUpdated, addCategory } = useCardStorage();
 
   return (
     <Row>
@@ -191,8 +194,9 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
             shape={"circle"}
             disabled={!(activeCategory && activeCategory.cards.length > 0)}
             onClick={() => {
+              const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
               logScreenView("Print");
-              setShowPrint(true);
+              navigate(`/print/${categoryIndex}`);
             }}
             icon={<PrinterOutlined />}
           />

@@ -33,7 +33,7 @@ export function UnitWeapons() {
           return (
             <div className="weapon" key={`profile-${profile.wargear_id}-${index}-${pindex}`}>
               <div className="weapon_edit_profile">
-                <div className="left" id="value" style={{ whiteSpace: "nowrap" }}>
+                <div className="left value" style={{ whiteSpace: "nowrap" }}>
                   <Input
                     type="text"
                     value={profile.name}
@@ -41,7 +41,7 @@ export function UnitWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value" style={{ whiteSpace: "nowrap" }}>
+                <div className="center value" style={{ whiteSpace: "nowrap" }}>
                   <Input
                     type="text"
                     value={profile.Range}
@@ -49,7 +49,7 @@ export function UnitWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value" style={{ whiteSpace: "nowrap" }}>
+                <div className="center value" style={{ whiteSpace: "nowrap" }}>
                   <Input
                     type="text"
                     value={profile.type}
@@ -57,7 +57,7 @@ export function UnitWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.S}
@@ -65,7 +65,7 @@ export function UnitWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.AP}
@@ -73,7 +73,7 @@ export function UnitWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.D}
@@ -81,7 +81,7 @@ export function UnitWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Popconfirm
                     title={"Are you sure you want to delete this weapon profile?"}
                     placement="topRight"

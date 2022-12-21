@@ -1,6 +1,7 @@
 import { MarkdownDisplay } from "../MarkdownDisplay";
 
 export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => {
+  const style = secondary.variant === "custom" ? { height: `${secondary.height}cm`, width: `${secondary.width}cm` } : {};
   return (
     <div
       style={{
@@ -9,17 +10,19 @@ export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => 
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`secondary ${secondary.variant || "card"}`} style={cardStyle}>
-        <div className="frame">
-          <div className={secondary.faction_id ? secondary.faction_id : "basic"}>
-            <div className="secondary_header">
-              <div className="secondary_type">{secondary.category}</div>
-              <div className="secondary_name">{secondary.name}</div>
+      <div className={`secondary`} style={cardStyle}>
+        <div className={`page ${secondary.variant || "secondary"}`}>
+          <div className="frame">
+            <div className={secondary.faction_id ? secondary.faction_id : "basic"}>
+              <div className="header">
+                <div className="type">{secondary.category}</div>
+                <div className="name">{secondary.name}</div>
+              </div>
+              <div className="description">
+                <MarkdownDisplay content={secondary.description} />
+              </div>
+              <div className="footer">{secondary.type || "Secondary"}</div>
             </div>
-            <div className="secondary_description">
-              <MarkdownDisplay content={secondary.description} />
-            </div>
-            <div className="secondary_footer">{secondary.type || "Secondary"}</div>
           </div>
         </div>
       </div>

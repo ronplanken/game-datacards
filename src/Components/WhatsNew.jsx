@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 1.4.2
+                Whats new in 1.5.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,32 +56,30 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Datasheets can now be sorted by role.</strong>
-                          <br />A new setting has been added to the faction settings to sort and group all datasheets by
-                          their role.
+                          <strong>Printing feature has been updated</strong>
+                          <br />
+                          In order to help you create the perfect prints the print feature has been updated to be more
+                          inline to what you will actually print. For now it supports A4 and Letter US page formats. You
+                          will also have more control over the way the cards are spaced around the pages.
+                          <br />
+                          <br />
+                          Card scaling has been removed in favor of more fine-tuned control for all card sizes. You now
+                          have the ability to select all kinds of different sizes or go full custom and manually enter
+                          the card size. (Yes, unfortunately I&aposm one of those metric kind of programmers, so cm only
+                          for now.)
+                          <br />
+                          <br />
+                          You can expect more custom styling / printing options in a future update. Stuff like
+                          font-size, custom images and more.
                         </li>
                         <li>
-                          <strong>Basic stratagems have been added.</strong>
+                          <strong>Reworked styling</strong>
                           <br />
-                          Basic stratagems are now shown in addition to the faction stratagems. You have the option to
-                          hide these using the faction settings.
-                        </li>
-                        <li>
-                          <strong>Basic secondaries can now be filtered.</strong>
-                          <br />
-                          Basic secondaries are now shown as a seperate group. You have the option to hide these using
-                          the faction settings.
-                        </li>
-                        <li>
-                          <strong>Add cards to a specific category</strong>
-                          <br />
-                          You can now add a card to a specific category instead of just the first one.
+                          All styling for all types of cards has been reworked. Since I was supposed to do this from the
+                          start but didn&apos;t this might cause some styling issues. Please report any issues you find
+                          to the Discord!
                         </li>
                       </ul>
-                      <em>
-                        Please note that you need to update your datasources in order to use the latest data. Not
-                        updating might cause errors.
-                      </em>
                     </Typography.Paragraph>
                   </Col>
                 </Row>

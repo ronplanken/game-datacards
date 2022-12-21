@@ -1,3 +1,56 @@
+@media print {
+  @page {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  .print-page {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #FFF;
+    page-break-after: always;
+  }
+
+  .print-page:last-child {
+    page-break-after: avoid;
+  }
+
+  .printer {
+    background-color: initial;
+  }
+}
+
+@media screen {
+  .print-page {
+    margin: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: white;
+    scale: 1;
+    transform-origin: top left;
+    box-shadow: 3px 3px 8px 0 rgba(0, 0, 0, 0.75);
+    page-break-after: always;
+  }
+
+  .printer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    /* background-color: green; */
+  }
+}
+
 .App {
   text-align: center;
 }
@@ -37,10 +90,17 @@
     transform: rotate(360deg);
   }
 }
+
 .list-header {
-  padding-left: 8px !important;
+  padding-left: 16px !important;
   border-bottom: 1px solid lightgray !important;
   width: 100%;
+  font-weight: 700;
+  background-color: #d3d3d36e;
+}
+
+.ant-form-item-label {
+  min-width: 150px;
 }
 
 .list-item {
@@ -49,6 +109,7 @@
   width: 100%;
   cursor: pointer;
 }
+
 .list-item:hover {
   background-color: #006fd610;
 }
