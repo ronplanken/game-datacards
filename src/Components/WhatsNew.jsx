@@ -62,10 +62,15 @@ export const WhatsNew = () => {
                           inline to what you will actually print. For now it supports A4 and Letter US page formats. You
                           will also have more control over the way the cards are spaced around the pages.
                           <br />
+                          <br />
                           Card scaling has been removed in favor of more fine-tuned control for all card sizes. You now
                           have the ability to select all kinds of different sizes or go full custom and manually enter
                           the card size. (Yes, unfortunately I&aposm one of those metric kind of programmers, so cm only
                           for now.)
+                          <br />
+                          <br />
+                          You can expect more custom styling / printing options in a future update. Stuff like
+                          font-size, custom images and more.
                         </li>
                         <li>
                           <strong>Reworked styling</strong>
@@ -75,10 +80,6 @@ export const WhatsNew = () => {
                           to the Discord!
                         </li>
                       </ul>
-                      <em>
-                        Please note that you need to update your datasources in order to use the latest data. Not
-                        updating might cause errors.
-                      </em>
                     </Typography.Paragraph>
                   </Col>
                 </Row>
