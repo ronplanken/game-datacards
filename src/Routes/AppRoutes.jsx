@@ -12,7 +12,7 @@ export const AppRoutes = () => {
     <Routes>
       <Route path="/" element={isMobile ? <Mobile /> : <App />} />
       <Route path="shared/:Id" element={<Shared />} />
-      <Route path="print" element={<Print />} />
+      <Route path="print/:CategoryId" element={<Print />} />
     </Routes>
   );
 };

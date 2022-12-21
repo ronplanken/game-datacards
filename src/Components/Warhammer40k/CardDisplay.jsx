@@ -5,7 +5,7 @@ import { SecondaryCard } from "./SecondaryCard";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
 
-export const Warhammer40KCardDisplay = ({ type, card, cardScaling }) => {
+export const Warhammer40KCardDisplay = ({ type, card, cardScaling, printPadding }) => {
   const { activeCard } = useCardStorage();
 
   return (
@@ -25,40 +25,44 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling }) => {
           {card.cardType === "datasheet" && (
             <UnitCard
               unit={card}
-              paddingTop="8px"
+              paddingTop="0px"
               cardStyle={{
                 transformOrigin: "0% 0%",
                 transform: `scale(${cardScaling / 100})`,
+                gap: printPadding,
               }}
             />
           )}
           {card.cardType === "stratagem" && (
             <StratagemCard
               stratagem={card}
-              paddingTop="8px"
+              paddingTop="0px"
               cardStyle={{
                 transformOrigin: "0% 0%",
                 transform: `scale(${cardScaling / 100})`,
+                gap: printPadding,
               }}
             />
           )}
           {card.cardType === "secondary" && (
             <SecondaryCard
               secondary={card}
-              paddingTop="8px"
+              paddingTop="0px"
               cardStyle={{
                 transformOrigin: "0% 0%",
                 transform: `scale(${cardScaling / 100})`,
+                gap: printPadding,
               }}
             />
           )}
           {card.cardType === "psychic" && (
             <PsychicCard
               power={card}
-              paddingTop="8px"
+              paddingTop="0px"
               cardStyle={{
                 transformOrigin: "0% 0%",
                 transform: `scale(${cardScaling / 100})`,
+                gap: printPadding,
               }}
             />
           )}

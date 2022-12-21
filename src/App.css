@@ -1,4 +1,14 @@
 @media print {
+  @page {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
   .no-print,
   .no-print * {
@@ -7,17 +17,17 @@
 
   .print-page {
     display: flex;
-    justify-content: space-evenly;
     flex-wrap: wrap;
-    /* background-color: #0070d6; */
+    background-color: #FFF;
     page-break-after: always;
   }
+
   .print-page:last-child {
     page-break-after: avoid;
   }
 
   .printer {
-    /* background-color: green; */
+    background-color: initial;
   }
 }
 
@@ -25,7 +35,6 @@
   .print-page {
     margin: 16px;
     display: flex;
-    justify-content: space-evenly;
     flex-wrap: wrap;
     background-color: white;
     scale: 1;
