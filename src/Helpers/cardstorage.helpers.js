@@ -41,7 +41,7 @@ const upgradeStoredCards = (parsedJson) => {
         }),
       };
     }
-    if (compare(parsedJson.version, "1.4.0", "<=")) {
+    if (compare(parsedJson.version, "1.4.2", "<=")) {
       return {
         ...parsedJson,
         categories: parsedJson.categories.map((cat) => {
