@@ -38,7 +38,7 @@ function ErrorFallback({ error }) {
           <Paragraph>
             <Row style={{ padding: "16px" }} justify={"center"}>
               <Col span={16}>
-                <Text>{error.stack}</Text>
+                <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: "more" }}>{error.stack}</Paragraph>
               </Col>
             </Row>
           </Paragraph>

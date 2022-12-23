@@ -89,7 +89,7 @@ function App() {
           isCustom: true,
           uuid: uuidv4(),
         };
-        const cat = { ...cardStorage.categories.find( (c) => c.uuid === e.key)};
+        const cat = { ...cardStorage.categories.find((c) => c.uuid === e.key) };
         addCardToCategory(newCard, cat.uuid);
         setActiveCard(newCard);
         setActiveCategory(cat);
@@ -436,7 +436,7 @@ function App() {
               </Col>
             </Row>
           </Col>
-          <Col span={9} style={{ display: "flex", flexDirection: "column" }} className={`data-${activeCard?.source}`}>
+          <Col span={10} style={{ display: "flex", flexDirection: "column" }} className={`data-${activeCard?.source}`}>
             <Row style={{ overflow: "hidden" }}>
               {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
               {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
@@ -452,30 +452,49 @@ function App() {
                     display: "flex",
                     marginTop: "16px",
                   }}>
-                  <Dropdown.Button
-                    overlay={categoryMenu}
-                    icon={<AddCard />}
-                    type={"primary"}
-                    onClick={() => {
-                      const newCard = {
-                        ...activeCard,
-                        isCustom: true,
-                        uuid: uuidv4(),
-                      };
-                      const cat = { ...cardStorage.categories[0] };
-                      addCardToCategory(newCard);
-                      setActiveCard(newCard);
-                      setActiveCategory(cat);
-                      setSelectedTreeIndex(`card-${newCard.uuid}`);
-                    }}>
-                    Add card to {cardStorage.categories[0].name}
-                  </Dropdown.Button>
+                  {cardStorage.categories?.length > 1 ? (
+                    <Dropdown.Button
+                      overlay={categoryMenu}
+                      icon={<AddCard />}
+                      type={"primary"}
+                      onClick={() => {
+                        const newCard = {
+                          ...activeCard,
+                          isCustom: true,
+                          uuid: uuidv4(),
+                        };
+                        const cat = { ...cardStorage.categories[0] };
+                        addCardToCategory(newCard);
+                        setActiveCard(newCard);
+                        setActiveCategory(cat);
+                        setSelectedTreeIndex(`card-${newCard.uuid}`);
+                      }}>
+                      Add card to {cardStorage.categories[0].name}
+                    </Dropdown.Button>
+                  ) : (
+                    <Button
+                      type={"primary"}
+                      onClick={() => {
+                        const newCard = {
+                          ...activeCard,
+                          isCustom: true,
+                          uuid: uuidv4(),
+                        };
+                        const cat = { ...cardStorage.categories[0] };
+                        addCardToCategory(newCard);
+                        setActiveCard(newCard);
+                        setActiveCategory(cat);
+                        setSelectedTreeIndex(`card-${newCard.uuid}`);
+                      }}>
+                      Add card to {cardStorage.categories[0].name}
+                    </Button>
+                  )}
                 </Col>
               )}
             </Row>
           </Col>
           {activeCard && (
-            <Col span={9} style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}>
+            <Col span={8} style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}>
               {activeCard?.source === "40k" && <Warhammer40KCardEditor />}
               {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
               {activeCard?.source === "necromunda" && <NecromundaCardEditor />}
@@ -483,109 +502,6 @@ function App() {
           )}
         </Row>
       </Content>
-      {showPrint && (
-        <NewWindow
-          onUnload={() => setShowPrint(false)}
-          ref={printRef}
-          center="screen"
-          features={{ width: "500px" }}
-          title="Datacards">
-          <style>
-            {`@media print
-          {    
-              .no-print, .no-print *
-              {
-                  display: none !important;
-              }
-          }`}
-          </style>
-          <div className={"no-print"} style={{ marginTop: "32px", padding: "32px" }}>
-            <Form layout="vertical">
-              <Row gutter={16}>
-                <Col span={3}>
-                  <Form.Item label={"Cards per page:"}>
-                    <Input
-                      type={"number"}
-                      value={cardsPerPage}
-                      min={1}
-                      max={9}
-                      onChange={(e) => setCardsPerPage(Number(e.target.value))}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={3}>
-                  <Form.Item label={"Cards per row:"}>
-                    <Input
-                      type={"number"}
-                      value={cardsPerRow}
-                      min={1}
-                      max={4}
-                      onChange={(e) => setCardsPerRow(Number(e.target.value))}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={3}>
-                  <Form.Item label={"Scaling of cards:"}>
-                    <Input
-                      type={"number"}
-                      value={cardScaling}
-                      min={25}
-                      max={250}
-                      onChange={(e) => setCardScaling(Number(e.target.value))}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={4}>
-                  <Form.Item label={"Print"}>
-                    <Button
-                      type="primary"
-                      icon={<PrinterOutlined />}
-                      size={"medium"}
-                      onClick={() => printRef.current.window.print()}>
-                      Print
-                    </Button>
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={12}>
-                  <Typography.Paragraph>
-                    When printing the cards make sure to enable the &quote;Background graphics&quote; option in order to
-                    print the icons and borders.
-                  </Typography.Paragraph>
-                </Col>
-              </Row>
-            </Form>
-          </div>
-          {split(activeCategory.cards, cardsPerPage).map((row, RowIndex) => {
-            return (
-              <div
-                className="flex"
-                key={`print-${RowIndex}`}
-                style={{
-                  pageBreakAfter: "always",
-                  gridTemplateColumns: `${cardsPerRow}fr `.repeat(cardsPerRow),
-                }}>
-                {row.map((card, index) => {
-                  return (
-                    <div className={`data-${card?.source}`} key={`${card.id}-${index}`}>
-                      {card?.source === "40k" && (
-                        <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
-                      )}
-                      {card?.source === "basic" && (
-                        <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
-                      )}
-                      {card?.source === "necromunda" && (
-                        <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </NewWindow>
-      )}
     </Layout>
   );
 }

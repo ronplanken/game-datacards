@@ -1,3 +1,5 @@
+@import "./factions.less";
+
 .data-necromunda .ganger {
   .page {
     padding: 8px;
@@ -265,7 +267,6 @@
       width: 295px;
       background-color: #d0d0d0;
       padding: 8px;
-      margin-right: 4px;
     }
     .frame {
       display: block;
@@ -275,9 +276,6 @@
       border-radius: 13.5px;
       background-color: #e2e2dd;
       overflow: hidden;
-
-      @factions: AC, AE, AL, AS, AdM, BA, BL, BT, CD, CSM, CoB, DA, DG, DRU, DW, EC, GC, GK, HAR, IF, IH, IW, NEC, NL,
-        ORK, QI, QT, RC, RG, SA, SM, SW, TAU, TS, TYR, UL, WB, WE, WS;
 
       each(@factions, {
         .@{value}::before {

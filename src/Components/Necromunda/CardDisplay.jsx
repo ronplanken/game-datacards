@@ -25,7 +25,7 @@ export const NecromundaCardDisplay = ({ type, card, cardScaling }) => {
         </>
       )}
       {type === "print" && card && (
-        <Col span={24}>
+        <div className="data-necromunda">
           {card.cardType === "ganger" && (
             <GangerCard
               unit={card}
@@ -86,7 +86,7 @@ export const NecromundaCardDisplay = ({ type, card, cardScaling }) => {
               }}
             />
           )}
-        </Col>
+        </div>
       )}
     </>
   );

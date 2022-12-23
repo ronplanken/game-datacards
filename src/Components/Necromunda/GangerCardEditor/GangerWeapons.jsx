@@ -24,7 +24,7 @@ export function GangerWeapons() {
           return (
             <div className="weapon" key={`profile-${profile.id}-${index}-${pindex}`}>
               <div className="ganger_weapon_profile">
-                <div className="left" id="value" style={{ whiteSpace: "nowrap" }}>
+                <div className="left value" style={{ whiteSpace: "nowrap" }}>
                   <Input
                     type="text"
                     value={profile.name}
@@ -32,7 +32,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.S}
@@ -40,7 +40,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.L}
@@ -48,7 +48,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.S2}
@@ -56,7 +56,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.L2}
@@ -64,7 +64,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.STR}
@@ -72,7 +72,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.AP}
@@ -80,7 +80,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.D}
@@ -88,7 +88,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Input
                     type="text"
                     value={profile.AM}
@@ -96,7 +96,7 @@ export function GangerWeapons() {
                     onChange={(e) => handleProfileChange(e, index, pindex)}
                   />
                 </div>
-                <div className="center" id="value">
+                <div className="center value">
                   <Popconfirm
                     title={"Are you sure you want to delete this weapon profile?"}
                     placement="topRight"

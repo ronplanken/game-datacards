@@ -1,19 +1,5 @@
-import { SettingOutlined, ExclamationCircleFilled } from "@ant-design/icons";
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Collapse,
-  Modal,
-  Popconfirm,
-  Row,
-  Space,
-  Switch,
-  Tabs,
-  Tooltip,
-  Typography,
-} from "antd";
+import { SettingOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Collapse, Modal, Popconfirm, Row, Space, Switch, Tabs, Tooltip, Typography } from "antd";
 import React from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
@@ -242,6 +228,38 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 1.5.0"} key={"1.5.0"}>
+                    <b> 21-12-2022 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Printing feature has been updated</strong>
+                          <br />
+                          In order to help you create the perfect prints the print feature has been updated to be more
+                          inline to what you will actually print. For now it supports A4 and Letter US page formats. You
+                          will also have more control over the way the cards are spaced around the pages.
+                          <br />
+                          <br />
+                          Card scaling has been removed in favor of more fine-tuned control for all card sizes. You now
+                          have the ability to select all kinds of different sizes or go full custom and manually enter
+                          the card size. (Yes, unfortunately I&aposm one of those metric kind of programmers, so cm only
+                          for now.)
+                          <br />
+                          <br />
+                          You can expect more custom styling / printing options in a future update. Stuff like
+                          font-size, custom images and more.
+                        </li>
+                        <li>
+                          <strong>Reworked styling</strong>
+                          <br />
+                          All styling for all types of cards has been reworked. Since I was supposed to do this from the
+                          start but didn&apos;t this might cause some styling issues. Please report any issues you find
+                          to the Discord!
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.4.2"} key={"1.4.2"}>
                     <b> 17-10-2022 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
