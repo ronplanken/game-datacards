@@ -63,7 +63,9 @@ export const Print = () => {
                   onChange={(val) => setPageSize(val)}
                   options={[
                     { label: "A4", value: "A4" },
+                    { label: "A5", value: "A5" },
                     { label: "Letter (US)", value: "Letter (US)" },
+                    { label: "Half-letter (US)", value: "Half-letter (US)" },
                   ]}
                 />
               </Form.Item>
