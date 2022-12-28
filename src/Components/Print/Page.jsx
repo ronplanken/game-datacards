@@ -3,7 +3,7 @@ export const Page = ({ faction, size, customSize, children, style }) => {
 
   switch (size) {
     case "A5":
-      pageSize = { height: "210mm", width: "148mm" };
+      pageSize = { height: "209.5mm", width: "148mm" };
       break;
     case "A4":
       pageSize = { height: "297mm", width: "210mm" };
