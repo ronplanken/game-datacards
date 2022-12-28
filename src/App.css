@@ -5,6 +5,7 @@
     margin-top: 0px;
     margin-bottom: 0px;
   }
+
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -28,6 +29,10 @@
 
   .printer {
     background-color: initial;
+  }
+
+  .ant-layout {
+    background-color: #FFF;
   }
 }
 

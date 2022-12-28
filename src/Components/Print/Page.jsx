@@ -1,4 +1,4 @@
-export const Page = ({ faction, size, children, style }) => {
+export const Page = ({ faction, size, customSize, children, style }) => {
   let pageSize;
 
   switch (size) {
@@ -13,6 +13,9 @@ export const Page = ({ faction, size, children, style }) => {
       break;
     case "Half-letter (US)":
       pageSize = { height: "216mm", width: "139mm" };
+      break;
+    case "custom":
+      pageSize = customSize;
       break;
     default:
       pageSize = { height: "297mm", width: "210mm" };

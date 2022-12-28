@@ -1,4 +1,4 @@
-import { Button, Col, Form, Grid, Image, Layout, Row, Select, Slider, Space, Typography } from "antd";
+import { Button, Col, Form, Grid, Image, Input, Layout, Row, Select, Slider, Space, Typography } from "antd";
 import split from "just-split";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -25,6 +25,7 @@ export const Print = () => {
   const [columnGap, setColumnGap] = useState(0);
   const [pageSize, setPageSize] = useState("A4");
   const [cardAlignment, setCardAlignment] = useState("space-evenly");
+  const [customSize, setCustomSize] = useState({ height: "15cm", width: "15cm" });
   const [verticalAlignment, setVerticalAlignment] = useState("flex-start");
 
   const { cardStorage } = useCardStorage();
@@ -47,7 +48,7 @@ export const Print = () => {
           </Row>
         </Header>
         <Layout>
-          <Sider style={{ backgroundColor: "#F0F2F5" }} className="no-print">
+          <Sider style={{ backgroundColor: "#F0F2F5", zIndex: 1000 }} className="no-print">
             <Row style={{ paddingTop: 8, paddingLeft: 8 }}>
               <Col flex="auto">
                 <Typography.Title level={5}>Settings</Typography.Title>
@@ -66,9 +67,38 @@ export const Print = () => {
                     { label: "A5", value: "A5" },
                     { label: "Letter (US)", value: "Letter (US)" },
                     { label: "Half-letter (US)", value: "Half-letter (US)" },
+                    { label: "Custom", value: "custom" },
                   ]}
                 />
               </Form.Item>
+              {pageSize === "custom" && (
+                <>
+                  <Form.Item label={"Custom height"}>
+                    <Input
+                      type={"text"}
+                      placeholder={"Height"}
+                      value={customSize.height}
+                      onChange={(e) =>
+                        setCustomSize((current) => {
+                          return { ...current, height: e.target.value };
+                        })
+                      }
+                    />
+                  </Form.Item>
+                  <Form.Item label={"Custom width)"}>
+                    <Input
+                      type={"text"}
+                      placeholder={"Width"}
+                      value={customSize.width}
+                      onChange={(e) =>
+                        setCustomSize((current) => {
+                          return { ...current, width: e.target.value };
+                        })
+                      }
+                    />
+                  </Form.Item>
+                </>
+              )}
               <Form.Item label={"Card spread"}>
                 <Select
                   defaultValue={cardAlignment}
@@ -130,6 +160,7 @@ export const Print = () => {
                   <Page
                     key={rowIndex}
                     size={pageSize}
+                    customSize={customSize}
                     style={{
                       padding: pagePadding,
                       justifyContent: cardAlignment,
