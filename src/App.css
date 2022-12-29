@@ -4,7 +4,9 @@
     margin-right: 0px;
     margin-top: 0px;
     margin-bottom: 0px;
+
   }
+
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
@@ -20,6 +22,7 @@
     flex-wrap: wrap;
     background-color: #FFF;
     page-break-after: always;
+    overflow: hidden;
   }
 
   .print-page:last-child {
@@ -28,6 +31,10 @@
 
   .printer {
     background-color: initial;
+  }
+
+  .ant-layout {
+    background-color: #FFF;
   }
 }
 
