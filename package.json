@@ -18,7 +18,7 @@
     "just-split": "^3.0.1",
     "localforage": "^1.10.0",
     "moment": "^2.29.4",
-    "node-fetch": "^3.2.3",
+    "node-fetch": "^3.2.10",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
