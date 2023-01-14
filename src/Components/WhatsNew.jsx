@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 1.5.0
+                Whats new in 1.6.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,28 +56,28 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Printing feature has been updated</strong>
+                          <strong>New printing options</strong>
                           <br />
-                          In order to help you create the perfect prints the print feature has been updated to be more
-                          inline to what you will actually print. For now it supports A4 and Letter US page formats. You
-                          will also have more control over the way the cards are spaced around the pages.
-                          <br />
-                          <br />
-                          Card scaling has been removed in favor of more fine-tuned control for all card sizes. You now
-                          have the ability to select all kinds of different sizes or go full custom and manually enter
-                          the card size. (Yes, unfortunately I&aposm one of those metric kind of programmers, so cm only
-                          for now.)
-                          <br />
-                          <br />
-                          You can expect more custom styling / printing options in a future update. Stuff like
-                          font-size, custom images and more.
+                          You can now select card scaling and page orientation in the print settings.
                         </li>
                         <li>
-                          <strong>Reworked styling</strong>
+                          <strong>Legacy printing options</strong>
                           <br />
-                          All styling for all types of cards has been reworked. Since I was supposed to do this from the
-                          start but didn&apos;t this might cause some styling issues. Please report any issues you find
-                          to the Discord!
+                          By popular demand the old printing feature has returned as a legacy option. You can toggle
+                          this in the configuration window.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Col>
+                  <Col>
+                    <Typography.Title level={5}>Coming soon!</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Battlescribe imports</strong>
+                          <br />
+                          Soon you will be able to insert your Battlescribe .ros or .rosz files and generate cards for
+                          them!
                         </li>
                       </ul>
                     </Typography.Paragraph>

@@ -195,7 +195,33 @@ export const SettingsModal = () => {
               </Col>
             </Row>
           </TabPane>
-          <TabPane tab="Changelog" key="4">
+          <TabPane tab="Printing" key="4">
+            <Row>
+              <Col>You can configure printing options here.</Col>
+            </Row>
+            <Row style={{ paddingTop: "16px" }}>
+              <Col span={23}>
+                <Card
+                  type={"inner"}
+                  size={"small"}
+                  title={"Legacy Printing"}
+                  bodyStyle={{ padding: 0 }}
+                  style={{ marginBottom: "16px" }}
+                  extra={
+                    <Switch
+                      onChange={() =>
+                        updateSettings({
+                          ...settings,
+                          legacyPrinting: !settings.legacyPrinting,
+                        })
+                      }
+                      checked={settings.legacyPrinting}
+                    />
+                  }></Card>
+              </Col>
+            </Row>
+          </TabPane>
+          <TabPane tab="Changelog" key="5">
             <Row>
               <Col span={23}>
                 <Collapse>
@@ -228,6 +254,25 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 1.6.0"} key={"1.6.0"}>
+                    <b> 14-01-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>New printing options</strong>
+                          <br />
+                          You can now select card scaling and page orientation in the print settings.
+                        </li>
+                        <li>
+                          <strong>Legacy Printing options</strong>
+                          <br />
+                          By popular demand the old printing feature has returned as a legacy option. You can toggle
+                          this in the configuration window.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.5.0"} key={"1.5.0"}>
                     <b> 21-12-2022 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>

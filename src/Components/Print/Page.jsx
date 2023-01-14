@@ -1,4 +1,4 @@
-export const Page = ({ faction, size, customSize, children, style }) => {
+export const Page = ({ faction, size, customSize, orientation, children, style }) => {
   let pageSize;
 
   switch (size) {
@@ -20,6 +20,9 @@ export const Page = ({ faction, size, customSize, children, style }) => {
     default:
       pageSize = { height: "297mm", width: "210mm" };
       break;
+  }
+  if (orientation === "landscape") {
+    pageSize = { height: pageSize.width, width: pageSize.height };
   }
   return (
     <div
