@@ -22,8 +22,10 @@ export const Print = () => {
   const [cardsPerPage, setCardsPerPage] = useState(1);
   const [pagePadding, setPagePadding] = useState(0);
   const [rowGap, setRowGap] = useState(0);
+  const [cardScaling, setCardScaling] = useState(100);
   const [columnGap, setColumnGap] = useState(0);
   const [pageSize, setPageSize] = useState("A4");
+  const [pageOrientation, setPageOrientation] = useState("portrait");
   const [cardAlignment, setCardAlignment] = useState("space-evenly");
   const [customSize, setCustomSize] = useState({ height: "15cm", width: "15cm" });
   const [verticalAlignment, setVerticalAlignment] = useState("flex-start");
@@ -64,10 +66,21 @@ export const Print = () => {
                   onChange={(val) => setPageSize(val)}
                   options={[
                     { label: "A4", value: "A4" },
+                    { label: "A4", value: "A4" },
                     { label: "A5", value: "A5" },
                     { label: "Letter (US)", value: "Letter (US)" },
                     { label: "Half-letter (US)", value: "Half-letter (US)" },
                     { label: "Custom", value: "custom" },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item label={"Orientation"}>
+                <Select
+                  defaultValue={pageOrientation}
+                  onChange={(val) => setPageOrientation(val)}
+                  options={[
+                    { label: "Portrait", value: "portrait" },
+                    { label: "Landscape", value: "landscape" },
                   ]}
                 />
               </Form.Item>
@@ -141,6 +154,14 @@ export const Print = () => {
               <Form.Item label={`Column padding (${columnGap}px)`}>
                 <Slider min={0} max={64} step={2} onChange={(val) => setColumnGap(val)} value={columnGap}></Slider>
               </Form.Item>
+              <Form.Item label={`Card scaling (${cardScaling}%)`}>
+                <Slider
+                  min={25}
+                  max={200}
+                  step={1}
+                  onChange={(val) => setCardScaling(val)}
+                  value={cardScaling}></Slider>
+              </Form.Item>
               <Form.Item>
                 <Button block type="primary" onClick={() => window.print()}>
                   Print
@@ -153,7 +174,7 @@ export const Print = () => {
               </Form.Item>
             </Form>
           </Sider>
-          <Content>
+          <Content className={"print-content"}>
             <Printer>
               {split(cardStorage.categories[CategoryId].cards, cardsPerPage).map((row, rowIndex) => {
                 return (
@@ -161,6 +182,7 @@ export const Print = () => {
                     key={rowIndex}
                     size={pageSize}
                     customSize={customSize}
+                    orientation={pageOrientation}
                     style={{
                       padding: pagePadding,
                       justifyContent: cardAlignment,
@@ -172,13 +194,28 @@ export const Print = () => {
                       return (
                         <>
                           {card?.source === "40k" && (
-                            <Warhammer40KCardDisplay card={card} type="print" key={`${rowIndex}-${index}`} />
+                            <Warhammer40KCardDisplay
+                              card={card}
+                              type="print"
+                              key={`${rowIndex}-${index}`}
+                              cardScaling={cardScaling}
+                            />
                           )}
                           {card?.source === "basic" && (
-                            <Warhammer40KCardDisplay card={card} type="print" key={`${rowIndex}-${index}`} />
+                            <Warhammer40KCardDisplay
+                              card={card}
+                              type="print"
+                              key={`${rowIndex}-${index}`}
+                              cardScaling={cardScaling}
+                            />
                           )}
                           {card?.source === "necromunda" && (
-                            <NecromundaCardDisplay card={card} type="print" key={`${rowIndex}-${index}`} />
+                            <NecromundaCardDisplay
+                              card={card}
+                              type="print"
+                              key={`${rowIndex}-${index}`}
+                              cardScaling={cardScaling}
+                            />
                           )}
                         </>
                       );
