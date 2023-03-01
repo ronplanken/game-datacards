@@ -65,9 +65,11 @@ export const get40KData = async () => {
   const dataSecondaries = await readCsv(
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Secondaries.json?${new Date().getTime()}`
   );
-
   const dataPsychic = await readCsv(
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/PsychicPowers.json?${new Date().getTime()}`
+  );
+  const dataTraits = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Warlord_traits.json?${new Date().getTime()}`
   );
 
   const mappedPsychicPowers = dataPsychic.map((power) => {
@@ -83,6 +85,7 @@ export const get40KData = async () => {
   const mappedStratagems = dataStratagems.map((stratagem) => {
     stratagem["cardType"] = "stratagem";
     stratagem["source"] = "40k";
+    stratagem["cp_cost"] = `${stratagem["cp_cost"]} CP`;
     if (stratagem.faction_id === stratagem.subfaction_id) {
       stratagem["subfaction_id"] = undefined;
     }
@@ -194,13 +197,20 @@ export const get40KData = async () => {
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       });
+    faction["traits"] = dataTraits
+      .filter((trait) => trait.faction_id === faction.id)
+      .sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     faction["secondaries"] = mappedSecondaries.filter((secondary) => {
       return (
         secondary.game === "Arks of Omen: Grand Tournament" &&
         (secondary.faction_id === faction.id ||
           faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
-      );
-    });
+          );
+        });
+
+    console.log(faction.id, faction["secondaries"]);
 
     faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {
       return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id === "";

@@ -2,6 +2,7 @@ import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Col, Form, Input, Row, Select } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { FactionSelect } from "../FactionSelect";
 
 const { Option } = Select;
 
@@ -64,6 +65,12 @@ export function PsychicPowerBasicInfo() {
           type={"text"}
           value={activeCard.extra}
           onChange={(e) => updateActiveCard({ ...activeCard, extra: e.target.value })}
+        />
+      </Form.Item>
+      <Form.Item label={"Faction"}>
+        <FactionSelect
+          value={activeCard.faction_id || "basic"}
+          onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
         />
       </Form.Item>
       <Card type={"inner"} size={"small"} title={"Description"} bodyStyle={{ padding: 0 }}>

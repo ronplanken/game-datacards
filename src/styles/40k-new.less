@@ -478,7 +478,57 @@
         background-color: #e2e2dd;
         overflow: hidden;
         border-radius: 13.5px;
+        .background {
+          width: inherit;
+        }
+        each(@factions, {
+        .@{value}::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      });
 
+        .AM::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 55%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 85px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+        .basic::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
         .footer {
           border-top: 2px solid #000;
           position: absolute;
