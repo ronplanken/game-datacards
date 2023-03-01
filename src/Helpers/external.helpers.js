@@ -196,14 +196,14 @@ export const get40KData = async () => {
       });
     faction["secondaries"] = mappedSecondaries.filter((secondary) => {
       return (
-        secondary.game === "War Zone Nephilim: Grand Tournament" &&
+        secondary.game === "Arks of Omen: Grand Tournament" &&
         (secondary.faction_id === faction.id ||
           faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
       );
     });
 
     faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {
-      return secondary.game === "War Zone Nephilim: Grand Tournament" && secondary.faction_id === "";
+      return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id === "";
     });
 
     return faction;
