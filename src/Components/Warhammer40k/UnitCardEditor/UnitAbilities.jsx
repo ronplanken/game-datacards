@@ -1,14 +1,18 @@
 import { DeleteFilled } from "@ant-design/icons";
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Button, Card, Col, Popconfirm, Row, Space, Switch, Typography } from "antd";
-import React from "react";
+import { Button, Card, Col, Popconfirm, Row, Select, Space, Switch, Typography } from "antd";
+import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+
+const { Option } = Select;
 
 export function UnitAbilities() {
   const { activeCard, updateActiveCard } = useCardStorage();
-
+  const { selectedFaction } = useDataSourceStorage();
+  const [selectedTraitIndex, setSelectedTraitIndex] = useState(-1);
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -16,9 +20,48 @@ export function UnitAbilities() {
 
     return result;
   };
-
   return (
     <>
+      <Row>
+        <Col span={22}>
+          <Select
+            placeholder={"Add a warlord trait"}
+            size={"middle"}
+            onChange={(index) => setSelectedTraitIndex(index)}
+            style={{
+              width: "100%",
+              marginBottom: 8,
+            }}>
+            {selectedFaction?.traits?.map((trait, index) => (
+              <Option value={index} key={`${trait?.name}-${index}`}>
+                {trait?.name}
+              </Option>
+            ))}
+          </Select>
+        </Col>
+        <Col span={2}>
+          <Button
+            disabled={selectedTraitIndex === -1}
+            onClick={() => {
+              updateActiveCard(() => {
+                const newAbilities = [...activeCard.abilities];
+                newAbilities.push({
+                  name: selectedFaction?.traits[selectedTraitIndex].name,
+                  description: selectedFaction?.traits[selectedTraitIndex].description,
+                  custom: true,
+                  showAbility: true,
+                  showDescription: false,
+                  type: "Abilities",
+                  id: uuidv4(),
+                });
+                return { ...activeCard, abilities: newAbilities };
+              });
+            }}>
+            Add
+          </Button>
+        </Col>
+      </Row>
+
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {
@@ -155,6 +198,7 @@ export function UnitAbilities() {
               showAbility: true,
               showDescription: false,
               type: "Abilities",
+
               id: uuidv4(),
             });
             return { ...activeCard, abilities: newAbilities };

@@ -72,17 +72,13 @@ export const parseStorageJson = (savedJson) => {
   }
 
   try {
-    const parsedJson = JSON.parse(savedJson.replace(/(<([^>]+)>)/gi, ""));
-    console.log("parsedJson.version", parsedJson.version);
+    const parsedJson = JSON.parse(savedJson);
     if (compare(parsedJson.version, "1.5.0", ">=")) {
-      console.log("parsedJson.version", "1.5.0 >=");
       return parsedJson;
     }
     if (compare(parsedJson.version, "1.5.0", "<")) {
-      console.log("parsedJson.version", "1.5.0 <");
       return upgradeStoredCards(parsedJson);
     }
-    console.log("parsedJson.version", "Nothing");
   } catch (e) {
     return defaultCategories;
   }
