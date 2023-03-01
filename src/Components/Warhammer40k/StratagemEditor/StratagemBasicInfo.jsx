@@ -2,6 +2,7 @@ import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Col, Form, Input, Row, Select } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { FactionSelect } from "../FactionSelect";
 
 const { Option } = Select;
 
@@ -65,6 +66,20 @@ export function StratagemBasicInfo() {
           onChange={(e) => updateActiveCard({ ...activeCard, cp_cost: e.target.value })}
         />
       </Form.Item>
+      <Form.Item label={"Faction"}>
+        <FactionSelect
+          value={activeCard.faction_id || "basic"}
+          onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
+        />
+      </Form.Item>
+      {activeCard.subfaction_id && (
+        <Form.Item label={"Subfaction"}>
+          <FactionSelect
+            value={activeCard.subfaction_id || "NONE"}
+            onChange={(value) => updateActiveCard({ ...activeCard, subfaction_id: value })}
+          />
+        </Form.Item>
+      )}
       <Card type={"inner"} size={"small"} title={"Description"} bodyStyle={{ padding: 0 }}>
         <Row justify="space-between" align="middle">
           <Col span={24}>

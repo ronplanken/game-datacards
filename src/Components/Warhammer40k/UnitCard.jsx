@@ -3,8 +3,9 @@ import { UnitStatline } from "./UnitCard/UnitStatline";
 import { UnitType } from "./UnitCard/UnitType";
 import { WeaponStatline } from "./UnitCard/WeaponStatline";
 
-export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
-  const style = unit.variant === "custom" ? { "height": `${unit.height}cm`, "width": `${unit.width}cm` } : {}
+export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", cardScaling }) => {
+  let style = unit.variant === "custom" ? { height: `${unit.height}cm`, width: `${unit.width}cm` } : {};
+
   return (
     <div
       style={{
@@ -14,9 +15,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
         display: "flex",
       }}>
       <div className={`unit`} style={cardStyle}>
-        <div
-          className={`page ${unit.variant || "card"} ${unit.icons || "icons"}`}
-          style={style}>
+        <div className={`page ${unit.variant || "card"} ${unit.icons || "icons"}`} style={style}>
           <div className="frame">
             <div className={`${unit.background || "NONE"} background`}>
               <div className="header">

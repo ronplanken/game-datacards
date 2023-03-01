@@ -71,6 +71,20 @@ export function SecondaryBasicInfo() {
           <Option value="SHADOW OPERATIONS">SHADOW OPERATIONS</Option>
         </Select>
       </Form.Item>
+      <Form.Item label={"Faction"}>
+        <FactionSelect
+          value={activeCard.faction_id || "basic"}
+          onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
+        />
+      </Form.Item>
+      {activeCard.subfaction_id && (
+        <Form.Item label={"Subfaction"}>
+          <FactionSelect
+            value={activeCard.subfaction_id || "NONE"}
+            onChange={(value) => updateActiveCard({ ...activeCard, subfaction_id: value })}
+          />
+        </Form.Item>
+      )}
       <Card
         type={"inner"}
         size={"small"}
@@ -102,20 +116,6 @@ export function SecondaryBasicInfo() {
           </Col>
         </Row>
       </Card>
-      <Form.Item label={"Faction"}>
-        <FactionSelect
-          value={activeCard.faction_id || "basic"}
-          onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
-        />
-      </Form.Item>
-      {activeCard.subfaction && (
-        <Form.Item label={"Subfaction"}>
-          <FactionSelect
-            value={activeCard.subfaction_id || "NONE"}
-            onChange={(value) => updateActiveCard({ ...activeCard, subfaction_id: value })}
-          />
-        </Form.Item>
-      )}
     </>
   );
 }

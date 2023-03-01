@@ -1,28 +1,25 @@
-import { ExclamationCircleOutlined, PrinterOutlined, SettingOutlined, FilterOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
   Divider,
-  Form,
+  Dropdown,
   Image,
   Input,
   Layout,
   List,
+  Menu,
   Modal,
   Row,
   Select,
   Space,
   Tooltip,
   Typography,
-  Dropdown,
-  Menu,
 } from "antd";
 import "antd/dist/antd.min.css";
 import clone from "just-clone";
-import split from "just-split";
 import { useRef, useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import NewWindow from "react-new-window";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 import { AboutModal } from "./Components/AboutModal";
@@ -377,11 +374,9 @@ function App() {
                                   Stratagems
                                 </Option>
                               )}
-                              {selectedFaction?.secondaries && selectedFaction?.secondaries.length > 0 && (
-                                <Option value={"secondaries"} key={`secondaries`}>
-                                  Secondaries
-                                </Option>
-                              )}
+                              <Option value={"secondaries"} key={`secondaries`}>
+                                Secondaries
+                              </Option>
                               {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
                                 <Option value={"psychicpowers"} key={`psychicpowers`}>
                                   Psychic powers
