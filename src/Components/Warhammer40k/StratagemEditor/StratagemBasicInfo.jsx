@@ -10,7 +10,7 @@ export function StratagemBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
-    <>
+    <Form>
       <Form.Item label={"Variant"}>
         <Select
           value={activeCard.variant || "card"}
@@ -26,24 +26,28 @@ export function StratagemBasicInfo() {
         </Select>
       </Form.Item>
       {activeCard.variant === "custom" && (
-        <>
-          <Form.Item label={"Custom height (cm)"}>
-            <Input
-              type={"text"}
-              placeholder={"Height in centimeters"}
-              value={activeCard.height}
-              onChange={(e) => updateActiveCard({ ...activeCard, height: e.target.value })}
-            />
-          </Form.Item>
-          <Form.Item label={"Custom width (cm)"}>
-            <Input
-              type={"text"}
-              placeholder={"Width in centimeters"}
-              value={activeCard.width}
-              onChange={(e) => updateActiveCard({ ...activeCard, width: e.target.value })}
-            />
-          </Form.Item>
-        </>
+        <Row gutter={8}>
+          <Col span={12}>
+            <Form.Item label={"Height (cm)"}>
+              <Input
+                type={"text"}
+                placeholder={"Height in centimeters"}
+                value={activeCard.height}
+                onChange={(e) => updateActiveCard({ ...activeCard, height: e.target.value })}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item label={"Width (cm)"}>
+              <Input
+                type={"text"}
+                placeholder={"Width in centimeters"}
+                value={activeCard.width}
+                onChange={(e) => updateActiveCard({ ...activeCard, width: e.target.value })}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
       )}
       <Form.Item label={"Name"}>
         <Input
@@ -106,6 +110,6 @@ export function StratagemBasicInfo() {
           </Col>
         </Row>
       </Card>
-    </>
+    </Form>
   );
 }

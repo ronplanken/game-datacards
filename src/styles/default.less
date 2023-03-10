@@ -74,7 +74,6 @@
   background-position: center;
 }
 
-
 .labels {
   font-weight: 600;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -117,6 +116,12 @@ body {
   font-family: system-ui, sans-serif;
 }
 
+.small-form {
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+}
+
 .tree-item-container {
   &.selected {
     .tree-state {
@@ -129,5 +134,28 @@ body {
     padding-left: 9px;
     padding-top: 2px;
     width: 24px;
+  }
+}
+
+.vertical-resizer {
+  width: 2px;
+  background-color: rgba(0,0,0,.06);
+
+  transition: background-color .25s linear;
+
+  &:hover {
+    background-color: grey;
+    width: 2px;
+  }
+}
+.horizontal-resizer {
+  height: 2px;
+  background-color: rgba(0,0,0,.06);
+
+  transition: background-color .25s linear;
+
+  &:hover {
+    background-color: grey;
+    height: 2px;
   }
 }

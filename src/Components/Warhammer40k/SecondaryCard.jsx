@@ -5,13 +5,13 @@ export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => 
   return (
     <div
       style={{
-        paddingTop,
+      paddingTop,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
       }}>
       <div className={`secondary`} style={cardStyle}>
-        <div className={`page ${secondary.variant || "secondary"}`}>
+        <div className={`page ${secondary.variant || "secondary"}`} style={style}>
           <div className="frame">
             <div className={`${secondary.faction_id ? secondary.faction_id : "basic"} background`}>
               <div className="header">

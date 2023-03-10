@@ -8,6 +8,7 @@ import { Printer } from "../Components/Print/Printer";
 import { PrintFaq } from "../Components/PrintFaq";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { useCardStorage } from "../Hooks/useCardStorage";
+import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import logo from "../Images/logo.png";
 
 const { useBreakpoint } = Grid;
@@ -18,17 +19,17 @@ export const LegacyPrint = () => {
   const { CategoryId } = useParams();
   const navigate = useNavigate();
 
-  const [cardsPerPage, setCardsPerPage] = useState(9);
-  const [cardsPerRow, setCardsPerRow] = useState(3);
-  const [cardScaling, setCardScaling] = useState(100);
+  const { settings, updateSettings } = useSettingsStorage();
+
+  const [cardsPerPage, setCardsPerPage] = useState(settings.legacyPrintSettings?.cardsPerPage || 9);
+  const [cardsPerRow, setCardsPerRow] = useState(settings.legacyPrintSettings?.cardsPerRow || 3);
+  const [cardScaling, setCardScaling] = useState(settings.legacyPrintSettings?.cardScaling || 100);
 
   const { cardStorage } = useCardStorage();
 
-  const screens = useBreakpoint();
-
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
     return (
-      <Layout>
+      <Layout style={{ height: "calc(100vh)"}}>
         <Header className="no-print">
           <Row style={{ justifyContent: "space-between" }}>
             <Col>
@@ -45,7 +46,7 @@ export const LegacyPrint = () => {
           <Sider style={{ backgroundColor: "#F0F2F5", zIndex: 1000 }} className="no-print">
             <Row style={{ paddingTop: 8, paddingLeft: 8 }}>
               <Col flex="auto">
-                <Typography.Title level={5}>Settings</Typography.Title>
+                <Typography.Title level={5}>Legacy print settings</Typography.Title>
               </Col>
               <Col flex="48px">
                 <PrintFaq />
@@ -53,17 +54,43 @@ export const LegacyPrint = () => {
             </Row>
             <Form layout="vertical" style={{ padding: 8, borderRightWidth: 1, borderRightColor: "#0070D6" }}>
               <Form.Item label={`Cards per Page (${cardsPerPage})`}>
-                <Slider value={cardsPerPage} min={1} max={9} onChange={(val) => setCardsPerPage(val)}></Slider>
+                <Slider
+                  value={cardsPerPage}
+                  min={1}
+                  max={9}
+                  onChange={(val) => {
+                    setCardsPerPage(val);
+                    updateSettings({
+                      ...settings,
+                      legacyPrintSettings: { ...settings.legacyPrintSettings, cardsPerPage: val },
+                    });
+                  }}></Slider>
               </Form.Item>
               <Form.Item label={`Cards per Row (${cardsPerRow})`}>
-                <Slider min={1} max={10} onChange={(val) => setCardsPerRow(val)} value={cardsPerRow}></Slider>
+                <Slider
+                  min={1}
+                  max={10}
+                  onChange={(val) => {
+                    setCardsPerRow(val);
+                    updateSettings({
+                      ...settings,
+                      legacyPrintSettings: { ...settings.legacyPrintSettings, cardsPerRow: val },
+                    });
+                  }}
+                  value={cardsPerRow}></Slider>
               </Form.Item>
               <Form.Item label={`Card scaling (${cardScaling}%)`}>
                 <Slider
                   min={25}
                   max={200}
                   step={1}
-                  onChange={(val) => setCardScaling(val)}
+                  onChange={(val) => {
+                    setCardScaling(val);
+                    updateSettings({
+                      ...settings,
+                      legacyPrintSettings: { ...settings.legacyPrintSettings, cardScaling: val },
+                    });
+                  }}
                   value={cardScaling}></Slider>
               </Form.Item>
               <Form.Item>

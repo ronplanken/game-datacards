@@ -95,7 +95,7 @@ const generateAbilities = (selection) => {
     });
   } else {
     if (selection.profiles?.profile) {
-      wargear.push(extractAbility(selection.profiles?.profile));
+      abilities.push(extractAbility(selection.profiles?.profile));
     }
   }
   return abilities;
@@ -110,8 +110,8 @@ const generateUpgrades = (selection) => {
       }
     });
   } else {
-    if (selection.profiles?.profile) {
-      wargear.push(extractAbility(selection.profiles?.profile));
+    if (selection?.profiles?.profile) {
+      wargear.push(extractAbility(selection?.profiles?.profile));
     }
   }
   return abilities;
@@ -119,6 +119,7 @@ const generateUpgrades = (selection) => {
 
 const generateModelWargear = (model) => {
   const wargear = [];
+  console.log("selection:", model );
   if (Array.isArray(model.selections.selection)) {
     model.selections.selection.forEach((selection) => {
       if (selection.type === "upgrade" && selection?.profiles?.profile) {
@@ -137,9 +138,9 @@ const generateModelWargear = (model) => {
       }
     });
   } else {
-    if (selection.profiles?.profile && selection?.profiles?.profile.typeName.toLowerCase() === "weapon") {
-      wargear.push(extractWargear(selection.profiles?.profile));
-    }
+    // if (selection?.profiles?.profile && selection?.profiles?.profile.typeName.toLowerCase() === "weapon") {
+    //   wargear.push(extractWargear(selection?.profiles?.profile));
+    // }
   }
   return wargear;
 };

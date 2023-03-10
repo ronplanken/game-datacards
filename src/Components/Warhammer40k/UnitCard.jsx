@@ -100,13 +100,14 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", cardScaling }) 
                   if (wargear.profiles.length > 1) {
                     return (
                       <>
-                        <div className="description" key={`profile-${index}-description`}>
+                        <div className="weapon_name" key={`profile-${index}-description`}>
                           {wargear.name}
                         </div>
                         {wargear.profiles.map((profile, pindex) => {
                           return (
                             <WeaponStatline
                               profile={profile}
+                              nested={true}
                               key={`profile-${index}-${pindex}`}
                               type={unit.variant || "card"}
                               icons={unit.icons}

@@ -9,8 +9,6 @@ const modalRoot = document.getElementById("modal-root");
 export const PrintFaq = () => {
   const [isPrintFaqVisible, setIsPrintFaqVisible] = React.useState(false);
 
-  const { settings, updateSettings } = useSettingsStorage();
-
   const closeModal = () => {
     setIsPrintFaqVisible(false);
   };
@@ -87,9 +85,9 @@ export const PrintFaq = () => {
         style={{
           width: "32px",
           padding: "0px",
+          marginTop: "-4px",
         }}
         type="ghost"
-        shape='circle'
         onClick={() => setIsPrintFaqVisible(true)}>
         <QuestionCircleOutlined />
       </Button>

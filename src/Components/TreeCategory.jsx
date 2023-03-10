@@ -1,22 +1,33 @@
-import React, { useState } from "react";
 import {
   CaretDownOutlined,
   CaretRightOutlined,
-  FolderOutlined,
-  FolderOpenOutlined,
-  ExclamationCircleOutlined,
   DeleteOutlined,
+  ExclamationCircleOutlined,
+  FolderOpenOutlined,
+  FolderOutlined,
 } from "@ant-design/icons";
-import { useCardStorage } from "../Hooks/useCardStorage";
 import { Dropdown, Input, Menu, message, Modal } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import { useCardStorage } from "../Hooks/useCardStorage";
 
 const { confirm } = Modal;
 
 export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children }) {
   const { cardStorage, setActiveCard, setActiveCategory, removeCategory, renameCategory, cardUpdated, updateCategory } =
     useCardStorage();
+
+  const inputRef = useRef(null);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState(category.name);
+
+  useEffect(() => {
+    if (isModalVisible) {
+      inputRef.current.focus({
+        cursor: "end",
+      });
+    }
+  }, [isModalVisible, inputRef]);
 
   const menu = (
     <Menu>
@@ -123,7 +134,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
         onCancel={() => {
           setIsModalVisible(false);
         }}>
-        <Input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} />
+        <Input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} ref={inputRef} />
       </Modal>
     </>
   );

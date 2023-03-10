@@ -10,10 +10,9 @@ import { UnitCard } from "./UnitCard";
 export const Warhammer40KCardDisplay = ({ type, card, cardScaling, printPadding }) => {
   const { activeCard } = useCardStorage();
   const { settings } = useSettingsStorage();
-
   let resizedStyle = {
-    height: `calc(${sizes[card?.variant || "card"].height} * ${cardScaling / 100} )`,
-    width: `calc(${sizes[card?.variant || "card"].width} * ${cardScaling / 100} )`,
+    height: `calc(${sizes[card?.variant || "card"]?.height || 1} * ${cardScaling / 100} )`,
+    width: `calc(${sizes[card?.variant || "card"]?.width || 1} * ${cardScaling / 100} )`,
   };
 
   if (settings.legacyPrinting) {
@@ -54,6 +53,7 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling, printPadding 
                 transformOrigin: "0% 0%",
                 transform: `scale(${cardScaling / 100})`,
                 gap: printPadding,
+                ...resizedStyle,
               }}
             />
           )}
@@ -65,6 +65,7 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling, printPadding 
                 transformOrigin: "0% 0%",
                 transform: `scale(${cardScaling / 100})`,
                 gap: printPadding,
+                ...resizedStyle,
               }}
             />
           )}
@@ -76,6 +77,7 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling, printPadding 
                 transformOrigin: "0% 0%",
                 transform: `scale(${cardScaling / 100})`,
                 gap: printPadding,
+                ...resizedStyle,
               }}
             />
           )}

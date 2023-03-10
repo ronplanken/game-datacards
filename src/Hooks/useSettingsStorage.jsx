@@ -9,6 +9,13 @@ const defaultSettings = {
   selectedFactionIndex: 0,
   ignoredSubFactions: [],
   wizardCompleted: "0.0.0",
+  printSettings: {
+    pageSize: "A4",
+    pageOrientation: "portrait",
+    cardAlignment: "space-evenly",
+    customSize: { height: "15cm", width: "15cm" },
+    verticalAlignment: "flex-start",
+  },
 };
 
 export function useSettingsStorage() {

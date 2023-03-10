@@ -9,10 +9,12 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 
 const { Option } = Select;
 
-export function UnitAbilities() {
+
+
+export function UnitPowers() {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { selectedFaction } = useDataSourceStorage();
-  const [selectedTraitIndex, setSelectedTraitIndex] = useState(undefined);
+  const [selectedPowerIndex, setSelectedPowerIndex] = useState(undefined);
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -25,42 +27,46 @@ export function UnitAbilities() {
       <Row>
         <Col span={22}>
           <Select
-            placeholder={"Add a warlord trait"}
+            placeholder={"Add a psychic power"}
             size={"middle"}
-            value={selectedTraitIndex}
-            onChange={(index) => setSelectedTraitIndex(index)}
+            value={selectedPowerIndex}
+            onChange={(index) => setSelectedPowerIndex(index)}
             style={{
               width: "100%",
               marginBottom: 8,
             }}
             notFoundContent={
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No warlord traits could be found."} />
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No psyhic powers could be found."} />
             }>
-            {selectedFaction?.traits?.map((trait, index) => (
-              <Option value={index} key={`${trait?.name}-${index}`}>
-                {trait?.name}
+            {selectedFaction?.psychicpowers?.map((power, index) => (
+              <Option value={index} key={`${power?.name}-${index}`}>
+                {power?.name}
               </Option>
             ))}
           </Select>
         </Col>
         <Col span={2}>
           <Button
-            disabled={selectedTraitIndex === undefined}
+            disabled={selectedPowerIndex === undefined}
             onClick={() => {
               updateActiveCard(() => {
-                const newAbilities = [...activeCard.abilities];
-                newAbilities.push({
-                  name: selectedFaction?.traits[selectedTraitIndex].name,
-                  description: selectedFaction?.traits[selectedTraitIndex].description,
+                const newPowers = [...activeCard.powers || []];
+                const power = selectedFaction?.psychicpowers[selectedPowerIndex];
+                newPowers.push({
+                  name: power.name,
+                  description: power.description,
+                  warpcharge: extractWarpChargeValue(power.description),
+                  powerType: power.type,
                   custom: true,
-                  showAbility: true,
+                  showPower: true,
+                  showWarpCharge: true,
                   showDescription: false,
-                  type: "Abilities",
+                  type: "powers",
                   id: uuidv4(),
                 });
-                return { ...activeCard, abilities: newAbilities };
+                return { ...activeCard, powers: newPowers };
               });
-              setSelectedTraitIndex(undefined);
+              setSelectedPowerIndex(undefined);
             }}>
             Add
           </Button>
@@ -73,25 +79,25 @@ export function UnitAbilities() {
             return;
           }
 
-          const newAbilities = reorder(activeCard.abilities, result.source.index, result.destination.index);
-          updateActiveCard({ ...activeCard, abilities: newAbilities });
+          const newPowers = reorder(activeCard.powers, result.source.index, result.destination.index);
+          updateActiveCard({ ...activeCard, powers: newPowers });
         }}>
-        <Droppable droppableId="droppable-abilities">
+        <Droppable droppableId="droppable-powers">
           {(provided, snapshot) => {
             return (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {activeCard.abilities.map((ability, index) => {
+                {activeCard?.powers?.map((power, index) => {
                   return (
                     <Draggable
-                      key={`ability-${ability.id}-${index}`}
-                      draggableId={`ability-${ability.id}-${index}`}
+                      key={`power-${power.id}-${index}`}
+                      draggableId={`power-${power.id}-${index}`}
                       index={index}>
                       {(drag) => (
                         <div
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
-                          key={`ability-${ability.id}-${index}`}>
+                          key={`power-${power.id}-${index}`}>
                           <Card
                             type={"inner"}
                             size={"small"}
@@ -100,15 +106,15 @@ export function UnitAbilities() {
                                 ellipsis={{ rows: 1 }}
                                 editable={{
                                   onChange: (value) => {
-                                    const newAbilities = [...activeCard.abilities];
-                                    newAbilities[index]["name"] = value;
+                                    const newPowers = [...activeCard.powers];
+                                    newPowers[index]["name"] = value;
                                     updateActiveCard({
                                       ...activeCard,
-                                      abilities: newAbilities,
+                                      powers: newPowers,
                                     });
                                   },
                                 }}>
-                                {ability.name}
+                                {power.name}
                               </Typography.Text>
                             }
                             bodyStyle={{ padding: 0 }}
@@ -116,39 +122,39 @@ export function UnitAbilities() {
                             extra={
                               <Space>
                                 <Popconfirm
-                                  title={"Are you sure you want to delete this ability?"}
+                                  title={"Are you sure you want to delete this power?"}
                                   placement="topRight"
                                   onConfirm={(value) =>
                                     updateActiveCard(() => {
-                                      const newAbilities = [...activeCard.abilities];
-                                      newAbilities.splice(index, 1);
-                                      return { ...activeCard, abilities: newAbilities };
+                                      const newPowers = [...activeCard.powers];
+                                      newPowers.splice(index, 1);
+                                      return { ...activeCard, powers: newPowers };
                                     })
                                   }>
                                   <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
                                 </Popconfirm>
                                 <Switch
-                                  checked={ability.showAbility}
+                                  checked={power.showAbility}
                                   onChange={(value) => {
                                     updateActiveCard(() => {
-                                      const newAbilities = [...activeCard.abilities];
-                                      newAbilities[index]["showAbility"] = value;
-                                      return { ...activeCard, abilities: newAbilities };
+                                      const newPowers = [...activeCard.powers];
+                                      newPowers[index]["showPower"] = value;
+                                      return { ...activeCard, powers: newPowers };
                                     });
                                   }}
                                 />
                               </Space>
                             }>
-                            {ability.showAbility && (
+                            {power.showPower && (
                               <Row justify="space-between" align="middle">
                                 <Col span={2} justify="center" style={{ textAlign: "center" }}>
                                   <Switch
-                                    checked={ability.showDescription}
+                                    checked={power.showDescription}
                                     onChange={(value) => {
                                       updateActiveCard(() => {
-                                        const newAbilities = [...activeCard.abilities];
-                                        newAbilities[index]["showDescription"] = value;
-                                        return { ...activeCard, abilities: newAbilities };
+                                        const newPowers = [...activeCard.powers];
+                                        newPowers[index]["showDescription"] = value;
+                                        return { ...activeCard, powers: newPowers };
                                       });
                                     }}
                                   />
@@ -167,12 +173,12 @@ export function UnitAbilities() {
                                       commands.divider,
                                     ]}
                                     extraCommands={[]}
-                                    value={ability.description}
+                                    value={power.description}
                                     onChange={(value) => {
                                       updateActiveCard(() => {
-                                        const newAbilities = [...activeCard.abilities];
-                                        newAbilities[index]["description"] = value;
-                                        return { ...activeCard, abilities: newAbilities };
+                                        const newPowers = [...activeCard.powers];
+                                        newPowers[index]["description"] = value;
+                                        return { ...activeCard, powers: newPowers };
                                       });
                                     }}
                                   />
@@ -191,26 +197,6 @@ export function UnitAbilities() {
           }}
         </Droppable>
       </DragDropContext>
-      <Button
-        type="dashed"
-        style={{ width: "100%" }}
-        onClick={() =>
-          updateActiveCard(() => {
-            const newAbilities = [...activeCard.abilities];
-            newAbilities.push({
-              name: `New ability ${newAbilities.length + 1}`,
-              custom: true,
-              showAbility: true,
-              showDescription: false,
-              type: "Abilities",
-
-              id: uuidv4(),
-            });
-            return { ...activeCard, abilities: newAbilities };
-          })
-        }>
-        Add empty ability
-      </Button>
     </>
   );
 }
