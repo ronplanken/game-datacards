@@ -281,30 +281,32 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                               cards: [
                                 ...roster.forces.force.selections.selection.reduce((cards, selection) => {
                                   if (selection.type === "unit") {
-                                    selection.selections.selection.forEach((subSelection) => {
-                                      if (subSelection.type === "model") {
-                                        cards.push({
-                                          source: "40k",
-                                          cardType: "datasheet",
-                                          name: subSelection.name,
-                                          role: selection.categories.category.reduce((role, cat) => {
-                                            if (cat.primary === "true") {
-                                              role = cat.name;
-                                            }
-                                            return role;
-                                          }, "Unknown"),
-                                          keywords: [],
-                                          datasheet: generateDatasheets(subSelection),
-                                          wargear: generateModelWargear(subSelection),
-                                          abilities: [
-                                            ...generateAbilities(subSelection),
-                                            ...generateAbilities(selection),
-                                          ],
-                                          isCustom: true,
-                                          uuid: uuidv4(),
-                                        });
-                                      }
-                                    });
+                                    if (Array.isArray(selection?.selections?.selection)) {
+                                      selection?.selections?.selection?.forEach((subSelection) => {
+                                        if (subSelection.type === "model") {
+                                          cards.push({
+                                            source: "40k",
+                                            cardType: "datasheet",
+                                            name: subSelection.name,
+                                            role: selection.categories.category.reduce((role, cat) => {
+                                              if (cat.primary === "true") {
+                                                role = cat.name;
+                                              }
+                                              return role;
+                                            }, "Unknown"),
+                                            keywords: [],
+                                            datasheet: generateDatasheets(subSelection),
+                                            wargear: generateModelWargear(subSelection),
+                                            abilities: [
+                                              ...generateAbilities(subSelection),
+                                              ...generateAbilities(selection),
+                                            ],
+                                            isCustom: true,
+                                            uuid: uuidv4(),
+                                          });
+                                        }
+                                      });
+                                    }
                                   }
                                   if (selection.type === "model") {
                                     cards.push({

@@ -5,6 +5,15 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
+function extractWarpChargeValue(text) {
+  const pattern = /has a warp charge value of (\d+)/i;
+  const match = text.match(pattern);
+  if (match) {
+    return parseInt(match[1]);
+  }
+  return null;
+}
+
 const BASIC_CORE_STRATAGEMS = [
   "000002134002",
   "000002134003",
@@ -75,6 +84,7 @@ export const get40KData = async () => {
   const mappedPsychicPowers = dataPsychic.map((power) => {
     power["cardType"] = "psychic";
     power["source"] = "40k";
+    power["warpcharge"] = extractWarpChargeValue(power["description"]);
     return power;
   });
 
@@ -207,10 +217,8 @@ export const get40KData = async () => {
         secondary.game === "Arks of Omen: Grand Tournament" &&
         (secondary.faction_id === faction.id ||
           faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
-          );
-        });
-
-    console.log(faction.id, faction["secondaries"]);
+      );
+    });
 
     faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {
       return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id === "";
