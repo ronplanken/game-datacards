@@ -293,141 +293,143 @@ function App() {
               </Panel>
               <PanelResizeHandle className="horizontal-resizer" />
               <Panel defaultSize={50} minSize={20} maxSize={80}>
-                <Row>
-                  <Col span={24}>
-                    <List
-                      bordered
-                      size="small"
-                      loading={isLoading}
-                      dataSource={getDataSourceType()}
-                      style={{ overflowY: "auto", height: "100%" }}
-                      locale={{
-                        emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
-                      }}
-                      header={
-                        <>
-                          {dataSource.data.length > 1 && (
-                            <>
-                              <Row style={{ marginBottom: "4px" }}>
-                                <Col span={24}>
-                                  <Select
-                                    loading={isLoading}
-                                    style={{
-                                      width: "calc(100% - 32px)",
-                                    }}
-                                    onChange={(value) => {
-                                      updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
-                                    }}
-                                    placeholder="Select a faction"
-                                    value={dataSource?.data[selectedFactionIndex]?.name}>
-                                    {dataSource.data.map((faction, index) => (
-                                      <Option value={faction.id} key={`${faction.id}-${index}`}>
-                                        {faction.name}
-                                      </Option>
-                                    ))}
-                                  </Select>
-                                  <FactionSettingsModal />
-                                </Col>
-                              </Row>
-                              <Row>
-                                <Col span={24}>
-                                  <Divider style={{ marginTop: 4, marginBottom: 8 }} />
-                                </Col>
-                              </Row>
-                            </>
-                          )}
-                          <Row style={{ marginBottom: "4px" }}>
-                            <Col span={24}>
-                              <Input.Search
-                                placeholder={"Search"}
-                                onSearch={(value) => {
-                                  if (value.length > 0) {
-                                    setSearchText(value);
-                                  } else {
-                                    setSearchText(undefined);
-                                  }
-                                }}
-                                allowClear={true}
-                              />
-                            </Col>
-                          </Row>
-                          {selectedFaction && (
+                <div
+                  style={{
+                    height: "100%",
+                    overflow: "auto",
+                  }}>
+                  <List
+                    bordered
+                    size="small"
+                    loading={isLoading}
+                    dataSource={getDataSourceType()}
+                    style={{ overflowY: "auto", height: "100%" }}
+                    locale={{
+                      emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
+                    }}
+                    header={
+                      <>
+                        {dataSource.data.length > 1 && (
+                          <>
                             <Row style={{ marginBottom: "4px" }}>
                               <Col span={24}>
                                 <Select
                                   loading={isLoading}
-                                  style={{ width: "100%" }}
-                                  onChange={(value) => {
-                                    setSelectedContentType(value);
+                                  style={{
+                                    width: "calc(100% - 32px)",
                                   }}
-                                  placeholder="Select a type"
-                                  value={selectedContentType}>
-                                  {selectedFaction?.datasheets && selectedFaction?.datasheets.length > 0 && (
-                                    <Option value={"datasheets"} key={`datasheets`}>
-                                      Datasheets
+                                  onChange={(value) => {
+                                    updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
+                                  }}
+                                  placeholder="Select a faction"
+                                  value={dataSource?.data[selectedFactionIndex]?.name}>
+                                  {dataSource.data.map((faction, index) => (
+                                    <Option value={faction.id} key={`${faction.id}-${index}`}>
+                                      {faction.name}
                                     </Option>
-                                  )}
-                                  {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
-                                    <Option value={"stratagems"} key={`stratagems`}>
-                                      Stratagems
-                                    </Option>
-                                  )}
-                                  <Option value={"secondaries"} key={`secondaries`}>
-                                    Secondaries
-                                  </Option>
-                                  {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
-                                    <Option value={"psychicpowers"} key={`psychicpowers`}>
-                                      Psychic powers
-                                    </Option>
-                                  )}
+                                  ))}
                                 </Select>
+                                <FactionSettingsModal />
                               </Col>
                             </Row>
-                          )}
-                        </>
-                      }
-                      renderItem={(card, index) => {
-                        if (card.type === "header") {
-                          return (
-                            <List.Item key={`list-header-${index}`} className={`list-header`}>
-                              {card.name}
-                            </List.Item>
-                          );
-                        }
-                        if (card.type !== "header") {
-                          return (
-                            <List.Item
-                              key={`list-${card.id}`}
-                              onClick={() => {
-                                if (cardUpdated) {
-                                  confirm({
-                                    title: "You have unsaved changes",
-                                    content: "Are you sure you want to discard your changes?",
-                                    icon: <ExclamationCircleOutlined />,
-                                    okText: "Yes",
-                                    okType: "danger",
-                                    cancelText: "No",
-                                    onOk: () => {
-                                      setActiveCard(card);
-                                      setSelectedTreeIndex(null);
-                                    },
-                                  });
+                            <Row>
+                              <Col span={24}>
+                                <Divider style={{ marginTop: 4, marginBottom: 8 }} />
+                              </Col>
+                            </Row>
+                          </>
+                        )}
+                        <Row style={{ marginBottom: "4px" }}>
+                          <Col span={24}>
+                            <Input.Search
+                              placeholder={"Search"}
+                              onSearch={(value) => {
+                                if (value.length > 0) {
+                                  setSearchText(value);
                                 } else {
-                                  setActiveCard(card);
-                                  setSelectedTreeIndex(null);
+                                  setSearchText(undefined);
                                 }
                               }}
-                              className={`list-item ${
-                                activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                              }`}>
-                              <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
-                            </List.Item>
-                          );
-                        }
-                      }}
-                    />
-                  </Col>
-                </Row>
+                              allowClear={true}
+                            />
+                          </Col>
+                        </Row>
+                        {selectedFaction && (
+                          <Row style={{ marginBottom: "4px" }}>
+                            <Col span={24}>
+                              <Select
+                                loading={isLoading}
+                                style={{ width: "100%" }}
+                                onChange={(value) => {
+                                  setSelectedContentType(value);
+                                }}
+                                placeholder="Select a type"
+                                value={selectedContentType}>
+                                {selectedFaction?.datasheets && selectedFaction?.datasheets.length > 0 && (
+                                  <Option value={"datasheets"} key={`datasheets`}>
+                                    Datasheets
+                                  </Option>
+                                )}
+                                {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
+                                  <Option value={"stratagems"} key={`stratagems`}>
+                                    Stratagems
+                                  </Option>
+                                )}
+                                <Option value={"secondaries"} key={`secondaries`}>
+                                  Secondaries
+                                </Option>
+                                {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
+                                  <Option value={"psychicpowers"} key={`psychicpowers`}>
+                                    Psychic powers
+                                  </Option>
+                                )}
+                              </Select>
+                            </Col>
+                          </Row>
+                        )}
+                      </>
+                    }
+                    renderItem={(card, index) => {
+                      if (card.type === "header") {
+                        return (
+                          <List.Item key={`list-header-${index}`} className={`list-header`}>
+                            {card.name}
+                          </List.Item>
+                        );
+                      }
+                      if (card.type !== "header") {
+                        return (
+                          <List.Item
+                            key={`list-${card.id}`}
+                            onClick={() => {
+                              if (cardUpdated) {
+                                confirm({
+                                  title: "You have unsaved changes",
+                                  content: "Are you sure you want to discard your changes?",
+                                  icon: <ExclamationCircleOutlined />,
+                                  okText: "Yes",
+                                  okType: "danger",
+                                  cancelText: "No",
+                                  onOk: () => {
+                                    setActiveCard(card);
+                                    setSelectedTreeIndex(null);
+                                  },
+                                });
+                              } else {
+                                setActiveCard(card);
+                                setSelectedTreeIndex(null);
+                              }
+                            }}
+                            className={`list-item ${
+                              activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
+                            }`}>
+                            <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
+                          </List.Item>
+                        );
+                      }
+                    }}
+                  />
+                </div>
               </Panel>
             </PanelGroup>
           </Panel>
