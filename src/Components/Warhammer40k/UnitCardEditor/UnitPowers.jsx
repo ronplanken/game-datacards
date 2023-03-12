@@ -1,15 +1,14 @@
 import { DeleteFilled } from "@ant-design/icons";
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Button, Card, Col, Empty, Popconfirm, Row, Select, Space, Switch, Typography } from "antd";
+import { Button, Card, Col, Empty, Form, Input, Popconfirm, Row, Select, Space, Switch, Typography } from "antd";
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
+import { extractWarpChargeValue } from "../../../Helpers/external.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 
 const { Option } = Select;
-
-
 
 export function UnitPowers() {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -50,7 +49,7 @@ export function UnitPowers() {
             disabled={selectedPowerIndex === undefined}
             onClick={() => {
               updateActiveCard(() => {
-                const newPowers = [...activeCard.powers || []];
+                const newPowers = [...(activeCard.powers || [])];
                 const power = selectedFaction?.psychicpowers[selectedPowerIndex];
                 newPowers.push({
                   name: power.name,
@@ -117,7 +116,6 @@ export function UnitPowers() {
                                 {power.name}
                               </Typography.Text>
                             }
-                            bodyStyle={{ padding: 0 }}
                             style={{ marginBottom: "16px" }}
                             extra={
                               <Space>
@@ -146,8 +144,8 @@ export function UnitPowers() {
                               </Space>
                             }>
                             {power.showPower && (
-                              <Row justify="space-between" align="middle">
-                                <Col span={2} justify="center" style={{ textAlign: "center" }}>
+                              <Form size="small">
+                                <Form.Item label={"Show Description"}>
                                   <Switch
                                     checked={power.showDescription}
                                     onChange={(value) => {
@@ -158,8 +156,8 @@ export function UnitPowers() {
                                       });
                                     }}
                                   />
-                                </Col>
-                                <Col span={22}>
+                                </Form.Item>
+                                <Form.Item label={"Description"}>
                                   <MDEditor
                                     preview="edit"
                                     commands={[
@@ -182,8 +180,33 @@ export function UnitPowers() {
                                       });
                                     }}
                                   />
-                                </Col>
-                              </Row>
+                                </Form.Item>
+                                <Form.Item label={"Show Warpcharge"}>
+                                  <Switch
+                                    checked={power.showWarpCharge}
+                                    onChange={(value) => {
+                                      updateActiveCard(() => {
+                                        const newPowers = [...activeCard.powers];
+                                        newPowers[index]["showWarpCharge"] = value;
+                                        return { ...activeCard, powers: newPowers };
+                                      });
+                                    }}
+                                  />
+                                </Form.Item>
+                                <Form.Item label={"Warpcharge"}>
+                                  <Input
+                                    type={"text"}
+                                    value={power.warpcharge}
+                                    onChange={(e) =>
+                                      updateActiveCard(() => {
+                                        const newPowers = [...activeCard.powers];
+                                        newPowers[index]["warpcharge"] = e.target.value;
+                                        return { ...activeCard, powers: newPowers };
+                                      })
+                                    }
+                                  />
+                                </Form.Item>
+                              </Form>
                             )}
                           </Card>
                         </div>

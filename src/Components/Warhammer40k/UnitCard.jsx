@@ -141,6 +141,21 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", cardScaling }) 
                   );
                 })}
               </div>
+              <div className="powers">
+                {unit.powers?.map((power, index) => {
+                  return (
+                    power.showPower && (
+                      <div className="description" key={`ability-${power.name}-description-${index}`}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span>{<b>{power.name}</b>}</span>
+                          {power.showWarpCharge && <MarkdownDisplay content={`${power.warpcharge}`} />}
+                        </div>
+                        {power.showDescription && <MarkdownDisplay content={`${power.description}`} />}
+                      </div>
+                    )
+                  );
+                })}
+              </div>
               <div className="footer">
                 {unit.keywords
                   ?.filter((keyword) => keyword.active)
