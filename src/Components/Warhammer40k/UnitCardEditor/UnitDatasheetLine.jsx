@@ -1,10 +1,7 @@
 import { DeleteFilled, SettingOutlined } from "@ant-design/icons";
 import { Button, Card, Checkbox, Dropdown, Input, Menu, Popconfirm, Space, Switch, Typography } from "antd";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
-import { getByPlaceholderText } from "@testing-library/react";
 
 export function UnitDatasheetLine({ sheet, index }) {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -43,7 +40,7 @@ export function UnitDatasheetLine({ sheet, index }) {
           <Dropdown
             visible={dropdownVisible}
             onVisibleChange={(flag) => setDropdownVisible(flag)}
-            placement={'bottomRight'}
+            placement={"bottomRight"}
             overlay={
               <Menu>
                 <Menu.Item key="1">
@@ -93,34 +90,34 @@ export function UnitDatasheetLine({ sheet, index }) {
         <div>
           <div className="editor labels edit_heading">
             <div className="center label">
-              <div className="movement icon" title="Movement" alt-text="Movement"></div>
+              <div className="movement icon" title="Movement"></div>
             </div>
             <div className="center label">
-              <div className="weaponskill icon" title="Weapon Skill" alt-text="Weapon Skill"></div>
+              <div className="weaponskill icon" title="Weapon Skill"></div>
             </div>
             <div className="center label">
-              <div className="ballisticskill icon" title="Ballistic Skill" alt-text="Ballistic Skill"></div>
+              <div className="ballisticskill icon" title="Ballistic Skill"></div>
             </div>
             <div className="center label">
-              <div className="strength icon" title="Strength" alt-text="Strength"></div>
+              <div className="strength icon" title="Strength"></div>
             </div>
             <div className="center label">
-              <div className="toughness icon" title="Toughness" alt-text="Toughness"></div>
+              <div className="toughness icon" title="Toughness"></div>
             </div>
             <div className="center label">
-              <div className="wounds icon" title="Wounds" alt-text="Wounds"></div>
+              <div className="wounds icon" title="Wounds"></div>
             </div>
             <div className="center label">
-              <div className="attacks icon" title="Attacks" alt-text="Attacks"></div>
+              <div className="attacks icon" title="Attacks"></div>
             </div>
             <div className="center label">
-              <div className="leadership icon" title="Leadership" alt-text="Leadership"></div>
+              <div className="leadership icon" title="Leadership"></div>
             </div>
             <div className="center label">
-              <div className="save icon" title="Save" alt-text="Save"></div>
+              <div className="save icon" title="Save"></div>
             </div>
             <div className="center label">
-              <div className="inv icon" title="Invulnerable" alt-text="Save"></div>
+              <div className="inv icon" title="Invulnerable"></div>
             </div>
           </div>
           <div className="labels edit_line">

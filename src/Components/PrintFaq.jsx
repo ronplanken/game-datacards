@@ -89,7 +89,7 @@ export const PrintFaq = () => {
           padding: "0px",
         }}
         type="ghost"
-        shape='circle'
+        shape="circle"
         onClick={() => setIsPrintFaqVisible(true)}>
         <QuestionCircleOutlined />
       </Button>

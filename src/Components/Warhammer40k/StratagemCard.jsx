@@ -1,7 +1,8 @@
 import { MarkdownDisplay } from "../MarkdownDisplay";
 
 export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px" }) => {
-  const style = stratagem.variant === "custom" ? { height: `${stratagem.height}cm`, width: `${stratagem.width}cm` } : {};
+  const style =
+    stratagem.variant === "custom" ? { height: `${stratagem.height}cm`, width: `${stratagem.width}cm` } : {};
   return (
     <div
       style={{

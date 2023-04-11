@@ -1,7 +1,7 @@
 import Icon from "@ant-design/icons";
 
 const svgIcon = () => (
-  <svg width="1.2em" height="1.2em"  viewBox="0 0 334 471" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="1.2em" height="1.2em" viewBox="0 0 334 471" fill="none" xmlns="http://www.w3.org/2000/svg">
     <mask id="path-1-inside-1_202_2" fill="white">
       <rect width="334" height="470.423" rx="16" />
     </mask>

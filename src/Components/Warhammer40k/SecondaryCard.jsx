@@ -1,7 +1,8 @@
 import { MarkdownDisplay } from "../MarkdownDisplay";
 
 export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => {
-  const style = secondary.variant === "custom" ? { height: `${secondary.height}cm`, width: `${secondary.width}cm` } : {};
+  const style =
+    secondary.variant === "custom" ? { height: `${secondary.height}cm`, width: `${secondary.width}cm` } : {};
   return (
     <div
       style={{

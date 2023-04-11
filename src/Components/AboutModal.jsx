@@ -25,28 +25,22 @@ export const AboutModal = () => {
               type="primary"
               onClick={() => {
                 setIsModalVisible(false);
-              }}
-            >
+              }}>
               Close
             </Button>
           </Space>
-        }
-      >
+        }>
         <div>
           <p>
-            The Game Datacards website is a tool to help Tabletop Wargaming
-            players around the world create their own custom datacards for
-            printing.
+            The Game Datacards website is a tool to help Tabletop Wargaming players around the world create their own
+            custom datacards for printing.
           </p>
           <b>An extra thank you to:</b>
           <ul>
             <li>
               <p>
                 External data sources are powered by{" "}
-                <Typography.Link href="https://wahapedia.ru/">
-                  Wahapedia
-                </Typography.Link>
-                .
+                <Typography.Link href="https://wahapedia.ru/">Wahapedia</Typography.Link>.
               </p>
             </li>
             <li>
@@ -74,8 +68,7 @@ export const AboutModal = () => {
           style={{ color: "white" }}
           onClick={() => {
             setIsModalVisible(true);
-          }}
-        >
+          }}>
           About
         </Button>
       </Tooltip>

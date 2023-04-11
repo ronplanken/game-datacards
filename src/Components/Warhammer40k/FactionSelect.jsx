@@ -3,7 +3,7 @@ import React from "react";
 
 const { Option } = Select;
 
-export const FactionSelect = ({value, onChange}) => {
+export const FactionSelect = ({ value, onChange }) => {
   return (
     <Select value={value} onChange={onChange}>
       <Option value="NONE">None</Option>
