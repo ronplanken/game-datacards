@@ -29,14 +29,15 @@ const extractWargear = (profile) => {
         S: profile?.characteristics?.characteristic?.find((char) => char.name === "S")["_"] || "",
         AP: profile?.characteristics?.characteristic?.find((char) => char.name === "AP")["_"] || "",
         D: profile?.characteristics?.characteristic?.find((char) => char.name === "D")["_"] || "",
-        abilities: profile?.characteristics?.characteristic?.find((char) => char.name === "Abilities")["_"] || "",
+        abilities:
+          profile?.characteristics?.characteristic?.find((char) => char.name === "Abilities")["_"]?.replace("-", "") ||
+          "",
       },
     ],
     active: true,
   };
 };
 const extractMultilineWargear = (profile) => {
-  console.log("profile", profile);
   return {
     id: uuidv4(),
     name: name,
@@ -60,7 +61,6 @@ const extractMultilineWargear = (profile) => {
 };
 
 const extractAbility = (profile) => {
-  console.log(profile);
   return {
     id: uuidv4(),
     type: "Abilities",
@@ -92,6 +92,9 @@ const generateAbilities = (selection) => {
       if (profile.typeName === "Abilities") {
         abilities.push(extractAbility(profile));
       }
+      if (profile.typeName === "Explosion") {
+        abilities.push(extractAbility(profile));
+      }
     });
   } else {
     if (selection.profiles?.profile) {
@@ -119,11 +122,9 @@ const generateUpgrades = (selection) => {
 
 const generateModelWargear = (model) => {
   const wargear = [];
-  console.log("selection:", model );
   if (Array.isArray(model.selections.selection)) {
     model.selections.selection.forEach((selection) => {
       if (selection.type === "upgrade" && selection?.profiles?.profile) {
-        console.log("start", selection);
         if (Array.isArray(selection?.profiles?.profile)) {
           selection.profiles.profile.forEach((profile) => {
             if (profile.typeName.toLowerCase() === "weapon") {
@@ -137,10 +138,41 @@ const generateModelWargear = (model) => {
         }
       }
     });
-  } else {
-    // if (selection?.profiles?.profile && selection?.profiles?.profile.typeName.toLowerCase() === "weapon") {
-    //   wargear.push(extractWargear(selection?.profiles?.profile));
-    // }
+  }
+  if (!Array.isArray(model.selections.selection)) {
+    console.log(model);
+    model.selections.selection.forEach((selection) => {
+      if (smodel.selections.selection.type === "upgrade" && model.selections?.selection?.profiles?.profile) {
+        if (Array.isArray(model.selections?.selection?.profiles?.profile)) {
+          selection.profiles.profile.forEach((profile) => {
+            if (profile.typeName.toLowerCase() === "weapon") {
+              wargear.push(extractWargear(profile));
+            }
+          });
+        } else {
+          if (model.selections?.selection?.profiles?.profile.typeName.toLowerCase() === "weapon") {
+            wargear.push(extractWargear(model.selections?.selection?.profiles?.profile));
+          }
+        }
+      }
+    });
+  }
+  if (Array.isArray(model?.profiles?.profile)) {
+    model.profiles?.profile.forEach((profile) => {
+      if (profile.typeName?.toLowerCase() === "weapon") {
+        if (Array.isArray(profile?.profiles?.profile)) {
+          profile.profiles.profile.forEach((profile) => {
+            if (profile.typeName.toLowerCase() === "weapon") {
+              wargear.push(extractWargear(profile));
+            }
+          });
+        } else {
+          if (profile?.typeName.toLowerCase() === "weapon") {
+            wargear.push(extractWargear(profile));
+          }
+        }
+      }
+    });
   }
   return wargear;
 };

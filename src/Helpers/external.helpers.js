@@ -129,7 +129,13 @@ export const get40KData = async () => {
     return secondary;
   });
 
-  mappedSecondaries.sort((a, b) => a.category.localeCompare(b.category));
+  mappedSecondaries.sort((a, b) => {
+    if (a.faction_id !== b.faction_id) {
+      return a.faction_id.localeCompare(b.faction_id);
+    } else {
+      return a.category.localeCompare(b.category);
+    }
+  });
 
   const mappedSheets = sheets.map((row) => {
     row["cardType"] = "datasheet";
@@ -229,11 +235,7 @@ export const get40KData = async () => {
         return a.name.localeCompare(b.name);
       });
     faction["secondaries"] = mappedSecondaries.filter((secondary) => {
-      return (
-        secondary.game === "Arks of Omen: Grand Tournament" &&
-        (secondary.faction_id === faction.id ||
-          faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
-      );
+      return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id !== "";
     });
 
     faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {

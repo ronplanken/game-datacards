@@ -505,6 +505,20 @@
           background-size: contain;
           background-position: center;
         }
+          .secondary_icon_@{value}::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 23px;
+            height: 23px;
+            opacity: 0.75;
+            background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+          }
       });
 
         .AM::before {
@@ -541,11 +555,10 @@
           border-top: 2px solid #000;
           position: absolute;
           text-transform: uppercase;
-          font-size: 16px;
-          font-weight: 700;
+          font-size: 13px;
+          font-weight: 600;
           text-align: center;
-          bottom: 8px;
-          text-align: center;
+          bottom: 6px;
           padding-left: 15px;
           padding-right: 15px;
           display: -webkit-box;
@@ -580,11 +593,11 @@
         }
         .name {
           font-family: "Heebo", sans-serif;
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
           text-transform: uppercase;
           text-align: center;
-          margin-top: 8px;
+          margin-top: 4px;
         }
 
         .description {
@@ -623,7 +636,9 @@
 
           ul {
             padding-left: 16px;
-
+            li {
+               padding-left: -8px
+            }
             p {
               margin-bottom: 2px;
             }
