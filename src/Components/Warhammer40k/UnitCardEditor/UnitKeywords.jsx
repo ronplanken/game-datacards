@@ -24,14 +24,9 @@ export function UnitKeywords() {
             return;
           }
 
-          const newKeywords = reorder(
-            activeCard.keywords,
-            result.source.index,
-            result.destination.index
-          );
+          const newKeywords = reorder(activeCard.keywords, result.source.index, result.destination.index);
           updateActiveCard({ ...activeCard, keywords: newKeywords });
-        }}
-      >
+        }}>
         <Droppable droppableId="droppable-keywords">
           {(provided, snapshot) => {
             return (
@@ -41,45 +36,38 @@ export function UnitKeywords() {
                     <Draggable
                       key={`ability-${keyword.keyword}-${index}`}
                       draggableId={`ability-${keyword.keyword}-${index}`}
-                      index={index}
-                    >
+                      index={index}>
                       {(drag) => (
                         <Row
                           justify="space-between"
                           align="middle"
                           ref={drag.innerRef}
                           {...drag.draggableProps}
-                          {...drag.dragHandleProps}
-                        >
+                          {...drag.dragHandleProps}>
                           <Col span={22} justify="center">
                             <Checkbox
                               checked={keyword.active}
                               onChange={(e) => {
                                 updateActiveCard(() => {
                                   const newKeywords = [...activeCard.keywords];
-                                  newKeywords[index]["active"] =
-                                    e.target.checked;
+                                  newKeywords[index]["active"] = e.target.checked;
                                   return {
                                     ...activeCard,
                                     keywords: newKeywords,
                                   };
                                 });
-                              }}
-                            >
+                              }}>
                               <Typography.Text
                                 editable={{
                                   onChange: (value) => {
-                                    const newKeywords = [
-                                      ...activeCard.keywords,
-                                    ];
+                                    const newKeywords = [...activeCard.keywords];
                                     newKeywords[index]["keyword"] = value;
                                     updateActiveCard({
                                       ...activeCard,
                                       keywords: newKeywords,
                                     });
                                   },
-                                }}
-                              >
+                                }}>
                                 {keyword.keyword}
                               </Typography.Text>
                             </Checkbox>
@@ -114,8 +102,7 @@ export function UnitKeywords() {
             });
             return { ...activeCard, keywords: newKeywords };
           })
-        }
-      >
+        }>
         Add new keyword
       </Button>
     </>

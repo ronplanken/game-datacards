@@ -58,9 +58,7 @@ export const WeaponStatProfile = ({ type }) => {
         </div>
       );
     }
-    return (
-      <div style={{ display: "flex", alignItems: "center" }}>{weaponType}</div>
-    );
+    return <div style={{ display: "flex", alignItems: "center" }}>{weaponType}</div>;
   };
 
   return renderType(type);

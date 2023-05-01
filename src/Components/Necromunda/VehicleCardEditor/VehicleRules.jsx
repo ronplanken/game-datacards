@@ -1,5 +1,5 @@
 import { DeleteFilled } from "@ant-design/icons";
-import MDEditor, { commands } from '@uiw/react-md-editor';
+import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Button, Card, Col, Popconfirm, Row, Space, Switch, Typography } from "antd";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";

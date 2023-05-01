@@ -6,10 +6,10 @@ import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { Datacard } from "../Icons/Datacard";
 import { Ganger } from "../Icons/Ganger";
-import { PsychicPower } from '../Icons/PsychicPower';
+import { PsychicPower } from "../Icons/PsychicPower";
 import { Secondary } from "../Icons/Secondary";
 import { Stratagem } from "../Icons/Stratagem";
-import { Vehicle } from '../Icons/Vehicle';
+import { Vehicle } from "../Icons/Vehicle";
 
 const { confirm } = Modal;
 

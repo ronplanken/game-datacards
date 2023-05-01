@@ -37,8 +37,7 @@ export function GangerWargear() {
                     <Draggable
                       key={`ability-${gear.name}-${index}`}
                       draggableId={`ability-${gear.name}-${index}`}
-                      index={index}
-                      >
+                      index={index}>
                       {(drag) => (
                         <Card
                           type={"inner"}
