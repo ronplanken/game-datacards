@@ -94,7 +94,6 @@ export const CardStorageProviderComponent = (props) => {
   };
 
   const importCategory = (category) => {
-
     if (!category) {
       return;
     }

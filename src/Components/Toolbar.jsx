@@ -8,17 +8,15 @@ import {
   SaveOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { Button, Col, message, Modal, Row, Tabs, Tooltip } from "antd";
+import { Button, Col, Modal, Row, Tabs, Tooltip, message } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
 import { compare } from "compare-versions";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { generateAbilities, generateDatasheets, generateModelWargear } from "../Helpers/battlescribe.helpers";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
 
-import JSZip from "jszip";
 import { Parser } from "xml2js";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
@@ -202,7 +200,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                 </Col>
               </Row>
             </Tabs.TabPane>
-            <Tabs.TabPane tab={"Battlescribe"} key={"battlescribe"} style={{ minHeight: 250 }}>
+            {/* <Tabs.TabPane tab={"Battlescribe"} key={"battlescribe"} style={{ minHeight: 250 }}>
               <Row>
                 <Col span={24}>
                   <Dragger
@@ -368,8 +366,8 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                     <p className="ant-upload-hint">Support for a single file upload. Only .rosz files.</p>
                   </Dragger>
                 </Col>
-              </Row>
-              {/* <Row>
+              </Row> */}
+            {/* <Row>
                 <Col span={24}>
                   <Form layout="horizontal">
                     <Card
@@ -391,7 +389,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                   </Form>
                 </Col>
               </Row> */}
-            </Tabs.TabPane>
+            {/* </Tabs.TabPane> */}
           </Tabs>
         </Modal>
         <Tooltip title={"Print cards from category"} placement="bottomLeft">

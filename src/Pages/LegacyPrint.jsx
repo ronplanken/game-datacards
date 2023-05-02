@@ -29,7 +29,7 @@ export const LegacyPrint = () => {
 
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
     return (
-      <Layout style={{ height: "calc(100vh)"}}>
+      <Layout style={{ height: "calc(100vh)" }}>
         <Header className="no-print">
           <Row style={{ justifyContent: "space-between" }}>
             <Col>

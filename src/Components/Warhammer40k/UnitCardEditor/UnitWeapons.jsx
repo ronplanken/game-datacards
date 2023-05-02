@@ -196,13 +196,17 @@ export function UnitWeapons() {
                             size={"small"}
                             title={
                               <Typography.Text
-                                editable={{
-                                  onChange: (value) => {
-                                    const newWargear = [...activeCard.wargear];
-                                    newWargear[index]["name"] = value;
-                                    updateActiveCard({ ...activeCard, wargear: newWargear });
-                                  },
-                                }}>
+                                editable={
+                                  wargear.active && wargear?.profiles?.length > 1
+                                    ? {
+                                        onChange: (value) => {
+                                          const newWargear = [...activeCard.wargear];
+                                          newWargear[index]["name"] = value;
+                                          updateActiveCard({ ...activeCard, wargear: newWargear });
+                                        },
+                                      }
+                                    : false
+                                }>
                                 {wargear.name}
                               </Typography.Text>
                             }

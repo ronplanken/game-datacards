@@ -1,6 +1,6 @@
 import { DeleteFilled } from "@ant-design/icons";
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Button, Card, Col, Empty, Popconfirm, Row, Select, Space, Switch, Typography } from "antd";
+import { Button, Card, Col, Empty, Form, Popconfirm, Row, Select, Space, Switch, Typography } from "antd";
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
@@ -23,47 +23,47 @@ export function UnitAbilities() {
   return (
     <>
       <Row>
-        <Col span={22}>
-          <Select
-            placeholder={"Add a warlord trait"}
-            size={"middle"}
-            value={selectedTraitIndex}
-            onChange={(index) => setSelectedTraitIndex(index)}
-            style={{
-              width: "100%",
-              marginBottom: 8,
-            }}
-            notFoundContent={
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No warlord traits could be found."} />
-            }>
-            {selectedFaction?.traits?.map((trait, index) => (
-              <Option value={index} key={`${trait?.name}-${index}`}>
-                {trait?.name}
-              </Option>
-            ))}
-          </Select>
-        </Col>
-        <Col span={2}>
-          <Button
-            disabled={selectedTraitIndex === undefined}
-            onClick={() => {
-              updateActiveCard(() => {
-                const newAbilities = [...activeCard.abilities];
-                newAbilities.push({
-                  name: selectedFaction?.traits[selectedTraitIndex].name,
-                  description: selectedFaction?.traits[selectedTraitIndex].description,
-                  custom: true,
-                  showAbility: true,
-                  showDescription: false,
-                  type: "Abilities",
-                  id: uuidv4(),
+        <Col span={24}>
+          <Space.Compact block>
+            <Select
+              placeholder={"Add a warlord trait"}
+              size={"middle"}
+              value={selectedTraitIndex}
+              onChange={(index) => setSelectedTraitIndex(index)}
+              style={{
+                width: "100%",
+                marginBottom: 8,
+              }}
+              notFoundContent={
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No warlord traits could be found."} />
+              }>
+              {selectedFaction?.traits?.map((trait, index) => (
+                <Option value={index} key={`${trait?.name}-${index}`}>
+                  {trait?.name}
+                </Option>
+              ))}
+            </Select>
+            <Button
+              disabled={selectedTraitIndex === undefined}
+              onClick={() => {
+                updateActiveCard(() => {
+                  const newAbilities = [...activeCard.abilities];
+                  newAbilities.push({
+                    name: selectedFaction?.traits[selectedTraitIndex].name,
+                    description: selectedFaction?.traits[selectedTraitIndex].description,
+                    custom: true,
+                    showAbility: true,
+                    showDescription: false,
+                    type: "Abilities",
+                    id: uuidv4(),
+                  });
+                  return { ...activeCard, abilities: newAbilities };
                 });
-                return { ...activeCard, abilities: newAbilities };
-              });
-              setSelectedTraitIndex(undefined);
-            }}>
-            Add
-          </Button>
+                setSelectedTraitIndex(undefined);
+              }}>
+              Add
+            </Button>
+          </Space.Compact>
         </Col>
       </Row>
 
@@ -111,8 +111,8 @@ export function UnitAbilities() {
                                 {ability.name}
                               </Typography.Text>
                             }
-                            bodyStyle={{ padding: 0 }}
                             style={{ marginBottom: "16px" }}
+                            bodyStyle={{ padding: ability.showAbility ? 8 : 0 }}
                             extra={
                               <Space>
                                 <Popconfirm
@@ -140,8 +140,8 @@ export function UnitAbilities() {
                               </Space>
                             }>
                             {ability.showAbility && (
-                              <Row justify="space-between" align="middle">
-                                <Col span={2} justify="center" style={{ textAlign: "center" }}>
+                              <Form size="small">
+                                <Form.Item label={"Show Description"}>
                                   <Switch
                                     checked={ability.showDescription}
                                     onChange={(value) => {
@@ -152,8 +152,8 @@ export function UnitAbilities() {
                                       });
                                     }}
                                   />
-                                </Col>
-                                <Col span={22}>
+                                </Form.Item>
+                                <Form.Item label={"Description"}>
                                   <MDEditor
                                     preview="edit"
                                     commands={[
@@ -176,8 +176,8 @@ export function UnitAbilities() {
                                       });
                                     }}
                                   />
-                                </Col>
-                              </Row>
+                                </Form.Item>
+                              </Form>
                             )}
                           </Card>
                         </div>

@@ -458,6 +458,7 @@ function App() {
                         overlay={categoryMenu}
                         icon={<AddCard />}
                         type={"primary"}
+                        style={{ width: "auto" }}
                         onClick={() => {
                           const newCard = {
                             ...activeCard,

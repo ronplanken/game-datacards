@@ -1,6 +1,29 @@
 @import "./factions.less";
 .data-40k,
 .data-basic {
+  &.no-icons {
+    .edit_heading {
+      .label {
+        @import (multiple) "./40k-no-icons.less";
+      }
+    }
+  }
+
+  &.icons {
+    .edit_heading {
+      .label {
+        .icon {
+          height: 11px;
+          width: 11px;
+          margin-right: 2px;
+          margin-top: -2px;
+          background-repeat: no-repeat;
+        }
+        @import (multiple) "./40k-icons.less";
+      }
+    }
+  }
+
   .unit {
     .page {
       width: inherit;
@@ -10,11 +33,11 @@
       background-color: #d0d0d0;
 
       &.no-icons {
-        @import "./40k-no-icons.less";
+        @import (multiple) "./40k-no-icons.less";
       }
 
       &.icons {
-        @import "./40k-icons.less";
+        @import (multiple) "./40k-icons.less";
       }
 
       @import (multiple) "./sizes.less";
@@ -637,7 +660,7 @@
           ul {
             padding-left: 16px;
             li {
-               padding-left: -8px
+              padding-left: -8px;
             }
             p {
               margin-bottom: 2px;
