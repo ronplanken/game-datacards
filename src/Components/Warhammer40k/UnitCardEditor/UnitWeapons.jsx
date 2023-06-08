@@ -128,19 +128,19 @@ export function UnitWeapons() {
         <div className="weapon_edit_profile edit_heading" key={`profile-header-${index}`}>
           <div className="left label">DESCRIPTION</div>
           <div className="center label">
-            <div className="range icon" title="Range" alt-text="Range"></div>
+            <div className="range icon" title="Range"></div>
           </div>
           <div className="center label">
-            <div className="type icon" title="Type" alt-text="Type"></div>
+            <div className="type icon" title="Type"></div>
           </div>
           <div className="center label">
-            <div className="strength icon" title="Type" alt-text="Type"></div>
+            <div className="strength icon" title="Type"></div>
           </div>
           <div className="center label">
-            <div className="ap icon" title="Type" alt-text="Type"></div>
+            <div className="ap icon" title="Type"></div>
           </div>
           <div className="center label">
-            <div className="dmg icon" title="Type" alt-text="Type"></div>
+            <div className="dmg icon" title="Type"></div>
           </div>
         </div>
         {profiles}
@@ -196,13 +196,17 @@ export function UnitWeapons() {
                             size={"small"}
                             title={
                               <Typography.Text
-                                editable={{
-                                  onChange: (value) => {
-                                    const newWargear = [...activeCard.wargear];
-                                    newWargear[index]["name"] = value;
-                                    updateActiveCard({ ...activeCard, wargear: newWargear });
-                                  },
-                                }}>
+                                editable={
+                                  wargear.active && wargear?.profiles?.length > 1
+                                    ? {
+                                        onChange: (value) => {
+                                          const newWargear = [...activeCard.wargear];
+                                          newWargear[index]["name"] = value;
+                                          updateActiveCard({ ...activeCard, wargear: newWargear });
+                                        },
+                                      }
+                                    : false
+                                }>
                                 {wargear.name}
                               </Typography.Text>
                             }

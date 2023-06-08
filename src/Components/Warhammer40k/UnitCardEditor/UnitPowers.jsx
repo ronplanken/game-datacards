@@ -24,51 +24,51 @@ export function UnitPowers() {
   return (
     <>
       <Row>
-        <Col span={22}>
-          <Select
-            placeholder={"Add a psychic power"}
-            size={"middle"}
-            value={selectedPowerIndex}
-            onChange={(index) => setSelectedPowerIndex(index)}
-            style={{
-              width: "100%",
-              marginBottom: 8,
-            }}
-            notFoundContent={
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No psyhic powers could be found."} />
-            }>
-            {selectedFaction?.psychicpowers?.map((power, index) => (
-              <Option value={index} key={`${power?.name}-${index}`}>
-                {power?.name}
-              </Option>
-            ))}
-          </Select>
-        </Col>
-        <Col span={2}>
-          <Button
-            disabled={selectedPowerIndex === undefined}
-            onClick={() => {
-              updateActiveCard(() => {
-                const newPowers = [...(activeCard.powers || [])];
-                const power = selectedFaction?.psychicpowers[selectedPowerIndex];
-                newPowers.push({
-                  name: power.name,
-                  description: power.description,
-                  warpcharge: extractWarpChargeValue(power.description),
-                  powerType: power.type,
-                  custom: true,
-                  showPower: true,
-                  showWarpCharge: true,
-                  showDescription: false,
-                  type: "powers",
-                  id: uuidv4(),
+        <Col span={24}>
+          <Space.Compact block>
+            <Select
+              placeholder={"Add a psychic power"}
+              size={"middle"}
+              value={selectedPowerIndex}
+              onChange={(index) => setSelectedPowerIndex(index)}
+              style={{
+                width: "100%",
+                marginBottom: 8,
+              }}
+              notFoundContent={
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={"No psyhic powers could be found."} />
+              }>
+              {selectedFaction?.psychicpowers?.map((power, index) => (
+                <Option value={index} key={`${power?.name}-${index}`}>
+                  {power?.name}
+                </Option>
+              ))}
+            </Select>
+            <Button
+              disabled={selectedPowerIndex === undefined}
+              onClick={() => {
+                updateActiveCard(() => {
+                  const newPowers = [...(activeCard.powers || [])];
+                  const power = selectedFaction?.psychicpowers[selectedPowerIndex];
+                  newPowers.push({
+                    name: power.name,
+                    description: power.description,
+                    warpcharge: extractWarpChargeValue(power.description),
+                    powerType: power.type,
+                    custom: true,
+                    showPower: true,
+                    showWarpCharge: true,
+                    showDescription: false,
+                    type: "powers",
+                    id: uuidv4(),
+                  });
+                  return { ...activeCard, powers: newPowers };
                 });
-                return { ...activeCard, powers: newPowers };
-              });
-              setSelectedPowerIndex(undefined);
-            }}>
-            Add
-          </Button>
+                setSelectedPowerIndex(undefined);
+              }}>
+              Add
+            </Button>
+          </Space.Compact>
         </Col>
       </Row>
 
@@ -132,7 +132,7 @@ export function UnitPowers() {
                                   <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
                                 </Popconfirm>
                                 <Switch
-                                  checked={power.showAbility}
+                                  checked={power.showPower}
                                   onChange={(value) => {
                                     updateActiveCard(() => {
                                       const newPowers = [...activeCard.powers];

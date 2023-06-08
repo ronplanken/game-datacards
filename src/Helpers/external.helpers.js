@@ -129,7 +129,13 @@ export const get40KData = async () => {
     return secondary;
   });
 
-  mappedSecondaries.sort((a, b) => a.category.localeCompare(b.category));
+  mappedSecondaries.sort((a, b) => {
+    if (a.faction_id !== b.faction_id) {
+      return a.faction_id.localeCompare(b.faction_id);
+    } else {
+      return a.category.localeCompare(b.category);
+    }
+  });
 
   const mappedSheets = sheets.map((row) => {
     row["cardType"] = "datasheet";
@@ -229,11 +235,7 @@ export const get40KData = async () => {
         return a.name.localeCompare(b.name);
       });
     faction["secondaries"] = mappedSecondaries.filter((secondary) => {
-      return (
-        secondary.game === "Arks of Omen: Grand Tournament" &&
-        (secondary.faction_id === faction.id ||
-          faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
-      );
+      return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id !== "";
     });
 
     faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {
@@ -390,6 +392,24 @@ export const getBasicData = () => {
         ],
       },
     ],
+  };
+};
+
+export const get40k10eData = async () => {
+  const tyranids = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/tyranids.json?${new Date().getTime()}`
+  );
+
+  return {
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: new Date().toISOString(),
+    lastCheckedForUpdate: new Date().toISOString(),
+    noDatasheetOptions: true,
+    noStratagemOptions: true,
+    noSecondaryOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: true,
+    data: [tyranids],
   };
 };
 

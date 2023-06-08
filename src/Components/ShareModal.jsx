@@ -24,18 +24,15 @@ export const ShareModal = () => {
             type="primary"
             onClick={() => {
               setIsModalVisible(false);
-            }}
-          >
+            }}>
             Ok
           </Button>
-        }
-      >
+        }>
         <Row gutter={8}>
           <Col span={24}>
             <Typography.Paragraph>
-              Share your datacard set with others by generating and sharing the
-              following link. When sharing your datacard set only active
-              sections will be saved.
+              Share your datacard set with others by generating and sharing the following link. When sharing your
+              datacard set only active sections will be saved.
             </Typography.Paragraph>
           </Col>
         </Row>
@@ -48,13 +45,9 @@ export const ShareModal = () => {
                 border: "1px solid #D9D9D9",
                 height: "32px",
                 lineHeight: "2em",
-              }}
-            >
+              }}>
               {shareId ? (
-                <Typography.Link
-                  target={"_blank"}
-                  href={`https://game-datacards.eu/shared/${shareId}`}
-                >
+                <Typography.Link target={"_blank"} href={`https://game-datacards.eu/shared/${shareId}`}>
                   https://game-datacards.eu/shared/{shareId}
                 </Typography.Link>
               ) : (
@@ -71,12 +64,9 @@ export const ShareModal = () => {
                   icon={<LinkOutlined />}
                   type={"primary"}
                   onClick={() => {
-                    navigator.clipboard.writeText(
-                      `https://game-datacards.eu/shared/${shareId}`
-                    );
+                    navigator.clipboard.writeText(`https://game-datacards.eu/shared/${shareId}`);
                     message.success("Link has been copied");
-                  }}
-                >
+                  }}>
                   Copy
                 </Button>
               </Tooltip>
@@ -92,8 +82,7 @@ export const ShareModal = () => {
                   const docId = await shareCategory(activeCategory);
                   setShareId(docId.id);
                   setIsGenerating(false);
-                }}
-              >
+                }}>
                 Generate
               </Button>
             </Col>
@@ -102,8 +91,7 @@ export const ShareModal = () => {
         <Row gutter={8}>
           <Col span={24}>
             <Typography.Text type="secondary" style={{ fontSize: "0.9em" }}>
-              Please note that the link is a snapshot of the current set and
-              will not be automatically updated.
+              Please note that the link is a snapshot of the current set and will not be automatically updated.
             </Typography.Text>
           </Col>
         </Row>
@@ -117,8 +105,7 @@ export const ShareModal = () => {
             logScreenView("Share category");
             setIsModalVisible(true);
           }}
-          className={"button-bar"}
-        >
+          className={"button-bar"}>
           Share
         </Button>
       </Tooltip>

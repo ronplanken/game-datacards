@@ -1,5 +1,5 @@
 import { Collapse } from "antd";
-import { SecondaryBasicInfo } from './SecondaryEditor/SecondaryBasicInfo';
+import { SecondaryBasicInfo } from "./SecondaryEditor/SecondaryBasicInfo";
 
 const { Panel } = Collapse;
 

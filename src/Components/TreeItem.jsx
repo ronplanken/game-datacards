@@ -1,15 +1,16 @@
 import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
-import { Dropdown, Menu, message, Modal } from "antd";
+import { Dropdown, Menu, Modal, message } from "antd";
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { Datacard } from "../Icons/Datacard";
+import { Datacard10e } from "../Icons/Datacard10e";
 import { Ganger } from "../Icons/Ganger";
-import { PsychicPower } from '../Icons/PsychicPower';
+import { PsychicPower } from "../Icons/PsychicPower";
 import { Secondary } from "../Icons/Secondary";
 import { Stratagem } from "../Icons/Stratagem";
-import { Vehicle } from '../Icons/Vehicle';
+import { Vehicle } from "../Icons/Vehicle";
 
 const { confirm } = Modal;
 
@@ -108,6 +109,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               }}
               className={"tree-item"}>
               {card.cardType === "datasheet" && <Datacard />}
+              {card.cardType === "DataCard" && <Datacard10e />}
               {card.cardType === "stratagem" && <Stratagem />}
               {card.cardType === "secondary" && <Secondary />}
               {card.cardType === "psychic" && <PsychicPower />}

@@ -3,9 +3,8 @@ import { UnitStatline } from "./UnitCard/UnitStatline";
 import { UnitType } from "./UnitCard/UnitType";
 import { WeaponStatline } from "./UnitCard/WeaponStatline";
 
-export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", cardScaling }) => {
-  let style = unit.variant === "custom" ? { height: `${unit.height}cm`, width: `${unit.width}cm` } : {};
-
+export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
+  const style = unit.variant === "custom" ? { height: `${unit.height}cm`, width: `${unit.width}cm` } : {};
   return (
     <div
       style={{
@@ -27,34 +26,34 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", cardScaling }) 
               {unit.datasheet?.filter((sheet) => sheet.active).length > 0 && (
                 <div className="labels heading">
                   <div className="center label">
-                    <div className="movement icon" title="Movement" alt-text="Movement"></div>
+                    <div className="movement icon" title="Movement"></div>
                   </div>
                   <div className="center label">
-                    <div className="weaponskill icon" title="Weapon Skill" alt-text="Weapon Skill"></div>
+                    <div className="weaponskill icon" title="Weapon Skill"></div>
                   </div>
                   <div className="center label">
-                    <div className="ballisticskill icon" title="Ballistic Skill" alt-text="Ballistic Skill"></div>
+                    <div className="ballisticskill icon" title="Ballistic Skill"></div>
                   </div>
                   <div className="center label">
-                    <div className="strength icon" title="Strength" alt-text="Strength"></div>
+                    <div className="strength icon" title="Strength"></div>
                   </div>
                   <div className="center label">
-                    <div className="toughness icon" title="Toughness" alt-text="Toughness"></div>
+                    <div className="toughness icon" title="Toughness"></div>
                   </div>
                   <div className="center label">
-                    <div className="wounds icon" title="Wounds" alt-text="Wounds"></div>
+                    <div className="wounds icon" title="Wounds"></div>
                   </div>
                   <div className="center label">
-                    <div className="attacks icon" title="Attacks" alt-text="Attacks"></div>
+                    <div className="attacks icon" title="Attacks"></div>
                   </div>
                   <div className="center label">
-                    <div className="leadership icon" title="Leadership" alt-text="Leadership"></div>
+                    <div className="leadership icon" title="Leadership"></div>
                   </div>
                   <div className="center label">
-                    <div className="save icon" title="Save" alt-text="Save"></div>
+                    <div className="save icon" title="Save"></div>
                   </div>
                   <div className="center label">
-                    <div className="inv icon" title="Invulnerable" alt-text="Save"></div>
+                    <div className="inv icon" title="Invulnerable"></div>
                   </div>
                 </div>
               )}
@@ -76,19 +75,19 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", cardScaling }) 
                 <div className="weapons heading">
                   <div className="left label">WEAPON</div>
                   <div className="center label">
-                    <div className="range icon" title="Range" alt-text="Range"></div>
+                    <div className="range icon" title="Range"></div>
                   </div>
                   <div className="center label">
-                    <div className="type icon" title="Type" alt-text="Type"></div>
+                    <div className="type icon" title="Type"></div>
                   </div>
                   <div className="center label">
-                    <div className="strength icon" title="Type" alt-text="Type"></div>
+                    <div className="strength icon" title="Type"></div>
                   </div>
                   <div className="center label">
-                    <div className="ap icon" title="Type" alt-text="Type"></div>
+                    <div className="ap icon" title="Type"></div>
                   </div>
                   <div className="center label">
-                    <div className="dmg icon" title="Type" alt-text="Type"></div>
+                    <div className="dmg icon" title="Type"></div>
                   </div>
                 </div>
               )}

@@ -42,110 +42,45 @@ export function GangerDatasheets() {
         <div className="line">
           <div className="stats">
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.M}
-                name="M"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.M} name="M" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.WS}
-                name="WS"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.WS} name="WS" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.BS}
-                name="BS"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.BS} name="BS" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.S}
-                name="S"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.S} name="S" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.T}
-                name="T"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.T} name="T" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.W}
-                name="W"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.W} name="W" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.I}
-                name="I"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.I} name="I" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.A}
-                name="A"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.A} name="A" onChange={(e) => handleSheetChange(e)} />
             </div>
           </div>
           <div className="data">
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.LD}
-                name="LD"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.LD} name="LD" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.CL}
-                name="CL"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.CL} name="CL" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.WIL}
-                name="WIL"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.WIL} name="WIL" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.INT}
-                name="INT"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.INT} name="INT" onChange={(e) => handleSheetChange(e)} />
             </div>
             <div>
-              <Input
-                type="text"
-                value={activeCard.datasheet.EXP}
-                name="EXP"
-                onChange={(e) => handleSheetChange(e)}
-              />
+              <Input type="text" value={activeCard.datasheet.EXP} name="EXP" onChange={(e) => handleSheetChange(e)} />
             </div>
           </div>
         </div>

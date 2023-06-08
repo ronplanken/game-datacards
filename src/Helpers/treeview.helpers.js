@@ -1,6 +1,6 @@
 import clone from "just-clone";
 
-export const getBackgroundColor = (snapshot: DroppableStateSnapshot): string => {
+export const getBackgroundColor = (snapshot) => {
   if (snapshot.isDraggingOver) {
     return "#f8f8f8";
   }
@@ -10,7 +10,7 @@ export const getBackgroundColor = (snapshot: DroppableStateSnapshot): string => 
   return "white";
 };
 
-export const getMinHeight = (snapshot: DroppableStateSnapshot): string => {
+export const getMinHeight = (snapshot) => {
   if (snapshot.isDraggingOver) {
     return "36px";
   }
@@ -40,7 +40,7 @@ export const move = (source, destination, droppableSource, droppableDestination)
 };
 
 export const getListFactionId = (card, faction) => {
-  if(!card) {
+  if (!card) {
     return "";
   }
   if (card.cardType === "datasheet") {

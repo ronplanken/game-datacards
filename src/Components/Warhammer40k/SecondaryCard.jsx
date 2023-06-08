@@ -1,11 +1,12 @@
 import { MarkdownDisplay } from "../MarkdownDisplay";
 
 export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => {
-  const style = secondary.variant === "custom" ? { height: `${secondary.height}cm`, width: `${secondary.width}cm` } : {};
+  const style =
+    secondary.variant === "custom" ? { height: `${secondary.height}cm`, width: `${secondary.width}cm` } : {};
   return (
     <div
       style={{
-      paddingTop,
+        paddingTop,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
@@ -13,6 +14,10 @@ export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => 
       <div className={`secondary`} style={cardStyle}>
         <div className={`page ${secondary.variant || "secondary"}`} style={style}>
           <div className="frame">
+            <div
+              className={`secondary_icon_${secondary.faction_id ? secondary.faction_id : "basic"}`}
+              style={{ position: "absolute", width: 35, height: 35, top: 10, right: 12 }}
+            />
             <div className={`${secondary.faction_id ? secondary.faction_id : "basic"} background`}>
               <div className="header">
                 <div className="type">{secondary.category}</div>

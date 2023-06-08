@@ -1,7 +1,7 @@
 import localForage from "localforage";
 import React, { useEffect } from "react";
-import { get40KData, getBasicData, getNecromundaBasicData } from "../Helpers/external.helpers";
-import { useFirebase } from './useFirebase';
+import { get40KData, getBasicData, getNecromundaBasicData, get40k10eData } from "../Helpers/external.helpers";
+import { useFirebase } from "./useFirebase";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
@@ -9,9 +9,7 @@ const DataSourceStorageContext = React.createContext(undefined);
 export function useDataSourceStorage() {
   const context = React.useContext(DataSourceStorageContext);
   if (context === undefined) {
-    throw new Error(
-      "`useDataSourceStorage` must be used with an `DataSourceStorageProvider`"
-    );
+    throw new Error("`useDataSourceStorage` must be used with an `DataSourceStorageProvider`");
   }
   return context;
 }
@@ -50,6 +48,20 @@ export const DataSourceStorageProviderComponent = (props) => {
 
         setDataSource(dataFactions);
       }
+      if (settings.selectedDataSource === "40k-10e") {
+        // const storedData = await dataStore.getItem("40k-10e");
+        // if (storedData) {
+        //   setDataSource(storedData);
+        //   setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+        //   return;
+        // }
+
+        const dataFactions = await get40k10eData();
+
+        dataStore.setItem("40k-10e", dataFactions);
+        setSelectedFaction(dataFactions.data[0]);
+        setDataSource(dataFactions);
+      }
       if (settings.selectedDataSource === "basic") {
         const basicData = getBasicData();
         setDataSource(basicData);
@@ -65,11 +77,7 @@ export const DataSourceStorageProviderComponent = (props) => {
   }, [settings]);
 
   useEffect(() => {
-    setSelectedFactionIndex(
-      dataSource?.data?.findIndex(
-        (faction) => faction?.id === selectedFaction?.id
-      )
-    );
+    setSelectedFactionIndex(dataSource?.data?.findIndex((faction) => faction?.id === selectedFaction?.id));
   }, [dataSource, selectedFaction]);
 
   const checkForUpdate = async () => {
@@ -77,6 +85,13 @@ export const DataSourceStorageProviderComponent = (props) => {
       return;
     }
     if (settings.selectedDataSource === "40k") {
+      const dataFactions = await get40KData();
+
+      dataStore.setItem("40k", dataFactions);
+
+      setDataSource(dataFactions);
+    }
+    if (settings.selectedDataSource === "40k-10e") {
       const dataFactions = await get40KData();
 
       dataStore.setItem("40k", dataFactions);
@@ -96,11 +111,7 @@ export const DataSourceStorageProviderComponent = (props) => {
   };
 
   useEffect(() => {
-    setSelectedFactionIndex(
-      dataSource?.data?.findIndex(
-        (faction) => faction?.id === selectedFaction?.id
-      )
-    );
+    setSelectedFactionIndex(dataSource?.data?.findIndex((faction) => faction?.id === selectedFaction?.id));
   }, [dataSource, selectedFaction]);
 
   const updateSelectedFaction = (faction) => {
@@ -108,9 +119,7 @@ export const DataSourceStorageProviderComponent = (props) => {
     setSelectedFaction(faction);
     updateSettings({
       ...settings,
-      selectedFactionIndex: dataSource?.data?.findIndex(
-        (f) => f?.id === faction?.id
-      ),
+      selectedFactionIndex: dataSource?.data?.findIndex((f) => f?.id === faction?.id),
     });
   };
   const updateSelectedFactionWithIndex = (index) => {
@@ -140,9 +149,5 @@ export const DataSourceStorageProviderComponent = (props) => {
     clearData,
   };
 
-  return (
-    <DataSourceStorageContext.Provider value={context}>
-      {props.children}
-    </DataSourceStorageContext.Provider>
-  );
+  return <DataSourceStorageContext.Provider value={context}>{props.children}</DataSourceStorageContext.Provider>;
 };

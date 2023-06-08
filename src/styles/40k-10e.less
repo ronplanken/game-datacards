@@ -1,0 +1,805 @@
+@import "./factions.less";
+
+.data-40k-10e {
+  .card-editor {
+    .stats_container {
+      padding-left: 8px;
+      display: flex;
+      align-items: end;
+      gap: 16px;
+
+      .stat {
+        z-index: 2;
+        position: relative;
+
+        flex-direction: row;
+        justify-content: center;
+        .caption {
+          text-align: center;
+          font-size: 0.9rem;
+          color: black;
+          font-weight: 600;
+          width: 40px;
+          height: 20px;
+        }
+
+        .value_container {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          background: #456664;
+          height: 40px;
+          width: 40px;
+          z-index: 1;
+          clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+
+          .value {
+            text-align: center;
+
+            height: 36px;
+            width: 36px;
+
+            text-transform: uppercase;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #456664;
+            z-index: 2;
+            background-color: white;
+
+            justify-content: center;
+            align-items: center;
+            display: flex;
+
+            clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+
+            input {
+              border: 0;
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: #456664;
+              text-align: center;
+              width: 100%;
+              padding: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .weapons_header {
+      background-color: #fafafa;
+      color: black;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .keywords_header {
+      background-color: #fafafa;
+      color: black;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding-left: 8px;
+    }
+    .keywords_container {
+      display: flex;
+      flex-direction: column;
+      padding-left: 16px;
+      padding-right: 16px;
+
+      .keyword_container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 2px;
+        margin: 2px;
+        border-bottom: 1px dotted #aaadb0;
+      }
+    }
+    .weapons_container,
+    .weapons_header {
+      padding-left: 8px;
+      display: flex;
+      align-items: end;
+      gap: 16px;
+
+      .tag {
+        border: 1px solid #456664;
+        border-radius: 2px;
+        padding-left: 4px;
+        padding-right: 4px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+
+      .weapon {
+        z-index: 2;
+        position: relative;
+
+        flex-direction: row;
+        justify-content: center;
+        .caption {
+          text-align: center;
+          font-size: 0.9rem;
+          color: black;
+          font-weight: 600;
+          width: 36px;
+          height: 20px;
+        }
+        .value {
+          text-align: center;
+
+          width: 36px;
+
+          text-transform: uppercase;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: #456664;
+          z-index: 2;
+          background-color: white;
+
+          justify-content: center;
+          align-items: center;
+          display: flex;
+
+          input {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #456664;
+            text-align: center;
+            width: 100%;
+            padding: 0;
+          }
+        }
+        .double {
+          width: 72px;
+        }
+      }
+    }
+  }
+  .unit {
+    height: 714px;
+    width: 1077px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    .header {
+      height: 196px;
+      width: 1077px;
+      background-color: black;
+      position: relative;
+
+      .name_container {
+        padding-top: 32px;
+        padding-left: 32px;
+        display: flex;
+        align-items: end;
+        .name {
+          text-transform: uppercase;
+          font-size: 2rem;
+          font-weight: 800;
+          color: white;
+          z-index: 2;
+          line-height: 2.5rem;
+          letter-spacing: 0.1rem;
+        }
+        .subname {
+          padding-left: 8px;
+          text-transform: uppercase;
+          font-style: italic;
+          color: white;
+          font-size: 1.1rem;
+          z-index: 2;
+          font-weight: 600;
+          letter-spacing: 0.1rem;
+        }
+      }
+
+      .stats_container {
+        padding-left: 32px;
+        display: flex;
+        align-items: end;
+        gap: 16px;
+
+        &:last-child {
+          padding-top: 4px;
+        }
+
+        .name {
+          text-transform: uppercase;
+          font-size: 1rem;
+          font-weight: 600;
+          color: white;
+          z-index: 2;
+          line-height: 2.5rem;
+          letter-spacing: 0.1rem;
+        }
+
+        .stat {
+          z-index: 2;
+          position: relative;
+
+          flex-direction: row;
+          justify-content: center;
+          .caption {
+            text-align: center;
+            font-size: 0.9rem;
+            color: white;
+            font-weight: 600;
+            width: 44px;
+            height: 20px;
+          }
+
+          .damageTable {
+            position: absolute;
+            bottom: -14px;
+            height: 24px;
+            width: 24px;
+            left: 10px;
+            border-radius: 32px;
+            background-color: #456664;
+
+            &::after {
+              content: " ";
+              position: absolute;
+              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+              background-repeat: no-repeat;
+              background-size: contain;
+              background-position: center;
+              height: 100%;
+              width: 100%;
+              scale: 0.75;
+            }
+          }
+          .value_container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            background: #456664;
+            height: 44px;
+            width: 44px;
+            z-index: 1;
+            clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+
+            .value {
+              text-align: center;
+
+              height: 40px;
+              width: 40px;
+
+              text-transform: uppercase;
+              font-size: 1.3rem;
+              font-weight: 600;
+              color: #456664;
+              z-index: 2;
+              background-color: white;
+
+              justify-content: center;
+              align-items: center;
+              display: flex;
+
+              clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+            }
+          }
+        }
+      }
+
+      &::after {
+        position: absolute;
+        content: "";
+        top: 32px;
+        left: 24px;
+        width: calc(1077px - 24px);
+        height: 90px;
+        background-color: #103344;
+        clip-path: polygon(0% 0%, 0% 100%, 42% 100%, 52% 50%, 100% 50%, 100% 0%);
+      }
+    }
+    .data_container {
+      height: 468px;
+      width: 1032px;
+      background-color: #456663;
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 2% 100%, 0 96%);
+
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+
+      .data {
+        top: 0;
+        margin-top: -4px;
+        height: 468px;
+        width: 1028px;
+        background-color: rgb(223, 224, 226);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 2% 100%, 0 96%);
+
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        grid-template-rows: 1fr;
+        grid-column-gap: 0px;
+        grid-row-gap: 0px;
+
+        .weapons {
+          height: 500px;
+          border-right: 2px solid #456663;
+          padding-top: 16px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .ranged {
+            position: relative;
+
+            &::before {
+              content: "";
+              position: absolute;
+              left: 4px;
+              top: 0;
+              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
+              background-repeat: none;
+              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+              width: 24px;
+              height: 24px;
+            }
+
+            .heading {
+              background-color: #456663;
+              padding-left: 32px;
+              display: grid;
+              grid-template-columns: 7fr 2fr repeat(5, 1fr);
+              grid-template-rows: 1fr;
+              grid-column-gap: 0px;
+              grid-row-gap: 0px;
+
+              .title {
+                text-transform: uppercase;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .weapon {
+              padding-left: 32px;
+              border-bottom: 1px dotted #636567;
+
+              &:nth-of-type(even) {
+                background: #d8d8da;
+              }
+              &:nth-of-type(odd) {
+                background: #dee3e0;
+              }
+              .line {
+                display: grid;
+                grid-template-columns: 7fr 2fr repeat(5, 1fr);
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+                .value {
+                  color: black;
+                  font-size: 0.9rem;
+                  font-weight: 400;
+                  letter-spacing: normal;
+                  z-index: 2;
+
+                  .name {
+                    white-space: pre-line;
+                  }
+
+                  .keyword {
+                    white-space: nowrap;
+                  }
+                }
+              }
+            }
+          }
+          .melee {
+            position: relative;
+
+            &::before {
+              content: "";
+              position: absolute;
+              left: 4px;
+              top: 0;
+              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
+              background-repeat: none;
+              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+              width: 20px;
+              height: 20px;
+              margin-top: 2px;
+            }
+
+            .heading {
+              background-color: #456663;
+              padding-left: 32px;
+              display: grid;
+              grid-template-columns: 7fr 2fr repeat(5, 1fr);
+              grid-template-rows: 1fr;
+              grid-column-gap: 0px;
+              grid-row-gap: 0px;
+
+              .title {
+                text-transform: uppercase;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .weapon {
+              padding-left: 32px;
+              border-bottom: 1px dotted #636567;
+
+              &:nth-of-type(even) {
+                background: #d8d8da;
+              }
+              &:nth-of-type(odd) {
+                background: #dee3e0;
+              }
+              .line {
+                display: grid;
+                grid-template-columns: 7fr 2fr repeat(5, 1fr);
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+                .value {
+                  color: black;
+                  font-size: 0.9rem;
+                  font-weight: 400;
+                  letter-spacing: normal;
+                  z-index: 2;
+
+                  .keyword {
+                    white-space: nowrap;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .extra {
+          padding: 16px;
+          height: 100%;
+
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .invul_container {
+            z-index: 2;
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+
+            .info {
+              color: black;
+              font-size: 0.7rem;
+              font-weight: 400;
+              letter-spacing: normal;
+              font-style: italic;
+              margin-top: -12px;
+              padding-left: 8px;
+            }
+            .invul {
+              z-index: 2;
+              position: relative;
+
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: center;
+
+              &::before {
+                content: " ";
+                position: absolute;
+                width: 100%;
+                height: 22px;
+                background-color: #456664;
+                top: calc(50% - 11px);
+              }
+
+              .title {
+                text-transform: uppercase;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+
+                padding-left: 8px;
+              }
+
+              .value_container {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+
+                height: 50px;
+                width: 50px;
+                z-index: 1;
+
+                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+                mask-repeat: no-repeat;
+                mask-position: center;
+                mask-size: contain;
+
+                background-color: #456664;
+
+                .value {
+                  text-align: center;
+
+                  height: 44px;
+                  width: 45px;
+
+                  text-transform: uppercase;
+                  font-size: 1.3rem;
+                  font-weight: 600;
+                  color: #456664;
+                  z-index: 2;
+
+                  justify-content: center;
+                  align-items: center;
+                  display: flex;
+
+                  background-color: white;
+
+                  mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+                  mask-repeat: no-repeat;
+                  mask-position: center;
+                  mask-size: contain;
+                }
+              }
+            }
+          }
+          .abilities {
+            .heading {
+              background-color: #456663;
+              padding-left: 8px;
+
+              .title {
+                text-transform: uppercase;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .ability {
+              padding: 4px;
+              border-bottom: 1px dotted #636567;
+              line-height: 1.0rem;
+
+              .title {
+                text-transform: uppercase;
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 300;
+
+                &::after {
+                  content: ":";
+                }
+              }
+
+              .value {
+                text-transform: capitalize;
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+              }
+              .description {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 400;
+                padding-left: 4px;
+              }
+
+              .name {
+                text-transform: capitalize;
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+
+                &::after {
+                  content: ":";
+                }
+              }
+            }
+          }
+
+          .damaged {
+            .description {
+              font-size: 0.7rem;
+              color: black;
+              font-weight: 400;
+              line-height: 1.1rem;
+              padding-left: 4px;
+              padding-top: 4px;
+            }
+            .heading {
+              background-color: #456663;
+              padding-left: 8px;
+              position: relative;
+
+              .title {
+                text-transform: uppercase;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                z-index: 2;
+                padding-left: 16px;
+
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 6px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+                  background-repeat: no-repeat;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 20px;
+                  height: 20px;
+                  margin-top: 2px;
+                  scale: 0.8;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .footer {
+      height: 64px;
+      width: 1000px;
+      border: 2px solid #456663;
+      background-color: #dfe0e2;
+      position: absolute;
+      bottom: 32px;
+
+      display: grid;
+      grid-template-columns: 670px auto;
+      grid-template-rows: 1fr;
+      grid-column-gap: 0px;
+      grid-row-gap: 0px;
+
+      .keywords {
+        border-right: 2px solid #456663;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-left: 16px;
+        position: relative;
+        padding-right: 48px;
+        background-color: #d8d8da;
+
+        .title {
+          text-transform: uppercase;
+          font-size: 1rem;
+          color: black;
+          font-weight: 400;
+          padding-right: 4px;
+
+          &::after {
+            content: ":";
+          }
+        }
+
+        .value {
+          text-transform: capitalize;
+          font-size: 1rem;
+          color: black;
+          font-weight: 600;
+        }
+      }
+      .factions {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        padding-left: 48px;
+        background-color: black;
+
+        .title {
+          text-transform: uppercase;
+          font-size: 1rem;
+          color: white;
+          font-weight: 400;
+          padding-right: 4px;
+          line-height: 1.1rem;
+
+          &::after {
+            content: ":";
+          }
+        }
+
+        .value {
+          text-transform: capitalize;
+          font-size: 1rem;
+          color: white;
+          font-weight: 600;
+          line-height: 1.1rem;
+        }
+      }
+    }
+    .faction {
+      height: 64px;
+      width: 64px;
+      border: 2px solid #456663;
+      background-color: #d8d8da;
+      position: absolute;
+      bottom: 32px;
+      left: 677px;
+      rotate: 45deg;
+      overflow: hidden;
+
+      each(@factions, {
+          .@{value} {
+            content: " ";
+            display: block;
+            width: 100%;
+            height: 100%;
+            scale: 1;
+            background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;        
+            filter: invert(38%) sepia(8%) saturate(1294%) hue-rotate(125deg) brightness(92%) contrast(89%);
+            rotate: -45deg;
+          }
+        });
+
+      .AM {
+        content: " ";
+        display: block;
+        width: 100%;
+        height: 100%;
+        scale: 1.8;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        filter: invert(38%) sepia(8%) saturate(1294%) hue-rotate(125deg) brightness(92%) contrast(89%);
+        rotate: -45deg;
+      }
+      .basic {
+        content: " ";
+        display: block;
+        width: 100%;
+        height: 100%;
+        scale: 1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        filter: invert(38%) sepia(8%) saturate(1294%) hue-rotate(125deg) brightness(92%) contrast(89%);
+        rotate: -45deg;
+      }
+    }
+  }
+
+  .center {
+    text-align: center;
+  }
+  .keyword {
+    text-transform: uppercase;
+    color: #456663;
+    font-size: 0.7rem;
+    font-weight: 600;
+    z-index: 2;
+    &::after {
+      content: "]";
+    }
+    &::before {
+      content: "[";
+    }
+  }
+}

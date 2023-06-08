@@ -4,11 +4,7 @@ module.exports = {
     es2021: true,
     jest: true,
   },
-  extends: [
-    "plugin:react/recommended",
-    "plugin:prettier/recommended",
-    "plugin:react/jsx-runtime",
-  ],
+  extends: ["plugin:react/recommended", "plugin:react/jsx-runtime", "plugin:prettier/recommended"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -18,7 +14,12 @@ module.exports = {
   },
   plugins: ["react", "prettier"],
   rules: {
-    "prettier/prettier": ["off"],
+    "prettier/prettier": ["error", { jsxBracketSameLine: true }],
     "react/prop-types": ["off"],
+  },
+  settings: {
+    react: {
+      version: "detect",
+    },
   },
 };

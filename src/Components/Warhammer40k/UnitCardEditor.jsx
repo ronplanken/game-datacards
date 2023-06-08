@@ -5,7 +5,7 @@ import { UnitBasicInfo } from "./UnitCardEditor/UnitBasicInfo";
 import { UnitDatasheets } from "./UnitCardEditor/UnitDatasheets";
 import { UnitDescription } from "./UnitCardEditor/UnitDescription";
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
-import { UnitPowers } from './UnitCardEditor/UnitPowers';
+import { UnitPowers } from "./UnitCardEditor/UnitPowers";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 
 const { Panel } = Collapse;
@@ -59,7 +59,9 @@ export const UnitCardEditor = () => {
         extra={
           <div>
             (
-            {`${activeCard?.powers?.filter((sheet) => sheet.showPower).length || 0} / ${activeCard?.powers?.length || 0}`}
+            {`${activeCard?.powers?.filter((sheet) => sheet.showPower).length || 0} / ${
+              activeCard?.powers?.length || 0
+            }`}
             )
           </div>
         }>

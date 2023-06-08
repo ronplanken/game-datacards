@@ -85,6 +85,27 @@ export const SettingsModal = () => {
                 <Card
                   type={"inner"}
                   size={"small"}
+                  title={"40k 10th Edition import"}
+                  bodyStyle={{ padding: 0 }}
+                  style={{ marginBottom: "16px" }}
+                  extra={
+                    <Switch
+                      onChange={() =>
+                        updateSettings({
+                          ...settings,
+                          selectedDataSource: "40k-10e",
+                          selectedFactionIndex: 0,
+                        })
+                      }
+                      disabled={settings.selectedDataSource === "40k-10e"}
+                      checked={settings.selectedDataSource === "40k-10e"}
+                    />
+                  }></Card>
+              </Col>
+              <Col span={23}>
+                <Card
+                  type={"inner"}
+                  size={"small"}
                   title={"Wahapedia data import"}
                   bodyStyle={{
                     padding: settings.selectedDataSource === "40k" ? 8 : 0,

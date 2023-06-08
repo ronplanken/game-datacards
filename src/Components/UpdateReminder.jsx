@@ -13,7 +13,10 @@ export const UpdateReminder = () => {
   const { dataSource, checkForUpdate } = useDataSourceStorage();
 
   useEffect(() => {
-    if ((dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 4) || compare(dataSource.version, process.env.REACT_APP_VERSION, "<")) {
+    if (
+      (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 4) ||
+      compare(dataSource.version, process.env.REACT_APP_VERSION, "<")
+    ) {
       setIsUpdateReminderVisible(true);
     } else {
       setIsUpdateReminderVisible(false);
@@ -43,7 +46,7 @@ export const UpdateReminder = () => {
               justifyContent: "center",
               alignItems: "center",
               cursor: "pointer",
-              zIndex: "9999"
+              zIndex: "9999",
             }}
             onClick={() => {
               setCheckingForUpdate(true);
