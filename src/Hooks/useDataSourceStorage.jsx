@@ -48,13 +48,22 @@ export const DataSourceStorageProviderComponent = (props) => {
 
         setDataSource(dataFactions);
       }
+      if (settings.selectedDataSource === "40k-10e") {
+        // const storedData = await dataStore.getItem("40k-10e");
+        // if (storedData) {
+        //   setDataSource(storedData);
+        //   setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+        //   return;
+        // }
+
+        const dataFactions = await get40k10eData();
+
+        dataStore.setItem("40k-10e", dataFactions);
+        setSelectedFaction(dataFactions.data[0]);
+        setDataSource(dataFactions);
+      }
       if (settings.selectedDataSource === "basic") {
         const basicData = getBasicData();
-        setDataSource(basicData);
-        setSelectedFaction(basicData.data[0]);
-      }
-      if (settings.selectedDataSource === "40k-10e") {
-        const basicData = get40k10eData();
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
       }
@@ -76,6 +85,13 @@ export const DataSourceStorageProviderComponent = (props) => {
       return;
     }
     if (settings.selectedDataSource === "40k") {
+      const dataFactions = await get40KData();
+
+      dataStore.setItem("40k", dataFactions);
+
+      setDataSource(dataFactions);
+    }
+    if (settings.selectedDataSource === "40k-10e") {
       const dataFactions = await get40KData();
 
       dataStore.setItem("40k", dataFactions);

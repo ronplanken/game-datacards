@@ -34,7 +34,9 @@ export const UnitExtra = ({ unit }) => {
           )}
         </div>
       )}
-      {unit.abilities?.invul && <UnitInvul invul={unit.abilities?.invul} />}
+      {unit.abilities?.invul && unit.abilities?.invul.showInvulnerableSave && (
+        <UnitInvul invul={unit.abilities?.invul} />
+      )}
     </div>
   );
 };

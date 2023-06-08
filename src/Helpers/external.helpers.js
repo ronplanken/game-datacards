@@ -395,7 +395,11 @@ export const getBasicData = () => {
   };
 };
 
-export const get40k10eData = () => {
+export const get40k10eData = async () => {
+  const tyranids = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/tyranids.json?${new Date().getTime()}`
+  );
+
   return {
     version: process.env.REACT_APP_VERSION,
     lastUpdated: new Date().toISOString(),
@@ -404,116 +408,8 @@ export const get40k10eData = () => {
     noStratagemOptions: true,
     noSecondaryOptions: true,
     noPsychicOptions: true,
-    data: [
-      {
-        id: "40k-10e-01",
-        link: "https://game-datacard.eu",
-        name: "40k 10e Cards",
-        datasheets: [
-          {
-            name: "Basic Card",
-            subname: "with a subname",
-            id: "000000001",
-            source: "40k-10e",
-            description: "Basic unit description you can customize to your needs. Empty this field to hide it",
-            faction_id: "CHBA",
-            cardType: "DataCard",
-            abilities: {
-              core: ["leader", "deep strike"],
-              faction: ["Oaths of Moment"],
-              invul: {
-                value: "5+",
-                info: "Against ranged attacks only",
-                showInvulnerableSave: true,
-                showDescription: true,
-                showInfo: true,
-              },
-              damaged: {
-                showDamagedAbility: true,
-                showDescription: false,
-                range: "1-20 wounds remaining",
-                description:
-                  "While this model has 1-7 wounds remaining, subtract 5 from this model's Objective Secured characteristic",
-              },
-              other: [
-                {
-                  description: "Basic ability description you can customize to your needs. Empty this field to hide it",
-                  name: "Basic ability",
-                  showAbility: true,
-                  showDescription: true,
-                },
-              ],
-            },
-            stats: [
-              {
-                m: '6"',
-                t: "3",
-                ld: "9",
-                w: "5",
-                sv: "3+",
-                oc: "1",
-                invul: "3+",
-                name: "Basic Card",
-                showDamagedMarker: true,
-                showName: false,
-                active: true,
-              },
-            ],
-            rangedWeapons: [
-              {
-                active: true,
-                profiles: [
-                  {
-                    active: true,
-                    range: '12"',
-                    attacks: "1",
-                    skill: "1",
-                    strength: "4",
-                    ap: "-2",
-                    damage: "3",
-                    name: "Basic Weapon",
-                    keywords: [],
-                  },
-                  {
-                    active: true,
-                    range: '24"',
-                    attacks: "1",
-                    skill: "1",
-                    strength: "4",
-                    ap: "-2",
-                    damage: "3",
-                    name: "Basic Weapon - Laser",
-                    keywords: ["Pistol"],
-                  },
-                ],
-              },
-            ],
-            meleeWeapons: [
-              {
-                active: true,
-                name: "Melee Weapon",
-                profiles: [
-                  {
-                    active: true,
-                    range: "Melee",
-                    attacks: "1",
-                    skill: "1",
-                    strength: "4",
-                    ap: "-2",
-                    damage: "3",
-                    name: "Basic Weapon",
-                    keywords: ["extra hits 1"],
-                  },
-                ],
-              },
-            ],
-            keywords: ["Basic Card"],
-            factions: ["Adeptus Astartes"],
-            wargear: [],
-          },
-        ],
-      },
-    ],
+    noFactionOptions: true,
+    data: [tyranids],
   };
 };
 

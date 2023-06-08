@@ -55,7 +55,7 @@ const { confirm } = Modal;
 function App() {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
   const { settings } = useSettingsStorage();
-
+  console.log(dataSource);
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
 
@@ -331,7 +331,7 @@ function App() {
                                     </Option>
                                   ))}
                                 </Select>
-                                <FactionSettingsModal />
+                                {!dataSource?.noFactionOptions && <FactionSettingsModal />}
                               </Col>
                             </Row>
                             <Row>
@@ -377,9 +377,11 @@ function App() {
                                     Stratagems
                                   </Option>
                                 )}
-                                <Option value={"secondaries"} key={`secondaries`}>
-                                  Secondaries
-                                </Option>
+                                {selectedFaction?.secondaries && selectedFaction?.secondaries.length > 0 && (
+                                  <Option value={"secondaries"} key={`secondaries`}>
+                                    Secondaries
+                                  </Option>
+                                )}
                                 {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
                                   <Option value={"psychicpowers"} key={`psychicpowers`}>
                                     Psychic powers
