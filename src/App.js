@@ -33,6 +33,8 @@ import { Toolbar } from "./Components/Toolbar";
 import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
 import { UpdateReminder } from "./Components/UpdateReminder";
+import { Warhammer40K10eCardDisplay } from "./Components/Warhammer40k-10e/CardDisplay";
+import { Warhammer40K10eCardEditor } from "./Components/Warhammer40k-10e/CardEditor";
 import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
@@ -440,6 +442,7 @@ function App() {
               className={`data-${activeCard?.source}`}>
               <Row style={{ overflow: "hidden" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
+                {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay />}
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
               </Row>
@@ -499,8 +502,9 @@ function App() {
           <PanelResizeHandle className="vertical-resizer" />
           <Panel defaultSize={33} order={3}>
             {activeCard && (
-              <div style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}>
+              <div style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} className={`data-${activeCard?.source}`}>
                 {activeCard?.source === "40k" && <Warhammer40KCardEditor />}
+                {activeCard?.source === "40k-10e" && <Warhammer40K10eCardEditor />}
                 {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "necromunda" && <NecromundaCardEditor />}
               </div>

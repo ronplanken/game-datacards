@@ -1,6 +1,6 @@
 import localForage from "localforage";
 import React, { useEffect } from "react";
-import { get40KData, getBasicData, getNecromundaBasicData } from "../Helpers/external.helpers";
+import { get40KData, getBasicData, getNecromundaBasicData, get40k10eData } from "../Helpers/external.helpers";
 import { useFirebase } from "./useFirebase";
 import { useSettingsStorage } from "./useSettingsStorage";
 
@@ -50,6 +50,11 @@ export const DataSourceStorageProviderComponent = (props) => {
       }
       if (settings.selectedDataSource === "basic") {
         const basicData = getBasicData();
+        setDataSource(basicData);
+        setSelectedFaction(basicData.data[0]);
+      }
+      if (settings.selectedDataSource === "40k-10e") {
+        const basicData = get40k10eData();
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
       }

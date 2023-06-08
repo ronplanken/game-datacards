@@ -59,21 +59,19 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <SettingsStorageProviderComponent>
-        <FirebaseProviderComponent>
-          <DataSourceStorageProviderComponent>
-            <CardStorageProviderComponent>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </CardStorageProviderComponent>
-          </DataSourceStorageProviderComponent>
-        </FirebaseProviderComponent>
-      </SettingsStorageProviderComponent>
-    </ErrorBoundary>
-  </React.StrictMode>
+  <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <SettingsStorageProviderComponent>
+      <FirebaseProviderComponent>
+        <DataSourceStorageProviderComponent>
+          <CardStorageProviderComponent>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </CardStorageProviderComponent>
+        </DataSourceStorageProviderComponent>
+      </FirebaseProviderComponent>
+    </SettingsStorageProviderComponent>
+  </ErrorBoundary>
 );
 
 // If you want to start measuring performance in your app, pass a function

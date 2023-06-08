@@ -15,6 +15,7 @@ const extractDatasheet = (name, profile) => {
     active: true,
   };
 };
+
 const extractWargear = (profile) => {
   return {
     id: uuidv4(),
@@ -71,18 +72,14 @@ const extractAbility = (profile) => {
   };
 };
 
-const generateDatasheets = (selection) => {
-  const datasheets = [];
-  if (Array.isArray(selection.profiles.profile)) {
-    selection.profiles.profile.forEach((profile) => {
-      if (profile.typeName === "Unit") {
-        datasheets.push(extractDatasheet(profile.name, profile));
-      }
-    });
-  } else {
-    datasheets.push(extractDatasheet(selection.name, selection.profiles?.profile));
-  }
-  return datasheets;
+const generateUnits = (roster) => {
+  const units = [];
+  roster.forces.forEach((force) => {
+    for (const unit in force.units) {
+      units.push(extractUnit(unit));
+    }
+  });
+  return units;
 };
 
 const generateAbilities = (selection) => {

@@ -17,7 +17,9 @@ import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
 
+import JSZip from "jszip";
 import { Parser } from "xml2js";
+import { Create40kRoster } from "../Helpers/battlescribe.40k.helpers";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
 const parser = new Parser({ mergeAttrs: true, explicitArray: false });
@@ -35,6 +37,50 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
 
   const [fileList, setFileList] = React.useState([]);
   const { cardStorage, activeCategory, saveActiveCard, importCategory, cardUpdated, addCategory } = useCardStorage();
+
+  function parseXML(xmldata) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmldata, "text/xml");
+    if (!doc) return;
+
+    // Determine roster type (game system).
+    const info = doc.querySelector("roster");
+    if (!info) return;
+
+    const gameType = info.getAttribute("gameSystemName");
+    if (!gameType) return;
+
+    const rosterName = info.getAttribute("name");
+    if (rosterName) {
+      document.title = `FancyScribe ${rosterName}`;
+    }
+
+    if (gameType == "Warhammer 40,000 9th Edition") {
+      console.log(doc);
+      const roster = Create40kRoster(doc);
+      console.log(roster);
+      if (roster && roster.forces.length > 0) {
+        // setRoster(roster);
+        // setError("");
+        // smartlook("track", "loadRoster", {
+        //   name: rosterName,
+        //   faction: roster.forces[0].catalog,
+        // });
+        setFileList([
+          {
+            uid: "-1",
+            name: `${roster.name}`,
+            status: "success",
+            size: JSON.stringify(roster).length,
+          },
+        ]);
+        setUploadFile(roster);
+        return roster;
+      }
+    } else {
+      // setError("No support for game type '" + gameType + "'.");
+    }
+  }
 
   return (
     <Row>
@@ -276,69 +322,7 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                           JSZip.loadAsync(event.target.result).then(function (zip) {
                             for (let [filename, file] of Object.entries(zip.files)) {
                               file.async("text").then((text) => {
-                                parseString(text, function (err, result) {
-                                  const roster = result.roster;
-                                  let newCategory = {
-                                    uuid: uuidv4(),
-                                    name: roster.name,
-                                    closed: false,
-                                    cards: [
-                                      ...roster.forces.force.selections.selection.reduce((cards, selection) => {
-                                        console.log("cards", cards);
-                                        if (selection.type === "unit") {
-                                          if (Array.isArray(selection?.selections?.selection)) {
-                                            selection?.selections?.selection?.forEach((subSelection) => {
-                                              if (subSelection.type === "model") {
-                                                cards.push({
-                                                  source: "40k",
-                                                  cardType: "datasheet",
-                                                  name: subSelection.name,
-                                                  role: selection.categories.category.reduce((role, cat) => {
-                                                    if (cat.primary === "true") {
-                                                      role = cat.name;
-                                                    }
-                                                    return role;
-                                                  }, "Unknown"),
-                                                  keywords: [],
-                                                  datasheet: generateDatasheets(subSelection),
-                                                  wargear: generateModelWargear(subSelection),
-                                                  abilities: [
-                                                    ...generateAbilities(subSelection),
-                                                    ...generateAbilities(selection),
-                                                  ],
-                                                  isCustom: true,
-                                                  uuid: uuidv4(),
-                                                });
-                                              }
-                                            });
-                                          }
-                                        }
-                                        if (selection.type === "model") {
-                                          cards.push({
-                                            source: "40k",
-                                            cardType: "datasheet",
-                                            name: selection.name,
-                                            role: selection.categories.category.reduce((role, cat) => {
-                                              if (cat.primary === "true") {
-                                                role = cat.name;
-                                              }
-                                              return role;
-                                            }, "Unknown"),
-                                            keywords: [],
-                                            datasheet: generateDatasheets(selection),
-                                            wargear: generateModelWargear(selection),
-                                            abilities: generateAbilities(selection),
-                                            isCustom: true,
-                                            uuid: uuidv4(),
-                                          });
-                                        }
-                                        return cards;
-                                      }, []),
-                                    ],
-                                  };
-                                  console.log("cat:", newCategory);
-                                  importCategory(newCategory);
-                                });
+                                parseXML(text);
                               });
                             }
                           });
@@ -366,8 +350,8 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                     <p className="ant-upload-hint">Support for a single file upload. Only .rosz files.</p>
                   </Dragger>
                 </Col>
-              </Row> */}
-            {/* <Row>
+              </Row>
+              <Row>
                 <Col span={24}>
                   <Form layout="horizontal">
                     <Card
@@ -388,8 +372,8 @@ export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) =
                     />
                   </Form>
                 </Col>
-              </Row> */}
-            {/* </Tabs.TabPane> */}
+              </Row>
+            </Tabs.TabPane> */}
           </Tabs>
         </Modal>
         <Tooltip title={"Print cards from category"} placement="bottomLeft">
