@@ -1,27 +1,35 @@
 import { UnitStat } from "./UnitStat";
 
 export const UnitStats = ({ stats }) => {
+  const statHeaders = [
+    { text: "M", value: "m", width: "44px" },
+    { text: "T", value: "t", width: "44px" },
+    { text: "SV", value: "sv", width: "44px" },
+    { text: "W", value: "w", width: "44px" },
+    { text: "LD", value: "ld", width: "44px" },
+    { text: "OC", value: "oc", width: "44px" },
+  ];
+  statHeaders.forEach((header, index) => {
+    stats
+      ?.filter((stat) => stat.active)
+      ?.map((stat) => {
+        if (stat?.[header.value] && stat?.[header.value].length >= 3) {
+          statHeaders[index].width = "60px";
+        }
+      });
+  });
   return (
     <>
       <div className="stats_container">
-        <div className="stat">
-          <div className="caption">M</div>
-        </div>
-        <div className="stat">
-          <div className="caption">T</div>
-        </div>
-        <div className="stat">
-          <div className="caption">SV</div>
-        </div>
-        <div className="stat">
-          <div className="caption">W</div>
-        </div>
-        <div className="stat">
-          <div className="caption">LD</div>
-        </div>
-        <div className="stat">
-          <div className="caption">OC</div>
-        </div>
+        {statHeaders.map((header) => {
+          return (
+            <div className="stat" key={header.value}>
+              <div className="caption" style={{ width: header.width }}>
+                {header.text}
+              </div>
+            </div>
+          );
+        })}
       </div>
       {stats
         ?.filter((stat) => stat.active)

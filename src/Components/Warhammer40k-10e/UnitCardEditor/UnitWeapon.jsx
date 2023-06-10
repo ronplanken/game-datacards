@@ -7,9 +7,9 @@ export function UnitWeapon({ weapon, index, type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
   const [dropdownVisible, setDropdownVisible] = useState();
 
-  const handleSheetChange = (event, index) => {
+  const handleSheetChange = (event, pIndex) => {
     const newWeapons = [...activeCard[type]];
-    newWeapons[index][event.target.name] = event.target.value;
+    newWeapons[index].profiles[pIndex][event.target.name] = event.target.value;
     updateActiveCard({ ...activeCard, [type]: newWeapons });
   };
 
@@ -97,7 +97,7 @@ export function UnitWeapon({ weapon, index, type }) {
                           type="text"
                           value={line.range}
                           name="range"
-                          onChange={(e) => handleSheetChange(e, index)}
+                          onChange={(e) => handleSheetChange(e, pIndex)}
                         />
                       </div>
                     </div>
@@ -109,7 +109,7 @@ export function UnitWeapon({ weapon, index, type }) {
                           type="text"
                           value={line.attacks}
                           name="attacks"
-                          onChange={(e) => handleSheetChange(e, index)}
+                          onChange={(e) => handleSheetChange(e, pIndex)}
                         />
                       </div>
                     </div>
@@ -121,7 +121,7 @@ export function UnitWeapon({ weapon, index, type }) {
                           type="text"
                           value={line.skill}
                           name="skill"
-                          onChange={(e) => handleSheetChange(e, index)}
+                          onChange={(e) => handleSheetChange(e, pIndex)}
                         />
                       </div>
                     </div>
@@ -133,7 +133,7 @@ export function UnitWeapon({ weapon, index, type }) {
                           type="text"
                           value={line.strength}
                           name="strength"
-                          onChange={(e) => handleSheetChange(e, index)}
+                          onChange={(e) => handleSheetChange(e, pIndex)}
                         />
                       </div>
                     </div>
@@ -141,7 +141,7 @@ export function UnitWeapon({ weapon, index, type }) {
                   <div className="weapon">
                     <div className="value_container">
                       <div className="value">
-                        <Input type="text" value={line.ap} name="ap" onChange={(e) => handleSheetChange(e, index)} />
+                        <Input type="text" value={line.ap} name="ap" onChange={(e) => handleSheetChange(e, pIndex)} />
                       </div>
                     </div>
                   </div>
@@ -152,7 +152,7 @@ export function UnitWeapon({ weapon, index, type }) {
                           type="text"
                           value={line.damage}
                           name="damage"
-                          onChange={(e) => handleSheetChange(e, index)}
+                          onChange={(e) => handleSheetChange(e, pIndex)}
                         />
                       </div>
                     </div>
