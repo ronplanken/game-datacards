@@ -59,7 +59,6 @@ export const DataSourceStorageProviderComponent = (props) => {
         const dataFactions = await get40k10eData();
 
         dataStore.setItem("40k-10e", dataFactions);
-        setSelectedFaction(dataFactions.data[0]);
         setDataSource(dataFactions);
       }
       if (settings.selectedDataSource === "basic") {

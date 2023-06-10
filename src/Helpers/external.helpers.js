@@ -399,6 +399,12 @@ export const get40k10eData = async () => {
   const tyranids = await readCsv(
     `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/tyranids.json?${new Date().getTime()}`
   );
+  const marinesLeviathan = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/marines_leviathan.json?${new Date().getTime()}`
+  );
+  const spaceMarines = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/space_marines.json?${new Date().getTime()}`
+  );
 
   return {
     version: process.env.REACT_APP_VERSION,
@@ -409,7 +415,7 @@ export const get40k10eData = async () => {
     noSecondaryOptions: true,
     noPsychicOptions: true,
     noFactionOptions: true,
-    data: [tyranids],
+    data: [tyranids, spaceMarines, marinesLeviathan],
   };
 };
 
