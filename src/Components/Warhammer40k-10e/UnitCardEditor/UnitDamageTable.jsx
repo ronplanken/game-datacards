@@ -1,5 +1,5 @@
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Card, Form, Select, Space, Switch, Typography } from "antd";
+import { Card, Form, Input, Select, Space, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
@@ -13,22 +13,7 @@ export function UnitDamageTable() {
       <Card
         type={"inner"}
         size={"small"}
-        title={
-          <Typography.Text
-            ellipsis={{ rows: 1 }}
-            editable={{
-              onChange: (value) => {
-                const newDamaged = { ...activeCard.abilities.damaged };
-                newDamaged.range = value;
-                return {
-                  ...activeCard,
-                  abilities: { ...activeCard.abilities, damaged: newDamaged },
-                };
-              },
-            }}>
-            {ability.range || "1-2 wounds remaining"}
-          </Typography.Text>
-        }
+        title={<>Damage table</>}
         style={{ marginBottom: "16px" }}
         bodyStyle={{ padding: ability.showDamagedAbility ? 8 : 0 }}
         extra={
@@ -50,6 +35,22 @@ export function UnitDamageTable() {
         }>
         {ability.showDamagedAbility && (
           <Form size="small">
+            <Form.Item label={"Range"}>
+              <Input
+                type={"text"}
+                value={ability.range}
+                onChange={(e) => {
+                  updateActiveCard(() => {
+                    const newDamaged = { ...activeCard.abilities.damaged };
+                    newDamaged.range = e.target.value;
+                    return {
+                      ...activeCard,
+                      abilities: { ...activeCard.abilities, damaged: newDamaged },
+                    };
+                  });
+                }}
+              />
+            </Form.Item>
             <Form.Item label={"Show Description"}>
               <Switch
                 checked={ability.showDescription}

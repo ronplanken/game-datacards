@@ -48,7 +48,7 @@ export function UnitBasicAbility({ type }) {
                                   editable={{
                                     onChange: (value) => {
                                       const newAbilities = [...activeCard.abilities[type]];
-                                      newAbilities[type][index] = value;
+                                      newAbilities[index] = value;
                                       updateActiveCard({
                                         ...activeCard,
                                         abilities: { ...activeCard.abilities, [type]: newAbilities },

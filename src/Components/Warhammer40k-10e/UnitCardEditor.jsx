@@ -33,15 +33,21 @@ export const UnitCardEditor = () => {
         <UnitBasicAbility type={"faction"} />
       </Panel>
       <Panel header="Extended abilities" style={{ width: "100%" }} key="6">
-        <UnitExtendedAbilities />
+        <UnitExtendedAbilities type={"other"} />
       </Panel>
-      <Panel header="Damaged ability" style={{ width: "100%" }} key="7">
+      <Panel header="Wargear abilities" style={{ width: "100%" }} key="7">
+        <UnitExtendedAbilities type={"wargear"} />
+      </Panel>
+      <Panel header="Special abilities" style={{ width: "100%" }} key="special">
+        <UnitExtendedAbilities type={"special"} />
+      </Panel>
+      <Panel header="Damaged ability" style={{ width: "100%" }} key="8">
         <UnitDamageTable />
       </Panel>
-      <Panel header="Invulnerable save" style={{ width: "100%" }} key="8">
+      <Panel header="Invulnerable save" style={{ width: "100%" }} key="9">
         <UnitInvulnerableSave />
       </Panel>
-      <Panel header="Keywords" style={{ width: "100%" }} key="9">
+      <Panel header="Keywords" style={{ width: "100%" }} key="10">
         <UnitKeywords type={"keywords"} />
         <UnitKeywords type={"factions"} />
       </Panel>
