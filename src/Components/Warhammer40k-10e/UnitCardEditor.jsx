@@ -6,6 +6,7 @@ import { UnitDamageTable } from "./UnitCardEditor/UnitDamageTable";
 import { UnitExtendedAbilities } from "./UnitCardEditor/UnitExtendedAbilities";
 import { UnitInvulnerableSave } from "./UnitCardEditor/UnitInvulnerableSave";
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
+import { UnitPrimarchAbilities } from "./UnitCardEditor/UnitPrimarchAbilities";
 import { UnitStats } from "./UnitCardEditor/UnitStats";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 
@@ -43,6 +44,9 @@ export const UnitCardEditor = () => {
       </Panel>
       <Panel header="Damaged ability" style={{ width: "100%" }} key="8">
         <UnitDamageTable />
+      </Panel>
+      <Panel header="Primarch ability" style={{ width: "100%" }} key="primarch">
+        <UnitPrimarchAbilities />
       </Panel>
       <Panel header="Invulnerable save" style={{ width: "100%" }} key="9">
         <UnitInvulnerableSave />

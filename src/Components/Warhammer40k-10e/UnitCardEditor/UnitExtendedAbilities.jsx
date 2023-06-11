@@ -21,19 +21,19 @@ export function UnitExtendedAbilities({ type }) {
           const newAbilities = reorder(activeCard.abilities[type], result.source.index, result.destination.index);
           updateActiveCard({ ...activeCard, abilities: { ...activeCard.abilities, [type]: newAbilities } });
         }}>
-        <Droppable droppableId="droppable-other-abilities">
+        <Droppable droppableId={`droppable-${type}-abilities`}>
           {(provided, snapshot) => {
             return (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {activeCard.abilities[type].map((ability, index) => {
                   return (
-                    <Draggable key={`ability-other-${index}`} draggableId={`ability-other-${index}`} index={index}>
+                    <Draggable key={`ability-${type}-${index}`} draggableId={`ability-${type}-${index}`} index={index}>
                       {(drag) => (
                         <div
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
-                          key={`ability-other-${index}`}>
+                          key={`ability-${type}-${index}`}>
                           <Card
                             type={"inner"}
                             size={"small"}
