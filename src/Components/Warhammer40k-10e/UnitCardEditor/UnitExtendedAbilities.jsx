@@ -7,7 +7,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 const { Option } = Select;
 
-export function UnitExtendedAbilities() {
+export function UnitExtendedAbilities({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
@@ -18,22 +18,22 @@ export function UnitExtendedAbilities() {
             return;
           }
 
-          const newAbilities = reorder(activeCard.abilities.other, result.source.index, result.destination.index);
-          updateActiveCard({ ...activeCard, abilities: { ...activeCard.abilities, other: newAbilities } });
+          const newAbilities = reorder(activeCard.abilities[type], result.source.index, result.destination.index);
+          updateActiveCard({ ...activeCard, abilities: { ...activeCard.abilities, [type]: newAbilities } });
         }}>
-        <Droppable droppableId="droppable-other-abilities">
+        <Droppable droppableId={`droppable-${type}-abilities`}>
           {(provided, snapshot) => {
             return (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {activeCard.abilities.other.map((ability, index) => {
+                {activeCard.abilities[type].map((ability, index) => {
                   return (
-                    <Draggable key={`ability-other-${index}`} draggableId={`ability-other-${index}`} index={index}>
+                    <Draggable key={`ability-${type}-${index}`} draggableId={`ability-${type}-${index}`} index={index}>
                       {(drag) => (
                         <div
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
-                          key={`ability-other-${index}`}>
+                          key={`ability-${type}-${index}`}>
                           <Card
                             type={"inner"}
                             size={"small"}
@@ -42,11 +42,11 @@ export function UnitExtendedAbilities() {
                                 ellipsis={{ rows: 1 }}
                                 editable={{
                                   onChange: (value) => {
-                                    const newAbilities = [...activeCard.abilities.other];
+                                    const newAbilities = [...activeCard.abilities[type]];
                                     newAbilities[index]["name"] = value;
                                     updateActiveCard({
                                       ...activeCard,
-                                      abilities: { ...activeCard.abilities, other: newAbilities },
+                                      abilities: { ...activeCard.abilities, [type]: newAbilities },
                                     });
                                   },
                                 }}>
@@ -62,11 +62,11 @@ export function UnitExtendedAbilities() {
                                   placement="topRight"
                                   onConfirm={(value) =>
                                     updateActiveCard(() => {
-                                      const newAbilities = [...activeCard.abilities.other];
+                                      const newAbilities = [...activeCard.abilities[type]];
                                       newAbilities.splice(index, 1);
                                       return {
                                         ...activeCard,
-                                        abilities: { ...activeCard.abilities, other: newAbilities },
+                                        abilities: { ...activeCard.abilities, [type]: newAbilities },
                                       };
                                     })
                                   }>
@@ -76,11 +76,11 @@ export function UnitExtendedAbilities() {
                                   checked={ability.showAbility}
                                   onChange={(value) => {
                                     updateActiveCard(() => {
-                                      const newAbilities = [...activeCard.abilities.other];
+                                      const newAbilities = [...activeCard.abilities[type]];
                                       newAbilities[index]["showAbility"] = value;
                                       return {
                                         ...activeCard,
-                                        abilities: { ...activeCard.abilities, other: newAbilities },
+                                        abilities: { ...activeCard.abilities, [type]: newAbilities },
                                       };
                                     });
                                   }}
@@ -94,11 +94,11 @@ export function UnitExtendedAbilities() {
                                     checked={ability.showDescription}
                                     onChange={(value) => {
                                       updateActiveCard(() => {
-                                        const newAbilities = [...activeCard.abilities.other];
+                                        const newAbilities = [...activeCard.abilities[type]];
                                         newAbilities[index]["showDescription"] = value;
                                         return {
                                           ...activeCard,
-                                          abilities: { ...activeCard.abilities, other: newAbilities },
+                                          abilities: { ...activeCard.abilities, [type]: newAbilities },
                                         };
                                       });
                                     }}
@@ -121,11 +121,11 @@ export function UnitExtendedAbilities() {
                                     value={ability.description}
                                     onChange={(value) => {
                                       updateActiveCard(() => {
-                                        const newAbilities = [...activeCard.abilities.other];
+                                        const newAbilities = [...activeCard.abilities[type]];
                                         newAbilities[index]["description"] = value;
                                         return {
                                           ...activeCard,
-                                          abilities: { ...activeCard.abilities, other: newAbilities },
+                                          abilities: { ...activeCard.abilities, [type]: newAbilities },
                                         };
                                       });
                                     }}
@@ -150,13 +150,13 @@ export function UnitExtendedAbilities() {
         style={{ width: "100%" }}
         onClick={() =>
           updateActiveCard(() => {
-            const newAbilities = [...activeCard.abilities.other];
+            const newAbilities = [...activeCard.abilities[type]];
             newAbilities.push({
               name: `New ability ${newAbilities.length + 1}`,
               showAbility: true,
               showDescription: false,
             });
-            return { ...activeCard, abilities: { ...activeCard.abilities, other: newAbilities } };
+            return { ...activeCard, abilities: { ...activeCard.abilities, [type]: newAbilities } };
           })
         }>
         Add ability
