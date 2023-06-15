@@ -156,9 +156,12 @@
       }
     }
   }
+  --card-scaling: 100;
+  --card-scaling-factor: 1;
   .unit {
-    height: 714px;
-    width: 1077px;
+    height: calc(714px);
+    width: calc(1077px);
+    transform: scale(var(--card-scaling-factor));
     display: flex;
     flex-direction: column;
     align-items: center;

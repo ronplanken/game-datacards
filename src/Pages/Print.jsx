@@ -7,6 +7,7 @@ import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Page } from "../Components/Print/Page";
 import { Printer } from "../Components/Print/Printer";
 import { PrintFaq } from "../Components/PrintFaq";
+import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
@@ -309,6 +310,14 @@ export const Print = () => {
                         <>
                           {card?.source === "40k" && (
                             <Warhammer40KCardDisplay
+                              card={card}
+                              type="print"
+                              key={`${rowIndex}-${index}`}
+                              cardScaling={cardScaling}
+                            />
+                          )}
+                          {card?.source === "40k-10e" && (
+                            <Warhammer40K10eCardDisplay
                               card={card}
                               type="print"
                               key={`${rowIndex}-${index}`}

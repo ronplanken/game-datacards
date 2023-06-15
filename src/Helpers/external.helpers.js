@@ -397,15 +397,68 @@ export const getBasicData = () => {
 
 export const get40k10eData = async () => {
   const tyranids = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/tyranids.json?${new Date().getTime()}`
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/tyranids.json?${new Date().getTime()}`
   );
-  const marinesLeviathan = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/marines_leviathan.json?${new Date().getTime()}`
+  const worldeaters = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/worldeaters.json?${new Date().getTime()}`
   );
-  const spaceMarines = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/json/space_marines.json?${new Date().getTime()}`
+  const deathwatch = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/deathwatch.json?${new Date().getTime()}`
   );
-
+  const deathguard = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/deathguard.json?${new Date().getTime()}`
+  );
+  const adeptusmechanicus = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/adeptusmechanicus.json?${new Date().getTime()}`
+  );
+  const chaos_spacemarines = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/chaos_spacemarines.json?${new Date().getTime()}`
+  );
+  const blacktemplar = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/blacktemplar.json?${new Date().getTime()}`
+  );
+  const adeptasororitas = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/adeptasororitas.json?${new Date().getTime()}`
+  );
+  const thousandsons = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/thousandsons.json?${new Date().getTime()}`
+  );
+  const marines_leviathan = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/marines_leviathan.json?${new Date().getTime()}`
+  );
+  const darkangels = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/darkangels.json?${new Date().getTime()}`
+  );
+  const chaosdaemons = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/chaosdaemons.json?${new Date().getTime()}`
+  );
+  const astramilitarum = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/astramilitarum.json?${new Date().getTime()}`
+  );
+  const chaosknights = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/chaosknights.json?${new Date().getTime()}`
+  );
+  const space_marines = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/space_marines.json?${new Date().getTime()}`
+  );
+  const agents = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/agents.json?${new Date().getTime()}`
+  );
+  const spacewolves = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/spacewolves.json?${new Date().getTime()}`
+  );
+  const greyknights = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/greyknights.json?${new Date().getTime()}`
+  );
+  const adeptuscustodes = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/adeptuscustodes.json?${new Date().getTime()}`
+  );
+  const imperialknights = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/imperialknights.json?${new Date().getTime()}`
+  );
+  const bloodangels = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/bloodangels.json?${new Date().getTime()}`
+  );
   return {
     version: process.env.REACT_APP_VERSION,
     lastUpdated: new Date().toISOString(),
@@ -415,7 +468,29 @@ export const get40k10eData = async () => {
     noSecondaryOptions: true,
     noPsychicOptions: true,
     noFactionOptions: true,
-    data: [tyranids, spaceMarines, marinesLeviathan],
+    data: [
+      worldeaters,
+      deathwatch,
+      deathguard,
+      adeptusmechanicus,
+      chaos_spacemarines,
+      blacktemplar,
+      adeptasororitas,
+      thousandsons,
+      marines_leviathan,
+      darkangels,
+      chaosdaemons,
+      astramilitarum,
+      chaosknights,
+      space_marines,
+      agents,
+      spacewolves,
+      greyknights,
+      tyranids,
+      adeptuscustodes,
+      imperialknights,
+      bloodangels,
+    ],
   };
 };
 

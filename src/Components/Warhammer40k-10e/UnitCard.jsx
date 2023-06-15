@@ -6,11 +6,9 @@ import { UnitStats } from "./UnitCard/UnitStats";
 import { UnitWeapons } from "./UnitCard/UnitWeapons";
 
 export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
-  const style = unit.variant === "custom" ? { height: `${unit.height}cm`, width: `${unit.width}cm` } : {};
   return (
     <div
       style={{
-        paddingTop,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
