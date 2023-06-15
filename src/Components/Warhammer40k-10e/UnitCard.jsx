@@ -5,9 +5,10 @@ import { UnitName } from "./UnitCard/UnitName";
 import { UnitStats } from "./UnitCard/UnitStats";
 import { UnitWeapons } from "./UnitCard/UnitWeapons";
 
-export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
+export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", className }) => {
   return (
     <div
+      className={className}
       style={{
         justifyContent: "center",
         justifyItems: "center",

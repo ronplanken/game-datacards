@@ -1,11 +1,9 @@
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { UnitCard } from "./UnitCard";
 
 export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPadding }) => {
   const { activeCard } = useCardStorage();
-  const { settings } = useSettingsStorage();
 
   return (
     <>
@@ -25,6 +23,24 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
           {card.cardType === "DataCard" && (
             <UnitCard
               unit={card}
+              paddingTop="0px"
+              cardStyle={{
+                gap: printPadding,
+              }}
+            />
+          )}
+        </div>
+      )}
+      {type === "viewer" && (
+        <div
+          style={{
+            transformOrigin: "0% 0%",
+            transform: `scale(${cardScaling / 100})`,
+          }}>
+          {activeCard.cardType === "DataCard" && (
+            <UnitCard
+              unit={activeCard}
+              className={"viewer"}
               paddingTop="0px"
               cardStyle={{
                 gap: printPadding,

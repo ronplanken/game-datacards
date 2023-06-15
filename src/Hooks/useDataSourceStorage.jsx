@@ -49,12 +49,13 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(dataFactions);
       }
       if (settings.selectedDataSource === "40k-10e") {
+        console.log("update settings");
         const storedData = await dataStore.getItem("40k-10e");
         if (storedData) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+          return;
         }
-
         const dataFactions = await get40k10eData();
 
         dataStore.setItem("40k-10e", dataFactions);

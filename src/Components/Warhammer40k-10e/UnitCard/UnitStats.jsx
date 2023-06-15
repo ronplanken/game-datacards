@@ -2,31 +2,29 @@ import { UnitStat } from "./UnitStat";
 
 export const UnitStats = ({ stats }) => {
   const statHeaders = [
-    { text: "M", value: "m", width: "44px" },
-    { text: "T", value: "t", width: "44px" },
-    { text: "SV", value: "sv", width: "44px" },
-    { text: "W", value: "w", width: "44px" },
-    { text: "LD", value: "ld", width: "44px" },
-    { text: "OC", value: "oc", width: "44px" },
+    { text: "M", value: "m" },
+    { text: "T", value: "t" },
+    { text: "SV", value: "sv" },
+    { text: "W", value: "w" },
+    { text: "LD", value: "ld" },
+    { text: "OC", value: "oc" },
   ];
-  statHeaders.forEach((header, index) => {
-    stats
-      ?.filter((stat) => stat.active)
-      ?.map((stat) => {
-        if (stat?.[header.value] && stat?.[header.value].length >= 3) {
-          statHeaders[index].width = "60px";
-        }
-      });
-  });
+  // statHeaders.forEach((header, index) => {
+  //   stats
+  //     ?.filter((stat) => stat.active)
+  //     ?.map((stat) => {
+  //       if (stat?.[header.value] && stat?.[header.value].length >= 3) {
+  //         statHeaders[index].width = "60px";
+  //       }
+  //     });
+  // });
   return (
     <>
       <div className="stats_container">
         {statHeaders.map((header) => {
           return (
             <div className="stat" key={header.value}>
-              <div className="caption" style={{ width: header.width }}>
-                {header.text}
-              </div>
+              <div className="caption">{header.text}</div>
             </div>
           );
         })}
