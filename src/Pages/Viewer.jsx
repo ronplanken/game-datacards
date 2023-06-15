@@ -1,4 +1,4 @@
-import { MenuOutlined } from "@ant-design/icons";
+import { MenuOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -347,13 +347,59 @@ export const Viewer = () => {
           {screens.md && (
             <Col sm={24} lg={20}>
               <div
-                style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
+                style={{
+                  height: "calc(100vh - 64px)",
+                  display: "block",
+                  overflow: "auto",
+                  "--card-scaling-factor": settings.zoom / 100,
+                }}
                 className={`data-${activeCard?.source}`}>
                 <Row style={{ overflow: "hidden" }}>
                   {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay />}
                   {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+                </Row>
+                <Row style={{ overflow: "hidden", justifyContent: "center" }}>
+                  <Col
+                    span={1}
+                    style={{
+                      overflow: "hidden",
+                      justifyContent: "center",
+                      display: "flex",
+                      marginTop: "16px",
+                    }}>
+                    {activeCard?.source === "40k-10e" && (
+                      <Space.Compact block>
+                        <Button
+                          type={"primary"}
+                          icon={<ZoomInOutlined />}
+                          disabled={settings.zoom === 100}
+                          onClick={() => {
+                            let newZoom = settings.zoom || 100;
+                            newZoom = newZoom + 5;
+                            if (newZoom >= 100) {
+                              newZoom = 100;
+                            }
+                            updateSettings({ ...settings, zoom: newZoom });
+                          }}
+                        />
+                        <Button
+                          type={"primary"}
+                          icon={<ZoomOutOutlined />}
+                          disabled={settings.zoom === 25}
+                          onClick={() => {
+                            let newZoom = settings.zoom || 100;
+                            newZoom = newZoom - 5;
+                            if (newZoom <= 25) {
+                              newZoom = newZoom = 25;
+                            }
+                            updateSettings({ ...settings, zoom: newZoom });
+                          }}
+                        />
+                      </Space.Compact>
+                    )}
+                  </Col>
                 </Row>
               </div>
             </Col>
