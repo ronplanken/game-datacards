@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import "../App.css";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
+import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
@@ -156,6 +157,7 @@ export const Shared = () => {
                   key={`${card.name}-${index}`}
                   className={`data-${card?.source ? card?.source : "40k"}`}>
                   {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
+                  {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} type="print" />}
                   {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
                   {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
                   {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}

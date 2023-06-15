@@ -55,7 +55,6 @@ const { confirm } = Modal;
 function App() {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
   const { settings } = useSettingsStorage();
-  console.log(dataSource);
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
 
