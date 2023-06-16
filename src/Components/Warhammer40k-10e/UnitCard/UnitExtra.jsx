@@ -1,6 +1,7 @@
 import { UnitAbility } from "./UnitAbility";
 import { UnitAbilityDescription } from "./UnitAbilityDescription";
 import { UnitInvul } from "./UnitInvul";
+import { UnitLeader } from "./UnitLeader";
 
 export const UnitExtra = ({ unit }) => {
   return (
@@ -72,6 +73,7 @@ export const UnitExtra = ({ unit }) => {
       {unit.abilities?.invul && unit.abilities?.invul.showInvulnerableSave && (
         <UnitInvul invul={unit.abilities?.invul} />
       )}
+      {unit.leader && unit.leader !== "" && <UnitLeader leader={unit.leader} />}
     </div>
   );
 };
