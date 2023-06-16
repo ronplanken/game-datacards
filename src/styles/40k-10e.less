@@ -1151,6 +1151,7 @@
                   filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
                   width: 16px;
                   height: 16px;
+                  margin-top: 2px;
                 }
               }
               @media only screen and (min-width: 600px) {
@@ -1169,7 +1170,7 @@
 
               .heading {
                 background-color: #456663;
-                padding-left: 32px;
+                padding-left: 0px;
                 display: grid;
                 grid-template-columns: 7fr 2fr repeat(5, 1fr);
                 grid-template-rows: 1fr;
@@ -1183,6 +1184,10 @@
                   font-weight: 600;
                   letter-spacing: 0.1rem;
                   z-index: 2;
+
+                  &:first-child {
+                    margin-left: 24px;
+                  }
                 }
               }
 
@@ -1249,23 +1254,38 @@
             }
             .melee {
               position: relative;
-
-              &::before {
-                content: "";
-                position: absolute;
-                left: 4px;
-                top: 0;
-                background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
-                background-repeat: none;
-                filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                width: 20px;
-                height: 20px;
-                margin-top: 2px;
+              @media only screen and (max-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 16px;
+                  height: 16px;
+                  margin-top: 4px;
+                }
+              }
+              @media only screen and (min-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 20px;
+                  height: 20px;
+                  margin-top: 3px;
+                }
               }
 
               .heading {
                 background-color: #456663;
-                padding-left: 32px;
+                padding-left: 0px;
                 display: grid;
                 grid-template-columns: 7fr 2fr repeat(5, 1fr);
                 grid-template-rows: 1fr;
@@ -1279,6 +1299,11 @@
                   font-weight: 600;
                   letter-spacing: 0.1rem;
                   z-index: 2;
+                  padding-top: 2px;
+
+                  &:first-child {
+                    margin-left: 24px;
+                  }
                 }
               }
               .weapon {

@@ -446,6 +446,16 @@ export const Viewer = () => {
                   <p style={{ padding: "32px", fontSize: "1.2rem", textAlign: "justify" }}>
                     To get started select a card from the menu at the top right.
                   </p>
+                  <Row
+                    style={{ padding: "16px", textAlign: "center", position: "absolute", bottom: "128px" }}
+                    justify={"center"}>
+                    <Col span={24}>
+                      Join our Discord!
+                      <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
+                        <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
+                      </a>
+                    </Col>
+                  </Row>
                 </Col>
               )}
             </>
