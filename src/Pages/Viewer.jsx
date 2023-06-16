@@ -26,6 +26,7 @@ import { SettingsModal } from "../Components/SettingsModal";
 import { UpdateReminder } from "../Components/UpdateReminder";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
+import { WhatsNew } from "../Components/WhatsNew";
 import { getListFactionId } from "../Helpers/treeview.helpers";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -81,6 +82,7 @@ export const Viewer = () => {
 
   return (
     <Layout>
+      <WhatsNew />
       <UpdateReminder />
       <Header style={{ paddingLeft: screens.xs ? "8px" : "32px", paddingRight: screens.xs ? "12px" : "32px" }}>
         <Row style={{ justifyContent: "space-between" }}>
@@ -419,18 +421,27 @@ export const Viewer = () => {
             </Col>
           )}
           {screens.xs && (
-            <Col>
-              <div
-                style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
-                className={`data-${activeCard?.source}`}>
-                <Row style={{ overflow: "hidden" }}>
-                  {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} />}
-                  {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
-                </Row>
-              </div>
-            </Col>
+            <>
+              <Col>
+                <div
+                  style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
+                  className={`data-${activeCard?.source}`}>
+                  <Row style={{ overflow: "hidden" }}>
+                    {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
+                    {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} />}
+                    {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
+                    {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+                  </Row>
+                </div>
+              </Col>
+              {!activeCard && (
+                <Col>
+                  <p style={{ padding: "32px", fontSize: "1.2rem" }}>
+                    You can select a datasheet using the menu at the top right.
+                  </p>
+                </Col>
+              )}
+            </>
           )}
         </Row>
       </Content>

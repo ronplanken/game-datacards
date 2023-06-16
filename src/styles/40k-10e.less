@@ -22,6 +22,20 @@
   html {
     font-size: 90%;
   }
+  .welcome-background {
+    border-radius: 4px;
+    width: 100%;
+    height: 80%;
+    position: absolute;
+    background: white;
+    top: 45%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    .whatsnew-container {
+      width: 100%;
+    }
+  }
 }
 @media only screen and (min-width: 600px) {
   html {
@@ -937,7 +951,7 @@
 
         .name_container {
           padding-top: 12px;
-          padding-left: 32px;
+          padding-left: 8px;
           display: flex;
           align-items: flex-end;
           .name {
@@ -1750,6 +1764,16 @@
 
   .center {
     text-align: center;
+  }
+  .rule {
+    text-transform: capitalize;
+    color: black;
+    font-weight: 600;
+    span {
+      text-transform: capitalize;
+      color: black;
+      font-weight: 600;
+    }
   }
   .keyword {
     text-transform: uppercase;
