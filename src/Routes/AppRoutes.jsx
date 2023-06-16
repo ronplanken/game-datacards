@@ -12,7 +12,7 @@ const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={isMobile ? <Mobile /> : <App />} />
+      <Route path="/" element={isMobile ? <Viewer /> : <App />} />
       <Route path="shared/:Id" element={<Shared />} />
       <Route path="viewer" element={<Viewer />} />
       <Route path="print/:CategoryId" element={<Print />} />
