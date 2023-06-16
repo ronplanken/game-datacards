@@ -7,7 +7,7 @@ export const UnitWeaponsType = ({ weapons, weaponType }) => {
         <div className="title">{weaponType.name}</div>
         <div className="title center">Range</div>
         <div className="title center">A</div>
-        <div className="title center">BS</div>
+        <div className="title center">{weaponType.class === "melee" ? "WS" : "BS"}</div>
         <div className="title center">S</div>
         <div className="title center">AP</div>
         <div className="title center">D</div>
