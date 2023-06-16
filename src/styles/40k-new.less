@@ -1,6 +1,29 @@
 @import "./factions.less";
 .data-40k,
 .data-basic {
+  &.no-icons {
+    .edit_heading {
+      .label {
+        @import (multiple) "./40k-no-icons.less";
+      }
+    }
+  }
+
+  &.icons {
+    .edit_heading {
+      .label {
+        .icon {
+          height: 11px;
+          width: 11px;
+          margin-right: 2px;
+          margin-top: -2px;
+          background-repeat: no-repeat;
+        }
+        @import (multiple) "./40k-icons.less";
+      }
+    }
+  }
+
   .unit {
     .page {
       width: inherit;
@@ -10,11 +33,11 @@
       background-color: #d0d0d0;
 
       &.no-icons {
-        @import "./40k-no-icons.less";
+        @import (multiple) "./40k-no-icons.less";
       }
 
       &.icons {
-        @import "./40k-icons.less";
+        @import (multiple) "./40k-icons.less";
       }
 
       @import (multiple) "./sizes.less";
@@ -196,8 +219,16 @@
         .profile {
           border-bottom: 2px solid #777273;
           margin: 0 8px;
-
+          .weapon_name {
+            font-family: "Heebo", sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 4px;
+          }
           .weapon {
+            &.nested {
+              padding-left: 8px;
+            }
             &:nth-of-type(even) {
               background: #dee3e0;
             }
@@ -435,7 +466,7 @@
 
         .description {
           margin: 8px 8px;
-          margin-top: 16px;
+          margin-top: 4px;
           padding: 0 4px;
           vertical-align: middle;
           font-family: "Heebo", sans-serif;
@@ -478,16 +509,79 @@
         background-color: #e2e2dd;
         overflow: hidden;
         border-radius: 13.5px;
+        .background {
+          width: inherit;
+        }
+        each(@factions, {
+        .@{value}::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+          .secondary_icon_@{value}::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 23px;
+            height: 23px;
+            opacity: 0.75;
+            background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+          }
+      });
 
+        .AM::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 55%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 85px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+        .basic::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
         .footer {
           border-top: 2px solid #000;
           position: absolute;
           text-transform: uppercase;
-          font-size: 16px;
-          font-weight: 700;
+          font-size: 13px;
+          font-weight: 600;
           text-align: center;
-          bottom: 8px;
-          text-align: center;
+          bottom: 6px;
           padding-left: 15px;
           padding-right: 15px;
           display: -webkit-box;
@@ -522,16 +616,16 @@
         }
         .name {
           font-family: "Heebo", sans-serif;
-          font-size: 16px;
+          font-size: 15px;
           font-weight: 600;
           text-transform: uppercase;
           text-align: center;
-          margin-top: 8px;
+          margin-top: 4px;
         }
 
         .description {
           margin: 8px 8px;
-          margin-top: 16px;
+          margin-top: 4px;
           padding: 0 4px;
           vertical-align: middle;
           font-family: "Heebo", sans-serif;
@@ -565,7 +659,9 @@
 
           ul {
             padding-left: 16px;
-
+            li {
+              padding-left: -8px;
+            }
             p {
               margin-bottom: 2px;
             }
@@ -624,7 +720,7 @@
 
         .description {
           margin: 8px 8px;
-          margin-top: 16px;
+          margin-top: 4px;
           padding: 0 4px;
           vertical-align: middle;
           font-family: "Heebo", sans-serif;

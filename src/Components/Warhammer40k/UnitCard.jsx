@@ -99,13 +99,14 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
                   if (wargear.profiles.length > 1) {
                     return (
                       <>
-                        <div className="description" key={`profile-${index}-description`}>
+                        <div className="weapon_name" key={`profile-${index}-description`}>
                           {wargear.name}
                         </div>
                         {wargear.profiles.map((profile, pindex) => {
                           return (
                             <WeaponStatline
                               profile={profile}
+                              nested={true}
                               key={`profile-${index}-${pindex}`}
                               type={unit.variant || "card"}
                               icons={unit.icons}
@@ -134,6 +135,21 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
                         {ability.showDescription && (
                           <MarkdownDisplay content={`**${ability.name}** : ${ability.description}`} />
                         )}
+                      </div>
+                    )
+                  );
+                })}
+              </div>
+              <div className="powers">
+                {unit.powers?.map((power, index) => {
+                  return (
+                    power.showPower && (
+                      <div className="description" key={`ability-${power.name}-description-${index}`}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <span>{<b>{power.name}</b>}</span>
+                          {power.showWarpCharge && <MarkdownDisplay content={`${power.warpcharge}`} />}
+                        </div>
+                        {power.showDescription && <MarkdownDisplay content={`${power.description}`} />}
                       </div>
                     )
                   );

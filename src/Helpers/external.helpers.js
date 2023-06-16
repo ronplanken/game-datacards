@@ -5,6 +5,23 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
+function capitalizeSentence(sentence) {
+  let words = sentence.toLowerCase().split(" ");
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+  }
+  return words.join(" ");
+}
+
+export function extractWarpChargeValue(text) {
+  const pattern = /has a warp charge value of (\d+)/i;
+  const match = text.match(pattern);
+  if (match) {
+    return parseInt(match[1]);
+  }
+  return null;
+}
+
 const BASIC_CORE_STRATAGEMS = [
   "000002134002",
   "000002134003",
@@ -65,15 +82,24 @@ export const get40KData = async () => {
   const dataSecondaries = await readCsv(
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Secondaries.json?${new Date().getTime()}`
   );
-
   const dataPsychic = await readCsv(
     `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/PsychicPowers.json?${new Date().getTime()}`
+  );
+  const dataTraits = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Warlord_traits.json?${new Date().getTime()}`
   );
 
   const mappedPsychicPowers = dataPsychic.map((power) => {
     power["cardType"] = "psychic";
     power["source"] = "40k";
+    power["name"] = capitalizeSentence(power.name);
+    power["warpcharge"] = extractWarpChargeValue(power["description"]);
     return power;
+  });
+  const mappedTraits = dataTraits.map((trait) => {
+    trait["source"] = "40k";
+    trait["name"] = capitalizeSentence(trait.name);
+    return trait;
   });
 
   dataFactions.sort((a, b) => a.name.localeCompare(b.name));
@@ -83,6 +109,8 @@ export const get40KData = async () => {
   const mappedStratagems = dataStratagems.map((stratagem) => {
     stratagem["cardType"] = "stratagem";
     stratagem["source"] = "40k";
+    stratagem["cp_cost"] = `${stratagem["cp_cost"]} CP`;
+    stratagem["name"] = capitalizeSentence(stratagem.name);
     if (stratagem.faction_id === stratagem.subfaction_id) {
       stratagem["subfaction_id"] = undefined;
     }
@@ -95,12 +123,19 @@ export const get40KData = async () => {
 
   const mappedSecondaries = dataSecondaries.map((secondary) => {
     secondary["cardType"] = "secondary";
+    secondary["name"] = capitalizeSentence(secondary.name);
     secondary["source"] = "40k";
     secondary["id"] = uuidv4();
     return secondary;
   });
 
-  mappedSecondaries.sort((a, b) => a.category.localeCompare(b.category));
+  mappedSecondaries.sort((a, b) => {
+    if (a.faction_id !== b.faction_id) {
+      return a.faction_id.localeCompare(b.faction_id);
+    } else {
+      return a.category.localeCompare(b.category);
+    }
+  });
 
   const mappedSheets = sheets.map((row) => {
     row["cardType"] = "datasheet";
@@ -194,16 +229,17 @@ export const get40KData = async () => {
       .sort((a, b) => {
         return a.name.localeCompare(b.name);
       });
+    faction["traits"] = mappedTraits
+      .filter((trait) => trait.faction_id === faction.id)
+      .sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
     faction["secondaries"] = mappedSecondaries.filter((secondary) => {
-      return (
-        secondary.game === "War Zone Nephilim: Grand Tournament" &&
-        (secondary.faction_id === faction.id ||
-          faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
-      );
+      return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id !== "";
     });
 
     faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {
-      return secondary.game === "War Zone Nephilim: Grand Tournament" && secondary.faction_id === "";
+      return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id === "";
     });
 
     return faction;
@@ -356,6 +392,65 @@ export const getBasicData = () => {
         ],
       },
     ],
+  };
+};
+
+export const get40k10eData = async () => {
+  const factions = [
+    "worldeaters",
+    "deathwatch",
+    "deathguard",
+    "adeptusmechanicus",
+    "chaos_spacemarines",
+    "blacktemplar",
+    "adeptasororitas",
+    "thousandsons",
+    "marines_leviathan",
+    "darkangels",
+    "chaosdaemons",
+    "astramilitarum",
+    "chaosknights",
+    "space_marines",
+    "agents",
+    "spacewolves",
+    "greyknights",
+    "tyranids",
+    "adeptuscustodes",
+    "imperialknights",
+    "bloodangels",
+    "orks",
+    "votann",
+    "tau",
+    "necrons",
+    "aeldari",
+    "drukhari",
+  ];
+
+  const fetchData = async (faction) => {
+    const url = `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/${faction}.json?${new Date().getTime()}`;
+    const data = await readCsv(url);
+    return data;
+  };
+
+  const fetchAllData = async () => {
+    const sortedFactions = factions.sort();
+    const promises = sortedFactions.map((faction) => fetchData(faction));
+    const allData = await Promise.all(promises);
+    return allData;
+  };
+
+  const allFactionsData = await fetchAllData();
+
+  return {
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: new Date().toISOString(),
+    lastCheckedForUpdate: new Date().toISOString(),
+    noDatasheetOptions: true,
+    noStratagemOptions: true,
+    noSecondaryOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: true,
+    data: allFactionsData,
   };
 };
 

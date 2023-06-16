@@ -1,12 +1,12 @@
 import { MarkdownDisplay } from "../../MarkdownDisplay";
 import { WeaponStatProfile } from "./WeaponStatProfile";
 
-export const WeaponStatline = ({ profile, type = "card", icons = "icons" }) => {
+export const WeaponStatline = ({ profile, type = "card", icons = "icons", nested = false }) => {
   if (!profile) {
     return <></>;
   }
   return (
-    <div className="weapon">
+    <div className={`weapon ${nested ? "nested" : ""}`}>
       <div className="weapon_profile">
         <div
           className="left value"

@@ -17,6 +17,9 @@ export const FactionSelect = ({ value, onChange }) => {
       <Option value="CHBA">Blood Angels</Option>
       <Option value="LGBL">Black Legion</Option>
       <Option value="CHBT">Black Templar</Option>
+      <Option value="CD">Chaos Daemons</Option>
+      <Option value="QT">Chaos Knights</Option>
+      <Option value="CSM">Chaos Space Marines</Option>
       <Option value="CHDA">Dark Angels</Option>
       <Option value="DG">Death Guard</Option>
       <Option value="DRU">Drukhari</Option>

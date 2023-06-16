@@ -5,6 +5,7 @@ import { UnitBasicInfo } from "./UnitCardEditor/UnitBasicInfo";
 import { UnitDatasheets } from "./UnitCardEditor/UnitDatasheets";
 import { UnitDescription } from "./UnitCardEditor/UnitDescription";
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
+import { UnitPowers } from "./UnitCardEditor/UnitPowers";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 
 const { Panel } = Collapse;
@@ -53,8 +54,22 @@ export const UnitCardEditor = () => {
         <UnitAbilities />
       </Panel>
       <Panel
-        header="Keywords"
+        header="Powers"
         key="6"
+        extra={
+          <div>
+            (
+            {`${activeCard?.powers?.filter((sheet) => sheet.showPower).length || 0} / ${
+              activeCard?.powers?.length || 0
+            }`}
+            )
+          </div>
+        }>
+        <UnitPowers />
+      </Panel>
+      <Panel
+        header="Keywords"
+        key="7"
         extra={
           <div>
             ({`${activeCard?.keywords?.filter((sheet) => sheet.active).length} / ${activeCard?.keywords?.length}`})

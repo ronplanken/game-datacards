@@ -1,19 +1,17 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
 import { BrowserRouter } from "react-router-dom";
-import { AppRoutes } from "./Routes/AppRoutes";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
+import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
-import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
+import { AppRoutes } from "./Routes/AppRoutes";
 
-import { CloseCircleOutlined } from "@ant-design/icons";
-
-import { ErrorBoundary } from "react-error-boundary";
 import { Col, Result, Row, Typography } from "antd";
+import { ErrorBoundary } from "react-error-boundary";
 
 const { Paragraph, Text } = Typography;
 
@@ -57,23 +55,23 @@ function ErrorFallback({ error }) {
   );
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <SettingsStorageProviderComponent>
-        <FirebaseProviderComponent>
-          <DataSourceStorageProviderComponent>
-            <CardStorageProviderComponent>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </CardStorageProviderComponent>
-          </DataSourceStorageProviderComponent>
-        </FirebaseProviderComponent>
-      </SettingsStorageProviderComponent>
-    </ErrorBoundary>
-  </React.StrictMode>,
-  document.getElementById("root")
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
+  <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <SettingsStorageProviderComponent>
+      <FirebaseProviderComponent>
+        <DataSourceStorageProviderComponent>
+          <CardStorageProviderComponent>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </CardStorageProviderComponent>
+        </DataSourceStorageProviderComponent>
+      </FirebaseProviderComponent>
+    </SettingsStorageProviderComponent>
+  </ErrorBoundary>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 1.6.0
+                Whats new in 2.0.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,28 +56,18 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>New printing options</strong>
+                          <strong>Warhammer 40k 10th edition support</strong>
                           <br />
-                          You can now select card scaling and page orientation in the print settings.
+                          We now support Warhammer 40k 10th edition datacards. You can edit and modify them as you wish.
+                          All data is retrieve from an external datasource and not included in game-datacards.
+                          <br />
+                          <br /> Make sure you enable the Warhammer 40k 10th edition datasource in the settings window.
+                          <br /> If you have any suggestions or questions make sure to join our discord!
                         </li>
                         <li>
-                          <strong>Legacy printing options</strong>
+                          <strong>Scalable panels</strong>
                           <br />
-                          By popular demand the old printing feature has returned as a legacy option. You can toggle
-                          this in the configuration window.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Col>
-                  <Col>
-                    <Typography.Title level={5}>Coming soon!</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Battlescribe imports</strong>
-                          <br />
-                          Soon you will be able to insert your Battlescribe .ros or .rosz files and generate cards for
-                          them!
+                          You can now move and scale both side panels as you wish.
                         </li>
                       </ul>
                     </Typography.Paragraph>
