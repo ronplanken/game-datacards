@@ -14,7 +14,7 @@ export const UpdateReminder = () => {
 
   useEffect(() => {
     if (
-      (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 4) ||
+      (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "hours") > 8) ||
       compare(dataSource.version, process.env.REACT_APP_VERSION, "<")
     ) {
       setIsUpdateReminderVisible(true);

@@ -1,4 +1,4 @@
-import { ExclamationCircleOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -54,7 +54,7 @@ const { confirm } = Modal;
 
 function App() {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
-  const { settings } = useSettingsStorage();
+  const { settings, updateSettings } = useSettingsStorage();
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
 
@@ -214,14 +214,14 @@ function App() {
       </Header>
       <Content style={{ height: "calc(100vh - 64px)" }}>
         <PanelGroup direction="horizontal" autoSaveId="mainLayout">
-          <Panel defaultSize={25} order={1}>
+          <Panel defaultSize={18} order={1}>
             <Toolbar
               setShowPrint={setShowPrint}
               selectedTreeKey={selectedTreeIndex}
               setSelectedTreeKey={setSelectedTreeIndex}
             />
             <PanelGroup direction="vertical" autoSaveId="toolbarLayout">
-              <Panel defaultSize={50} minSize={20} maxSize={80}>
+              <Panel defaultSize={30} minSize={20} maxSize={80}>
                 <div
                   style={{
                     height: "100%",
@@ -304,7 +304,7 @@ function App() {
                     size="small"
                     loading={isLoading}
                     dataSource={getDataSourceType()}
-                    style={{ overflowY: "auto", height: "100%" }}
+                    style={{ overflowY: "auto", height: "calc(100% - 36px)" }}
                     locale={{
                       emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
                     }}
@@ -439,7 +439,12 @@ function App() {
           <PanelResizeHandle className="vertical-resizer" />
           <Panel defaultSize={41} order={2}>
             <div
-              style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
+              style={{
+                height: "calc(100vh - 64px)",
+                display: "block",
+                overflow: "auto",
+                "--card-scaling-factor": settings.zoom / 100,
+              }}
               className={`data-${activeCard?.source}`}>
               <Row style={{ overflow: "hidden" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
@@ -448,60 +453,94 @@ function App() {
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
               </Row>
               <Row style={{ overflow: "hidden", justifyContent: "center" }}>
-                {activeCard && !activeCard.isCustom && (
-                  <Col
-                    span={20}
-                    style={{
-                      overflow: "hidden",
-                      justifyContent: "center",
-                      display: "flex",
-                      marginTop: "16px",
-                    }}>
-                    {cardStorage.categories?.length > 1 ? (
-                      <Dropdown.Button
-                        overlay={categoryMenu}
-                        icon={<AddCard />}
-                        type={"primary"}
-                        style={{ width: "auto" }}
-                        onClick={() => {
-                          const newCard = {
-                            ...activeCard,
-                            isCustom: true,
-                            uuid: uuidv4(),
-                          };
-                          const cat = { ...cardStorage.categories[0] };
-                          addCardToCategory(newCard);
-                          setActiveCard(newCard);
-                          setActiveCategory(cat);
-                          setSelectedTreeIndex(`card-${newCard.uuid}`);
-                        }}>
-                        Add card to {cardStorage.categories[0].name}
-                      </Dropdown.Button>
-                    ) : (
-                      <Button
-                        type={"primary"}
-                        onClick={() => {
-                          const newCard = {
-                            ...activeCard,
-                            isCustom: true,
-                            uuid: uuidv4(),
-                          };
-                          const cat = { ...cardStorage.categories[0] };
-                          addCardToCategory(newCard);
-                          setActiveCard(newCard);
-                          setActiveCategory(cat);
-                          setSelectedTreeIndex(`card-${newCard.uuid}`);
-                        }}>
-                        Add card to {cardStorage.categories[0].name}
-                      </Button>
+                <Col
+                  span={20}
+                  style={{
+                    overflow: "hidden",
+                    justifyContent: "center",
+                    display: "flex",
+                    marginTop: "16px",
+                  }}>
+                  <Space>
+                    {activeCard?.source === "40k-10e" && (
+                      <Space.Compact block>
+                        <Button
+                          type={"primary"}
+                          icon={<ZoomInOutlined />}
+                          disabled={settings.zoom === 100}
+                          onClick={() => {
+                            let newZoom = settings.zoom || 100;
+                            newZoom = newZoom + 5;
+                            if (newZoom >= 100) {
+                              newZoom = 100;
+                            }
+                            updateSettings({ ...settings, zoom: newZoom });
+                          }}
+                        />
+                        <Button
+                          type={"primary"}
+                          icon={<ZoomOutOutlined />}
+                          disabled={settings.zoom === 25}
+                          onClick={() => {
+                            let newZoom = settings.zoom || 100;
+                            newZoom = newZoom - 5;
+                            if (newZoom <= 25) {
+                              newZoom = newZoom = 25;
+                            }
+                            updateSettings({ ...settings, zoom: newZoom });
+                          }}
+                        />
+                      </Space.Compact>
                     )}
-                  </Col>
-                )}
+                    {activeCard && !activeCard.isCustom && (
+                      <>
+                        {cardStorage.categories?.length > 1 ? (
+                          <Dropdown.Button
+                            overlay={categoryMenu}
+                            icon={<AddCard />}
+                            type={"primary"}
+                            style={{ width: "auto" }}
+                            onClick={() => {
+                              const newCard = {
+                                ...activeCard,
+                                isCustom: true,
+                                uuid: uuidv4(),
+                              };
+                              const cat = { ...cardStorage.categories[0] };
+                              addCardToCategory(newCard);
+                              setActiveCard(newCard);
+                              setActiveCategory(cat);
+                              setSelectedTreeIndex(`card-${newCard.uuid}`);
+                            }}>
+                            Add card to {cardStorage.categories[0].name}
+                          </Dropdown.Button>
+                        ) : (
+                          <Button
+                            type={"primary"}
+                            onClick={() => {
+                              const newCard = {
+                                ...activeCard,
+                                isCustom: true,
+                                uuid: uuidv4(),
+                              };
+                              const cat = { ...cardStorage.categories[0] };
+                              addCardToCategory(newCard);
+                              setActiveCard(newCard);
+                              setActiveCategory(cat);
+                              setSelectedTreeIndex(`card-${newCard.uuid}`);
+                            }}>
+                            Add card to {cardStorage.categories[0].name}
+                          </Button>
+                        )}
+                      </>
+                    )}
+                  </Space>
+                </Col>
               </Row>
             </div>
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />
-          <Panel defaultSize={33} order={3}>
+          <Panel defaultSize={20} order={3}>
             {activeCard && (
               <div style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} className={`data-${activeCard?.source}`}>
                 {activeCard?.source === "40k" && <Warhammer40KCardEditor />}

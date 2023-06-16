@@ -13,6 +13,34 @@
   .ant-list {
     border: 0px;
   }
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  html {
+    font-size: 90%;
+  }
+  .welcome-background {
+    border-radius: 4px;
+    width: 100%;
+    height: 80%;
+    position: absolute;
+    background: white;
+    top: 45%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    .whatsnew-container {
+      width: 100%;
+    }
+  }
+}
+@media only screen and (min-width: 600px) {
+  html {
+    font-size: 16px;
+  }
 }
 
 .data-40k-10e {
@@ -192,7 +220,6 @@
       grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
       grid-template-columns: 1fr 1fr;
 
-      
       grid-template-areas:
         " c1  c1 "
         " c2  c2 "
@@ -221,6 +248,7 @@
         display: flex;
         align-items: flex-end;
         grid-area: c1;
+
         .name {
           text-transform: uppercase;
           font-size: 2rem;
@@ -242,8 +270,6 @@
         }
       }
 
-
-
       .stats_container {
         padding-left: 32px;
         display: flex;
@@ -261,6 +287,7 @@
           color: white;
           z-index: 2;
           letter-spacing: 0.1rem;
+          white-space: nowrap;
         }
 
         .stat {
@@ -924,7 +951,7 @@
 
         .name_container {
           padding-top: 12px;
-          padding-left: 32px;
+          padding-left: 8px;
           display: flex;
           align-items: flex-end;
           .name {
@@ -1113,16 +1140,31 @@
             .ranged {
               position: relative;
 
-              &::before {
-                content: "";
-                position: absolute;
-                left: 4px;
-                top: 0;
-                background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
-                background-repeat: none;
-                filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                width: 24px;
-                height: 24px;
+              @media only screen and (max-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 16px;
+                  height: 16px;
+                }
+              }
+              @media only screen and (min-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 24px;
+                  height: 24px;
+                }
               }
 
               .heading {
@@ -1143,6 +1185,7 @@
                   z-index: 2;
                 }
               }
+
               .weapon {
                 padding-left: 8px;
                 border-bottom: 1px dotted #636567;
@@ -1722,12 +1765,38 @@
   .center {
     text-align: center;
   }
+  .rule {
+    text-transform: capitalize;
+    color: black;
+    font-weight: 600;
+    span {
+      text-transform: capitalize;
+      color: black;
+      font-weight: 600;
+    }
+  }
   .keyword {
     text-transform: uppercase;
     color: #456663;
     font-size: 0.7rem;
     font-weight: 600;
     z-index: 2;
+
+    span {
+      &::after {
+        content: ", ";
+      }
+    }
+    span:first-child {
+      &::before {
+        content: "";
+      }
+    }
+    span:last-child {
+      &::after {
+        content: "";
+      }
+    }
     &::after {
       content: "]";
     }

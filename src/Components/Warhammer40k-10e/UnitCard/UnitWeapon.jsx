@@ -1,3 +1,5 @@
+import { UnitWeaponKeywords } from "./UnitWeaponKeyword";
+
 export const UnitWeapon = ({ weapon }) => {
   return (
     <div className="weapon">
@@ -7,8 +9,7 @@ export const UnitWeapon = ({ weapon }) => {
           <div className="line" key={`weapon-line-${index}`}>
             <div className="value">
               {line.name}
-              {` `}
-              {line.keywords?.length > 0 && <span className="keyword">{line.keywords.join(", ")}</span>}
+              {line.keywords?.length > 0 && <UnitWeaponKeywords keywords={line.keywords} />}
             </div>
             <div className="value center">{line.range}</div>
             <div className="value center">{line.attacks}</div>
