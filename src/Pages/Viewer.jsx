@@ -48,6 +48,8 @@ export const Viewer = () => {
   const [isLoading] = useState(false);
   const [searchText, setSearchText] = useState(undefined);
 
+  const [side, setSide] = useState("front");
+
   const { activeCard, setActiveCard } = useCardStorage();
 
   const screens = useBreakpoint();
@@ -60,8 +62,8 @@ export const Viewer = () => {
       selectedDataSource: "40k-10e",
     });
   }, []);
-  console.log(selectedFaction);
 
+  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
       const filteredSheets = searchText
@@ -354,17 +356,19 @@ export const Viewer = () => {
                   display: "block",
                   overflow: "auto",
                   "--card-scaling-factor": settings.zoom / 100,
+                  "--banner-colour": cardFaction?.colours?.banner,
+                  "--header-colour": cardFaction?.colours?.header,
                 }}
                 className={`data-${activeCard?.source}`}>
                 <Row style={{ overflow: "hidden" }}>
                   {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay />}
+                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
                   {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 </Row>
                 <Row style={{ overflow: "hidden", justifyContent: "center" }}>
                   <Col
-                    span={1}
+                    span={8}
                     style={{
                       overflow: "hidden",
                       justifyContent: "center",
@@ -372,34 +376,48 @@ export const Viewer = () => {
                       marginTop: "16px",
                     }}>
                     {activeCard?.source === "40k-10e" && (
-                      <Space.Compact block>
+                      <Space>
+                        <Space.Compact block>
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomInOutlined />}
+                            disabled={settings.zoom === 100}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom + 5;
+                              if (newZoom >= 100) {
+                                newZoom = 100;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomOutOutlined />}
+                            disabled={settings.zoom === 25}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom - 5;
+                              if (newZoom <= 25) {
+                                newZoom = newZoom = 25;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                        </Space.Compact>
                         <Button
                           type={"primary"}
-                          icon={<ZoomInOutlined />}
-                          disabled={settings.zoom === 100}
                           onClick={() => {
-                            let newZoom = settings.zoom || 100;
-                            newZoom = newZoom + 5;
-                            if (newZoom >= 100) {
-                              newZoom = 100;
-                            }
-                            updateSettings({ ...settings, zoom: newZoom });
-                          }}
-                        />
-                        <Button
-                          type={"primary"}
-                          icon={<ZoomOutOutlined />}
-                          disabled={settings.zoom === 25}
-                          onClick={() => {
-                            let newZoom = settings.zoom || 100;
-                            newZoom = newZoom - 5;
-                            if (newZoom <= 25) {
-                              newZoom = newZoom = 25;
-                            }
-                            updateSettings({ ...settings, zoom: newZoom });
-                          }}
-                        />
-                      </Space.Compact>
+                            setSide((current) => {
+                              if (current === "front") {
+                                return "back";
+                              }
+                              return "front";
+                            });
+                          }}>
+                          Swap
+                        </Button>
+                      </Space>
                     )}
                   </Col>
                 </Row>
@@ -409,11 +427,17 @@ export const Viewer = () => {
           {screens.sm && !screens.lg && (
             <Col>
               <div
-                style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
+                style={{
+                  height: "calc(100vh - 64px)",
+                  display: "block",
+                  overflow: "auto",
+                  "--banner-colour": dataSource?.colours?.banner,
+                  "--header-colour": dataSource?.colours?.header,
+                }}
                 className={`data-${activeCard?.source}`}>
                 <Row style={{ overflow: "hidden" }}>
                   {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} />}
+                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} side={side} />}
                   {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 </Row>
@@ -424,11 +448,17 @@ export const Viewer = () => {
             <>
               <Col>
                 <div
-                  style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
+                  style={{
+                    height: "calc(100vh - 64px)",
+                    display: "block",
+                    overflow: "auto",
+                    "--banner-colour": dataSource?.colours?.banner,
+                    "--header-colour": dataSource?.colours?.header,
+                  }}
                   className={`data-${activeCard?.source}`}>
                   <Row style={{ overflow: "hidden" }}>
                     {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                    {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} />}
+                    {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} side={side} />}
                     {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                     {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                   </Row>
