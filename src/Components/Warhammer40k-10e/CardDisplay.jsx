@@ -40,6 +40,7 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
           }}>
           {activeCard.cardType === "DataCard" && (
             <UnitCard
+              side={side}
               unit={activeCard}
               className={"viewer"}
               paddingTop="0px"

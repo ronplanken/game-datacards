@@ -13,12 +13,12 @@ export const UnitCardBack = ({ unit, cardStyle, paddingTop = "32px", className }
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`unit `} style={cardStyle}>
+      <div className={`unit`} style={cardStyle}>
         <div className={"header back"}>
           <UnitName name={unit.name} subname={unit.subname} />
         </div>
-        <div className="data_container">
-          <div className="data">
+        <div className="data_container ">
+          <div className="data back">
             <UnitWargear unit={unit} />
             <UnitLoadout unit={unit} />
           </div>

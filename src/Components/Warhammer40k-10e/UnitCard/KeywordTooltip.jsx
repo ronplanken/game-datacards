@@ -4,6 +4,7 @@ export const KeywordTooltip = ({ keyword }) => {
   if (keyword.includes("anti-")) {
     return (
       <Tooltip
+        placement="topLeft"
         title={"An unmodified Wound roll of ‘x+’ against a target with the matching keyword scores a Critical Wound."}>
         {`${keyword}`}
       </Tooltip>
@@ -12,6 +13,7 @@ export const KeywordTooltip = ({ keyword }) => {
   if (keyword.includes("feel no pain")) {
     return (
       <Tooltip
+        placement="topLeft"
         title={
           "Each time this model would lose a wound, roll one D6: if the result equals or exceeds ‘x’, that wound is not lost."
         }>
@@ -22,6 +24,7 @@ export const KeywordTooltip = ({ keyword }) => {
   if (keyword.includes("anti-")) {
     return (
       <Tooltip
+        placement="topLeft"
         title={"An unmodified Wound roll of ‘x+’ against a target with the matching keyword scores a Critical Wound."}>
         {`${keyword}`}
       </Tooltip>
@@ -29,7 +32,7 @@ export const KeywordTooltip = ({ keyword }) => {
   }
   if (keyword.includes("assault")) {
     return (
-      <Tooltip title={"Can be shot even if the bearer’s unit Advanced."} placement="topLeft">
+      <Tooltip placement="topLeft" title={"Can be shot even if the bearer’s unit Advanced."}>
         {`${keyword}`}
       </Tooltip>
     );

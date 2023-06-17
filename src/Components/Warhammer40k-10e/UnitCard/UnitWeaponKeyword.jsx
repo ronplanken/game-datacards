@@ -239,9 +239,5 @@ export const UnitWeaponKeywords = ({ keywords }) => {
     return <span key={index}>{`${keyword}`}</span>;
   });
 
-  return (
-    <>
-      &nbsp;<span className="keyword">{tooltips}</span>
-    </>
-  );
+  return <span className="keyword">{tooltips}</span>;
 };

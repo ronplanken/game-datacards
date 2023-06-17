@@ -563,6 +563,25 @@
             }
           }
         }
+
+        &.back {
+
+          .wargear_container {
+            height: auto !important;
+            padding-left: 0px;
+            padding-right: 0px;
+
+            .content {
+              grid-template-rows: auto !important;
+              grid-template-columns: 1fr !important;
+              grid-auto-flow: row !important;
+            }
+          }
+          .composition,
+          .loadout, .transport, .leader {
+            padding-left: 14px !important;
+          }
+        }
         .wargear_container {
           height: 500px;
           border-right: 2px solid var(--header-colour);
@@ -1123,11 +1142,12 @@
   .viewer {
     .unit {
       height: auto;
-      width: 100%;
+      width: 100vw;
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
+
       .header {
         width: 100%;
         height: auto;
@@ -1135,6 +1155,19 @@
         background-color: black;
         position: relative;
         display: block;
+
+        &.back {
+          min-height: 65px;
+          &::after {
+            position: absolute;
+            content: "";
+            top: 8px;
+            left: 0px;
+            width: 100%;
+            height: 85px;
+            background-color: var(--banner-colour);
+          }
+        }
 
         .name_container {
           padding-top: 12px;
@@ -1239,6 +1272,34 @@
                 height: 100%;
                 width: 100%;
                 scale: 0.75;
+              }
+            }
+
+            .damageTable {
+              position: absolute;
+              bottom: -14px;
+              height: 24px;
+              width: 24px;
+              left: 10px;
+              border-radius: 32px;
+              background-color: var(--header-colour);
+
+              &::after {
+                content: " ";
+                position: absolute;
+                filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center;
+                height: 100%;
+                width: 100%;
+                scale: 0.75;
+              }
+            }
+            @media only screen and (max-width: 600px) {
+              .damageTable {
+                left: 5px;
               }
             }
             .value_container {

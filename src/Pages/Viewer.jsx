@@ -1,4 +1,4 @@
-import { MenuOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { MenuOutlined, RedoOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -431,8 +431,9 @@ export const Viewer = () => {
                   height: "calc(100vh - 64px)",
                   display: "block",
                   overflow: "auto",
-                  "--banner-colour": dataSource?.colours?.banner,
-                  "--header-colour": dataSource?.colours?.header,
+                  "--banner-colour": cardFaction?.colours?.banner,
+                  "--header-colour": cardFaction?.colours?.header,
+                  backgroundColor: "#d8d8da",
                 }}
                 className={`data-${activeCard?.source}`}>
                 <Row style={{ overflow: "hidden" }}>
@@ -452,8 +453,9 @@ export const Viewer = () => {
                     height: "calc(100vh - 64px)",
                     display: "block",
                     overflow: "auto",
-                    "--banner-colour": dataSource?.colours?.banner,
-                    "--header-colour": dataSource?.colours?.header,
+                    "--banner-colour": cardFaction?.colours?.banner,
+                    "--header-colour": cardFaction?.colours?.header,
+                    backgroundColor: "#d8d8da",
                   }}
                   className={`data-${activeCard?.source}`}>
                   <Row style={{ overflow: "hidden" }}>
@@ -462,6 +464,33 @@ export const Viewer = () => {
                     {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                     {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                   </Row>
+                </div>
+                <div
+                  style={{
+                    height: "48px",
+                    position: "absolute",
+                    backgroundColor: "#001529",
+                    width: "100%",
+                    bottom: "0px",
+                    paddingTop: "4px",
+                    width: "100vw",
+                  }}>
+                  <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
+                    <Button
+                      icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
+                      type="ghost"
+                      size="large"
+                      shape="round"
+                      className="button-bar"
+                      onClick={() => {
+                        setSide((current) => {
+                          if (current === "front") {
+                            return "back";
+                          }
+                          return "front";
+                        });
+                      }}></Button>
+                  </Space>
                 </div>
               </Col>
               {!activeCard && (
