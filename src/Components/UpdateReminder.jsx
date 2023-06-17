@@ -1,10 +1,9 @@
-import { Button, Col, Row, Popover, Typography, message } from "antd";
+import { DatabaseOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Popover, message } from "antd";
 import { compare } from "compare-versions";
+import moment from "moment";
 import React, { useEffect } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
-import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
-import { DatabaseOutlined, LoadingOutlined } from "@ant-design/icons";
-import moment from "moment";
 
 export const UpdateReminder = () => {
   const [isUpdateReminderVisible, setIsUpdateReminderVisible] = React.useState(false);
@@ -14,7 +13,7 @@ export const UpdateReminder = () => {
 
   useEffect(() => {
     if (
-      (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "hours") > 8) ||
+      (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 2) ||
       compare(dataSource.version, process.env.REACT_APP_VERSION, "<")
     ) {
       setIsUpdateReminderVisible(true);
