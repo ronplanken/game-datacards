@@ -5,10 +5,16 @@ export const UnitWeapons = ({ unit }) => {
   return (
     <div className="weapons">
       {unit.rangedWeapons && unit.rangedWeapons.length > 0 && (
-        <UnitWeaponsType weaponType={{ name: "Ranged weapons", class: "ranged" }} weapons={unit.rangedWeapons} />
+        <UnitWeaponsType
+          weaponType={{ name: "Ranged weapons", class: "ranged", skill: "BS" }}
+          weapons={unit.rangedWeapons}
+        />
       )}
       {unit.meleeWeapons && unit.meleeWeapons.length > 0 && (
-        <UnitWeaponsType weaponType={{ name: "Melee weapons", class: "melee" }} weapons={unit.meleeWeapons} />
+        <UnitWeaponsType
+          weaponType={{ name: "Melee weapons", class: "melee", skill: "WS" }}
+          weapons={unit.meleeWeapons}
+        />
       )}
       {unit.abilities.primarch && unit.abilities.primarch.length > 0 && (
         <>
