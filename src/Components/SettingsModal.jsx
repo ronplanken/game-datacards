@@ -327,6 +327,28 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.0.0"} key={"2.0.0"}>
+                    <b> 15-06-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Warhammer 40k 10th edition support</strong>
+                          <br />
+                          We now support Warhammer 40k 10th edition datacards. You can edit and modify them as you wish.
+                          All data is retrieve from an external datasource and not included in game-datacards.
+                          <br />
+                          <br /> Make sure you enable the Warhammer 40k 10th edition datasource in the settings window.
+                          <br /> If you have any suggestions or questions make sure to join our discord!
+                        </li>
+                        <li>
+                          <strong>Scalable panels</strong>
+                          <br />
+                          You can now move and scale both side panels as you wish.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 1.6.0"} key={"1.6.0"}>
                     <b> 14-01-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>

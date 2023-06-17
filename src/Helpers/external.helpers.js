@@ -405,7 +405,6 @@ export const get40k10eData = async () => {
     "blacktemplar",
     "adeptasororitas",
     "thousandsons",
-    "marines_leviathan",
     "darkangels",
     "chaosdaemons",
     "astramilitarum",
@@ -424,6 +423,7 @@ export const get40k10eData = async () => {
     "necrons",
     "aeldari",
     "drukhari",
+    "gsc",
   ];
 
   const fetchData = async (faction) => {

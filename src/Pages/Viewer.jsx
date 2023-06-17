@@ -1,4 +1,4 @@
-import { MenuOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { MenuOutlined, RedoOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -48,6 +48,8 @@ export const Viewer = () => {
   const [isLoading] = useState(false);
   const [searchText, setSearchText] = useState(undefined);
 
+  const [side, setSide] = useState("front");
+
   const { activeCard, setActiveCard } = useCardStorage();
 
   const screens = useBreakpoint();
@@ -60,8 +62,8 @@ export const Viewer = () => {
       selectedDataSource: "40k-10e",
     });
   }, []);
-  console.log(selectedFaction);
 
+  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
       const filteredSheets = searchText
@@ -354,17 +356,19 @@ export const Viewer = () => {
                   display: "block",
                   overflow: "auto",
                   "--card-scaling-factor": settings.zoom / 100,
+                  "--banner-colour": cardFaction?.colours?.banner,
+                  "--header-colour": cardFaction?.colours?.header,
                 }}
                 className={`data-${activeCard?.source}`}>
                 <Row style={{ overflow: "hidden" }}>
                   {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay />}
+                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
                   {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 </Row>
                 <Row style={{ overflow: "hidden", justifyContent: "center" }}>
                   <Col
-                    span={1}
+                    span={8}
                     style={{
                       overflow: "hidden",
                       justifyContent: "center",
@@ -372,34 +376,48 @@ export const Viewer = () => {
                       marginTop: "16px",
                     }}>
                     {activeCard?.source === "40k-10e" && (
-                      <Space.Compact block>
+                      <Space>
+                        <Space.Compact block>
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomInOutlined />}
+                            disabled={settings.zoom === 100}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom + 5;
+                              if (newZoom >= 100) {
+                                newZoom = 100;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomOutOutlined />}
+                            disabled={settings.zoom === 25}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom - 5;
+                              if (newZoom <= 25) {
+                                newZoom = newZoom = 25;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                        </Space.Compact>
                         <Button
                           type={"primary"}
-                          icon={<ZoomInOutlined />}
-                          disabled={settings.zoom === 100}
                           onClick={() => {
-                            let newZoom = settings.zoom || 100;
-                            newZoom = newZoom + 5;
-                            if (newZoom >= 100) {
-                              newZoom = 100;
-                            }
-                            updateSettings({ ...settings, zoom: newZoom });
-                          }}
-                        />
-                        <Button
-                          type={"primary"}
-                          icon={<ZoomOutOutlined />}
-                          disabled={settings.zoom === 25}
-                          onClick={() => {
-                            let newZoom = settings.zoom || 100;
-                            newZoom = newZoom - 5;
-                            if (newZoom <= 25) {
-                              newZoom = newZoom = 25;
-                            }
-                            updateSettings({ ...settings, zoom: newZoom });
-                          }}
-                        />
-                      </Space.Compact>
+                            setSide((current) => {
+                              if (current === "front") {
+                                return "back";
+                              }
+                              return "front";
+                            });
+                          }}>
+                          Swap
+                        </Button>
+                      </Space>
                     )}
                   </Col>
                 </Row>
@@ -409,11 +427,18 @@ export const Viewer = () => {
           {screens.sm && !screens.lg && (
             <Col>
               <div
-                style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
+                style={{
+                  height: "calc(100vh - 64px)",
+                  display: "block",
+                  overflow: "auto",
+                  "--banner-colour": cardFaction?.colours?.banner,
+                  "--header-colour": cardFaction?.colours?.header,
+                  backgroundColor: "#d8d8da",
+                }}
                 className={`data-${activeCard?.source}`}>
                 <Row style={{ overflow: "hidden" }}>
                   {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} />}
+                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} side={side} />}
                   {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 </Row>
@@ -424,14 +449,48 @@ export const Viewer = () => {
             <>
               <Col>
                 <div
-                  style={{ height: "calc(100vh - 64px)", display: "block", overflow: "auto" }}
+                  style={{
+                    height: "calc(100vh - 64px)",
+                    display: "block",
+                    overflow: "auto",
+                    "--banner-colour": cardFaction?.colours?.banner,
+                    "--header-colour": cardFaction?.colours?.header,
+                    backgroundColor: "#d8d8da",
+                  }}
                   className={`data-${activeCard?.source}`}>
                   <Row style={{ overflow: "hidden" }}>
                     {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                    {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} />}
+                    {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay type={"viewer"} side={side} />}
                     {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                     {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                   </Row>
+                </div>
+                <div
+                  style={{
+                    height: "48px",
+                    position: "absolute",
+                    backgroundColor: "#001529",
+                    width: "100%",
+                    bottom: "0px",
+                    paddingTop: "4px",
+                    width: "100vw",
+                  }}>
+                  <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
+                    <Button
+                      icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
+                      type="ghost"
+                      size="large"
+                      shape="round"
+                      className="button-bar"
+                      onClick={() => {
+                        setSide((current) => {
+                          if (current === "front") {
+                            return "back";
+                          }
+                          return "front";
+                        });
+                      }}></Button>
+                  </Space>
                 </div>
               </Col>
               {!activeCard && (
@@ -446,6 +505,16 @@ export const Viewer = () => {
                   <p style={{ padding: "32px", fontSize: "1.2rem", textAlign: "justify" }}>
                     To get started select a card from the menu at the top right.
                   </p>
+                  <Row
+                    style={{ padding: "16px", textAlign: "center", position: "absolute", bottom: "64px" }}
+                    justify={"center"}>
+                    <Col span={24}>
+                      Join our Discord!
+                      <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
+                        <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
+                      </a>
+                    </Col>
+                  </Row>
                 </Col>
               )}
             </>
