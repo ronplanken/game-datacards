@@ -58,6 +58,8 @@ function App() {
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
 
+  const [side, setSide] = useState("front");
+
   const [showPrint, setShowPrint] = useState(false);
 
   const [searchText, setSearchText] = useState(undefined);
@@ -448,7 +450,7 @@ function App() {
               className={`data-${activeCard?.source}`}>
               <Row style={{ overflow: "hidden" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay />}
+                {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
               </Row>
@@ -463,34 +465,48 @@ function App() {
                   }}>
                   <Space>
                     {activeCard?.source === "40k-10e" && (
-                      <Space.Compact block>
+                      <>
+                        <Space.Compact block>
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomInOutlined />}
+                            disabled={settings.zoom === 100}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom + 5;
+                              if (newZoom >= 100) {
+                                newZoom = 100;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomOutOutlined />}
+                            disabled={settings.zoom === 25}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom - 5;
+                              if (newZoom <= 25) {
+                                newZoom = newZoom = 25;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                        </Space.Compact>
                         <Button
                           type={"primary"}
-                          icon={<ZoomInOutlined />}
-                          disabled={settings.zoom === 100}
                           onClick={() => {
-                            let newZoom = settings.zoom || 100;
-                            newZoom = newZoom + 5;
-                            if (newZoom >= 100) {
-                              newZoom = 100;
-                            }
-                            updateSettings({ ...settings, zoom: newZoom });
-                          }}
-                        />
-                        <Button
-                          type={"primary"}
-                          icon={<ZoomOutOutlined />}
-                          disabled={settings.zoom === 25}
-                          onClick={() => {
-                            let newZoom = settings.zoom || 100;
-                            newZoom = newZoom - 5;
-                            if (newZoom <= 25) {
-                              newZoom = newZoom = 25;
-                            }
-                            updateSettings({ ...settings, zoom: newZoom });
-                          }}
-                        />
-                      </Space.Compact>
+                            setSide((current) => {
+                              if (current === "front") {
+                                return "back";
+                              }
+                              return "front";
+                            });
+                          }}>
+                          Swap
+                        </Button>
+                      </>
                     )}
                     {activeCard && !activeCard.isCustom && (
                       <>

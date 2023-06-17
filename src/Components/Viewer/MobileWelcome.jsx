@@ -2,7 +2,7 @@ import { Col, Row } from "antd";
 
 export const MobileWelcome = () => {
   return (
-    <Col style={{ height: "100%" }}>
+    <Col>
       <p style={{ padding: "32px", fontSize: "1.3rem", fontWeight: "600", textAlign: "center" }}>
         Welcome to game-datacards.eu
       </p>
@@ -13,9 +13,7 @@ export const MobileWelcome = () => {
       <p style={{ padding: "32px", fontSize: "1.2rem", textAlign: "justify" }}>
         To get started select a card from the menu at the top right.
       </p>
-      <Row
-        style={{ padding: "16px", textAlign: "center", position: "absolute", bottom: "0px", width: "100%" }}
-        justify={"center"}>
+      <Row style={{ padding: "16px", textAlign: "center", width: "100%" }} justify={"center"}>
         <Col span={24}>
           Join our Discord!
           <br />

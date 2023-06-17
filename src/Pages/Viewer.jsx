@@ -17,7 +17,7 @@ import {
   Typography,
 } from "antd";
 import "antd/dist/antd.min.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../App.css";
 import { AboutModal } from "../Components/AboutModal";
 import { FactionSettingsModal } from "../Components/FactionSettingsModal";
@@ -25,6 +25,7 @@ import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { SettingsModal } from "../Components/SettingsModal";
 import { UpdateReminder } from "../Components/UpdateReminder";
 import { MobileHeader } from "../Components/Viewer/MobileHeader";
+import { MobileMenu } from "../Components/Viewer/MobileMenu";
 import { MobileNav } from "../Components/Viewer/MobileNav";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
@@ -50,7 +51,7 @@ export const Viewer = () => {
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
   const [searchText, setSearchText] = useState(undefined);
-
+  const [isMobileMenuVisible, setIsMobileMenuVisible] = React.useState(false);
   const [side, setSide] = useState("front");
 
   const { activeCard, setActiveCard } = useCardStorage();
@@ -220,7 +221,7 @@ export const Viewer = () => {
 
       <Content style={{ height: "calc(100vh - 64px)", paddingBottom: "54px" }}>
         <Row>
-          {screens.lg && !screens.md && (
+          {screens.lg && (
             <Col span={4}>
               <div
                 style={{
@@ -312,6 +313,82 @@ export const Viewer = () => {
               </div>
             </Col>
           )}
+          {screens.md && (
+            <Col sm={24} lg={20}>
+              <div
+                style={{
+                  height: "calc(100vh - 64px)",
+                  display: "block",
+                  overflow: "auto",
+                  "--card-scaling-factor": settings.zoom / 100,
+                  "--banner-colour": cardFaction?.colours?.banner,
+                  "--header-colour": cardFaction?.colours?.header,
+                }}
+                className={`data-${activeCard?.source}`}>
+                <Row style={{ overflow: "hidden" }}>
+                  {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
+                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
+                  {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
+                  {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+                </Row>
+                <Row style={{ overflow: "hidden", justifyContent: "center" }}>
+                  <Col
+                    span={8}
+                    style={{
+                      overflow: "hidden",
+                      justifyContent: "center",
+                      display: "flex",
+                      marginTop: "16px",
+                    }}>
+                    {activeCard?.source === "40k-10e" && (
+                      <Space>
+                        <Space.Compact block>
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomInOutlined />}
+                            disabled={settings.zoom === 100}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom + 5;
+                              if (newZoom >= 100) {
+                                newZoom = 100;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                          <Button
+                            type={"primary"}
+                            icon={<ZoomOutOutlined />}
+                            disabled={settings.zoom === 25}
+                            onClick={() => {
+                              let newZoom = settings.zoom || 100;
+                              newZoom = newZoom - 5;
+                              if (newZoom <= 25) {
+                                newZoom = newZoom = 25;
+                              }
+                              updateSettings({ ...settings, zoom: newZoom });
+                            }}
+                          />
+                        </Space.Compact>
+                        <Button
+                          type={"primary"}
+                          onClick={() => {
+                            setSide((current) => {
+                              if (current === "front") {
+                                return "back";
+                              }
+                              return "front";
+                            });
+                          }}>
+                          Swap
+                        </Button>
+                      </Space>
+                    )}
+                  </Col>
+                </Row>
+              </div>
+            </Col>
+          )}
           {screens.sm && !screens.lg && (
             <Col>
               <div
@@ -357,7 +434,8 @@ export const Viewer = () => {
                   </Row>
                   {!activeCard && <MobileWelcome />}
                 </div>
-                <MobileNav setSide={setSide} side={side} />
+                <MobileNav setSide={setSide} side={side} setMenuVisible={setIsMobileMenuVisible} />
+                <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
               </Col>
             </>
           )}
