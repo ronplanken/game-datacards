@@ -506,7 +506,7 @@ export const Viewer = () => {
                     To get started select a card from the menu at the top right.
                   </p>
                   <Row
-                    style={{ padding: "16px", textAlign: "center", position: "absolute", bottom: "128px" }}
+                    style={{ padding: "16px", textAlign: "center", position: "absolute", bottom: "64px" }}
                     justify={"center"}>
                     <Col span={24}>
                       Join our Discord!

@@ -45,29 +45,46 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.0.0
+                Whats new in 2.0.1
               </h1>
             </div>
             <div className="welcome-cover">
               <>
-                <Row style={{ padding: "16px" }}>
+                <Row style={{ padding: "16px" }} className="whatsnew-content">
                   <Col>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Warhammer 40k 10th edition support</strong>
+                          <strong>Genestealer Cults available</strong>
                           <br />
-                          We now support Warhammer 40k 10th edition datacards. You can edit and modify them as you wish.
-                          All data is retrieve from an external datasource and not included in game-datacards.
-                          <br />
-                          <br /> Make sure you enable the Warhammer 40k 10th edition datasource in the settings window.
-                          <br /> If you have any suggestions or questions make sure to join our discord!
+                          The GSC were hiding in the ground, waiting for the blips to arrive. And arrived they have! The
+                          Patriarch came bearing gifts!
                         </li>
                         <li>
-                          <strong>Scalable panels</strong>
+                          <strong>Faction based colours</strong>
                           <br />
-                          You can now move and scale both side panels as you wish.
+                          All factions now have their own colour scheme based on original documentation. <br />
+                          Unfortunately the Chaos Daemons are scared colourless and cannot make up their mind, their
+                          specific colours will be coming later.
+                        </li>
+                        <li>
+                          <strong>Composition, loadouts &amp; more</strong>
+                          <br />
+                          The GSC are scary. So press a button and flip the datacard around to see what it was hiding.
+                          (It was hiding data..)
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Bug fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Melee weapons</strong>
+                          <br />
+                          Melee weapons now show WS instead of BS.
+                          <br />
+                          (Courtesy of the first ever contribution by a different author then me!)
                         </li>
                       </ul>
                     </Typography.Paragraph>
