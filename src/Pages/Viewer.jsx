@@ -1,4 +1,4 @@
-import { MenuOutlined, RedoOutlined, UndoOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -24,6 +24,9 @@ import { FactionSettingsModal } from "../Components/FactionSettingsModal";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { SettingsModal } from "../Components/SettingsModal";
 import { UpdateReminder } from "../Components/UpdateReminder";
+import { MobileHeader } from "../Components/Viewer/MobileHeader";
+import { MobileNav } from "../Components/Viewer/MobileNav";
+import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { WhatsNew } from "../Components/WhatsNew";
@@ -86,78 +89,39 @@ export const Viewer = () => {
     <Layout>
       <WhatsNew />
       <UpdateReminder />
-      <Header style={{ paddingLeft: screens.xs ? "8px" : "32px", paddingRight: screens.xs ? "12px" : "32px" }}>
-        <Row style={{ justifyContent: "space-between" }}>
-          {screens.xs && (
-            <>
-              <Col>
-                <Space size={"large"}>
-                  <Image preview={false} src={logo} width={50} />
-                  <Typography.Title level={4} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
-                    Game Datacards
-                  </Typography.Title>
-                </Space>
-              </Col>
-              <Col>
-                <Button
-                  className="button-bar"
-                  type="ghost"
-                  size="large"
-                  onClick={() => setOpen(true)}
-                  icon={<MenuOutlined />}
-                />
-              </Col>
-            </>
-          )}
-          {screens.sm && !screens.lg && (
-            <>
-              <Col>
-                <Space size={"large"}>
-                  <Image preview={false} src={logo} width={50} />
-                  <Typography.Title level={2} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
-                    Game Datacards
-                  </Typography.Title>
-                </Space>
-              </Col>
-              <Col>
-                <Button
-                  className="button-bar"
-                  type="ghost"
-                  size="large"
-                  onClick={() => setOpen(true)}
-                  icon={<MenuOutlined />}
-                />
-              </Col>
-            </>
-          )}
-
-          {screens.lg && (
-            <>
-              <Col>
-                <Space size={"large"}>
-                  <Image preview={false} src={logo} width={50} />
-                  <Typography.Title level={2} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
-                    Game Datacards
-                  </Typography.Title>
-                </Space>
-              </Col>
-              <Col>
-                <Space>
-                  <AboutModal />
-                  <Tooltip title={"Join us on discord!"} placement="bottomRight">
-                    <Button
-                      className="button-bar"
-                      type="ghost"
-                      size="large"
-                      icon={<Discord />}
-                      onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}></Button>
-                  </Tooltip>
-                  <SettingsModal />
-                </Space>
-              </Col>
-            </>
-          )}
-        </Row>
+      <Header
+        style={{
+          paddingLeft: screens.xs ? "8px" : "32px",
+          paddingRight: screens.xs ? "12px" : "32px",
+        }}>
+        {screens.xs && <MobileHeader setOpen={setOpen} padding={"24px"} />}
+        {screens.sm && !screens.lg && <MobileHeader setOpen={setOpen} padding={"64px"} />}
+        {screens.lg && (
+          <Row style={{ justifyContent: "space-between" }}>
+            <Col>
+              <Space size={"large"}>
+                <Image preview={false} src={logo} width={50} />
+                <Typography.Title level={2} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
+                  Game Datacards
+                </Typography.Title>
+              </Space>
+            </Col>
+            <Col>
+              <Space>
+                <AboutModal />
+                <Tooltip title={"Join us on discord!"} placement="bottomRight">
+                  <Button
+                    className="button-bar"
+                    type="ghost"
+                    size="large"
+                    icon={<Discord />}
+                    onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}></Button>
+                </Tooltip>
+                <SettingsModal />
+              </Space>
+            </Col>
+          </Row>
+        )}
       </Header>
 
       <Drawer
@@ -254,9 +218,9 @@ export const Viewer = () => {
         />
       </Drawer>
 
-      <Content style={{ height: "calc(100vh - 64px)" }}>
+      <Content style={{ height: "calc(100vh - 64px)", paddingBottom: "54px" }}>
         <Row>
-          {screens.lg && (
+          {screens.lg && !screens.md && (
             <Col span={4}>
               <div
                 style={{
@@ -348,82 +312,6 @@ export const Viewer = () => {
               </div>
             </Col>
           )}
-          {screens.md && (
-            <Col sm={24} lg={20}>
-              <div
-                style={{
-                  height: "calc(100vh - 64px)",
-                  display: "block",
-                  overflow: "auto",
-                  "--card-scaling-factor": settings.zoom / 100,
-                  "--banner-colour": cardFaction?.colours?.banner,
-                  "--header-colour": cardFaction?.colours?.header,
-                }}
-                className={`data-${activeCard?.source}`}>
-                <Row style={{ overflow: "hidden" }}>
-                  {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
-                  {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
-                  {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
-                </Row>
-                <Row style={{ overflow: "hidden", justifyContent: "center" }}>
-                  <Col
-                    span={8}
-                    style={{
-                      overflow: "hidden",
-                      justifyContent: "center",
-                      display: "flex",
-                      marginTop: "16px",
-                    }}>
-                    {activeCard?.source === "40k-10e" && (
-                      <Space>
-                        <Space.Compact block>
-                          <Button
-                            type={"primary"}
-                            icon={<ZoomInOutlined />}
-                            disabled={settings.zoom === 100}
-                            onClick={() => {
-                              let newZoom = settings.zoom || 100;
-                              newZoom = newZoom + 5;
-                              if (newZoom >= 100) {
-                                newZoom = 100;
-                              }
-                              updateSettings({ ...settings, zoom: newZoom });
-                            }}
-                          />
-                          <Button
-                            type={"primary"}
-                            icon={<ZoomOutOutlined />}
-                            disabled={settings.zoom === 25}
-                            onClick={() => {
-                              let newZoom = settings.zoom || 100;
-                              newZoom = newZoom - 5;
-                              if (newZoom <= 25) {
-                                newZoom = newZoom = 25;
-                              }
-                              updateSettings({ ...settings, zoom: newZoom });
-                            }}
-                          />
-                        </Space.Compact>
-                        <Button
-                          type={"primary"}
-                          onClick={() => {
-                            setSide((current) => {
-                              if (current === "front") {
-                                return "back";
-                              }
-                              return "front";
-                            });
-                          }}>
-                          Swap
-                        </Button>
-                      </Space>
-                    )}
-                  </Col>
-                </Row>
-              </div>
-            </Col>
-          )}
           {screens.sm && !screens.lg && (
             <Col>
               <div
@@ -442,7 +330,9 @@ export const Viewer = () => {
                   {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 </Row>
+                {!activeCard && <MobileWelcome />}
               </div>
+              <MobileNav setSide={setSide} side={side} />
             </Col>
           )}
           {screens.xs && (
@@ -456,6 +346,7 @@ export const Viewer = () => {
                     "--banner-colour": cardFaction?.colours?.banner,
                     "--header-colour": cardFaction?.colours?.header,
                     backgroundColor: "#d8d8da",
+                    paddingBottom: "64px",
                   }}
                   className={`data-${activeCard?.source}`}>
                   <Row style={{ overflow: "hidden" }}>
@@ -464,59 +355,10 @@ export const Viewer = () => {
                     {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                     {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                   </Row>
+                  {!activeCard && <MobileWelcome />}
                 </div>
-                <div
-                  style={{
-                    height: "48px",
-                    position: "absolute",
-                    backgroundColor: "#001529",
-                    width: "100%",
-                    bottom: "0px",
-                    paddingTop: "4px",
-                    width: "100vw",
-                  }}>
-                  <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
-                    <Button
-                      icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
-                      type="ghost"
-                      size="large"
-                      shape="round"
-                      className="button-bar"
-                      onClick={() => {
-                        setSide((current) => {
-                          if (current === "front") {
-                            return "back";
-                          }
-                          return "front";
-                        });
-                      }}></Button>
-                  </Space>
-                </div>
+                <MobileNav setSide={setSide} side={side} />
               </Col>
-              {!activeCard && (
-                <Col>
-                  <p style={{ padding: "32px", fontSize: "1.3rem", fontWeight: "600", textAlign: "center" }}>
-                    Welcome to game-datacards.eu
-                  </p>
-                  <p style={{ padding: "32px", fontSize: "1.2rem", textAlign: "justify" }}>
-                    When using a mobile device you can only view data-cards. If you wish to create your own you can
-                    visit this website on a desktop pc.
-                  </p>
-                  <p style={{ padding: "32px", fontSize: "1.2rem", textAlign: "justify" }}>
-                    To get started select a card from the menu at the top right.
-                  </p>
-                  <Row
-                    style={{ padding: "16px", textAlign: "center", position: "absolute", bottom: "64px" }}
-                    justify={"center"}>
-                    <Col span={24}>
-                      Join our Discord!
-                      <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
-                        <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
-                      </a>
-                    </Col>
-                  </Row>
-                </Col>
-              )}
             </>
           )}
         </Row>
