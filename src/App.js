@@ -54,11 +54,10 @@ const { confirm } = Modal;
 
 function App() {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
+
   const { settings, updateSettings } = useSettingsStorage();
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
-
-  const [side, setSide] = useState("front");
 
   const [showPrint, setShowPrint] = useState(false);
 
@@ -80,6 +79,7 @@ function App() {
     updateCategory,
     activeCategory,
     setActiveCategory,
+    updateActiveCard,
   } = useCardStorage();
 
   const categoryMenu = (
@@ -450,7 +450,9 @@ function App() {
               className={`data-${activeCard?.source}`}>
               <Row style={{ overflow: "hidden" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
+                {activeCard?.source === "40k-10e" && (
+                  <Warhammer40K10eCardDisplay side={activeCard.print_side || "front"} />
+                )}
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
               </Row>
@@ -497,12 +499,11 @@ function App() {
                         <Button
                           type={"primary"}
                           onClick={() => {
-                            setSide((current) => {
-                              if (current === "front") {
-                                return "back";
-                              }
-                              return "front";
-                            });
+                            if (activeCard.print_side === "back") {
+                              updateActiveCard({ ...activeCard, print_side: "front" });
+                            } else {
+                              updateActiveCard({ ...activeCard, print_side: "back" });
+                            }
                           }}>
                           Swap
                         </Button>
