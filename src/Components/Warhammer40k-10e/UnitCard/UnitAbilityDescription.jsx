@@ -4,7 +4,7 @@ import { RuleTooltip } from "./RuleTooltip";
 export function replaceKeywords(inputString) {
   const keywordRegex = /\[(.*?)\]/g;
   const listRegex =
-    /(Stealth|Leader|Deep Strike|Infiltrators|Deadly Demise \d+|Deadly Demise D\d+|Scouts \d+"|Fights First|Lone Operative|Feel No Pain \d+\+)/g;
+    /(Stealth|\bLeader\b|Deep Strike|Infiltrators|Deadly Demise \d+|Deadly Demise D\d+|Scouts \d+"|Fights First|Lone Operative|Feel No Pain \d+\+)/g;
   const matches = inputString.match(keywordRegex) || [];
   const listMatches = inputString.match(listRegex) || [];
 

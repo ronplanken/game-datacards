@@ -54,7 +54,7 @@
 
 @media only screen and (max-width: 600px) {
   html {
-    font-size: 90%;
+    font-size: 15px;
   }
   .welcome-background {
     border-radius: 4px;
@@ -1652,7 +1652,7 @@
                 grid-column-gap: 0px;
                 grid-row-gap: 0px;
                 padding-right: 8px;
-                
+
                 .title {
                   text-transform: uppercase;
                   color: white;
@@ -1671,7 +1671,7 @@
                 padding-left: 8px;
                 border-bottom: 1px dotted #636567;
                 padding-right: 8px;
-                
+
                 &:nth-of-type(even) {
                   background: #d8d8da;
                 }
@@ -2157,6 +2157,12 @@
     text-transform: capitalize;
     color: black;
     font-weight: 600;
+
+    .rule-button {
+      font-size: inherit;
+      height: 16px;
+      padding: 0px;
+    }
     &:hover {
       text-decoration: underline;
     }
@@ -2174,20 +2180,24 @@
     z-index: 2;
     cursor: pointer;
 
-    span {
-      &:hover {
-        text-decoration: underline;
-      }
+    .keyword-button {
+      text-transform: uppercase;
+      color: var(--header-colour);
+      font-size: 0.7rem;
+      font-weight: 600;
+      height: 16px;
+      padding: 0px;
+
       &::after {
         content: ", ";
       }
     }
-    span:first-child {
+    .keyword-button:first-child {
       &::before {
         content: "";
       }
     }
-    span:last-child {
+    .keyword-button:last-child {
       &::after {
         content: "";
       }

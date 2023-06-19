@@ -1,9 +1,9 @@
-import { Popover } from "antd";
+import { Button, Popover } from "antd";
 
 export const UnitPoints = ({ points }) => {
   if (points?.length > 0) {
     return (
-      <div className="points_container">
+      <Button className="points_container" size="small" type="text">
         <Popover
           placement="bottomRight"
           arrow="hide"
@@ -32,7 +32,7 @@ export const UnitPoints = ({ points }) => {
           }>
           <div className="points">{` ${points[0].cost} pts`}</div>
         </Popover>
-      </div>
+      </Button>
     );
   }
 };

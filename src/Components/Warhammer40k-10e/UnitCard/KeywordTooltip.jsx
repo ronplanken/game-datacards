@@ -1,7 +1,7 @@
-import { Tooltip } from "antd";
+import { Button, Tooltip } from "antd";
 
 export const tooltipProps = {
-  placement: "bottom",
+  placement: "bottomLeft",
   arrowPointAtCenter: true,
 };
 
@@ -11,14 +11,14 @@ export const KeywordTooltip = ({ keyword }) => {
       <Tooltip
         {...tooltipProps}
         title={"An unmodified Wound roll of ‘x+’ against a target with the matching keyword scores a Critical Wound."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
   if (keyword.includes("one shot")) {
     return (
       <Tooltip {...tooltipProps} title={"The bearer can only shoot with this weapon once per battle."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -29,7 +29,7 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "When selecting targets for this weapon, you can measure range and determine visibility from another friendly Fire Prism model that is visible to the bearer."
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -40,7 +40,7 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "The bearer can only shoot with this weapon in your Shooting phase, and only if it Remained Stationary this turn and you did not use its Deathstrike Missile ability to Designate Target or Adjust Target this phase. When the bearer shoots with this weapon, do not select a target. Instead, resolve this weapon’s attacks, rolling for each unit within 6&quot; of the centre of its Deathstrike Target marker individually."
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -51,7 +51,7 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "Each time this model would lose a wound, roll one D6: if the result equals or exceeds ‘x’, that wound is not lost."
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -60,14 +60,14 @@ export const KeywordTooltip = ({ keyword }) => {
       <Tooltip
         {...tooltipProps}
         title={"An unmodified Wound roll of ‘x+’ against a target with the matching keyword scores a Critical Wound."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
   if (keyword.includes("assault")) {
     return (
       <Tooltip {...tooltipProps} title={"Can be shot even if the bearer’s unit Advanced."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -84,7 +84,7 @@ export const KeywordTooltip = ({ keyword }) => {
             <li>Cannot be shot alongside any other non-Pistol weapon (except by a Monster or Vehicle)</li>
           </ul>
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -95,14 +95,14 @@ export const KeywordTooltip = ({ keyword }) => {
           "Each time an attack made with this weapon targets a unit within half that weapon’s range, that attack’s Damage characteristic is increased by the amount denoted by ‘x’."
         }
         {...tooltipProps}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
   if (keyword.includes("rapid fire")) {
     return (
       <Tooltip title={"Increase the Attacks by ‘x’ when targeting units within half range."} {...tooltipProps}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -111,7 +111,7 @@ export const KeywordTooltip = ({ keyword }) => {
       <Tooltip
         title={"Each time an attack is made with this weapon, that attack automatically hits the target."}
         {...tooltipProps}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -122,7 +122,7 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "Each time an attack is made with this weapon, the target cannot have the Benefit of Cover against that attack"
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -131,7 +131,7 @@ export const KeywordTooltip = ({ keyword }) => {
       <Tooltip
         {...tooltipProps}
         title={"Each time an attack is made with this weapon, a Critical Hit automatically wounds the target."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -142,7 +142,7 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "Each time an attack is made with such a weapon, if the bearer made a Charge move this turn, add 1 to that attack’s Wound roll."
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -160,7 +160,7 @@ export const KeywordTooltip = ({ keyword }) => {
             </li>
           </ul>
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -171,7 +171,7 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "When targeting an Attached unit, the attacking model’s player can have the attack allocated to a Character model in that unit visible to the bearer"
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -188,14 +188,14 @@ export const KeywordTooltip = ({ keyword }) => {
             </li>
           </ul>
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
   if (keyword.includes("heavy")) {
     return (
       <Tooltip {...tooltipProps} title={"Add 1 to Hit rolls if the bearer’s unit Remained Stationary this turn."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -204,7 +204,7 @@ export const KeywordTooltip = ({ keyword }) => {
       <Tooltip
         {...tooltipProps}
         title={"Each time an attack is made with this weapon, you can re-roll that attack’s Wound roll."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -215,7 +215,7 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "After a unit shoots or fights, roll one Hazardous test (one D6) for each Hazardous weapon used. For each 1, one model equipped with a Hazardous weapon is destroyed (Characters, Monsters and Vehicles suffer 3 mortal wounds instead). "
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -226,14 +226,14 @@ export const KeywordTooltip = ({ keyword }) => {
           "A Critical Wound inflicts mortal wounds equal to the weapon’s Damage characteristic, instead of any normal damage."
         }
         {...tooltipProps}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
   if (keyword.includes("sustained hits")) {
     return (
       <Tooltip {...tooltipProps} title={"Each Critical Hit scores ‘x’ additional hits on the target."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -242,7 +242,7 @@ export const KeywordTooltip = ({ keyword }) => {
       <Tooltip
         {...tooltipProps}
         title={"The bearer can attack with this weapon in addition to any other weapons it can make attacks with."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -251,7 +251,7 @@ export const KeywordTooltip = ({ keyword }) => {
       <Tooltip
         {...tooltipProps}
         title={"The bearer can attack with this weapon in addition to any other weapons it can make attacks with."}>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
@@ -262,9 +262,13 @@ export const KeywordTooltip = ({ keyword }) => {
         title={
           "If a Psychic weapon or ability causes any unit to suffer one or more wounds, each of those wounds is considered to have been inflicted by a Psychic Attack."
         }>
-        {`${keyword}`}
+        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
-  return <span>{`${keyword}`}</span>;
+  return (
+    <span>
+      <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
+    </span>
+  );
 };
