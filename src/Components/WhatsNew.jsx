@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.0.1
+                Whats new in 2.0.2
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,23 +56,9 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Genestealer Cults available</strong>
+                          <strong>Points costs for 10th</strong>
                           <br />
-                          The GSC were hiding in the ground, waiting for the blips to arrive. And arrived they have! The
-                          Patriarch came bearing gifts!
-                        </li>
-                        <li>
-                          <strong>Faction based colours</strong>
-                          <br />
-                          All factions now have their own colour scheme based on original documentation. <br />
-                          Unfortunately the Chaos Daemons are scared colourless and cannot make up their mind, their
-                          specific colours will be coming later.
-                        </li>
-                        <li>
-                          <strong>Composition, loadouts &amp; more</strong>
-                          <br />
-                          The GSC are scary. So press a button and flip the datacard around to see what it was hiding.
-                          (It was hiding data..)
+                          The points costs are now available for 10th edition datacards.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -80,11 +66,10 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Melee weapons</strong>
+                          <strong>Added missing DataCards</strong>
                           <br />
-                          Melee weapons now show WS instead of BS.
-                          <br />
-                          (Courtesy of the first ever contribution by a different author then me!)
+                          Some cards were missing or had broken text. Fixed most of them. If you find anymore please let
+                          me know through Discord or a Github issue!
                         </li>
                       </ul>
                     </Typography.Paragraph>

@@ -17,9 +17,44 @@
     width: 100% !important;
   }
 }
+
+.points_table-container {
+  .ant-popover-inner-content {
+    padding: 0px 0px;
+    background-color: #001529;
+    border: 1px solid white;
+  }
+  .point-tabel {
+    padding: 8px;
+    font-family: "Heebo", sans-serif;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    width: 150px;
+    border: 0px solid #001529;
+
+    thead {
+      text-align: center;
+      background-color: #001529;
+      text-transform: uppercase;
+      color: white;
+      font-size: 0.9em;
+      font-weight: 800;
+      letter-spacing: 0.1rem;
+      z-index: 2;
+    }
+    tbody {
+      background-color: #dfe0e2;
+      color: black;
+      font-size: 1.1em;
+      font-weight: 800;
+      text-align: center;
+    }
+  }
+}
+
 @media only screen and (max-width: 600px) {
   html {
-    font-size: 90%;
+    font-size: 15px;
   }
   .welcome-background {
     border-radius: 4px;
@@ -260,34 +295,69 @@
         grid-area: c6;
       }
 
-      .name_container {
+      .header_container {
+        grid-area: c1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
         padding-top: 32px;
         padding-left: 32px;
-        display: flex;
-        align-items: flex-end;
-        grid-area: c1;
 
-        .name {
-          text-transform: uppercase;
-          font-size: 2rem;
-          font-weight: 800;
-          color: white;
-          z-index: 2;
-          line-height: 2.5rem;
-          letter-spacing: 0.1rem;
+        .name_container {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+
+          .name {
+            text-transform: uppercase;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            z-index: 3;
+            line-height: 2.5rem;
+            letter-spacing: 0.1rem;
+          }
+          .subname {
+            padding-left: 8px;
+            text-transform: uppercase;
+            font-style: italic;
+            color: white;
+            font-size: 1.1rem;
+            z-index: 2;
+            font-weight: 600;
+            letter-spacing: 0.1rem;
+          }
         }
-        .subname {
-          padding-left: 8px;
-          text-transform: uppercase;
-          font-style: italic;
-          color: white;
-          font-size: 1.1rem;
+
+        .points_container {
+          display: flex;
+          align-items: "flex-start";
+          justify-content: flex-end;
+          padding-right: 16px;
           z-index: 2;
-          font-weight: 600;
-          letter-spacing: 0.1rem;
+          padding-top: 4px;
+          .points {
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            z-index: 2;
+            line-height: 2.2rem;
+            letter-spacing: 0.1rem;
+            padding-left: 8px;
+            padding-right: 8px;
+            border: 1px solid #dfe0e2;
+            border-radius: 4px;
+
+            &:hover {
+              border: 1px solid #dfe0e2;
+              background-color: #ffffff44;
+              cursor: pointer;
+            }
+          }
         }
       }
-
       .stats_container {
         padding-left: 32px;
         display: flex;
@@ -1183,33 +1253,56 @@
             background-color: var(--banner-colour);
           }
         }
-
-        .name_container {
+        .header_container {
+          grid-area: c1;
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
           padding-top: 12px;
           padding-left: 8px;
-          display: flex;
-          align-items: flex-end;
-          .name {
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: white;
-            z-index: 2;
-            line-height: 1.5rem;
-            letter-spacing: 0.1rem;
+
+          .name_container {
+            flex-basis: 100%;
+            display: flex;
+            align-items: flex-end;
+            .name {
+              text-transform: uppercase;
+              font-size: 1.2rem;
+              font-weight: 800;
+              color: white;
+              z-index: 2;
+              line-height: 1.5rem;
+              letter-spacing: 0.1rem;
+            }
+            .subname {
+              padding-left: 8px;
+              text-transform: uppercase;
+              font-style: italic;
+              color: white;
+              font-size: 1rem;
+              z-index: 2;
+              font-weight: 600;
+              letter-spacing: 0.1rem;
+            }
           }
-          .subname {
+          .points_container {
+            padding-top: 0px;
             padding-left: 8px;
-            text-transform: uppercase;
-            font-style: italic;
-            color: white;
-            font-size: 1rem;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
             z-index: 2;
-            font-weight: 600;
-            letter-spacing: 0.1rem;
+            .points {
+              text-transform: uppercase;
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: white;
+              z-index: 2;
+              line-height: 1rem;
+              letter-spacing: 0.1rem;
+            }
           }
         }
-
         .stats_container {
           padding-left: 16px;
           display: grid;
@@ -1439,6 +1532,7 @@
                 grid-template-rows: 1fr;
                 grid-column-gap: 0px;
                 grid-row-gap: 0px;
+                padding-right: 8px;
 
                 .title {
                   text-transform: uppercase;
@@ -1457,7 +1551,7 @@
               .weapon {
                 padding-left: 8px;
                 border-bottom: 1px dotted #636567;
-
+                padding-right: 8px;
                 &:nth-of-type(even) {
                   background: #d8d8da;
                 }
@@ -1557,6 +1651,7 @@
                 grid-template-rows: 1fr;
                 grid-column-gap: 0px;
                 grid-row-gap: 0px;
+                padding-right: 8px;
 
                 .title {
                   text-transform: uppercase;
@@ -1575,6 +1670,7 @@
               .weapon {
                 padding-left: 8px;
                 border-bottom: 1px dotted #636567;
+                padding-right: 8px;
 
                 &:nth-of-type(even) {
                   background: #d8d8da;
@@ -1749,7 +1845,7 @@
 
                 .title {
                   text-transform: uppercase;
-                  font-size: 0.7rem;
+                  font-size: 0.8rem;
                   color: black;
                   font-weight: 300;
 
@@ -1760,12 +1856,12 @@
 
                 .value {
                   text-transform: capitalize;
-                  font-size: 0.7rem;
+                  font-size: 0.8rem;
                   color: black;
                   font-weight: 600;
                 }
                 .description {
-                  font-size: 0.7rem;
+                  font-size: 0.8rem;
                   color: black;
                   font-weight: 400;
                   padding-left: 4px;
@@ -1773,7 +1869,7 @@
 
                 .name {
                   text-transform: capitalize;
-                  font-size: 0.7rem;
+                  font-size: 0.8rem;
                   color: black;
                   font-weight: 600;
 
@@ -1786,7 +1882,7 @@
 
             .damaged {
               .description {
-                font-size: 0.7rem;
+                font-size: 0.8rem;
                 color: black;
                 font-weight: 400;
                 line-height: 1.1rem;
@@ -1828,7 +1924,7 @@
       }
       .special {
         .description {
-          font-size: 0.7rem;
+          font-size: 0.8rem;
           color: black;
           font-weight: 400;
           line-height: 1.1rem;
@@ -1855,7 +1951,7 @@
 
           .title {
             text-transform: uppercase;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             color: black;
             font-weight: 300;
 
@@ -1866,12 +1962,12 @@
 
           .value {
             text-transform: capitalize;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             color: black;
             font-weight: 600;
           }
           .description {
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             color: black;
             font-weight: 400;
             padding-left: 8px;
@@ -1880,7 +1976,7 @@
 
           .name {
             text-transform: capitalize;
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             color: black;
             font-weight: 600;
 
@@ -2057,9 +2153,19 @@
     text-align: center;
   }
   .rule {
+    cursor: pointer;
     text-transform: capitalize;
     color: black;
     font-weight: 600;
+
+    .rule-button {
+      font-size: inherit;
+      height: 16px;
+      padding: 0px;
+    }
+    &:hover {
+      text-decoration: underline;
+    }
     span {
       text-transform: capitalize;
       color: black;
@@ -2072,18 +2178,26 @@
     font-size: 0.7rem;
     font-weight: 600;
     z-index: 2;
+    cursor: pointer;
 
-    span {
+    .keyword-button {
+      text-transform: uppercase;
+      color: var(--header-colour);
+      font-size: 0.7rem;
+      font-weight: 600;
+      height: 16px;
+      padding: 0px;
+
       &::after {
         content: ", ";
       }
     }
-    span:first-child {
+    .keyword-button:first-child {
       &::before {
         content: "";
       }
     }
-    span:last-child {
+    .keyword-button:last-child {
       &::after {
         content: "";
       }
