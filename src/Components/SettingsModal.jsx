@@ -327,6 +327,45 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.0.1"} key={"2.0.1"}>
+                    <b> 19-06-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Genestealer Cults available</strong>
+                          <br />
+                          The GSC were hiding in the ground, waiting for the blips to arrive. And arrived they have! The
+                          Patriarch came bearing gifts!
+                        </li>
+                        <li>
+                          <strong>Faction based colours</strong>
+                          <br />
+                          All factions now have their own colour scheme based on original documentation. <br />
+                          Unfortunately the Chaos Daemons are scared colourless and cannot make up their mind, their
+                          specific colours will be coming later.
+                        </li>
+                        <li>
+                          <strong>Composition, loadouts &amp; more</strong>
+                          <br />
+                          The GSC are scary. So press a button and flip the datacard around to see what it was hiding.
+                          (It was hiding data..)
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Bug fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Melee weapons</strong>
+                          <br />
+                          Melee weapons now show WS instead of BS.
+                          <br />
+                          (Courtesy of the first ever contribution by a different author then me!)
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.0.0"} key={"2.0.0"}>
                     <b> 15-06-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
