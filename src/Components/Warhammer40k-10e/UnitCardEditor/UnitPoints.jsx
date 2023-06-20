@@ -1,4 +1,4 @@
-import { Card, Form, Input, Space, Switch } from "antd";
+import { Button, Card, Form, Input, Space, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
@@ -7,7 +7,7 @@ export function UnitPoints() {
 
   return (
     <>
-      {activeCard.points.map((point, index) => (
+      {activeCard?.points?.map((point, index) => (
         <Card
           key={`points-${index}`}
           type={"inner"}
@@ -59,6 +59,21 @@ export function UnitPoints() {
           </Form>
         </Card>
       ))}
+      <Button
+        type="dashed"
+        style={{ width: "100%" }}
+        onClick={() =>
+          updateActiveCard(() => {
+            if (activeCard?.points) {
+              const newPoints = [...activeCard?.points];
+              newPoints.push({ active: true, models: 0, cost: 0 });
+              return { ...activeCard, points: newPoints };
+            }
+            return { ...activeCard, points: [{ active: true, models: 0, cost: 0 }] };
+          })
+        }>
+        Add points
+      </Button>
     </>
   );
 }
