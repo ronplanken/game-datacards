@@ -322,6 +322,7 @@ export const Print = () => {
                               type="print"
                               key={`${rowIndex}-${index}`}
                               cardScaling={cardScaling}
+                              side={card.print_side || "front"}
                             />
                           )}
                           {card?.source === "basic" && (

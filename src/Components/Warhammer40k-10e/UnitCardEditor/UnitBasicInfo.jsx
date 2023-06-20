@@ -30,6 +30,14 @@ export function UnitBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
         />
       </Form.Item>
+      <Form.Item label={"Print side"}>
+        <Select
+          value={activeCard.print_side || "front"}
+          onChange={(value) => updateActiveCard({ ...activeCard, print_side: value })}>
+          <Option value="front">Front</Option>
+          <Option value="back">Back</Option>
+        </Select>
+      </Form.Item>
     </Form>
   );
 }

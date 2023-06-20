@@ -1,7 +1,7 @@
-import { RedoOutlined, SettingOutlined, UndoOutlined } from "@ant-design/icons";
+import { RedoOutlined, SettingOutlined, ShareAltOutlined, UndoOutlined } from "@ant-design/icons";
 import { Button, Col, Row, Space } from "antd";
 
-export const MobileNav = ({ setSide, side, setMenuVisible }) => {
+export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible }) => {
   return (
     <div
       style={{
@@ -34,6 +34,13 @@ export const MobileNav = ({ setSide, side, setMenuVisible }) => {
         </Col>
         <Col span={8}>
           <Space align="center" style={{ width: "100%", justifyContent: "flex-end" }}>
+            <Button
+              type="text"
+              style={{ color: "white", paddingRight: "8px", paddingBottom: "8px" }}
+              size="large"
+              onClick={() => setSharingVisible(true)}
+              icon={<ShareAltOutlined />}
+            />
             <Button
               type="text"
               style={{ color: "white", paddingRight: "8px", paddingBottom: "8px" }}

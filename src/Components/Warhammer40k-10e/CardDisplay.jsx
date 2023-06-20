@@ -12,6 +12,7 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
           <Col span={24}>{activeCard.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}</Col>
         </>
       )}
+      {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
       {type === "print" && card && (
         <div
           className="data-40k-10e"
@@ -38,7 +39,7 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
             transformOrigin: "0% 0%",
             transform: `scale(${cardScaling / 100})`,
           }}>
-          {activeCard.cardType === "DataCard" && (
+          {activeCard?.cardType === "DataCard" && (
             <UnitCard
               side={side}
               unit={activeCard}
