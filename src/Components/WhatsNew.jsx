@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.0.2
+                Whats new in 2.0.3
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,9 +56,10 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Points costs for 10th</strong>
+                          <strong>Sharing options</strong>
                           <br />
-                          The points costs are now available for 10th edition datacards.
+                          The mobile viewer now has the option to directly share a datacard as a picture or link. Easy
+                          to discuss and share!
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -66,10 +67,9 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Added missing DataCards</strong>
+                          <strong>Points editing</strong>
                           <br />
-                          Some cards were missing or had broken text. Fixed most of them. If you find anymore please let
-                          me know through Discord or a Github issue!
+                          You can now edit and disable the points in the Card Editor on Desktop.
                         </li>
                       </ul>
                     </Typography.Paragraph>
