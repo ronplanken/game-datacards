@@ -32,7 +32,7 @@ export const UnitPoints = ({ points }) => {
               </table>
             </>
           }>
-          <div className="points">{` ${points[0].cost} pts`}</div>
+          <div className="points">{` ${points?.filter((p) => p.active)[0].cost} pts`}</div>
         </Popover>
       </Button>
     );
