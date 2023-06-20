@@ -14,13 +14,7 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
       )}
       {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
       {type === "print" && card && (
-        <div
-          className="data-40k-10e"
-          style={{
-            height: "148.5mm",
-            transformOrigin: "top",
-            transform: `scale(${cardScaling / 100})`,
-          }}>
+        <div className="data-40k-10e" style={{}}>
           {card.cardType === "DataCard" && (
             <UnitCard
               unit={card}
@@ -28,6 +22,10 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
               paddingTop="0px"
               cardStyle={{
                 gap: printPadding,
+                transformOrigin: "top",
+                transform: `scale(${cardScaling / 100})`,
+                height: `${714 * (cardScaling / 100)}px`,
+                width: `${1077 * (cardScaling / 100)}px`,
               }}
             />
           )}
