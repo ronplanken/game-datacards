@@ -52,7 +52,8 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
           </Button>
           <Button
             size="large"
-            type="default"
+            type="ghost"
+            style={{ color: "white" }}
             block
             onClick={() => {
               setIsVisible(false);

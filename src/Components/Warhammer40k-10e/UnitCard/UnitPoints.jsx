@@ -1,7 +1,7 @@
 import { Button, Popover } from "antd";
 
 export const UnitPoints = ({ points }) => {
-  if (points?.length > 0) {
+  if (points?.filter((p) => p.active).length > 0) {
     return (
       <Button className="points_container" size="small" type="text">
         <Popover
@@ -18,14 +18,16 @@ export const UnitPoints = ({ points }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {points.map((point, index) => {
-                    return (
-                      <tr className="points" key={`points-${index}-${point.model}`}>
-                        <td>{`${point.models}`}</td>
-                        <td>{`${point.cost} pts`}</td>
-                      </tr>
-                    );
-                  })}
+                  {points
+                    ?.filter((p) => p.active)
+                    .map((point, index) => {
+                      return (
+                        <tr className="points" key={`points-${index}-${point.model}`}>
+                          <td>{`${point.models}`}</td>
+                          <td>{`${point.cost} pts`}</td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </>

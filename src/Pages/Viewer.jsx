@@ -15,9 +15,11 @@ import {
   Space,
   Tooltip,
   Typography,
+  message,
 } from "antd";
 import "antd/dist/antd.min.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import { AboutModal } from "../Components/AboutModal";
 import { FactionSettingsModal } from "../Components/FactionSettingsModal";
@@ -39,11 +41,15 @@ import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
 import "../style.less";
 
+import { toBlob, toPng } from "html-to-image";
+
 const { Header, Content } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
 
 const { useBreakpoint } = Grid;
+
+import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 
 export const Viewer = () => {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
@@ -52,13 +58,80 @@ export const Viewer = () => {
   const [isLoading] = useState(false);
   const [searchText, setSearchText] = useState(undefined);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = React.useState(false);
+  const [isMobileSharingMenuVisible, setIsMobileSharingMenuVisible] = React.useState(false);
   const [side, setSide] = useState("front");
+
+  const { faction, unit } = useParams();
 
   const { activeCard, setActiveCard } = useCardStorage();
 
+  const fullCardRef = useRef(null);
+  const viewerCardRef = useRef(null);
+  const overlayRef = useRef(null);
+
   const screens = useBreakpoint();
 
+  const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
+
+  const htmlToImageConvert = (divRef) => {
+    divRef.current.style.display = "block";
+    overlayRef.current.style.display = "block";
+    if (navigator.share) {
+      toBlob(divRef.current, { cacheBust: false })
+        .then((data) => {
+          const fileData = {
+            files: [
+              new File([data], `${activeCard.name}.png`, {
+                type: data.type,
+              }),
+            ],
+            title: `${activeCard.name}`,
+          };
+          if (navigator.canShare(fileData)) {
+            navigator.share(fileData);
+          } else {
+            message.warn("Your browser is not supported to share this file");
+          }
+          divRef.current.style.display = "none";
+          overlayRef.current.style.display = "none";
+        })
+        .catch((err) => {
+          divRef.current.style.display = "none";
+          overlayRef.current.style.display = "none";
+          message.error(err);
+        });
+    } else {
+      toPng(divRef.current, { cacheBust: false })
+        .then((data) => {
+          divRef.current.style.display = "none";
+          overlayRef.current.style.display = "none";
+          const link = document.createElement("a");
+          link.download = `${activeCard.name}.png`;
+          link.href = data;
+          link.click();
+        })
+        .catch((err) => {
+          divRef.current.style.display = "none";
+          overlayRef.current.style.display = "none";
+          message.error(err.toString());
+        });
+    }
+  };
+
+  const shareLink = () => {
+    if (navigator.share) {
+      const data = { url: window.location.href, title: `Game-Datacards.eu - ${activeCard.name}` };
+      if (navigator.canShare(data)) {
+        navigator.share(data);
+      } else {
+        message.warn("Your browser is not supported to share this file");
+      }
+    } else {
+      message.warn("Your browser is not supported to a link");
+    }
+  };
 
   useEffect(() => {
     updateSettings({
@@ -85,7 +158,20 @@ export const Viewer = () => {
       return filteredSheets;
     }
   };
+  if (faction && unit) {
+    const foundFaction = dataSource.data.find((f) => {
+      return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+    });
 
+    // updateSelectedFaction(foundFaction);
+    // console.log(faction, foundFaction);
+    const foundUnit = foundFaction?.datasheets?.find((u) => {
+      return u.name.replaceAll(" ", "-").toLowerCase() === unit;
+    });
+
+    console.log(unit, foundUnit);
+    setActiveCard(foundUnit);
+  }
   return (
     <Layout>
       <WhatsNew />
@@ -205,6 +291,12 @@ export const Viewer = () => {
                 <List.Item
                   key={`list-${card.id}`}
                   onClick={() => {
+                    navigate(
+                      `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`
+                    );
+
                     setActiveCard(card);
                     setOpen(false);
                   }}
@@ -220,6 +312,19 @@ export const Viewer = () => {
       </Drawer>
 
       <Content style={{ height: "calc(100vh - 64px)", paddingBottom: "54px" }}>
+        <div
+          ref={overlayRef}
+          style={{
+            display: "none",
+            position: "absolute",
+            height: "100vh",
+            width: "100vw",
+            backgroundColor: "#00000099",
+            top: "0px",
+            bottom: "0px",
+            zIndex: 9999,
+          }}
+        />
         <Row>
           {screens.lg && (
             <Col span={4}>
@@ -299,6 +404,11 @@ export const Viewer = () => {
                         <List.Item
                           key={`list-${card.id}`}
                           onClick={() => {
+                            navigate(
+                              `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                                .replaceAll(" ", "-")
+                                .toLowerCase()}`
+                            );
                             setActiveCard(card);
                           }}
                           className={`list-item ${
@@ -434,11 +544,63 @@ export const Viewer = () => {
                   </Row>
                   {!activeCard && <MobileWelcome />}
                 </div>
-                <MobileNav setSide={setSide} side={side} setMenuVisible={setIsMobileMenuVisible} />
+                <MobileNav
+                  setSide={setSide}
+                  side={side}
+                  setMenuVisible={setIsMobileMenuVisible}
+                  setSharingVisible={setIsMobileSharingMenuVisible}
+                />
                 <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
+                <MobileSharingMenu
+                  isVisible={isMobileSharingMenuVisible}
+                  setIsVisible={setIsMobileSharingMenuVisible}
+                  shareFullCard={() => htmlToImageConvert(fullCardRef)}
+                  shareMobileCard={() => htmlToImageConvert(viewerCardRef)}
+                  shareLink={() => shareLink()}
+                />
               </Col>
             </>
           )}
+          <div
+            ref={fullCardRef}
+            style={{
+              display: "none",
+              "--banner-colour": cardFaction?.colours?.banner,
+              "--header-colour": cardFaction?.colours?.header,
+              backgroundColor: "#d8d8da",
+              zIndex: "-9999",
+              position: "absolute",
+              top: "0px",
+              left: "0px",
+            }}
+            className={`data-${activeCard?.source}`}>
+            <Row style={{ overflow: "hidden" }}>
+              {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
+              {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
+              {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
+              {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+            </Row>
+          </div>
+          <div
+            ref={viewerCardRef}
+            style={{
+              display: "none",
+              "--banner-colour": cardFaction?.colours?.banner,
+              "--header-colour": cardFaction?.colours?.header,
+              backgroundColor: "#d8d8da",
+              zIndex: "-9999",
+              position: "absolute",
+              top: "0px",
+              left: "0px",
+            }}
+            className={`data-${activeCard?.source}`}>
+            <Row style={{ overflow: "hidden" }}>
+              {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
+              {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} type={"viewer"} />}
+              {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
+              {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+            </Row>
+          </div>
         </Row>
       </Content>
     </Layout>

@@ -12,11 +12,9 @@ export const UnitWargear = ({ unit }) => {
               const lines = wargear.split(" *");
               explanations.push(...lines.slice(1));
               return (
-                <>
-                  <div className="item" key={`wargear-${index}`}>
-                    <span className="description">{lines[0].replaceAll("◦", "\n\r◦")}</span>
-                  </div>
-                </>
+                <div className="item" key={`wargear-${index}`}>
+                  <span className="description">{lines[0].replaceAll("◦", "\n\r◦")}</span>
+                </div>
               );
             }
             return (

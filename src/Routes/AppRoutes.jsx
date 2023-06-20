@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Route, Routes } from "react-router-dom";
 import App from "../App";
-import Mobile from "../Mobile";
+// import { Embed } from "../Pages/Embed";
 import { LegacyPrint } from "../Pages/LegacyPrint";
 import { Print } from "../Pages/Print";
 import { Shared } from "../Pages/Shared";
@@ -14,7 +14,8 @@ export const AppRoutes = () => {
     <Routes>
       <Route path="/" element={isMobile ? <Viewer /> : <App />} />
       <Route path="shared/:Id" element={<Shared />} />
-      <Route path="viewer" element={<Viewer />} />
+      <Route path="viewer/:faction?/:unit?" element={<Viewer />} />
+      {/* <Route path="embed/:faction?/:unit?" element={<Embed />} /> */}
       <Route path="print/:CategoryId" element={<Print />} />
       <Route path="legacy-print/:CategoryId" element={<LegacyPrint />} />
     </Routes>
