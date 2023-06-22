@@ -18,7 +18,7 @@ import {
 } from "antd";
 import "antd/dist/antd.min.css";
 import clone from "just-clone";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { v4 as uuidv4 } from "uuid";
@@ -59,17 +59,10 @@ function App() {
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
 
-  const [showPrint, setShowPrint] = useState(false);
-
   const [searchText, setSearchText] = useState(undefined);
 
   const [selectedTreeIndex, setSelectedTreeIndex] = useState(null);
 
-  const [cardsPerPage, setCardsPerPage] = useState(9);
-  const [cardsPerRow, setCardsPerRow] = useState(3);
-  const [cardScaling, setCardScaling] = useState(100);
-
-  const printRef = useRef(null);
   const {
     cardStorage,
     activeCard,
@@ -217,11 +210,7 @@ function App() {
       <Content style={{ height: "calc(100vh - 64px)" }}>
         <PanelGroup direction="horizontal" autoSaveId="mainLayout">
           <Panel defaultSize={18} order={1}>
-            <Toolbar
-              setShowPrint={setShowPrint}
-              selectedTreeKey={selectedTreeIndex}
-              setSelectedTreeKey={setSelectedTreeIndex}
-            />
+            <Toolbar selectedTreeKey={selectedTreeIndex} setSelectedTreeKey={setSelectedTreeIndex} />
             <PanelGroup direction="vertical" autoSaveId="toolbarLayout">
               <Panel defaultSize={30} minSize={20} maxSize={80}>
                 <div
@@ -505,7 +494,7 @@ function App() {
                               updateActiveCard({ ...activeCard, print_side: "back" });
                             }
                           }}>
-                          Swap
+                          {activeCard.print_side === "back" ? "Show front" : "Show back"}
                         </Button>
                       </>
                     )}

@@ -490,7 +490,7 @@ export const Viewer = () => {
                               return "front";
                             });
                           }}>
-                          Swap
+                          {side === "back" ? "Show front" : "Show back"}
                         </Button>
                       </Space>
                     )}
