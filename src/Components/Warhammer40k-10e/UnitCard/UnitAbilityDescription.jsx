@@ -2,6 +2,9 @@ import React from "react";
 import { KeywordTooltip } from "./KeywordTooltip";
 import { RuleTooltip } from "./RuleTooltip";
 export function replaceKeywords(inputString) {
+  if (!inputString) {
+    return;
+  }
   const keywordRegex = /\[(.*?)\]/g;
   const listRegex =
     /(Stealth|\bLeader\b|Deep Strike|Infiltrators|Deadly Demise \d+|Deadly Demise D\d+|Scouts \d+"|Fights First|Lone Operative|Feel No Pain \d+\+)/g;
@@ -12,7 +15,7 @@ export function replaceKeywords(inputString) {
   let currentIndex = 0;
   let remainingText = inputString;
 
-  matches.forEach((match, index) => {
+  matches?.forEach((match, index) => {
     const keyword = match.slice(1, -1);
     const startIndex = remainingText.indexOf(match);
     const endIndex = startIndex + match.length;
@@ -28,7 +31,7 @@ export function replaceKeywords(inputString) {
     );
   });
 
-  listMatches.forEach((match, index) => {
+  listMatches?.forEach((match, index) => {
     const startIndex = remainingText.indexOf(match);
     const endIndex = startIndex + match.length;
     const textBefore = remainingText.slice(0, startIndex);
