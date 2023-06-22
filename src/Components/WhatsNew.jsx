@@ -60,6 +60,7 @@ export const WhatsNew = () => {
                           <br />
                           DataCards now show which units a unit can be lead by. For now this only works in their own
                           faction, so no leaders for the SM Chapters yet. You can found them on the back of the cards.
+                          You can even click on them to go directly to the connected sheet.
                         </li>
                         <li>
                           <strong>Keywords, Rules & Linked unit</strong>
