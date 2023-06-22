@@ -1,15 +1,20 @@
 import { Col } from "antd";
+import sizes from "../../Helpers/sizes.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import sizes from "../../Helpers/sizes.helpers";
 import { PsychicCard } from "./PsychicCard";
 import { SecondaryCard } from "./SecondaryCard";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
 
-export const Warhammer40KCardDisplay = ({ type, card, cardScaling, printPadding }) => {
+export const Warhammer40KCardDisplay = ({ type, card, cardScaling = 100, printPadding = 0 }) => {
   const { activeCard } = useCardStorage();
   const { settings } = useSettingsStorage();
+
+  if (sizes[card?.variant || "card"]?.widthInPixels > window.innerWidth) {
+    cardScaling = (window.innerWidth / sizes[card?.variant || "card"]?.widthInPixels) * 100;
+  }
+
   let resizedStyle = {
     height: `calc(${sizes[card?.variant || "card"]?.height || 1} * ${cardScaling / 100} )`,
     width: `calc(${sizes[card?.variant || "card"]?.width || 1} * ${cardScaling / 100} )`,

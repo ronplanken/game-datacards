@@ -48,6 +48,17 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
               }}
             />
           )}
+          {card?.cardType === "DataCard" && (
+            <UnitCard
+              side={side}
+              unit={card}
+              className={"viewer"}
+              paddingTop="0px"
+              cardStyle={{
+                gap: printPadding,
+              }}
+            />
+          )}
         </div>
       )}
     </>

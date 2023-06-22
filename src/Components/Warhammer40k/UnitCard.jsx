@@ -5,6 +5,7 @@ import { WeaponStatline } from "./UnitCard/WeaponStatline";
 
 export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
   const style = unit.variant === "custom" ? { height: `${unit.height}cm`, width: `${unit.width}cm` } : {};
+
   return (
     <div
       style={{
