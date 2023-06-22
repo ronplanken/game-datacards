@@ -10,11 +10,12 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
     <div
       className={className}
       style={{
+        ...cardStyle,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`unit`} style={cardStyle}>
+      <div className={`unit`}>
         <div className={"header"}>
           <UnitName name={unit.name} subname={unit.subname} points={unit.points} />
           <UnitStats stats={unit.stats} />

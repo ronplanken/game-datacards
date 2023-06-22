@@ -483,6 +483,7 @@
     }
 
     .data_container {
+      position: relative;
       height: 468px;
       width: 1032px;
       background-color: var(--header-colour);
@@ -923,6 +924,36 @@
                 color: black;
                 font-weight: 400;
                 white-space: pre-wrap;
+              }
+            }
+            .ledBy {
+              padding: 2px;
+              padding-left: 14px !important;
+              line-height: 1rem;
+
+              .description {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 400;
+                white-space: pre-wrap;
+              }
+              .value {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+                white-space: pre-wrap;
+                margin-left: 4px;
+                @media screen {
+                  &::before {
+                    content: "[ ";
+                  }
+                  &::after {
+                    content: " ]";
+                  }
+                }
+                &:hover {
+                  text-decoration: underline;
+                }
               }
             }
             .transport {
@@ -2163,6 +2194,17 @@
       font-size: inherit;
       height: 16px;
       padding: 0px;
+
+      @media screen {
+        span {
+          &::before {
+            content: "[ ";
+          }
+          &::after {
+            content: " ]";
+          }
+        }
+      }
     }
     &:hover {
       text-decoration: underline;

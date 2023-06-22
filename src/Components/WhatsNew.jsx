@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.0.3
+                Whats new in 2.0.4
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,10 +56,17 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Sharing options</strong>
+                          <strong>Units lead by</strong>
                           <br />
-                          The mobile viewer now has the option to directly share a datacard as a picture or link. Easy
-                          to discuss and share!
+                          DataCards now show which units a unit can be lead by. For now this only works in their own
+                          faction, so no leaders for the SM Chapters yet. You can found them on the back of the cards.
+                          You can even click on them to go directly to the connected sheet.
+                        </li>
+                        <li>
+                          <strong>Keywords, Rules & Linked unit</strong>
+                          <br />
+                          All keywords, rules and linked units (such as the lead by section) are indicated by brackets:{" "}
+                          <strong>[ ]</strong>. These will not show up when printing for the rules and linked units.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -67,9 +74,11 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Points editing</strong>
+                          <strong>Printing & Sharing</strong>
                           <br />
-                          You can now edit and disable the points in the Card Editor on Desktop.
+                          Printing for 10e cards should now behave better then before. When scaling cards the actual
+                          space they take up is more in line with what you see. Shared cards now also properly fill up
+                          the screen and auto-scale based on screen size.
                         </li>
                       </ul>
                     </Typography.Paragraph>

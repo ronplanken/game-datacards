@@ -1,5 +1,9 @@
+import { Link } from "react-router-dom";
+import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+
 export const UnitLoadout = ({ unit }) => {
-  console.log(unit);
+  const { selectedFaction } = useDataSourceStorage();
+
   const unitLoadouts = unit.loadout.split(".").filter((val) => val);
   return (
     <div className="extra">
@@ -30,6 +34,29 @@ export const UnitLoadout = ({ unit }) => {
             </div>
             <div className="leader">
               <span className="description">{unit.leader.replaceAll("■", "\n\r ■")}</span>
+            </div>
+          </>
+        )}
+        {unit.ledBy && (
+          <>
+            <div className="heading">
+              <div className="title">Led by</div>
+            </div>
+            <div className="ledBy">
+              <span className="description">This unit can be led by the following:</span>
+              {unit.ledBy.map((leader) => {
+                return (
+                  <div key={`leader-${leader}`}>
+                    ■
+                    <Link
+                      to={`/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${leader
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}>
+                      <span className="value">{leader}</span>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           </>
         )}

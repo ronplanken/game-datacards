@@ -145,17 +145,10 @@ export const Shared = () => {
       </Header>
       <Content style={{ minHeight: "calc(100vh - 64px)" }}>
         {!screens.xs && (
-          <Row>
+          <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
             {sharedStorage?.category?.cards?.map((card, index) => {
               return (
-                <Col
-                  span={8}
-                  lg={8}
-                  md={12}
-                  sm={12}
-                  xs={24}
-                  key={`${card.name}-${index}`}
-                  className={`data-${card?.source ? card?.source : "40k"}`}>
+                <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
                   {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
                   {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} type="print" />}
                   {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
@@ -172,6 +165,7 @@ export const Shared = () => {
               return (
                 <div className={`data-${card?.source ? card?.source : "40k"}`} key={`${card.name}-${index}`}>
                   {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
+                  {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} type="viewer" />}
                   {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
                   {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
                   {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}

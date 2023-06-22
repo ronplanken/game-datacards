@@ -17,7 +17,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
 
-import JSZip from "jszip";
 import { Parser } from "xml2js";
 import { Create40kRoster } from "../Helpers/battlescribe.40k.helpers";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
@@ -26,7 +25,7 @@ const parser = new Parser({ mergeAttrs: true, explicitArray: false });
 
 const parseString = parser.parseString;
 
-export const Toolbar = ({ setShowPrint, selectedTreeKey, setSelectedTreeKey }) => {
+export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
   const { settings } = useSettingsStorage();
   const [uploadFile, setUploadFile] = React.useState(null);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
