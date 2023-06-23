@@ -163,13 +163,10 @@ export const Viewer = () => {
       return f.name.toLowerCase().replaceAll(" ", "-") === faction;
     });
 
-    // updateSelectedFaction(foundFaction);
-    // console.log(faction, foundFaction);
     const foundUnit = foundFaction?.datasheets?.find((u) => {
       return u.name.replaceAll(" ", "-").toLowerCase() === unit;
     });
 
-    console.log(unit, foundUnit);
     setActiveCard(foundUnit);
   }
   return (

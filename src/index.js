@@ -12,6 +12,7 @@ import { AppRoutes } from "./Routes/AppRoutes";
 
 import { Col, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
+import { MobileListProvider } from "./Components/Viewer/useMobileList";
 
 const { Paragraph, Text } = Typography;
 
@@ -64,9 +65,11 @@ root.render(
       <FirebaseProviderComponent>
         <DataSourceStorageProviderComponent>
           <CardStorageProviderComponent>
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
+            <MobileListProvider>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </MobileListProvider>
           </CardStorageProviderComponent>
         </DataSourceStorageProviderComponent>
       </FirebaseProviderComponent>
