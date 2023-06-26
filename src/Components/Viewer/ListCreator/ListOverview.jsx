@@ -70,12 +70,13 @@ export const ListOverview = ({ setShowList }) => {
                 alignItems: "center",
                 fontSize: "16px",
                 width: "100vw",
-                height: "36px",
+                height: !line.enhancement ? "36px" : "72px",
                 padding: "2px",
                 paddingTop: "4px",
                 paddingBottom: "4px",
                 borderBottom: "2px solid #f0f2f5",
                 paddingRight: "8px",
+                flexDirection: "column",
               }}
               key={line.card.name}>
               <Row style={{ width: "100%", alignItems: "center" }}>
@@ -101,6 +102,17 @@ export const ListOverview = ({ setShowList }) => {
                 <Col span={2} style={{ fontSize: "0.8rem" }}>
                   <Button type="text" size="large" onClick={() => removeDatacard(index)} icon={<DeleteOutlined />} />
                 </Col>
+                {line.enhancement && (
+                  <>
+                    {" "}
+                    <Col span={18} style={{ paddingLeft: "16px" }}>
+                      {line.enhancement.name}
+                    </Col>
+                    <Col span={4} style={{ fontSize: "0.8rem" }}>
+                      {line.enhancement.cost} pts
+                    </Col>
+                  </>
+                )}
               </Row>
             </div>
           );

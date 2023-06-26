@@ -38,14 +38,14 @@ export const MobileListProvider = (props) => {
 
   const [selectedList, setSelectedList] = React.useState(0);
 
-  const addDatacard = (datacard, points) => {
+  const addDatacard = (datacard, points, enhancement) => {
     if (!datacard) {
       return;
     }
     const newDatacard = { ...datacard };
     setStoredLists((lists) => {
       const newLists = [...lists];
-      newLists[selectedList].datacards.push({ card: newDatacard, points: points });
+      newLists[selectedList].datacards.push({ card: newDatacard, points: points, enhancement });
       return newLists;
     });
   };

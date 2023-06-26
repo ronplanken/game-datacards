@@ -39,7 +39,11 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible }) 
               }>
               <span style={{ width: "48px" }}>
                 {lists[selectedList].datacards.reduce((acc, val) => {
-                  return acc + Number(val.points.cost);
+                  let cost = acc + Number(val.points.cost);
+                  if (val.enhancement) {
+                    cost = cost + Number(val.enhancement.cost);
+                  }
+                  return cost;
                 }, 0)}{" "}
                 pts
               </span>

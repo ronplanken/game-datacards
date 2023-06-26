@@ -1,7 +1,24 @@
 .flex {
   display: grid;
 }
-
+.mobile-menu {
+  .ant-list-item {
+    &.selected {
+      background-color: #0070d6;
+      span {
+        font-weight: 600;
+        color: white;
+      }
+    }
+    &.disabled {
+      background-color: #f5f5f5;
+      span {
+        font-weight: 200;
+        color: #00000040;
+      }
+    }
+  }
+}
 .nav-menu-item {
   display: flex;
   justify-content: center;
