@@ -16,6 +16,18 @@ export const ListOverview = ({ setShowList }) => {
         setShowList(false);
       }}>
       <div
+        onClick={() => setShowList(false)}
+        style={{
+          display: "block",
+          position: "absolute",
+          height: "100vh",
+          width: "100vw",
+          top: "0px",
+          bottom: "0px",
+          zIndex: 888,
+        }}
+      />
+      <div
         style={{
           position: "absolute",
           bottom: "48px",
