@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const MobileListContext = React.createContext(undefined);
 
@@ -31,6 +31,10 @@ export const MobileListProvider = (props) => {
       return [{ name: "Default", datacards: [] }];
     }
   });
+
+  useEffect(() => {
+    localStorage.setItem("lists", JSON.stringify(storedLists));
+  }, [storedLists]);
 
   const [selectedList, setSelectedList] = React.useState(0);
 

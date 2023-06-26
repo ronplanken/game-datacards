@@ -254,6 +254,9 @@
   --header-colour: #456664;
   --banner-colour: #103344;
 
+  --background-colour: black;
+  --faction-text-colour: white;
+
   .unit {
     height: calc(714px);
     width: calc(1077px);
@@ -265,7 +268,7 @@
     .header {
       height: 196px;
       width: 1077px;
-      background-color: black;
+      background-color: var(--background-colour);
       position: relative;
 
       display: grid;
@@ -1144,12 +1147,12 @@
         justify-content: center;
         position: relative;
         padding-left: 48px;
-        background-color: black;
+        background-color:  var(--background-colour);
 
         .title {
           text-transform: uppercase;
           font-size: 1rem;
-          color: white;
+          color: var(--faction-text-colour);
           font-weight: 400;
           padding-right: 4px;
           line-height: 1.1rem;
@@ -1162,7 +1165,7 @@
         .value {
           text-transform: capitalize;
           font-size: 1rem;
-          color: white;
+          color: var(--faction-text-colour);;
           font-weight: 600;
           line-height: 1.1rem;
         }
@@ -1269,7 +1272,7 @@
         width: 100%;
         height: auto;
         min-height: 110px;
-        background-color: black;
+        background-color:  var(--background-colour);
         position: relative;
         display: block;
 
@@ -2098,7 +2101,7 @@
             grid-area: column-1;
 
             text-transform: uppercase;
-            color: white;
+            color: var(--faction-text-colour);
             font-size: 1rem;
             font-weight: 600;
             letter-spacing: 0.1rem;

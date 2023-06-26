@@ -1,5 +1,4 @@
 import ReactMarkdown from "react-markdown";
-import rehypeRemark from "rehype-remark";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import stringWidth from "string-width";

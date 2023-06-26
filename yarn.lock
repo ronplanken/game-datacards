@@ -3234,10 +3234,10 @@ antd-prompt@^0.7.1:
   resolved "https://registry.yarnpkg.com/antd-prompt/-/antd-prompt-0.7.1.tgz#f8e8b04d6529a8e9ebe806cfba3166319582140a"
   integrity sha512-7KNEjlyZ37LoOj41eq1kZD8gZIE5OzQcBRuzIvkWKHo7vVgXDCBJSsa8mrpkEajdSNDj0GjRLLoG9WYYUzhr9A==
 
-antd@^4.19.3:
-  version "4.24.9"
-  resolved "https://registry.yarnpkg.com/antd/-/antd-4.24.9.tgz#2f1d24c327d16c722116dfa9406cdf649907c87e"
-  integrity sha512-VPgjzGk9o8UZESlaIGLI8Vei7Dudlrd7bopWm+Adw7uevRejtBMAatnQUNo8hACjuGYIW7AYLU6wYe1dorBX0Q==
+antd@^4.24.10:
+  version "4.24.10"
+  resolved "https://registry.yarnpkg.com/antd/-/antd-4.24.10.tgz#9bf371c3b351b881c5b56049a410d5cf16f077ac"
+  integrity sha512-GihdwTGFW0dUaWjcvSIfejFcT63HjEp2EbYd+ojEXayldhey230KrHDJ+C53rkrkzLvymrPBfSxlLxJzyFIZsg==
   dependencies:
     "@ant-design/colors" "^6.0.0"
     "@ant-design/icons" "^4.7.0"
@@ -4201,7 +4201,7 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==
 
-compare-versions@^4.1.3:
+compare-versions@^4.1.4:
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-4.1.4.tgz#3571f4d610924d4414846a4183d386c8f3d51112"
   integrity sha512-FemMreK9xNyL8gQevsdRMrvO4lFCkQP7qbuktn1q8ndcNk1+0mz7lgE7b/sNvbhVgY4w6tMN1FDp6aADjqw2rw==
@@ -7770,7 +7770,7 @@ jszip@^3.10.1:
     readable-stream "~2.3.6"
     setimmediate "^1.0.5"
 
-just-clone@^5.0.1:
+just-clone@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/just-clone/-/just-clone-5.1.0.tgz#ad46808a5c99505e13f5c25b38bf4006f1c22a0a"
   integrity sha512-LiIL2BG6WIjSMo0HI5/LD2iuXoQj9nh+cZgaaxR538z53XM+g/M2Yra+o9dz/s6cRSnghwENrE8zDEfsOPduOg==
@@ -10564,7 +10564,7 @@ react-markdown@^8.0.2, react-markdown@~8.0.0:
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
 
-react-new-window@^0.2.1:
+react-new-window@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/react-new-window/-/react-new-window-0.2.2.tgz#aa851ecd1c7b6a74f677cc706facb4c9705e2a15"
   integrity sha512-B21UfF7EYRHEQz51WzwZqFqB3QQVVyJGQtrlmujKCnWcu+X9yo4UKtTSCDPCo7JbCgRaKAISU0QMcAwKFSgifw==
@@ -12539,7 +12539,7 @@ web-streams-polyfill@^3.0.3:
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz#71c2718c52b45fd49dbeee88634b3a60ceab42a6"
   integrity sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==
 
-web-vitals@^2.1.0:
+web-vitals@^2.1.4:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-2.1.4.tgz#76563175a475a5e835264d373704f9dde718290c"
   integrity sha512-sVWcwhU5mX6crfI5Vd2dC4qchyTqxV8URinzt25XqVh+bHEPGH4C3NPrNionCP7Obx59wrYEbNlw4Z8sjALzZg==

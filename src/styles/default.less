@@ -2,6 +2,23 @@
   display: grid;
 }
 
+.nav-menu-item {
+  display: flex;
+  justify-content: center;
+  height: calc(64px);
+  padding-left: 16px;
+  padding-right: 16px;
+  cursor: pointer;
+
+  &.selected {
+    border-bottom: 3px solid #0070d6;
+  }
+
+  &:hover {
+    border-bottom: 3px solid white;
+  }
+}
+
 .welcome-background {
   z-index: 1000;
   position: absolute;
@@ -139,9 +156,9 @@ body {
 
 .vertical-resizer {
   width: 2px;
-  background-color: rgba(0,0,0,.06);
+  background-color: rgba(0, 0, 0, 0.06);
 
-  transition: background-color .25s linear;
+  transition: background-color 0.25s linear;
 
   &:hover {
     background-color: grey;
@@ -150,9 +167,9 @@ body {
 }
 .horizontal-resizer {
   height: 2px;
-  background-color: rgba(0,0,0,.06);
+  background-color: rgba(0, 0, 0, 0.06);
 
-  transition: background-color .25s linear;
+  transition: background-color 0.25s linear;
 
   &:hover {
     background-color: grey;

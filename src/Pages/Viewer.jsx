@@ -19,7 +19,7 @@ import {
 } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import { AboutModal } from "../Components/AboutModal";
 import { FactionSettingsModal } from "../Components/FactionSettingsModal";
@@ -188,6 +188,22 @@ export const Viewer = () => {
                 <Typography.Title level={2} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
                   Game Datacards
                 </Typography.Title>
+                <Space>
+                  <div className="nav-menu-item" onClick={() => navigate("/")}>
+                    <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
+                      <Link to={"/"} style={{ fontSize: "1.1rem", color: "white" }}>
+                        Editor
+                      </Link>
+                    </Typography.Text>
+                  </div>
+                  <div className="nav-menu-item selected" onClick={() => navigate("/viewer")}>
+                    <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
+                      <Link to={"/viewer"} style={{ fontSize: "1.1rem", color: "white" }}>
+                        Viewer
+                      </Link>
+                    </Typography.Text>
+                  </div>
+                </Space>
               </Space>
             </Col>
             <Col>
