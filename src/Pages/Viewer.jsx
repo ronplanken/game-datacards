@@ -50,6 +50,7 @@ const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
+import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 
 export const Viewer = () => {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
@@ -58,6 +59,7 @@ export const Viewer = () => {
   const [isLoading] = useState(false);
   const [searchText, setSearchText] = useState(undefined);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = React.useState(false);
+  const [isListAddVisible, setIsListAddVisible] = React.useState(false);
   const [isMobileSharingMenuVisible, setIsMobileSharingMenuVisible] = React.useState(false);
   const [side, setSide] = useState("front");
 
@@ -562,8 +564,10 @@ export const Viewer = () => {
                   side={side}
                   setMenuVisible={setIsMobileMenuVisible}
                   setSharingVisible={setIsMobileSharingMenuVisible}
+                  setAddListvisible={setIsListAddVisible}
                 />
                 <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
+                <ListAdd isVisible={isListAddVisible} setIsVisible={setIsListAddVisible} />
                 <MobileSharingMenu
                   isVisible={isMobileSharingMenuVisible}
                   setIsVisible={setIsMobileSharingMenuVisible}

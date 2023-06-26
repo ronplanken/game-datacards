@@ -3,14 +3,13 @@ import { Button, Col, Row, Space } from "antd";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { AddCard } from "../../Icons/AddCard";
-import { ListAdd } from "./ListCreator/ListAdd";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
 
-export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible }) => {
+export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, setAddListvisible }) => {
   const { activeCard } = useCardStorage();
   const { lists, selectedList } = useMobileList();
-  const [showAddCards, setShowAddCards] = useState(false);
+
   const [showList, setShowList] = useState(false);
   return (
     <div
@@ -23,7 +22,6 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible }) 
         width: "100vw",
       }}>
       {showList && <ListOverview setShowList={setShowList} />}
-      {showAddCards && <ListAdd setShowList={setShowAddCards} />}
       <Row>
         <Col span={8} style={{ paddingLeft: "8px" }}>
           <Space.Compact block size="large">
@@ -55,7 +53,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible }) 
                 size="large"
                 shape="round"
                 className="button-bar"
-                onClick={() => setShowAddCards((val) => !val)}></Button>
+                onClick={() => setAddListvisible((val) => !val)}></Button>
             )}
           </Space.Compact>
         </Col>
