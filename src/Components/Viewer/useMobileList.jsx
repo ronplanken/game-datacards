@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const MobileListContext = React.createContext(undefined);
 
@@ -38,25 +39,33 @@ export const MobileListProvider = (props) => {
 
   const [selectedList, setSelectedList] = React.useState(0);
 
-  const addDatacard = (datacard, points, enhancement) => {
+  const addDatacard = (datacard, points, enhancement, isWarlord) => {
     if (!datacard) {
       return;
     }
     const newDatacard = { ...datacard };
     setStoredLists((lists) => {
       const newLists = [...lists];
-      newLists[selectedList].datacards.push({ card: newDatacard, points: points, enhancement });
+      newLists[selectedList].datacards.push({
+        card: newDatacard,
+        points: points,
+        enhancement,
+        warlord: isWarlord,
+        id: uuidv4(),
+      });
       return newLists;
     });
   };
 
-  const removeDatacard = (index) => {
-    if (index < 0) {
+  const removeDatacard = (id) => {
+    if (!id) {
       return;
     }
+    console.log(id);
     setStoredLists((lists) => {
       const newLists = [...lists];
-      newLists[selectedList].datacards.splice(index, 1);
+      const cardIndex = newLists[selectedList].datacards.findIndex((val) => val.id === id);
+      newLists[selectedList].datacards.splice(cardIndex, 1);
       return newLists;
     });
   };

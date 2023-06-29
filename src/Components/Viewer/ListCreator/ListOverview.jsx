@@ -1,5 +1,12 @@
-import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Col, Row } from "antd";
+import {
+  CrownFilled,
+  DeleteOutlined,
+  FileTextOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+} from "@ant-design/icons";
+import { Button, Col, Row, Space } from "antd";
+import { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
@@ -7,6 +14,7 @@ import { useMobileList } from "../useMobileList";
 
 export const ListOverview = ({ setShowList }) => {
   const { lists, selectedList, removeDatacard } = useMobileList();
+  const [fullscreen, setFullscreen] = useState(false);
   const { dataSource } = useDataSourceStorage();
   const navigate = useNavigate();
 
@@ -33,17 +41,40 @@ export const ListOverview = ({ setShowList }) => {
           bottom: "48px",
           left: "0px",
           width: "100vw",
-          minHeight: "250px",
-
+          minHeight: fullscreen ? "calc(100vh - 112px)" : "300px",
           backgroundColor: "#FFFFFF",
-          height: "24%",
+          height: "28%",
           zIndex: "999",
-          paddingTop: "8px",
+          paddingTop: "0px",
           borderTop: "2px solid #001529",
           overflowY: "auto",
           overflowX: "hidden",
           scrollbarGutter: "stable",
         }}>
+        <Space
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "end",
+            paddingRight: "16px",
+            borderBottom: "1px solid grey",
+          }}>
+          <Button
+            type="text"
+            shape="circle"
+            size="large"
+            icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+            className="mobile-icon-button"
+            onClick={() => {
+              setFullscreen((val) => !val);
+            }}></Button>
+          <Button
+            type="text"
+            shape="circle"
+            size="large"
+            icon={<FileTextOutlined />}
+            className="mobile-icon-button"></Button>
+        </Space>
         {lists[selectedList].datacards.length === 0 && (
           <div
             style={{
@@ -52,7 +83,7 @@ export const ListOverview = ({ setShowList }) => {
               justifyContent: "center",
               fontSize: "16px",
               width: "100vw",
-              height: "100%",
+              height: "calc(100% - 48px)",
               padding: "2px",
               paddingTop: "4px",
               paddingBottom: "4px",
@@ -62,61 +93,81 @@ export const ListOverview = ({ setShowList }) => {
             Your list is currently empty
           </div>
         )}
-        {lists[selectedList].datacards.map((line, index) => {
-          return (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: "16px",
-                width: "100vw",
-                height: !line.enhancement ? "36px" : "72px",
-                padding: "2px",
-                paddingTop: "4px",
-                paddingBottom: "4px",
-                borderBottom: "2px solid #f0f2f5",
-                paddingRight: "8px",
-                flexDirection: "column",
-              }}
-              key={line.card.name}>
-              <Row style={{ width: "100%", alignItems: "center" }}>
-                <Col
-                  span={14}
-                  style={{ paddingLeft: "16px" }}
-                  onClick={() => {
-                    const cardFaction = dataSource.data.find((faction) => faction.id === line.card?.faction_id);
-                    navigate(
-                      `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${line.card.name
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`
-                    );
-                  }}>
-                  {line.card.name}
-                </Col>
-                <Col span={4} style={{ fontSize: "0.8rem" }}>
-                  {line.points.models} models
-                </Col>
-                <Col span={4} style={{ fontSize: "0.8rem" }}>
-                  {line.points.cost} pts
-                </Col>
-                <Col span={2} style={{ fontSize: "0.8rem" }}>
-                  <Button type="text" size="large" onClick={() => removeDatacard(index)} icon={<DeleteOutlined />} />
-                </Col>
-                {line.enhancement && (
-                  <>
-                    {" "}
-                    <Col span={18} style={{ paddingLeft: "16px" }}>
-                      {line.enhancement.name}
-                    </Col>
-                    <Col span={4} style={{ fontSize: "0.8rem" }}>
-                      {line.enhancement.cost} pts
-                    </Col>
-                  </>
-                )}
-              </Row>
-            </div>
-          );
-        })}
+        {lists[selectedList].datacards
+          .toSorted((a, b) => {
+            if (a.warlord) {
+              return -1;
+            }
+            if (b.warlord) {
+              return 1;
+            }
+            return a.card.name.localeCompare(b.card.name);
+          })
+          .map((line, index) => {
+            return (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: "16px",
+                  width: "100vw",
+                  height: !line.enhancement ? "36px" : "72px",
+                  padding: "2px",
+                  paddingTop: "4px",
+                  paddingBottom: "4px",
+                  borderBottom: "2px solid #f0f2f5",
+                  paddingRight: "8px",
+                  flexDirection: "column",
+                }}
+                key={`line.card.name-${line.id}`}>
+                <Row style={{ width: "100%", alignItems: "center" }}>
+                  <Col
+                    span={14}
+                    style={{ paddingLeft: "16px" }}
+                    onClick={() => {
+                      const cardFaction = dataSource.data.find((faction) => faction.id === line.card?.faction_id);
+                      navigate(
+                        `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${line.card.name
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`
+                      );
+                    }}>
+                    {line.warlord && (
+                      <span style={{ paddingRight: "8px" }}>
+                        <CrownFilled />
+                      </span>
+                    )}
+                    {line.card.name}
+                  </Col>
+                  <Col span={4} style={{ fontSize: "0.8rem" }}>
+                    {line.points.models} models
+                  </Col>
+                  <Col span={4} style={{ fontSize: "0.8rem" }}>
+                    {line.points.cost} pts
+                  </Col>
+                  <Col span={2} style={{ fontSize: "0.8rem" }}>
+                    <Button
+                      type="text"
+                      size="large"
+                      onClick={() => removeDatacard(line.id)}
+                      icon={<DeleteOutlined />}
+                    />
+                  </Col>
+                  {line.enhancement && (
+                    <>
+                      {" "}
+                      <Col span={18} style={{ paddingLeft: "16px" }}>
+                        {line.enhancement.name}
+                      </Col>
+                      <Col span={4} style={{ fontSize: "0.8rem" }}>
+                        {line.enhancement.cost} pts
+                      </Col>
+                    </>
+                  )}
+                </Row>
+              </div>
+            );
+          })}
       </div>
     </OutsideClickHandler>
   );

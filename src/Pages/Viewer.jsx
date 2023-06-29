@@ -128,10 +128,10 @@ export const Viewer = () => {
       if (navigator.canShare(data)) {
         navigator.share(data);
       } else {
-        message.warn("Your browser is not supported to share this file");
+        message.warn("Your browser is not supported to share this link");
       }
     } else {
-      message.warn("Your browser is not supported to a link");
+      message.warn("Your browser is not supported to share this link");
     }
   };
 
@@ -566,8 +566,8 @@ export const Viewer = () => {
                   setSharingVisible={setIsMobileSharingMenuVisible}
                   setAddListvisible={setIsListAddVisible}
                 />
+                {isListAddVisible && <ListAdd setIsVisible={setIsListAddVisible} />}
                 <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
-                <ListAdd isVisible={isListAddVisible} setIsVisible={setIsListAddVisible} />
                 <MobileSharingMenu
                   isVisible={isMobileSharingMenuVisible}
                   setIsVisible={setIsMobileSharingMenuVisible}

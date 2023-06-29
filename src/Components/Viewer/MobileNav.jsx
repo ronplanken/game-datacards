@@ -52,7 +52,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 type="ghost"
                 size="large"
                 shape="round"
-                className="button-bar"
+                className="button-bar mobile-icon-button"
                 onClick={() => setAddListvisible((val) => !val)}></Button>
             )}
           </Space.Compact>
@@ -83,6 +83,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
               type="text"
               style={{ color: "white", paddingRight: "8px", paddingBottom: "8px" }}
               size="large"
+              className="mobile-icon-button"
               onClick={() => setSharingVisible(true)}
               icon={<ShareAltOutlined />}
             />
@@ -90,6 +91,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
               type="text"
               style={{ color: "white", paddingRight: "8px", paddingBottom: "8px" }}
               size="large"
+              className="mobile-icon-button"
               onClick={() => setMenuVisible(true)}
               icon={<SettingOutlined />}
             />
