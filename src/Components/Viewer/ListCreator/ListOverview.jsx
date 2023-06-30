@@ -5,7 +5,7 @@ import {
   FullscreenExitOutlined,
   FullscreenOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Row, Space } from "antd";
+import { Button, Col, Row, Space, message } from "antd";
 import { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useNavigate } from "react-router-dom";
@@ -73,7 +73,34 @@ export const ListOverview = ({ setShowList }) => {
             shape="circle"
             size="large"
             icon={<FileTextOutlined />}
-            className="mobile-icon-button"></Button>
+            className="mobile-icon-button"
+            onClick={() => {
+              let listText = "Warhammer 40K List";
+              lists[selectedList].datacards
+                ?.toSorted((a, b) => {
+                  if (a.warlord) {
+                    return -1;
+                  }
+                  if (b.warlord) {
+                    return 1;
+                  }
+                  return a.card.name.localeCompare(b.card.name);
+                })
+                .forEach((val) => {
+                  listText += `\n\n${val.card.name} ${val.points.models > 1 ? val.points.models + "x" : ""} (${
+                    val.points.cost
+                  } pts)`;
+                  if (val.warlord) {
+                    listText += `\n${val.warlord ? "  Warlord" : ""}`;
+                  }
+                  if (val.enhancement) {
+                    listText += `\n  ${val.enhancement.name} (${val.enhancement.cost} pts)`;
+                  }
+                });
+              listText += "\n\nCreated with https://game-datacards.eu";
+              navigator.clipboard.writeText(listText);
+              message.success("List copied to clipboard.");
+            }}></Button>
         </Space>
         {lists[selectedList].datacards.length === 0 && (
           <div
@@ -94,7 +121,7 @@ export const ListOverview = ({ setShowList }) => {
           </div>
         )}
         {lists[selectedList].datacards
-          .toSorted((a, b) => {
+          ?.toSorted((a, b) => {
             if (a.warlord) {
               return -1;
             }

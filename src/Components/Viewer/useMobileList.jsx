@@ -61,7 +61,6 @@ export const MobileListProvider = (props) => {
     if (!id) {
       return;
     }
-    console.log(id);
     setStoredLists((lists) => {
       const newLists = [...lists];
       const cardIndex = newLists[selectedList].datacards.findIndex((val) => val.id === id);
