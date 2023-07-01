@@ -1,4 +1,5 @@
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import {
   Button,
   Col,
@@ -38,6 +39,7 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { Discord } from "../Icons/Discord";
+
 import logo from "../Images/logo.png";
 import "../style.less";
 
@@ -49,10 +51,12 @@ const { confirm } = Modal;
 
 const { useBreakpoint } = Grid;
 
-import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
+import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
+import { MobileFaction } from "../Components/Viewer/MobileFaction";
 
 export const Viewer = () => {
+  const [parent] = useAutoAnimate({ duration: 75 });
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
@@ -160,17 +164,27 @@ export const Viewer = () => {
       return filteredSheets;
     }
   };
-  if (faction && unit) {
+
+  if (faction) {
     const foundFaction = dataSource.data.find((f) => {
       return f.name.toLowerCase().replaceAll(" ", "-") === faction;
     });
 
-    const foundUnit = foundFaction?.datasheets?.find((u) => {
-      return u.name.replaceAll(" ", "-").toLowerCase() === unit;
-    });
+    if (selectedFaction?.id !== foundFaction?.id) {
+      updateSelectedFaction(foundFaction);
+    }
 
-    setActiveCard(foundUnit);
+    if (unit) {
+      const foundUnit = foundFaction?.datasheets?.find((u) => {
+        return u.name.replaceAll(" ", "-").toLowerCase() === unit;
+      });
+
+      setActiveCard(foundUnit);
+    } else {
+      setActiveCard();
+    }
   }
+
   return (
     <Layout>
       <WhatsNew />
@@ -256,12 +270,12 @@ export const Viewer = () => {
                           width: "100%",
                         }}
                         onChange={(value) => {
-                          updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
+                          navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
                         }}
                         placeholder="Select a faction"
                         value={dataSource?.data[selectedFactionIndex]?.name}>
                         {dataSource.data.map((faction, index) => (
-                          <Option value={faction.id} key={`${faction.id}-${index}`}>
+                          <Option value={faction.name} key={`${faction.id}-${faction.name}`}>
                             {faction.name}
                           </Option>
                         ))}
@@ -369,12 +383,12 @@ export const Viewer = () => {
                                   width: "100%",
                                 }}
                                 onChange={(value) => {
-                                  updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
+                                  navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
                                 }}
                                 placeholder="Select a faction"
                                 value={dataSource?.data[selectedFactionIndex]?.name}>
                                 {dataSource.data.map((faction, index) => (
-                                  <Option value={faction.id} key={`${faction.id}-${index}`}>
+                                  <Option value={faction.name} key={`${faction.id}-${index}`}>
                                     {faction.name}
                                   </Option>
                                 ))}
@@ -532,14 +546,14 @@ export const Viewer = () => {
                   {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                   {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 </Row>
-                {!activeCard && <MobileWelcome />}
+                {!activeCard && !selectedFaction && <MobileWelcome />}
               </div>
               <MobileNav setSide={setSide} side={side} />
             </Col>
           )}
           {screens.xs && (
             <>
-              <Col>
+              <Col ref={parent}>
                 <div
                   style={{
                     height: "calc(100vh - 64px)",
@@ -557,7 +571,8 @@ export const Viewer = () => {
                     {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                     {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                   </Row>
-                  {!activeCard && <MobileWelcome />}
+                  {!activeCard && !selectedFaction && <MobileWelcome />}
+                  {!activeCard && selectedFaction && <MobileFaction />}
                 </div>
                 <MobileNav
                   setSide={setSide}
@@ -567,14 +582,15 @@ export const Viewer = () => {
                   setAddListvisible={setIsListAddVisible}
                 />
                 {isListAddVisible && <ListAdd setIsVisible={setIsListAddVisible} />}
-                <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
-                <MobileSharingMenu
-                  isVisible={isMobileSharingMenuVisible}
-                  setIsVisible={setIsMobileSharingMenuVisible}
-                  shareFullCard={() => htmlToImageConvert(fullCardRef)}
-                  shareMobileCard={() => htmlToImageConvert(viewerCardRef)}
-                  shareLink={() => shareLink()}
-                />
+                {isMobileMenuVisible && <MobileMenu setIsVisible={setIsMobileMenuVisible} />}
+                {isMobileSharingMenuVisible && (
+                  <MobileSharingMenu
+                    setIsVisible={setIsMobileSharingMenuVisible}
+                    shareFullCard={() => htmlToImageConvert(fullCardRef)}
+                    shareMobileCard={() => htmlToImageConvert(viewerCardRef)}
+                    shareLink={() => shareLink()}
+                  />
+                )}
               </Col>
             </>
           )}

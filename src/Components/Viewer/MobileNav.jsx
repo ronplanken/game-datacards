@@ -11,18 +11,21 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
   const { lists, selectedList } = useMobileList();
 
   const [showList, setShowList] = useState(false);
+
   return (
     <div
       style={{
-        height: "48px",
+        height: "64px",
         position: "fixed",
         backgroundColor: "#001529",
         bottom: "0px",
         paddingTop: "4px",
         width: "100vw",
+        display: "flex",
+        alignItems: "center",
       }}>
       {showList && <ListOverview setShowList={setShowList} />}
-      <Row>
+      <Row style={{ width: "100%" }}>
         <Col span={8} style={{ paddingLeft: "8px" }}>
           <Space.Compact block size="large">
             <Button
@@ -35,7 +38,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                   return showList ? false : true;
                 })
               }>
-              <span style={{ width: "48px" }}>
+              <span ref={parent} style={{ width: "48px" }}>
                 {lists[selectedList].datacards.reduce((acc, val) => {
                   let cost = acc + Number(val.points.cost);
                   if (val.enhancement) {
@@ -46,6 +49,10 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 pts
               </span>
             </Button>
+          </Space.Compact>
+        </Col>
+        <Col span={8}>
+          <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
             {activeCard && activeCard.points && (
               <Button
                 icon={<AddCard />}
@@ -55,10 +62,6 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 className="button-bar mobile-icon-button"
                 onClick={() => setAddListvisible((val) => !val)}></Button>
             )}
-          </Space.Compact>
-        </Col>
-        <Col span={8}>
-          <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
             {activeCard && (
               <Button
                 icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}

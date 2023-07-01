@@ -59,9 +59,9 @@ export const ListAdd = ({ setIsVisible }) => {
           width: "100vw",
           position: "fixed",
           bottom: "0px",
-          paddingBottom: "48px",
           zIndex: "999",
           padding: "8px",
+          paddingBottom: "32px",
           borderTop: "2px solid #f0f2f5",
         }}
         className="mobile-menu">

@@ -28,7 +28,7 @@ export const ListOverview = ({ setShowList }) => {
         style={{
           display: "block",
           position: "absolute",
-          height: "100vh",
+          height: "100dvh",
           width: "100vw",
           top: "0px",
           bottom: "0px",
@@ -38,12 +38,11 @@ export const ListOverview = ({ setShowList }) => {
       <div
         style={{
           position: "absolute",
-          bottom: "48px",
+          bottom: "64px",
           left: "0px",
           width: "100vw",
-          minHeight: fullscreen ? "calc(100vh - 112px)" : "300px",
           backgroundColor: "#FFFFFF",
-          height: "28%",
+          height: fullscreen ? "calc(100dvh - 128px)" : "300px",
           zIndex: "999",
           paddingTop: "0px",
           borderTop: "2px solid #001529",
@@ -55,52 +54,63 @@ export const ListOverview = ({ setShowList }) => {
           style={{
             width: "100%",
             display: "flex",
-            justifyContent: "end",
+            justifyContent: "space-between",
+            paddingLeft: "16px",
             paddingRight: "16px",
             borderBottom: "1px solid grey",
+            fontSize: "1.1rem",
+            fontWeight: "600",
           }}>
-          <Button
-            type="text"
-            shape="circle"
-            size="large"
-            icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-            className="mobile-icon-button"
-            onClick={() => {
-              setFullscreen((val) => !val);
-            }}></Button>
-          <Button
-            type="text"
-            shape="circle"
-            size="large"
-            icon={<FileTextOutlined />}
-            className="mobile-icon-button"
-            onClick={() => {
-              let listText = "Warhammer 40K List";
-              lists[selectedList].datacards
-                ?.toSorted((a, b) => {
-                  if (a.warlord) {
-                    return -1;
-                  }
-                  if (b.warlord) {
-                    return 1;
-                  }
-                  return a.card.name.localeCompare(b.card.name);
-                })
-                .forEach((val) => {
-                  listText += `\n\n${val.card.name} ${val.points.models > 1 ? val.points.models + "x" : ""} (${
-                    val.points.cost
-                  } pts)`;
-                  if (val.warlord) {
-                    listText += `\n${val.warlord ? "  Warlord" : ""}`;
-                  }
-                  if (val.enhancement) {
-                    listText += `\n  ${val.enhancement.name} (${val.enhancement.cost} pts)`;
-                  }
-                });
-              listText += "\n\nCreated with https://game-datacards.eu";
-              navigator.clipboard.writeText(listText);
-              message.success("List copied to clipboard.");
-            }}></Button>
+          {lists[selectedList].name}
+          <Space
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "end",
+            }}>
+            <Button
+              type="text"
+              shape="circle"
+              size="large"
+              icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+              className="mobile-icon-button"
+              onClick={() => {
+                setFullscreen((val) => !val);
+              }}></Button>
+            <Button
+              type="text"
+              shape="circle"
+              size="large"
+              icon={<FileTextOutlined />}
+              className="mobile-icon-button"
+              onClick={() => {
+                let listText = "Warhammer 40K List";
+                lists[selectedList].datacards
+                  ?.toSorted((a, b) => {
+                    if (a.warlord) {
+                      return -1;
+                    }
+                    if (b.warlord) {
+                      return 1;
+                    }
+                    return a.card.name.localeCompare(b.card.name);
+                  })
+                  .forEach((val) => {
+                    listText += `\n\n${val.card.name} ${val.points.models > 1 ? val.points.models + "x" : ""} (${
+                      val.points.cost
+                    } pts)`;
+                    if (val.warlord) {
+                      listText += `\n${val.warlord ? "  Warlord" : ""}`;
+                    }
+                    if (val.enhancement) {
+                      listText += `\n  ${val.enhancement.name} (${val.enhancement.cost} pts)`;
+                    }
+                  });
+                listText += "\n\nCreated with https://game-datacards.eu";
+                navigator.clipboard.writeText(listText);
+                message.success("List copied to clipboard.");
+              }}></Button>
+          </Space>
         </Space>
         {lists[selectedList].datacards.length === 0 && (
           <div

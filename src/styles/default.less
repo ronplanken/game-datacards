@@ -2,6 +2,12 @@
   display: grid;
 }
 
+.slide-up {
+  transition-property: all;
+  transition-duration: 0.5s;
+  transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
+}
+
 .mobile-icon-button {
   span {
     font-size: 22px !important;
@@ -25,6 +31,22 @@
     }
   }
 }
+
+.bottom-nav {
+  .bottom-nav-item {
+    background-color: #001529;
+    color: rgb(165, 165, 165);
+    font-size: 1.5rem;
+    transition: font-size 0.1s ease, color 0.1s ease;
+
+    &.active {
+      font-size: 1.7rem;
+      color: white;
+      background-color: #04223e;
+    }
+  }
+}
+
 .nav-menu-item {
   display: flex;
   justify-content: center;
