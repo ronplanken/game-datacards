@@ -519,9 +519,9 @@ function App() {
                           type={"primary"}
                           onClick={() => {
                             if (activeCard.print_side === "back") {
-                              updateActiveCard({ ...activeCard, print_side: "front" });
+                              updateActiveCard({ ...activeCard, print_side: "front" }, true);
                             } else {
-                              updateActiveCard({ ...activeCard, print_side: "back" });
+                              updateActiveCard({ ...activeCard, print_side: "back" }, true);
                             }
                           }}>
                           {activeCard.print_side === "back" ? "Show front" : "Show back"}

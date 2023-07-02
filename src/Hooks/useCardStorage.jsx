@@ -38,12 +38,14 @@ export const CardStorageProviderComponent = (props) => {
     localStorage.setItem("storage", JSON.stringify({ ...cardStorage, version }));
   }, [cardStorage]);
 
-  const updateActiveCard = (card) => {
+  const updateActiveCard = (card, noUpdate = false) => {
     if (!card) {
       return;
     }
     const copiedCard = clone(card);
-    setCardUpdated(true);
+    if (!noUpdate) {
+      setCardUpdated(true);
+    }
     setActiveCard(copiedCard);
   };
 

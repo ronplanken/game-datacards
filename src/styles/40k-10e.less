@@ -928,6 +928,24 @@
                 font-weight: 400;
                 white-space: pre-wrap;
               }
+              .value {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+                white-space: pre-wrap;
+                margin-left: 4px;
+                @media screen {
+                  &::before {
+                    content: "[ ";
+                  }
+                  &::after {
+                    content: " ]";
+                  }
+                }
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
             }
             .ledBy {
               padding: 2px;
@@ -1147,7 +1165,7 @@
         justify-content: center;
         position: relative;
         padding-left: 48px;
-        background-color:  var(--background-colour);
+        background-color: var(--background-colour);
 
         .title {
           text-transform: uppercase;
@@ -1165,7 +1183,7 @@
         .value {
           text-transform: capitalize;
           font-size: 1rem;
-          color: var(--faction-text-colour);;
+          color: var(--faction-text-colour);
           font-weight: 600;
           line-height: 1.1rem;
         }
@@ -1272,7 +1290,7 @@
         width: 100%;
         height: auto;
         min-height: 110px;
-        background-color:  var(--background-colour);
+        background-color: var(--background-colour);
         position: relative;
         display: block;
 

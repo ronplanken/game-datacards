@@ -38,7 +38,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                   return showList ? false : true;
                 })
               }>
-              <span ref={parent} style={{ width: "48px" }}>
+              <span ref={parent}>
                 {lists[selectedList].datacards.reduce((acc, val) => {
                   let cost = acc + Number(val.points.cost);
                   if (val.enhancement) {
