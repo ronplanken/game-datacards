@@ -37,14 +37,14 @@ export const UnitLoadout = ({ unit }) => {
             </div>
           </>
         )}
-        {unit.ledBy && (
+        {unit?.leadBy && (
           <>
             <div className="heading">
               <div className="title">Lead by</div>
             </div>
             <div className="ledBy">
               <span className="description">This unit can be lead by the following:</span>
-              {unit.ledBy.map((leader) => {
+              {unit?.leadBy?.map((leader) => {
                 return (
                   <div key={`leader-${leader}`}>
                     ■
