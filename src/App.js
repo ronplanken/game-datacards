@@ -4,6 +4,7 @@ import {
   Col,
   Divider,
   Dropdown,
+  Grid,
   Image,
   Input,
   Layout,
@@ -21,6 +22,7 @@ import clone from "just-clone";
 import { useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 import { AboutModal } from "./Components/AboutModal";
@@ -51,6 +53,7 @@ import "./style.less";
 const { Header, Content } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
+const { useBreakpoint } = Grid;
 
 function App() {
   const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
@@ -58,6 +61,9 @@ function App() {
   const { settings, updateSettings } = useSettingsStorage();
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
   const [isLoading] = useState(false);
+
+  const screens = useBreakpoint();
+  const navigate = useNavigate();
 
   const [searchText, setSearchText] = useState(undefined);
 
@@ -175,12 +181,18 @@ function App() {
     }
   };
 
+  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+
   return (
     <Layout>
       <WelcomeWizard />
       <WhatsNew />
       <UpdateReminder />
-      <Header>
+      <Header
+        style={{
+          paddingLeft: screens.xs ? "8px" : "32px",
+          paddingRight: screens.xs ? "12px" : "32px",
+        }}>
         <Row style={{ justifyContent: "space-between" }}>
           <Col>
             <Space size={"large"}>
@@ -188,6 +200,22 @@ function App() {
               <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
                 Game Datacards
               </Typography.Title>
+              <Space>
+                <div className="nav-menu-item selected" onClick={() => navigate("/")}>
+                  <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
+                    <Link to={"/"} style={{ fontSize: "1.1rem", color: "white" }}>
+                      Editor
+                    </Link>
+                  </Typography.Text>
+                </div>
+                <div className="nav-menu-item" onClick={() => navigate("/viewer")}>
+                  <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
+                    <Link to={"/viewer"} style={{ fontSize: "1.1rem", color: "white" }}>
+                      Viewer
+                    </Link>
+                  </Typography.Text>
+                </div>
+              </Space>
             </Space>
           </Col>
           <Col>
@@ -435,6 +463,8 @@ function App() {
                 display: "block",
                 overflow: "auto",
                 "--card-scaling-factor": settings.zoom / 100,
+                "--banner-colour": cardFaction?.colours?.banner,
+                "--header-colour": cardFaction?.colours?.header,
               }}
               className={`data-${activeCard?.source}`}>
               <Row style={{ overflow: "hidden" }}>
@@ -489,9 +519,9 @@ function App() {
                           type={"primary"}
                           onClick={() => {
                             if (activeCard.print_side === "back") {
-                              updateActiveCard({ ...activeCard, print_side: "front" });
+                              updateActiveCard({ ...activeCard, print_side: "front" }, true);
                             } else {
-                              updateActiveCard({ ...activeCard, print_side: "back" });
+                              updateActiveCard({ ...activeCard, print_side: "back" }, true);
                             }
                           }}>
                           {activeCard.print_side === "back" ? "Show front" : "Show back"}

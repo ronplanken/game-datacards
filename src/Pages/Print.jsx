@@ -33,6 +33,7 @@ export const Print = () => {
   const [cardAlignment, setCardAlignment] = useState(settings.printSettings?.cardAlignment || "space-evenly");
   const [customSize, setCustomSize] = useState(settings.printSettings?.customSize || { height: "15cm", width: "15cm" });
   const [verticalAlignment, setVerticalAlignment] = useState(settings.printSettings?.verticalAlignment || "flex-start");
+  const [backgrounds, setBackgrounds] = useState(settings.printSettings?.backgrounds || "standard");
 
   const { cardStorage } = useCardStorage();
 
@@ -265,6 +266,23 @@ export const Print = () => {
                   }}
                   value={columnGap}></Slider>
               </Form.Item>
+              <Form.Item label={"Background"}>
+                <Select
+                  defaultValue={backgrounds}
+                  onChange={(val) => {
+                    setBackgrounds(val);
+                    updateSettings({
+                      ...settings,
+                      printSettings: { ...settings.printSettings, backgrounds: val },
+                    });
+                  }}
+                  options={[
+                    { label: "Standard Backgrounds", value: "standard" },
+                    { label: "Light Backgrounds", value: "light" },
+                  ]}
+                  size={"small"}
+                />
+              </Form.Item>
             </Form>
             <Form
               style={{
@@ -323,6 +341,7 @@ export const Print = () => {
                               key={`${rowIndex}-${index}`}
                               cardScaling={cardScaling}
                               side={card.print_side || "front"}
+                              backgrounds={backgrounds}
                             />
                           )}
                           {card?.source === "basic" && (

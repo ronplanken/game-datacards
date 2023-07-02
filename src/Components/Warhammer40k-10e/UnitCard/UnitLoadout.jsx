@@ -27,13 +27,27 @@ export const UnitLoadout = ({ unit }) => {
             </div>
           );
         })}
-        {unit.leader && (
+        {unit.leads && (
           <>
             <div className="heading">
               <div className="title">Leader</div>
             </div>
             <div className="leader">
-              <span className="description">{unit.leader.replaceAll("■", "\n\r ■")}</span>
+              <span className="description">This unit can lead the following units:</span>
+              {unit?.leads?.units?.map((leader) => {
+                return (
+                  <div key={`leader-${leader}`}>
+                    ■
+                    <Link
+                      to={`/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${leader
+                        .replaceAll(" ", "-")
+                        .toLowerCase()}`}>
+                      <span className="value">{leader}</span>
+                    </Link>
+                  </div>
+                );
+              })}
+              {unit?.leads?.extra && <span className="description">{unit?.leads?.extra}</span>}
             </div>
           </>
         )}
@@ -43,7 +57,7 @@ export const UnitLoadout = ({ unit }) => {
               <div className="title">Lead by</div>
             </div>
             <div className="ledBy">
-              <span className="description">This unit can be lead by the following:</span>
+              <span className="description">This unit can be lead by the following units:</span>
               {unit?.leadBy?.map((leader) => {
                 return (
                   <div key={`leader-${leader}`}>

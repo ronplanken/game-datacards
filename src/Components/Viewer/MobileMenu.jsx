@@ -4,14 +4,14 @@ import React from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 
-export const MobileMenu = ({ isVisible, setIsVisible }) => {
+export const MobileMenu = ({ setIsVisible }) => {
   const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
   const { checkForUpdate } = useDataSourceStorage();
   return (
     <>
       <div
         style={{
-          display: isVisible ? "block" : "none",
+          display: "block",
           position: "absolute",
           height: "100vh",
           width: "100vw",
@@ -23,7 +23,7 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
       />
       <Col
         style={{
-          display: isVisible ? "block" : "none",
+          display: "block",
           backgroundColor: "#001529",
           height: "15%",
           width: "100vw",

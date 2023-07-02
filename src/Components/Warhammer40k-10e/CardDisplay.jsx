@@ -2,8 +2,18 @@ import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { UnitCard } from "./UnitCard";
 
-export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPadding, side = "front" }) => {
+export const Warhammer40K10eCardDisplay = ({
+  type,
+  card,
+  cardScaling,
+  printPadding,
+  side = "front",
+  backgrounds = "standard",
+}) => {
   const { activeCard } = useCardStorage();
+
+  const backgroundColour = backgrounds === "standard" ? "black" : "#dfe0e2";
+  const factionTextColour = backgrounds === "standard" ? "white" : "black";
 
   return (
     <>
@@ -26,6 +36,8 @@ export const Warhammer40K10eCardDisplay = ({ type, card, cardScaling, printPaddi
                 transform: `scale(${cardScaling / 100})`,
                 height: `${714 * (cardScaling / 100)}px`,
                 width: `${1077 * (cardScaling / 100)}px`,
+                "--background-colour": backgroundColour,
+                "--faction-text-colour": factionTextColour,
               }}
             />
           )}

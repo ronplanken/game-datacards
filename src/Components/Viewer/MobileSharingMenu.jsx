@@ -3,12 +3,12 @@ import { Col, List, Row, Space, Typography } from "antd";
 import React from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 
-export const MobileSharingMenu = ({ isVisible, setIsVisible, shareFullCard, shareMobileCard, shareLink }) => {
+export const MobileSharingMenu = ({ setIsVisible, shareFullCard, shareMobileCard, shareLink }) => {
   return (
     <>
       <div
         style={{
-          display: isVisible ? "block" : "none",
+          display: "block",
           position: "absolute",
           height: "100vh",
           width: "100vw",
@@ -20,7 +20,7 @@ export const MobileSharingMenu = ({ isVisible, setIsVisible, shareFullCard, shar
       />
       <Col
         style={{
-          display: isVisible ? "block" : "none",
+          display: "block",
           backgroundColor: "#FFFFFF",
           height: "24%",
           width: "100vw",

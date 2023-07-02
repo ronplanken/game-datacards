@@ -10,15 +10,23 @@ import { FirebaseProviderComponent } from "./Hooks/useFirebase";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
 import { AppRoutes } from "./Routes/AppRoutes";
 
-import { Col, Result, Row, Typography } from "antd";
+import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
+import { MobileListProvider } from "./Components/Viewer/useMobileList";
 
 const { Paragraph, Text } = Typography;
+const { useBreakpoint } = Grid;
 
 function ErrorFallback({ error }) {
+  const screens = useBreakpoint();
+
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <Result status="error" title="Sorry, something went wrong." subTitle={error.message} style={{ width: "50%" }}>
+      <Result
+        status="error"
+        title="Sorry, something went wrong."
+        subTitle={error.message}
+        style={{ width: screens.xs ? "100%" : "50%" }}>
         <div className="desc">
           <Paragraph>
             <Row style={{ padding: "16px" }} justify={"center"}>
@@ -41,8 +49,8 @@ function ErrorFallback({ error }) {
             </Row>
           </Paragraph>
           <Paragraph>
-            <Row style={{ padding: "16px", textAlign: "center" }} justify={"center"}>
-              <Col span={10}>
+            <Row style={{ padding: "4px", textAlign: "center" }} justify={"center"}>
+              <Col span={24}>
                 <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
                   <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
                 </a>
@@ -64,9 +72,11 @@ root.render(
       <FirebaseProviderComponent>
         <DataSourceStorageProviderComponent>
           <CardStorageProviderComponent>
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
+            <MobileListProvider>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </MobileListProvider>
           </CardStorageProviderComponent>
         </DataSourceStorageProviderComponent>
       </FirebaseProviderComponent>
