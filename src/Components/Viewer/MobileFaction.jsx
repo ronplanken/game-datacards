@@ -5,10 +5,12 @@ import { MarkdownDisplay } from "../MarkdownDisplay";
 export const MobileFaction = () => {
   const { selectedFaction } = useDataSourceStorage();
   return (
-    <Col style={{ width: "100dvw" }}>
-      <p style={{ padding: "32px", fontSize: "1.4rem", fontWeight: "600", textAlign: "center" }}>
-        {selectedFaction.name}
-      </p>
+    <Col style={{ width: "100dvw" }} className="mobile-faction">
+      {/* <div className="title">
+        <div className="heading">
+          <div className="title">Stats</div>
+        </div>
+      </div> */}
       {/* <p style={{ padding: 32, paddingBottom: 4, fontSize: "1.3rem", fontWeight: "600", textAlign: "center" }}>
         Stratagems
       </p>
@@ -19,16 +21,30 @@ export const MobileFaction = () => {
           </Collapse.Panel>
         ))}
       </Collapse> */}
-      <p style={{ padding: 32, paddingBottom: 0, fontSize: "1.3rem", fontWeight: "600", textAlign: "center" }}>
-        Enhancements
-      </p>
-      <Collapse style={{ margin: 16 }}>
-        {selectedFaction.enhancements.map((val) => (
-          <Collapse.Panel key={val.name} header={val.name}>
-            <MarkdownDisplay content={val.description.replaceAll("■", "\n\r ■")} />
-          </Collapse.Panel>
-        ))}
-      </Collapse>
+      <div className="stratagems">
+        <div className="heading">
+          <div className="title">Stratagems</div>
+        </div>
+        {/* <Collapse style={{ margin: 16 }}>
+          {selectedFaction?.enhancements?.map((val) => (
+            <Collapse.Panel key={val.name} header={val.name}>
+              <MarkdownDisplay content={val.description.replaceAll("■", "\n\r ■")} />
+            </Collapse.Panel>
+          ))}
+        </Collapse> */}
+      </div>
+      <div className="enhancements">
+        <div className="heading">
+          <div className="title">Enhancements</div>
+        </div>
+        <Collapse style={{ margin: 16 }}>
+          {selectedFaction?.enhancements?.map((val) => (
+            <Collapse.Panel key={val.name} header={val.name}>
+              <MarkdownDisplay content={val.description.replaceAll("■", "\n\r ■")} />
+            </Collapse.Panel>
+          ))}
+        </Collapse>
+      </div>
     </Col>
   );
 };
