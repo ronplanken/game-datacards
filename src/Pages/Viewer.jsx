@@ -21,6 +21,7 @@ import {
 import "antd/dist/antd.min.css";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useSwipeable } from "react-swipeable";
 import "../App.css";
 import { AboutModal } from "../Components/AboutModal";
 import { FactionSettingsModal } from "../Components/FactionSettingsModal";
@@ -52,8 +53,8 @@ const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
-import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { MobileFaction } from "../Components/Viewer/MobileFaction";
+import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 
 export const Viewer = () => {
   const [parent] = useAutoAnimate({ duration: 75 });
@@ -71,6 +72,7 @@ export const Viewer = () => {
 
   const { activeCard, setActiveCard } = useCardStorage();
 
+  const list = useRef();
   const fullCardRef = useRef(null);
   const viewerCardRef = useRef(null);
   const overlayRef = useRef(null);
@@ -84,6 +86,7 @@ export const Viewer = () => {
   const htmlToImageConvert = (divRef) => {
     divRef.current.style.display = "block";
     overlayRef.current.style.display = "block";
+
     if (navigator.share) {
       toBlob(divRef.current, { cacheBust: false })
         .then((data) => {
@@ -184,7 +187,14 @@ export const Viewer = () => {
       setActiveCard();
     }
   }
-
+  const handlers = useSwipeable({
+    onSwiped: (eventData) => {
+      if (eventData.dir === "Right") {
+        setOpen(false);
+      }
+    },
+    delta: { right: 100 },
+  });
   return (
     <Layout>
       <WhatsNew />
@@ -249,95 +259,97 @@ export const Viewer = () => {
         key={"drawer"}
         className="viewer-drawer"
         headerStyle={{ backgroundColor: "#001529", color: "white" }}>
-        <List
-          bordered
-          size="small"
-          loading={isLoading}
-          dataSource={getDataSourceType()}
-          style={{ overflowY: "auto", height: "100%" }}
-          locale={{
-            emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
-          }}
-          header={
-            <>
-              {dataSource.data.length > 1 && (
-                <>
-                  <Row style={{ marginBottom: "4px" }}>
-                    <Col span={24}>
-                      <Select
-                        loading={isLoading}
-                        style={{
-                          width: "100%",
-                        }}
-                        onChange={(value) => {
-                          navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
-                        }}
-                        placeholder="Select a faction"
-                        value={dataSource?.data[selectedFactionIndex]?.name}>
-                        {dataSource.data.map((faction, index) => (
-                          <Option value={faction.name} key={`${faction.id}-${faction.name}`}>
-                            {faction.name}
-                          </Option>
-                        ))}
-                      </Select>
-                      {!dataSource?.noFactionOptions && <FactionSettingsModal />}
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col span={24}>
-                      <Divider style={{ marginTop: 4, marginBottom: 8 }} />
-                    </Col>
-                  </Row>
-                </>
-              )}
-              <Row style={{ marginBottom: "4px" }}>
-                <Col span={24}>
-                  <Input.Search
-                    placeholder={"Search"}
-                    onChange={(value) => {
-                      if (value.target.value.length > 0) {
-                        setSearchText(value.target.value);
-                      } else {
-                        setSearchText(undefined);
-                      }
-                    }}
-                    allowClear={true}
-                  />
-                </Col>
-              </Row>
-            </>
-          }
-          renderItem={(card, index) => {
-            if (card.type === "header") {
-              return (
-                <List.Item key={`list-header-${index}`} className={`list-header`}>
-                  {card.name}
-                </List.Item>
-              );
+        <div {...handlers}>
+          <List
+            bordered
+            size="small"
+            loading={isLoading}
+            dataSource={getDataSourceType()}
+            style={{ overflowY: "auto", height: "100%" }}
+            locale={{
+              emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
+            }}
+            header={
+              <>
+                {dataSource.data.length > 1 && (
+                  <>
+                    <Row style={{ marginBottom: "4px" }}>
+                      <Col span={24}>
+                        <Select
+                          loading={isLoading}
+                          style={{
+                            width: "100%",
+                          }}
+                          onChange={(value) => {
+                            navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
+                          }}
+                          placeholder="Select a faction"
+                          value={dataSource?.data[selectedFactionIndex]?.name}>
+                          {dataSource.data.map((faction, index) => (
+                            <Option value={faction.name} key={`${faction.id}-${faction.name}`}>
+                              {faction.name}
+                            </Option>
+                          ))}
+                        </Select>
+                        {!dataSource?.noFactionOptions && <FactionSettingsModal />}
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={24}>
+                        <Divider style={{ marginTop: 4, marginBottom: 8 }} />
+                      </Col>
+                    </Row>
+                  </>
+                )}
+                <Row style={{ marginBottom: "4px" }}>
+                  <Col span={24}>
+                    <Input.Search
+                      placeholder={"Search"}
+                      onChange={(value) => {
+                        if (value.target.value.length > 0) {
+                          setSearchText(value.target.value);
+                        } else {
+                          setSearchText(undefined);
+                        }
+                      }}
+                      allowClear={true}
+                    />
+                  </Col>
+                </Row>
+              </>
             }
-            if (card.type !== "header") {
-              return (
-                <List.Item
-                  key={`list-${card.id}`}
-                  onClick={() => {
-                    navigate(
-                      `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
-                        .replaceAll(" ", "-")
-                        .toLowerCase()}`
-                    );
+            renderItem={(card, index) => {
+              if (card.type === "header") {
+                return (
+                  <List.Item key={`list-header-${index}`} className={`list-header`}>
+                    {card.name}
+                  </List.Item>
+                );
+              }
+              if (card.type !== "header") {
+                return (
+                  <List.Item
+                    key={`list-${card.id}`}
+                    onClick={() => {
+                      navigate(
+                        `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                          .replaceAll(" ", "-")
+                          .toLowerCase()}`
+                      );
 
-                    setActiveCard(card);
-                    setOpen(false);
-                  }}
-                  className={`list-item ${
-                    activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                  }`}>
-                  <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
-                </List.Item>
-              );
-            }
-          }}
-        />
+                      setActiveCard(card);
+                      setOpen(false);
+                    }}
+                    className={`list-item ${
+                      activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
+                    }`}>
+                    <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
+                  </List.Item>
+                );
+              }
+            }}
+          />
+        </div>
       </Drawer>
 
       <Content style={{ height: "calc(100vh - 64px)", paddingBottom: "54px" }}>

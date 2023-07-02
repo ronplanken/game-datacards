@@ -2,6 +2,7 @@ import { Button, Col, Row, Typography } from "antd";
 import { compare } from "compare-versions";
 import React, { useEffect } from "react";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { AddCard } from "../Icons/AddCard";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 
 export const WhatsNew = () => {
@@ -45,7 +46,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.0.4
+                Whats new in 2.1.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,17 +57,28 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Units lead by</strong>
+                          <strong>Mobile List Creation</strong>
                           <br />
-                          DataCards now show which units a unit can be lead by. For now this only works in their own
-                          faction, so no leaders for the SM Chapters yet. You can found them on the back of the cards.
-                          You can even click on them to go directly to the connected sheet.
+                          When using the mobile version you can now create a list on the go. Simply open up a DataCard
+                          and press the new button <AddCard /> at the bottom, select a size, warlord and optional
+                          enhancement and add it to your list. <br /> <br /> The button on the left&nbsp;
+                          <Button
+                            type="ghost"
+                            size="small"
+                            className="button-bar"
+                            shape="round"
+                            style={{ color: "white", backgroundColor: "rgb(0, 21, 41)" }}>
+                            0 pts
+                          </Button>
+                          &nbsp; will show the amount of points and gives you an overview. You can also export it to
+                          text through the list overview.
                         </li>
                         <li>
-                          <strong>Keywords, Rules & Linked unit</strong>
+                          <strong>Stratagem & Enhancement overview</strong>
                           <br />
-                          All keywords, rules and linked units (such as the lead by section) are indicated by brackets:{" "}
-                          <strong>[ ]</strong>. These will not show up when printing for the rules and linked units.
+                          You can now select an Faction in the top header. Doing this will show an overview of faction
+                          stratagems and enhancements. Pressing the GDC logo will always let you return here. <br />
+                          <br /> An extra special thanks to ZiggyQubert for working on the Stratagem datasource!
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -74,11 +86,15 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Printing & Sharing</strong>
+                          <strong>Background colours</strong>
                           <br />
-                          Printing for 10e cards should now behave better then before. When scaling cards the actual
-                          space they take up is more in line with what you see. Shared cards now also properly fill up
-                          the screen and auto-scale based on screen size.
+                          You can select a low-ink print option for 40k 10e cards.
+                        </li>
+                        <li>
+                          <strong>Swapping front to back save message</strong>
+                          <br />
+                          When swapping between front & back on the desktop version GDC will not bother you with a
+                          &quot;unsaved changes&quot; popup anymore.
                         </li>
                       </ul>
                     </Typography.Paragraph>

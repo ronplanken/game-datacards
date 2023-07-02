@@ -82,14 +82,16 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
         </Col>
         <Col span={8}>
           <Space align="center" style={{ width: "100%", justifyContent: "flex-end" }}>
-            <Button
-              type="text"
-              style={{ color: "white", paddingRight: "8px", paddingBottom: "8px" }}
-              size="large"
-              className="mobile-icon-button"
-              onClick={() => setSharingVisible(true)}
-              icon={<ShareAltOutlined />}
-            />
+            {activeCard && (
+              <Button
+                type="text"
+                style={{ color: "white", paddingRight: "8px", paddingBottom: "8px" }}
+                size="large"
+                className="mobile-icon-button"
+                onClick={() => setSharingVisible(true)}
+                icon={<ShareAltOutlined />}
+              />
+            )}
             <Button
               type="text"
               style={{ color: "white", paddingRight: "8px", paddingBottom: "8px" }}
