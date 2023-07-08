@@ -1,12 +1,14 @@
 import { DatabaseOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Button, Col, Space, message } from "antd";
+import { Button, Card, Col, Space, Switch, Typography, message } from "antd";
 import React from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 
 export const MobileMenu = ({ setIsVisible }) => {
   const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
   const { checkForUpdate } = useDataSourceStorage();
+  const { settings, updateSettings } = useSettingsStorage();
   return (
     <>
       <div
@@ -25,12 +27,14 @@ export const MobileMenu = ({ setIsVisible }) => {
         style={{
           display: "block",
           backgroundColor: "#001529",
-          height: "15%",
+          height: "auto",
+          padding: "8px",
+          paddingBottom: "64px",
           width: "100vw",
           position: "sticky",
           bottom: "0",
           zIndex: 999,
-          padding: "8px",
+          borderTop: "2px solid #f0f2f5",
         }}
         className="mobile-menu">
         <OutsideClickHandler
@@ -38,6 +42,23 @@ export const MobileMenu = ({ setIsVisible }) => {
             setIsVisible(false);
           }}>
           <Space direction="vertical" style={{ width: "100%" }}>
+            <Typography.Text style={{ color: "white" }}>Options</Typography.Text>
+            <Card
+              type={"inner"}
+              key={`display-01`}
+              size={"small"}
+              title={"Show Legend cards"}
+              bodyStyle={{ padding: 0 }}
+              style={{ marginBottom: "8px" }}
+              extra={
+                <Switch
+                  checked={settings.showLegends}
+                  onChange={(value) => {
+                    updateSettings({ ...settings, showLegends: value });
+                  }}
+                />
+              }></Card>
+            <Typography.Text style={{ color: "white" }}>Actions</Typography.Text>
             <Button
               size="large"
               type="primary"
@@ -61,16 +82,6 @@ export const MobileMenu = ({ setIsVisible }) => {
                 )
               }>
               Update datasources
-            </Button>
-            <Button
-              size="large"
-              type="ghost"
-              style={{ color: "white" }}
-              block
-              onClick={() => {
-                setIsVisible(false);
-              }}>
-              Close
             </Button>
           </Space>
         </OutsideClickHandler>
