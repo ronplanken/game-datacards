@@ -107,9 +107,12 @@ function App() {
 
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
-      const filteredSheets = searchText
+      let filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
+      if (!settings?.showLegends) {
+        filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
+      }
       if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
         const types = [...new Set(filteredSheets?.map((item) => item.role))];
         let byRole = [];

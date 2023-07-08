@@ -2,7 +2,6 @@ import { Button, Col, Row, Typography } from "antd";
 import { compare } from "compare-versions";
 import React, { useEffect } from "react";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-import { AddCard } from "../Icons/AddCard";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 
 export const WhatsNew = () => {
@@ -46,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.1.0
+                Whats new in 2.1.1
               </h1>
             </div>
             <div className="welcome-cover">
@@ -57,28 +56,21 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Mobile List Creation</strong>
+                          <strong>Backcard editing</strong>
                           <br />
-                          When using the mobile version you can now create a list on the go. Simply open up a DataCard
-                          and press the new button <AddCard /> at the bottom, select a size, warlord and optional
-                          enhancement and add it to your list. <br /> <br /> The button on the left&nbsp;
-                          <Button
-                            type="ghost"
-                            size="small"
-                            className="button-bar"
-                            shape="round"
-                            style={{ color: "white", backgroundColor: "rgb(0, 21, 41)" }}>
-                            0 pts
-                          </Button>
-                          &nbsp; will show the amount of points and gives you an overview. You can also export it to
-                          text through the list overview.
+                          You can now edit the back of the cards while in the Desktop card editor. Since
+                          <strong>Leads</strong> and <strong>Lead by</strong> are derrived fields they are not editable
+                          at the moment.
                         </li>
                         <li>
-                          <strong>Stratagem & Enhancement overview</strong>
+                          <strong>Legends cards</strong>
+                          <br />A first pass has been added for Legends cards for 10th edition. Please note that for now
+                          only the &quot;main&quot; faction of the cards have them available. The Traitoris versions
+                          will be coming at a later date. On both Mobile and Desktop they are hidden by default but can
+                          be enabled through the faction settings or mobile settings.
                           <br />
-                          You can now select an Faction in the top header. Doing this will show an overview of faction
-                          stratagems and enhancements. Pressing the GDC logo will always let you return here. <br />
-                          <br /> An extra special thanks to ZiggyQubert for working on the Stratagem datasource!
+                          <br />
+                          <b>Make sure to update your datasources!</b>
                         </li>
                       </ul>
                     </Typography.Paragraph>

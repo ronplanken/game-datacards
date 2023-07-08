@@ -113,7 +113,7 @@ export const DataSourceStorageProviderComponent = (props) => {
   }, [dataSource, selectedFaction]);
 
   const updateSelectedFaction = (faction) => {
-    logLocalEvent("select_faction", { faction: faction.name, dataSource: settings.selectedDataSource });
+    logLocalEvent("select_faction", { faction: faction?.name, dataSource: settings.selectedDataSource });
     setSelectedFaction(faction);
     updateSettings({
       ...settings,

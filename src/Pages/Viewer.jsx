@@ -152,9 +152,12 @@ export const Viewer = () => {
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
-      const filteredSheets = searchText
+      let filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
+      if (!settings?.showLegends) {
+        filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
+      }
       if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
         const types = [...new Set(filteredSheets?.map((item) => item.role))];
         let byRole = [];
@@ -291,7 +294,6 @@ export const Viewer = () => {
                             </Option>
                           ))}
                         </Select>
-                        {!dataSource?.noFactionOptions && <FactionSettingsModal />}
                       </Col>
                     </Row>
                     <Row>
@@ -392,7 +394,7 @@ export const Viewer = () => {
                               <Select
                                 loading={isLoading}
                                 style={{
-                                  width: "100%",
+                                  width: dataSource?.noFactionOptions ? "100%" : "calc(100% - 32px)",
                                 }}
                                 onChange={(value) => {
                                   navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
