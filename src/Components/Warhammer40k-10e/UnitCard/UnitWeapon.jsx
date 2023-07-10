@@ -32,16 +32,18 @@ export const UnitWeapon = ({ weapon }) => {
             </div>
           </div>
         ))}
-      <div className="special">
-        {weapon.abilities
-          ?.filter((line) => line.showAbility)
-          ?.map((line, index) => (
-            <div className="ability" style={{ paddingLeft: 30, paddingRight: 8 }} key={`weapon-ability-${line.name}`}>
-              <span className="name">{line.name}</span>
-              {line.showDescription && <span className="description">{replaceKeywords(line.description)}</span>}
-            </div>
-          ))}
-      </div>
+      {weapon?.abilities && (
+        <div className="special">
+          {weapon.abilities
+            ?.filter((line) => line.showAbility)
+            ?.map((line, index) => (
+              <div className="ability" style={{ paddingLeft: 30, paddingRight: 8 }} key={`weapon-ability-${line.name}`}>
+                <span className="name">{line.name}</span>
+                {line.showDescription && <span className="description">{replaceKeywords(line.description)}</span>}
+              </div>
+            ))}
+        </div>
+      )}
     </>
   );
 };
