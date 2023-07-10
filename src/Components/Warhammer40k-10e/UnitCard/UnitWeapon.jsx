@@ -1,4 +1,5 @@
 import { Grid } from "antd";
+import { replaceKeywords } from "./UnitAbilityDescription";
 import { UnitWeaponKeywords } from "./UnitWeaponKeyword";
 
 const { useBreakpoint } = Grid;
@@ -31,6 +32,16 @@ export const UnitWeapon = ({ weapon }) => {
             </div>
           </div>
         ))}
+      <div className="special">
+        {weapon.abilities
+          ?.filter((line) => line.showAbility)
+          ?.map((line, index) => (
+            <div className="ability" style={{ paddingLeft: 30, paddingRight: 8 }} key={`weapon-ability-${line.name}`}>
+              <span className="name">{line.name}</span>
+              {line.showDescription && <span className="description">{replaceKeywords(line.description)}</span>}
+            </div>
+          ))}
+      </div>
     </>
   );
 };
