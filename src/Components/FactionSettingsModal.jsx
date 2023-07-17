@@ -156,11 +156,16 @@ export const FactionSettingsModal = () => {
                           </Col>
                         </Row>
                       )}
+                      <Row style={{ paddingTop: "8px" }}>
+                        <Col span={23}>
+                          <Typography.Paragraph>Warhammer 10th edition only options</Typography.Paragraph>
+                        </Col>
+                      </Row>
                       <Row style={{ paddingTop: "0px" }}>
                         <Col span={23}>
                           <Card
                             type={"inner"}
-                            key={`display-01`}
+                            key={`display-02`}
                             size={"small"}
                             title={"Show Legends datasheets"}
                             bodyStyle={{ padding: 0 }}
@@ -170,6 +175,25 @@ export const FactionSettingsModal = () => {
                                 checked={settings.showLegends}
                                 onChange={(value) => {
                                   updateSettings({ ...settings, showLegends: value });
+                                }}
+                              />
+                            }></Card>
+                        </Col>
+                      </Row>
+                      <Row style={{ paddingTop: "0px" }}>
+                        <Col span={23}>
+                          <Card
+                            type={"inner"}
+                            key={`display-03`}
+                            size={"small"}
+                            title={"Add generic Adeptus Astartes Cards to subfactions"}
+                            bodyStyle={{ padding: 0 }}
+                            style={{ marginBottom: "8px", marginTop: "8px" }}
+                            extra={
+                              <Switch
+                                checked={settings.combineParentFactions}
+                                onChange={(value) => {
+                                  updateSettings({ ...settings, combineParentFactions: value });
                                 }}
                               />
                             }></Card>

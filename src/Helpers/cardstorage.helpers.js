@@ -1,5 +1,7 @@
 import { compare } from "compare-versions";
 import { v4 as uuidv4 } from "uuid";
+import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
 const defaultCategories = {
   version: process.env.REACT_APP_VERSION,
@@ -10,6 +12,50 @@ const defaultCategories = {
       cards: [],
     },
   ],
+};
+
+export const useDataSourceType = () => {
+  const { settings } = useSettingsStorage();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
+  const searchText = "";
+  if (selectedFaction) {
+    let combinedSheets = [];
+    if (selectedFaction.is_subfaction) {
+      let parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
+
+      let parentDatasheets = parentFaction?.datasheets
+        ?.filter((val) => val.factions.length === 1 && val.factions.includes(selectedFaction.parent_keyword))
+        .map((val) => {
+          return { ...val, nonBase: true };
+        });
+
+      combinedSheets = [
+        { type: "category", name: parentFaction.name, id: parentFaction.id, closed: true },
+        ...parentDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+        { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
+        ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+      ];
+    } else {
+      combinedSheets = [...selectedFaction?.datasheets];
+    }
+
+    let filteredSheets = searchText
+      ? combinedSheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
+      : combinedSheets;
+    if (!settings?.showLegends) {
+      filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
+    }
+    if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
+      const types = [...new Set(filteredSheets?.map((item) => item.role))];
+      let byRole = [];
+      types.map((role) => {
+        byRole = [...byRole, { type: "header", name: role }];
+        byRole = [...byRole, ...filteredSheets?.filter((sheet) => sheet.role === role)];
+      });
+      return byRole;
+    }
+    return filteredSheets;
+  }
 };
 
 const upgradeStoredCards = (parsedJson) => {

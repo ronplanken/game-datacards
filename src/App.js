@@ -18,6 +18,7 @@ import {
   Typography,
 } from "antd";
 import "antd/dist/antd.min.css";
+import classNames from "classnames";
 import clone from "just-clone";
 import { useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -154,7 +155,7 @@ function App() {
         const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
           return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
         });
-
+        console.log(filteredSecondaries);
         if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
           return filteredSecondaries;
         } else {
@@ -445,9 +446,11 @@ function App() {
                                 setSelectedTreeIndex(null);
                               }
                             }}
-                            className={`list-item ${
-                              activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                            }`}>
+                            className={classNames({
+                              "list-item": true,
+                              selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
+                              legends: card.legends,
+                            })}>
                             <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
                           </List.Item>
                         );
