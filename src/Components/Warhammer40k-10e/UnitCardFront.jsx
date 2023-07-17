@@ -17,7 +17,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
       }}>
       <div className={`unit`}>
         <div className={"header"}>
-          <UnitName name={unit.name} subname={unit.subname} points={unit.points} />
+          <UnitName name={unit.name} subname={unit.subname} points={unit.points} legends={unit.legends} />
           <UnitStats stats={unit.stats} />
         </div>
         <div className="data_container">
