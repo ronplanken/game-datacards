@@ -1,17 +1,19 @@
+import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, Divider, Input, List, Row, Select } from "antd";
 import classNames from "classnames";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceType } from "../../Helpers/cardstorage.helpers";
-import { getListFactionId } from "../../Helpers/treeview.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { FactionSettingsModal } from "../FactionSettingsModal";
 
 export const DesktopUnitList = () => {
   const { dataSource, selectedFactionIndex, selectedFaction } = useDataSourceStorage();
   const { activeCard, setActiveCard } = useCardStorage();
   const [searchText, setSearchText] = useState(undefined);
+  const { settings, updateSettings } = useSettingsStorage();
 
   const navigate = useNavigate();
 
@@ -82,27 +84,66 @@ export const DesktopUnitList = () => {
             </List.Item>
           );
         }
-        if (card.type !== "header") {
-          return (
-            <List.Item
-              key={`list-${card.id}`}
-              onClick={() => {
+        if (card.type === "category") {
+          if (settings?.groupByFaction) {
+            return (
+              <List.Item
+                key={`list-category-${index}`}
+                className={`list-category`}
+                onClick={() => {
+                  let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
+                  if (newClosedFactions.includes(card.id)) {
+                    newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
+                  } else {
+                    newClosedFactions.push(card.id);
+                  }
+                  updateSettings({
+                    ...settings,
+                    mobile: { ...settings.mobile, closedFactions: newClosedFactions },
+                  });
+                }}>
+                <span className="icon">
+                  {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+                </span>
+                <span className="name">{card.name}</span>
+              </List.Item>
+            );
+          }
+          return <></>;
+        }
+        const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+
+        if (settings?.groupByFaction && settings?.mobile?.closedFactions?.includes(card.faction_id)) {
+          return <></>;
+        }
+        return (
+          <List.Item
+            key={`list-${card.id}`}
+            onClick={() => {
+              if (!card.nonBase) {
                 navigate(
-                  `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                  `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
                     .replaceAll(" ", "-")
                     .toLowerCase()}`
                 );
-                setActiveCard(card);
-              }}
-              className={classNames({
-                "list-item": true,
-                selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
-                legends: card.legends,
-              })}>
-              <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
-            </List.Item>
-          );
-        }
+              }
+              if (card.nonBase) {
+                navigate(
+                  `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
+                    .toLowerCase()
+                    .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
+                );
+              }
+              setActiveCard(card);
+            }}
+            className={classNames({
+              "list-item": true,
+              selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
+              legends: card.legends,
+            })}>
+            <div className={card.nonBase ? card.faction_id : ""}>{card.name}</div>
+          </List.Item>
+        );
       }}
     />
   );

@@ -14,13 +14,17 @@ const defaultCategories = {
   ],
 };
 
-export const useDataSourceType = () => {
+export const useDataSourceType = (searchText) => {
   const { settings } = useSettingsStorage();
   const { dataSource, selectedFaction } = useDataSourceStorage();
-  const searchText = "";
-  if (selectedFaction) {
-    let combinedSheets = [];
-    if (selectedFaction.is_subfaction) {
+
+  let filteredSheets = [];
+  if (selectedFaction && settings.selectedDataSource === "40k-10e") {
+    filteredSheets = [
+      { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
+      ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+    ];
+    if (selectedFaction.is_subfaction && settings.combineParentFactions) {
       let parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
 
       let parentDatasheets = parentFaction?.datasheets
@@ -29,19 +33,73 @@ export const useDataSourceType = () => {
           return { ...val, nonBase: true };
         });
 
-      combinedSheets = [
+      filteredSheets = [
+        ...filteredSheets,
         { type: "category", name: parentFaction.name, id: parentFaction.id, closed: true },
         ...parentDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-        { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
-        ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
       ];
-    } else {
-      combinedSheets = [...selectedFaction?.datasheets];
     }
 
-    let filteredSheets = searchText
-      ? combinedSheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
-      : combinedSheets;
+    if (!settings?.showLegends) {
+      filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
+    }
+    if (!settings.groupByFaction) {
+      filteredSheets = filteredSheets.toSorted((a, b) => a.name.localeCompare(b.name));
+    }
+    if (settings.groupByRole) {
+      const types = ["Battleline", "Character", "Dedicated Transport"];
+      let byRole = [];
+
+      types.map((role) => {
+        byRole = [...byRole, { type: "header", name: role }];
+        byRole = [...byRole, ...filteredSheets?.filter((sheet) => sheet?.keywords?.includes(role))];
+      });
+
+      byRole = [
+        ...byRole,
+        { type: "header", name: "Other" },
+        ...filteredSheets?.filter((sheet) => {
+          return types.every((t) => !sheet?.keywords?.includes(t));
+        }),
+      ];
+
+      filteredSheets = byRole;
+    }
+
+    if (
+      selectedFaction.allied_factions &&
+      selectedFaction.allied_factions.length > 0 &&
+      settings.combineAlliedFactions
+    ) {
+      selectedFaction.allied_factions.forEach((alliedFactionId) => {
+        let alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
+
+        let alliedFactionDatasheets = alliedFaction?.datasheets.map((val) => {
+          return { ...val, nonBase: true };
+        });
+
+        filteredSheets = [
+          ...filteredSheets,
+          { type: "category", name: alliedFaction.name, id: alliedFaction.id, closed: true },
+          ...alliedFactionDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+        ];
+      });
+    }
+    filteredSheets = searchText
+      ? filteredSheets.filter((sheet) => {
+          if (sheet.type === "category" || sheet.type === "header") {
+            return true;
+          }
+          return sheet.name.toLowerCase().includes(searchText.toLowerCase());
+        })
+      : filteredSheets;
+
+    return filteredSheets;
+  }
+  if (selectedFaction && settings.selectedDataSource !== "40k-10e") {
+    filteredSheets = searchText
+      ? selectedFaction?.datasheets?.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
+      : selectedFaction?.datasheets;
     if (!settings?.showLegends) {
       filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
     }
@@ -56,6 +114,8 @@ export const useDataSourceType = () => {
     }
     return filteredSheets;
   }
+
+  return [];
 };
 
 const upgradeStoredCards = (parsedJson) => {

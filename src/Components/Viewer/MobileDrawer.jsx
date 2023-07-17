@@ -103,55 +103,67 @@ export const MobileDrawer = ({ open, setOpen }) => {
               );
             }
             if (card.type === "category") {
-              return (
-                <List.Item
-                  key={`list-category-${index}`}
-                  className={`list-category`}
-                  onClick={() => {
-                    let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
-                    if (newClosedFactions.includes(card.id)) {
-                      newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
-                    } else {
-                      newClosedFactions.push(card.id);
-                    }
-                    updateSettings({ ...settings, mobile: { ...settings.mobile, closedFactions: newClosedFactions } });
-                  }}>
-                  <span className="icon">
-                    {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
-                  </span>
-                  <span className="name">{card.name}</span>
-                </List.Item>
-              );
+              if (settings?.groupByFaction) {
+                return (
+                  <List.Item
+                    key={`list-category-${index}`}
+                    className={`list-category`}
+                    onClick={() => {
+                      let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
+                      if (newClosedFactions.includes(card.id)) {
+                        newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
+                      } else {
+                        newClosedFactions.push(card.id);
+                      }
+                      updateSettings({
+                        ...settings,
+                        mobile: { ...settings.mobile, closedFactions: newClosedFactions },
+                      });
+                    }}>
+                    <span className="icon">
+                      {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+                    </span>
+                    <span className="name">{card.name}</span>
+                  </List.Item>
+                );
+              }
+              return <></>;
             }
-            if (
-              card.type !== "header" &&
-              card.type !== "category" &&
-              !settings?.mobile?.closedFactions?.includes(card.faction_id)
-            ) {
-              const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+            const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
-              return (
-                <List.Item
-                  key={`list-${card.id}`}
-                  onClick={() => {
+            if (settings?.groupByFaction && settings?.mobile?.closedFactions?.includes(card.faction_id)) {
+              return <></>;
+            }
+            return (
+              <List.Item
+                key={`list-${card.id}`}
+                onClick={() => {
+                  if (!card.nonBase) {
                     navigate(
                       `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
                         .replaceAll(" ", "-")
                         .toLowerCase()}`
                     );
+                  }
+                  if (card.nonBase) {
+                    navigate(
+                      `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
+                        .toLowerCase()
+                        .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
+                    );
+                  }
 
-                    setActiveCard(card);
-                    setOpen(false);
-                  }}
-                  className={classNames({
-                    "list-item": true,
-                    selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
-                    legends: card.legends,
-                  })}>
-                  <div className={!card.nonBase ? card.faction_id : ""}>{card.name}</div>
-                </List.Item>
-              );
-            }
+                  setActiveCard(card);
+                  setOpen(false);
+                }}
+                className={classNames({
+                  "list-item": true,
+                  selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
+                  legends: card.legends,
+                })}>
+                <div className={card.nonBase ? card.faction_id : ""}>{card.name}</div>
+              </List.Item>
+            );
           }}
         />
       </div>

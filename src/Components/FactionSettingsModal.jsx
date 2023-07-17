@@ -186,14 +186,14 @@ export const FactionSettingsModal = () => {
                             type={"inner"}
                             key={`display-03`}
                             size={"small"}
-                            title={"Add generic Adeptus Astartes Cards to subfactions"}
+                            title={"Add Space Marine Cards to subchapters"}
                             bodyStyle={{ padding: 0 }}
                             style={{ marginBottom: "8px", marginTop: "8px" }}
                             extra={
                               <Switch
-                                checked={settings.combineParentFactions}
+                                checked={settings.combineAlliedFactions}
                                 onChange={(value) => {
-                                  updateSettings({ ...settings, combineParentFactions: value });
+                                  updateSettings({ ...settings, combineAlliedFactions: value });
                                 }}
                               />
                             }></Card>

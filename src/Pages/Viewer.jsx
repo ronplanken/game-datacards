@@ -39,7 +39,7 @@ import { useMobileSharing } from "../Hooks/useMobileSharing";
 
 export const Viewer = () => {
   const [parent] = useAutoAnimate({ duration: 75 });
-  const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const [isMobileMenuVisible, setIsMobileMenuVisible] = React.useState(false);
   const [isListAddVisible, setIsListAddVisible] = React.useState(false);
@@ -48,7 +48,7 @@ export const Viewer = () => {
 
   const { shareLink, htmlToImageConvert } = useMobileSharing();
 
-  const { faction, unit } = useParams();
+  const { faction, unit, alliedFaction, alliedUnit } = useParams();
 
   const { activeCard, setActiveCard } = useCardStorage();
 
@@ -72,7 +72,7 @@ export const Viewer = () => {
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
 
   useEffect(() => {
-    if (faction) {
+    if (faction && !alliedFaction) {
       const foundFaction = dataSource.data.find((f) => {
         return f.name.toLowerCase().replaceAll(" ", "-") === faction;
       });
@@ -90,7 +90,30 @@ export const Viewer = () => {
         setActiveCard();
       }
     }
-  }, [faction, unit, dataSource]);
+    if (faction && alliedFaction) {
+      const foundFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+      });
+
+      if (selectedFaction?.id !== foundFaction?.id) {
+        updateSelectedFaction(foundFaction);
+      }
+
+      const foundAlliedFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === alliedFaction;
+      });
+
+      if (alliedUnit) {
+        const foundUnit = foundAlliedFaction?.datasheets?.find((u) => {
+          return u.name.replaceAll(" ", "-").toLowerCase() === alliedUnit;
+        });
+
+        setActiveCard(foundUnit);
+      } else {
+        setActiveCard();
+      }
+    }
+  }, [faction, unit, alliedFaction, alliedUnit, dataSource]);
 
   return (
     <Layout>
