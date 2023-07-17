@@ -80,7 +80,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
           position: "fixed",
           width: `calc(100vw - ${padding})`,
         }}>
-        <Col style={{ display: "flex", alignItems: "center" }}>
+        <Col style={{ display: "flex", alignItems: "center" }} span={20}>
           <Image
             preview={false}
             src={logo}
@@ -89,10 +89,11 @@ export const MobileHeader = ({ setOpen, padding }) => {
               dropdown.current.style.height = "0px";
               navigate(`/viewer/${selectedFaction.name?.toLowerCase().replaceAll(" ", "-")}`);
             }}
+            style={{ width: 42 }}
           />
           <Button
             type="text"
-            style={{ color: "white", fontSize: "1.4rem" }}
+            style={{ color: "white", fontSize: "1.4rem", overflow: "hidden", textOverflow: "ellipsis" }}
             size="large"
             onClick={() => {
               const node = dropdown.current;
