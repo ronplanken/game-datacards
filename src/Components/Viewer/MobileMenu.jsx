@@ -61,7 +61,7 @@ export const MobileMenu = ({ setIsVisible }) => {
               type={"inner"}
               key={`Types-02`}
               size={"small"}
-              title={"Show main faction Cards"}
+              title={"Show main faction cards"}
               bodyStyle={{ padding: 0 }}
               extra={
                 <Switch
@@ -86,7 +86,7 @@ export const MobileMenu = ({ setIsVisible }) => {
                 />
               }></Card>
             <Typography.Text style={{ color: "white" }}>Display</Typography.Text>
-            <Card
+            {/* <Card
               type={"inner"}
               key={`display-01`}
               size={"small"}
@@ -97,6 +97,20 @@ export const MobileMenu = ({ setIsVisible }) => {
                   checked={settings.groupByFaction}
                   onChange={(value) => {
                     updateSettings({ ...settings, groupByFaction: value });
+                  }}
+                />
+              }></Card> */}
+            <Card
+              type={"inner"}
+              key={`display-01`}
+              size={"small"}
+              title={"Show points in listview"}
+              bodyStyle={{ padding: 0 }}
+              extra={
+                <Switch
+                  checked={settings.showPointsInListview}
+                  onChange={(value) => {
+                    updateSettings({ ...settings, showPointsInListview: value });
                   }}
                 />
               }></Card>

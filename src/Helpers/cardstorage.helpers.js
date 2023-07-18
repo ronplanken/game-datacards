@@ -51,16 +51,27 @@ export const useDataSourceType = (searchText) => {
       let byRole = [];
 
       types.map((role) => {
-        byRole = [...byRole, { type: "header", name: role }];
-        byRole = [...byRole, ...filteredSheets?.filter((sheet) => sheet?.keywords?.includes(role))];
+        byRole = [...byRole, { type: "role", name: role }];
+        byRole = [
+          ...byRole,
+          ...filteredSheets
+            ?.filter((sheet) => sheet?.keywords?.includes(role))
+            .map((val) => {
+              return { ...val, role: role };
+            }),
+        ];
       });
 
       byRole = [
         ...byRole,
-        { type: "header", name: "Other" },
-        ...filteredSheets?.filter((sheet) => {
-          return types.every((t) => !sheet?.keywords?.includes(t));
-        }),
+        { type: "role", name: "Other" },
+        ...filteredSheets
+          ?.filter((sheet) => {
+            return types.every((t) => !sheet?.keywords?.includes(t));
+          })
+          .map((val) => {
+            return { ...val, role: "Other" };
+          }),
       ];
 
       filteredSheets = byRole;
@@ -75,12 +86,12 @@ export const useDataSourceType = (searchText) => {
         let alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
 
         let alliedFactionDatasheets = alliedFaction?.datasheets.map((val) => {
-          return { ...val, nonBase: true };
+          return { ...val, nonBase: true, allied: true };
         });
 
         filteredSheets = [
           ...filteredSheets,
-          { type: "category", name: alliedFaction.name, id: alliedFaction.id, closed: true },
+          { type: "allied", name: alliedFaction.name, id: alliedFaction.id, closed: true },
           ...alliedFactionDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
         ];
       });

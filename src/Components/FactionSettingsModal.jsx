@@ -130,75 +130,204 @@ export const FactionSettingsModal = () => {
                   )}
                   {!dataSource.noDatasheetOptions && (
                     <Tabs.TabPane tab="Datasheets" key="2" style={{ overflowY: "auto", minHeight: "350px" }}>
-                      <Row style={{ paddingTop: "8px" }}>
-                        <Col span={23}>
-                          <Typography.Paragraph>Please select your preferred options here.</Typography.Paragraph>
-                        </Col>
-                      </Row>
                       {!dataSource.noDatasheetByRole && (
-                        <Row style={{ paddingTop: "0px" }}>
-                          <Col span={23}>
-                            <Card
-                              type={"inner"}
-                              key={`display-01`}
-                              size={"small"}
-                              title={"Split datasheets by role"}
-                              bodyStyle={{ padding: 0 }}
-                              style={{ marginBottom: "8px", marginTop: "8px" }}
-                              extra={
-                                <Switch
-                                  checked={settings.splitDatasheetsByRole}
-                                  onChange={(value) => {
-                                    updateSettings({ ...settings, splitDatasheetsByRole: value });
-                                  }}
-                                />
-                              }></Card>
-                          </Col>
-                        </Row>
+                        <>
+                          <Row style={{ paddingTop: "8px" }}>
+                            <Col span={23}>
+                              <Typography.Paragraph
+                                style={{
+                                  fontSize: "0.9rem",
+                                  fontWeight: 600,
+                                  textTransform: "uppercase",
+                                  marginBottom: 0,
+                                  color: "#888888",
+                                  borderBottom: "2px solid #f0f0f0",
+                                }}>
+                                Generic options
+                              </Typography.Paragraph>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-01`}
+                                size={"small"}
+                                title={"Split datasheets by role"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginBottom: "8px", marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.splitDatasheetsByRole}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, splitDatasheetsByRole: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                        </>
                       )}
-                      <Row style={{ paddingTop: "8px" }}>
-                        <Col span={23}>
-                          <Typography.Paragraph>Warhammer 10th edition only options</Typography.Paragraph>
-                        </Col>
-                      </Row>
-                      <Row style={{ paddingTop: "0px" }}>
+                      {settings.selectedDataSource === "40k-10e" && (
+                        <>
+                          <Row style={{ paddingTop: "8px" }}>
+                            <Col span={23}>
+                              <Typography.Paragraph
+                                style={{
+                                  fontSize: "0.9rem",
+                                  fontWeight: 600,
+                                  textTransform: "uppercase",
+                                  marginBottom: 0,
+                                  color: "#888888",
+                                  borderBottom: "2px solid #f0f0f0",
+                                }}>
+                                Warhammer 10th edition options
+                              </Typography.Paragraph>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "8px" }}>
+                            <Col span={23}>
+                              <Typography.Paragraph
+                                style={{
+                                  fontSize: "0.8rem",
+                                  fontWeight: 400,
+                                  textTransform: "uppercase",
+                                  marginBottom: 0,
+                                  color: "#888888",
+                                }}>
+                                Datacards
+                              </Typography.Paragraph>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-02`}
+                                size={"small"}
+                                title={"Add Legends datacards to factions"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginBottom: "8px", marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.showLegends}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, showLegends: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-03`}
+                                size={"small"}
+                                title={"Add Space Marine cards to subchapter factions"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginBottom: "8px", marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.combineParentFactions}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, combineParentFactions: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-04`}
+                                size={"small"}
+                                title={"Add allied faction cards to factions"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginBottom: "8px", marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.combineAlliedFactions}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, combineAlliedFactions: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "8px" }}>
+                            <Col span={23}>
+                              <Typography.Paragraph
+                                style={{
+                                  fontSize: "0.8rem",
+                                  fontWeight: 400,
+                                  textTransform: "uppercase",
+                                  marginBottom: 0,
+                                  color: "#888888",
+                                }}>
+                                display
+                              </Typography.Paragraph>
+                            </Col>
+                          </Row>
+                          {/* <Row style={{ paddingTop: "0px" }}>
                         <Col span={23}>
                           <Card
                             type={"inner"}
-                            key={`display-02`}
+                            key={`display-04`}
                             size={"small"}
-                            title={"Show Legends datasheets"}
+                            title={"Group cards by faction"}
                             bodyStyle={{ padding: 0 }}
                             style={{ marginBottom: "8px", marginTop: "8px" }}
                             extra={
                               <Switch
-                                checked={settings.showLegends}
+                                checked={settings.groupByFaction}
                                 onChange={(value) => {
-                                  updateSettings({ ...settings, showLegends: value });
+                                  updateSettings({ ...settings, groupByFaction: value });
                                 }}
                               />
                             }></Card>
                         </Col>
-                      </Row>
-                      <Row style={{ paddingTop: "0px" }}>
+                      </Row> */}
+                          {/* <Row style={{ paddingTop: "0px" }}>
                         <Col span={23}>
                           <Card
                             type={"inner"}
-                            key={`display-03`}
+                            key={`display-01`}
                             size={"small"}
-                            title={"Add Space Marine Cards to subchapters"}
+                            title={"Show points in listview"}
                             bodyStyle={{ padding: 0 }}
-                            style={{ marginBottom: "8px", marginTop: "8px" }}
                             extra={
                               <Switch
-                                checked={settings.combineAlliedFactions}
+                                checked={settings.showPointsInListview}
                                 onChange={(value) => {
-                                  updateSettings({ ...settings, combineAlliedFactions: value });
+                                  updateSettings({ ...settings, showPointsInListview: value });
                                 }}
                               />
                             }></Card>
                         </Col>
-                      </Row>
+                      </Row> */}
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-04`}
+                                size={"small"}
+                                title={"Group cards by role"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginBottom: "8px", marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.groupByRole}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, groupByRole: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                        </>
+                      )}
                     </Tabs.TabPane>
                   )}
                   {!dataSource.noStratagemOptions && (

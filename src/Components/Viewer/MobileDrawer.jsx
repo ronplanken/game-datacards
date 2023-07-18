@@ -37,7 +37,11 @@ export const MobileDrawer = ({ open, setOpen }) => {
       onClose={() => setOpen(false)}
       key={"drawer"}
       className="viewer-drawer"
-      headerStyle={{ backgroundColor: "#001529", color: "white" }}>
+      headerStyle={{ backgroundColor: "#001529", color: "white" }}
+      style={{
+        "--banner-colour": selectedFaction?.colours?.banner,
+        "--header-colour": selectedFaction?.colours?.header,
+      }}>
       <div {...handlers}>
         <List
           bordered
@@ -97,7 +101,7 @@ export const MobileDrawer = ({ open, setOpen }) => {
           renderItem={(card, index) => {
             if (card.type === "header") {
               return (
-                <List.Item key={`list-header-${index}`} className={`list-header`}>
+                <List.Item key={`list-header-${index}`} className={`list-header`} onClick={() => {}}>
                   {card.name}
                 </List.Item>
               );
@@ -129,9 +133,62 @@ export const MobileDrawer = ({ open, setOpen }) => {
               }
               return <></>;
             }
+            if (card.type === "allied") {
+              return (
+                <List.Item
+                  key={`list-category-${index}`}
+                  className={`list-category`}
+                  onClick={() => {
+                    console.log(card);
+                    let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
+                    if (newClosedFactions.includes(card.id)) {
+                      newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
+                    } else {
+                      newClosedFactions.push(card.id);
+                    }
+                    updateSettings({
+                      ...settings,
+                      mobile: { ...settings.mobile, closedFactions: newClosedFactions },
+                    });
+                  }}>
+                  <span className="icon">
+                    {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+                  </span>
+                  <span className="name">{card.name}</span>
+                </List.Item>
+              );
+            }
+            if (card.type === "role") {
+              return (
+                <List.Item
+                  key={`list-role-${index}`}
+                  className={`list-category`}
+                  onClick={() => {
+                    console.log(card);
+                    let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
+                    if (newClosedRoles.includes(card.name)) {
+                      newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
+                    } else {
+                      newClosedRoles.push(card.name);
+                    }
+                    updateSettings({
+                      ...settings,
+                      mobile: { ...settings.mobile, closedRoles: newClosedRoles },
+                    });
+                  }}>
+                  <span className="icon">
+                    {settings?.mobile?.closedRoles?.includes(card.name) ? <RightOutlined /> : <DownOutlined />}
+                  </span>
+                  <span className="name">{card.name}</span>
+                </List.Item>
+              );
+            }
             const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
-            if (settings?.groupByFaction && settings?.mobile?.closedFactions?.includes(card.faction_id)) {
+            if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
+              return <></>;
+            }
+            if (settings?.mobile?.closedRoles?.includes(card.role)) {
               return <></>;
             }
             return (
@@ -161,7 +218,28 @@ export const MobileDrawer = ({ open, setOpen }) => {
                   selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
                   legends: card.legends,
                 })}>
-                <div className={card.nonBase ? card.faction_id : ""}>{card.name}</div>
+                <div
+                  style={{ display: "flex", width: "100%", marginRight: "48px", justifyContent: "space-between" }}
+                  className={card.nonBase ? card.faction_id : ""}>
+                  <span>{card.name}</span>
+                  {settings.showPointsInListview && card.points.length > 0 && (
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        border: "1px solid white",
+                        backgroundColor: "var(--header-colour)",
+                        color: "white",
+                        paddingTop: "2px",
+                        paddingbottom: "2px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        borderRadius: "6px",
+                        textAlign: "center",
+                      }}>
+                      <strong>{card.points[0]?.cost}</strong> pts
+                    </span>
+                  )}
+                </div>
               </List.Item>
             );
           }}

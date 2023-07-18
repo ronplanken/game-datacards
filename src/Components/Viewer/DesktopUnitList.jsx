@@ -79,7 +79,7 @@ export const DesktopUnitList = () => {
       renderItem={(card, index) => {
         if (card.type === "header") {
           return (
-            <List.Item key={`list-header-${index}`} className={`list-header`}>
+            <List.Item key={`list-header-${index}`} className={`list-header`} onClick={() => {}}>
               {card.name}
             </List.Item>
           );
@@ -111,9 +111,62 @@ export const DesktopUnitList = () => {
           }
           return <></>;
         }
+        if (card.type === "allied") {
+          return (
+            <List.Item
+              key={`list-category-${index}`}
+              className={`list-category`}
+              onClick={() => {
+                console.log(card);
+                let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
+                if (newClosedFactions.includes(card.id)) {
+                  newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
+                } else {
+                  newClosedFactions.push(card.id);
+                }
+                updateSettings({
+                  ...settings,
+                  mobile: { ...settings.mobile, closedFactions: newClosedFactions },
+                });
+              }}>
+              <span className="icon">
+                {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+              </span>
+              <span className="name">{card.name}</span>
+            </List.Item>
+          );
+        }
+        if (card.type === "role") {
+          return (
+            <List.Item
+              key={`list-role-${index}`}
+              className={`list-category`}
+              onClick={() => {
+                console.log(card);
+                let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
+                if (newClosedRoles.includes(card.name)) {
+                  newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
+                } else {
+                  newClosedRoles.push(card.name);
+                }
+                updateSettings({
+                  ...settings,
+                  mobile: { ...settings.mobile, closedRoles: newClosedRoles },
+                });
+              }}>
+              <span className="icon">
+                {settings?.mobile?.closedRoles?.includes(card.name) ? <RightOutlined /> : <DownOutlined />}
+              </span>
+              <span className="name">{card.name}</span>
+            </List.Item>
+          );
+        }
         const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
-        if (settings?.groupByFaction && settings?.mobile?.closedFactions?.includes(card.faction_id)) {
+        if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
+          return <></>;
+        }
+        if (settings?.mobile?.closedRoles?.includes(card.role)) {
           return <></>;
         }
         return (
@@ -134,6 +187,7 @@ export const DesktopUnitList = () => {
                     .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
                 );
               }
+
               setActiveCard(card);
             }}
             className={classNames({
@@ -141,7 +195,11 @@ export const DesktopUnitList = () => {
               selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
               legends: card.legends,
             })}>
-            <div className={card.nonBase ? card.faction_id : ""}>{card.name}</div>
+            <div
+              style={{ display: "flex", width: "100%", marginRight: "48px", justifyContent: "space-between" }}
+              className={card.nonBase ? card.faction_id : ""}>
+              <span>{card.name}</span>
+            </div>
           </List.Item>
         );
       }}
