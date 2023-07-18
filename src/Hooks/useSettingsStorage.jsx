@@ -8,6 +8,9 @@ const defaultSettings = {
   selectedDataSource: undefined,
   selectedFactionIndex: 0,
   ignoredSubFactions: [],
+  mobile: {
+    closedFactions: [],
+  },
   wizardCompleted: "0.0.0",
   printSettings: {
     pageSize: "A4",

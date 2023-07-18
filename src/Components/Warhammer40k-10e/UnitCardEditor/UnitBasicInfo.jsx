@@ -1,4 +1,4 @@
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
@@ -37,6 +37,12 @@ export function UnitBasicInfo() {
           <Option value="front">Front</Option>
           <Option value="back">Back</Option>
         </Select>
+      </Form.Item>
+      <Form.Item label={"Legends"}>
+        <Switch
+          checked={activeCard.legends || false}
+          onChange={(value) => updateActiveCard({ ...activeCard, legends: value })}
+        />
       </Form.Item>
     </Form>
   );

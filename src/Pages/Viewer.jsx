@@ -1,30 +1,11 @@
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import {
-  Button,
-  Col,
-  Divider,
-  Drawer,
-  Grid,
-  Image,
-  Input,
-  Layout,
-  List,
-  Modal,
-  Row,
-  Select,
-  Space,
-  Tooltip,
-  Typography,
-  message,
-} from "antd";
+import { Button, Col, Grid, Image, Layout, Modal, Row, Select, Space, Tooltip, Typography } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useSwipeable } from "react-swipeable";
 import "../App.css";
 import { AboutModal } from "../Components/AboutModal";
-import { FactionSettingsModal } from "../Components/FactionSettingsModal";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { SettingsModal } from "../Components/SettingsModal";
 import { UpdateReminder } from "../Components/UpdateReminder";
@@ -35,7 +16,6 @@ import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { WhatsNew } from "../Components/WhatsNew";
-import { getListFactionId } from "../Helpers/treeview.helpers";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
@@ -44,35 +24,34 @@ import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
 import "../style.less";
 
-import { toBlob, toPng } from "html-to-image";
-
 const { Header, Content } = Layout;
 const { Option } = Select;
 const { confirm } = Modal;
 
 const { useBreakpoint } = Grid;
 
+import { DesktopUnitList } from "../Components/Viewer/DesktopUnitList";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
+import { MobileDrawer } from "../Components/Viewer/MobileDrawer";
 import { MobileFaction } from "../Components/Viewer/MobileFaction";
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
+import { useMobileSharing } from "../Hooks/useMobileSharing";
 
 export const Viewer = () => {
   const [parent] = useAutoAnimate({ duration: 75 });
-  const { dataSource, selectedFactionIndex, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
-  const [selectedContentType, setSelectedContentType] = useState("datasheets");
-  const [isLoading] = useState(false);
-  const [searchText, setSearchText] = useState(undefined);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = React.useState(false);
   const [isListAddVisible, setIsListAddVisible] = React.useState(false);
   const [isMobileSharingMenuVisible, setIsMobileSharingMenuVisible] = React.useState(false);
   const [side, setSide] = useState("front");
 
-  const { faction, unit } = useParams();
+  const { shareLink, htmlToImageConvert } = useMobileSharing();
+
+  const { faction, unit, alliedFaction, alliedUnit } = useParams();
 
   const { activeCard, setActiveCard } = useCardStorage();
 
-  const list = useRef();
   const fullCardRef = useRef(null);
   const viewerCardRef = useRef(null);
   const overlayRef = useRef(null);
@@ -83,65 +62,6 @@ export const Viewer = () => {
 
   const [open, setOpen] = useState(false);
 
-  const htmlToImageConvert = (divRef) => {
-    divRef.current.style.display = "block";
-    overlayRef.current.style.display = "block";
-
-    if (navigator.share) {
-      toBlob(divRef.current, { cacheBust: false })
-        .then((data) => {
-          const fileData = {
-            files: [
-              new File([data], `${activeCard.name}.png`, {
-                type: data.type,
-              }),
-            ],
-            title: `${activeCard.name}`,
-          };
-          if (navigator.canShare(fileData)) {
-            navigator.share(fileData);
-          } else {
-            message.warn("Your browser is not supported to share this file");
-          }
-          divRef.current.style.display = "none";
-          overlayRef.current.style.display = "none";
-        })
-        .catch((err) => {
-          divRef.current.style.display = "none";
-          overlayRef.current.style.display = "none";
-          message.error(err);
-        });
-    } else {
-      toPng(divRef.current, { cacheBust: false })
-        .then((data) => {
-          divRef.current.style.display = "none";
-          overlayRef.current.style.display = "none";
-          const link = document.createElement("a");
-          link.download = `${activeCard.name}.png`;
-          link.href = data;
-          link.click();
-        })
-        .catch((err) => {
-          divRef.current.style.display = "none";
-          overlayRef.current.style.display = "none";
-          message.error(err.toString());
-        });
-    }
-  };
-
-  const shareLink = () => {
-    if (navigator.share) {
-      const data = { url: window.location.href, title: `Game-Datacards.eu - ${activeCard.name}` };
-      if (navigator.canShare(data)) {
-        navigator.share(data);
-      } else {
-        message.warn("Your browser is not supported to share this link");
-      }
-    } else {
-      message.warn("Your browser is not supported to share this link");
-    }
-  };
-
   useEffect(() => {
     updateSettings({
       ...settings,
@@ -150,54 +70,51 @@ export const Viewer = () => {
   }, []);
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
-  const getDataSourceType = () => {
-    if (selectedContentType === "datasheets") {
-      let filteredSheets = searchText
-        ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
-        : selectedFaction?.datasheets;
-      if (!settings?.showLegends) {
-        filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
-      }
-      if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
-        const types = [...new Set(filteredSheets?.map((item) => item.role))];
-        let byRole = [];
-        types.map((role) => {
-          byRole = [...byRole, { type: "header", name: role }];
-          byRole = [...byRole, ...filteredSheets?.filter((sheet) => sheet.role === role)];
-        });
-        return byRole;
-      }
-      return filteredSheets;
-    }
-  };
 
-  if (faction) {
-    const foundFaction = dataSource.data.find((f) => {
-      return f.name.toLowerCase().replaceAll(" ", "-") === faction;
-    });
-
-    if (selectedFaction?.id !== foundFaction?.id) {
-      updateSelectedFaction(foundFaction);
-    }
-
-    if (unit) {
-      const foundUnit = foundFaction?.datasheets?.find((u) => {
-        return u.name.replaceAll(" ", "-").toLowerCase() === unit;
+  useEffect(() => {
+    if (faction && !alliedFaction) {
+      const foundFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
       });
 
-      setActiveCard(foundUnit);
-    } else {
-      setActiveCard();
-    }
-  }
-  const handlers = useSwipeable({
-    onSwiped: (eventData) => {
-      if (eventData.dir === "Right") {
-        setOpen(false);
+      if (selectedFaction?.id !== foundFaction?.id) {
+        updateSelectedFaction(foundFaction);
       }
-    },
-    delta: { right: 100 },
-  });
+      if (unit) {
+        const foundUnit = foundFaction?.datasheets?.find((u) => {
+          return u.name.replaceAll(" ", "-").toLowerCase() === unit;
+        });
+
+        setActiveCard(foundUnit);
+      } else {
+        setActiveCard();
+      }
+    }
+    if (faction && alliedFaction) {
+      const foundFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+      });
+
+      if (selectedFaction?.id !== foundFaction?.id) {
+        updateSelectedFaction(foundFaction);
+      }
+
+      const foundAlliedFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === alliedFaction;
+      });
+
+      if (alliedUnit) {
+        const foundUnit = foundAlliedFaction?.datasheets?.find((u) => {
+          return u.name.replaceAll(" ", "-").toLowerCase() === alliedUnit;
+        });
+
+        setActiveCard(foundUnit);
+      } else {
+        setActiveCard();
+      }
+    }
+  }, [faction, unit, alliedFaction, alliedUnit, dataSource]);
+
   return (
     <Layout>
       <WhatsNew />
@@ -253,106 +170,7 @@ export const Viewer = () => {
         )}
       </Header>
 
-      <Drawer
-        title="Unit selection"
-        placement={"right"}
-        closable={true}
-        open={open}
-        onClose={() => setOpen(false)}
-        key={"drawer"}
-        className="viewer-drawer"
-        headerStyle={{ backgroundColor: "#001529", color: "white" }}>
-        <div {...handlers}>
-          <List
-            bordered
-            size="small"
-            loading={isLoading}
-            dataSource={getDataSourceType()}
-            style={{ overflowY: "auto", height: "100%" }}
-            locale={{
-              emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
-            }}
-            header={
-              <>
-                {dataSource.data.length > 1 && (
-                  <>
-                    <Row style={{ marginBottom: "4px" }}>
-                      <Col span={24}>
-                        <Select
-                          loading={isLoading}
-                          style={{
-                            width: "100%",
-                          }}
-                          onChange={(value) => {
-                            navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
-                          }}
-                          placeholder="Select a faction"
-                          value={dataSource?.data[selectedFactionIndex]?.name}>
-                          {dataSource.data.map((faction, index) => (
-                            <Option value={faction.name} key={`${faction.id}-${faction.name}`}>
-                              {faction.name}
-                            </Option>
-                          ))}
-                        </Select>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col span={24}>
-                        <Divider style={{ marginTop: 4, marginBottom: 8 }} />
-                      </Col>
-                    </Row>
-                  </>
-                )}
-                <Row style={{ marginBottom: "4px" }}>
-                  <Col span={24}>
-                    <Input.Search
-                      placeholder={"Search"}
-                      onChange={(value) => {
-                        if (value.target.value.length > 0) {
-                          setSearchText(value.target.value);
-                        } else {
-                          setSearchText(undefined);
-                        }
-                      }}
-                      allowClear={true}
-                    />
-                  </Col>
-                </Row>
-              </>
-            }
-            renderItem={(card, index) => {
-              if (card.type === "header") {
-                return (
-                  <List.Item key={`list-header-${index}`} className={`list-header`}>
-                    {card.name}
-                  </List.Item>
-                );
-              }
-              if (card.type !== "header") {
-                return (
-                  <List.Item
-                    key={`list-${card.id}`}
-                    onClick={() => {
-                      navigate(
-                        `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`
-                      );
-
-                      setActiveCard(card);
-                      setOpen(false);
-                    }}
-                    className={`list-item ${
-                      activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                    }`}>
-                    <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
-                  </List.Item>
-                );
-              }
-            }}
-          />
-        </div>
-      </Drawer>
+      <MobileDrawer open={open} setOpen={setOpen} />
 
       <Content style={{ height: "calc(100vh - 64px)", paddingBottom: "54px" }}>
         <div
@@ -376,93 +194,7 @@ export const Viewer = () => {
                   height: "100%",
                   overflow: "auto",
                 }}>
-                <List
-                  bordered
-                  size="small"
-                  loading={isLoading}
-                  dataSource={getDataSourceType()}
-                  style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
-                  locale={{
-                    emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
-                  }}
-                  header={
-                    <>
-                      {dataSource.data.length > 1 && (
-                        <>
-                          <Row style={{ marginBottom: "4px" }}>
-                            <Col span={24}>
-                              <Select
-                                loading={isLoading}
-                                style={{
-                                  width: dataSource?.noFactionOptions ? "100%" : "calc(100% - 32px)",
-                                }}
-                                onChange={(value) => {
-                                  navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
-                                }}
-                                placeholder="Select a faction"
-                                value={dataSource?.data[selectedFactionIndex]?.name}>
-                                {dataSource.data.map((faction, index) => (
-                                  <Option value={faction.name} key={`${faction.id}-${index}`}>
-                                    {faction.name}
-                                  </Option>
-                                ))}
-                              </Select>
-                              {!dataSource?.noFactionOptions && <FactionSettingsModal />}
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col span={24}>
-                              <Divider style={{ marginTop: 4, marginBottom: 8 }} />
-                            </Col>
-                          </Row>
-                        </>
-                      )}
-                      <Row style={{ marginBottom: "4px" }}>
-                        <Col span={24}>
-                          <Input.Search
-                            placeholder={"Search"}
-                            onSearch={(value) => {
-                              if (value.length > 0) {
-                                setSearchText(value);
-                              } else {
-                                setSearchText(undefined);
-                              }
-                            }}
-                            allowClear={true}
-                          />
-                        </Col>
-                      </Row>
-                    </>
-                  }
-                  renderItem={(card, index) => {
-                    if (card.type === "header") {
-                      return (
-                        <List.Item key={`list-header-${index}`} className={`list-header`}>
-                          {card.name}
-                        </List.Item>
-                      );
-                    }
-                    if (card.type !== "header") {
-                      return (
-                        <List.Item
-                          key={`list-${card.id}`}
-                          onClick={() => {
-                            navigate(
-                              `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
-                                .replaceAll(" ", "-")
-                                .toLowerCase()}`
-                            );
-                            setActiveCard(card);
-                          }}
-                          className={`list-item ${
-                            activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                          }`}>
-                          <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
-                        </List.Item>
-                      );
-                    }
-                  }}
-                />
+                <DesktopUnitList />
               </div>
             </Col>
           )}
@@ -517,7 +249,7 @@ export const Viewer = () => {
                               let newZoom = settings.zoom || 100;
                               newZoom = newZoom - 5;
                               if (newZoom <= 25) {
-                                newZoom = newZoom = 25;
+                                newZoom = 25;
                               }
                               updateSettings({ ...settings, zoom: newZoom });
                             }}
@@ -600,8 +332,8 @@ export const Viewer = () => {
                 {isMobileSharingMenuVisible && (
                   <MobileSharingMenu
                     setIsVisible={setIsMobileSharingMenuVisible}
-                    shareFullCard={() => htmlToImageConvert(fullCardRef)}
-                    shareMobileCard={() => htmlToImageConvert(viewerCardRef)}
+                    shareFullCard={() => htmlToImageConvert(fullCardRef, overlayRef)}
+                    shareMobileCard={() => htmlToImageConvert(viewerCardRef, overlayRef)}
                     shareLink={() => shareLink()}
                   />
                 )}

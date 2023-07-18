@@ -1,4 +1,4 @@
-import { ExclamationCircleOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { DownOutlined, RightOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import {
   Button,
   Col,
@@ -18,6 +18,7 @@ import {
   Typography,
 } from "antd";
 import "antd/dist/antd.min.css";
+import classNames from "classnames";
 import clone from "just-clone";
 import { useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -41,7 +42,7 @@ import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { WhatsNew } from "./Components/WhatsNew";
-import { getBackgroundColor, getListFactionId, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
+import { getBackgroundColor, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
@@ -107,6 +108,95 @@ function App() {
 
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
+      if (selectedFaction && settings.selectedDataSource === "40k-10e") {
+        let filteredSheets = [
+          { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
+          ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+        ];
+        if (selectedFaction.is_subfaction && settings.combineParentFactions) {
+          let parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
+
+          let parentDatasheets = parentFaction?.datasheets
+            ?.filter((val) => val.factions.length === 1 && val.factions.includes(selectedFaction.parent_keyword))
+            .map((val) => {
+              return { ...val, nonBase: true };
+            });
+
+          filteredSheets = [
+            ...filteredSheets,
+            { type: "category", name: parentFaction.name, id: parentFaction.id, closed: true },
+            ...parentDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+          ];
+        }
+
+        if (!settings?.showLegends) {
+          filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
+        }
+        if (!settings.groupByFaction) {
+          filteredSheets = filteredSheets.toSorted((a, b) => a.name.localeCompare(b.name));
+        }
+        if (settings.groupByRole) {
+          const types = ["Battleline", "Character", "Dedicated Transport"];
+          let byRole = [];
+
+          types.map((role) => {
+            byRole = [...byRole, { type: "role", name: role }];
+            byRole = [
+              ...byRole,
+              ...filteredSheets
+                ?.filter((sheet) => sheet?.keywords?.includes(role))
+                .map((val) => {
+                  return { ...val, role: role };
+                }),
+            ];
+          });
+
+          byRole = [
+            ...byRole,
+            { type: "role", name: "Other" },
+            ...filteredSheets
+              ?.filter((sheet) => {
+                return types.every((t) => !sheet?.keywords?.includes(t));
+              })
+              .map((val) => {
+                return { ...val, role: "Other" };
+              }),
+          ];
+
+          filteredSheets = byRole;
+        }
+
+        if (
+          selectedFaction.allied_factions &&
+          selectedFaction.allied_factions.length > 0 &&
+          settings.combineAlliedFactions
+        ) {
+          selectedFaction.allied_factions.forEach((alliedFactionId) => {
+            let alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
+
+            let alliedFactionDatasheets = alliedFaction?.datasheets.map((val) => {
+              return { ...val, nonBase: true, allied: true };
+            });
+
+            filteredSheets = [
+              ...filteredSheets,
+              { type: "allied", name: alliedFaction.name, id: alliedFaction.id, closed: true },
+              ...alliedFactionDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+            ];
+          });
+        }
+        filteredSheets = searchText
+          ? filteredSheets.filter((sheet) => {
+              if (sheet.type === "category" || sheet.type === "header") {
+                return true;
+              }
+              return sheet.name.toLowerCase().includes(searchText.toLowerCase());
+            })
+          : filteredSheets;
+
+        return filteredSheets;
+      }
+
       let filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
@@ -154,7 +244,7 @@ function App() {
         const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
           return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
         });
-
+        console.log(filteredSecondaries);
         if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
           return filteredSecondaries;
         } else {
@@ -417,41 +507,131 @@ function App() {
                     renderItem={(card, index) => {
                       if (card.type === "header") {
                         return (
-                          <List.Item key={`list-header-${index}`} className={`list-header`}>
+                          <List.Item key={`list-header-${index}`} className={`list-header`} onClick={() => {}}>
                             {card.name}
                           </List.Item>
                         );
                       }
-                      if (card.type !== "header") {
+                      if (card.type === "category") {
+                        if (settings?.groupByFaction) {
+                          return (
+                            <List.Item
+                              key={`list-category-${index}`}
+                              className={`list-category`}
+                              onClick={() => {
+                                let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
+                                if (newClosedFactions.includes(card.id)) {
+                                  newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
+                                } else {
+                                  newClosedFactions.push(card.id);
+                                }
+                                updateSettings({
+                                  ...settings,
+                                  mobile: { ...settings.mobile, closedFactions: newClosedFactions },
+                                });
+                              }}>
+                              <span className="icon">
+                                {settings?.mobile?.closedFactions?.includes(card.id) ? (
+                                  <RightOutlined />
+                                ) : (
+                                  <DownOutlined />
+                                )}
+                              </span>
+                              <span className="name">{card.name}</span>
+                            </List.Item>
+                          );
+                        }
+                        return <></>;
+                      }
+                      if (card.type === "allied") {
                         return (
                           <List.Item
-                            key={`list-${card.id}`}
+                            key={`list-category-${index}`}
+                            className={`list-category`}
                             onClick={() => {
-                              if (cardUpdated) {
-                                confirm({
-                                  title: "You have unsaved changes",
-                                  content: "Are you sure you want to discard your changes?",
-                                  icon: <ExclamationCircleOutlined />,
-                                  okText: "Yes",
-                                  okType: "danger",
-                                  cancelText: "No",
-                                  onOk: () => {
-                                    setActiveCard(card);
-                                    setSelectedTreeIndex(null);
-                                  },
-                                });
+                              console.log(card);
+                              let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
+                              if (newClosedFactions.includes(card.id)) {
+                                newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
                               } else {
-                                setActiveCard(card);
-                                setSelectedTreeIndex(null);
+                                newClosedFactions.push(card.id);
                               }
-                            }}
-                            className={`list-item ${
-                              activeCard && !activeCard.isCustom && activeCard.id === card.id ? "selected" : ""
-                            }`}>
-                            <div className={getListFactionId(card, selectedFaction)}>{card.name}</div>
+                              updateSettings({
+                                ...settings,
+                                mobile: { ...settings.mobile, closedFactions: newClosedFactions },
+                              });
+                            }}>
+                            <span className="icon">
+                              {settings?.mobile?.closedFactions?.includes(card.id) ? (
+                                <RightOutlined />
+                              ) : (
+                                <DownOutlined />
+                              )}
+                            </span>
+                            <span className="name">{card.name}</span>
                           </List.Item>
                         );
                       }
+                      if (card.type === "role") {
+                        return (
+                          <List.Item
+                            key={`list-role-${index}`}
+                            className={`list-category`}
+                            onClick={() => {
+                              console.log(card);
+                              let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
+                              if (newClosedRoles.includes(card.name)) {
+                                newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
+                              } else {
+                                newClosedRoles.push(card.name);
+                              }
+                              updateSettings({
+                                ...settings,
+                                mobile: { ...settings.mobile, closedRoles: newClosedRoles },
+                              });
+                            }}>
+                            <span className="icon">
+                              {settings?.mobile?.closedRoles?.includes(card.name) ? (
+                                <RightOutlined />
+                              ) : (
+                                <DownOutlined />
+                              )}
+                            </span>
+                            <span className="name">{card.name}</span>
+                          </List.Item>
+                        );
+                      }
+                      const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+
+                      if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
+                        return <></>;
+                      }
+                      if (settings?.mobile?.closedRoles?.includes(card.role)) {
+                        return <></>;
+                      }
+                      return (
+                        <List.Item
+                          key={`list-${card.id}`}
+                          onClick={() => {
+                            setActiveCard(card);
+                          }}
+                          className={classNames({
+                            "list-item": true,
+                            selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
+                            legends: card.legends,
+                          })}>
+                          <div
+                            style={{
+                              display: "flex",
+                              width: "100%",
+                              marginRight: "48px",
+                              justifyContent: "space-between",
+                            }}
+                            className={card.nonBase ? card.faction_id : ""}>
+                            <span>{card.name}</span>
+                          </div>
+                        </List.Item>
+                      );
                     }}
                   />
                 </div>
