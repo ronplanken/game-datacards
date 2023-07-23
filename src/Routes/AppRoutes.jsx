@@ -15,6 +15,7 @@ export const AppRoutes = () => {
       <Route path="/" element={isMobile ? <Viewer /> : <App />} />
       <Route path="shared/:Id" element={<Shared />} />
       <Route path="viewer/:faction?/:unit?" element={<Viewer />} />
+      <Route path="viewer/:faction?/allied/:alliedFaction?/:alliedUnit?" element={<Viewer />} />
       {/* <Route path="embed/:faction?/:unit?" element={<Embed />} /> */}
       <Route path="print/:CategoryId" element={<Print />} />
       <Route path="legacy-print/:CategoryId" element={<LegacyPrint />} />

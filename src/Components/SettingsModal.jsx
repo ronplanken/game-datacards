@@ -3,6 +3,7 @@ import { Button, Card, Col, Collapse, Modal, Popconfirm, Row, Space, Switch, Tab
 import React from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { AddCard } from "../Icons/AddCard";
 
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
@@ -327,6 +328,54 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.1.0"} key={"2.1.0"}>
+                    <b> 01-07-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Mobile List Creation</strong>
+                          <br />
+                          When using the mobile version you can now create a list on the go. Simply open up a DataCard
+                          and press the new button <AddCard /> at the bottom, select a size, warlord and optional
+                          enhancement and add it to your list. <br /> <br /> The button on the left&nbsp;
+                          <Button
+                            type="ghost"
+                            size="small"
+                            className="button-bar"
+                            shape="round"
+                            style={{ color: "white", backgroundColor: "rgb(0, 21, 41)" }}>
+                            0 pts
+                          </Button>
+                          &nbsp; will show the amount of points and gives you an overview. You can also export it to
+                          text through the list overview.
+                        </li>
+                        <li>
+                          <strong>Stratagem & Enhancement overview</strong>
+                          <br />
+                          You can now select an Faction in the top header. Doing this will show an overview of faction
+                          stratagems and enhancements. Pressing the GDC logo will always let you return here. <br />
+                          <br /> An extra special thanks to ZiggyQubert for working on the Stratagem datasource!
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Bug fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Background colours</strong>
+                          <br />
+                          You can select a low-ink print option for 40k 10e cards.
+                        </li>
+                        <li>
+                          <strong>Swapping front to back save message</strong>
+                          <br />
+                          When swapping between front & back on the desktop version GDC will not bother you with a
+                          &quot;unsaved changes&quot; popup anymore.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.0.1"} key={"2.0.1"}>
                     <b> 19-06-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>

@@ -21,13 +21,14 @@ export const MobileSharingMenu = ({ setIsVisible, shareFullCard, shareMobileCard
       <Col
         style={{
           display: "block",
-          backgroundColor: "#FFFFFF",
-          height: "24%",
+          backgroundColor: "#001529",
+          height: "auto",
+          padding: "8px",
+          paddingBottom: "64px",
           width: "100vw",
           position: "sticky",
           bottom: "0",
           zIndex: "999",
-          padding: "8px",
           borderTop: "2px solid #f0f2f5",
         }}
         className="mobile-menu">
@@ -35,8 +36,8 @@ export const MobileSharingMenu = ({ setIsVisible, shareFullCard, shareMobileCard
           onOutsideClick={() => {
             setIsVisible(false);
           }}>
-          <Typography.Text>Share</Typography.Text>
           <Space direction="vertical" style={{ width: "100%" }}>
+            <Typography.Text style={{ color: "white" }}>Share</Typography.Text>
             <List
               bordered
               dataSource={[
@@ -67,7 +68,7 @@ export const MobileSharingMenu = ({ setIsVisible, shareFullCard, shareMobileCard
               ]}
               renderItem={(item) => {
                 return (
-                  <List.Item onClick={item.onClick}>
+                  <List.Item onClick={item.onClick} style={{ backgroundColor: "white" }}>
                     <Row style={{ width: "100%", fontSize: "1.2rem" }}>
                       <Col span={2}>{item.icon}</Col>
                       <Col span={18}>

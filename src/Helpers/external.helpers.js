@@ -235,7 +235,11 @@ export const get40KData = async () => {
         return a.name.localeCompare(b.name);
       });
     faction["secondaries"] = mappedSecondaries.filter((secondary) => {
-      return secondary.game === "Arks of Omen: Grand Tournament" && secondary.faction_id !== "";
+      return (
+        secondary.game === "Arks of Omen: Grand Tournament" &&
+        (secondary.faction_id === faction.id ||
+          faction.subfactions.map((subfaction) => subfaction.id).includes(secondary.faction_id))
+      );
     });
 
     faction["basicSecondaries"] = mappedSecondaries.filter((secondary) => {
@@ -258,10 +262,10 @@ export const getBasicData = () => {
     version: process.env.REACT_APP_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
-    noDatasheetOptions: true,
+    noDatasheetOptions: false,
     noStratagemOptions: true,
     noSecondaryOptions: true,
-    noPsyhicOptions: true,
+    noPsychicOptions: true,
     data: [
       {
         id: "basic",
@@ -432,6 +436,10 @@ export const get40k10eData = async () => {
     return data;
   };
 
+  const core = await readCsv(
+    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/core.json?${new Date().getTime()}`
+  );
+
   const fetchAllData = async () => {
     const sortedFactions = factions.sort();
     const promises = sortedFactions.map((faction) => fetchData(faction));
@@ -445,12 +453,16 @@ export const get40k10eData = async () => {
     version: process.env.REACT_APP_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
-    noDatasheetOptions: true,
+    noDatasheetOptions: false,
+    noDatasheetByRole: true,
     noStratagemOptions: true,
+    noSubfactionOptions: true,
     noSecondaryOptions: true,
     noPsychicOptions: true,
-    noFactionOptions: true,
-    data: allFactionsData,
+    noFactionOptions: false,
+    data: allFactionsData.map((val) => {
+      return { ...val, basicStratagems: core.stratagems };
+    }),
   };
 };
 
@@ -461,8 +473,10 @@ export const getNecromundaBasicData = () => {
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: true,
     noStratagemOptions: true,
+    noSubfactionOptions: true,
     noSecondaryOptions: true,
-    noPsyhicOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: true,
     data: [
       {
         id: "necromunda",

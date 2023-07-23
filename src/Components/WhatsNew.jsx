@@ -1,9 +1,9 @@
-import { Button, Col, Row, Typography } from "antd";
+import { Button, Col, Image, Row, Typography } from "antd";
 import { compare } from "compare-versions";
 import React, { useEffect } from "react";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-import { AddCard } from "../Icons/AddCard";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
+import rosterizer from "../svg/rosterizer.svg";
 
 export const WhatsNew = () => {
   const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
@@ -46,7 +46,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.1.0
+                Whats new in 2.1.1
               </h1>
             </div>
             <div className="welcome-cover">
@@ -57,44 +57,50 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Mobile List Creation</strong>
+                          <strong>Backcard editing</strong>
                           <br />
-                          When using the mobile version you can now create a list on the go. Simply open up a DataCard
-                          and press the new button <AddCard /> at the bottom, select a size, warlord and optional
-                          enhancement and add it to your list. <br /> <br /> The button on the left&nbsp;
-                          <Button
-                            type="ghost"
-                            size="small"
-                            className="button-bar"
-                            shape="round"
-                            style={{ color: "white", backgroundColor: "rgb(0, 21, 41)" }}>
-                            0 pts
-                          </Button>
-                          &nbsp; will show the amount of points and gives you an overview. You can also export it to
-                          text through the list overview.
+                          You can now edit the back of the cards while in the Desktop card editor. Since &nbsp;
+                          <strong>Leads</strong> and <strong>Lead by</strong> are derrived fields they are not editable
+                          at the moment.
                         </li>
                         <li>
-                          <strong>Stratagem & Enhancement overview</strong>
+                          <strong>Legends cards</strong>
+                          <br />A first pass has been added for Legends cards for 10th edition. Please note that for now
+                          only the &quot;main&quot; faction of the cards have them available. The Traitoris versions
+                          will be coming at a later date.
+                        </li>
+                        <li>
+                          <strong>Allied & Parent factions</strong>
                           <br />
-                          You can now select an Faction in the top header. Doing this will show an overview of faction
-                          stratagems and enhancements. Pressing the GDC logo will always let you return here. <br />
-                          <br /> An extra special thanks to ZiggyQubert for working on the Stratagem datasource!
+                          You can add Allied & Parent factions to faction that have available. They will show up at the
+                          bottom of the datasheet list.
+                        </li>
+                        <li>
+                          <strong>Group by role</strong>
+                          <br />
+                          Datasheets can now be grouped by role for listbuilding.
+                        </li>
+                        <li>
+                          <strong>More settings</strong>
+                          <br />A couple of settings and filters have been added. Check them out in the Faction settings
+                          and the mobile options menu.
                         </li>
                       </ul>
                     </Typography.Paragraph>
-                    <Typography.Title level={5}>Bug fixes</Typography.Title>
+                    <Typography.Title level={5}>Friends from the website</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Background colours</strong>
+                          <strong>
+                            <Image src={rosterizer} preview={false} style={{ height: "45px" }} />
+                          </strong>
                           <br />
-                          You can select a low-ink print option for 40k 10e cards.
-                        </li>
-                        <li>
-                          <strong>Swapping front to back save message</strong>
-                          <br />
-                          When swapping between front & back on the desktop version GDC will not bother you with a
-                          &quot;unsaved changes&quot; popup anymore.
+                          Our friends @ <a href="https://rosterizer.com/">Rosterizer</a> have been working hard on full
+                          10th edition support and have launched a kickstarter. Take a peek:{" "}
+                          <a href="https://www.kickstarter.com/projects/gameknave/rosterizer-a-universal-list-builder-app-for-tabletop-games">
+                            Kickstarter
+                          </a>
+                          .
                         </li>
                       </ul>
                     </Typography.Paragraph>

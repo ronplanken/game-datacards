@@ -91,8 +91,20 @@
     font-size: 16px;
   }
 }
-
+.list-item {
+  &.legends {
+    &::before {
+      position: absolute;
+      right: 16px;
+      content: "L";
+      font-size: 1.3rem;
+      font-weight: 600;
+      font-family: "EB Garamond", serif;
+    }
+  }
+}
 .data-40k-10e {
+  page-break-inside: avoid;
   .card-editor {
     .stats_container {
       padding-left: 8px;
@@ -1718,6 +1730,11 @@
                   &:first-child {
                     margin-left: 24px;
                   }
+                }
+              }
+              .special {
+                .ability {
+                  padding-left: 8px !important;
                 }
               }
               .weapon {

@@ -20,10 +20,17 @@ export const UnitLoadout = ({ unit }) => {
         })}
         {unitLoadouts.map((loadout, index) => {
           const line = loadout.split(":");
+          if (line?.length > 1) {
+            return (
+              <div className="loadout" key={`loadout-${index}`}>
+                <span className="name">{line[0]}</span>
+                <span className="description">{line[1]}.</span>
+              </div>
+            );
+          }
           return (
             <div className="loadout" key={`loadout-${index}`}>
-              <span className="name">{line[0]}</span>
-              <span className="description">{line[1]}.</span>
+              <span className="description">{loadout}</span>
             </div>
           );
         })}

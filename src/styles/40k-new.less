@@ -1,4 +1,25 @@
 @import "./factions.less";
+
+.list-item {
+
+  each(@factions, {
+    .@{value}::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      opacity: 0.3;
+      right: 8px;
+      margin-top: -4px;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+  });
+}
+
 .data-40k,
 .data-basic {
   &.no-icons {
