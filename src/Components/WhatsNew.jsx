@@ -1,8 +1,9 @@
-import { Button, Col, Row, Typography } from "antd";
+import { Button, Col, Image, Row, Typography } from "antd";
 import { compare } from "compare-versions";
 import React, { useEffect } from "react";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
+import rosterizer from "../svg/rosterizer.svg";
 
 export const WhatsNew = () => {
   const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
@@ -58,7 +59,7 @@ export const WhatsNew = () => {
                         <li>
                           <strong>Backcard editing</strong>
                           <br />
-                          You can now edit the back of the cards while in the Desktop card editor. Since
+                          You can now edit the back of the cards while in the Desktop card editor. Since &nbsp;
                           <strong>Leads</strong> and <strong>Lead by</strong> are derrived fields they are not editable
                           at the moment.
                         </li>
@@ -66,27 +67,40 @@ export const WhatsNew = () => {
                           <strong>Legends cards</strong>
                           <br />A first pass has been added for Legends cards for 10th edition. Please note that for now
                           only the &quot;main&quot; faction of the cards have them available. The Traitoris versions
-                          will be coming at a later date. On both Mobile and Desktop they are hidden by default but can
-                          be enabled through the faction settings or mobile settings.
+                          will be coming at a later date.
+                        </li>
+                        <li>
+                          <strong>Allied & Parent factions</strong>
                           <br />
+                          You can add Allied & Parent factions to faction that have available. They will show up at the
+                          bottom of the datasheet list.
+                        </li>
+                        <li>
+                          <strong>Group by role</strong>
                           <br />
-                          <b>Make sure to update your datasources!</b>
+                          Datasheets can now be grouped by role for listbuilding.
+                        </li>
+                        <li>
+                          <strong>More settings</strong>
+                          <br />A couple of settings and filters have been added. Check them out in the Faction settings
+                          and the mobile options menu.
                         </li>
                       </ul>
                     </Typography.Paragraph>
-                    <Typography.Title level={5}>Bug fixes</Typography.Title>
+                    <Typography.Title level={5}>Friends from the website</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Background colours</strong>
+                          <strong>
+                            <Image src={rosterizer} preview={false} style={{ height: "45px" }} />
+                          </strong>
                           <br />
-                          You can select a low-ink print option for 40k 10e cards.
-                        </li>
-                        <li>
-                          <strong>Swapping front to back save message</strong>
-                          <br />
-                          When swapping between front & back on the desktop version GDC will not bother you with a
-                          &quot;unsaved changes&quot; popup anymore.
+                          Our friends @ <a href="https://rosterizer.com/">Rosterizer</a> have been working hard on full
+                          10th edition support and have launched a kickstarter. Take a peek:{" "}
+                          <a href="https://www.kickstarter.com/projects/gameknave/rosterizer-a-universal-list-builder-app-for-tabletop-games">
+                            Kickstarter
+                          </a>
+                          .
                         </li>
                       </ul>
                     </Typography.Paragraph>
