@@ -133,7 +133,7 @@ function App() {
           filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
         }
         if (!settings.groupByFaction) {
-          filteredSheets = filteredSheets.toSorted((a, b) => a.name.localeCompare(b.name));
+          filteredSheets = filteredSheets?.toSorted((a, b) => a.name.localeCompare(b.name));
         }
         if (settings.groupByRole) {
           const types = ["Battleline", "Character", "Dedicated Transport"];
