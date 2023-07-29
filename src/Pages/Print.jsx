@@ -34,6 +34,7 @@ export const Print = () => {
   const [customSize, setCustomSize] = useState(settings.printSettings?.customSize || { height: "15cm", width: "15cm" });
   const [verticalAlignment, setVerticalAlignment] = useState(settings.printSettings?.verticalAlignment || "flex-start");
   const [backgrounds, setBackgrounds] = useState(settings.printSettings?.backgrounds || "standard");
+  const [print_side, setPrintSide] = useState(settings.printSettings?.print_side || "front");
 
   const { cardStorage } = useCardStorage();
 
@@ -283,6 +284,23 @@ export const Print = () => {
                   size={"small"}
                 />
               </Form.Item>
+              <Form.Item label={"Print Side"}>
+                <Select
+                  defaultValue={print_side}
+                  onChange={(val) => {
+                    setPrintSide(val);
+                    updateSettings({
+                      ...settings,
+                      printSettings: { ...settings.printSettings, print_side: val },
+                    });
+                  }}
+                  options={[
+                    { label: "Front", value: "front" },
+                    { label: "Back", value: "back" },
+                  ]}
+                  size={"small"}
+                />
+              </Form.Item>
             </Form>
             <Form
               style={{
@@ -340,7 +358,7 @@ export const Print = () => {
                               type="print"
                               key={`${rowIndex}-${index}`}
                               cardScaling={cardScaling}
-                              side={card.print_side || "front"}
+                              side={settings.printSettings.print_side || "front"}
                               backgrounds={backgrounds}
                             />
                           )}
