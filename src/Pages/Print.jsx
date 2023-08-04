@@ -1,4 +1,4 @@
-import { Button, Col, Form, Grid, Image, Input, Layout, Row, Select, Slider, Space, Typography } from "antd";
+import { Button, Col, Form, Grid, Image, Input, Layout, Row, Select, Slider, Space, Tooltip, Typography } from "antd";
 import split from "just-split";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -285,7 +285,7 @@ export const Print = () => {
                   size={"small"}
                 />
               </Form.Item>
-              <Form.Item label={"Force Print Side"}>
+              <Form.Item label={"Force Print Side"} tooltip="Force the print side even if datacards have one saved">
                 <Select
                   defaultValue={force_print_side}
                   onChange={(val) => {
@@ -302,7 +302,7 @@ export const Print = () => {
                   size={"small"}
                 />
               </Form.Item>
-              <Form.Item label={"Print Side"}>
+              <Form.Item label={"Print Side"} tooltip="Set the print side if the datacard does not have one saved">
                 <Select
                   defaultValue={print_side}
                   onChange={(val) => {
