@@ -376,7 +376,7 @@ export const Print = () => {
                               type="print"
                               key={`${rowIndex}-${index}`}
                               cardScaling={cardScaling}
-                              side={force_print_side ? print_side : card.print_side}
+                              side={!card.print_side || force_print_side ? print_side : card.print_side}
                               backgrounds={backgrounds}
                             />
                           )}
