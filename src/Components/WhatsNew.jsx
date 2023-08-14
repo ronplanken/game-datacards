@@ -1,9 +1,8 @@
-import { Button, Col, Image, Row, Typography } from "antd";
+import { Button, Col, Row, Typography } from "antd";
 import { compare } from "compare-versions";
 import React, { useEffect } from "react";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
-import rosterizer from "../svg/rosterizer.svg";
 
 export const WhatsNew = () => {
   const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
@@ -46,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.1.1
+                Whats new in 2.1.2
               </h1>
             </div>
             <div className="welcome-cover">
@@ -57,50 +56,15 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Backcard editing</strong>
+                          <strong>Backcard printing</strong>
+                          <br />A new feature has been added by a code-contributor that allows you to swap the cards
+                          directly during printing. You can now simply do two print actions, one for the front and a
+                          second for the back without having to swap cards manually.
+                        </li>
+                        <li>
+                          <strong>Enhancement costs</strong>
                           <br />
-                          You can now edit the back of the cards while in the Desktop card editor. Since &nbsp;
-                          <strong>Leads</strong> and <strong>Lead by</strong> are derrived fields they are not editable
-                          at the moment.
-                        </li>
-                        <li>
-                          <strong>Legends cards</strong>
-                          <br />A first pass has been added for Legends cards for 10th edition. Please note that for now
-                          only the &quot;main&quot; faction of the cards have them available. The Traitoris versions
-                          will be coming at a later date.
-                        </li>
-                        <li>
-                          <strong>Allied & Parent factions</strong>
-                          <br />
-                          You can add Allied & Parent factions to faction that have available. They will show up at the
-                          bottom of the datasheet list.
-                        </li>
-                        <li>
-                          <strong>Group by role</strong>
-                          <br />
-                          Datasheets can now be grouped by role for listbuilding.
-                        </li>
-                        <li>
-                          <strong>More settings</strong>
-                          <br />A couple of settings and filters have been added. Check them out in the Faction settings
-                          and the mobile options menu.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Friends from the website</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>
-                            <Image src={rosterizer} preview={false} style={{ height: "45px" }} />
-                          </strong>
-                          <br />
-                          Our friends @ <a href="https://rosterizer.com/">Rosterizer</a> have been working hard on full
-                          10th edition support and have launched a kickstarter. Take a peek:{" "}
-                          <a href="https://www.kickstarter.com/projects/gameknave/rosterizer-a-universal-list-builder-app-for-tabletop-games">
-                            Kickstarter
-                          </a>
-                          .
+                          The mobile version now shows the costs for enhancements in the overview.
                         </li>
                       </ul>
                     </Typography.Paragraph>

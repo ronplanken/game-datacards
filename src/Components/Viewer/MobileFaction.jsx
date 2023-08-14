@@ -49,7 +49,28 @@ export const MobileFaction = () => {
         </div>
         <Collapse style={{ margin: 16 }}>
           {selectedFaction?.enhancements?.map((val) => (
-            <Collapse.Panel key={val.name} header={val.name}>
+            <Collapse.Panel
+              key={val.name}
+              header={
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>{val.name}</span>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      border: "1px solid white",
+                      backgroundColor: "var(--header-colour)",
+                      color: "white",
+                      paddingTop: "2px",
+                      paddingbottom: "2px",
+                      paddingLeft: "8px",
+                      paddingRight: "8px",
+                      borderRadius: "6px",
+                      textAlign: "center",
+                    }}>
+                    <strong>{val.cost}</strong> pts
+                  </span>
+                </div>
+              }>
               <MarkdownDisplay content={val.description.replaceAll("■", "\n\r ■")} />
             </Collapse.Panel>
           ))}
