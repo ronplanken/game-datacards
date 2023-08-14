@@ -164,7 +164,6 @@ export const MobileDrawer = ({ open, setOpen }) => {
                   key={`list-role-${index}`}
                   className={`list-category`}
                   onClick={() => {
-                    console.log(card);
                     let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
                     if (newClosedRoles.includes(card.name)) {
                       newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
