@@ -17,7 +17,109 @@
     width: 100% !important;
   }
 }
+@media (min-width: 600px) {
+  .stratagem {
+    height: 121mm;
+    width: 69mm;
+    border: 1px solid var(--banner-colour);
+    border-radius: 8px;
+    position: relative;
+    background-color: white;
+    .background-side-bar {
+      position: absolute;
+      top: 6mm;
+      left: 6mm;
+      height: 100mm;
+      width: 4mm;
+      background-color: var(--header-colour);
+    }
+    .background-header-bar {
+      position: absolute;
+      top: 8.5mm;
+      left: 11mm;
+      height: 1mm;
+      width: 53mm;
+      background-color: var(--header-colour);
+    }
+    .header {
+      padding-left: 4px;
+      position: absolute;
+      top: 2.5mm;
+      left: 14mm;
+      color: var(--header-colour);
+      width: 49mm;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .type {
+      padding-left: 4px;
+      position: absolute;
+      top: 9.5mm;
+      left: 14mm;
+      width: 50mm;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      border-bottom: 1px dotted #aaadb0;
+    }
+    .content {
+      position: absolute;
+      top: 15mm;
+      left: 14mm;
+      width: 50mm;
+      height: auto;
+      padding-left: 4px;
+      .section {
+        padding-top: 4px;
+        line-height: 1rem;
+        .title {
+          text-transform: uppercase;
+          color: var(--banner-colour);
+          font-size: 0.7rem;
+          font-weight: 600;
+          padding-right: 4px;
+        }
+        .text {
+          color: black;
+          font-size: 0.7rem;
+          font-weight: 400;
+        }
+      }
+    }
+    .type-container {
+      height: 9.5mm;
+      width: 9.5mm;
+      border: 0.9mm solid var(--header-colour);
+      background-color: #d8d8da;
+      position: absolute;
+      top: 4.25mm;
+      left: 3.25mm;
+      rotate: 45deg;
+      overflow: hidden;
+    }
+    .cp-container {
+      height: 9.5mm;
+      width: 9.5mm;
+      border: 0.9mm solid var(--header-colour);
+      background-color: #d8d8da;
+      position: absolute;
+      top: 22mm;
+      left: 3.25mm;
+      rotate: 45deg;
+      overflow: hidden;
+      line-height: 7.5mm;
 
+      .value {
+        rotate: -45deg;
+        text-align: center;
+        font-weight: 600;
+        color: var(--header-colour);
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
 .points_table-container {
   .ant-popover-inner-content {
     padding: 0px 0px;
@@ -53,6 +155,81 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .ant-tabs-nav-wrap {
+    background-color: white;
+    .ant-tabs-nav-list {
+      width: 90%;
+      .ant-tabs-ink-bar {
+        border-color: var(--header-colour) !important;
+        background-color: var(--header-colour) !important;
+      }
+      .ant-tabs-tab-active {
+        .ant-tabs-tab-btn {
+          color: var(--banner-colour);
+        }
+      }
+      .ant-tabs-tab {
+        display: flex;
+        justify-content: center;
+        width: 45%;
+      }
+    }
+  }
+  .stratagem {
+    position: relative;
+
+    .content {
+      height: auto;
+      .section {
+        &:nth-of-type(1) {
+          padding-top: 0px;
+        }
+        padding-top: 4px;
+        .title {
+          text-transform: uppercase;
+          color: var(--banner-colour);
+          font-weight: 600;
+          padding-right: 4px;
+        }
+        .text {
+          color: black;
+          font-size: 14px;
+        }
+      }
+    }
+    .type-container {
+      height: 9.5mm;
+      width: 9.5mm;
+      border: 0.9mm solid var(--header-colour);
+      background-color: #d8d8da;
+      position: absolute;
+      top: 4.25mm;
+      left: 3.25mm;
+      rotate: 45deg;
+      overflow: hidden;
+    }
+    .cp-container {
+      height: 9.5mm;
+      width: 9.5mm;
+      border: 0.9mm solid var(--header-colour);
+      background-color: #d8d8da;
+      position: absolute;
+      top: 22mm;
+      left: 3.25mm;
+      rotate: 45deg;
+      overflow: hidden;
+      line-height: 7.5mm;
+
+      .value {
+        rotate: -45deg;
+        text-align: center;
+        font-weight: 600;
+        color: var(--header-colour);
+        font-size: 1.1rem;
+      }
+    }
+  }
+
   html {
     font-size: 15px;
   }
@@ -92,10 +269,14 @@
   }
 }
 .list-item {
+  each(@factions, {
+    .@{value}::before {
+    right: 80px;
+  }})
   &.legends {
     &::before {
       position: absolute;
-      right: 16px;
+      right: 86px;
       content: "L";
       font-size: 1.3rem;
       font-weight: 600;
@@ -317,7 +498,32 @@
         justify-content: space-between;
         padding-top: 32px;
         padding-left: 32px;
-
+        @media only screen and (max-width: 600px) {
+          .legends {
+            position: absolute;
+            right: 16px;
+            top: 8px;
+            font-size: 1rem;
+            &::before {
+              content: "Legends";
+            }
+          }
+        }
+        @media only screen and (min-width: 600px) {
+          .legends {
+            &::before {
+              content: "Warhammer Legends";
+            }
+            position: absolute;
+            top: 38px;
+            right: 110px;
+            z-index: 10;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: "EB Garamond", "serif";
+            color: var(--faction-text-colour);
+          }
+        }
         .name_container {
           display: flex;
           align-items: center;
@@ -392,6 +598,7 @@
           z-index: 2;
           letter-spacing: 0.1rem;
           white-space: nowrap;
+          width: 135px;
         }
 
         .stat {
@@ -1325,6 +1532,37 @@
           justify-content: space-between;
           padding-top: 12px;
           padding-left: 8px;
+
+          @media only screen and (max-width: 600px) {
+            .legends {
+              position: absolute;
+              right: 16px;
+              top: 12px;
+              font-size: 1rem;
+              z-index: 10;
+              color: var(--faction-text-colour);
+              font-weight: 600;
+              font-family: "EB Garamond", "serif";
+              &::before {
+                content: "Legends";
+              }
+            }
+          }
+          @media only screen and (min-width: 600px) {
+            .legends {
+              &::before {
+                content: "Warhammer Legends";
+              }
+              position: absolute;
+              top: 38px;
+              right: 110px;
+              z-index: 10;
+              font-size: 1.3rem;
+              font-weight: 600;
+              font-family: "EB Garamond", "serif";
+              color: var(--faction-text-colour);
+            }
+          }
 
           .name_container {
             flex-basis: 100%;

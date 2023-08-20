@@ -218,7 +218,7 @@ export const MobileDrawer = ({ open, setOpen }) => {
                   legends: card.legends,
                 })}>
                 <div
-                  style={{ display: "flex", width: "100%", marginRight: "48px", justifyContent: "space-between" }}
+                  style={{ display: "flex", width: "100%", marginRight: "0px", justifyContent: "space-between" }}
                   className={card.nonBase ? card.faction_id : ""}>
                   <span>{card.name}</span>
                   {settings.showPointsInListview && card.points.length > 0 && (

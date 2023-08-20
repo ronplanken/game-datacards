@@ -81,7 +81,6 @@ function App() {
     setActiveCategory,
     updateActiveCard,
   } = useCardStorage();
-
   const categoryMenu = (
     <Menu
       onClick={(e) => {

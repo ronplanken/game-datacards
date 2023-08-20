@@ -1,3 +1,4 @@
+import { ReactFitty } from "react-fitty";
 import { UnitStat } from "./UnitStat";
 
 export const UnitStats = ({ stats }) => {
@@ -40,7 +41,13 @@ export const UnitStats = ({ stats }) => {
               <UnitStat value={stat.w} showDamagedMarker={stat.showDamagedMarker} />
               <UnitStat value={stat.ld} />
               <UnitStat value={stat.oc} />
-              {stat.showName && <div className="name">{stat.name}</div>}
+              {stat.showName && (
+                <div className="name">
+                  <ReactFitty maxSize={16} minSize={10}>
+                    {stat.name}
+                  </ReactFitty>
+                </div>
+              )}
             </div>
           );
         })}

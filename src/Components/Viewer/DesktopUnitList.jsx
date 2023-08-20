@@ -8,17 +8,47 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { FactionSettingsModal } from "../FactionSettingsModal";
-
+const { Option } = Select;
 export const DesktopUnitList = () => {
   const { dataSource, selectedFactionIndex, selectedFaction } = useDataSourceStorage();
   const { activeCard, setActiveCard } = useCardStorage();
   const [searchText, setSearchText] = useState(undefined);
   const { settings, updateSettings } = useSettingsStorage();
 
+  const [selectedContentType, setSelectedContentType] = useState("datasheets");
+
   const navigate = useNavigate();
 
-  const unitList = useDataSourceType(searchText);
+  let unitList;
 
+  if (selectedContentType === "datasheets") {
+    unitList = useDataSourceType(searchText);
+  }
+  if (selectedContentType === "stratagems") {
+    const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
+      return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
+    });
+    const mainStratagems = searchText
+      ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
+      : filteredStratagems;
+
+    if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
+      unitList = mainStratagems;
+    } else {
+      const basicStratagems = searchText
+        ? selectedFaction.basicStratagems?.filter((stratagem) =>
+            stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
+
+      unitList = [
+        { type: "header", name: "Basic stratagems" },
+        ...basicStratagems,
+        { type: "header", name: "Faction stratagems" },
+        ...mainStratagems,
+      ];
+    }
+  }
   return (
     <List
       bordered
@@ -74,6 +104,30 @@ export const DesktopUnitList = () => {
               />
             </Col>
           </Row>
+          {selectedFaction && (
+            <Row style={{ marginBottom: "4px" }}>
+              <Col span={24}>
+                <Select
+                  style={{ width: "100%" }}
+                  onChange={(value) => {
+                    setSelectedContentType(value);
+                  }}
+                  placeholder="Select a type"
+                  value={selectedContentType}>
+                  {selectedFaction?.datasheets && selectedFaction?.datasheets.length > 0 && (
+                    <Option value={"datasheets"} key={`datasheets`}>
+                      Datasheets
+                    </Option>
+                  )}
+                  {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
+                    <Option value={"stratagems"} key={`stratagems`}>
+                      Stratagems
+                    </Option>
+                  )}
+                </Select>
+              </Col>
+            </Row>
+          )}
         </>
       }
       renderItem={(card, index) => {
