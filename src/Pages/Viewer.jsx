@@ -48,7 +48,7 @@ export const Viewer = () => {
 
   const { shareLink, htmlToImageConvert } = useMobileSharing();
 
-  const { faction, unit, alliedFaction, alliedUnit } = useParams();
+  const { faction, unit, alliedFaction, alliedUnit, stratagem } = useParams();
 
   const { activeCard, setActiveCard } = useCardStorage();
 
@@ -72,7 +72,7 @@ export const Viewer = () => {
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
 
   useEffect(() => {
-    if (faction && !alliedFaction) {
+    if (faction && !alliedFaction && !stratagem) {
       const foundFaction = dataSource.data.find((f) => {
         return f.name.toLowerCase().replaceAll(" ", "-") === faction;
       });
@@ -86,6 +86,24 @@ export const Viewer = () => {
         });
 
         setActiveCard(foundUnit);
+      } else {
+        setActiveCard();
+      }
+    }
+    if (faction && !alliedFaction && stratagem) {
+      const foundFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+      });
+
+      if (selectedFaction?.id !== foundFaction?.id) {
+        updateSelectedFaction(foundFaction);
+      }
+      if (stratagem) {
+        const foundStratagem = foundFaction?.stratagems?.find((u) => {
+          return u.name.replaceAll(" ", "-").toLowerCase() === stratagem;
+        });
+
+        setActiveCard(foundStratagem);
       } else {
         setActiveCard();
       }

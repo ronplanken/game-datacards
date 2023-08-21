@@ -7,21 +7,7 @@ export const UnitName = ({ name, subname, points, legends }) => {
         <div className="name">{name}</div>
         {subname && <div className="subname">{subname}</div>}
       </div>
-      {legends && (
-        <div
-          style={{
-            position: "absolute",
-            top: 38,
-            right: 110,
-            zIndex: 10,
-            fontSize: "1.3rem",
-            fontWeight: 600,
-            fontFamily: "EB Garamond, serif",
-            color: "var(--faction-text-colour)",
-          }}>
-          Warhammer Legends
-        </div>
-      )}
+      {legends && <div className="legends" />}
       <UnitPoints points={points} />
     </div>
   );

@@ -5826,6 +5826,11 @@ firebase@^9.6.10:
     "@firebase/storage-compat" "0.3.2"
     "@firebase/util" "1.9.3"
 
+fitty@2, fitty@^2.3.7:
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/fitty/-/fitty-2.3.7.tgz#f80002f8291334ef1bac7e9256a5648a54608db8"
+  integrity sha512-yucQBzDD8sRa8EXfHu4/h9vNDFHUXpYtC+nydtBRfLSjzToCEvacy4qiBJyihgUVrqpXB+Kp5kWCbROSrePd2g==
+
 flat-cache@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-3.0.4.tgz#61b0338302b2fe9f957dcc32fc2a87f1c3048b11"
@@ -10532,6 +10537,13 @@ react-error-overlay@^6.0.11:
   version "6.0.11"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.11.tgz#92835de5841c5cf08ba00ddd2d677b6d17ff9adb"
   integrity sha512-/6UZ2qgEyH2aqzYZgQPxEnz33NJ2gNsnHA2o5+o4wW9bLM/JYQitNP9xPhsXwC08hMMovfGe/8retsdDsczPRg==
+
+react-fitty@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-fitty/-/react-fitty-1.0.1.tgz#e8a3b13da173f19e50eb538c9ab11986f178f284"
+  integrity sha512-mO+Sbon+bO8Kazv38qu3uwi52vYDdty6P8fla91TkQEc2KwfZjNLT4j31cXix3ZTlBMWmavWAu5SfG6J9SpaFQ==
+  dependencies:
+    fitty "2"
 
 react-is@^16.12.0, react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"

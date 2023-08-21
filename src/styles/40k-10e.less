@@ -17,7 +17,118 @@
     width: 100% !important;
   }
 }
+@media (min-width: 600px) {
+  .stratagem {
+    height: 458px;
+    width: 262px;
+    transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--banner-colour);
+    .border {
+      background-color: white;
+      border-radius: 8px;
+      height: 456px;
+      width: 260px;
+      .background-side-bar {
+        position: absolute;
+        top: 22.67px;
+        left: 22.67px;
+        height: 377.95px;
+        width: 15.11px;
+        background-color: var(--header-colour);
+      }
+      .background-header-bar {
+        position: absolute;
+        top: 32.12px;
+        left: 41.57px;
+        height: 3.77px;
+        width: 200.31px;
+        background-color: var(--header-colour);
+      }
+      .header {
+        padding-left: 4px;
+        position: absolute;
+        top: 9.44px;
+        left: 52.91px;
+        color: var(--header-colour);
+        width: 185.19px;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .type {
+        padding-left: 4px;
+        position: absolute;
+        top: 35.9px;
+        left: 52.91px;
+        width: 188.97;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px dotted #aaadb0;
+      }
+      .content {
+        position: absolute;
+        top: 56.69px;
+        left: 52.91px;
+        width: 188.97px;
+        height: auto;
+        padding-left: 4px;
+        .section {
+          padding-top: 4px;
+          line-height: 1rem;
+          .title {
+            text-transform: uppercase;
+            color: var(--banner-colour);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding-right: 4px;
+          }
+          .text {
+            color: black;
+            font-size: 0.7rem;
+            font-weight: 400;
+          }
+        }
+      }
+      .type-container {
+        height: 35.9px;
+        width: 35.9px;
+        border: 3.4px solid var(--header-colour);
+        background-color: #d8d8da;
+        position: absolute;
+        top: 16.06px;
+        left: 12.28px;
+        rotate: 45deg;
+        overflow: hidden;
+      }
+      .cp-container {
+        height: 35.9px;
+        width: 35.9px;
+        border: 3.4px solid var(--header-colour);
+        background-color: #d8d8da;
+        position: absolute;
+        top: 83.14px;
+        left: 12.28px;
+        rotate: 45deg;
+        overflow: hidden;
+        line-height: 28.34px;
 
+        .value {
+          rotate: -45deg;
+          text-align: center;
+          font-weight: 600;
+          color: var(--header-colour);
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}
 .points_table-container {
   .ant-popover-inner-content {
     padding: 0px 0px;
@@ -53,6 +164,81 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .ant-tabs-nav-wrap {
+    background-color: white;
+    .ant-tabs-nav-list {
+      width: 90%;
+      .ant-tabs-ink-bar {
+        border-color: var(--header-colour) !important;
+        background-color: var(--header-colour) !important;
+      }
+      .ant-tabs-tab-active {
+        .ant-tabs-tab-btn {
+          color: var(--banner-colour);
+        }
+      }
+      .ant-tabs-tab {
+        display: flex;
+        justify-content: center;
+        width: 45%;
+      }
+    }
+  }
+  .stratagem {
+    position: relative;
+
+    .content {
+      height: auto;
+      .section {
+        &:nth-of-type(1) {
+          padding-top: 0px;
+        }
+        padding-top: 4px;
+        .title {
+          text-transform: uppercase;
+          color: var(--banner-colour);
+          font-weight: 600;
+          padding-right: 4px;
+        }
+        .text {
+          color: black;
+          font-size: 14px;
+        }
+      }
+    }
+    .type-container {
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
+      background-color: #d8d8da;
+      position: absolute;
+      top: 16.06px;
+      left: 12.28px;
+      rotate: 45deg;
+      overflow: hidden;
+    }
+    .cp-container {
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
+      background-color: #d8d8da;
+      position: absolute;
+      top: 83.14px;
+      left: 12.28px;
+      rotate: 45deg;
+      overflow: hidden;
+      line-height: 28.34px;
+
+      .value {
+        rotate: -45deg;
+        text-align: center;
+        font-weight: 600;
+        color: var(--header-colour);
+        font-size: 1.1rem;
+      }
+    }
+  }
+
   html {
     font-size: 15px;
   }
@@ -85,26 +271,156 @@
       }
     }
   }
+  .list-item {
+    each(@factions, {
+      .@{value}::before {
+      right: 80px;
+    }}) &.legends {
+      &::before {
+        position: absolute;
+        right: 86px;
+        content: "L";
+        font-size: 1.3rem;
+        font-weight: 600;
+        font-family: "EB Garamond", serif;
+      }
+    }
+  }
 }
 @media only screen and (min-width: 600px) {
   html {
     font-size: 16px;
   }
-}
-.list-item {
-  &.legends {
-    &::before {
-      position: absolute;
-      right: 16px;
-      content: "L";
-      font-size: 1.3rem;
-      font-weight: 600;
-      font-family: "EB Garamond", serif;
+  .list-item {
+    &.legends {
+      &::before {
+        position: absolute;
+        right: 16px;
+        content: "L";
+        font-size: 1.3rem;
+        font-weight: 600;
+        font-family: "EB Garamond", serif;
+      }
     }
   }
 }
+
 .data-40k-10e {
   page-break-inside: avoid;
+
+  @media print, (min-width: 600px) {
+    .stratagem {
+      height: 458px;
+      width: 262px;
+      transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--banner-colour);
+      .border {
+        background-color: white;
+        border-radius: 8px;
+        height: 456px;
+        width: 260px;
+        .background-side-bar {
+          position: absolute;
+          top: 22.67px;
+          left: 22.67px;
+          height: 377.95px;
+          width: 15.11px;
+          background-color: var(--header-colour);
+        }
+        .background-header-bar {
+          position: absolute;
+          top: 32.12px;
+          left: 41.57px;
+          height: 3.77px;
+          width: 200.31px;
+          background-color: var(--header-colour);
+        }
+        .header {
+          padding-left: 4px;
+          position: absolute;
+          top: 9.44px;
+          left: 52.91px;
+          color: var(--header-colour);
+          width: 185.19px;
+          font-size: 1.1rem;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+        .type {
+          padding-left: 4px;
+          position: absolute;
+          top: 35.9px;
+          left: 52.91px;
+          width: 188.97;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          font-weight: 600;
+          border-bottom: 1px dotted #aaadb0;
+        }
+        .content {
+          position: absolute;
+          top: 56.69px;
+          left: 52.91px;
+          width: 188.97px;
+          height: auto;
+          padding-left: 4px;
+          .section {
+            padding-top: 4px;
+            line-height: 1rem;
+            .title {
+              text-transform: uppercase;
+              color: var(--banner-colour);
+              font-size: 0.7rem;
+              font-weight: 600;
+              padding-right: 4px;
+            }
+            .text {
+              color: black;
+              font-size: 0.7rem;
+              font-weight: 400;
+            }
+          }
+        }
+        .type-container {
+          height: 35.9px;
+          width: 35.9px;
+          border: 3.4px solid var(--header-colour);
+          background-color: #d8d8da;
+          position: absolute;
+          top: 16.06px;
+          left: 12.28px;
+          rotate: 45deg;
+          overflow: hidden;
+        }
+        .cp-container {
+          height: 35.9px;
+          width: 35.9px;
+          border: 3.4px solid var(--header-colour);
+          background-color: #d8d8da;
+          position: absolute;
+          top: 83.14px;
+          left: 12.28px;
+          rotate: 45deg;
+          overflow: hidden;
+          line-height: 28.34px;
+
+          .value {
+            rotate: -45deg;
+            text-align: center;
+            font-weight: 600;
+            color: var(--header-colour);
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+
   .card-editor {
     .stats_container {
       padding-left: 8px;
@@ -317,7 +633,32 @@
         justify-content: space-between;
         padding-top: 32px;
         padding-left: 32px;
-
+        @media only screen and (max-width: 600px) {
+          .legends {
+            position: absolute;
+            right: 16px;
+            top: 8px;
+            font-size: 1rem;
+            &::before {
+              content: "Legends";
+            }
+          }
+        }
+        @media only screen and (min-width: 600px) {
+          .legends {
+            &::before {
+              content: "Warhammer Legends";
+            }
+            position: absolute;
+            top: 38px;
+            right: 110px;
+            z-index: 10;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: "EB Garamond", "serif";
+            color: var(--faction-text-colour);
+          }
+        }
         .name_container {
           display: flex;
           align-items: center;
@@ -392,6 +733,7 @@
           z-index: 2;
           letter-spacing: 0.1rem;
           white-space: nowrap;
+          width: 135px;
         }
 
         .stat {
@@ -1325,6 +1667,37 @@
           justify-content: space-between;
           padding-top: 12px;
           padding-left: 8px;
+
+          @media only screen and (max-width: 600px) {
+            .legends {
+              position: absolute;
+              right: 16px;
+              top: 12px;
+              font-size: 1rem;
+              z-index: 10;
+              color: var(--faction-text-colour);
+              font-weight: 600;
+              font-family: "EB Garamond", "serif";
+              &::before {
+                content: "Legends";
+              }
+            }
+          }
+          @media only screen and (min-width: 600px) {
+            .legends {
+              &::before {
+                content: "Warhammer Legends";
+              }
+              position: absolute;
+              top: 38px;
+              right: 110px;
+              z-index: 10;
+              font-size: 1.3rem;
+              font-weight: 600;
+              font-family: "EB Garamond", "serif";
+              color: var(--faction-text-colour);
+            }
+          }
 
           .name_container {
             flex-basis: 100%;

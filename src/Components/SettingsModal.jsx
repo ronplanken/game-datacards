@@ -328,8 +328,27 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.1.2"} key={"2.1.2"}>
+                    <b> 20-07-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Backcard printing</strong>
+                          <br />A new feature has been added by a code-contributor that allows you to swap the cards
+                          directly during printing. You can now simply do two print actions, one for the front and a
+                          second for the back without having to swap cards manually.
+                        </li>
+                        <li>
+                          <strong>Enhancement costs</strong>
+                          <br />
+                          The mobile version now shows the costs for enhancements in the overview.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.1.0"} key={"2.1.0"}>
-                    <b> 14-87-2023 </b>
+                    <b> 14-07-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>

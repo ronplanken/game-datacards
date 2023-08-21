@@ -3,7 +3,7 @@ import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import stringWidth from "string-width";
 
-export const MarkdownDisplay = ({ content }) => {
+export const MarkdownDisplay = ({ content, components }) => {
   return (
     <ReactMarkdown remarkPlugins={[[remarkGfm, { stringLength: stringWidth }]]} rehypePlugins={[[rehypeSanitize]]}>
       {content}

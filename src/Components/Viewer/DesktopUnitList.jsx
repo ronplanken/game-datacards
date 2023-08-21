@@ -2,23 +2,40 @@ import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, Divider, Input, List, Row, Select } from "antd";
 import classNames from "classnames";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDataSourceType } from "../../Helpers/cardstorage.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { FactionSettingsModal } from "../FactionSettingsModal";
-
+const { Option } = Select;
 export const DesktopUnitList = () => {
   const { dataSource, selectedFactionIndex, selectedFaction } = useDataSourceStorage();
   const { activeCard, setActiveCard } = useCardStorage();
   const [searchText, setSearchText] = useState(undefined);
   const { settings, updateSettings } = useSettingsStorage();
 
+  const { stratagem } = useParams();
+
+  const [selectedContentType, setSelectedContentType] = useState(stratagem ? "stratagems" : "datasheets");
+
   const navigate = useNavigate();
 
-  const unitList = useDataSourceType(searchText);
+  let unitList;
 
+  if (selectedContentType === "datasheets") {
+    unitList = useDataSourceType(searchText);
+  }
+  if (selectedContentType === "stratagems") {
+    const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
+      return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
+    });
+    const mainStratagems = searchText
+      ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
+      : filteredStratagems;
+
+    unitList = mainStratagems;
+  }
   return (
     <List
       bordered
@@ -74,6 +91,30 @@ export const DesktopUnitList = () => {
               />
             </Col>
           </Row>
+          {selectedFaction && (
+            <Row style={{ marginBottom: "4px" }}>
+              <Col span={24}>
+                <Select
+                  style={{ width: "100%" }}
+                  onChange={(value) => {
+                    setSelectedContentType(value);
+                  }}
+                  placeholder="Select a type"
+                  value={selectedContentType}>
+                  {selectedFaction?.datasheets && selectedFaction?.datasheets.length > 0 && (
+                    <Option value={"datasheets"} key={`datasheets`}>
+                      Datasheets
+                    </Option>
+                  )}
+                  {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
+                    <Option value={"stratagems"} key={`stratagems`}>
+                      Stratagems
+                    </Option>
+                  )}
+                </Select>
+              </Col>
+            </Row>
+          )}
         </>
       }
       renderItem={(card, index) => {
@@ -117,7 +158,6 @@ export const DesktopUnitList = () => {
               key={`list-category-${index}`}
               className={`list-category`}
               onClick={() => {
-                console.log(card);
                 let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
                 if (newClosedFactions.includes(card.id)) {
                   newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
@@ -142,7 +182,6 @@ export const DesktopUnitList = () => {
               key={`list-role-${index}`}
               className={`list-category`}
               onClick={() => {
-                console.log(card);
                 let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
                 if (newClosedRoles.includes(card.name)) {
                   newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
@@ -161,7 +200,7 @@ export const DesktopUnitList = () => {
             </List.Item>
           );
         }
-        const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+        let cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
         if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
           return <></>;
@@ -173,19 +212,28 @@ export const DesktopUnitList = () => {
           <List.Item
             key={`list-${card.id}`}
             onClick={() => {
-              if (!card.nonBase) {
+              if (card.cardType === "stratagem") {
                 navigate(
-                  `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                  `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/stratagem/${card.name
                     .replaceAll(" ", "-")
                     .toLowerCase()}`
                 );
               }
-              if (card.nonBase) {
-                navigate(
-                  `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
-                    .toLowerCase()
-                    .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
-                );
+              if (!card.cardType === "stratagem") {
+                if (!card.nonBase) {
+                  navigate(
+                    `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                      .replaceAll(" ", "-")
+                      .toLowerCase()}`
+                  );
+                }
+                if (card.nonBase) {
+                  navigate(
+                    `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
+                      .toLowerCase()
+                      .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
+                  );
+                }
               }
 
               setActiveCard(card);
