@@ -52,8 +52,8 @@ export const Warhammer40K10eCardDisplay = ({
                 gap: printPadding,
                 transformOrigin: "top",
                 transform: `scale(${cardScaling / 100})`,
-                height: `${714 * (cardScaling / 100)}px`,
-                width: `${1077 * (cardScaling / 100)}px`,
+                height: `${460 * (cardScaling / 100)}px`,
+                width: `${266 * (cardScaling / 100)}px`,
                 "--background-colour": backgroundColour,
                 "--faction-text-colour": factionTextColour,
               }}
