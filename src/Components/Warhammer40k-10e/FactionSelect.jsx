@@ -46,7 +46,7 @@ export const FactionSelect = ({ value, onChange }) => {
       <Option value="TYR">Tyranids</Option>
       <Option value="CHUL">Ultramarines</Option>
       <Option value="LGWB">Word Bearers</Option>
-      <Option value="LGWE">World Eaters</Option>
+      <Option value="WE">World Eaters</Option>
       <Option value="CHWS">White Scars</Option>
     </Select>
   );
