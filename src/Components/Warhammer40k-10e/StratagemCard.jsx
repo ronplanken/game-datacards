@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { MarkdownSpanDisplay } from "../MarkdownSpanDisplay";
 
@@ -12,7 +13,16 @@ export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px", class
         display: "flex",
         paddingTop: paddingTop,
       }}>
-      <div className={`stratagem`}>
+      <div
+        className={classNames(
+          {
+            stratagem: true,
+            other: stratagem.turn === "opponents",
+            either: stratagem.turn === "either",
+            own: stratagem.turn === "your",
+          },
+          stratagem.faction_id
+        )}>
         <div className={`border`}>
           <div className="background-side-bar"></div>
           <div className="background-header-bar"></div>
@@ -60,12 +70,20 @@ export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px", class
               </div>
             )}
           </div>
-          <div className="type-container"></div>
-          <div className="cp-container">
-            <div className="value">
-              <ReactFitty maxSize={18} minSize={10}>
-                {stratagem.cost} CP
-              </ReactFitty>
+          <div className="containers">
+            {stratagem.phase?.map((phase) => {
+              return (
+                <div className="type-container" key={phase}>
+                  <div className={phase}> </div>
+                </div>
+              );
+            })}
+            <div className="cp-container">
+              <div className="value">
+                <ReactFitty maxSize={18} minSize={10}>
+                  {stratagem.cost} CP
+                </ReactFitty>
+              </div>
             </div>
           </div>
         </div>
