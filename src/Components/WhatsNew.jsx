@@ -58,8 +58,7 @@ export const WhatsNew = () => {
                         <li>
                           <strong>Stratagem editor</strong>
                           <br />
-                          Stratagems are now editable & printable in the card editor on desktop. Icons will be added in
-                          an upcoming update.
+                          Stratagems are now editable & printable in the card editor on desktop.
                         </li>
                         <li>
                           <strong>Basic stratagems</strong>
