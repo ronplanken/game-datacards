@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.1.2
+                Whats new in 2.2.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,15 +56,37 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Backcard printing</strong>
-                          <br />A new feature has been added by a code-contributor that allows you to swap the cards
-                          directly during printing. You can now simply do two print actions, one for the front and a
-                          second for the back without having to swap cards manually.
+                          <strong>Stratagem editor</strong>
+                          <br />
+                          Stratagems are now editable & printable in the card editor on desktop.
                         </li>
                         <li>
-                          <strong>Enhancement costs</strong>
+                          <strong>Basic stratagems</strong>
                           <br />
-                          The mobile version now shows the costs for enhancements in the overview.
+                          The mobile viewer now shows basic stratagems in the faction overview.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Visual changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Multi-model units</strong>
+                          <br />
+                          Changes have been made to the way unit names in multi-model units are shown. They now
+                          auto-scale on the available space, even though this might cause the names not to have the same
+                          size it will fix the card overflowing outside its boundaries.
+                        </li>
+                        <li>
+                          <strong>Weapon keywords</strong>
+                          <br />
+                          When the keywords on a weapon do not fit on the same line as the name the entire block will be
+                          moved to the second line.
+                        </li>
+                        <li>
+                          <strong>Legends</strong>
+                          <br />
+                          The Legends text is now properly shown in the mobile viewer.
                         </li>
                       </ul>
                     </Typography.Paragraph>

@@ -1,5 +1,6 @@
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
 
 export const Warhammer40K10eCardDisplay = ({
@@ -14,12 +15,14 @@ export const Warhammer40K10eCardDisplay = ({
 
   const backgroundColour = backgrounds === "standard" ? "black" : "#dfe0e2";
   const factionTextColour = backgrounds === "standard" ? "white" : "black";
-
   return (
     <>
       {!type && activeCard && (
         <>
-          <Col span={24}>{activeCard.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}</Col>
+          <Col span={24}>
+            {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
+            {activeCard.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}
+          </Col>
         </>
       )}
       {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
@@ -41,6 +44,21 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
+          {card.cardType === "stratagem" && (
+            <StratagemCard
+              stratagem={card}
+              paddingTop="0px"
+              cardStyle={{
+                gap: printPadding,
+                transformOrigin: "top",
+                transform: `scale(${cardScaling / 100})`,
+                height: `${460 * (cardScaling / 100)}px`,
+                width: `${266 * (cardScaling / 100)}px`,
+                "--background-colour": backgroundColour,
+                "--faction-text-colour": factionTextColour,
+              }}
+            />
+          )}
         </div>
       )}
       {type === "viewer" && (
@@ -49,6 +67,7 @@ export const Warhammer40K10eCardDisplay = ({
             transformOrigin: "0% 0%",
             transform: `scale(${cardScaling / 100})`,
           }}>
+          {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
           {activeCard?.cardType === "DataCard" && (
             <UnitCard
               side={side}
@@ -60,6 +79,7 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
+          {card?.cardType === "stratagem" && <StratagemCard stratagem={card} />}
           {card?.cardType === "DataCard" && (
             <UnitCard
               side={side}

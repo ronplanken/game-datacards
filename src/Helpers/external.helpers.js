@@ -461,7 +461,15 @@ export const get40k10eData = async () => {
     noPsychicOptions: true,
     noFactionOptions: false,
     data: allFactionsData.map((val) => {
-      return { ...val, basicStratagems: core.stratagems };
+      return {
+        ...val,
+        stratagems: val?.stratagems?.map((strat) => {
+          return { ...strat, cardType: "stratagem", source: "40k-10e" };
+        }),
+        basicStratagems: core?.stratagems?.map((strat) => {
+          return { ...strat, cardType: "stratagem", source: "40k-10e" };
+        }),
+      };
     }),
   };
 };
