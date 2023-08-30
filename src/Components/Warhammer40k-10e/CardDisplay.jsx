@@ -1,5 +1,6 @@
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { BattleRuleCard } from "./BattleRuleCard";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
 
@@ -21,6 +22,7 @@ export const Warhammer40K10eCardDisplay = ({
         <>
           <Col span={24}>
             {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
+            {activeCard.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
             {activeCard.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}
           </Col>
         </>
@@ -59,6 +61,21 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
+          {card.cardType === "battle_rule" && (
+            <BattleRuleCard
+              stratagem={card}
+              paddingTop="0px"
+              cardStyle={{
+                gap: printPadding,
+                transformOrigin: "top",
+                transform: `scale(${cardScaling / 100})`,
+                height: `${714 * (cardScaling / 100)}px`,
+                width: `${1077 * (cardScaling / 100)}px`,
+                "--background-colour": backgroundColour,
+                "--faction-text-colour": factionTextColour,
+              }}
+            />
+          )}
         </div>
       )}
       {type === "viewer" && (
@@ -68,6 +85,7 @@ export const Warhammer40K10eCardDisplay = ({
             transform: `scale(${cardScaling / 100})`,
           }}>
           {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
+          {activeCard.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
           {activeCard?.cardType === "DataCard" && (
             <UnitCard
               side={side}
@@ -80,6 +98,7 @@ export const Warhammer40K10eCardDisplay = ({
             />
           )}
           {card?.cardType === "stratagem" && <StratagemCard stratagem={card} />}
+          {card?.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
           {card?.cardType === "DataCard" && (
             <UnitCard
               side={side}

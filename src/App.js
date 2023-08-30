@@ -244,6 +244,34 @@ function App() {
         ];
       }
     }
+    if (selectedContentType === "battle_rules") {
+      const filteredBattleRules = selectedFaction?.battle_rules.filter((battle_rule) => {
+        return !settings?.ignoredSubFactions?.includes(battle_rule.subfaction_id);
+      });
+      const mainBattleRules = searchText
+        ? filteredBattleRules?.filter((battle_rule) =>
+            battle_rule.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : filteredBattleRules;
+
+      if (settings.hideBasicBattleRules || settings?.noBattleRuleOptions) {
+        return mainBattleRules;
+      } else {
+        const basicBattleRules = searchText
+          ? selectedFaction.basicBattleRules?.filter((battle_rule) =>
+              battle_rule.name.toLowerCase().includes(searchText.toLowerCase())
+            )
+          : selectedFaction.basicBattleRules ?? [{ name: "Update your datasources" }];
+
+        return [
+          { type: "header", name: "Basic battle rules" },
+          ...basicBattleRules,
+          { type: "header", name: "Faction battle rules" },
+          ...mainBattleRules,
+        ];
+      }
+    }
+
     if (selectedContentType === "secondaries") {
       if (selectedContentType === "secondaries") {
         const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
@@ -501,6 +529,11 @@ function App() {
                                 {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
                                   <Option value={"psychicpowers"} key={`psychicpowers`}>
                                     Psychic powers
+                                  </Option>
+                                )}
+                                {selectedFaction?.battle_rules && selectedFaction?.battle_rules.length > 0 && (
+                                  <Option value={"battlerules"} key={`battlerules`}>
+                                    Battle rules
                                   </Option>
                                 )}
                               </Select>

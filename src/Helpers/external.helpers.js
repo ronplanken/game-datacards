@@ -380,6 +380,18 @@ export const getBasicData = () => {
             type: "Progressive Objective",
           },
         ],
+        battlerules: [
+          {
+            cardType: "battle_rule",
+            name: "BASIC BATTLERULE",
+            source: "basic",
+            flavor_text: "Progressive Objective",
+            main_desc: "This is an example description for a rule card",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+          },
+        ],
         psychicpowers: [
           {
             cardType: "psychic",
