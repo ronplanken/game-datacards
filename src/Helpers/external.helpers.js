@@ -384,12 +384,68 @@ export const getBasicData = () => {
         battlerules: [
           {
             cardType: "battle_rule",
-            rule_type: "Primary Mission",
-            name: "BASIC BATTLE RULE",
+            rule_type: "Gambit",
+            rule_subtype: "",
+            name: "BASIC GAMBIT RULE",
             source: "basic",
             flavor_text: "Battles are won by arbitrary fiat and king maker conditions",
-            main_desc: "This is an example description for a rule card",
+            main_desc: "",
             id: "000006088475",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            extra_description: [
+              {
+                "type": "gambit",
+                "callout": "Determine First Thing",
+                "detail": "Roll a d6 to determine the number of whoozits to whatzit",
+              },
+              {
+                "type": "gambit",
+                "callout": "Determine what was whatzited",
+                "detail": "At the end of the fifth turn record each enemy unit within 12\" of your units",
+              },
+              {
+                "type": "gambit",
+                "callout": "Determine Gambit Success",
+                "detail": "Roll a d6 to determine the number of whoozits to whatzit",
+              }
+            ]
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Primary Mission",
+            rule_subtype: "",
+            name: "BASIC PRIMARY MISSION",
+            source: "basic",
+            flavor_text: "Gat those guys!",
+            main_desc: "",
+            id: "000006088476",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            extra_description: [
+              {
+                "type": "primary",
+                "callout": "In the second, third, fourth and fifth battle rounds:",
+                "detail": "Keep shooting units scoring 5VP for each dead unit",
+              },
+              {
+                "type": "primary",
+                "callout": "At the end of the battle:",
+                "detail": "Get an extra 10VP if you have killed more units than the enemy",
+              },
+            ]
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Mission Rule",
+            rule_subtype: "Attacker",
+            name: "BASIC BATTLE RULE",
+            source: "basic",
+            flavor_text: "Oh boy!  Battle is fun!",
+            main_desc: "Just your simple Mission Rule card",
+            id: "000006088477",
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
