@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.1.2
+                Whats new in 2.2.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -58,8 +58,7 @@ export const WhatsNew = () => {
                         <li>
                           <strong>Stratagem editor</strong>
                           <br />
-                          Stratagems are now editable & printable in the card editor on desktop. Icons will be added in
-                          an upcoming update.
+                          Stratagems are now editable & printable in the card editor on desktop.
                         </li>
                         <li>
                           <strong>Basic stratagems</strong>

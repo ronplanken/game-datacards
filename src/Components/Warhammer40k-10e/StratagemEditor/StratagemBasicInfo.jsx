@@ -23,6 +23,15 @@ export function StratagemBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
         />
       </Form.Item>
+      <Form.Item label={"Turn"}>
+        <Select
+          value={activeCard.turn || "card"}
+          onChange={(value) => updateActiveCard({ ...activeCard, turn: value })}>
+          <Option value="your">Your turn</Option>
+          <Option value="either">Either turn</Option>
+          <Option value="opponents">Opponents turn</Option>
+        </Select>
+      </Form.Item>
       <Form.Item label={"Detachment"}>
         <Input
           type={"text"}

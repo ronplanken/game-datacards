@@ -17,109 +17,7 @@
     width: 100% !important;
   }
 }
-@media (min-width: 600px) {
-  .stratagem {
-    height: 121mm;
-    width: 69mm;
-    border: 1px solid var(--banner-colour);
-    border-radius: 8px;
-    position: relative;
-    background-color: white;
-    .background-side-bar {
-      position: absolute;
-      top: 6mm;
-      left: 6mm;
-      height: 100mm;
-      width: 4mm;
-      background-color: var(--header-colour);
-    }
-    .background-header-bar {
-      position: absolute;
-      top: 8.5mm;
-      left: 11mm;
-      height: 1mm;
-      width: 53mm;
-      background-color: var(--header-colour);
-    }
-    .header {
-      padding-left: 4px;
-      position: absolute;
-      top: 2.5mm;
-      left: 14mm;
-      color: var(--header-colour);
-      width: 49mm;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-    .type {
-      padding-left: 4px;
-      position: absolute;
-      top: 9.5mm;
-      left: 14mm;
-      width: 50mm;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      font-weight: 600;
-      border-bottom: 1px dotted #aaadb0;
-    }
-    .content {
-      position: absolute;
-      top: 15mm;
-      left: 14mm;
-      width: 50mm;
-      height: auto;
-      padding-left: 4px;
-      .section {
-        padding-top: 4px;
-        line-height: 1rem;
-        .title {
-          text-transform: uppercase;
-          color: var(--banner-colour);
-          font-size: 0.7rem;
-          font-weight: 600;
-          padding-right: 4px;
-        }
-        .text {
-          color: black;
-          font-size: 0.7rem;
-          font-weight: 400;
-        }
-      }
-    }
-    .type-container {
-      height: 9.5mm;
-      width: 9.5mm;
-      border: 0.9mm solid var(--header-colour);
-      background-color: #d8d8da;
-      position: absolute;
-      top: 4.25mm;
-      left: 3.25mm;
-      rotate: 45deg;
-      overflow: hidden;
-    }
-    .cp-container {
-      height: 9.5mm;
-      width: 9.5mm;
-      border: 0.9mm solid var(--header-colour);
-      background-color: #d8d8da;
-      position: absolute;
-      top: 22mm;
-      left: 3.25mm;
-      rotate: 45deg;
-      overflow: hidden;
-      line-height: 7.5mm;
 
-      .value {
-        rotate: -45deg;
-        text-align: center;
-        font-weight: 600;
-        color: var(--header-colour);
-        font-size: 1.1rem;
-      }
-    }
-  }
-}
 .points_table-container {
   .ant-popover-inner-content {
     padding: 0px 0px;
@@ -198,27 +96,27 @@
       }
     }
     .type-container {
-      height: 9.5mm;
-      width: 9.5mm;
-      border: 0.9mm solid var(--header-colour);
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
       background-color: #d8d8da;
       position: absolute;
-      top: 4.25mm;
-      left: 3.25mm;
+      top: 16.06px;
+      left: 12.28px;
       rotate: 45deg;
       overflow: hidden;
     }
     .cp-container {
-      height: 9.5mm;
-      width: 9.5mm;
-      border: 0.9mm solid var(--header-colour);
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
       background-color: #d8d8da;
       position: absolute;
-      top: 22mm;
-      left: 3.25mm;
+      top: 83.14px;
+      left: 12.28px;
       rotate: 45deg;
       overflow: hidden;
-      line-height: 7.5mm;
+      line-height: 28.34px;
 
       .value {
         rotate: -45deg;
@@ -262,30 +160,312 @@
       }
     }
   }
+  .list-item {
+    each(@factions, {
+      .@{value}::before {
+      right: 80px;
+    }}) &.legends {
+      &::before {
+        position: absolute;
+        right: 86px;
+        content: "L";
+        font-size: 1.3rem;
+        font-weight: 600;
+        font-family: "EB Garamond", serif;
+      }
+    }
+  }
 }
 @media only screen and (min-width: 600px) {
   html {
     font-size: 16px;
   }
-}
-.list-item {
-  each(@factions, {
-    .@{value}::before {
-    right: 80px;
-  }})
-  &.legends {
-    &::before {
-      position: absolute;
-      right: 86px;
-      content: "L";
-      font-size: 1.3rem;
-      font-weight: 600;
-      font-family: "EB Garamond", serif;
+  .list-item {
+    &.legends {
+      &::before {
+        position: absolute;
+        right: 16px;
+        content: "L";
+        font-size: 1.3rem;
+        font-weight: 600;
+        font-family: "EB Garamond", serif;
+      }
     }
   }
 }
+
 .data-40k-10e {
   page-break-inside: avoid;
+
+  @media print, (min-width: 600px) {
+    .stratagem {
+      height: 458px;
+      width: 262px;
+      transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      each(@factions, {
+        &.@{value}::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      });
+      &.AM::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 55%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 85px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+      &.basic::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 150px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+      &.either {
+        --stratagem-colour: #2c594c;
+      }
+      &.own {
+        --stratagem-colour: #234461;
+      }
+      &.other {
+        --stratagem-colour: #a2151a;
+      }
+      background-color: var(--stratagem-colour);
+      .border {
+        background-color: white;
+        border-radius: 8px;
+        height: 456px;
+        width: 260px;
+        .background-side-bar {
+          position: absolute;
+          top: 22.67px;
+          left: 22.67px;
+          height: 377.95px;
+          width: 15.11px;
+          background-color: var(--stratagem-colour);
+        }
+        .background-header-bar {
+          position: absolute;
+          top: 32.12px;
+          left: 41.57px;
+          height: 3.77px;
+          width: 200.31px;
+          background-color: var(--stratagem-colour);
+        }
+        .header {
+          padding-left: 4px;
+          position: absolute;
+          top: 9.44px;
+          left: 52.91px;
+          color: var(--stratagem-colour);
+          width: 185.19px;
+          font-size: 1.1rem;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+        .type {
+          padding-left: 4px;
+          position: absolute;
+          top: 35.9px;
+          left: 52.91px;
+          width: 188.97;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          font-weight: 600;
+          border-bottom: 1px dotted #aaadb0;
+        }
+        .content {
+          position: absolute;
+          top: 56.69px;
+          left: 52.91px;
+          width: 188.97px;
+          height: auto;
+          padding-left: 4px;
+          .section {
+            padding-top: 4px;
+            line-height: 1rem;
+            .title {
+              text-transform: uppercase;
+              color: var(--stratagem-colour);
+              font-size: 0.7rem;
+              font-weight: 600;
+              padding-right: 4px;
+            }
+            .text {
+              color: black;
+              font-size: 0.7rem;
+              font-weight: 400;
+            }
+          }
+        }
+        .containers {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+
+          gap: 20px;
+
+          width: 35.9px;
+          height: auto;
+
+          top: 16.06px;
+          left: 12.28px;
+
+          .type-container {
+            height: 35.9px;
+            width: 35.9px;
+            border: 3.4px solid var(--stratagem-colour);
+            background-color: #d8d8da;
+            rotate: 45deg;
+            overflow: hidden;
+
+            .any {
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/any.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+
+              background-color: var(--stratagem-colour);
+
+              display: block;
+              width: 95%;
+              height: 95%;
+
+              margin-left: 1px;
+              margin-top: -1px;
+
+              rotate: -45deg;
+            }
+            .charge {
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/charge.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+
+              background-color: var(--stratagem-colour);
+
+              display: block;
+              width: 100%;
+              height: 100%;
+
+              margin-top: -2px;
+              margin-left: -2px;
+
+              rotate: -45deg;
+            }
+            .fight {
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/combat.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+
+              background-color: var(--stratagem-colour);
+
+              display: block;
+              width: 95%;
+              height: 95%;
+
+              rotate: -45deg;
+            }
+            .command {
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/command.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+
+              background-color: var(--stratagem-colour);
+
+              display: block;
+              width: 100%;
+              height: 100%;
+
+              rotate: -45deg;
+            }
+            .movement {
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/movement.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+
+              background-color: var(--stratagem-colour);
+
+              display: block;
+              width: 95%;
+              height: 95%;
+
+              rotate: -45deg;
+            }
+            .shooting {
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/shooting.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+
+              background-color: var(--stratagem-colour);
+
+              display: block;
+              width: 100%;
+              height: 100%;
+
+              rotate: -45deg;
+            }
+          }
+          .cp-container {
+            height: 35.9px;
+            width: 35.9px;
+            border: 3.4px solid var(--stratagem-colour);
+            background-color: #d8d8da;
+
+            rotate: 45deg;
+            overflow: hidden;
+            line-height: 28.34px;
+
+            .value {
+              rotate: -45deg;
+              text-align: center;
+              font-weight: 600;
+              color: var(--stratagem-colour);
+              font-size: 1.1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
   .card-editor {
     .stats_container {
       padding-left: 8px;

@@ -2,7 +2,7 @@ import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, Divider, Input, List, Row, Select } from "antd";
 import classNames from "classnames";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDataSourceType } from "../../Helpers/cardstorage.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -15,7 +15,9 @@ export const DesktopUnitList = () => {
   const [searchText, setSearchText] = useState(undefined);
   const { settings, updateSettings } = useSettingsStorage();
 
-  const [selectedContentType, setSelectedContentType] = useState("datasheets");
+  const { stratagem } = useParams();
+
+  const [selectedContentType, setSelectedContentType] = useState(stratagem ? "stratagems" : "datasheets");
 
   const navigate = useNavigate();
 
@@ -32,22 +34,7 @@ export const DesktopUnitList = () => {
       ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
       : filteredStratagems;
 
-    if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
-      unitList = mainStratagems;
-    } else {
-      const basicStratagems = searchText
-        ? selectedFaction.basicStratagems?.filter((stratagem) =>
-            stratagem.name.toLowerCase().includes(searchText.toLowerCase())
-          )
-        : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
-
-      unitList = [
-        { type: "header", name: "Basic stratagems" },
-        ...basicStratagems,
-        { type: "header", name: "Faction stratagems" },
-        ...mainStratagems,
-      ];
-    }
+    unitList = mainStratagems;
   }
   if (selectedContentType === "battle_rules") {
     const filteredBattleRules = selectedFaction?.battle_rules.filter((battle_rule) => {
@@ -201,7 +188,6 @@ export const DesktopUnitList = () => {
               key={`list-category-${index}`}
               className={`list-category`}
               onClick={() => {
-                console.log(card);
                 let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
                 if (newClosedFactions.includes(card.id)) {
                   newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
@@ -226,7 +212,6 @@ export const DesktopUnitList = () => {
               key={`list-role-${index}`}
               className={`list-category`}
               onClick={() => {
-                console.log(card);
                 let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
                 if (newClosedRoles.includes(card.name)) {
                   newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
@@ -245,7 +230,7 @@ export const DesktopUnitList = () => {
             </List.Item>
           );
         }
-        const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+        let cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
         if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
           return <></>;
@@ -257,19 +242,28 @@ export const DesktopUnitList = () => {
           <List.Item
             key={`list-${card.id}`}
             onClick={() => {
-              if (!card.nonBase) {
+              if (card.cardType === "stratagem") {
                 navigate(
-                  `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                  `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/stratagem/${card.name
                     .replaceAll(" ", "-")
                     .toLowerCase()}`
                 );
               }
-              if (card.nonBase) {
-                navigate(
-                  `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
-                    .toLowerCase()
-                    .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
-                );
+              if (!card.cardType === "stratagem") {
+                if (!card.nonBase) {
+                  navigate(
+                    `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                      .replaceAll(" ", "-")
+                      .toLowerCase()}`
+                  );
+                }
+                if (card.nonBase) {
+                  navigate(
+                    `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
+                      .toLowerCase()
+                      .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
+                  );
+                }
               }
 
               setActiveCard(card);
