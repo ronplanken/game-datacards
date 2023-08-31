@@ -2,7 +2,6 @@
   "name": "game-datacards",
   "version": "2.2.0",
   "description": "The only tool you will ever need for your custom datacards",
-  "private": false,
   "homepage": "https://game-datacards.eu",
   "repository": {
     "type": "git",
