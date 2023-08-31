@@ -1,5 +1,6 @@
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { BattleRuleEditor } from "./BattleRuleEditor";
 import { PsychicPowerEditor } from "./PsychicPowerEditor";
 import { SecondaryEditor } from "./SecondaryEditor";
 import { StratagemEditor } from "./StratagemEditor";
@@ -15,6 +16,7 @@ export const Warhammer40KCardEditor = () => {
         {activeCard.cardType === "stratagem" && <StratagemEditor />}
         {activeCard.cardType === "secondary" && <SecondaryEditor />}
         {activeCard.cardType === "psychic" && <PsychicPowerEditor />}
+        {activeCard.cardType === "battle_rule" && <BattleRuleEditor />}
       </Col>
     )
   );

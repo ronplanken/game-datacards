@@ -266,6 +266,7 @@ export const getBasicData = () => {
     noStratagemOptions: true,
     noSecondaryOptions: true,
     noPsychicOptions: true,
+    noBattleRuleOptions: true,
     data: [
       {
         id: "basic",
@@ -383,10 +384,12 @@ export const getBasicData = () => {
         battlerules: [
           {
             cardType: "battle_rule",
-            name: "BASIC BATTLERULE",
+            rule_type: "Primary Mission",
+            name: "BASIC BATTLE RULE",
             source: "basic",
-            flavor_text: "Progressive Objective",
+            flavor_text: "Battles are won by arbitrary fiat and king maker conditions",
             main_desc: "This is an example description for a rule card",
+            id: "000006088475",
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",

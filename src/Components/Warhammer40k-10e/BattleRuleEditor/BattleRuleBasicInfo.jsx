@@ -16,18 +16,18 @@ export function BattleRuleBasicInfo() {
           onChange={(e) => updateActiveCard({ ...activeCard, name: e.target.value })}
         />
       </Form.Item>
+      <Form.Item label={"Rule type"}>
+        <Input
+          type={"text"}
+          value={activeCard.rule_type}
+          onChange={(e) => updateActiveCard({ ...activeCard, rule_type: e.target.value })}
+        />
+      </Form.Item>
       <Form.Item label={"Flavor Text"}>
         <Input
           type={"text"}
           value={activeCard.flavor_text}
           onChange={(e) => updateActiveCard({ ...activeCard, flavor_text: e.target.value })}
-        />
-      </Form.Item>
-      <Form.Item label={"Main Description"}>
-        <Input
-          type={"text"}
-          value={activeCard.main_desc}
-          onChange={(e) => updateActiveCard({ ...activeCard, main_desc: e.target.value })}
         />
       </Form.Item>
     </Form>
