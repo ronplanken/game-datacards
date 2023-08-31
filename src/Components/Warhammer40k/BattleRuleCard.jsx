@@ -22,39 +22,31 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
         </div>
         <div className="type">
           <ReactFitty maxSize={10} minSize={8}>
-            {battle_rule.detachment} - {battle_rule.type}
+            {battle_rule.detachment} - {battle_rule.rule_type}
           </ReactFitty>
         </div>
         <div className="content">
-          {battle_rule.when && (
+          {battle_rule.rule_type && (
             <div className="section">
               <span className="title">When:</span>
               <span className="text">
-                <MarkdownSpanDisplay content={battle_rule.when} />
+                <MarkdownSpanDisplay content={battle_rule.rule_type} />
               </span>
             </div>
           )}
-          {battle_rule.target && (
+          {battle_rule.flavor_text && (
             <div className="section">
               <span className="title">target:</span>
               <span className="text">
-                <MarkdownSpanDisplay content={battle_rule.target} />
+                <MarkdownSpanDisplay content={battle_rule.flavor_text} />
               </span>
             </div>
           )}
-          {battle_rule.effect && (
+          {battle_rule.main_desc && (
             <div className="section">
               <span className="title">effect:</span>
               <span className="text">
-                <MarkdownSpanDisplay content={battle_rule.effect} />
-              </span>
-            </div>
-          )}
-          {battle_rule.restrictions && (
-            <div className="section">
-              <span className="title">restrictions:</span>
-              <span className="text">
-                <MarkdownSpanDisplay content={battle_rule.restrictions} />
+                <MarkdownSpanDisplay content={battle_rule.main_desc} />
               </span>
             </div>
           )}
