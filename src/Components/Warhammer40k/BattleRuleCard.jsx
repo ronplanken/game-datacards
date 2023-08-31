@@ -38,7 +38,6 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
                 <div className="content">
                   {battle_rule.flavor_text && (
                     <div className="section">
-                      <span className="callout_text">target:</span>
                       <span className="text">
                         <MarkdownSpanDisplay content={battle_rule.flavor_text} />
                       </span>
@@ -46,12 +45,22 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
                   )}
                   {battle_rule.main_desc && (
                     <div className="section">
-                      <span className="callout_text">effect:</span>
                       <span className="text">
                         <MarkdownSpanDisplay content={battle_rule.main_desc} />
                       </span>
                     </div>
                   )}
+                  {battle_rule.extra_description &&
+                    battle_rule.extra_description.map((item) => (
+                      <div className="section" key={item.id}>
+                        <span className="callout_text">
+                          <MarkdownSpanDisplay content={item.callout} />
+                        </span>
+                        <span className="text">
+                          <MarkdownSpanDisplay content={item.detail} />
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>
