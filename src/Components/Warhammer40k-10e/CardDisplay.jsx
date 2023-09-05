@@ -67,7 +67,7 @@ export const Warhammer40K10eCardDisplay = ({
             transformOrigin: "0% 0%",
             transform: `scale(${cardScaling / 100})`,
           }}>
-          {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
+          {activeCard?.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
           {activeCard?.cardType === "DataCard" && (
             <UnitCard
               side={side}
