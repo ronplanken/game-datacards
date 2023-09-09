@@ -6,9 +6,10 @@ import {
   InboxOutlined,
   PrinterOutlined,
   SaveOutlined,
+  SettingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { Button, Col, Modal, Row, Tabs, Tooltip, message } from "antd";
+import { Button, Checkbox, Col, Dropdown, Menu, Modal, Row, Tabs, Tooltip, message } from "antd";
 import Dragger from "antd/lib/upload/Dragger";
 import { compare } from "compare-versions";
 import React from "react";
@@ -18,8 +19,8 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
 
 import { Parser } from "xml2js";
-import { Create40kRoster } from "../Helpers/battlescribe.40k.helpers";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { ListCards } from "../Icons/ListCards";
 
 const parser = new Parser({ mergeAttrs: true, explicitArray: false });
 
@@ -29,57 +30,31 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
   const { settings } = useSettingsStorage();
   const [uploadFile, setUploadFile] = React.useState(null);
   const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [dropdownVisible, setDropdownVisible] = React.useState();
 
   const navigate = useNavigate();
 
   const { logScreenView } = useFirebase();
 
   const [fileList, setFileList] = React.useState([]);
-  const { cardStorage, activeCategory, saveActiveCard, importCategory, cardUpdated, addCategory } = useCardStorage();
+  const {
+    cardStorage,
+    activeCategory,
+    setActiveCategory,
+    saveActiveCard,
+    importCategory,
+    cardUpdated,
+    addCategory,
+    updateCategory,
+  } = useCardStorage();
 
-  function parseXML(xmldata) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xmldata, "text/xml");
-    if (!doc) return;
+  const [showPointTotal, setShowPointTotal] = React.useState(activeCategory?.settings?.showPointTotal);
+  const [showModelPoint, setShowModelPoint] = React.useState(activeCategory?.settings?.showModelPoint);
 
-    // Determine roster type (game system).
-    const info = doc.querySelector("roster");
-    if (!info) return;
-
-    const gameType = info.getAttribute("gameSystemName");
-    if (!gameType) return;
-
-    const rosterName = info.getAttribute("name");
-    if (rosterName) {
-      document.title = `FancyScribe ${rosterName}`;
-    }
-
-    if (gameType == "Warhammer 40,000 9th Edition") {
-      console.log(doc);
-      const roster = Create40kRoster(doc);
-      console.log(roster);
-      if (roster && roster.forces.length > 0) {
-        // setRoster(roster);
-        // setError("");
-        // smartlook("track", "loadRoster", {
-        //   name: rosterName,
-        //   faction: roster.forces[0].catalog,
-        // });
-        setFileList([
-          {
-            uid: "-1",
-            name: `${roster.name}`,
-            status: "success",
-            size: JSON.stringify(roster).length,
-          },
-        ]);
-        setUploadFile(roster);
-        return roster;
-      }
-    } else {
-      // setError("No support for game type '" + gameType + "'.");
-    }
-  }
+  React.useEffect(() => {
+    setShowPointTotal(activeCategory?.settings?.showPointTotal);
+    setShowModelPoint(activeCategory?.settings?.showModelPoint);
+  }, [activeCategory]);
 
   return (
     <Row>
@@ -245,134 +220,6 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
                 </Col>
               </Row>
             </Tabs.TabPane>
-            {/* <Tabs.TabPane tab={"Battlescribe"} key={"battlescribe"} style={{ minHeight: 250 }}>
-              <Row>
-                <Col span={24}>
-                  <Dragger
-                    fileList={fileList}
-                    multiple={false}
-                    maxCount={1}
-                    action={null}
-                    accept={".rosz"}
-                    itemRender={(node, file) => {
-                      return file.status === "success" ? (
-                        <Row
-                          style={{
-                            marginTop: "4px",
-                            padding: "8px",
-                            border: `1px solid #E5E5E5`,
-                            borderRadius: 4,
-                          }}
-                          align={"middle"}
-                          justify={"space-around"}>
-                          <Col>
-                            <FileOutlined style={{ fontSize: "18px" }} />
-                          </Col>
-                          <Col>{file.name}</Col>
-                          <Col>{`${Math.round(file.size / 1024, 1)}KiB`}</Col>
-                          <Col>
-                            <Button
-                              type={"text"}
-                              shape={"circle"}
-                              onClick={() => {
-                                setFileList(null);
-                                setUploadFile(null);
-                              }}
-                              icon={<DeleteOutlined />}
-                            />
-                          </Col>
-                        </Row>
-                      ) : (
-                        <Tooltip title={"This file cannot be read as an battlescribe export."} color={"red"}>
-                          <Row
-                            style={{
-                              marginTop: "4px",
-                              padding: "8px",
-                              border: `1px solid red`,
-                              borderRadius: 4,
-                            }}
-                            align={"middle"}
-                            justify={"space-around"}>
-                            <Col>
-                              <FileOutlined style={{ fontSize: "18px" }} />
-                            </Col>
-                            <Col>{file.name}</Col>
-                            <Col>{`${Math.round(file.size / 1024, 1)}KiB`}</Col>
-                            <Col>
-                              <Button
-                                type={"text"}
-                                shape={"circle"}
-                                onClick={() => {
-                                  setFileList(null);
-                                  setUploadFile(null);
-                                }}
-                                icon={<DeleteOutlined />}
-                              />
-                            </Col>
-                          </Row>
-                        </Tooltip>
-                      );
-                    }}
-                    beforeUpload={(file) => {
-                      var reader = new FileReader();
-
-                      reader.onload = function (event) {
-                        try {
-                          JSZip.loadAsync(event.target.result).then(function (zip) {
-                            for (let [filename, file] of Object.entries(zip.files)) {
-                              file.async("text").then((text) => {
-                                parseXML(text);
-                              });
-                            }
-                          });
-                        } catch (e) {
-                          console.error(e);
-                          setFileList([
-                            {
-                              uid: "-1",
-                              name: file.name,
-                              status: "error",
-                              size: file.size,
-                            },
-                          ]);
-                          setUploadFile(null);
-                        }
-                      };
-                      reader.readAsArrayBuffer(file);
-
-                      return false;
-                    }}>
-                    <p className="ant-upload-drag-icon">
-                      <InboxOutlined />
-                    </p>
-                    <p className="ant-upload-text">Click or drag a file to this area to upload</p>
-                    <p className="ant-upload-hint">Support for a single file upload. Only .rosz files.</p>
-                  </Dragger>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <Form layout="horizontal">
-                    <Card
-                      type={"inner"}
-                      size={"small"}
-                      title={"Combine all models in a unit to one datacard."}
-                      bodyStyle={{ padding: 0 }}
-                      style={{ marginBottom: "8px", marginTop: "8px" }}
-                      extra={<Switch />}
-                    />
-                    <Card
-                      type={"inner"}
-                      size={"small"}
-                      title={"Add wound brackets to units"}
-                      bodyStyle={{ padding: 0 }}
-                      style={{ marginBottom: "8px", marginTop: "8px" }}
-                      extra={<Switch />}
-                    />
-                  </Form>
-                </Col>
-              </Row>
-            </Tabs.TabPane> */}
           </Tabs>
         </Modal>
         <Tooltip title={"Print cards from category"} placement="bottomLeft">
@@ -449,6 +296,16 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
             }}
           />
         </Tooltip>
+        <Tooltip title={"Add new list"} placement="bottomLeft">
+          <Button
+            type={"text"}
+            shape={"circle"}
+            icon={<ListCards />}
+            onClick={() => {
+              addCategory("New List", "list");
+            }}
+          />
+        </Tooltip>
       </Col>
       <Col
         span={12}
@@ -461,7 +318,7 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
           alignItems: "center",
           paddingRight: "4px",
         }}>
-        {selectedTreeKey && selectedTreeKey.includes("card") && (
+        {selectedTreeKey && selectedTreeKey?.includes("card") && (
           <>
             <Tooltip title={"Update selected card"} placement="bottom">
               <Button
@@ -476,6 +333,59 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
                 save
               </Button>
             </Tooltip>
+          </>
+        )}
+        {activeCategory?.settings?.showPointTotal}
+        {activeCategory && activeCategory.type === "list" && !selectedTreeKey?.includes("card") && (
+          <>
+            <Dropdown
+              visible={dropdownVisible}
+              onVisibleChange={(flag) => setDropdownVisible(flag)}
+              placement={"bottomRight"}
+              overlay={
+                <Menu>
+                  <Menu.Item key="1">
+                    <Checkbox
+                      checked={showPointTotal}
+                      onChange={(value) => {
+                        setShowPointTotal(!showPointTotal);
+                        const newCategory = {
+                          ...activeCategory,
+                          settings: {
+                            ...activeCategory.settings,
+                            showPointTotal: !showPointTotal,
+                          },
+                        };
+                        updateCategory(newCategory, newCategory.uuid);
+                        setActiveCategory(newCategory);
+                      }}>
+                      Show point total
+                    </Checkbox>
+                  </Menu.Item>
+                  <Menu.Item key="2">
+                    <Checkbox
+                      checked={showModelPoint}
+                      onChange={(value) => {
+                        setShowModelPoint(!showModelPoint);
+                        const newCategory = {
+                          ...activeCategory,
+                          settings: {
+                            ...activeCategory.settings,
+                            showModelPoint: !showModelPoint,
+                          },
+                        };
+                        updateCategory(newCategory, newCategory.uuid);
+                        setActiveCategory(newCategory);
+                      }}>
+                      Show DataCard points
+                    </Checkbox>
+                  </Menu.Item>
+                </Menu>
+              }>
+              <Button icon={<SettingOutlined />} type={"ghost"} size={"small"} onClick={() => {}}>
+                List
+              </Button>
+            </Dropdown>
           </>
         )}
       </Col>
