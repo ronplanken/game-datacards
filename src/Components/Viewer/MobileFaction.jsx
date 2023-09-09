@@ -65,6 +65,15 @@ export const MobileFaction = () => {
                       }>
                       <div className="stratagem">
                         <div className="content">
+                          {val.type && (
+                            <div className="section">
+                              <span className="text">
+                                <b>
+                                  <MarkdownSpanDisplay content={`${val.detachment.toUpperCase()} - ${val.type}`} />
+                                </b>
+                              </span>
+                            </div>
+                          )}
                           {val.when && (
                             <div className="section">
                               <span className="title">When:</span>
@@ -134,6 +143,15 @@ export const MobileFaction = () => {
                       }>
                       <div className="stratagem">
                         <div className="content">
+                          {val.type && (
+                            <div className="section">
+                              <span className="text">
+                                <b>
+                                  <MarkdownSpanDisplay content={`${val.detachment.toUpperCase()} - ${val.type}`} />
+                                </b>
+                              </span>
+                            </div>
+                          )}
                           {val.when && (
                             <div className="section">
                               <span className="title">When:</span>
