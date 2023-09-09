@@ -3,6 +3,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { MarkdownSpanDisplay } from "../MarkdownSpanDisplay";
+import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
 
 export const MobileFaction = () => {
   const { selectedFaction } = useDataSourceStorage();
@@ -63,50 +64,8 @@ export const MobileFaction = () => {
                           </span>
                         </div>
                       }>
-                      <div className="stratagem">
-                        <div className="content">
-                          {val.type && (
-                            <div className="section">
-                              <span className="text">
-                                <b>
-                                  <MarkdownSpanDisplay content={`${val.detachment.toUpperCase()} - ${val.type}`} />
-                                </b>
-                              </span>
-                            </div>
-                          )}
-                          {val.when && (
-                            <div className="section">
-                              <span className="title">When:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.when} />
-                              </span>
-                            </div>
-                          )}
-                          {val.target && (
-                            <div className="section">
-                              <span className="title">target:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.target} />
-                              </span>
-                            </div>
-                          )}
-                          {val.effect && (
-                            <div className="section">
-                              <span className="title">effect:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.effect} />
-                              </span>
-                            </div>
-                          )}
-                          {val.restrictions && (
-                            <div className="section">
-                              <span className="title">restrictions:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.restrictions} />
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                      <div className="data-40k-10e">
+                        <StratagemCard stratagem={val} paddingTop={"0"} className={"mobile"} />
                       </div>
                     </Collapse.Panel>
                   ))}
@@ -141,50 +100,8 @@ export const MobileFaction = () => {
                           </span>
                         </div>
                       }>
-                      <div className="stratagem">
-                        <div className="content">
-                          {val.type && (
-                            <div className="section">
-                              <span className="text">
-                                <b>
-                                  <MarkdownSpanDisplay content={`${val.detachment.toUpperCase()} - ${val.type}`} />
-                                </b>
-                              </span>
-                            </div>
-                          )}
-                          {val.when && (
-                            <div className="section">
-                              <span className="title">When:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.when} />
-                              </span>
-                            </div>
-                          )}
-                          {val.target && (
-                            <div className="section">
-                              <span className="title">target:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.target} />
-                              </span>
-                            </div>
-                          )}
-                          {val.effect && (
-                            <div className="section">
-                              <span className="title">effect:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.effect} />
-                              </span>
-                            </div>
-                          )}
-                          {val.restrictions && (
-                            <div className="section">
-                              <span className="title">restrictions:</span>
-                              <span className="text">
-                                <MarkdownSpanDisplay content={val.restrictions} />
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                      <div className="data-40k-10e">
+                        <StratagemCard stratagem={val} paddingTop={"0"} className={"mobile"} />
                       </div>
                     </Collapse.Panel>
                   ))}

@@ -197,6 +197,148 @@
 .data-40k-10e {
   page-break-inside: avoid;
 
+  .stratagem {
+    &.either {
+      --stratagem-colour: #2c594c;
+    }
+
+    &.own {
+      --stratagem-colour: #234461;
+    }
+
+    &.other {
+      --stratagem-colour: #a2151a;
+    }
+
+    .containers {
+      .type-container {
+        height: 35.9px;
+        width: 35.9px;
+        border: 3.5px solid var(--stratagem-colour);
+        background-color: #d8d8da;
+        rotate: 45deg;
+        overflow: hidden;
+
+        .any {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/any.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 95%;
+          height: 95%;
+
+          margin-left: 1px;
+          margin-top: -1px;
+
+          rotate: -45deg;
+        }
+        .charge {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/charge.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 100%;
+          height: 100%;
+
+          margin-top: -2px;
+          margin-left: -2px;
+
+          rotate: -45deg;
+        }
+        .fight {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/combat.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 95%;
+          height: 95%;
+
+          rotate: -45deg;
+        }
+        .command {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/command.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 100%;
+          height: 100%;
+
+          rotate: -45deg;
+        }
+        .movement {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/movement.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 95%;
+          height: 95%;
+
+          rotate: -45deg;
+        }
+        .shooting {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/shooting.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 100%;
+          height: 100%;
+
+          rotate: -45deg;
+        }
+      }
+    }
+
+  }
+
+  .mobile {
+    .stratagem {
+      .border {
+        border-left: 5px solid var(--stratagem-colour);
+        padding-left: 15px;
+        margin-left: 4px;
+      }
+      .header, .cp-container {
+        display: none;
+      }
+      .containers {
+        .type-container {
+          height: 25px;
+          width: 25px;
+          border-width: 2px;
+          top: .5px;
+          left: -6.4px;
+        }
+      }
+      .type {
+        margin-left: 5px;
+      }
+    }
+  }
+
   @media print, (min-width: 600px) {
     .stratagem {
       height: 458px;
@@ -253,15 +395,6 @@
         background-repeat: no-repeat;
         background-size: contain;
         background-position: center;
-      }
-      &.either {
-        --stratagem-colour: #2c594c;
-      }
-      &.own {
-        --stratagem-colour: #234461;
-      }
-      &.other {
-        --stratagem-colour: #a2151a;
       }
       background-color: var(--stratagem-colour);
       .border {
@@ -344,105 +477,7 @@
           top: 16.06px;
           left: 12.28px;
 
-          .type-container {
-            height: 35.9px;
-            width: 35.9px;
-            border: 3.4px solid var(--stratagem-colour);
-            background-color: #d8d8da;
-            rotate: 45deg;
-            overflow: hidden;
 
-            .any {
-              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/any.svg");
-              mask-repeat: no-repeat;
-              mask-position: center;
-              mask-size: contain;
-
-              background-color: var(--stratagem-colour);
-
-              display: block;
-              width: 95%;
-              height: 95%;
-
-              margin-left: 1px;
-              margin-top: -1px;
-
-              rotate: -45deg;
-            }
-            .charge {
-              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/charge.svg");
-              mask-repeat: no-repeat;
-              mask-position: center;
-              mask-size: contain;
-
-              background-color: var(--stratagem-colour);
-
-              display: block;
-              width: 100%;
-              height: 100%;
-
-              margin-top: -2px;
-              margin-left: -2px;
-
-              rotate: -45deg;
-            }
-            .fight {
-              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/combat.svg");
-              mask-repeat: no-repeat;
-              mask-position: center;
-              mask-size: contain;
-
-              background-color: var(--stratagem-colour);
-
-              display: block;
-              width: 95%;
-              height: 95%;
-
-              rotate: -45deg;
-            }
-            .command {
-              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/command.svg");
-              mask-repeat: no-repeat;
-              mask-position: center;
-              mask-size: contain;
-
-              background-color: var(--stratagem-colour);
-
-              display: block;
-              width: 100%;
-              height: 100%;
-
-              rotate: -45deg;
-            }
-            .movement {
-              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/movement.svg");
-              mask-repeat: no-repeat;
-              mask-position: center;
-              mask-size: contain;
-
-              background-color: var(--stratagem-colour);
-
-              display: block;
-              width: 95%;
-              height: 95%;
-
-              rotate: -45deg;
-            }
-            .shooting {
-              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/shooting.svg");
-              mask-repeat: no-repeat;
-              mask-position: center;
-              mask-size: contain;
-
-              background-color: var(--stratagem-colour);
-
-              display: block;
-              width: 100%;
-              height: 100%;
-
-              rotate: -45deg;
-            }
-          }
           .cp-container {
             height: 35.9px;
             width: 35.9px;
@@ -1609,7 +1644,7 @@
             background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
             background-repeat: no-repeat;
             background-size: contain;
-            background-position: center;        
+            background-position: center;
             filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
             rotate: -45deg;
           }
@@ -2601,7 +2636,7 @@
             background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
             background-repeat: no-repeat;
             background-size: contain;
-            background-position: center;        
+            background-position: center;
             filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
             rotate: -45deg;
           }
