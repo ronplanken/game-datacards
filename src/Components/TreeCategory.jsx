@@ -30,6 +30,12 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     }
   }, [isModalVisible, inputRef]);
 
+  const rename = () => {
+    renameCategory(category.uuid, newCategoryName);
+    setIsModalVisible(false);
+    message.success("Category has been renamed.");
+  };
+
   const pointsTotal = category.cards?.reduce((total, card) => {
     if (card?.source === "40k-10e" && card?.unitSize?.cost) {
       if (card.selectedEnhancement) {
@@ -37,7 +43,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       }
       return total + Number(card?.unitSize?.cost);
     }
-    return 0;
+    return total;
   }, 0);
 
   const menu = (
@@ -129,7 +135,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
                 {category.type !== "list" && (category.type !== "list" ? <FolderOutlined /> : <FolderOpenOutlined />)}
                 {category.type === "list" && <List />}
                 &nbsp;{category.name}&nbsp;
-                {category?.settings?.showPointTotal && (
+                {category.type === "list" && (
                   <span
                     style={{
                       fontSize: "0.75rem",
@@ -161,14 +167,21 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
         title="Rename category"
         visible={isModalVisible}
         onOk={() => {
-          renameCategory(category.uuid, newCategoryName);
-          setIsModalVisible(false);
-          message.success("Category has been renamed.");
+          rename();
         }}
         onCancel={() => {
           setIsModalVisible(false);
         }}>
-        <Input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} ref={inputRef} />
+        <Input
+          value={newCategoryName}
+          onChange={(e) => setNewCategoryName(e.target.value)}
+          ref={inputRef}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              rename();
+            }
+          }}
+        />
       </Modal>
     </>
   );

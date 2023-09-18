@@ -89,7 +89,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
             isCustom: true,
             uuid: uuidv4(),
           };
-          addCardToCategory(newCard);
+          addCardToCategory(newCard, activeCategory.uuid);
           setActiveCard(newCard);
         }}>
         Duplicate
@@ -201,24 +201,27 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                   }}
                   onClick={(e) => {
                     e.preventDefault();
-                    dropdown.current.style.display = "block";
+                    dropdown.current.style.display = "flex";
                   }}>
                   <strong>{card?.unitSize?.cost}</strong>
                 </span>
               )}
-              {category?.type === "list" && card?.source === "40k-10e" && !card?.unitSize && (
-                <>
-                  <button
-                    type="primary"
-                    className="list-select"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      dropdown.current.style.display = "block";
-                    }}>
-                    <strong>select</strong>
-                  </button>
-                </>
-              )}
+              {category?.type === "list" &&
+                card?.source === "40k-10e" &&
+                card?.cardType === "DataCard" &&
+                !card?.unitSize && (
+                  <>
+                    <button
+                      type="primary"
+                      className="list-select"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        dropdown.current.style.display = "flex";
+                      }}>
+                      <strong>select</strong>
+                    </button>
+                  </>
+                )}
             </div>
           </Dropdown>
         )}
@@ -229,15 +232,17 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
           className="modal-background"
           style={{
             display: "none",
+            alignContent: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            width: "100vw",
+            flexDirection: "row",
           }}>
           <div
             style={{
-              position: "fixed",
-              bottom: "50%",
-              left: "50%",
               backgroundColor: "white",
               width: "500px",
-              height: "auto",
               padding: "8px",
             }}
             className="desktop-list">

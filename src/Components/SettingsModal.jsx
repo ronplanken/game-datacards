@@ -356,7 +356,7 @@ export const SettingsModal = () => {
                           <strong>Backcard editing</strong>
                           <br />
                           You can now edit the back of the cards while in the Desktop card editor. Since &nbsp;
-                          <strong>Leads</strong> and <strong>Lead by</strong> are derrived fields they are not editable
+                          <strong>Leads</strong> and <strong>Led by</strong> are derrived fields they are not editable
                           at the moment.
                         </li>
                         <li>
