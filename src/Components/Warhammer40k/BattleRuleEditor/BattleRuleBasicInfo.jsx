@@ -48,10 +48,10 @@ export function BattleRuleBasicInfo() {
                 commands.divider,
               ]}
               extraCommands={[]}
-              value={activeCard.description}
+              value={activeCard.main_desc}
               onChange={(value) =>
                 updateActiveCard(() => {
-                  return { ...activeCard, description: value };
+                  return { ...activeCard, main_desc: value };
                 })
               }
             />
