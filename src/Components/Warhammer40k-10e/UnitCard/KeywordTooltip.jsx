@@ -223,7 +223,7 @@ export const KeywordTooltip = ({ keyword }) => {
     return (
       <Tooltip
         title={
-          "A Critical Wound inflicts mortal wounds equal to the weapon’s Damage characteristic, instead of any normal damage."
+          "Saving throws cannot be made against Critical Wounds scored by this weapon (including invulnerable saving throws)."
         }
         {...tooltipProps}>
         <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>

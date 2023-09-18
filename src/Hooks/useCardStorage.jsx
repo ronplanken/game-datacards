@@ -69,6 +69,20 @@ export const CardStorageProviderComponent = (props) => {
     });
   };
 
+  const saveCard = (updatedCard, category) => {
+    if (!updatedCard || !category) {
+      return;
+    }
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const categoryIndex = newStorage.categories.findIndex((cat) => cat.uuid === category.uuid);
+      const newCards = newStorage.categories[categoryIndex].cards;
+      newCards[newCards.findIndex((card) => card.uuid === updatedCard.uuid)] = updatedCard;
+      newStorage.categories[categoryIndex].cards = newCards;
+      return newStorage;
+    });
+  };
+
   const addCardToCategory = (card, categoryId) => {
     if (!card) {
       return;
@@ -110,7 +124,7 @@ export const CardStorageProviderComponent = (props) => {
       };
     });
   };
-  const addCategory = (categoryName) => {
+  const addCategory = (categoryName, type = "category") => {
     if (!categoryName) {
       return;
     }
@@ -119,6 +133,7 @@ export const CardStorageProviderComponent = (props) => {
       newStorage.categories.push({
         uuid: uuidv4(),
         name: categoryName,
+        type,
         cards: [],
       });
       return {
@@ -207,6 +222,7 @@ export const CardStorageProviderComponent = (props) => {
     removeCategory,
     addCategory,
     updateCategory,
+    saveCard,
   };
 
   return <CardStorageContext.Provider value={context}>{props.children}</CardStorageContext.Provider>;

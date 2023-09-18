@@ -99,9 +99,16 @@ export const Viewer = () => {
         updateSelectedFaction(foundFaction);
       }
       if (stratagem) {
-        const foundStratagem = foundFaction?.stratagems?.find((u) => {
+        let foundStratagem = foundFaction?.stratagems?.find((u) => {
           return u.name.replaceAll(" ", "-").toLowerCase() === stratagem;
         });
+
+        if (!foundStratagem) {
+          foundStratagem = foundFaction?.basicStratagems?.find((u) => {
+            return u.name.replaceAll(" ", "-").toLowerCase() === stratagem;
+          });
+          foundStratagem.faction_id = foundFaction.id;
+        }
 
         setActiveCard(foundStratagem);
       } else {
