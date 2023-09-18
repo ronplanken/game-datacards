@@ -34,7 +34,20 @@ export const DesktopUnitList = () => {
       ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
       : filteredStratagems;
 
-    unitList = mainStratagems;
+    const basicStratagems = searchText
+      ? selectedFaction.basicStratagems?.filter((stratagem) =>
+          stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+      : selectedFaction.basicStratagems;
+
+    unitList = [
+      { type: "header", name: "Basic stratagems" },
+      ...basicStratagems.map((s) => {
+        return { ...s, faction_id: selectedFaction.id };
+      }),
+      { type: "header", name: "Faction stratagems" },
+      ...mainStratagems,
+    ];
   }
   if (selectedContentType === "battlerules") {
     const filteredBattleRules = selectedFaction?.battlerules.filter((battle_rule) => {

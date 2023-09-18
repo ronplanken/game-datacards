@@ -620,6 +620,12 @@ export const get40k10eData = async () => {
   };
 };
 
+export const getMessages = async () => {
+  const url = `https://raw.githubusercontent.com/ronplanken/game-datacards/main/messages.json`;
+  const data = await readCsv(url);
+  return data;
+};
+
 export const getNecromundaBasicData = () => {
   return {
     version: process.env.REACT_APP_VERSION,

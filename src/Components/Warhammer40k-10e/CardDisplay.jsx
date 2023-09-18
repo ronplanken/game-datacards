@@ -21,16 +21,16 @@ export const Warhammer40K10eCardDisplay = ({
       {!type && activeCard && (
         <>
           <Col span={24}>
-            {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
-            {activeCard.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
-            {activeCard.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}
+            {activeCard?.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
+            {activeCard?.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
+            {activeCard?.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}
           </Col>
         </>
       )}
       {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
       {type === "print" && card && (
         <div className="data-40k-10e" style={{}}>
-          {card.cardType === "DataCard" && (
+          {card?.cardType === "DataCard" && (
             <UnitCard
               unit={card}
               side={side}
@@ -46,7 +46,7 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
-          {card.cardType === "stratagem" && (
+          {card?.cardType === "stratagem" && (
             <StratagemCard
               stratagem={card}
               paddingTop="0px"
@@ -84,8 +84,8 @@ export const Warhammer40K10eCardDisplay = ({
             transformOrigin: "0% 0%",
             transform: `scale(${cardScaling / 100})`,
           }}>
-          {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
-          {activeCard.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
+          {activeCard?.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
+          {activeCard?.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
           {activeCard?.cardType === "DataCard" && (
             <UnitCard
               side={side}
