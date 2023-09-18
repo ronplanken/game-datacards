@@ -244,8 +244,8 @@ function App() {
         ];
       }
     }
-    if (selectedContentType === "battlerules") {
-      const filteredBattleRules = selectedFaction?.battlerules.filter((battle_rule) => {
+    if (selectedContentType === "battle_rules") {
+      const filteredBattleRules = selectedFaction?.battle_rules?.filter((battle_rule) => {
         return !settings?.ignoredSubFactions?.includes(battle_rule.subfaction_id);
       });
       const mainBattleRules = searchText
@@ -267,7 +267,7 @@ function App() {
           { type: "header", name: "Basic battle rules" },
           ...basicBattleRules,
           { type: "header", name: "Faction battle rules" },
-          ...mainBattleRules,
+          ...(mainBattleRules || []),
         ];
       }
     }
@@ -531,8 +531,8 @@ function App() {
                                     Psychic powers
                                   </Option>
                                 )}
-                                {selectedFaction?.battlerules && selectedFaction?.battlerules.length > 0 && (
-                                  <Option value={"battlerules"} key={`battlerules`}>
+                                {selectedFaction?.battle_rules && selectedFaction?.battle_rules.length > 0 && (
+                                  <Option value={"battle_rules"} key={`battle_rules`}>
                                     Battle rules
                                   </Option>
                                 )}

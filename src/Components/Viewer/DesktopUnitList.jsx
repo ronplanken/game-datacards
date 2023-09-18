@@ -49,8 +49,8 @@ export const DesktopUnitList = () => {
       ...mainStratagems,
     ];
   }
-  if (selectedContentType === "battlerules") {
-    const filteredBattleRules = selectedFaction?.battlerules.filter((battle_rule) => {
+  if (selectedContentType === "battle_rules") {
+    const filteredBattleRules = selectedFaction?.battle_rules.filter((battle_rule) => {
       return !settings?.ignoredSubFactions?.includes(battle_rule.subfaction_id);
     });
     const mainBattleRules = searchText
@@ -149,8 +149,8 @@ export const DesktopUnitList = () => {
                       Stratagems
                     </Option>
                   )}
-                  {selectedFaction?.battlerules && selectedFaction?.battlerules.length > 0 && (
-                    <Option value={"battlerules"} key={`battlerules`}>
+                  {selectedFaction?.battle_rules && selectedFaction?.battle_rules.length > 0 && (
+                    <Option value={"battle_rules"} key={`battle_rules`}>
                       Battle rules
                     </Option>
                   )}

@@ -381,7 +381,7 @@ export const getBasicData = () => {
             type: "Progressive Objective",
           },
         ],
-        battlerules: [
+        battle_rules: [
           {
             cardType: "battle_rule",
             rule_type: "Gambit",
@@ -583,7 +583,7 @@ export const get40k10eData = async () => {
   };
 
   const core = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/core.json?${new Date().getTime()}`
+    `https://raw.githubusercontent.com/RabidCicada/datasources/feature/add_battle_rules/10th/gdc/core.json?${new Date().getTime()}`
   );
 
   const fetchAllData = async () => {
@@ -614,6 +614,9 @@ export const get40k10eData = async () => {
         }),
         basicStratagems: core?.stratagems?.map((strat) => {
           return { ...strat, cardType: "stratagem", source: "40k-10e" };
+        }),
+        basicBattleRules: core?.battle_rules?.map((battle_rule) => {
+          return { ...battle_rule, cardType: "battle_rule", source: "40k-10e" };
         }),
       };
     }),
