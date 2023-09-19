@@ -25,6 +25,13 @@ export function BattleRuleBasicInfo() {
           onChange={(e) => updateActiveCard({ ...activeCard, rule_type: e.target.value })}
         />
       </Form.Item>
+      <Form.Item label={"Rule subtype"}>
+        <Input
+          type={"text"}
+          value={activeCard.rule_subtype}
+          onChange={(e) => updateActiveCard({ ...activeCard, rule_subtype: e.target.value })}
+        />
+      </Form.Item>
       <Form.Item label={"Flavor Text"}>
         <Input
           type={"text"}

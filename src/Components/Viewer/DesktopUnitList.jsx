@@ -68,7 +68,9 @@ export const DesktopUnitList = () => {
 
       unitList = [
         { type: "header", name: "Basic battle rules" },
-        ...basicBattleRules,
+        ...basicBattleRules.map((br) => {
+          return { ...br, faction_id: selectedFaction.id };
+        }),
         { type: "header", name: "Faction battle rules" },
         ...mainBattleRules,
       ];
@@ -149,7 +151,8 @@ export const DesktopUnitList = () => {
                       Stratagems
                     </Option>
                   )}
-                  {selectedFaction?.battle_rules && selectedFaction?.battle_rules.length > 0 && (
+                  {((selectedFaction?.basicBattleRules && selectedFaction?.basicBattleRules.length > 0) ||
+                    (selectedFaction?.battle_rules && selectedFaction?.battle_rules.length > 0)) && (
                     <Option value={"battle_rules"} key={`battle_rules`}>
                       Battle rules
                     </Option>
