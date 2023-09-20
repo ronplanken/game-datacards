@@ -397,17 +397,17 @@ export const getBasicData = () => {
             callouts: [
               {
                 type: "gambit",
-                callout: "Determine First Thing",
+                callout_text: "Determine First Thing",
                 detail: "Roll a d6 to determine the number of whoozits to whatzit",
               },
               {
                 type: "gambit",
-                callout: "Determine what was whatzited",
+                callout_text: "Determine what was whatzited",
                 detail: 'At the end of the fifth turn record each enemy unit within 12" of your units',
               },
               {
                 type: "gambit",
-                callout: "Determine Gambit Success",
+                callout_text: "Determine Gambit Success",
                 detail: "Roll a d6 to determine the number of whoozits to whatzit",
               },
             ],
@@ -427,12 +427,12 @@ export const getBasicData = () => {
             callouts: [
               {
                 type: "primary",
-                callout: "In the second, third, fourth and fifth battle rounds:",
+                callout_text: "In the second, third, fourth and fifth battle rounds:",
                 detail: "Keep shooting units scoring 5VP for each dead unit",
               },
               {
                 type: "primary",
-                callout: "At the end of the battle:",
+                callout_text: "At the end of the battle:",
                 detail: "Get an extra 10VP if you have killed more units than the enemy",
               },
             ],
@@ -449,6 +449,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
+            callouts: [],
           },
           {
             cardType: "battle_rule",
@@ -464,6 +465,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
+            callouts: [],
           },
           {
             cardType: "battle_rule",
@@ -479,6 +481,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
+            callouts: [],
           },
           {
             cardType: "battle_rule",
@@ -494,6 +497,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
+            callouts: [],
           },
           {
             cardType: "battle_rule",
@@ -509,6 +513,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
+            callouts: [],
           },
           {
             cardType: "battle_rule",
@@ -524,6 +529,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
+            callouts: [],
           },
         ],
         psychicpowers: [
