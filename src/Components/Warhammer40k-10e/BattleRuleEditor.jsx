@@ -1,6 +1,6 @@
 import { Collapse } from "antd";
 import { BattleRuleBasicInfo } from "./BattleRuleEditor/BattleRuleBasicInfo";
-import { BattleRuleCardInfo } from "./BattleRuleEditor/BattleRuleCardInfo";
+import { BattleRuleCallouts } from "./BattleRuleEditor/BattleRuleCallouts";
 
 const { Panel } = Collapse;
 
@@ -11,7 +11,7 @@ export const BattleRuleEditor = () => {
         <BattleRuleBasicInfo />
       </Panel>
       <Panel header="Detailed information" style={{ width: "100%" }} key="2">
-        <BattleRuleCardInfo />
+        <BattleRuleCallouts type={"placeholder"} />
       </Panel>
     </Collapse>
   );

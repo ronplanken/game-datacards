@@ -50,7 +50,7 @@ export const DesktopUnitList = () => {
     ];
   }
   if (selectedContentType === "battle_rules") {
-    const filteredBattleRules = selectedFaction?.battle_rules.filter((battle_rule) => {
+    const filteredBattleRules = selectedFaction?.battle_rules?.filter((battle_rule) => {
       return !settings?.ignoredSubFactions?.includes(battle_rule.subfaction_id);
     });
     const mainBattleRules = searchText
@@ -72,7 +72,7 @@ export const DesktopUnitList = () => {
           return { ...br, faction_id: selectedFaction.id };
         }),
         { type: "header", name: "Faction battle rules" },
-        ...mainBattleRules,
+        ...(mainBattleRules || []),
       ];
     }
   }

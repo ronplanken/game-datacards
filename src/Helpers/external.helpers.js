@@ -394,7 +394,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
-            extra_description: [
+            callouts: [
               {
                 type: "gambit",
                 callout: "Determine First Thing",
@@ -424,7 +424,7 @@ export const getBasicData = () => {
             faction_id: "basic",
             faction_name: "Basic",
             faction_type: "Basic",
-            extra_description: [
+            callouts: [
               {
                 type: "primary",
                 callout: "In the second, third, fourth and fifth battle rounds:",

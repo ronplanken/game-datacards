@@ -50,11 +50,11 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
                       </span>
                     </div>
                   )}
-                  {battle_rule.extra_description &&
-                    battle_rule.extra_description.map((item) => (
+                  {battle_rule.callouts &&
+                    battle_rule.callouts.map((item) => (
                       <div className="section" key={item.id}>
                         <span className="callout_text">
-                          <MarkdownSpanDisplay content={item.callout} />
+                          <MarkdownSpanDisplay content={item.callout_text} />
                         </span>
                         <span className="text">
                           <MarkdownSpanDisplay content={item.detail} />
