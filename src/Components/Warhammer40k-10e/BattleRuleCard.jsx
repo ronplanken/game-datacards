@@ -51,17 +51,16 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
                 </span>
               </div>
             )}
-            {battle_rule.callouts &&
-              battle_rule.callouts.map((item) => (
-                <div className="section" key={item.id}>
-                  <span className="callout_text title">
-                    <MarkdownSpanDisplay content={item.callout_text} />
-                  </span>
-                  <span className="text">
-                    <MarkdownSpanDisplay content={item.detail} />
-                  </span>
-                </div>
-              ))}
+            {battle_rule.callouts?.map((item) => (
+              <div className="section" key={item.id}>
+                <span className="title">
+                  <MarkdownSpanDisplay content={item.callout_text} />
+                </span>
+                <span className="text">
+                  <MarkdownSpanDisplay content={item.detail} />
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
