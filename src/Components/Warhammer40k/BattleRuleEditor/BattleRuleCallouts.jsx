@@ -8,7 +8,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 const { Option } = Select;
 
-export function BattleRuleCallouts({ type }) {
+export function BattleRuleCallouts() {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
@@ -22,19 +22,19 @@ export function BattleRuleCallouts({ type }) {
           const newCallouts = reorder(activeCard.callouts, result.source.index, result.destination.index);
           updateActiveCard({ ...activeCard, callouts: newCallouts });
         }}>
-        <Droppable droppableId={`droppable-${type}-callouts`}>
+        <Droppable droppableId={`droppable-callouts`}>
           {(provided, snapshot) => {
             return (
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {activeCard.callouts?.map((callout, index) => {
                   return (
-                    <Draggable key={`callout-${type}-${index}`} draggableId={`callout-${type}-${index}`} index={index}>
+                    <Draggable key={`callout-${index}`} draggableId={`callout-${index}`} index={index}>
                       {(drag) => (
                         <div
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
-                          key={`callout-${type}-${index}`}>
+                          key={`callout-${index}`}>
                           <Card
                             type={"inner"}
                             size={"small"}

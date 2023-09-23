@@ -11,7 +11,7 @@ export const BattleRuleEditor = () => {
         <BattleRuleBasicInfo />
       </Panel>
       <Panel header="Detailed information" style={{ width: "100%" }} key="2">
-        <BattleRuleCallouts type={"placeholder"} />
+        <BattleRuleCallouts />
       </Panel>
     </Collapse>
   );
