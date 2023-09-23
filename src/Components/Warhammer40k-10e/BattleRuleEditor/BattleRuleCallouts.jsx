@@ -90,11 +90,11 @@ export function BattleRuleCallouts({ type }) {
                                     commands.divider,
                                   ]}
                                   extraCommands={[]}
-                                  value={callout.description}
+                                  value={callout.detail}
                                   onChange={(value) => {
                                     updateActiveCard(() => {
                                       const newCallouts = [...activeCard.callouts];
-                                      newCallouts[index]["description"] = value;
+                                      newCallouts[index]["detail"] = value;
                                       return {
                                         ...activeCard,
                                         callouts: newCallouts,
