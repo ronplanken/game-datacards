@@ -68,7 +68,7 @@ export const DesktopUnitList = () => {
 
       unitList = [
         { type: "header", name: "Basic battle rules" },
-        ...basicBattleRules.map((br) => {
+        ...basicBattleRules?.map((br) => {
           return { ...br, faction_id: selectedFaction.id };
         }),
         { type: "header", name: "Faction battle rules" },
