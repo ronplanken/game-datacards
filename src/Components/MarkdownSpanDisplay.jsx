@@ -8,7 +8,7 @@ export const MarkdownSpanDisplay = ({ content, components }) => {
     <ReactMarkdown
       remarkPlugins={[[remarkGfm, { stringLength: stringWidth }]]}
       rehypePlugins={[[rehypeSanitize]]}
-      components={{ p: "span" }}>
+      components={{ p: "div" }}>
       {content}
     </ReactMarkdown>
   );

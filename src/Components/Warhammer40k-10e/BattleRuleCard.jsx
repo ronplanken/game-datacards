@@ -18,10 +18,10 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
       <div
         className={classNames(
           {
-            stratagem: true,
-            either: true,
+            battlerule: true,
           },
-          battle_rule.faction_id
+          battle_rule.faction_id,
+          battle_rule.colour || "generic"
         )}>
         <div className={`border`}>
           <div className="background-side-bar"></div>
@@ -32,14 +32,14 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
             </ReactFitty>
           </div>
           <div className="type">
-            <ReactFitty maxSize={16} minSize={6}>
+            <ReactFitty maxSize={14} minSize={6}>
               {battle_rule.rule_type} {battle_rule.rule_subtype && "-" + battle_rule.rule_subtype}
             </ReactFitty>
           </div>
           <div className="content">
             {battle_rule.flavor_text && (
               <div className="section">
-                <span className="text">
+                <span className="flavour">
                   <MarkdownSpanDisplay content={battle_rule.flavor_text} />
                 </span>
               </div>

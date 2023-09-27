@@ -1,9 +1,9 @@
 import { DeleteFilled } from "@ant-design/icons";
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Button, Card, Form, Popconfirm, Select, Space, Switch, Typography } from "antd";
+import { Button, Card, Form, Popconfirm, Select, Space, Typography } from "antd";
 import React from "react";
-import { reorder } from "../../../Helpers/generic.helpers";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import { reorder } from "../../../Helpers/generic.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 const { Option } = Select;
@@ -121,7 +121,7 @@ export function BattleRuleCallouts({ type }) {
         style={{ width: "100%" }}
         onClick={() =>
           updateActiveCard(() => {
-            const newCallouts = [...activeCard.callouts];
+            const newCallouts = [...(activeCard.callouts || [])];
             newCallouts.push({
               name: `New callout ${newCallouts.length + 1}`,
               showAbility: true,

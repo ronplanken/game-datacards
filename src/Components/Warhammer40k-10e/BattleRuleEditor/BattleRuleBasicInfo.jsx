@@ -38,6 +38,15 @@ export function BattleRuleBasicInfo() {
           onChange={(e) => updateActiveCard({ ...activeCard, flavor_text: e.target.value })}
         />
       </Form.Item>
+      <Form.Item label={"Colour"}>
+        <Select
+          value={activeCard.colour || "generic"}
+          onChange={(value) => updateActiveCard({ ...activeCard, colour: value })}>
+          <Option value="generic">Generic</Option>
+          <Option value="player1">Player 1</Option>
+          <Option value="player2">Player 2</Option>
+        </Select>
+      </Form.Item>
       <Card type={"inner"} size={"small"} title={"Description"} bodyStyle={{ padding: 0 }}>
         <Row justify="space-between" align="middle">
           <Col span={24}>
