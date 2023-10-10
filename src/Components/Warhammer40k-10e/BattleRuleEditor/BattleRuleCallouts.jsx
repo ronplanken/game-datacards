@@ -10,7 +10,7 @@ const { Option } = Select;
 
 export function BattleRuleCallouts({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
-
+  console.log(activeCard);
   return (
     <>
       <DragDropContext
@@ -28,13 +28,16 @@ export function BattleRuleCallouts({ type }) {
               <div {...provided.droppableProps} ref={provided.innerRef}>
                 {activeCard.callouts?.map((callout, index) => {
                   return (
-                    <Draggable key={`callout-${type}-${index}`} draggableId={`callout-${type}-${index}`} index={index}>
+                    <Draggable
+                      key={`callout-${type}-${callout.callout_text}`}
+                      draggableId={`callout-${type}-${index}`}
+                      index={index}>
                       {(drag) => (
                         <div
                           ref={drag.innerRef}
                           {...drag.draggableProps}
                           {...drag.dragHandleProps}
-                          key={`callout-${type}-${index}`}>
+                          key={`callout-${type}-${callout.callout_text}-div`}>
                           <Card
                             type={"inner"}
                             size={"small"}
@@ -123,8 +126,9 @@ export function BattleRuleCallouts({ type }) {
           updateActiveCard(() => {
             const newCallouts = [...(activeCard.callouts || [])];
             newCallouts.push({
-              name: `New callout ${newCallouts.length + 1}`,
-              showAbility: true,
+              callout_text: `New callout ${newCallouts.length + 1}`,
+              detail: `New description`,
+              showCallout: true,
               showDescription: false,
             });
             return { ...activeCard, callouts: newCallouts };

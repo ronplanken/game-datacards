@@ -33,7 +33,7 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
           </div>
           <div className="type">
             <ReactFitty maxSize={14} minSize={6}>
-              {battle_rule.rule_type} {battle_rule.rule_subtype && "-" + battle_rule.rule_subtype}
+              {battle_rule.rule_type} {battle_rule.rule_subtype && "- " + battle_rule.rule_subtype}
             </ReactFitty>
           </div>
           <div className="content">
@@ -52,10 +52,10 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
               </div>
             )}
             {battle_rule.callouts?.map((item) => (
-              <div className="section" key={item.id}>
-                <span className="title">
+              <div className="callout" key={item.id}>
+                <div className="title">
                   <MarkdownSpanDisplay content={item.callout_text} />
-                </span>
+                </div>
                 <span className="text">
                   <MarkdownSpanDisplay content={item.detail} />
                 </span>
