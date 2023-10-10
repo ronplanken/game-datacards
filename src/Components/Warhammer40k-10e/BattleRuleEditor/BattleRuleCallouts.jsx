@@ -10,7 +10,7 @@ const { Option } = Select;
 
 export function BattleRuleCallouts({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
-  console.log(activeCard);
+
   return (
     <>
       <DragDropContext
