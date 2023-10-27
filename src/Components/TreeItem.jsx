@@ -23,6 +23,7 @@ import { PsychicPower } from "../Icons/PsychicPower";
 import { Secondary } from "../Icons/Secondary";
 import { Stratagem } from "../Icons/Stratagem";
 import { Vehicle } from "../Icons/Vehicle";
+import { capitalizeSentence } from "../Helpers/external.helpers";
 
 const { confirm } = Modal;
 
@@ -195,7 +196,14 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               </div>
               {category?.type === "list" && card?.source === "40k-10e" && card?.selectedEnhancement && (
                 <span style={{ paddingRight: "8px" }}>
-                  <Tooltip title={`Selected enhancement: ${card?.selectedEnhancement?.name}`}>
+                  <Tooltip
+                    title={
+                      <>
+                        Enhancement:
+                        <br /> <strong>{capitalizeSentence(card?.selectedEnhancement?.name)}</strong> (+
+                        {card?.selectedEnhancement?.cost}pts)
+                      </>
+                    }>
                     <HeatMapOutlined />
                   </Tooltip>
                 </span>
@@ -217,7 +225,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                     e.preventDefault();
                     dropdown.current.style.display = "flex";
                   }}>
-                  <strong>{card?.unitSize?.cost}</strong>
+                  <strong>{Number(card?.unitSize?.cost) + (Number(card.selectedEnhancement?.cost) || 0)}</strong>
                 </span>
               )}
               {isListItem && (

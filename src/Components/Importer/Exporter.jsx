@@ -4,6 +4,7 @@ import React from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useFirebase } from "../../Hooks/useFirebase";
 import { v4 as uuidv4 } from "uuid";
+import { capitalizeSentence } from "../../Helpers/external.helpers";
 
 export const Exporter = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -74,27 +75,72 @@ export const Exporter = () => {
             <Button
               onClick={() => {
                 let listText = activeCategory.name;
-                activeCategory?.cards
-                  ?.toSorted((a, b) => {
-                    if (a.isWarlord) {
-                      return -1;
+                const sortedCards = activeCategory?.cards?.reduce(
+                  (exportCards, card) => {
+                    if (card.keywords.includes("Character")) {
+                      exportCards.characters.push(card);
+                      return exportCards;
                     }
-                    if (b.isWarlord) {
-                      return 1;
+                    if (card.keywords.includes("Battleline")) {
+                      exportCards.battleline.push(card);
+                      return exportCards;
                     }
-                    return a.name.localeCompare(b.name);
-                  })
-                  .forEach((val) => {
+                    exportCards.other.push(card);
+                    return exportCards;
+                  },
+                  { characters: [], battleline: [], other: [], allied: [] }
+                );
+                if (sortedCards.characters.length > 0) {
+                  listText += "\n\nCHARACTERS";
+
+                  sortedCards.characters.forEach((val) => {
                     listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${
-                      val.unitSize?.cost || "?"
+                      Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?"
                     } pts)`;
                     if (val.isWarlord) {
-                      listText += `\n${val.isWarlord ? "  Warlord" : ""}`;
+                      listText += `\n   ${val.isWarlord ? "• Warlord" : ""}`;
                     }
                     if (val.selectedEnhancement) {
-                      listText += `\n  ${val.selectedEnhancement?.name} (${val.selectedEnhancement?.cost} pts)`;
+                      listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
+                        val.selectedEnhancement?.cost
+                      } pts)`;
                     }
                   });
+                }
+                if (sortedCards.battleline.length > 0) {
+                  listText += "\n\nBATTLELINE";
+
+                  sortedCards.battleline.forEach((val) => {
+                    listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${
+                      Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?"
+                    } pts)`;
+                    if (val.isWarlord) {
+                      listText += `\n   ${val.isWarlord ? "• Warlord" : ""}`;
+                    }
+                    if (val.selectedEnhancement) {
+                      listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
+                        val.selectedEnhancement?.cost
+                      } pts)`;
+                    }
+                  });
+                }
+                if (sortedCards.other.length > 0) {
+                  listText += "\n\nOTHER";
+
+                  sortedCards.other.forEach((val) => {
+                    listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${
+                      Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?"
+                    } pts)`;
+                    if (val.isWarlord) {
+                      listText += `\n   ${val.isWarlord ? "• Warlord" : ""}`;
+                    }
+                    if (val.selectedEnhancement) {
+                      listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
+                        val.selectedEnhancement?.cost
+                      } pts)`;
+                    }
+                  });
+                }
                 listText += "\n\nCreated with https://game-datacards.eu";
                 navigator.clipboard.writeText(listText);
                 message.success("List copied to clipboard.");
