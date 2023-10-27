@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.2.0
+                Whats new in 2.3.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,37 +56,29 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Stratagem editor</strong>
+                          <strong>Desktop List creation</strong>
                           <br />
-                          Stratagems are now editable & printable in the card editor on desktop.
+                          You can now create a simple Warhammer 40k 10th edition with GameDatacards.
                         </li>
                         <li>
-                          <strong>Basic stratagems</strong>
+                          <strong>Points costs in list</strong>
                           <br />
-                          The mobile viewer now shows basic stratagems in the faction overview.
+                          You can toggle the display of points costs in the faction settings window.
+                        </li>
+                        <li>
+                          <strong>Leads, Led by</strong>
+                          <br />
+                          You can now edit the leader section of 10th datacards.
                         </li>
                       </ul>
                     </Typography.Paragraph>
-                    <Typography.Title level={5}>Visual changes</Typography.Title>
+                    <Typography.Title level={5}>Visual Changes</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Multi-model units</strong>
+                          <strong>Mobile stratagems</strong>
                           <br />
-                          Changes have been made to the way unit names in multi-model units are shown. They now
-                          auto-scale on the available space, even though this might cause the names not to have the same
-                          size it will fix the card overflowing outside its boundaries.
-                        </li>
-                        <li>
-                          <strong>Weapon keywords</strong>
-                          <br />
-                          When the keywords on a weapon do not fit on the same line as the name the entire block will be
-                          moved to the second line.
-                        </li>
-                        <li>
-                          <strong>Legends</strong>
-                          <br />
-                          The Legends text is now properly shown in the mobile viewer.
+                          Stratagems on mobile now have better art / styling.
                         </li>
                       </ul>
                     </Typography.Paragraph>
