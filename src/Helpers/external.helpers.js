@@ -5,7 +5,7 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
-function capitalizeSentence(sentence) {
+export function capitalizeSentence(sentence) {
   let words = sentence.toLowerCase().split(" ");
   for (let i = 0; i < words.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
