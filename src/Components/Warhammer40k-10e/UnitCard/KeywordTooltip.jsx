@@ -55,15 +55,6 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("anti-")) {
-    return (
-      <Tooltip
-        {...tooltipProps}
-        title={"An unmodified Wound roll of ‘x+’ against a target with the matching keyword scores a Critical Wound."}>
-        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
-      </Tooltip>
-    );
-  }
   if (keyword.includes("assault")) {
     return (
       <Tooltip {...tooltipProps} title={"Can be shot even if the bearer’s unit Advanced."}>

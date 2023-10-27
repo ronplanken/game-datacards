@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Col, Dropdown, List, Menu, Modal, Row, Space, Tooltip, Typography, message } from "antd";
 import classNames from "classnames";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { createPortal } from "react-dom";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -59,6 +59,17 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     }
     return undefined;
   });
+
+  useEffect(() => {
+    setIsWarlord(card?.isWarlord);
+    setSelectedEnhancement(card.selectedEnhancement);
+    if (card.unitSize) {
+      setSelectedUnitSize(card?.unitSize);
+    }
+    if (card?.points?.length === 1) {
+      setSelectedUnitSize(card.points[0]);
+    }
+  }, [card, index]);
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   const warlordAlreadyAdded = category?.cards?.find((card) => card.warlord);
@@ -129,6 +140,9 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
       setActiveCategory(category);
     }
   };
+
+  const isListItem =
+    category?.type === "list" && card?.source === "40k-10e" && card?.cardType === "DataCard" && !card?.unitSize;
 
   return (
     <>
@@ -206,22 +220,19 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                   <strong>{card?.unitSize?.cost}</strong>
                 </span>
               )}
-              {category?.type === "list" &&
-                card?.source === "40k-10e" &&
-                card?.cardType === "DataCard" &&
-                !card?.unitSize && (
-                  <>
-                    <button
-                      type="primary"
-                      className="list-select"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        dropdown.current.style.display = "flex";
-                      }}>
-                      <strong>select</strong>
-                    </button>
-                  </>
-                )}
+              {isListItem && (
+                <>
+                  <button
+                    type="primary"
+                    className="list-select"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      dropdown.current.style.display = "flex";
+                    }}>
+                    <strong>select</strong>
+                  </button>
+                </>
+              )}
             </div>
           </Dropdown>
         )}
