@@ -4,8 +4,8 @@ import React, { useEffect } from "react";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 
-export const WhatsNew = () => {
-  const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
+export const ServiceMessage = () => {
+  const [isServiceMessage, setIsWhatsNewVisible] = React.useState(false);
 
   const { settings, updateSettings } = useSettingsStorage();
 
@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.3.0
+                Whats new in 2.2.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,29 +56,37 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Desktop List creation</strong>
+                          <strong>Stratagem editor</strong>
                           <br />
-                          You can now create a simple Warhammer 40k 10th edition with GameDatacards.
+                          Stratagems are now editable & printable in the card editor on desktop.
                         </li>
                         <li>
-                          <strong>Points costs in list</strong>
+                          <strong>Basic stratagems</strong>
                           <br />
-                          You can toggle the display of points costs in the faction settings window.
-                        </li>
-                        <li>
-                          <strong>Leads, Led by</strong>
-                          <br />
-                          You can now edit the leader section of 10th datacards.
+                          The mobile viewer now shows basic stratagems in the faction overview.
                         </li>
                       </ul>
                     </Typography.Paragraph>
-                    <Typography.Title level={5}>Visual Changes</Typography.Title>
+                    <Typography.Title level={5}>Visual changes</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Mobile stratagems</strong>
+                          <strong>Multi-model units</strong>
                           <br />
-                          Stratagems on mobile now have better art / styling.
+                          Changes have been made to the way unit names in multi-model units are shown. They now
+                          auto-scale on the available space, even though this might cause the names not to have the same
+                          size it will fix the card overflowing outside its boundaries.
+                        </li>
+                        <li>
+                          <strong>Weapon keywords</strong>
+                          <br />
+                          When the keywords on a weapon do not fit on the same line as the name the entire block will be
+                          moved to the second line.
+                        </li>
+                        <li>
+                          <strong>Legends</strong>
+                          <br />
+                          The Legends text is now properly shown in the mobile viewer.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -95,7 +103,7 @@ export const WhatsNew = () => {
                   justify={"space-between"}>
                   <Col></Col>
                   <Col>
-                    <Button type="primary" size="large" onClick={() => closeWhatsNew()}>
+                    <Button type="primary" size="large" onClick={() => closeServiceMessage()}>
                       Close
                     </Button>
                   </Col>

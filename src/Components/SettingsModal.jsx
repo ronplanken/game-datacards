@@ -328,6 +328,47 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.2.0"} key={"2.2.0"}>
+                    <b> 27-10-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Stratagem editor</strong>
+                          <br />
+                          Stratagems are now editable & printable in the card editor on desktop.
+                        </li>
+                        <li>
+                          <strong>Basic stratagems</strong>
+                          <br />
+                          The mobile viewer now shows basic stratagems in the faction overview.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Visual changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Multi-model units</strong>
+                          <br />
+                          Changes have been made to the way unit names in multi-model units are shown. They now
+                          auto-scale on the available space, even though this might cause the names not to have the same
+                          size it will fix the card overflowing outside its boundaries.
+                        </li>
+                        <li>
+                          <strong>Weapon keywords</strong>
+                          <br />
+                          When the keywords on a weapon do not fit on the same line as the name the entire block will be
+                          moved to the second line.
+                        </li>
+                        <li>
+                          <strong>Legends</strong>
+                          <br />
+                          The Legends text is now properly shown in the mobile viewer.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.1.2"} key={"2.1.2"}>
                     <b> 20-07-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
@@ -356,7 +397,7 @@ export const SettingsModal = () => {
                           <strong>Backcard editing</strong>
                           <br />
                           You can now edit the back of the cards while in the Desktop card editor. Since &nbsp;
-                          <strong>Leads</strong> and <strong>Lead by</strong> are derrived fields they are not editable
+                          <strong>Leads</strong> and <strong>Led by</strong> are derrived fields they are not editable
                           at the moment.
                         </li>
                         <li>

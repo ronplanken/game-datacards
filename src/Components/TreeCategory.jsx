@@ -6,9 +6,10 @@ import {
   FolderOpenOutlined,
   FolderOutlined,
 } from "@ant-design/icons";
-import { Dropdown, Input, Menu, message, Modal } from "antd";
+import { Dropdown, Input, Menu, Modal, message } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { useCardStorage } from "../Hooks/useCardStorage";
+import { List } from "../Icons/List";
 
 const { confirm } = Modal;
 
@@ -28,6 +29,22 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       });
     }
   }, [isModalVisible, inputRef]);
+
+  const rename = () => {
+    renameCategory(category.uuid, newCategoryName);
+    setIsModalVisible(false);
+    message.success("Category has been renamed.");
+  };
+
+  const pointsTotal = category.cards?.reduce((total, card) => {
+    if (card?.source === "40k-10e" && card?.unitSize?.cost) {
+      if (card.selectedEnhancement) {
+        return total + Number(card?.unitSize?.cost) + Number(card.selectedEnhancement.cost);
+      }
+      return total + Number(card?.unitSize?.cost);
+    }
+    return total;
+  }, 0);
 
   const menu = (
     <Menu>
@@ -115,8 +132,31 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
                   }
                 }}>
                 &nbsp;
-                {category.closed ? <FolderOutlined /> : <FolderOpenOutlined />}
-                &nbsp;{category.name}
+                {category.type !== "list" && (category.type !== "list" ? <FolderOutlined /> : <FolderOpenOutlined />)}
+                {category.type === "list" && <List />}
+                &nbsp;{category.name}&nbsp;
+                {category.type === "list" && (
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      border: "0px solid white",
+                      backgroundColor: "#001529",
+                      color: "white",
+                      marginTop: "1px",
+                      marginBottom: "1px",
+                      paddingTop: "1px",
+                      paddingBottom: "1px",
+                      paddingLeft: "8px",
+                      paddingRight: "8px",
+                      borderRadius: "6px",
+                      textAlign: "center",
+                      float: "right",
+                      marginRight: "8px",
+                      minWidth: "40px",
+                    }}>
+                    <strong>{pointsTotal}</strong>
+                  </span>
+                )}
               </div>
             </Dropdown>
           </>
@@ -127,14 +167,21 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
         title="Rename category"
         visible={isModalVisible}
         onOk={() => {
-          renameCategory(category.uuid, newCategoryName);
-          setIsModalVisible(false);
-          message.success("Category has been renamed.");
+          rename();
         }}
         onCancel={() => {
           setIsModalVisible(false);
         }}>
-        <Input value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} ref={inputRef} />
+        <Input
+          value={newCategoryName}
+          onChange={(e) => setNewCategoryName(e.target.value)}
+          ref={inputRef}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              rename();
+            }
+          }}
+        />
       </Modal>
     </>
   );

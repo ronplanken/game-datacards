@@ -629,11 +629,16 @@ function App() {
                             style={{
                               display: "flex",
                               width: "100%",
-                              marginRight: "48px",
+                              marginRight: "24px",
                               justifyContent: "space-between",
                             }}
                             className={card.nonBase ? card.faction_id : ""}>
                             <span>{card.name}</span>
+                            {settings.showPointsInListview && card?.points?.length > 0 && (
+                              <span className="list-cost">
+                                <strong>{card.points[0]?.cost}</strong> pts
+                              </span>
+                            )}
                           </div>
                         </List.Item>
                       );
