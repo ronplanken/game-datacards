@@ -27,7 +27,7 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
   return (
     <Row>
       <Col
-        span={12}
+        span={16}
         style={{
           display: "flex",
           flexDirection: "row",
@@ -111,7 +111,7 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
         </Tooltip>
       </Col>
       <Col
-        span={12}
+        span={8}
         style={{
           display: "flex",
           flexDirection: "row",
@@ -121,7 +121,7 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
           alignItems: "center",
           paddingRight: "4px",
         }}>
-        {selectedTreeKey && selectedTreeKey?.includes("card") && (
+        {selectedTreeKey?.includes("card") && (
           <>
             <Tooltip title={"Update selected card"} placement="bottom">
               <Button
@@ -138,58 +138,6 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
             </Tooltip>
           </>
         )}
-        {/* {activeCategory && activeCategory.type === "list" && !selectedTreeKey?.includes("card") && (
-          <>
-            <Dropdown
-              visible={dropdownVisible}
-              onVisibleChange={(flag) => setDropdownVisible(flag)}
-              placement={"bottomRight"}
-              overlay={
-                <Menu>
-                  <Menu.Item key="1">
-                    <Checkbox
-                      checked={showPointTotal}
-                      onChange={(value) => {
-                        setShowPointTotal(!showPointTotal);
-                        const newCategory = {
-                          ...activeCategory,
-                          settings: {
-                            ...activeCategory.settings,
-                            showPointTotal: !showPointTotal,
-                          },
-                        };
-                        updateCategory(newCategory, newCategory.uuid);
-                        setActiveCategory(newCategory);
-                      }}>
-                      Show point total
-                    </Checkbox>
-                  </Menu.Item>
-                  <Menu.Item key="2">
-                    <Checkbox
-                      checked={showModelPoint}
-                      onChange={(value) => {
-                        setShowModelPoint(!showModelPoint);
-                        const newCategory = {
-                          ...activeCategory,
-                          settings: {
-                            ...activeCategory.settings,
-                            showModelPoint: !showModelPoint,
-                          },
-                        };
-                        updateCategory(newCategory, newCategory.uuid);
-                        setActiveCategory(newCategory);
-                      }}>
-                      Show DataCard points
-                    </Checkbox>
-                  </Menu.Item>
-                </Menu>
-              }>
-              <Button icon={<SettingOutlined />} type={"ghost"} size={"small"} onClick={() => {}}>
-                List
-              </Button>
-            </Dropdown>
-          </>
-        )} */}
       </Col>
     </Row>
   );
