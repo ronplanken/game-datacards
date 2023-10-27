@@ -85,14 +85,14 @@ export const Exporter = () => {
                     return a.name.localeCompare(b.name);
                   })
                   .forEach((val) => {
-                    listText += `\n\n${val.name} ${val.unitSize.models > 1 ? val.points.models + "x" : ""} (${
-                      val.unitSize.cost
+                    listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${
+                      val.unitSize?.cost || "?"
                     } pts)`;
-                    if (val.warlord) {
+                    if (val.isWarlord) {
                       listText += `\n${val.isWarlord ? "  Warlord" : ""}`;
                     }
                     if (val.selectedEnhancement) {
-                      listText += `\n  ${val.selectedEnhancement.name} (${val.selectedEnhancement.cost} pts)`;
+                      listText += `\n  ${val.selectedEnhancement?.name} (${val.selectedEnhancement?.cost} pts)`;
                     }
                   });
                 listText += "\n\nCreated with https://game-datacards.eu";
