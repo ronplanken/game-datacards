@@ -99,7 +99,7 @@ export const Exporter = () => {
                 navigator.clipboard.writeText(listText);
                 message.success("List copied to clipboard.");
               }}>
-              Export to JSON
+              Copy to clipboard
             </Button>
           </Tabs.TabPane>
         </Tabs>
