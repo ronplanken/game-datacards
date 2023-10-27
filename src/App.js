@@ -634,7 +634,7 @@ function App() {
                             }}
                             className={card.nonBase ? card.faction_id : ""}>
                             <span>{card.name}</span>
-                            {settings.showPointsInListview && card.points.length > 0 && (
+                            {settings.showPointsInListview && card?.points?.length > 0 && (
                               <span className="list-cost">
                                 <strong>{card.points[0]?.cost}</strong> pts
                               </span>
