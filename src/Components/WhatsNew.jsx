@@ -56,19 +56,15 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Desktop List creation</strong>
+                          <strong>Detachments</strong>
                           <br />
-                          You can now create a simple Warhammer 40k 10th edition with GameDatacards.
+                          Factions that have a detachment can now be shown properly. Also when adding a unit to a list
+                          you can first select a detachment to filter the enhancements.
                         </li>
                         <li>
-                          <strong>Points costs in list</strong>
+                          <strong>Tyranids</strong>
                           <br />
-                          You can toggle the display of points costs in the faction settings window.
-                        </li>
-                        <li>
-                          <strong>Leads, Led by</strong>
-                          <br />
-                          You can now edit the leader section of 10th datacards.
+                          In the 10e datasource Tyranids are now available for detachments.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -76,9 +72,9 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Mobile stratagems</strong>
+                          <strong>Stratagems</strong>
                           <br />
-                          Stratagems on mobile now have better art / styling.
+                          Stratagems on mobile will now remember their opened state.
                         </li>
                       </ul>
                     </Typography.Paragraph>
