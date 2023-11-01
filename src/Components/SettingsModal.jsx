@@ -328,6 +328,39 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.3.0"} key={"2.3.0"}>
+                    <b> 01-11-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Desktop List creation</strong>
+                          <br />
+                          You can now create a simple Warhammer 40k 10th edition with GameDatacards.
+                        </li>
+                        <li>
+                          <strong>Points costs in list</strong>
+                          <br />
+                          You can toggle the display of points costs in the faction settings window.
+                        </li>
+                        <li>
+                          <strong>Leads, Led by</strong>
+                          <br />
+                          You can now edit the leader section of 10th datacards.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Visual Changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Mobile stratagems</strong>
+                          <br />
+                          Stratagems on mobile now have better art / styling.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.2.0"} key={"2.2.0"}>
                     <b> 27-10-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
@@ -512,170 +545,176 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel>
-                  <Panel header={"Version 2.0.0"} key={"2.0.0"}>
-                    <b> 15-06-2023 </b>
-                    <Typography.Title level={5}>New Features</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Warhammer 40k 10th edition support</strong>
-                          <br />
-                          We now support Warhammer 40k 10th edition datacards. You can edit and modify them as you wish.
-                          All data is retrieve from an external datasource and not included in game-datacards.
-                          <br />
-                          <br /> Make sure you enable the Warhammer 40k 10th edition datasource in the settings window.
-                          <br /> If you have any suggestions or questions make sure to join our discord!
-                        </li>
-                        <li>
-                          <strong>Scalable panels</strong>
-                          <br />
-                          You can now move and scale both side panels as you wish.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Panel>
-                  <Panel header={"Version 1.6.0"} key={"1.6.0"}>
-                    <b> 14-01-2023 </b>
-                    <Typography.Title level={5}>New Features</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>New printing options</strong>
-                          <br />
-                          You can now select card scaling and page orientation in the print settings.
-                        </li>
-                        <li>
-                          <strong>Legacy Printing options</strong>
-                          <br />
-                          By popular demand the old printing feature has returned as a legacy option. You can toggle
-                          this in the configuration window.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Panel>
-                  <Panel header={"Version 1.5.0"} key={"1.5.0"}>
-                    <b> 21-12-2022 </b>
-                    <Typography.Title level={5}>New Features</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Printing feature has been updated</strong>
-                          <br />
-                          In order to help you create the perfect prints the print feature has been updated to be more
-                          inline to what you will actually print. For now it supports A4 and Letter US page formats. You
-                          will also have more control over the way the cards are spaced around the pages.
-                          <br />
-                          <br />
-                          Card scaling has been removed in favor of more fine-tuned control for all card sizes. You now
-                          have the ability to select all kinds of different sizes or go full custom and manually enter
-                          the card size. (Yes, unfortunately I&aposm one of those metric kind of programmers, so cm only
-                          for now.)
-                          <br />
-                          <br />
-                          You can expect more custom styling / printing options in a future update. Stuff like
-                          font-size, custom images and more.
-                        </li>
-                        <li>
-                          <strong>Reworked styling</strong>
-                          <br />
-                          All styling for all types of cards has been reworked. Since I was supposed to do this from the
-                          start but didn&apos;t this might cause some styling issues. Please report any issues you find
-                          to the Discord!
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Panel>
-                  <Panel header={"Version 1.4.2"} key={"1.4.2"}>
-                    <b> 17-10-2022 </b>
-                    <Typography.Title level={5}>New Features</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Datasheets can now be sorted by role.</strong>
-                          <br />A new setting has been added to the faction settings to sort and group all datasheets by
-                          their role.
-                        </li>
-                        <li>
-                          <strong>Basic stratagems have been added.</strong>
-                          <br />
-                          Basic stratagems are now shown in addition to the faction stratagems. You have the option to
-                          hide these using the faction settings.
-                        </li>
-                        <li>
-                          <strong>Basic secondaries can now be filtered.</strong>
-                          <br />
-                          Basic secondaries are now shown as a seperate group. You have the option to hide these using
-                          the faction settings.
-                        </li>
-                        <li>
-                          <strong>Add cards to a specific category</strong>
-                          <br />
-                          You can now add a card to a specific category instead of just the first one.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Panel>
-                  <Panel header={"Version 1.4.1"} key={"1.4.1"}>
-                    <b> 21-09-2022 </b>
-                    <Typography.Title level={5}>New Features</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Full support for Wahapedia&apos;s Psychic Powers.</strong>
-                          <br />
-                          Game-datacards.eu now has full support for all Psychic abilities that are available in the
-                          Wahapedia datasource.
-                          <em>Please note that you need to update your datasources in order to use the latest data.</em>
-                        </li>
-                        <li>
-                          <strong>Datasheets can now show a header</strong>
-                          <br />
-                          Using the new settings button on a datasheet you can toggle the header on/off.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Panel>
-                  <Panel header={"Version 1.4.0"} key={"1.4.0"}>
-                    <b> 02-09-2022 </b>
-                    <Typography.Title level={5}>New Features</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Full support for Wahapedia&apos;s secondaries &amp; subfactions.</strong>
-                          <br />
-                          Game-datacards.eu now has full support for all secondaries &amp; subfactions that are
-                          available in the Wahapedia datasource.{" "}
-                          <em>Please note that you need to update your datasources in order to use the latest data.</em>
-                        </li>
-                        <li>
-                          <strong>Filter stratagems &amp; secondaries on subfaction</strong>
-                          <br />
-                          You can now select which subfactions you want to show for the stratagems &amp; secondaries
-                          using the new button next to the faction select. By default all subfactions are shown.
-                        </li>
-                        <li>
-                          <strong>Update reminder</strong>
-                          <br />
-                          An update reminder has been added to remind you to check for datasource updates.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Changes</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>40K</strong> Secondaries now have full table support if the text has them.
-                        </li>
-                        <li>
-                          <strong>40K</strong> Changes have been made to certain faction id fields. This might cause
-                          some backgrounds not working, if this occurs you can manually select a new background /
-                          faction.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Panel>
                   <Panel header={"Older versions"} key={"older"}>
                     <Collapse>
+                      <Panel header={"Version 2.0.0"} key={"2.0.0"}>
+                        <b> 15-06-2023 </b>
+                        <Typography.Title level={5}>New Features</Typography.Title>
+                        <Typography.Paragraph style={{ fontSize: "16px" }}>
+                          <ul>
+                            <li>
+                              <strong>Warhammer 40k 10th edition support</strong>
+                              <br />
+                              We now support Warhammer 40k 10th edition datacards. You can edit and modify them as you
+                              wish. All data is retrieve from an external datasource and not included in game-datacards.
+                              <br />
+                              <br /> Make sure you enable the Warhammer 40k 10th edition datasource in the settings
+                              window.
+                              <br /> If you have any suggestions or questions make sure to join our discord!
+                            </li>
+                            <li>
+                              <strong>Scalable panels</strong>
+                              <br />
+                              You can now move and scale both side panels as you wish.
+                            </li>
+                          </ul>
+                        </Typography.Paragraph>
+                      </Panel>
+                      <Panel header={"Version 1.6.0"} key={"1.6.0"}>
+                        <b> 14-01-2023 </b>
+                        <Typography.Title level={5}>New Features</Typography.Title>
+                        <Typography.Paragraph style={{ fontSize: "16px" }}>
+                          <ul>
+                            <li>
+                              <strong>New printing options</strong>
+                              <br />
+                              You can now select card scaling and page orientation in the print settings.
+                            </li>
+                            <li>
+                              <strong>Legacy Printing options</strong>
+                              <br />
+                              By popular demand the old printing feature has returned as a legacy option. You can toggle
+                              this in the configuration window.
+                            </li>
+                          </ul>
+                        </Typography.Paragraph>
+                      </Panel>
+                      <Panel header={"Version 1.5.0"} key={"1.5.0"}>
+                        <b> 21-12-2022 </b>
+                        <Typography.Title level={5}>New Features</Typography.Title>
+                        <Typography.Paragraph style={{ fontSize: "16px" }}>
+                          <ul>
+                            <li>
+                              <strong>Printing feature has been updated</strong>
+                              <br />
+                              In order to help you create the perfect prints the print feature has been updated to be
+                              more inline to what you will actually print. For now it supports A4 and Letter US page
+                              formats. You will also have more control over the way the cards are spaced around the
+                              pages.
+                              <br />
+                              <br />
+                              Card scaling has been removed in favor of more fine-tuned control for all card sizes. You
+                              now have the ability to select all kinds of different sizes or go full custom and manually
+                              enter the card size. (Yes, unfortunately I&aposm one of those metric kind of programmers,
+                              so cm only for now.)
+                              <br />
+                              <br />
+                              You can expect more custom styling / printing options in a future update. Stuff like
+                              font-size, custom images and more.
+                            </li>
+                            <li>
+                              <strong>Reworked styling</strong>
+                              <br />
+                              All styling for all types of cards has been reworked. Since I was supposed to do this from
+                              the start but didn&apos;t this might cause some styling issues. Please report any issues
+                              you find to the Discord!
+                            </li>
+                          </ul>
+                        </Typography.Paragraph>
+                      </Panel>
+                      <Panel header={"Version 1.4.2"} key={"1.4.2"}>
+                        <b> 17-10-2022 </b>
+                        <Typography.Title level={5}>New Features</Typography.Title>
+                        <Typography.Paragraph style={{ fontSize: "16px" }}>
+                          <ul>
+                            <li>
+                              <strong>Datasheets can now be sorted by role.</strong>
+                              <br />A new setting has been added to the faction settings to sort and group all
+                              datasheets by their role.
+                            </li>
+                            <li>
+                              <strong>Basic stratagems have been added.</strong>
+                              <br />
+                              Basic stratagems are now shown in addition to the faction stratagems. You have the option
+                              to hide these using the faction settings.
+                            </li>
+                            <li>
+                              <strong>Basic secondaries can now be filtered.</strong>
+                              <br />
+                              Basic secondaries are now shown as a seperate group. You have the option to hide these
+                              using the faction settings.
+                            </li>
+                            <li>
+                              <strong>Add cards to a specific category</strong>
+                              <br />
+                              You can now add a card to a specific category instead of just the first one.
+                            </li>
+                          </ul>
+                        </Typography.Paragraph>
+                      </Panel>
+                      <Panel header={"Version 1.4.1"} key={"1.4.1"}>
+                        <b> 21-09-2022 </b>
+                        <Typography.Title level={5}>New Features</Typography.Title>
+                        <Typography.Paragraph style={{ fontSize: "16px" }}>
+                          <ul>
+                            <li>
+                              <strong>Full support for Wahapedia&apos;s Psychic Powers.</strong>
+                              <br />
+                              Game-datacards.eu now has full support for all Psychic abilities that are available in the
+                              Wahapedia datasource.
+                              <em>
+                                Please note that you need to update your datasources in order to use the latest data.
+                              </em>
+                            </li>
+                            <li>
+                              <strong>Datasheets can now show a header</strong>
+                              <br />
+                              Using the new settings button on a datasheet you can toggle the header on/off.
+                            </li>
+                          </ul>
+                        </Typography.Paragraph>
+                      </Panel>
+                      <Panel header={"Version 1.4.0"} key={"1.4.0"}>
+                        <b> 02-09-2022 </b>
+                        <Typography.Title level={5}>New Features</Typography.Title>
+                        <Typography.Paragraph style={{ fontSize: "16px" }}>
+                          <ul>
+                            <li>
+                              <strong>Full support for Wahapedia&apos;s secondaries &amp; subfactions.</strong>
+                              <br />
+                              Game-datacards.eu now has full support for all secondaries &amp; subfactions that are
+                              available in the Wahapedia datasource.{" "}
+                              <em>
+                                Please note that you need to update your datasources in order to use the latest data.
+                              </em>
+                            </li>
+                            <li>
+                              <strong>Filter stratagems &amp; secondaries on subfaction</strong>
+                              <br />
+                              You can now select which subfactions you want to show for the stratagems &amp; secondaries
+                              using the new button next to the faction select. By default all subfactions are shown.
+                            </li>
+                            <li>
+                              <strong>Update reminder</strong>
+                              <br />
+                              An update reminder has been added to remind you to check for datasource updates.
+                            </li>
+                          </ul>
+                        </Typography.Paragraph>
+                        <Typography.Title level={5}>Changes</Typography.Title>
+                        <Typography.Paragraph style={{ fontSize: "16px" }}>
+                          <ul>
+                            <li>
+                              <strong>40K</strong> Secondaries now have full table support if the text has them.
+                            </li>
+                            <li>
+                              <strong>40K</strong> Changes have been made to certain faction id fields. This might cause
+                              some backgrounds not working, if this occurs you can manually select a new background /
+                              faction.
+                            </li>
+                          </ul>
+                        </Typography.Paragraph>
+                      </Panel>
                       <Panel header={"Version 1.3.2"} key={"1.3.2"}>
                         <b>25-08-2022</b>
                         <Typography.Title level={5}>New Features</Typography.Title>

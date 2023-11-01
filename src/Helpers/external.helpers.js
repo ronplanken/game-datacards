@@ -455,7 +455,7 @@ export const get40k10eData = async () => {
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
     noDatasheetByRole: true,
-    noStratagemOptions: true,
+    noStratagemOptions: false,
     noSubfactionOptions: true,
     noSecondaryOptions: true,
     noPsychicOptions: true,

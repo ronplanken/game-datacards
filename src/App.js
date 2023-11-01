@@ -554,7 +554,6 @@ function App() {
                             key={`list-category-${index}`}
                             className={`list-category`}
                             onClick={() => {
-                              console.log(card);
                               let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
                               if (newClosedFactions.includes(card.id)) {
                                 newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
@@ -583,7 +582,6 @@ function App() {
                             key={`list-role-${index}`}
                             className={`list-category`}
                             onClick={() => {
-                              console.log(card);
                               let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
                               if (newClosedRoles.includes(card.name)) {
                                 newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
@@ -633,7 +631,12 @@ function App() {
                               justifyContent: "space-between",
                             }}
                             className={card.nonBase ? card.faction_id : ""}>
-                            <span>{card.name}</span>
+                            <span style={{ flexDirection: "column", display: "flex" }}>
+                              {card.name}
+                              {card.detachment !== "core" && (
+                                <span style={{ fontSize: "0.7rem" }}>{card.detachment}</span>
+                              )}
+                            </span>
                             {settings.showPointsInListview && card?.points?.length > 0 && (
                               <span className="list-cost">
                                 <strong>{card.points[0]?.cost}</strong> pts
