@@ -33,17 +33,10 @@ export const BattleRuleCard = ({ battle_rule, cardStyle, paddingTop = "32px", cl
           </div>
           <div className="type">
             <ReactFitty maxSize={14} minSize={6}>
-              {battle_rule.rule_type} {battle_rule.rule_subtype && "-" + battle_rule.rule_subtype}
+              {battle_rule.rule_type} {battle_rule.rule_subtype && " - " + battle_rule.rule_subtype}
             </ReactFitty>
           </div>
           <div className="content">
-            {battle_rule.flavor_text && (
-              <div className="section">
-                <span className="flavour">
-                  <MarkdownSpanDisplay content={battle_rule.flavor_text} />
-                </span>
-              </div>
-            )}
             {battle_rule.main_desc && (
               <div className="section">
                 <span className="text">

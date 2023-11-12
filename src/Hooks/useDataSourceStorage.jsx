@@ -49,7 +49,6 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(dataFactions);
       }
       if (settings.selectedDataSource === "40k-10e") {
-        console.log("update settings");
         const storedData = await dataStore.getItem("40k-10e");
         if (storedData) {
           setDataSource(storedData);
