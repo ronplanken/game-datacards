@@ -263,12 +263,23 @@ function App() {
             )
           : selectedFaction.basicBattleRules;
 
-        return [
-          { type: "header", name: "Basic battle rules" },
-          ...basicBattleRules,
-          { type: "header", name: "Faction battle rules" },
-          ...(mainBattleRules || []),
-        ];
+        let br_groups = {};
+        basicBattleRules.map((battle_rule) => {
+          let group_name = battle_rule.rule_type + (battle_rule.rule_subtype && "-" + battle_rule.rule_subtype);
+          console.log("GroupName:" + group_name);
+          br_groups = { ...br_groups, [group_name]: br_groups[group_name] || [] };
+          console.log("br_groups names:", Object.getOwnPropertyNames(br_groups));
+          br_groups[group_name].push(battle_rule);
+        });
+        let menuItems = [];
+        Object.keys(br_groups).forEach(function (key, index) {
+          menuItems.push({ type: "header", name: key });
+          menuItems.push(...br_groups[key]);
+        });
+        console.log("br_groups:", Object.getOwnPropertyNames(br_groups));
+        console.log("MENUITEMS:", menuItems.toString());
+
+        return [...menuItems, { type: "header", name: "Faction battle rules" }, ...(mainBattleRules || [])];
       }
     }
 
