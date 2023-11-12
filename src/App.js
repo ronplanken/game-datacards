@@ -261,7 +261,7 @@ function App() {
           ? selectedFaction.basicBattleRules?.filter((battle_rule) =>
               battle_rule.name.toLowerCase().includes(searchText.toLowerCase())
             )
-          : selectedFaction.basicBattleRules ?? [{ name: "Update your datasources" }];
+          : selectedFaction.basicBattleRules;
 
         return [
           { type: "header", name: "Basic battle rules" },
@@ -277,7 +277,6 @@ function App() {
         const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
           return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
         });
-        console.log(filteredSecondaries);
         if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
           return filteredSecondaries;
         } else {
@@ -617,7 +616,6 @@ function App() {
                             key={`list-role-${index}`}
                             className={`list-category`}
                             onClick={() => {
-                              console.log(card);
                               let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
                               if (newClosedRoles.includes(card.name)) {
                                 newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
@@ -640,8 +638,6 @@ function App() {
                           </List.Item>
                         );
                       }
-                      const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
-
                       if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
                         return <></>;
                       }
