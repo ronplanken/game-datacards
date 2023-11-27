@@ -291,8 +291,10 @@ export const Print = () => {
                         });
                       }}
                       options={[
-                        { label: "Standard Backgrounds", value: "standard" },
-                        { label: "Light Backgrounds", value: "light" },
+                        { label: "Standard Background", value: "standard" },
+                        { label: "Light Background", value: "light" },
+                        { label: "Greyscale Background", value: "greyscale" },
+                        { label: "Debug Background", value: "debug" },
                       ]}
                       size={"small"}
                     />

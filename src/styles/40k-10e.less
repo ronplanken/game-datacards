@@ -55,7 +55,7 @@
       z-index: 2;
     }
     tbody {
-      background-color: #dfe0e2;
+      background-color: var(--text-background-colour);
       color: black;
       font-size: 1.1em;
       font-weight: 800;
@@ -111,7 +111,7 @@
       height: 35.9px;
       width: 35.9px;
       border: 3.4px solid var(--header-colour);
-      background-color: #d8d8da;
+      background-color: var(--rows-colour);
       position: absolute;
       top: 16.06px;
       left: 12.28px;
@@ -122,7 +122,7 @@
       height: 35.9px;
       width: 35.9px;
       border: 3.4px solid var(--header-colour);
-      background-color: #d8d8da;
+      background-color: var(--rows-colour);
       position: absolute;
       top: 83.14px;
       left: 12.28px;
@@ -227,7 +227,7 @@
         height: 35.9px;
         width: 35.9px;
         border: 3.5px solid var(--stratagem-colour);
-        background-color: #d8d8da;
+        background-color: var(--rows-colour);
         rotate: 45deg;
         overflow: hidden;
 
@@ -493,7 +493,7 @@
             height: 35.9px;
             width: 35.9px;
             border: 3.4px solid var(--stratagem-colour);
-            background-color: #d8d8da;
+            background-color: var(--rows-colour);
 
             rotate: 45deg;
             overflow: hidden;
@@ -671,10 +671,17 @@
   --card-scaling-factor: 1;
 
   --header-colour: #456664;
+  --header-text-colour: white;
+  --stat-text-colour: #456664;
   --banner-colour: #103344;
-
+  --text-background-colour: #dfe0e2;
+  --rows-colour: #d8d8da;
+  --alt-rows-colour: #dee3e0;
+  --keywords-background-colour: #d8d8da;
+  --weapon-keyword-colour: #456664;
   --background-colour: black;
   --faction-text-colour: white;
+  --title-text-colour: white;
 
   .unit {
     height: calc(714px);
@@ -759,7 +766,7 @@
             text-transform: uppercase;
             font-size: 2rem;
             font-weight: 800;
-            color: white;
+            color: var(--title-text-colour);
             z-index: 3;
             line-height: 2.5rem;
             letter-spacing: 0.1rem;
@@ -768,7 +775,7 @@
             padding-left: 8px;
             text-transform: uppercase;
             font-style: italic;
-            color: white;
+            color: var(--title-text-colour);
             font-size: 1.1rem;
             z-index: 2;
             font-weight: 600;
@@ -789,17 +796,17 @@
             text-transform: uppercase;
             font-size: 1rem;
             font-weight: 600;
-            color: white;
+            color: var(--title-text-colour);
             z-index: 2;
             line-height: 2.2rem;
             letter-spacing: 0.1rem;
             padding-left: 8px;
             padding-right: 8px;
-            border: 1px solid #dfe0e2;
+            border: 1px solid var(--title-text-colour);
             border-radius: 4px;
 
             &:hover {
-              border: 1px solid #dfe0e2;
+              border: 1px solid var(--title-text-colour);
               background-color: #ffffff44;
               cursor: pointer;
             }
@@ -836,7 +843,7 @@
           .caption {
             text-align: center;
             font-size: 0.9rem;
-            color: white;
+            color: var(--title-text-colour);
             font-weight: 600;
             width: 44px;
             height: 20px;
@@ -884,7 +891,7 @@
               text-transform: uppercase;
               font-size: 1.3rem;
               font-weight: 600;
-              color: var(--header-colour);
+              color: var(--stat-text-colour);
               z-index: 2;
               background-color: white;
 
@@ -947,7 +954,7 @@
         margin-top: -4px;
         height: 468px;
         width: 1028px;
-        background-color: rgb(223, 224, 226);
+        background-color: var(--text-background-colour);
         clip-path: polygon(0 0, 100% 0, 100% 100%, 2% 100%, 0 96%);
 
         display: grid;
@@ -991,7 +998,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1003,10 +1010,10 @@
               border-bottom: 1px dotted #636567;
 
               &:nth-of-type(even) {
-                background: #d8d8da;
+                background: var(--rows-colour);
               }
               &:nth-of-type(odd) {
-                background: #dee3e0;
+                background: var(--alt-rows-colour);
               }
               .line {
                 display: grid;
@@ -1059,7 +1066,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1071,10 +1078,10 @@
               border-bottom: 1px dotted #636567;
 
               &:nth-of-type(even) {
-                background: #d8d8da;
+                background: var(--rows-colour);
               }
               &:nth-of-type(odd) {
-                background: #dee3e0;
+                background: var(--alt-rows-colour);
               }
               .line {
                 display: grid;
@@ -1141,7 +1148,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1228,7 +1235,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1263,7 +1270,7 @@
                   text-transform: uppercase;
                   font-size: 1.3rem;
                   font-weight: 600;
-                  color: var(--header-colour);
+                  color: var(--stat-text-colour);
                   z-index: 2;
 
                   justify-content: center;
@@ -1287,7 +1294,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1342,7 +1349,7 @@
               margin-bottom: 4px;
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1473,7 +1480,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 z-index: 2;
@@ -1514,7 +1521,7 @@
 
         .title {
           text-transform: uppercase;
-          color: white;
+          color: var(--header-text-colour);
           font-size: 1rem;
           font-weight: 600;
           z-index: 2;
@@ -1565,7 +1572,7 @@
       height: 64px;
       width: 1000px;
       border: 2px solid var(--header-colour);
-      background-color: #dfe0e2;
+      background-color: var(--text-background-colour);
       position: absolute;
       bottom: 32px;
 
@@ -1583,7 +1590,7 @@
         padding-left: 16px;
         position: relative;
         padding-right: 48px;
-        background-color: #d8d8da;
+        background-color: var(--keywords-background-colour);
 
         .title {
           text-transform: uppercase;
@@ -1638,7 +1645,7 @@
       height: 64px;
       width: 64px;
       border: 2px solid var(--header-colour);
-      background-color: #d8d8da;
+      background-color: var(--rows-colour);
       position: absolute;
       bottom: 32px;
       left: 677px;
@@ -1883,7 +1890,7 @@
             .caption {
               text-align: center;
               font-size: 0.8rem;
-              color: white;
+              color: var(--title-text-colour);
               font-weight: 600;
               width: 34px;
               height: 12px;
@@ -2003,7 +2010,7 @@
           margin-top: -4px;
           height: auto;
           width: 100%;
-          background-color: rgb(223, 224, 226);
+          background-color: var(--text-background-colour);
           clip-path: initial;
 
           display: grid;
@@ -2082,10 +2089,10 @@
                 border-bottom: 1px dotted #636567;
                 padding-right: 8px;
                 &:nth-of-type(even) {
-                  background: #d8d8da;
+                  background: var(--rows-colour);
                 }
                 &:nth-of-type(odd) {
-                  background: #dee3e0;
+                  background: var(--alt-rows-colour);
                 }
                 .line {
                   display: grid;
@@ -2207,10 +2214,10 @@
                 padding-right: 8px;
 
                 &:nth-of-type(even) {
-                  background: #d8d8da;
+                  background: var(--rows-colour);
                 }
                 &:nth-of-type(odd) {
-                  background: #dee3e0;
+                  background: var(--alt-rows-colour);
                 }
                 .line {
                   display: grid;
@@ -2524,7 +2531,7 @@
         height: auto;
         width: 100%;
         border: 0px solid var(--header-colour);
-        background-color: #dfe0e2;
+        background-color: var(--text-background-colour);
         position: initial;
         grid-template-columns: 1fr;
 
@@ -2542,7 +2549,7 @@
             "column-2";
 
           padding-left: 0px;
-          background-color: #d8d8da;
+          background-color: var(--rows-colour);
 
           .title {
             padding-left: 8px;
@@ -2590,7 +2597,7 @@
             "column-2";
 
           padding-left: 0px;
-          background-color: #d8d8da;
+          background-color: var(--rows-colour);
 
           .title {
             padding: 4px;
@@ -2630,7 +2637,7 @@
         height: 64px;
         width: 64px;
         border: 2px solid var(--header-colour);
-        background-color: #d8d8da;
+        background-color: var(--rows-colour);
         position: absolute;
         bottom: 32px;
         left: 677px;
@@ -2719,7 +2726,7 @@
   }
   .keyword {
     text-transform: uppercase;
-    color: var(--header-colour);
+    color: var(--weapon-keyword-colour);
     font-size: 0.7rem;
     font-weight: 600;
     z-index: 2;
@@ -2727,7 +2734,7 @@
 
     .keyword-button {
       text-transform: uppercase;
-      color: var(--header-colour);
+      color: var(--weapon-keyword-colour);
       font-size: 0.7rem;
       font-weight: 600;
       height: 16px;
