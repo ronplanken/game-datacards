@@ -144,6 +144,9 @@ export const Warhammer40K10eCardDisplay = ({
                 "--alt-rows-colour": altRowsColour,
                 "--keywords-background-colour": keywordsBackgroundColour,
                 "--weapon-keyword-colour": weaponKeywordColour,
+                "--green-stratagem-colour": greenStratagemColour,
+                "--blue-stratagem-colour": blueStratagemColour,
+                "--red-stratagem-colour": redStratagemColour,
               }}
             />
           )}
