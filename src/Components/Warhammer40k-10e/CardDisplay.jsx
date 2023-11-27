@@ -38,6 +38,7 @@ export const Warhammer40K10eCardDisplay = ({
   // colour for the weapon keyword text like [assault] or [lethal hits]
   var weaponKeywordColour;
 
+  // colour for the different types of stratagem
   var greenStratagemColour;
   var blueStratagemColour;
   var redStratagemColour;
