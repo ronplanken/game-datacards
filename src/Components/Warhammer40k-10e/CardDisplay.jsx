@@ -38,6 +38,10 @@ export const Warhammer40K10eCardDisplay = ({
   // colour for the weapon keyword text like [assault] or [lethal hits]
   var weaponKeywordColour;
 
+  var greenStratagemColour;
+  var blueStratagemColour;
+  var redStratagemColour;
+
   if (backgrounds === "standard") {
     titleBackgroundColour = "black";
     titleTextColour = "white";
@@ -51,6 +55,9 @@ export const Warhammer40K10eCardDisplay = ({
     altRowsColour = "#dee3e0";
     keywordsBackgroundColour = "#d8d8da";
     weaponKeywordColour = "#456664";
+    greenStratagemColour = "#2c594c";
+    blueStratagemColour = "#234461";
+    redStratagemColour = "#a2151a";
   } else if (backgrounds === "light") {
     titleBackgroundColour = "#dfe0e2";
     titleTextColour = "white";
@@ -64,6 +71,9 @@ export const Warhammer40K10eCardDisplay = ({
     altRowsColour = "#dee3e0";
     keywordsBackgroundColour = "#d8d8da";
     weaponKeywordColour = "#456664";
+    greenStratagemColour = "#2c594c";
+    blueStratagemColour = "#234461";
+    redStratagemColour = "#a2151a";
   } else if (backgrounds === "greyscale") {
     titleBackgroundColour = "white";
     titleTextColour = "black";
@@ -77,6 +87,9 @@ export const Warhammer40K10eCardDisplay = ({
     altRowsColour = "#ededed";
     keywordsBackgroundColour = "white";
     weaponKeywordColour = "#4f4f4f";
+    greenStratagemColour = "#595959";
+    blueStratagemColour = "#616161";
+    redStratagemColour = "#a3a3a3";
   } else if (backgrounds === "debug") {
     titleBackgroundColour = "pink";
     titleTextColour = "teal";
@@ -90,6 +103,9 @@ export const Warhammer40K10eCardDisplay = ({
     altRowsColour = "blue";
     keywordsBackgroundColour = "brown";
     weaponKeywordColour = "purple";
+    greenStratagemColour = "green";
+    blueStratagemColour = "blue";
+    redStratagemColour = "red";
   }
   return (
     <>
@@ -141,7 +157,20 @@ export const Warhammer40K10eCardDisplay = ({
                 height: `${460 * (cardScaling / 100)}px`,
                 width: `${266 * (cardScaling / 100)}px`,
                 "--background-colour": titleBackgroundColour,
+                "--title-text-colour": titleTextColour,
                 "--faction-text-colour": factionTextColour,
+                "--header-colour": headerColour,
+                "--header-text-colour": headerTextColour,
+                "--stat-text-colour": statTextColour,
+                "--banner-colour": bannerColour,
+                "--text-background-colour": textBackgroundColour,
+                "--rows-colour": rowsColour,
+                "--alt-rows-colour": altRowsColour,
+                "--keywords-background-colour": keywordsBackgroundColour,
+                "--weapon-keyword-colour": weaponKeywordColour,
+                "--green-stratagem-colour": greenStratagemColour,
+                "--blue-stratagem-colour": blueStratagemColour,
+                "--red-stratagem-colour": redStratagemColour,
               }}
             />
           )}
