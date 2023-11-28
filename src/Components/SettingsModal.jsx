@@ -299,7 +299,7 @@ export const SettingsModal = () => {
             <Row>
               <Col span={23}>
                 <Collapse>
-                  {/* <Panel header={"Version 2.3.1"} key={"2.3.1"}>
+                  {/* <Panel header={"Version 1.3.1"} key={"1.3.1"}>
                     <b> DATE </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
@@ -328,7 +328,7 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
-                  <Panel header={"Version 1.3.1"} key={"1.3.1"}>
+                  <Panel header={"Version 2.3.1"} key={"2.3.1"}>
                     <b> DATE </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
