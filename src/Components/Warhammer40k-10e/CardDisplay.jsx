@@ -1,8 +1,8 @@
 import { Col } from "antd";
+import { COLOURS } from "../../Helpers/printcolours.js";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
-import { COLOURS } from "../../Helpers/printcolours.js";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -16,7 +16,7 @@ export const Warhammer40K10eCardDisplay = ({
 
   // if no background selected, use standard
   // this does assume standard will always exist but the alternative is duplicating the data?
-  if(!(backgrounds in COLOURS)) {
+  if (!(backgrounds in COLOURS)) {
     backgrounds = "standard";
   }
 
