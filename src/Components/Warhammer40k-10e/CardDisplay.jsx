@@ -1,4 +1,5 @@
 import { Col } from "antd";
+import { COLOURS } from "../../Helpers/printcolours.js";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
@@ -13,8 +14,12 @@ export const Warhammer40K10eCardDisplay = ({
 }) => {
   const { activeCard } = useCardStorage();
 
-  const backgroundColour = backgrounds === "standard" ? "black" : "#dfe0e2";
-  const factionTextColour = backgrounds === "standard" ? "white" : "black";
+  // if no background selected, use standard
+  // this does assume standard will always exist but the alternative is duplicating the data?
+  if (!(backgrounds in COLOURS)) {
+    backgrounds = "standard";
+  }
+
   return (
     <>
       {!type && activeCard && (
@@ -39,8 +44,21 @@ export const Warhammer40K10eCardDisplay = ({
                 transform: `scale(${cardScaling / 100})`,
                 height: `${714 * (cardScaling / 100)}px`,
                 width: `${1077 * (cardScaling / 100)}px`,
-                "--background-colour": backgroundColour,
-                "--faction-text-colour": factionTextColour,
+                "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+                "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+                "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+                "--header-colour": COLOURS[backgrounds].headerColour,
+                "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+                "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+                "--banner-colour": COLOURS[backgrounds].bannerColour,
+                "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+                "--rows-colour": COLOURS[backgrounds].rowsColour,
+                "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+                "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+                "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+                "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+                "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+                "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
               }}
             />
           )}
@@ -54,8 +72,21 @@ export const Warhammer40K10eCardDisplay = ({
                 transform: `scale(${cardScaling / 100})`,
                 height: `${460 * (cardScaling / 100)}px`,
                 width: `${266 * (cardScaling / 100)}px`,
-                "--background-colour": backgroundColour,
-                "--faction-text-colour": factionTextColour,
+                "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+                "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+                "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+                "--header-colour": COLOURS[backgrounds].headerColour,
+                "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+                "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+                "--banner-colour": COLOURS[backgrounds].bannerColour,
+                "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+                "--rows-colour": COLOURS[backgrounds].rowsColour,
+                "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+                "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+                "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+                "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+                "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+                "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
               }}
             />
           )}

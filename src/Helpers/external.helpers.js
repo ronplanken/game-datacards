@@ -428,6 +428,7 @@ export const get40k10eData = async () => {
     "aeldari",
     "drukhari",
     "gsc",
+    "unaligned",
   ];
 
   const fetchData = async (faction) => {
