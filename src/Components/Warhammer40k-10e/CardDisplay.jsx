@@ -2,6 +2,7 @@ import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
+import { COLOURS } from "../../Helpers/printcolours.js";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -13,117 +14,12 @@ export const Warhammer40K10eCardDisplay = ({
 }) => {
   const { activeCard } = useCardStorage();
 
-  // background colour of the main top banner (not the bit with the unit name on)
-  var titleBackgroundColour;
-  // text colour of the top title banner, also does the titles for stats (M, T, Sv, W, etc) and the points container
-  var titleTextColour;
-  // text colour in the faction keyword box
-  var factionTextColour;
-  // header background colour for weapons, abilities, invulns, etc. and borders of all containers
-  var headerColour;
-  // colour for header text and icons
-  var headerTextColour;
-  // colour of the stat text (M, T, Sv, W, etc) and invuln save text
-  var statTextColour;
-  // colour of the main banner containing the unit name and stat text
-  var bannerColour;
-  // background colour of the main text areas (not weapon rows)
-  var textBackgroundColour;
-  // background colour of the odd numbered rows for weapons
-  var rowsColour;
-  // background colour of the even numbered rows for weapons
-  var altRowsColour;
-  // background colour of the unit keywords box
-  var keywordsBackgroundColour;
-  // colour for the weapon keyword text like [assault] or [lethal hits]
-  var weaponKeywordColour;
-
-  // colour for the different types of stratagem
-  var greenStratagemColour;
-  var blueStratagemColour;
-  var redStratagemColour;
-
-  if (backgrounds === "standard") {
-    titleBackgroundColour = "black";
-    titleTextColour = "white";
-    factionTextColour = "white";
-    headerColour = "#456664";
-    headerTextColour = "white";
-    statTextColour = "#456664";
-    bannerColour = "#103344";
-    textBackgroundColour = "#dfe0e2";
-    rowsColour = "#d8d8da";
-    altRowsColour = "#dee3e0";
-    keywordsBackgroundColour = "#d8d8da";
-    weaponKeywordColour = "#456664";
-    greenStratagemColour = "#2c594c";
-    blueStratagemColour = "#234461";
-    redStratagemColour = "#a2151a";
-  } else if (backgrounds === "light") {
-    titleBackgroundColour = "#dfe0e2";
-    titleTextColour = "white";
-    factionTextColour = "black";
-    headerColour = "#456664";
-    headerTextColour = "white";
-    statTextColour = "#456664";
-    bannerColour = "#103344";
-    textBackgroundColour = "#dfe0e2";
-    rowsColour = "#d8d8da";
-    altRowsColour = "#dee3e0";
-    keywordsBackgroundColour = "#d8d8da";
-    weaponKeywordColour = "#456664";
-    greenStratagemColour = "#2c594c";
-    blueStratagemColour = "#234461";
-    redStratagemColour = "#a2151a";
-  } else if (backgrounds === "greyprint") {
-    titleBackgroundColour = "white";
-    titleTextColour = "black";
-    factionTextColour = "black";
-    headerColour = "#cccccc";
-    headerTextColour = "black";
-    statTextColour = "black";
-    bannerColour = "#cccccc";
-    textBackgroundColour = "white";
-    rowsColour = "white";
-    altRowsColour = "#ededed";
-    keywordsBackgroundColour = "white";
-    weaponKeywordColour = "#4f4f4f";
-    greenStratagemColour = "#595959";
-    blueStratagemColour = "#616161";
-    redStratagemColour = "#a3a3a3";
-  } else if (backgrounds === "colourprint") {
-    titleBackgroundColour = "white";
-    titleTextColour = "white";
-    factionTextColour = "black";
-    headerColour = "#456664";
-    headerTextColour = "white";
-    statTextColour = "#456664";
-    bannerColour = "#103344";
-    textBackgroundColour = "white";
-    rowsColour = "white";
-    altRowsColour = "#ededed";
-    keywordsBackgroundColour = "white";
-    weaponKeywordColour = "#456664";
-    greenStratagemColour = "#2c594c";
-    blueStratagemColour = "#234461";
-    redStratagemColour = "#a2151a";
-  } else if (backgrounds === "debug") {
-    titleBackgroundColour = "pink";
-    titleTextColour = "teal";
-    factionTextColour = "black";
-    headerColour = "red";
-    headerTextColour = "white";
-    statTextColour = "aqua";
-    bannerColour = "yellow";
-    textBackgroundColour = "green";
-    rowsColour = "orange";
-    altRowsColour = "blue";
-    keywordsBackgroundColour = "brown";
-    weaponKeywordColour = "purple";
-    greenStratagemColour = "green";
-    blueStratagemColour = "blue";
-    redStratagemColour = "red";
+  // if no background selected, use standard
+  // this does assume standard will always exist but the alternative is duplicating the data?
+  if(!(backgrounds in COLOURS)) {
+    backgrounds = "standard";
   }
+
   return (
     <>
       {!type && activeCard && (
@@ -148,21 +44,21 @@ export const Warhammer40K10eCardDisplay = ({
                 transform: `scale(${cardScaling / 100})`,
                 height: `${714 * (cardScaling / 100)}px`,
                 width: `${1077 * (cardScaling / 100)}px`,
-                "--background-colour": titleBackgroundColour,
-                "--title-text-colour": titleTextColour,
-                "--faction-text-colour": factionTextColour,
-                "--header-colour": headerColour,
-                "--header-text-colour": headerTextColour,
-                "--stat-text-colour": statTextColour,
-                "--banner-colour": bannerColour,
-                "--text-background-colour": textBackgroundColour,
-                "--rows-colour": rowsColour,
-                "--alt-rows-colour": altRowsColour,
-                "--keywords-background-colour": keywordsBackgroundColour,
-                "--weapon-keyword-colour": weaponKeywordColour,
-                "--green-stratagem-colour": greenStratagemColour,
-                "--blue-stratagem-colour": blueStratagemColour,
-                "--red-stratagem-colour": redStratagemColour,
+                "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+                "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+                "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+                "--header-colour": COLOURS[backgrounds].headerColour,
+                "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+                "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+                "--banner-colour": COLOURS[backgrounds].bannerColour,
+                "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+                "--rows-colour": COLOURS[backgrounds].rowsColour,
+                "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+                "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+                "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+                "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+                "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+                "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
               }}
             />
           )}
@@ -176,21 +72,21 @@ export const Warhammer40K10eCardDisplay = ({
                 transform: `scale(${cardScaling / 100})`,
                 height: `${460 * (cardScaling / 100)}px`,
                 width: `${266 * (cardScaling / 100)}px`,
-                "--background-colour": titleBackgroundColour,
-                "--title-text-colour": titleTextColour,
-                "--faction-text-colour": factionTextColour,
-                "--header-colour": headerColour,
-                "--header-text-colour": headerTextColour,
-                "--stat-text-colour": statTextColour,
-                "--banner-colour": bannerColour,
-                "--text-background-colour": textBackgroundColour,
-                "--rows-colour": rowsColour,
-                "--alt-rows-colour": altRowsColour,
-                "--keywords-background-colour": keywordsBackgroundColour,
-                "--weapon-keyword-colour": weaponKeywordColour,
-                "--green-stratagem-colour": greenStratagemColour,
-                "--blue-stratagem-colour": blueStratagemColour,
-                "--red-stratagem-colour": redStratagemColour,
+                "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+                "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+                "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+                "--header-colour": COLOURS[backgrounds].headerColour,
+                "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+                "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+                "--banner-colour": COLOURS[backgrounds].bannerColour,
+                "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+                "--rows-colour": COLOURS[backgrounds].rowsColour,
+                "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+                "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+                "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+                "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+                "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+                "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
               }}
             />
           )}

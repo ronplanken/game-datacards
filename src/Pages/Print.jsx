@@ -295,7 +295,8 @@ export const Print = () => {
                         { label: "Light Background", value: "light" },
                         { label: "Coloured Ink Saver", value: "colourprint" },
                         { label: "Greyscale Ink Saver", value: "greyprint" },
-                        { label: "Debug Background", value: "debug" },
+                        // uncomment the below option to allow debug colour mode which clearly shows each element
+                        // { label: "Debug Background", value: "debug" },
                       ]}
                       size={"small"}
                     />
