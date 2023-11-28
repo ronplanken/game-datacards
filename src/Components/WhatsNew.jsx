@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.3.0
+                Whats new in 2.3.2
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,25 +56,11 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Detachments</strong>
+                          <strong>Printer Ink Friendly Backgrounds</strong>
                           <br />
-                          Factions that have a detachment can now be shown properly. Also when adding a unit to a list
-                          you can first select a detachment to filter the enhancements.
-                        </li>
-                        <li>
-                          <strong>Tyranids</strong>
-                          <br />
-                          In the 10e datasource Tyranids are now available for detachments.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Visual Changes</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Stratagems</strong>
-                          <br />
-                          Stratagems on mobile will now remember their opened state.
+                          There are now two new backgrounds in the printer settings. Coloured Ink Saver, which keeps the
+                          original feel but with mostly white backgrounds instead of grey, and Greyscale Ink Saver which
+                          is the same but greyscale for even more printer ink friendliness.
                         </li>
                       </ul>
                     </Typography.Paragraph>

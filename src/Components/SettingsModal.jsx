@@ -299,7 +299,7 @@ export const SettingsModal = () => {
             <Row>
               <Col span={23}>
                 <Collapse>
-                  {/* <Panel header={"Version 1.3.1"} key={"1.3.1"}>
+                  {/* <Panel header={"Version 2.3.1"} key={"2.3.1"}>
                     <b> DATE </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
@@ -328,6 +328,35 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.3.1"} key={"2.3.1"}>
+                    <b> DATE </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Detachments</strong>
+                          <br />
+                          Factions that have a detachment can now be shown properly. Also when adding a unit to a list
+                          you can first select a detachment to filter the enhancements.
+                        </li>
+                        <li>
+                          <strong>Tyranids</strong>
+                          <br />
+                          In the 10e datasource Tyranids are now available for detachments.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Visual Changes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Stratagems</strong>
+                          <br />
+                          Stratagems on mobile will now remember their opened state.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.3.0"} key={"2.3.0"}>
                     <b> 01-11-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
