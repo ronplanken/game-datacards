@@ -75,7 +75,7 @@ export const Warhammer40K10eCardDisplay = ({
     greenStratagemColour = "#2c594c";
     blueStratagemColour = "#234461";
     redStratagemColour = "#a2151a";
-  } else if (backgrounds === "greyscale") {
+  } else if (backgrounds === "greyprint") {
     titleBackgroundColour = "white";
     titleTextColour = "black";
     factionTextColour = "black";
@@ -91,6 +91,22 @@ export const Warhammer40K10eCardDisplay = ({
     greenStratagemColour = "#595959";
     blueStratagemColour = "#616161";
     redStratagemColour = "#a3a3a3";
+  } else if (backgrounds === "colourprint") {
+    titleBackgroundColour = "white";
+    titleTextColour = "white";
+    factionTextColour = "black";
+    headerColour = "#456664";
+    headerTextColour = "white";
+    statTextColour = "#456664";
+    bannerColour = "#103344";
+    textBackgroundColour = "white";
+    rowsColour = "white";
+    altRowsColour = "#ededed";
+    keywordsBackgroundColour = "white";
+    weaponKeywordColour = "#456664";
+    greenStratagemColour = "#2c594c";
+    blueStratagemColour = "#234461";
+    redStratagemColour = "#a2151a";
   } else if (backgrounds === "debug") {
     titleBackgroundColour = "pink";
     titleTextColour = "teal";

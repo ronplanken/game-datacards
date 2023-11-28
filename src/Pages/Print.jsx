@@ -293,7 +293,8 @@ export const Print = () => {
                       options={[
                         { label: "Standard Background", value: "standard" },
                         { label: "Light Background", value: "light" },
-                        { label: "Greyscale Background", value: "greyscale" },
+                        { label: "Coloured Ink Saver", value: "colourprint" },
+                        { label: "Greyscale Ink Saver", value: "greyprint" },
                         { label: "Debug Background", value: "debug" },
                       ]}
                       size={"small"}
