@@ -291,8 +291,12 @@ export const Print = () => {
                         });
                       }}
                       options={[
-                        { label: "Standard Backgrounds", value: "standard" },
-                        { label: "Light Backgrounds", value: "light" },
+                        { label: "Standard Background", value: "standard" },
+                        { label: "Light Background", value: "light" },
+                        { label: "Coloured Ink Saver", value: "colourprint" },
+                        { label: "Greyscale Ink Saver", value: "greyprint" },
+                        // uncomment the below option to allow debug colour mode which clearly shows each element
+                        // { label: "Debug Background", value: "debug" },
                       ]}
                       size={"small"}
                     />
