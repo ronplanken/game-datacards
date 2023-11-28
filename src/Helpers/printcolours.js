@@ -1,32 +1,32 @@
-  // background colour of the main top banner (not the bit with the unit name on)
-  // titleBackgroundColour;
-  // text colour of the top title banner, also does the titles for stats (M, T, Sv, W, etc) and the points container
-  // titleTextColour;
-  // text colour in the faction keyword box
-  // factionTextColour;
-  // header background colour for weapons, abilities, invulns, etc. and borders of all containers
-  // headerColour;
-  // colour for header text and icons
-  // headerTextColour;
-  // colour of the stat text (M, T, Sv, W, etc) and invuln save text
-  // statTextColour;
-  // colour of the main banner containing the unit name and stat text
-  // bannerColour;
-  // background colour of the main text areas (not weapon rows)
-  // textBackgroundColour;
-  // background colour of the odd numbered rows for weapons
-  // rowsColour;
-  // background colour of the even numbered rows for weapons
-  // altRowsColour;
-  // background colour of the unit keywords box
-  // keywordsBackgroundColour;
-  // colour for the weapon keyword text like [assault] or [lethal hits]
-  // weaponKeywordColour;
+// background colour of the main top banner (not the bit with the unit name on)
+// titleBackgroundColour;
+// text colour of the top title banner, also does the titles for stats (M, T, Sv, W, etc) and the points container
+// titleTextColour;
+// text colour in the faction keyword box
+// factionTextColour;
+// header background colour for weapons, abilities, invulns, etc. and borders of all containers
+// headerColour;
+// colour for header text and icons
+// headerTextColour;
+// colour of the stat text (M, T, Sv, W, etc) and invuln save text
+// statTextColour;
+// colour of the main banner containing the unit name and stat text
+// bannerColour;
+// background colour of the main text areas (not weapon rows)
+// textBackgroundColour;
+// background colour of the odd numbered rows for weapons
+// rowsColour;
+// background colour of the even numbered rows for weapons
+// altRowsColour;
+// background colour of the unit keywords box
+// keywordsBackgroundColour;
+// colour for the weapon keyword text like [assault] or [lethal hits]
+// weaponKeywordColour;
 
-  // colour for the different types of stratagem
-  // greenStratagemColour;
-  // blueStratagemColour;
-  // redStratagemColour;
+// colour for the different types of stratagem
+// greenStratagemColour;
+// blueStratagemColour;
+// redStratagemColour;
 
 export const COLOURS = {
   standard: {
