@@ -328,8 +328,23 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.3.2"} key={"2.3.2"}>
+                    <b> 8-12-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Printer Ink Friendly Backgrounds</strong>
+                          <br />
+                          There are now two new backgrounds in the printer settings. Coloured Ink Saver, which keeps the
+                          original feel but with mostly white backgrounds instead of grey, and Greyscale Ink Saver which
+                          is the same but greyscale for even more printer ink friendliness.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.3.1"} key={"2.3.1"}>
-                    <b> DATE </b>
+                    <b> 28-11-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>

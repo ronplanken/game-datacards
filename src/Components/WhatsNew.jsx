@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.3.2
+                Whats new in 2.3.3
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,11 +56,10 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Printer Ink Friendly Backgrounds</strong>
+                          <strong>Flip side button for Shared cards</strong>
                           <br />
-                          There are now two new backgrounds in the printer settings. Coloured Ink Saver, which keeps the
-                          original feel but with mostly white backgrounds instead of grey, and Greyscale Ink Saver which
-                          is the same but greyscale for even more printer ink friendliness.
+                          When using a shared set of cards the flip button was missing for 10e cards. It is not
+                          available for mobile and desktop.
                         </li>
                       </ul>
                     </Typography.Paragraph>
