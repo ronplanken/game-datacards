@@ -10,7 +10,6 @@ import {
   Layout,
   List,
   Menu,
-  Modal,
   Row,
   Select,
   Space,
@@ -20,7 +19,7 @@ import {
 import "antd/dist/antd.min.css";
 import classNames from "classnames";
 import clone from "just-clone";
-import { useState } from "react";
+import React, { useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,6 +29,7 @@ import { AboutModal } from "./Components/AboutModal";
 import { FactionSettingsModal } from "./Components/FactionSettingsModal";
 import { NecromundaCardDisplay } from "./Components/Necromunda/CardDisplay";
 import { NecromundaCardEditor } from "./Components/Necromunda/CardEditor";
+import { ServiceMessage } from "./Components/ServiceMessage";
 import { SettingsModal } from "./Components/SettingsModal";
 import { ShareModal } from "./Components/ShareModal";
 import { Toolbar } from "./Components/Toolbar";
@@ -53,7 +53,6 @@ import "./style.less";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
-const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 function App() {
@@ -74,7 +73,6 @@ function App() {
     cardStorage,
     activeCard,
     setActiveCard,
-    cardUpdated,
     addCardToCategory,
     updateCategory,
     activeCategory,
@@ -285,6 +283,7 @@ function App() {
     <Layout>
       <WelcomeWizard />
       <WhatsNew />
+      <ServiceMessage />
       <UpdateReminder />
       <Header
         style={{

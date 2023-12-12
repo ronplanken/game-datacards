@@ -157,7 +157,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
   return (
     <>
       <Draggable key={`${cardIndex}-draggable`} draggableId={card.uuid} index={index}>
-        {(provided, snapshot) => (
+        {(provided) => (
           <Dropdown overlay={menu} trigger={["contextMenu"]}>
             <div
               className={["tree-item-container", selectedTreeIndex === cardIndex ? "selected" : ""].join(" ")}
@@ -299,7 +299,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                   bordered
                   dataSource={card?.points
                     ?.filter((p) => p.active)
-                    .map((point, index) => {
+                    .map((point) => {
                       return {
                         models: point.models,
                         cost: point.cost,
@@ -423,7 +423,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                           });
                           return isActiveEnhancement;
                         })
-                        .map((enhancement, index) => {
+                        .map((enhancement) => {
                           return {
                             name: enhancement.name,
                             cost: enhancement.cost,
