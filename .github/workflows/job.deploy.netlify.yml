@@ -15,7 +15,7 @@ env:
   REACT_APP_URL: https://game-datacards-staging.netlify.app/
   REACT_APP_DATASOURCE_10TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/develop/10th/gdc
   REACT_APP_DATASOURCE_9TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/develop/40k
-  REACT_APP_MESSAGES_URL: https://raw.githubusercontent.com/ronplanken/game-datacards/develop/messages.json
+  REACT_APP_MESSAGES_URL: https://raw.githubusercontent.com/game-datacards/messages/develop/messages.json
   REACT_APP_ENVIRONMENT: staging
   REACT_APP_IS_PRODUCTION: false
 
