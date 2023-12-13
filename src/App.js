@@ -1,59 +1,34 @@
 import { DownOutlined, RightOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Col,
-  Divider,
-  Dropdown,
-  Grid,
-  Image,
-  Input,
-  Layout,
-  List,
-  Menu,
-  Modal,
-  Row,
-  Select,
-  Space,
-  Tooltip,
-  Typography,
-} from "antd";
+import { Button, Col, Divider, Dropdown, Grid, Input, Layout, List, Menu, Row, Select, Space } from "antd";
 import "antd/dist/antd.min.css";
 import classNames from "classnames";
 import clone from "just-clone";
-import { useState } from "react";
+import React, { useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
-import { AboutModal } from "./Components/AboutModal";
+import { AppHeader } from "./Components/AppHeader";
 import { FactionSettingsModal } from "./Components/FactionSettingsModal";
 import { NecromundaCardDisplay } from "./Components/Necromunda/CardDisplay";
 import { NecromundaCardEditor } from "./Components/Necromunda/CardEditor";
-import { SettingsModal } from "./Components/SettingsModal";
-import { ShareModal } from "./Components/ShareModal";
 import { Toolbar } from "./Components/Toolbar";
 import { TreeCategory } from "./Components/TreeCategory";
 import { TreeItem } from "./Components/TreeItem";
-import { UpdateReminder } from "./Components/UpdateReminder";
 import { Warhammer40K10eCardDisplay } from "./Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40K10eCardEditor } from "./Components/Warhammer40k-10e/CardEditor";
 import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
-import { WelcomeWizard } from "./Components/WelcomeWizard";
-import { WhatsNew } from "./Components/WhatsNew";
 import { getBackgroundColor, getMinHeight, move, reorder } from "./Helpers/treeview.helpers";
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { AddCard } from "./Icons/AddCard";
-import { Discord } from "./Icons/Discord";
-import logo from "./Images/logo.png";
 import "./style.less";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
-const { confirm } = Modal;
 const { useBreakpoint } = Grid;
 
 function App() {
@@ -74,7 +49,6 @@ function App() {
     cardStorage,
     activeCard,
     setActiveCard,
-    cardUpdated,
     addCardToCategory,
     updateCategory,
     activeCategory,
@@ -249,7 +223,6 @@ function App() {
         const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
           return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
         });
-        console.log(filteredSecondaries);
         if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
           return filteredSecondaries;
         } else {
@@ -283,56 +256,7 @@ function App() {
 
   return (
     <Layout>
-      <WelcomeWizard />
-      <WhatsNew />
-      <UpdateReminder />
-      <Header
-        style={{
-          paddingLeft: screens.xs ? "8px" : "32px",
-          paddingRight: screens.xs ? "12px" : "32px",
-        }}>
-        <Row style={{ justifyContent: "space-between" }}>
-          <Col>
-            <Space size={"large"}>
-              <Image preview={false} src={logo} width={50} />
-              <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
-                Game Datacards
-              </Typography.Title>
-              <Space>
-                <div className="nav-menu-item selected" onClick={() => navigate("/")}>
-                  <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
-                    <Link to={"/"} style={{ fontSize: "1.1rem", color: "white" }}>
-                      Editor
-                    </Link>
-                  </Typography.Text>
-                </div>
-                <div className="nav-menu-item" onClick={() => navigate("/viewer")}>
-                  <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
-                    <Link to={"/viewer"} style={{ fontSize: "1.1rem", color: "white" }}>
-                      Viewer
-                    </Link>
-                  </Typography.Text>
-                </div>
-              </Space>
-            </Space>
-          </Col>
-          <Col>
-            <Space>
-              {activeCategory && activeCategory.cards.length > 0 && <ShareModal />}
-              <AboutModal />
-              <Tooltip title={"Join us on discord!"} placement="bottomRight">
-                <Button
-                  className="button-bar"
-                  type="ghost"
-                  size="large"
-                  icon={<Discord />}
-                  onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}></Button>
-              </Tooltip>
-              <SettingsModal />
-            </Space>
-          </Col>
-        </Row>
-      </Header>
+      <AppHeader />
       <Content style={{ height: "calc(100vh - 64px)" }}>
         <PanelGroup direction="horizontal" autoSaveId="mainLayout">
           <Panel defaultSize={18} order={1}>

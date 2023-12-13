@@ -44,49 +44,49 @@ const readCsv = async (file) => {
 
 export const get40KData = async () => {
   const lastUpdated = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Last_update.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`
   );
   const dataDatasheetAbilities = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_abilities.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`
   );
   const dataStratagems = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Stratagems.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`
   );
   const dataAbilities = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Abilities.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`
   );
   const dataDatasheetWargear = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_wargear.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`
   );
   const dataWargearList = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Wargear_list.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`
   );
   const dataWargear = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Wargear.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`
   );
   const dataModels = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_models.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`
   );
   const dataKeywords = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_keywords.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`
   );
   const dataDamage = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets_damage.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`
   );
   const dataFactions = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Factions.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`
   );
   const sheets = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Datasheets.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`
   );
   const dataSecondaries = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Secondaries.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`
   );
   const dataPsychic = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/PsychicPowers.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`
   );
   const dataTraits = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/40k/json/Warlord_traits.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`
   );
 
   const mappedPsychicPowers = dataPsychic.map((power) => {
@@ -432,14 +432,12 @@ export const get40k10eData = async () => {
   ];
 
   const fetchData = async (faction) => {
-    const url = `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/${faction}.json?${new Date().getTime()}`;
+    const url = `${process.env.REACT_APP_DATASOURCE_10TH_URL}/${faction}.json?${new Date().getTime()}`;
     const data = await readCsv(url);
     return data;
   };
 
-  const core = await readCsv(
-    `https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc/core.json?${new Date().getTime()}`
-  );
+  const core = await readCsv(`${process.env.REACT_APP_DATASOURCE_10TH_URL}/core.json?${new Date().getTime()}`);
 
   const fetchAllData = async () => {
     const sortedFactions = factions.sort();
@@ -476,7 +474,7 @@ export const get40k10eData = async () => {
 };
 
 export const getMessages = async () => {
-  const url = `https://raw.githubusercontent.com/ronplanken/game-datacards/main/messages.json`;
+  const url = `${process.env.REACT_APP_MESSAGES_URL}`;
   const data = await readCsv(url);
   return data;
 };

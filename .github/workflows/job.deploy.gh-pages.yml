@@ -2,10 +2,18 @@ name: Deploy to Github Pages
 on:
   workflow_call:
   workflow_dispatch:
-  
+
 permissions:
   contents: write
   pages: write
+
+env:
+  REACT_APP_URL: https://game-datacards.eu/
+  REACT_APP_DATASOURCE_10TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc
+  REACT_APP_DATASOURCE_9TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/main/40k
+  REACT_APP_MESSAGES_URL: https://raw.githubusercontent.com/ronplanken/game-datacards/main/messages.json
+  REACT_APP_ENVIRONMENT: production
+  REACT_APP_IS_PRODUCTION: true
 
 jobs:
   deploy:
