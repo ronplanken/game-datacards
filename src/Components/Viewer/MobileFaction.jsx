@@ -94,7 +94,7 @@ export const MobileFaction = () => {
                         )
                         .map((val) => (
                           <Collapse.Panel
-                            key={val.name}
+                            key={`${val.detachment}-${val.name}`}
                             header={
                               <div style={{ display: "flex", justifyContent: "space-between" }}>
                                 <span>{val.name}</span>
@@ -202,7 +202,7 @@ export const MobileFaction = () => {
                 )
                 .map((val) => (
                   <Collapse.Panel
-                    key={val.name}
+                    key={`${val.detachment}-${val.name}`}
                     header={
                       <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <span>{val.name}</span>
