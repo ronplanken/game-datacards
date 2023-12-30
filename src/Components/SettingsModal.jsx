@@ -328,6 +328,20 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.3.3"} key={"2.3.3"}>
+                    <b> 15-12-2023 </b>
+                    <Typography.Title level={5}>New Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Flip side button for Shared cards</strong>
+                          <br />
+                          When using a shared set of cards the flip button was missing for 10e cards. It is not
+                          available for mobile and desktop.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.3.2"} key={"2.3.2"}>
                     <b> 8-12-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>
