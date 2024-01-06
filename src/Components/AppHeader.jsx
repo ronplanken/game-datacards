@@ -36,7 +36,7 @@ export const AppHeader = ({ selectedTreeKey, setSelectedTreeKey }) => {
         <Row style={{ justifyContent: "space-between" }}>
           <Col>
             <Space size={"large"}>
-              {process.env.REACT_APP_IS_PRODUCTION ? (
+              {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
                 <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
                   <Image preview={false} src={logo} width={50} />
                 </Badge.Ribbon>
