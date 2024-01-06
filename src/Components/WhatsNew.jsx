@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.3.3
+                Whats new in 2.4.0
               </h1>
             </div>
             <div className="welcome-cover">
