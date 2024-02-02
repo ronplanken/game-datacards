@@ -19,7 +19,6 @@ export const Warhammer40K10eCardDisplay = ({
   if (!(backgrounds in COLOURS)) {
     backgrounds = "standard";
   }
-
   return (
     <>
       {!type && activeCard && (
@@ -112,7 +111,11 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
-          {card?.cardType === "stratagem" && <StratagemCard stratagem={card} />}
+          {card?.cardType === "stratagem" && (
+            <div className="data-40k-10e" style={{}}>
+              <StratagemCard stratagem={card} className={"shared-stratagem"} cardStyle={{ width: "100%" }} />
+            </div>
+          )}
           {card?.cardType === "DataCard" && (
             <UnitCard
               side={side}
