@@ -2,7 +2,13 @@ import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { MarkdownSpanDisplay } from "../MarkdownSpanDisplay";
 
-export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px", className = "stratagem" }) => {
+export const StratagemCard = ({
+  stratagem,
+  cardStyle,
+  paddingTop = "32px",
+  className = "stratagem",
+  containerClass = "",
+}) => {
   return (
     <div
       style={{
@@ -11,7 +17,8 @@ export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px", class
         justifyItems: "center",
         display: "flex",
         paddingTop: paddingTop,
-      }}>
+      }}
+      className={containerClass}>
       <div
         className={classNames(
           {
