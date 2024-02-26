@@ -116,7 +116,7 @@ export const MobileFaction = () => {
                               </div>
                             }>
                             <div className="data-40k-10e">
-                              <StratagemCard stratagem={val} paddingTop={"0"} className={"mobile"} />
+                              <StratagemCard stratagem={val} paddingTop={"0"} containerClass={"mobile"} />
                             </div>
                           </Collapse.Panel>
                         ))}
@@ -174,7 +174,7 @@ export const MobileFaction = () => {
                         </div>
                       }>
                       <div className="data-40k-10e">
-                        <StratagemCard stratagem={val} paddingTop={"0"} className={"mobile"} />
+                        <StratagemCard stratagem={val} paddingTop={"0"} containerClass={"stratagem mobile"} />
                       </div>
                     </Collapse.Panel>
                   ))}
