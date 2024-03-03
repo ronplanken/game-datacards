@@ -106,6 +106,11 @@ export const DataSourceStorageProviderComponent = (props) => {
       setDataSource(basicData);
       setSelectedFaction(basicData.data[0]);
     }
+    if (settings.selectedDataSource === "fullcustom") {
+      const fullcustom = getFullCustomData();
+      setDataSource(fullcustom);
+      setSelectedFaction(fullcustom.data[0]);
+    }
   };
 
   useEffect(() => {
