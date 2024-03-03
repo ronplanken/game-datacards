@@ -3,6 +3,7 @@ import { UnitAbilityDescription } from "./UnitAbilityDescription";
 import { UnitInvul } from "./UnitInvul";
 
 export const UnitExtra = ({ unit }) => {
+  console.log(unit);
   return (
     <div className="extra">
       <div className="abilities">
@@ -17,14 +18,14 @@ export const UnitExtra = ({ unit }) => {
             return (
               <UnitAbilityDescription
                 name={ability.name}
-                description={ability.description}
-                showDescription={ability.showDescription}
+                description={ability?.description}
+                showDescription={ability?.showDescription}
                 key={`ability-${index}`}
               />
             );
           })}
       </div>
-      {unit.abilities?.wargear?.filter((ability) => ability.showAbility).length > 0 && (
+      {unit.abilities?.wargear?.filter((ability) => ability.showAbility)?.length > 0 && (
         <div className="abilities">
           <div className="heading">
             <div className="title">Wargear abilities</div>
