@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
 import { message } from "antd";
 import logo from "../Images/logo.png";
@@ -12,6 +12,7 @@ import logo from "../Images/logo.png";
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 import JSZip from "jszip";
+import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
 const { useBreakpoint } = Grid;
 const { Option } = Select;
@@ -57,8 +58,16 @@ export const ImageGenerator = () => {
       setIsLoading(false);
     });
   };
-
+  const { settings, updateSettings } = useSettingsStorage();
   const { dataSource, selectedFaction, updateSelectedFaction, selectedFactionIndex } = useDataSourceStorage();
+
+  useEffect(() => {
+    updateSettings({
+      ...settings,
+      selectedDataSource: "40k-10e",
+    });
+  }, []);
+
   return (
     <Layout>
       <Header style={{ paddingLeft: 8 }}>
