@@ -17,11 +17,71 @@ import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 const { useBreakpoint } = Grid;
 const { Option } = Select;
 export const ImageGenerator = () => {
-  const cardsFrontRef = useRef([]);
-  const cardsBackRef = useRef([]);
+  const cardsFrontRef = useRef({
+    AS: [],
+    AC: [],
+    AdM: [],
+    AE: [],
+    AoI: [],
+    AM: [],
+    CHBT: [],
+    CHBA: [],
+    CSM: [],
+    CD: [],
+    QT: [],
+    CHDA: [],
+    DG: [],
+    CHDW: [],
+    DRU: [],
+    GK: [],
+    GSC: [],
+    QI: [],
+    NEC: [],
+    ORK: [],
+    SM: [],
+    CHSW: [],
+    TAU: [],
+    TS: [],
+    TYR: [],
+    UN: [],
+    LoV: [],
+    WE: [],
+  });
+  const cardsBackRef = useRef({
+    AS: [],
+    AC: [],
+    AdM: [],
+    AE: [],
+    AoI: [],
+    AM: [],
+    CHBT: [],
+    CHBA: [],
+    CSM: [],
+    CD: [],
+    QT: [],
+    CHDA: [],
+    DG: [],
+    CHDW: [],
+    DRU: [],
+    GK: [],
+    GSC: [],
+    QI: [],
+    NEC: [],
+    ORK: [],
+    SM: [],
+    CHSW: [],
+    TAU: [],
+    TS: [],
+    TYR: [],
+    UN: [],
+    LoV: [],
+    WE: [],
+  });
   const overlayRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [percentage, setIsPercentage] = useState(false);
+
+  const [selectedFactions, setSelectedFactions] = useState([]);
 
   const { Id } = useParams();
   const navigate = useNavigate();
@@ -32,27 +92,41 @@ export const ImageGenerator = () => {
     setIsLoading(true);
     await sleep(100);
 
-    const files = cardsFrontRef.current.map(async (card, index) => {
-      const data = await toBlob(card, { cacheBust: false });
-      return data;
-    });
-    const backFiles = cardsBackRef.current.map(async (card, index) => {
-      const data = await toBlob(card, { cacheBust: false });
-      return data;
-    });
+    selectedFactions.forEach((faction) => {
+      const files = cardsFrontRef.current[faction].map(async (card, index) => {
+        const data = await toBlob(card, { cacheBust: false });
+        return data;
+      });
+      const backFiles = cardsBackRef.current[faction].map(async (card, index) => {
+        const data = await toBlob(card, { cacheBust: false });
+        return data;
+      });
 
-    files.forEach(async (file, index) => {
-      zip.file(`${selectedFaction?.datasheets[index].name.replaceAll(" ", "_").toLowerCase()}-front.png`, file);
-    });
+      files.forEach(async (file, index) => {
+        zip.file(
+          `${faction}/${dataSource.data
+            .filter((f) => f.id === faction)[0]
+            ?.datasheets[index].name.replaceAll(" ", "_")
+            .toLowerCase()}-front.png`,
+          file
+        );
+      });
 
-    backFiles.forEach(async (file, index) => {
-      zip.file(`${selectedFaction?.datasheets[index].name.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
+      backFiles.forEach(async (file, index) => {
+        zip.file(
+          `${faction}/${dataSource.data
+            .filter((f) => f.id === faction)[0]
+            ?.datasheets[index].name.replaceAll(" ", "_")
+            .toLowerCase()}-back.png`,
+          file
+        );
+      });
     });
 
     zip.generateAsync({ type: "blob" }).then((content) => {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
-      link.download = `${selectedFaction.name.replaceAll(" ", "_").toLowerCase()}.zip`;
+      link.download = `datacards_${selectedFactions.join("_")}.zip`;
       link.click();
       overlayRef.current.style.display = "none";
       setIsLoading(false);
@@ -86,12 +160,14 @@ export const ImageGenerator = () => {
               </Typography.Title>
               <Typography.Title level={3} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
                 <Select
-                  style={{ width: 200 }}
+                  mode="multiple"
+                  style={{ minWidth: "650px" }}
+                  maxTagCount="responsive"
                   onChange={(value) => {
-                    updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
+                    setSelectedFactions(value);
                   }}
                   placeholder="Select a faction"
-                  value={dataSource?.data[selectedFactionIndex]?.name}>
+                  value={selectedFactions}>
                   {dataSource.data.map((faction, index) => (
                     <Option value={faction.id} key={`${faction.id}-${index}`}>
                       {faction.name}
@@ -135,26 +211,32 @@ export const ImageGenerator = () => {
             justifyContent: "center",
           }}></div>
         <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
-          {selectedFaction?.datasheets?.map((card, index) => {
-            return (
-              <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                <Row>
+          {dataSource?.data
+            .filter((faction) => {
+              return selectedFactions.includes(faction.id);
+            })
+            .map((faction) => {
+              return faction.datasheets.map((card, index) => {
+                return (
                   <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                    <div ref={(el) => (cardsFrontRef.current[index] = el)}>
-                      {card?.source === "40k-10e" && (
-                        <Warhammer40K10eCardDisplay card={card} type="print" side={"front"} />
-                      )}
-                    </div>
-                    <div ref={(el) => (cardsBackRef.current[index] = el)}>
-                      {card?.source === "40k-10e" && (
-                        <Warhammer40K10eCardDisplay card={card} type="print" side={"back"} />
-                      )}
-                    </div>
+                    <Row>
+                      <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                        <div ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}>
+                          {card?.source === "40k-10e" && (
+                            <Warhammer40K10eCardDisplay card={card} type="print" side={"front"} />
+                          )}
+                        </div>
+                        <div ref={(el) => (cardsBackRef.current[faction.id][index] = el)}>
+                          {card?.source === "40k-10e" && (
+                            <Warhammer40K10eCardDisplay card={card} type="print" side={"back"} />
+                          )}
+                        </div>
+                      </Col>
+                    </Row>
                   </Col>
-                </Row>
-              </Col>
-            );
-          })}
+                );
+              });
+            })}
         </Row>
       </Content>
     </Layout>

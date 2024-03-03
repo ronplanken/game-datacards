@@ -3,7 +3,6 @@ import { UnitAbilityDescription } from "./UnitAbilityDescription";
 import { UnitInvul } from "./UnitInvul";
 
 export const UnitExtra = ({ unit }) => {
-  console.log(unit);
   return (
     <div className="extra">
       <div className="abilities">
