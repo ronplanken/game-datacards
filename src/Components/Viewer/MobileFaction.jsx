@@ -223,7 +223,7 @@ export const MobileFaction = () => {
                         </span>
                       </div>
                     }>
-                    <MarkdownDisplay content={val.description.replaceAll("■", "\n\r ■")} />
+                    <MarkdownDisplay content={val.description.replaceAll("■", "\n ■")} />
                   </Collapse.Panel>
                 ))}
             </Collapse>
