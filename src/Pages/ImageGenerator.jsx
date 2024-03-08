@@ -94,11 +94,11 @@ export const ImageGenerator = () => {
 
     selectedFactions.forEach((faction) => {
       const files = cardsFrontRef.current[faction].map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false });
+        const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
         return data;
       });
       const backFiles = cardsBackRef.current[faction].map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false });
+        const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
         return data;
       });
       const factionName = dataSource.data.find((f) => f.id === faction).name;
