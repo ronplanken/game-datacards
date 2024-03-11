@@ -108,6 +108,7 @@ export const ImageGenerator = () => {
     LoV: [],
     WE: [],
   });
+  const basicStratagems = useRef([]);
   const overlayRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [percentage, setIsPercentage] = useState(false);
@@ -175,6 +176,19 @@ export const ImageGenerator = () => {
       }
     });
 
+    if (addStratagems) {
+      const basicStrats = basicStratagems?.current?.map(async (card, index) => {
+        const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+        return data;
+      });
+
+      basicStrats?.forEach(async (file, index) => {
+        zip.file(
+          `basic/${dataSource.data[0]?.basicStratagems[index].name.replaceAll(" ", "_").toLowerCase()}-stratagem.png`,
+          file
+        );
+      });
+    }
     zip.generateAsync({ type: "blob" }).then((content) => {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
@@ -337,6 +351,20 @@ export const ImageGenerator = () => {
                       );
                     })}
                 </div>
+              );
+            })}
+          {addStratagems &&
+            dataSource.data[0].basicStratagems.map((card, index) => {
+              return (
+                <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                  <Row>
+                    <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                      <div ref={(el) => (basicStratagems.current[index] = el)}>
+                        {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
               );
             })}
         </Row>
