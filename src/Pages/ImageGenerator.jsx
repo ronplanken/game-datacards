@@ -7,6 +7,7 @@ import "../App.css";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import "../Images.css";
+import { CheckSquareOutlined, BorderOutlined } from "@ant-design/icons";
 import logo from "../Images/logo.png";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -77,11 +78,43 @@ export const ImageGenerator = () => {
     LoV: [],
     WE: [],
   });
+  const cardsStratagems = useRef({
+    AS: [],
+    AC: [],
+    AdM: [],
+    AE: [],
+    AoI: [],
+    AM: [],
+    CHBT: [],
+    CHBA: [],
+    CSM: [],
+    CD: [],
+    QT: [],
+    CHDA: [],
+    DG: [],
+    CHDW: [],
+    DRU: [],
+    GK: [],
+    GSC: [],
+    QI: [],
+    NEC: [],
+    ORK: [],
+    SM: [],
+    CHSW: [],
+    TAU: [],
+    TS: [],
+    TYR: [],
+    UN: [],
+    LoV: [],
+    WE: [],
+  });
   const overlayRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [percentage, setIsPercentage] = useState(false);
 
   const [selectedFactions, setSelectedFactions] = useState([]);
+  const [addStratagems, setAddStratagems] = useState(false);
+  const [addDatasheets, setAddDatasheets] = useState(true);
 
   const { Id } = useParams();
   const navigate = useNavigate();
@@ -93,34 +126,53 @@ export const ImageGenerator = () => {
     await sleep(100);
 
     selectedFactions.forEach((faction) => {
-      const files = cardsFrontRef.current[faction].map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
-        return data;
-      });
-      const backFiles = cardsBackRef.current[faction].map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
-        return data;
-      });
       const factionName = dataSource.data.find((f) => f.id === faction).name;
-      files.forEach(async (file, index) => {
-        zip.file(
-          `${factionName}/${dataSource.data
-            .filter((f) => f.id === faction)[0]
-            ?.datasheets[index].name.replaceAll(" ", "_")
-            .toLowerCase()}-front.png`,
-          file
-        );
-      });
+      if (addDatasheets) {
+        const files = cardsFrontRef?.current?.[faction]?.map(async (card, index) => {
+          const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+          return data;
+        });
+        const backFiles = cardsBackRef?.current?.[faction]?.map(async (card, index) => {
+          const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+          return data;
+        });
 
-      backFiles.forEach(async (file, index) => {
-        zip.file(
-          `${factionName}/${dataSource.data
-            .filter((f) => f.id === faction)[0]
-            ?.datasheets[index].name.replaceAll(" ", "_")
-            .toLowerCase()}-back.png`,
-          file
-        );
-      });
+        files?.forEach(async (file, index) => {
+          zip.file(
+            `${factionName}/${dataSource.data
+              .filter((f) => f.id === faction)[0]
+              ?.datasheets[index].name.replaceAll(" ", "_")
+              .toLowerCase()}-front.png`,
+            file
+          );
+        });
+
+        backFiles?.forEach(async (file, index) => {
+          zip.file(
+            `${factionName}/${dataSource.data
+              .filter((f) => f.id === faction)[0]
+              ?.datasheets[index].name.replaceAll(" ", "_")
+              .toLowerCase()}-back.png`,
+            file
+          );
+        });
+      }
+      if (addStratagems) {
+        const stratagems = cardsStratagems?.current?.[faction]?.map(async (card, index) => {
+          const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+          return data;
+        });
+
+        stratagems?.forEach(async (file, index) => {
+          zip.file(
+            `${factionName}/${dataSource.data
+              .filter((f) => f.id === faction)[0]
+              ?.stratagems[index].name.replaceAll(" ", "_")
+              .toLowerCase()}-stratagem.png`,
+            file
+          );
+        });
+      }
     });
 
     zip.generateAsync({ type: "blob" }).then((content) => {
@@ -159,21 +211,29 @@ export const ImageGenerator = () => {
                 Image Generator
               </Typography.Title>
               <Typography.Title level={3} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
-                <Select
-                  mode="multiple"
-                  style={{ minWidth: "650px" }}
-                  maxTagCount="responsive"
-                  onChange={(value) => {
-                    setSelectedFactions(value);
-                  }}
-                  placeholder="Select a faction"
-                  value={selectedFactions}>
-                  {dataSource.data.map((faction, index) => (
-                    <Option value={faction.id} key={`${faction.id}-${index}`}>
-                      {faction.name}
-                    </Option>
-                  ))}
-                </Select>
+                <Space>
+                  <Select
+                    mode="multiple"
+                    style={{ minWidth: "650px" }}
+                    maxTagCount="responsive"
+                    onChange={(value) => {
+                      setSelectedFactions(value);
+                    }}
+                    placeholder="Select a faction"
+                    value={selectedFactions}>
+                    {dataSource.data.map((faction, index) => (
+                      <Option value={faction.id} key={`${faction.id}-${index}`}>
+                        {faction.name}
+                      </Option>
+                    ))}
+                  </Select>
+                  <Button type={addStratagems ? "primary" : "default"} onClick={() => setAddStratagems((val) => !val)}>
+                    {addStratagems ? <CheckSquareOutlined /> : <BorderOutlined />}Stratagems
+                  </Button>
+                  <Button type={addDatasheets ? "primary" : "default"} onClick={() => setAddDatasheets((val) => !val)}>
+                    {addDatasheets ? <CheckSquareOutlined /> : <BorderOutlined />}Datasheets
+                  </Button>
+                </Space>
               </Typography.Title>
             </Space>
           </Col>
@@ -224,32 +284,58 @@ export const ImageGenerator = () => {
                     "--header-colour": faction?.colours?.header,
                   }}
                   key={faction.id}>
-                  {faction.datasheets.map((card, index) => {
-                    return (
-                      <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                        <Row>
-                          <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                            <div
-                              ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
-                              style={{
-                                "--banner-colour": faction?.colours?.banner,
-                                "--header-colour": faction?.colours?.header,
-                              }}>
-                              {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} side={"front"} />}
-                            </div>
-                            <div
-                              ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
-                              style={{
-                                "--banner-colour": faction?.colours?.banner,
-                                "--header-colour": faction?.colours?.header,
-                              }}>
-                              {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} side={"back"} />}
-                            </div>
-                          </Col>
-                        </Row>
-                      </Col>
-                    );
-                  })}
+                  {addDatasheets &&
+                    faction.datasheets.map((card, index) => {
+                      return (
+                        <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                          <Row>
+                            <Col
+                              key={`${card.name}-${index}`}
+                              className={`data-${card?.source ? card?.source : "40k"}`}>
+                              <div
+                                ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
+                                style={{
+                                  "--banner-colour": faction?.colours?.banner,
+                                  "--header-colour": faction?.colours?.header,
+                                }}>
+                                {card?.source === "40k-10e" && (
+                                  <Warhammer40K10eCardDisplay card={card} side={"front"} />
+                                )}
+                              </div>
+                              <div
+                                ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
+                                style={{
+                                  "--banner-colour": faction?.colours?.banner,
+                                  "--header-colour": faction?.colours?.header,
+                                }}>
+                                {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} side={"back"} />}
+                              </div>
+                            </Col>
+                          </Row>
+                        </Col>
+                      );
+                    })}
+                  {addStratagems &&
+                    faction.stratagems.map((card, index) => {
+                      return (
+                        <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                          <Row>
+                            <Col
+                              key={`${card.name}-${index}`}
+                              className={`data-${card?.source ? card?.source : "40k"}`}>
+                              <div
+                                ref={(el) => (cardsStratagems.current[faction.id][index] = el)}
+                                style={{
+                                  "--banner-colour": faction?.colours?.banner,
+                                  "--header-colour": faction?.colours?.header,
+                                }}>
+                                {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
+                              </div>
+                            </Col>
+                          </Row>
+                        </Col>
+                      );
+                    })}
                 </div>
               );
             })}
