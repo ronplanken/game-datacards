@@ -1,7 +1,8 @@
 import { DeleteFilled } from "@ant-design/icons";
-import { Button, Card, Input, Popconfirm, Space, Switch, Typography } from "antd";
+import { Button, Card, Divider, Form, Input, Popconfirm, Space, Switch, Typography } from "antd";
 import React, { useState } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import MDEditor, { commands } from "@uiw/react-md-editor";
 
 export function UnitWeapon({ weapon, index, type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -211,9 +212,122 @@ export function UnitWeapon({ weapon, index, type }) {
           </Card>
         );
       })}
+      {weapon?.abilities?.map((line, pIndex) => {
+        return (
+          <Card
+            key={`ability-${line.name}-${index}-${pIndex}`}
+            type={"inner"}
+            size={"small"}
+            title={
+              <Typography.Text
+                ellipsis={{ rows: 1 }}
+                editable={{
+                  onChange: (value) => {
+                    const newWeapons = [...activeCard[type]];
+                    newWeapons[index].abilities[pIndex].name = value;
+                    updateActiveCard({
+                      ...activeCard,
+                      [type]: newWeapons,
+                    });
+                  },
+                }}>
+                {line.name}
+              </Typography.Text>
+            }
+            style={{ marginBottom: "16px" }}
+            bodyStyle={{ padding: line.showAbility ? 8 : 0 }}
+            extra={
+              <Space>
+                <Popconfirm
+                  title={"Are you sure you want to delete this ability?"}
+                  placement="topRight"
+                  onConfirm={(value) =>
+                    updateActiveCard(() => {
+                      const newWeapons = [...activeCard[type]];
+                      newWeapons[index].abilities.splice(pIndex, 1);
+                      return { ...activeCard, [type]: newWeapons };
+                    })
+                  }>
+                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                </Popconfirm>
+                <Switch
+                  checked={line.showAbility}
+                  onChange={(value) => {
+                    updateActiveCard(() => {
+                      const newWeapons = [...activeCard[type]];
+                      newWeapons[index].abilities[pIndex]["showAbility"] = value;
+                      return { ...activeCard, [type]: newWeapons };
+                    });
+                  }}
+                />
+              </Space>
+            }>
+            {line.showAbility && (
+              <Form size="small">
+                <Form.Item label={"Show Description"}>
+                  <Switch
+                    checked={line.showDescription}
+                    onChange={(value) => {
+                      updateActiveCard(() => {
+                        const newWeapons = [...activeCard[type]];
+                        newWeapons[index].abilities[pIndex]["showDescription"] = value;
+                        return { ...activeCard, [type]: newWeapons };
+                      });
+                    }}
+                  />
+                </Form.Item>
+                {line.showDescription && (
+                  <Form.Item label={"Description"}>
+                    <MDEditor
+                      preview="edit"
+                      commands={[
+                        commands.bold,
+                        commands.italic,
+                        commands.strikethrough,
+                        commands.hr,
+                        commands.divider,
+                        commands.unorderedListCommand,
+                        commands.orderedListCommand,
+                        commands.divider,
+                      ]}
+                      extraCommands={[]}
+                      value={line.description}
+                      onChange={(value) => {
+                        const newWeapons = [...activeCard[type]];
+                        newWeapons[index].abilities[pIndex].description = value;
+                        updateActiveCard({
+                          ...activeCard,
+                          [type]: newWeapons,
+                        });
+                      }}
+                    />
+                  </Form.Item>
+                )}
+              </Form>
+            )}
+          </Card>
+        );
+      })}
       <Button
         type="dashed"
-        style={{ width: "100%" }}
+        style={{ width: "100%", marginTop: 4 }}
+        onClick={() =>
+          updateActiveCard(() => {
+            const newWeapons = [...activeCard[type]];
+            newWeapons[index].abilities.push({
+              showAbility: true,
+              showDescription: false,
+              name: `Ability ${newWeapons[index].abilities.length + 1}`,
+              description: "",
+            });
+            return { ...activeCard, [type]: newWeapons };
+          })
+        }>
+        Add ability
+      </Button>
+      <Button
+        type="dashed"
+        style={{ width: "100%", marginTop: 4, marginBottom: 4 }}
         onClick={() =>
           updateActiveCard(() => {
             const newWeapons = [...activeCard[type]];
@@ -233,6 +347,7 @@ export function UnitWeapon({ weapon, index, type }) {
         }>
         Add profile
       </Button>
+      <Divider />
     </>
   );
 }
