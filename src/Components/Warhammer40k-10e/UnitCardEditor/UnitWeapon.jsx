@@ -327,7 +327,7 @@ export function UnitWeapon({ weapon, index, type }) {
       </Button>
       <Button
         type="dashed"
-        style={{ width: "100%", marginTop: 4, marginBottom: 4 }}
+        style={{ width: "100%", marginTop: 4, marginBottom: 4, borderColor: "#898989" }}
         onClick={() =>
           updateActiveCard(() => {
             const newWeapons = [...activeCard[type]];

@@ -166,10 +166,13 @@ export const ImageGenerator = () => {
 
         stratagems?.forEach(async (file, index) => {
           zip.file(
-            `${factionName}/${dataSource.data
+            `${factionName}/${
+              dataSource.data.filter((f) => f.id === faction)[0]?.stratagems[index].detachment
+            }/${dataSource.data
               .filter((f) => f.id === faction)[0]
               ?.stratagems[index].name.replaceAll(" ", "_")
-              .toLowerCase()}-stratagem.png`,
+              .replaceAll("&", "and")
+              .toLowerCase()}.png`,
             file
           );
         });
@@ -184,7 +187,7 @@ export const ImageGenerator = () => {
 
       basicStrats?.forEach(async (file, index) => {
         zip.file(
-          `basic/${dataSource.data[0]?.basicStratagems[index].name.replaceAll(" ", "_").toLowerCase()}-stratagem.png`,
+          `basic/${dataSource.data[0]?.basicStratagems[index].name.replaceAll(" ", "_").toLowerCase()}.png`,
           file
         );
       });
@@ -292,41 +295,45 @@ export const ImageGenerator = () => {
             })
             .map((faction) => {
               return (
-                <div
-                  style={{
-                    "--banner-colour": faction?.colours?.banner,
-                    "--header-colour": faction?.colours?.header,
-                  }}
-                  key={faction.id}>
+                <>
                   {addDatasheets &&
                     faction.datasheets.map((card, index) => {
                       return (
-                        <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                          <Row>
-                            <Col
-                              key={`${card.name}-${index}`}
-                              className={`data-${card?.source ? card?.source : "40k"}`}>
-                              <div
-                                ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
-                                style={{
-                                  "--banner-colour": faction?.colours?.banner,
-                                  "--header-colour": faction?.colours?.header,
-                                }}>
-                                {card?.source === "40k-10e" && (
-                                  <Warhammer40K10eCardDisplay card={card} side={"front"} />
-                                )}
-                              </div>
-                              <div
-                                ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
-                                style={{
-                                  "--banner-colour": faction?.colours?.banner,
-                                  "--header-colour": faction?.colours?.header,
-                                }}>
-                                {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} side={"back"} />}
-                              </div>
-                            </Col>
-                          </Row>
-                        </Col>
+                        <div
+                          style={{
+                            "--banner-colour": faction?.colours?.banner,
+                            "--header-colour": faction?.colours?.header,
+                          }}
+                          key={faction.id}>
+                          <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                            <Row>
+                              <Col
+                                key={`${card.name}-${index}`}
+                                className={`data-${card?.source ? card?.source : "40k"}`}>
+                                <div
+                                  ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
+                                  style={{
+                                    "--banner-colour": faction?.colours?.banner,
+                                    "--header-colour": faction?.colours?.header,
+                                  }}>
+                                  {card?.source === "40k-10e" && (
+                                    <Warhammer40K10eCardDisplay card={card} side={"front"} />
+                                  )}
+                                </div>
+                                <div
+                                  ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
+                                  style={{
+                                    "--banner-colour": faction?.colours?.banner,
+                                    "--header-colour": faction?.colours?.header,
+                                  }}>
+                                  {card?.source === "40k-10e" && (
+                                    <Warhammer40K10eCardDisplay card={card} side={"back"} />
+                                  )}
+                                </div>
+                              </Col>
+                            </Row>
+                          </Col>
+                        </div>
                       );
                     })}
                   {addStratagems &&
@@ -350,7 +357,7 @@ export const ImageGenerator = () => {
                         </Col>
                       );
                     })}
-                </div>
+                </>
               );
             })}
           {addStratagems &&
