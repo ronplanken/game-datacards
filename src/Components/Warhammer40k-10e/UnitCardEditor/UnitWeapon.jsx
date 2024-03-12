@@ -314,6 +314,9 @@ export function UnitWeapon({ weapon, index, type }) {
         onClick={() =>
           updateActiveCard(() => {
             const newWeapons = [...activeCard[type]];
+            if (newWeapons[index].abilities === undefined || newWeapons[index].abilities?.length === 0) {
+              newWeapons[index].abilities = [];
+            }
             newWeapons[index].abilities.push({
               showAbility: true,
               showDescription: false,
