@@ -13,13 +13,13 @@ export const UnitWargear = ({ unit }) => {
               explanations.push(...lines.slice(1));
               return (
                 <div className="item" key={`wargear-${index}`}>
-                  <span className="description">{lines[0].replaceAll("◦", "\n\r◦")}</span>
+                  <span className="description">{lines[0].replaceAll("◦", "\n◦")}</span>
                 </div>
               );
             }
             return (
               <div className="item" key={`wargear-${index}`}>
-                <span className="description">{wargear.replaceAll("◦", "\n\r◦")}</span>
+                <span className="description">{wargear.replaceAll("◦", "\n◦")}</span>
               </div>
             );
           })}

@@ -65,6 +65,12 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .multi-line {
+    position: relative;
+    .value:first-child {
+      padding-left: 18px;
+    }
+  }
   .ant-tabs-nav-wrap {
     background-color: white;
     .ant-tabs-nav-list {
@@ -888,6 +894,95 @@
         grid-area: c6;
       }
 
+      .invul_container {
+        z-index: 2;
+        position: relative;
+        padding-left: 120px;
+        display: flex;
+        flex-direction: column;
+
+        .info {
+          color: white;
+          font-size: 0.7rem;
+          font-weight: 400;
+          letter-spacing: normal;
+          font-style: italic;
+          margin-top: -12px;
+          padding-left: 54px;
+        }
+        .invul {
+          z-index: 2;
+          position: relative;
+
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+
+          &::before {
+            content: " ";
+            position: absolute;
+            width: 100%;
+            height: 22px;
+            background-color: var(--banner-colour);
+            top: calc(50% - 11px);
+          }
+
+          .title {
+            text-transform: uppercase;
+            color: var(--header-text-colour);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1rem;
+            z-index: 2;
+
+            padding-left: 8px;
+          }
+
+          .value_container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+
+            height: 44px;
+            width: 44px;
+            z-index: 1;
+
+            mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+
+            background-color: var(--banner-colour);
+
+            .value {
+              text-align: center;
+
+              height: 38px;
+              width: 39px;
+
+              text-transform: uppercase;
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: var(--stat-text-colour);
+              z-index: 2;
+
+              justify-content: center;
+              align-items: center;
+              display: flex;
+
+              background-color: white;
+
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+            }
+          }
+        }
+      }
+
       .header_container {
         grid-area: c1;
         display: flex;
@@ -1169,6 +1264,20 @@
                 z-index: 2;
               }
             }
+            .multi-line {
+              position: relative;
+            }
+            .multi-line::after {
+              content: "";
+              position: absolute;
+              top: 8px;
+              left: 8px;
+              width: 16px;
+              height: 8px;
+              background-color: var(--header-colour);
+              clip-path: polygon(0% 0%, 55% 0%, 100% 50%, 55% 100%, 0% 100%);
+              z-index: 1;
+            }
             .weapon {
               padding-left: 32px;
               border-bottom: 1px dotted #636567;
@@ -1218,7 +1327,20 @@
               height: 20px;
               margin-top: 2px;
             }
-
+            .multi-line {
+              position: relative;
+            }
+            .multi-line::after {
+              content: "";
+              position: absolute;
+              top: 8px;
+              left: 8px;
+              width: 16px;
+              height: 8px;
+              background-color: var(--header-colour);
+              clip-path: polygon(0% 0%, 55% 0%, 100% 50%, 55% 100%, 0% 100%);
+              z-index: 1;
+            }
             .heading {
               background-color: var(--header-colour);
               padding-left: 32px;
@@ -1261,7 +1383,7 @@
                   z-index: 2;
 
                   .keyword {
-                    white-space: nowrap;
+                    // white-space: nowrap;
                   }
                 }
               }
@@ -1670,18 +1792,21 @@
       }
     }
     .special {
-      .description {
-        font-size: 0.7rem;
-        color: black;
-        font-weight: 400;
+      .description-container {
         line-height: 1.1rem;
         padding-left: 4px;
         padding-top: 4px;
+        .description {
+          font-size: 0.7rem;
+          color: black;
+          font-weight: 400;
+        }
       }
       .heading {
         background-color: var(--header-colour);
         padding-left: 8px;
         position: relative;
+        line-height: 1.5rem;
 
         .title {
           text-transform: uppercase;
@@ -2895,6 +3020,9 @@
     font-weight: 600;
     z-index: 2;
     cursor: pointer;
+
+    padding-left: 2px;
+    padding-right: 2px;
 
     .keyword-button {
       text-transform: uppercase;

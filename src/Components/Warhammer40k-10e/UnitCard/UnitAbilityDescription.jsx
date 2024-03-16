@@ -1,6 +1,7 @@
 import React from "react";
 import { KeywordTooltip } from "./KeywordTooltip";
 import { RuleTooltip } from "./RuleTooltip";
+import { MarkdownSpanDisplay } from "../../MarkdownSpanDisplay";
 export function replaceKeywords(inputString) {
   if (!inputString) {
     return;
@@ -49,8 +50,76 @@ export function replaceKeywords(inputString) {
   if (remainingText.length > 0) {
     components.push(remainingText);
   }
+  return components.map((component, index) => {
+    // Check if the component has children and if it's a string
 
-  return components;
+    if (typeof component === "string") {
+      // Replace "■" with newline components
+      if (component.includes("■")) {
+        return component.split("■").map((segment, i) => (
+          <React.Fragment key={i}>
+            {<MarkdownSpanDisplay content={segment} />}
+            {i !== component.split("■").length - 1 && (
+              <>
+                <br /> ■
+              </>
+            )}
+          </React.Fragment>
+        ));
+      }
+      return <MarkdownSpanDisplay content={component} key={index} />;
+    } else if (React.isValidElement(component) && typeof component.props.children === "string") {
+      // Replace "■" with newline components
+      if (component.props.children.includes("■")) {
+        const newChildren = component.props.children.split("■").map((segment, i) => (
+          <React.Fragment key={i}>
+            {<MarkdownSpanDisplay content={segment} />}
+            {i !== component.props.children.split("■").length - 1 && (
+              <>
+                <br /> ■
+              </>
+            )}
+          </React.Fragment>
+        ));
+
+        // Clone the component with the new children
+        return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
+      }
+
+      const newChildren = <MarkdownSpanDisplay content={component.props.children} />;
+      return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
+    } else if (React.isValidElement(component) && component.props.children.length > 0) {
+      // Loop over all children and check if they are strings
+      const newChildren = component.props.children.map((child, i) => {
+        console.log(child);
+        // Replace "■" with newline components
+        if (typeof child === "string" && child.includes("■")) {
+          return child.split("■").map((segment, j) => (
+            <React.Fragment key={j}>
+              {<MarkdownSpanDisplay content={segment} />}
+              {j !== child.split("■").length - 1 && (
+                <>
+                  <br /> ■
+                </>
+              )}
+            </React.Fragment>
+          ));
+        }
+        // if it doesnt containt a newline character, return as a MarkDownSpanDisplay
+        if (typeof child === "string") {
+          return <MarkdownSpanDisplay content={child} key={i} />;
+        }
+
+        // Return the component as is if it doesn't meet the criteria
+        return child;
+      });
+
+      return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
+    }
+
+    // Return the component as is if it doesn't meet the criteria
+    return component;
+  });
 }
 
 export const UnitAbilityDescription = ({ name, description, showDescription }) => {

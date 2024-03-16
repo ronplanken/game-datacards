@@ -8,7 +8,12 @@ export const MarkdownSpanDisplay = ({ content, components }) => {
     <ReactMarkdown
       remarkPlugins={[[remarkGfm, { stringLength: stringWidth }]]}
       rehypePlugins={[[rehypeSanitize]]}
-      components={{ p: "span" }}>
+      components={{
+        p(props) {
+          const { node, ...rest } = props;
+          return <span style={{ whiteSpace: "pre-wrap" }} {...rest} />;
+        },
+      }}>
       {content}
     </ReactMarkdown>
   );

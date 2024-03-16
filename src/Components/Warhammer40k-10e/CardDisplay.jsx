@@ -30,6 +30,7 @@ export const Warhammer40K10eCardDisplay = ({
         </>
       )}
       {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
+      {!type && card && card.cardType === "stratagem" && <StratagemCard stratagem={card} />}
       {type === "print" && card && (
         <div className="data-40k-10e" style={{}}>
           {card?.cardType === "DataCard" && (

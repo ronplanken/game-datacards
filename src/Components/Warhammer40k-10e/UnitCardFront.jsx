@@ -1,5 +1,6 @@
 import { UnitExtra } from "./UnitCard/UnitExtra";
 import { UnitFactions } from "./UnitCard/UnitFactions";
+import { UnitInvulTop } from "./UnitCard/UnitInvulTop";
 import { UnitKeywords } from "./UnitCard/UnitKeywords";
 import { UnitName } from "./UnitCard/UnitName";
 import { UnitStats } from "./UnitCard/UnitStats";
@@ -19,6 +20,11 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
         <div className={"header"}>
           <UnitName name={unit.name} subname={unit.subname} points={unit.points} legends={unit.legends} />
           <UnitStats stats={unit.stats} />
+          <div className="stats_container" key={`stat-line-invul`}>
+            {unit.abilities?.invul?.showInvulnerableSave && unit.abilities?.invul?.showAtTop && (
+              <UnitInvulTop invul={unit.abilities?.invul} />
+            )}
+          </div>
         </div>
         <div className="data_container">
           <div className="data">
