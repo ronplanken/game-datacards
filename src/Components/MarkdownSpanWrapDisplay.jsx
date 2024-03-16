@@ -3,7 +3,7 @@ import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import stringWidth from "string-width";
 
-export const MarkdownSpanDisplay = ({ content, components }) => {
+export const MarkdownSpanWrapDisplay = ({ content, components }) => {
   return (
     <ReactMarkdown
       remarkPlugins={[[remarkGfm, { stringLength: stringWidth }]]}
@@ -11,7 +11,7 @@ export const MarkdownSpanDisplay = ({ content, components }) => {
       components={{
         p(props) {
           const { node, ...rest } = props;
-          return <span {...rest} />;
+          return <span style={{ whiteSpace: "pre-wrap" }} {...rest} />;
         },
       }}>
       {content}

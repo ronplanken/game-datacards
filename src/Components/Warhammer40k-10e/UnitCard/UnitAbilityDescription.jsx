@@ -1,7 +1,7 @@
 import React from "react";
 import { KeywordTooltip } from "./KeywordTooltip";
 import { RuleTooltip } from "./RuleTooltip";
-import { MarkdownSpanDisplay } from "../../MarkdownSpanDisplay";
+import { MarkdownSpanWrapDisplay } from "../../MarkdownSpanWrapDisplay";
 export function replaceKeywords(inputString) {
   if (!inputString) {
     return;
@@ -58,7 +58,7 @@ export function replaceKeywords(inputString) {
       if (component.includes("■")) {
         return component.split("■").map((segment, i) => (
           <React.Fragment key={i}>
-            {<MarkdownSpanDisplay content={segment} />}
+            {<MarkdownSpanWrapDisplay content={segment} />}
             {i !== component.split("■").length - 1 && (
               <>
                 <br /> ■
@@ -67,13 +67,13 @@ export function replaceKeywords(inputString) {
           </React.Fragment>
         ));
       }
-      return <MarkdownSpanDisplay content={component} key={index} />;
+      return <MarkdownSpanWrapDisplay content={component} key={index} />;
     } else if (React.isValidElement(component) && typeof component.props.children === "string") {
       // Replace "■" with newline components
       if (component.props.children.includes("■")) {
         const newChildren = component.props.children.split("■").map((segment, i) => (
           <React.Fragment key={i}>
-            {<MarkdownSpanDisplay content={segment} />}
+            {<MarkdownSpanWrapDisplay content={segment} />}
             {i !== component.props.children.split("■").length - 1 && (
               <>
                 <br /> ■
@@ -86,7 +86,7 @@ export function replaceKeywords(inputString) {
         return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
       }
 
-      const newChildren = <MarkdownSpanDisplay content={component.props.children} />;
+      const newChildren = <MarkdownSpanWrapDisplay content={component.props.children} />;
       return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
     } else if (React.isValidElement(component) && component.props.children.length > 0) {
       // Loop over all children and check if they are strings
@@ -96,7 +96,7 @@ export function replaceKeywords(inputString) {
         if (typeof child === "string" && child.includes("■")) {
           return child.split("■").map((segment, j) => (
             <React.Fragment key={j}>
-              {<MarkdownSpanDisplay content={segment} />}
+              {<MarkdownSpanWrapDisplay content={segment} />}
               {j !== child.split("■").length - 1 && (
                 <>
                   <br /> ■
@@ -107,7 +107,7 @@ export function replaceKeywords(inputString) {
         }
         // if it doesnt containt a newline character, return as a MarkDownSpanDisplay
         if (typeof child === "string") {
-          return <MarkdownSpanDisplay content={child} key={i} />;
+          return <MarkdownSpanWrapDisplay content={child} key={i} />;
         }
 
         // Return the component as is if it doesn't meet the criteria
