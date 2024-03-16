@@ -74,7 +74,11 @@ export function replaceKeywords(inputString) {
         const newChildren = component.props.children.split("■").map((segment, i) => (
           <React.Fragment key={i}>
             {<MarkdownSpanDisplay content={segment} />}
-            {i !== component.props.children.split("■").length - 1 && <br />}
+            {i !== component.props.children.split("■").length - 1 && (
+              <>
+                <br /> ■
+              </>
+            )}
           </React.Fragment>
         ));
 
@@ -93,7 +97,11 @@ export function replaceKeywords(inputString) {
           return child.split("■").map((segment, j) => (
             <React.Fragment key={j}>
               {<MarkdownSpanDisplay content={segment} />}
-              {j !== child.split("■").length - 1 && <br />}
+              {j !== child.split("■").length - 1 && (
+                <>
+                  <br /> ■
+                </>
+              )}
             </React.Fragment>
           ));
         }
