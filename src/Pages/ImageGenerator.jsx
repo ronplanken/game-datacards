@@ -116,6 +116,7 @@ export const ImageGenerator = () => {
   const [selectedFactions, setSelectedFactions] = useState([]);
   const [addStratagems, setAddStratagems] = useState(false);
   const [addDatasheets, setAddDatasheets] = useState(true);
+  const [invulTop, setInvulTop] = useState(false);
 
   const { Id } = useParams();
   const navigate = useNavigate();
@@ -250,6 +251,9 @@ export const ImageGenerator = () => {
                   <Button type={addDatasheets ? "primary" : "default"} onClick={() => setAddDatasheets((val) => !val)}>
                     {addDatasheets ? <CheckSquareOutlined /> : <BorderOutlined />}Datasheets
                   </Button>
+                  <Button type={invulTop ? "primary" : "default"} onClick={() => setInvulTop((val) => !val)}>
+                    {invulTop ? <CheckSquareOutlined /> : <BorderOutlined />}Invul at top
+                  </Button>
                 </Space>
               </Typography.Title>
             </Space>
@@ -298,6 +302,9 @@ export const ImageGenerator = () => {
                 <>
                   {addDatasheets &&
                     faction.datasheets.map((card, index) => {
+                      if (card.abilities?.invul?.showInvulnerableSave && invulTop) {
+                        card.abilities.invul.showAtTop = true;
+                      }
                       return (
                         <div
                           style={{

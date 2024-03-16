@@ -328,6 +328,39 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.4.0"} key={"2.4.0"}>
+                    <b> 16-03-2024 </b>
+                    <Typography.Title level={5}>Updates</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Space Marines update</strong>
+                          <br />
+                          The 10e Space Marines have been updated to their latest source. Make sure to update your
+                          datasources.
+                        </li>
+                      </ul>
+                      <ul>
+                        <li>
+                          <strong>Necron update</strong>
+                          <br />
+                          The 10e Necrons have been updated to their latest source. Make sure to update your
+                          datasources.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={5}>Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Service Messages</strong>
+                          <br />
+                          We are now able to add a simple message to the website to inform you of any issues or updates
+                          without having to make a new release.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.3.3"} key={"2.3.3"}>
                     <b> 15-12-2023 </b>
                     <Typography.Title level={5}>New Features</Typography.Title>

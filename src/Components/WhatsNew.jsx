@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.4.0
+                Whats new in 2.5.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,18 +56,14 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Space Marines update</strong>
+                          <strong>Dark Angels update</strong>
                           <br />
-                          The 10e Space Marines have been updated to their latest source. Make sure to update your
-                          datasources.
+                          The new Dark Angels 10e codex has been added to the website.
                         </li>
-                      </ul>
-                      <ul>
                         <li>
-                          <strong>Necron update</strong>
+                          <strong>Chaos Space Marines</strong>
                           <br />
-                          The 10e Necrons have been updated to their latest source. Make sure to update your
-                          datasources.
+                          The CSM stratagems have been updated to comply with the latest index.
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -75,10 +71,38 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Service Messages</strong>
+                          <strong>Markdown</strong>
                           <br />
-                          We are now able to add a simple message to the website to inform you of any issues or updates
-                          without having to make a new release.
+                          Markdown has been re-enabled for most description fields. Please note that some options are
+                          not fully compatible yet. (Such as newlines)
+                        </li>
+                        <li>
+                          <strong>Invulnerable save display</strong>
+                          <br />
+                          The invulnerable save is now displayed at the top of the unit card. Old datasheets still
+                          default to the old location. Updated ones are by default displayed at the top.
+                        </li>
+                        <li>
+                          <strong>Combined weapon profiles</strong>
+                          <br />
+                          Weapons that have exclusive profiles (such as sweep & strike for melee) now have the maker to
+                          show they are exclusive.
+                        </li>
+                        <li>
+                          <strong>Weapon abilities</strong>
+                          <br />
+                          Weapon abilities (such as one-shot) can now be edited and added.
+                        </li>
+                        <li>
+                          <strong>Image Generator</strong>
+                          <br />A Image Generator has been added to the website. This allows you to create images of
+                          complete factions. This is an experimental feature and can be found{" "}
+                          <a href="/image-generator">here</a>.
+                        </li>
+                        <li>
+                          <strong>Various fixes</strong>
+                          <br />
+                          Various fixes and improvements have been made to the website.
                         </li>
                       </ul>
                     </Typography.Paragraph>
