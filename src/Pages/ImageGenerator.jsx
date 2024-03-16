@@ -273,7 +273,7 @@ export const ImageGenerator = () => {
           </Col>
         </Row>
       </Header>
-      <Content style={{ minHeight: "calc(100vh - 64px)" }}>
+      <Content style={{ minHeight: "calc(100vh - 64px)" }} className="image-generator">
         <div
           ref={overlayRef}
           style={{
