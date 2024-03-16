@@ -1,5 +1,5 @@
 import { UnitAbility } from "./UnitAbility";
-import { UnitAbilityDescription } from "./UnitAbilityDescription";
+import { UnitAbilityDescription, replaceKeywords } from "./UnitAbilityDescription";
 import { UnitInvul } from "./UnitInvul";
 
 export const UnitExtra = ({ unit }) => {
@@ -49,7 +49,7 @@ export const UnitExtra = ({ unit }) => {
             <div className="title">Damaged: {unit.abilities?.damaged?.range}</div>
           </div>
           {unit.abilities?.damaged.showDescription && (
-            <div className="description">{unit.abilities?.damaged?.description}</div>
+            <div className="description">{replaceKeywords(unit.abilities?.damaged?.description)}</div>
           )}
         </div>
       )}
@@ -63,7 +63,9 @@ export const UnitExtra = ({ unit }) => {
                   <div className="heading">
                     <div className="title">{ability.name}</div>
                   </div>
-                  <div className="description">{ability.description}</div>
+                  {ability.showDescription && (
+                    <span className="description">{replaceKeywords(ability.description)}</span>
+                  )}
                 </div>
               );
             })}
