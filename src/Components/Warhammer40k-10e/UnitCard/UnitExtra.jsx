@@ -69,7 +69,7 @@ export const UnitExtra = ({ unit }) => {
             })}
         </>
       )}
-      {unit.abilities?.invul && unit.abilities?.invul.showInvulnerableSave && (
+      {unit.abilities?.invul?.showInvulnerableSave && !unit.abilities?.invul?.showAtTop && (
         <UnitInvul invul={unit.abilities?.invul} />
       )}
     </div>
