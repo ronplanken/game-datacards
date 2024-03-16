@@ -1383,7 +1383,6 @@
                   z-index: 2;
 
                   .keyword {
-
                     // white-space: nowrap;
                   }
                 }
@@ -1793,18 +1792,21 @@
       }
     }
     .special {
-      .description {
-        font-size: 0.7rem;
-        color: black;
-        font-weight: 400;
+      .description-container {
         line-height: 1.1rem;
         padding-left: 4px;
         padding-top: 4px;
+        .description {
+          font-size: 0.7rem;
+          color: black;
+          font-weight: 400;
+        }
       }
       .heading {
         background-color: var(--header-colour);
         padding-left: 8px;
         position: relative;
+        line-height: 1.5rem;
 
         .title {
           text-transform: uppercase;

@@ -64,7 +64,9 @@ export const UnitExtra = ({ unit }) => {
                     <div className="title">{ability.name}</div>
                   </div>
                   {ability.showDescription && (
-                    <span className="description">{replaceKeywords(ability.description)}</span>
+                    <div className="description-container">
+                      <span className="description">{replaceKeywords(ability.description)}</span>
+                    </div>
                   )}
                 </div>
               );
