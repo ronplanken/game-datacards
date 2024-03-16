@@ -65,6 +65,12 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .multi-line {
+    position: relative;
+    .value:first-child {
+      padding-left: 18px;
+    }
+  }
   .ant-tabs-nav-wrap {
     background-color: white;
     .ant-tabs-nav-list {
@@ -1258,6 +1264,20 @@
                 z-index: 2;
               }
             }
+            .multi-line {
+              position: relative;
+            }
+            .multi-line::after {
+              content: "";
+              position: absolute;
+              top: 8px;
+              left: 8px;
+              width: 16px;
+              height: 8px;
+              background-color: var(--header-colour);
+              clip-path: polygon(0% 0%, 55% 0%, 100% 50%, 55% 100%, 0% 100%);
+              z-index: 1;
+            }
             .weapon {
               padding-left: 32px;
               border-bottom: 1px dotted #636567;
@@ -1307,7 +1327,20 @@
               height: 20px;
               margin-top: 2px;
             }
-
+            .multi-line {
+              position: relative;
+            }
+            .multi-line::after {
+              content: "";
+              position: absolute;
+              top: 8px;
+              left: 8px;
+              width: 16px;
+              height: 8px;
+              background-color: var(--header-colour);
+              clip-path: polygon(0% 0%, 55% 0%, 100% 50%, 55% 100%, 0% 100%);
+              z-index: 1;
+            }
             .heading {
               background-color: var(--header-colour);
               padding-left: 32px;
