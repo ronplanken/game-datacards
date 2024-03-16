@@ -3,7 +3,7 @@ export const UnitKeywords = ({ keywords }) => {
     <div className="keywords">
       <span className="title">keywords</span>
       <span className="value">
-        {keywords?.map((keyword) => {
+        {keywords?.map((keyword, i, { length }) => {
           if (keyword?.includes(":")) {
             return (
               <span key={keyword} style={{ fontWeight: 400, textTransform: "uppercase", fontSize: "0.9rem" }}>
@@ -11,7 +11,7 @@ export const UnitKeywords = ({ keywords }) => {
               </span>
             );
           }
-          return `${keyword}, `;
+          return `${keyword}${length - 1 !== i ? "," : ""} `;
         })}
       </span>
     </div>
