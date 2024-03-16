@@ -1,4 +1,5 @@
-import { Button, Card, Form, Input, Space, Switch } from "antd";
+import { DeleteFilled } from "@ant-design/icons";
+import { Button, Card, Form, Input, Popconfirm, Space, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -40,6 +41,18 @@ export function UnitPoints() {
                             style={{ marginBottom: "16px" }}
                             extra={
                               <Space>
+                                <Popconfirm
+                                  title={"Are you sure you want to delete these points?"}
+                                  placement="topRight"
+                                  onConfirm={(value) =>
+                                    updateActiveCard(() => {
+                                      const newPoints = [...activeCard.points];
+                                      newPoints.splice(index, 1);
+                                      return { ...activeCard, points: newPoints };
+                                    })
+                                  }>
+                                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                                </Popconfirm>
                                 <Switch
                                   checked={point.active}
                                   onChange={(value) =>
