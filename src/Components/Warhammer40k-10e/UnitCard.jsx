@@ -2,6 +2,9 @@ import { UnitCardBack } from "./UnitCardBack";
 import { UnitCardFront } from "./UnitCardFront";
 
 export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", className, side = "front" }) => {
+  if (unit.variant === "full") {
+    return <UnitCardFull unit={unit} cardStyle={cardStyle} paddingTop={paddingTop} className={className} />;
+  }
   if (side === "front") {
     return <UnitCardFront unit={unit} cardStyle={cardStyle} paddingTop={paddingTop} className={className} />;
   }
