@@ -290,7 +290,9 @@ export const Viewer = () => {
                               return "front";
                             });
                           }}>
-                          {side === "back" ? "Show front" : "Show back"}
+                          {settings.showCardsAsDoubleSided === false && activeCard?.variant !== "full" && (
+                            <>{side === "back" ? "Show front" : "Show back"}</>
+                          )}
                         </Button>
                       </Space>
                     )}

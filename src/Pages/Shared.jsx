@@ -181,7 +181,7 @@ export const Shared = () => {
                                 });
                               }
                             }}>
-                            {card.print_side === "back" ? "Show front" : "Show back"}
+                            {card?.variant !== "full" && <>{card.print_side === "back" ? "Show front" : "Show back"}</>}
                           </Button>
                         </>
                       )}

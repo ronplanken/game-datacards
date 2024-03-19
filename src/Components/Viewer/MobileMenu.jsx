@@ -128,6 +128,20 @@ export const MobileMenu = ({ setIsVisible }) => {
                   }}
                 />
               }></Card>
+            <Card
+              type={"inner"}
+              key={`display-full-size`}
+              size={"small"}
+              title={"Always show cards in single-side view"}
+              bodyStyle={{ padding: 0 }}
+              extra={
+                <Switch
+                  checked={settings.showCardsAsDoubleSided || false}
+                  onChange={(value) => {
+                    updateSettings({ ...settings, showCardsAsDoubleSided: value });
+                  }}
+                />
+              }></Card>
             <Typography.Text style={{ color: "white" }}>Actions</Typography.Text>
             <Button
               size="large"

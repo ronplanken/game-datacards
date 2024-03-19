@@ -5,10 +5,12 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 
 export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, setAddListvisible }) => {
   const { activeCard } = useCardStorage();
   const { lists, selectedList } = useMobileList();
+  const { settings, updateSettings } = useSettingsStorage();
 
   const [showList, setShowList] = useState(false);
 
@@ -62,7 +64,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 className="button-bar mobile-icon-button"
                 onClick={() => setAddListvisible((val) => !val)}></Button>
             )}
-            {activeCard && (
+            {activeCard && settings.showCardsAsDoubleSided === false && (
               <Button
                 icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
                 type="ghost"

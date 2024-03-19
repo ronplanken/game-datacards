@@ -304,6 +304,7 @@ export const Print = () => {
                   <Form.Item label={"Force Print Side"} tooltip="Force the print side even if datacards have one saved">
                     <Select
                       defaultValue={force_print_side}
+                      disabled={settings.showCardsAsDoubleSided === true}
                       onChange={(val) => {
                         setForcePrintSide(val);
                         updateSettings({
@@ -321,6 +322,7 @@ export const Print = () => {
                   <Form.Item label={"Print Side"} tooltip="Set the print side if the datacard does not have one saved">
                     <Select
                       defaultValue={print_side}
+                      disabled={settings.showCardsAsDoubleSided === true}
                       onChange={(val) => {
                         setPrintSide(val);
                         updateSettings({

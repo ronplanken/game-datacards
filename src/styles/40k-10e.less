@@ -897,7 +897,7 @@
       .invul_container {
         z-index: 2;
         position: relative;
-        padding-left: 120px;
+        padding-left: 121px;
         display: flex;
         flex-direction: column;
 
@@ -936,7 +936,10 @@
             letter-spacing: 0.1rem;
             z-index: 2;
 
+            white-space: nowrap;
+
             padding-left: 8px;
+            padding-right: 8px;
           }
 
           .value_container {
@@ -1195,7 +1198,102 @@
         }
       }
     }
+    &.full {
+      height: auto;
+      min-height: calc(714px);
+      margin-bottom: 64px;
+      .footer {
+        position: initial;
+        margin-top: -32px;
+        z-index: 200;
+      }
+      .faction {
+        z-index: 201;
+        position: initial;
+        margin-top: -64px;
+        margin-left: 339px;
+      }
+      .extra {
+        height: initial !important;
+        border-bottom: 2px solid var(--header-colour);
+        & > div:last-child {
+          padding-bottom: 32px;
+        }
+      }
+      .data_container {
+        height: auto;
+        min-height: 468px;
 
+        .data {
+          height: auto;
+          min-height: 468px;
+
+          display: grid;
+          grid-template-areas:
+            " weapons extra "
+            " multi-data extra";
+
+          .weapons {
+            grid-area: weapons;
+            height: auto;
+          }
+
+          .multi-data {
+            grid-area: multi-data;
+          }
+          .extra {
+            grid-area: extra;
+          }
+
+          .multi-data {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-right: 2px solid var(--header-colour);
+            padding-bottom: 48px;
+
+            .wargear_container {
+              padding: 0px;
+              height: auto;
+              border-right: none;
+
+              .content {
+                grid-template-rows: 1fr;
+              }
+            }
+            .extra {
+              padding: 0px;
+              height: auto;
+              border-right: none;
+              border-bottom: none;
+              .heading:nth-of-type(1) {
+                margin-top: 0px;
+              }
+              .heading {
+                margin-top: 16px;
+              }
+              .ledBy {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+
+                .description {
+                  grid-column: span 2;
+                }
+              }
+              .composition_container > div {
+                padding-left: 16px;
+                .description {
+                  padding-left: 0px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     .data_container {
       position: relative;
       height: 468px;
@@ -1218,7 +1316,7 @@
 
         display: grid;
         grid-template-columns: 2fr 1fr;
-        grid-template-rows: 1fr;
+        grid-template-rows: auto auto;
         grid-column-gap: 0px;
         grid-row-gap: 0px;
 
@@ -1230,6 +1328,7 @@
           display: flex;
           flex-direction: column;
           gap: 16px;
+          padding-bottom: 16px;
 
           .ranged {
             position: relative;
@@ -2134,6 +2233,13 @@
           grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
           grid-gap: 2px;
 
+          .invul_container {
+            padding-left: 0px;
+            grid-column-start: column-3;
+            grid-column-end: column-5;
+            margin-left: -4px;
+          }
+
           grid-template-areas:
             "column-7 column-7 column-7 column-7 column-7 column-7"
             "column-1 column-2 column-3 column-4 column-5 column-6";
@@ -2303,10 +2409,32 @@
           clip-path: initial;
 
           display: grid;
-          grid-template-columns: 1fr;
           grid-template-rows: 1fr;
+          grid-template-columns: 1fr;
           grid-column-gap: 0px;
           grid-row-gap: 0px;
+
+          display: grid;
+          grid-template-areas:
+            " weapons "
+            " extra "
+            " multi-data ";
+
+          .weapons {
+            grid-area: weapons;
+          }
+          .multi-data {
+            grid-area: multi-data;
+            border-right: none;
+          }
+          .extra {
+            grid-area: extra;
+            padding-bottom: 16px !important;
+            
+            div:last-child {
+              padding-bottom: 0px;
+            }
+          }
 
           .weapons {
             height: auto;

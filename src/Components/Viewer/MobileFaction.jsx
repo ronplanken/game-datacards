@@ -92,9 +92,9 @@ export const MobileFaction = () => {
                             stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
                             !stratagem.detachment
                         )
-                        .map((val) => (
+                        .map((val, index) => (
                           <Collapse.Panel
-                            key={`${val.detachment}-${val.name}`}
+                            key={`${val.detachment}-${val.name}-${index}`}
                             header={
                               <div style={{ display: "flex", justifyContent: "space-between" }}>
                                 <span>{val.name}</span>
