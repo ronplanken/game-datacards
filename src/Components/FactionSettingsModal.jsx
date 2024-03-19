@@ -311,6 +311,25 @@ export const FactionSettingsModal = () => {
                             <Col span={23}>
                               <Card
                                 type={"inner"}
+                                key={`display-01`}
+                                size={"small"}
+                                title={"Always show cards in single-side view"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.showCardsAsDoubleSided || false}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, showCardsAsDoubleSided: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
                                 key={`display-04`}
                                 size={"small"}
                                 title={"Group cards by role"}

@@ -3,6 +3,7 @@ import { COLOURS } from "../../Helpers/printcolours.js";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage.jsx";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -13,6 +14,7 @@ export const Warhammer40K10eCardDisplay = ({
   backgrounds = "standard",
 }) => {
   const { activeCard } = useCardStorage();
+  const { settings } = useSettingsStorage();
 
   // if no background selected, use standard
   // this does assume standard will always exist but the alternative is duplicating the data?
@@ -42,8 +44,14 @@ export const Warhammer40K10eCardDisplay = ({
                 gap: printPadding,
                 transformOrigin: "top",
                 transform: `scale(${cardScaling / 100})`,
-                height: `${714 * (cardScaling / 100)}px`,
-                width: `${1077 * (cardScaling / 100)}px`,
+                height:
+                  settings.showCardsAsDoubleSided === true || card.variant === "full"
+                    ? "auto"
+                    : `${714 * (cardScaling / 100)}px`,
+                width:
+                  settings.showCardsAsDoubleSided === true || card.variant === "full"
+                    ? "auto"
+                    : `${1077 * (cardScaling / 100)}px`,
                 "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
                 "--title-text-colour": COLOURS[backgrounds].titleTextColour,
                 "--faction-text-colour": COLOURS[backgrounds].factionTextColour,

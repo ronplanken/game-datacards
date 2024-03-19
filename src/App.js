@@ -644,7 +644,9 @@ function App() {
                               updateActiveCard({ ...activeCard, print_side: "back" }, true);
                             }
                           }}>
-                          {activeCard.print_side === "back" ? "Show front" : "Show back"}
+                          {settings.showCardsAsDoubleSided === false && activeCard?.variant !== "full" && (
+                            <>{activeCard.print_side === "back" ? "Show front" : "Show back"}</>
+                          )}
                         </Button>
                       </>
                     )}

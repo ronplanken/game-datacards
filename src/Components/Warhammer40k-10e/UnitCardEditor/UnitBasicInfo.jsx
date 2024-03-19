@@ -2,11 +2,14 @@ import { Form, Input, Select, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
+import { settings } from "firebase/analytics";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 
 const { Option } = Select;
 
 export function UnitBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
+  const { settings, updateSettings } = useSettingsStorage();
 
   return (
     <Form>
@@ -30,22 +33,37 @@ export function UnitBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
         />
       </Form.Item>
-      <Form.Item label={"Variant"}>
-        <Select
-          value={activeCard.variant || "double"}
-          onChange={(value) => updateActiveCard({ ...activeCard, print_side: value })}>
-          <Option value="front">Front</Option>
-          <Option value="back">Back</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item label={"Print side"}>
-        <Select
-          value={activeCard.print_side || "front"}
-          onChange={(value) => updateActiveCard({ ...activeCard, print_side: value })}>
-          <Option value="front">Front</Option>
-          <Option value="back">Back</Option>
-        </Select>
-      </Form.Item>
+      {settings.showCardsAsDoubleSided === false && (
+        <>
+          <Form.Item label={"Variant"}>
+            <Select
+              value={activeCard.variant || "double"}
+              onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}>
+              <Option value="full">Full card</Option>
+              <Option value="double">Double sided</Option>
+            </Select>
+          </Form.Item>
+          {activeCard.variant !== "full" && (
+            <Form.Item label={"Print side"}>
+              <Select
+                value={activeCard.print_side || "front"}
+                onChange={(value) => updateActiveCard({ ...activeCard, print_side: value })}>
+                <Option value="front">Front</Option>
+                <Option value="back">Back</Option>
+              </Select>
+            </Form.Item>
+          )}
+        </>
+      )}
+      {settings.showCardsAsDoubleSided === true && (
+        <Form.Item label={"Variant"}>
+          <Select value={"full"} disabled={true}>
+            <Option value="full">Full card</Option>
+            <Option value="double">Double sided</Option>
+          </Select>
+        </Form.Item>
+      )}
+
       <Form.Item label={"Legends"}>
         <Switch
           checked={activeCard.legends || false}
