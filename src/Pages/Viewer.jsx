@@ -280,20 +280,20 @@ export const Viewer = () => {
                             }}
                           />
                         </Space.Compact>
-                        <Button
-                          type={"primary"}
-                          onClick={() => {
-                            setSide((current) => {
-                              if (current === "front") {
-                                return "back";
-                              }
-                              return "front";
-                            });
-                          }}>
-                          {settings.showCardsAsDoubleSided === false && activeCard?.variant !== "full" && (
-                            <>{side === "back" ? "Show front" : "Show back"}</>
-                          )}
-                        </Button>
+                        {settings.showCardsAsDoubleSided !== true && activeCard?.variant !== "full" && (
+                          <Button
+                            type={"primary"}
+                            onClick={() => {
+                              setSide((current) => {
+                                if (current === "front") {
+                                  return "back";
+                                }
+                                return "front";
+                              });
+                            }}>
+                            {side === "back" ? "Show front" : "Show back"}
+                          </Button>
+                        )}
                       </Space>
                     )}
                   </Col>

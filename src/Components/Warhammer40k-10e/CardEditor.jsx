@@ -12,7 +12,7 @@ export const Warhammer40K10eCardEditor = () => {
 
   return (
     <>
-      {activeCard && settings.showCardsAsDoubleSided === false && activeCard.variant !== "full" && (
+      {activeCard && settings.showCardsAsDoubleSided !== true && activeCard.variant !== "full" && (
         <Col span={24} className={`card-editor`}>
           {activeCard.cardType === "DataCard" && (activeCard.print_side === "front" || !activeCard.print_side) && (
             <UnitCardEditor />

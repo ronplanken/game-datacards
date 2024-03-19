@@ -33,7 +33,7 @@ export function UnitBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, faction_id: value })}
         />
       </Form.Item>
-      {settings.showCardsAsDoubleSided === false && (
+      {settings.showCardsAsDoubleSided !== true && (
         <>
           <Form.Item label={"Variant"}>
             <Select

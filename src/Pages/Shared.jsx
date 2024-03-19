@@ -164,25 +164,27 @@ export const Shared = () => {
                     <Col>
                       {card?.source === "40k-10e" && (
                         <>
-                          <Button
-                            type={"primary"}
-                            onClick={() => {
-                              if (card.print_side === "back") {
-                                setSharedStorage((prev) => {
-                                  const oldCards = clone(prev.category.cards);
-                                  oldCards[index].print_side = "front";
-                                  return { ...prev, category: { ...prev.category, cards: oldCards } };
-                                });
-                              } else {
-                                setSharedStorage((prev) => {
-                                  const oldCards = clone(prev.category.cards);
-                                  oldCards[index].print_side = "back";
-                                  return { ...prev, category: { ...prev.category, cards: oldCards } };
-                                });
-                              }
-                            }}>
-                            {card?.variant !== "full" && <>{card.print_side === "back" ? "Show front" : "Show back"}</>}
-                          </Button>
+                          {card?.variant !== "full" && (
+                            <Button
+                              type={"primary"}
+                              onClick={() => {
+                                if (card.print_side === "back") {
+                                  setSharedStorage((prev) => {
+                                    const oldCards = clone(prev.category.cards);
+                                    oldCards[index].print_side = "front";
+                                    return { ...prev, category: { ...prev.category, cards: oldCards } };
+                                  });
+                                } else {
+                                  setSharedStorage((prev) => {
+                                    const oldCards = clone(prev.category.cards);
+                                    oldCards[index].print_side = "back";
+                                    return { ...prev, category: { ...prev.category, cards: oldCards } };
+                                  });
+                                }
+                              }}>
+                              {card.print_side === "back" ? "Show front" : "Show back"}
+                            </Button>
+                          )}
                         </>
                       )}
                     </Col>

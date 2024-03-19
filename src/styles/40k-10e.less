@@ -1258,7 +1258,9 @@
               border-right: none;
 
               .content {
-                grid-template-rows: 1fr;
+                grid-template-rows: auto !important;
+                grid-template-columns: 1fr 1fr !important;
+                grid-auto-flow: row !important;
               }
             }
             .extra {

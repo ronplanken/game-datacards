@@ -6,7 +6,7 @@ import { UnitCardFull } from "./UnitCardFull";
 export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", className, side = "front" }) => {
   const { settings, updateSettings } = useSettingsStorage();
 
-  if (unit.variant === "full" || settings.showCardsAsDoubleSided) {
+  if (unit.variant === "full" || settings.showCardsAsDoubleSided === true) {
     return <UnitCardFull unit={unit} cardStyle={cardStyle} paddingTop={paddingTop} className={className} />;
   }
   if (side === "front") {
