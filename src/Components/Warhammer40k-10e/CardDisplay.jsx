@@ -4,6 +4,7 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage.jsx";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage.jsx";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -15,11 +16,19 @@ export const Warhammer40K10eCardDisplay = ({
 }) => {
   const { activeCard } = useCardStorage();
   const { settings } = useSettingsStorage();
+  const { dataSource } = useDataSourceStorage();
+
+  const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
   // if no background selected, use standard
   // this does assume standard will always exist but the alternative is duplicating the data?
   if (!(backgrounds in COLOURS)) {
     backgrounds = "standard";
+  }
+
+  if (backgrounds === "standard" || backgrounds === "colourprint" || backgrounds === "light") {
+    COLOURS[backgrounds].headerColour = cardFaction?.colours?.header;
+    COLOURS[backgrounds].bannerColour = cardFaction?.colours?.banner;
   }
   return (
     <>
