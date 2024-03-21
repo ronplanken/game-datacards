@@ -53,7 +53,7 @@ export const ServiceMessage = () => {
                   fontSize: "24px",
                   color: "white",
                 }}>
-                Messages
+                Service messages
               </h1>
             </div>
             <div className="welcome-cover">
@@ -61,7 +61,7 @@ export const ServiceMessage = () => {
                 {messages.map((message) => {
                   return (
                     <Row style={{ padding: "16px" }} className="whatsnew-content" key={message.id}>
-                      <Col>
+                      <Col style={{ padding: "16px" }}>
                         <Typography.Title level={5}>{message.title}</Typography.Title>
                         <Typography.Paragraph style={{ fontSize: "16px" }}>{message.body}</Typography.Paragraph>
                       </Col>

@@ -474,7 +474,7 @@ export const get40k10eData = async () => {
 };
 
 export const getMessages = async () => {
-  const url = `${process.env.REACT_APP_MESSAGES_URL}`;
+  const url = `${process.env.REACT_APP_MESSAGES_URL}?${new Date().getTime()}`;
   const data = await readCsv(url);
   return data;
 };

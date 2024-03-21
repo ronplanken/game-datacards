@@ -23,6 +23,7 @@ import { Discord } from "../Icons/Discord";
 
 import logo from "../Images/logo.png";
 import "../style.less";
+import "../mobile.less";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
@@ -280,18 +281,20 @@ export const Viewer = () => {
                             }}
                           />
                         </Space.Compact>
-                        <Button
-                          type={"primary"}
-                          onClick={() => {
-                            setSide((current) => {
-                              if (current === "front") {
-                                return "back";
-                              }
-                              return "front";
-                            });
-                          }}>
-                          {side === "back" ? "Show front" : "Show back"}
-                        </Button>
+                        {settings.showCardsAsDoubleSided !== true && activeCard?.variant !== "full" && (
+                          <Button
+                            type={"primary"}
+                            onClick={() => {
+                              setSide((current) => {
+                                if (current === "front") {
+                                  return "back";
+                                }
+                                return "front";
+                              });
+                            }}>
+                            {side === "back" ? "Show front" : "Show back"}
+                          </Button>
+                        )}
                       </Space>
                     )}
                   </Col>

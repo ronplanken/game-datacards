@@ -1,13 +1,12 @@
+import { BorderOutlined, CheckSquareOutlined } from "@ant-design/icons";
 import { Badge, Button, Col, Grid, Image, Layout, Row, Select, Space, Typography } from "antd";
 import { Content, Header } from "antd/lib/layout/layout";
 import { toBlob } from "html-to-image";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import "../Images.css";
-import { CheckSquareOutlined, BorderOutlined } from "@ant-design/icons";
 import logo from "../Images/logo.png";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -111,15 +110,12 @@ export const ImageGenerator = () => {
   const basicStratagems = useRef([]);
   const overlayRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [percentage, setIsPercentage] = useState(false);
 
   const [selectedFactions, setSelectedFactions] = useState([]);
   const [addStratagems, setAddStratagems] = useState(false);
   const [addDatasheets, setAddDatasheets] = useState(true);
-  const [invulTop, setInvulTop] = useState(false);
 
-  const { Id } = useParams();
-  const navigate = useNavigate();
+  const { settings, updateSettings } = useSettingsStorage();
 
   const getPics = async () => {
     const zip = new JSZip();
@@ -134,10 +130,6 @@ export const ImageGenerator = () => {
           const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
           return data;
         });
-        const backFiles = cardsBackRef?.current?.[faction]?.map(async (card, index) => {
-          const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
-          return data;
-        });
 
         files?.forEach(async (file, index) => {
           zip.file(
@@ -148,16 +140,22 @@ export const ImageGenerator = () => {
             file
           );
         });
+        if (settings.showCardsAsDoubleSided !== true) {
+          const backFiles = cardsBackRef?.current?.[faction]?.map(async (card, index) => {
+            const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+            return data;
+          });
 
-        backFiles?.forEach(async (file, index) => {
-          zip.file(
-            `${factionName}/${dataSource.data
-              .filter((f) => f.id === faction)[0]
-              ?.datasheets[index].name.replaceAll(" ", "_")
-              .toLowerCase()}-back.png`,
-            file
-          );
-        });
+          backFiles?.forEach(async (file, index) => {
+            zip.file(
+              `${factionName}/${dataSource.data
+                .filter((f) => f.id === faction)[0]
+                ?.datasheets[index].name.replaceAll(" ", "_")
+                .toLowerCase()}-back.png`,
+              file
+            );
+          });
+        }
       }
       if (addStratagems) {
         const stratagems = cardsStratagems?.current?.[faction]?.map(async (card, index) => {
@@ -202,8 +200,8 @@ export const ImageGenerator = () => {
       setIsLoading(false);
     });
   };
-  const { settings, updateSettings } = useSettingsStorage();
-  const { dataSource, selectedFaction, updateSelectedFaction, selectedFactionIndex } = useDataSourceStorage();
+
+  const { dataSource } = useDataSourceStorage();
 
   useEffect(() => {
     updateSettings({
@@ -250,9 +248,6 @@ export const ImageGenerator = () => {
                   </Button>
                   <Button type={addDatasheets ? "primary" : "default"} onClick={() => setAddDatasheets((val) => !val)}>
                     {addDatasheets ? <CheckSquareOutlined /> : <BorderOutlined />}Datasheets
-                  </Button>
-                  <Button type={invulTop ? "primary" : "default"} onClick={() => setInvulTop((val) => !val)}>
-                    {invulTop ? <CheckSquareOutlined /> : <BorderOutlined />}Invul at top
                   </Button>
                 </Space>
               </Typography.Title>
@@ -302,9 +297,6 @@ export const ImageGenerator = () => {
                 <>
                   {addDatasheets &&
                     faction.datasheets.map((card, index) => {
-                      if (card.abilities?.invul?.showInvulnerableSave && invulTop) {
-                        card.abilities.invul.showAtTop = true;
-                      }
                       return (
                         <div
                           style={{
@@ -333,7 +325,7 @@ export const ImageGenerator = () => {
                                     "--banner-colour": faction?.colours?.banner,
                                     "--header-colour": faction?.colours?.header,
                                   }}>
-                                  {card?.source === "40k-10e" && (
+                                  {card?.source === "40k-10e" && settings.showCardsAsDoubleSided !== true && (
                                     <Warhammer40K10eCardDisplay card={card} side={"back"} />
                                   )}
                                 </div>

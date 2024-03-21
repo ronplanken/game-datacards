@@ -30,7 +30,7 @@
 // blueStratagemColour;
 // redStratagemColour;
 
-export const COLOURS = {
+export let COLOURS = {
   standard: {
     titleBackgroundColour: "black",
     titleTextColour: "white",

@@ -635,17 +635,19 @@ function App() {
                             }}
                           />
                         </Space.Compact>
-                        <Button
-                          type={"primary"}
-                          onClick={() => {
-                            if (activeCard.print_side === "back") {
-                              updateActiveCard({ ...activeCard, print_side: "front" }, true);
-                            } else {
-                              updateActiveCard({ ...activeCard, print_side: "back" }, true);
-                            }
-                          }}>
-                          {activeCard.print_side === "back" ? "Show front" : "Show back"}
-                        </Button>
+                        {settings.showCardsAsDoubleSided !== true && activeCard?.variant !== "full" && (
+                          <Button
+                            type={"primary"}
+                            onClick={() => {
+                              if (activeCard.print_side === "back") {
+                                updateActiveCard({ ...activeCard, print_side: "front" }, true);
+                              } else {
+                                updateActiveCard({ ...activeCard, print_side: "back" }, true);
+                              }
+                            }}>
+                            {activeCard.print_side === "back" ? "Show front" : "Show back"}
+                          </Button>
+                        )}
                       </>
                     )}
                     {activeCard && !activeCard.isCustom && (

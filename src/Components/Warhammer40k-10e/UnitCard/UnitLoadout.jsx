@@ -46,7 +46,7 @@ export const UnitLoadout = ({ unit }) => {
                   <div key={`leader-${leader}`}>
                     ■
                     <Link
-                      to={`/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/${leader
+                      to={`/viewer/${selectedFaction?.name.toLowerCase().replaceAll(" ", "-")}/${leader
                         .replaceAll(" ", "-")
                         .toLowerCase()}`}>
                       <span className="value">{leader}</span>
