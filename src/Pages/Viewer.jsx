@@ -23,6 +23,7 @@ import { Discord } from "../Icons/Discord";
 
 import logo from "../Images/logo.png";
 import "../style.less";
+import "../mobile.less";
 
 const { Header, Content } = Layout;
 const { Option } = Select;

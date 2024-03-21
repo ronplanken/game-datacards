@@ -13,13 +13,33 @@ export const UnitWargear = ({ unit }) => {
               explanations.push(...lines.slice(1));
               return (
                 <div className="item" key={`wargear-${index}`}>
-                  <span className="description">{lines[0].replaceAll("◦", "\n◦")}</span>
+                  <span className="description">
+                    {wargear.split("◦")[0]}
+                    <ul style={{ listStyle: "none", padding: "0" }}>
+                      {wargear
+                        .split("◦")
+                        .filter((item, index) => index !== 0)
+                        .map((line) => (
+                          <li key={line}>{line?.trim()}</li>
+                        ))}
+                    </ul>
+                  </span>
                 </div>
               );
             }
             return (
               <div className="item" key={`wargear-${index}`}>
-                <span className="description">{wargear.replaceAll("◦", "\n◦")}</span>
+                <span className="description">
+                  {wargear.split("◦")[0]}
+                  <ul style={{ columns: wargear?.split("◦")?.length > 4 ? "2" : "1" }}>
+                    {wargear
+                      .split("◦")
+                      .filter((item, index) => index !== 0)
+                      .map((line) => (
+                        <li key={line}>{line?.trim()}</li>
+                      ))}
+                  </ul>
+                </span>
               </div>
             );
           })}

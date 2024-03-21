@@ -91,7 +91,6 @@ export function replaceKeywords(inputString) {
     } else if (React.isValidElement(component) && component.props.children.length > 0) {
       // Loop over all children and check if they are strings
       const newChildren = component.props.children.map((child, i) => {
-        console.log(child);
         // Replace "■" with newline components
         if (typeof child === "string" && child.includes("■")) {
           return child.split("■").map((segment, j) => (

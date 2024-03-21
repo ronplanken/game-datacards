@@ -267,7 +267,8 @@
         }
         .text {
           color: black;
-          font-size: 14px;
+          font-size: 0.9rem;
+          line-height: 0.9rem;
         }
       }
     }
@@ -307,6 +308,7 @@
   html {
     font-size: 15px;
   }
+
   .welcome-background {
     border-radius: 4px;
     width: 100%;
@@ -1259,8 +1261,18 @@
 
               .content {
                 grid-template-rows: auto !important;
-                grid-template-columns: 1fr 1fr !important;
+                grid-template-columns: 1fr !important;
                 grid-auto-flow: row !important;
+
+                ul {
+                  list-style: none;
+                  padding: 0;
+                  li::before {
+                    content: "◦"; /* Insert content that looks like bullets */
+                    padding-right: 8px;
+                    list-style-position: inside;
+                  }
+                }
               }
             }
             .extra {
@@ -1518,6 +1530,7 @@
           position: relative;
           display: flex;
           flex-direction: column;
+
           gap: 16px;
 
           .wargear {
@@ -2127,6 +2140,7 @@
       flex-direction: column;
       align-items: center;
       position: relative;
+      font-size: 1rem;
 
       .header {
         width: 100%;
@@ -2432,7 +2446,7 @@
           .extra {
             grid-area: extra;
             padding-bottom: 16px !important;
-            
+
             div:last-child {
               padding-bottom: 0px;
             }

@@ -7,7 +7,6 @@ export const tooltipProps = {
 
 export const UnitWeaponKeywords = ({ keywords }) => {
   const tooltips = keywords.map((keyword, index) => {
-    console.log("keyword:", keyword);
     return <KeywordTooltip keyword={keyword} key={`${keyword}-${index}`} />;
   });
 
