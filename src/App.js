@@ -218,6 +218,45 @@ function App() {
         ];
       }
     }
+    if (selectedContentType === "battle_rules") {
+      const filteredBattleRules = selectedFaction?.battle_rules?.filter((battle_rule) => {
+        return !settings?.ignoredSubFactions?.includes(battle_rule.subfaction_id);
+      });
+      const mainBattleRules = searchText
+        ? filteredBattleRules?.filter((battle_rule) =>
+            battle_rule.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : filteredBattleRules;
+
+      if (settings.hideBasicBattleRules || settings?.noBattleRuleOptions) {
+        return mainBattleRules;
+      } else {
+        const basicBattleRules = searchText
+          ? selectedFaction.basicBattleRules?.filter((battle_rule) =>
+              battle_rule.name.toLowerCase().includes(searchText.toLowerCase())
+            )
+          : selectedFaction.basicBattleRules;
+
+        let br_groups = {};
+        basicBattleRules.map((battle_rule) => {
+          let group_name = battle_rule.rule_type + (battle_rule.rule_subtype && "-" + battle_rule.rule_subtype);
+          console.log("GroupName:" + group_name);
+          br_groups = { ...br_groups, [group_name]: br_groups[group_name] || [] };
+          console.log("br_groups names:", Object.getOwnPropertyNames(br_groups));
+          br_groups[group_name].push(battle_rule);
+        });
+        let menuItems = [];
+        Object.keys(br_groups).forEach(function (key, index) {
+          menuItems.push({ type: "header", name: key });
+          menuItems.push(...br_groups[key]);
+        });
+        console.log("br_groups:", Object.getOwnPropertyNames(br_groups));
+        console.log("MENUITEMS:", menuItems.toString());
+
+        return [...menuItems, { type: "header", name: "Faction battle rules" }, ...(mainBattleRules || [])];
+      }
+    }
+
     if (selectedContentType === "secondaries") {
       if (selectedContentType === "secondaries") {
         const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
@@ -427,6 +466,12 @@ function App() {
                                     Psychic powers
                                   </Option>
                                 )}
+                                {((selectedFaction?.basicBattleRules && selectedFaction?.basicBattleRules.length > 0) ||
+                                  (selectedFaction?.battle_rules && selectedFaction?.battle_rules.length > 0)) && (
+                                  <Option value={"battle_rules"} key={`battle_rules`}>
+                                    Battle rules
+                                  </Option>
+                                )}
                               </Select>
                             </Col>
                           </Row>
@@ -528,8 +573,6 @@ function App() {
                           </List.Item>
                         );
                       }
-                      const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
-
                       if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
                         return <></>;
                       }

@@ -266,6 +266,7 @@ export const getBasicData = () => {
     noStratagemOptions: true,
     noSecondaryOptions: true,
     noPsychicOptions: true,
+    noBattleRuleOptions: true,
     data: [
       {
         id: "basic",
@@ -380,6 +381,157 @@ export const getBasicData = () => {
             type: "Progressive Objective",
           },
         ],
+        battle_rules: [
+          {
+            cardType: "battle_rule",
+            rule_type: "Gambit",
+            rule_subtype: "",
+            name: "BASIC GAMBIT",
+            source: "basic",
+            flavor_text: "Battles are won by arbitrary fiat and king maker conditions",
+            main_desc: "",
+            id: "000006088475",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [
+              {
+                type: "gambit",
+                callout_text: "Determine First Thing",
+                detail: "Roll a d6 to determine the number of whoozits to whatzit",
+              },
+              {
+                type: "gambit",
+                callout_text: "Determine what was whatzited",
+                detail: 'At the end of the fifth turn record each enemy unit within 12" of your units',
+              },
+              {
+                type: "gambit",
+                callout_text: "Determine Gambit Success",
+                detail: "Roll a d6 to determine the number of whoozits to whatzit",
+              },
+            ],
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Primary Mission",
+            rule_subtype: "",
+            name: "BASIC PRIMARY MISSION",
+            source: "basic",
+            flavor_text: "Primary Mission Flavor Text",
+            main_desc: "Primary Mission Main Description",
+            id: "000006088476",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [
+              {
+                type: "primary",
+                callout_text: "In the second, third, fourth and fifth battle rounds:",
+                detail: "Keep shooting units scoring 5VP for each dead unit",
+              },
+              {
+                type: "primary",
+                callout_text: "At the end of the battle:",
+                detail: "Get an extra 10VP if you have killed more units than the enemy",
+              },
+            ],
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Mission Rule",
+            rule_subtype: "Attacker",
+            name: "BASIC MISSION RULE",
+            source: "basic",
+            flavor_text: "Oh boy!  Battle is fun!",
+            main_desc: "Just your simple Mission Rule card",
+            id: "000006088477",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [],
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Secondary",
+            rule_subtype: "Attacker",
+            name: "SECURE NO MAN'S LAND",
+            source: "basic",
+            flavor_text:
+              "You must advance into no man's land and seize it before the enemy can, lest they take control of the entire battlefield",
+            main_desc:
+              "- At the end of your turn, if you control two or more objective markers in No Man's Land, this Secondary Mission is achieved and you scor 5VP.\n- If, at the end of your turn, you only control one objective marker in No Man's Land, this Secondary Mission is still achieved, but in this instance you score 2VP instead of 5VP.",
+            id: "000006088478",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [],
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Secondary",
+            rule_subtype: "Attacker",
+            name: "CAPTURE ENEMY OUTPOST",
+            source: "basic",
+            flavor_text:
+              "A vital objective has been identified in your vicinity, but it is currently held by the enemy.  You are ordered to capture it at any cost.",
+            main_desc:
+              "- At the end of your turn, if you control one or more objective markers in your opponent's deployment zone, this Secondary Mission is achieved and you score 8VP.",
+            id: "000006088479",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [],
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Secondary",
+            rule_subtype: "Attacker",
+            name: "EXTEND BATTLE LINES",
+            source: "basic",
+            flavor_text:
+              "The battleground is won one yard at a time, Continue to establish a strong military presence in the area",
+            main_desc:
+              "- At the end of your turn, if you control one or more objective markers in your own deployment zone and you also control one or more objective markers in No Man's Land, this Secondary Mission is achieved and you score 5 VP.\n- If you only have one unit remaining in your army, then this Secondary Mission is instead achieved at the end of your turn if that unit controls one objective markers in No Man's Land, but in this instance you score 2VP instead of 5VP",
+            id: "000006088480",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [],
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Secondary",
+            rule_subtype: "Attacker",
+            name: "DEFEND STRONGHOLD",
+            source: "basic",
+            flavor_text:
+              "You are charged with the defence of a key objective. It must not be permitted to fall into enemy hands.",
+            main_desc:
+              "- At the end of your opponent's turn, if you control one or more objective markers in your own deployment zone, this Secondary Mission is achieved and you score 3 VP.\n- This Secondary Mission cannot be achieved in the first battle round; if you draw this Secondary Mission card during the first battle round, draw a new Secondary Mission card and shuffle this Secondary Mission card back into your Secondary Mission deck",
+            id: "000006088481",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [],
+          },
+          {
+            cardType: "battle_rule",
+            rule_type: "Secondary",
+            rule_subtype: "Attacker",
+            name: "STORM HOSTILE OBJECTIVE",
+            source: "basic",
+            flavor_text:
+              "Dominated the field of battle.  Storm every site of tactical import and leave the foe with no place to hide.",
+            main_desc:
+              "- At the end of your opponent's turn, if either of the below conditions are satisfied, this Secondary Mission is achieved and you score 4VP if youa re using Fixed Missions, or 5VP if you are using Tactical Missions:\n    - You control one or more objectives markers that were controlled by your opponent at the start of your turn.\n    - You opponent did not control any objective markers at the start of your turn and you control one or more objective markers that you did not control at the start of your turn.\n- This Secondary Mission cannot be achieved in the first battle round; if you draw this Secondary Mission card during the first battle round, draw a new Secondary Mission card and shuffle this Secondary Mission card back into your Secondary Mission deck",
+            id: "000006088482",
+            faction_id: "basic",
+            faction_name: "Basic",
+            faction_type: "Basic",
+            callouts: [],
+          },
+        ],
         psychicpowers: [
           {
             cardType: "psychic",
@@ -439,6 +591,10 @@ export const get40k10eData = async () => {
 
   const core = await readCsv(`${process.env.REACT_APP_DATASOURCE_10TH_URL}/core.json?${new Date().getTime()}`);
 
+  const battle_rules = await readCsv(
+    `https://raw.githubusercontent.com/RabidCicada/datasources/feature/add_battle_rules/10th/gdc/battle_rules.json?${new Date().getTime()}`
+  );
+
   const fetchAllData = async () => {
     const sortedFactions = factions.sort();
     const promises = sortedFactions.map((faction) => fetchData(faction));
@@ -467,6 +623,9 @@ export const get40k10eData = async () => {
         }),
         basicStratagems: core?.stratagems?.map((strat) => {
           return { ...strat, cardType: "stratagem", source: "40k-10e" };
+        }),
+        basicBattleRules: battle_rules?.battle_rules?.map((battle_rule) => {
+          return { ...battle_rule, cardType: "battle_rule", source: "40k-10e" };
         }),
       };
     }),

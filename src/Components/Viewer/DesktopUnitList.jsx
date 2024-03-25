@@ -49,6 +49,33 @@ export const DesktopUnitList = () => {
       ...mainStratagems,
     ];
   }
+  if (selectedContentType === "battle_rules") {
+    const filteredBattleRules = selectedFaction?.battle_rules?.filter((battle_rule) => {
+      return !settings?.ignoredSubFactions?.includes(battle_rule.subfaction_id);
+    });
+    const mainBattleRules = searchText
+      ? filteredBattleRules?.filter((battle_rule) => battle_rule.name.toLowerCase().includes(searchText.toLowerCase()))
+      : filteredBattleRules;
+
+    if (settings.hideBasicBattleRules || settings?.noBattleRuleOptions) {
+      unitList = mainBattleRules;
+    } else {
+      const basicBattleRules = searchText
+        ? selectedFaction.basicBattleRules?.filter((battle_rule) =>
+            battle_rule.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : selectedFaction.basicBattleRules ?? [{ name: "Update your datasources" }];
+
+      unitList = [
+        { type: "header", name: "Basic battle rules" },
+        ...basicBattleRules?.map((br) => {
+          return { ...br, faction_id: selectedFaction.id };
+        }),
+        { type: "header", name: "Faction battle rules" },
+        ...(mainBattleRules || []),
+      ];
+    }
+  }
   return (
     <List
       bordered
@@ -122,6 +149,12 @@ export const DesktopUnitList = () => {
                   {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
                     <Option value={"stratagems"} key={`stratagems`}>
                       Stratagems
+                    </Option>
+                  )}
+                  {((selectedFaction?.basicBattleRules && selectedFaction?.basicBattleRules.length > 0) ||
+                    (selectedFaction?.battle_rules && selectedFaction?.battle_rules.length > 0)) && (
+                    <Option value={"battle_rules"} key={`battle_rules`}>
+                      Battle rules
                     </Option>
                   )}
                 </Select>

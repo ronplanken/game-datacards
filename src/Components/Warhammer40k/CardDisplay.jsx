@@ -4,6 +4,7 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { PsychicCard } from "./PsychicCard";
 import { SecondaryCard } from "./SecondaryCard";
+import { BattleRuleCard } from "./BattleRuleCard";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
 
@@ -33,6 +34,7 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling = 100, printPa
             {activeCard.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
             {activeCard.cardType === "secondary" && <SecondaryCard secondary={activeCard} />}
             {activeCard.cardType === "psychic" && <PsychicCard power={activeCard} />}
+            {activeCard.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
           </Col>
         </>
       )}
@@ -77,6 +79,18 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling = 100, printPa
           {card.cardType === "psychic" && (
             <PsychicCard
               power={card}
+              paddingTop="0px"
+              cardStyle={{
+                transformOrigin: "0% 0%",
+                transform: `scale(${cardScaling / 100})`,
+                gap: printPadding,
+                ...resizedStyle,
+              }}
+            />
+          )}
+          {card.cardType === "battle_rule" && (
+            <BattleRuleCard
+              battle_rule={card}
               paddingTop="0px"
               cardStyle={{
                 transformOrigin: "0% 0%",
