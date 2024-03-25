@@ -1,8 +1,11 @@
 import { Col } from "antd";
+import { COLOURS } from "../../Helpers/printcolours.js";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { BattleRuleCard } from "./BattleRuleCard";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage.jsx";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage.jsx";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -13,9 +16,21 @@ export const Warhammer40K10eCardDisplay = ({
   backgrounds = "standard",
 }) => {
   const { activeCard } = useCardStorage();
+  const { settings } = useSettingsStorage();
+  const { dataSource } = useDataSourceStorage();
 
-  const backgroundColour = backgrounds === "standard" ? "black" : "#dfe0e2";
-  const factionTextColour = backgrounds === "standard" ? "white" : "black";
+  const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+
+  // if no background selected, use standard
+  // this does assume standard will always exist but the alternative is duplicating the data?
+  if (!(backgrounds in COLOURS)) {
+    backgrounds = "standard";
+  }
+
+  if (backgrounds === "standard" || backgrounds === "colourprint" || backgrounds === "light") {
+    COLOURS[backgrounds].headerColour = cardFaction?.colours?.header;
+    COLOURS[backgrounds].bannerColour = cardFaction?.colours?.banner;
+  }
   return (
     <>
       {!type && activeCard && (
@@ -28,6 +43,7 @@ export const Warhammer40K10eCardDisplay = ({
         </>
       )}
       {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
+      {!type && card && card.cardType === "stratagem" && <StratagemCard stratagem={card} />}
       {type === "print" && card && (
         <div className="data-40k-10e" style={{}}>
           {card?.cardType === "DataCard" && (
@@ -39,10 +55,30 @@ export const Warhammer40K10eCardDisplay = ({
                 gap: printPadding,
                 transformOrigin: "top",
                 transform: `scale(${cardScaling / 100})`,
-                height: `${714 * (cardScaling / 100)}px`,
-                width: `${1077 * (cardScaling / 100)}px`,
-                "--background-colour": backgroundColour,
-                "--faction-text-colour": factionTextColour,
+                height:
+                  settings.showCardsAsDoubleSided === true || card.variant === "full"
+                    ? "auto"
+                    : `${714 * (cardScaling / 100)}px`,
+                width:
+                  settings.showCardsAsDoubleSided === true || card.variant === "full"
+                    ? "auto"
+                    : `${1077 * (cardScaling / 100)}px`,
+                "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+                "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+                "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+                "--header-colour": COLOURS[backgrounds].headerColour,
+                "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+                "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+                "--stat-title-colour": COLOURS[backgrounds].statTitleColour,
+                "--banner-colour": COLOURS[backgrounds].bannerColour,
+                "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+                "--rows-colour": COLOURS[backgrounds].rowsColour,
+                "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+                "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+                "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+                "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+                "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+                "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
               }}
             />
           )}
@@ -56,8 +92,22 @@ export const Warhammer40K10eCardDisplay = ({
                 transform: `scale(${cardScaling / 100})`,
                 height: `${460 * (cardScaling / 100)}px`,
                 width: `${266 * (cardScaling / 100)}px`,
-                "--background-colour": backgroundColour,
-                "--faction-text-colour": factionTextColour,
+                "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+                "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+                "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+                "--header-colour": COLOURS[backgrounds].headerColour,
+                "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+                "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+                "--stat-title-colour": COLOURS[backgrounds].statTitleColour,
+                "--banner-colour": COLOURS[backgrounds].bannerColour,
+                "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+                "--rows-colour": COLOURS[backgrounds].rowsColour,
+                "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+                "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+                "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+                "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+                "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+                "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
               }}
             />
           )}
@@ -97,8 +147,16 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
-          {card?.cardType === "stratagem" && <StratagemCard stratagem={card} />}
-          {card?.cardType === "battle_rule" && <BattleRuleCard battle_rule={activeCard} />}
+          {card?.cardType === "stratagem" && (
+            <div className="data-40k-10e" style={{}}>
+              <StratagemCard stratagem={card} className={"shared-stratagem"} cardStyle={{ width: "100%" }} />
+            </div>
+          )}
+          {card?.cardType === "battle_rule" && (
+            <div className="data-40k-10e" style={{}}>
+              <BattleRuleCard battle_rule={activeCard} />
+            </div>
+          )}
           {card?.cardType === "DataCard" && (
             <UnitCard
               side={side}

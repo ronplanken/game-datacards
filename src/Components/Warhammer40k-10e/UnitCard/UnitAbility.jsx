@@ -5,7 +5,8 @@ export const UnitAbility = ({ name, value }) => {
     <>
       {value && (
         <div className="ability">
-          <span className="title">{name}</span> <span className="value">{replaceKeywords(value)}</span>
+          <span className="title">{name}</span>
+          <span className="value">{replaceKeywords(value)}</span>
         </div>
       )}
     </>

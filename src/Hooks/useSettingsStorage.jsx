@@ -12,6 +12,7 @@ const defaultSettings = {
     closedFactions: [],
   },
   wizardCompleted: "0.0.0",
+  serviceMessage: 0,
   printSettings: {
     pageSize: "A4",
     pageOrientation: "portrait",
@@ -34,7 +35,8 @@ export const SettingsStorageProviderComponent = (props) => {
     try {
       const settings = localStorage.getItem("settings");
       if (settings) {
-        return JSON.parse(settings);
+        const parsedSettings = JSON.parse(settings);
+        return { ...defaultSettings, ...parsedSettings };
       }
       return defaultSettings;
     } catch (e) {

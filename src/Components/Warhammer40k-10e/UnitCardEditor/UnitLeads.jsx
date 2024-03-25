@@ -92,7 +92,7 @@ export function UnitLeader() {
             style={{ width: "100%" }}
             onClick={() =>
               updateActiveCard(() => {
-                const newLeads = [...(activeCard.leads.units || [])];
+                const newLeads = [...(activeCard?.leads?.units || [])];
                 newLeads.push(`Unit ${newLeads.length + 1}`);
                 return {
                   ...activeCard,

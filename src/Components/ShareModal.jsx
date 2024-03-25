@@ -1,5 +1,5 @@
 import { LinkOutlined, ShareAltOutlined } from "@ant-design/icons";
-import { Button, Col, message, Modal, Row, Tooltip, Typography } from "antd";
+import { Button, Col, Modal, Row, Tooltip, Typography, message } from "antd";
 import React from "react";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
@@ -24,6 +24,7 @@ export const ShareModal = () => {
             type="primary"
             onClick={() => {
               setIsModalVisible(false);
+              setShareId(undefined);
             }}>
             Ok
           </Button>
@@ -45,10 +46,13 @@ export const ShareModal = () => {
                 border: "1px solid #D9D9D9",
                 height: "32px",
                 lineHeight: "2em",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                textWrap: "nowrap",
               }}>
               {shareId ? (
-                <Typography.Link target={"_blank"} href={`https://game-datacards.eu/shared/${shareId}`}>
-                  https://game-datacards.eu/shared/{shareId}
+                <Typography.Link target={"_blank"} href={`${process.env.REACT_APP_URL}/shared/${shareId}`}>
+                  {process.env.REACT_APP_URL}/shared/{shareId}
                 </Typography.Link>
               ) : (
                 <Typography.Text italic type="secondary">
@@ -64,7 +68,7 @@ export const ShareModal = () => {
                   icon={<LinkOutlined />}
                   type={"primary"}
                   onClick={() => {
-                    navigator.clipboard.writeText(`https://game-datacards.eu/shared/${shareId}`);
+                    navigator.clipboard.writeText(`${process.env.REACT_APP_URL}/shared/${shareId}`);
                     message.success("Link has been copied");
                   }}>
                   Copy

@@ -2,11 +2,13 @@ import { UnitExtra } from "./UnitCard/UnitExtra";
 import { UnitFactions } from "./UnitCard/UnitFactions";
 import { UnitInvulTop } from "./UnitCard/UnitInvulTop";
 import { UnitKeywords } from "./UnitCard/UnitKeywords";
+import { UnitLoadout } from "./UnitCard/UnitLoadout";
 import { UnitName } from "./UnitCard/UnitName";
 import { UnitStats } from "./UnitCard/UnitStats";
+import { UnitWargear } from "./UnitCard/UnitWargear";
 import { UnitWeapons } from "./UnitCard/UnitWeapons";
 
-export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className }) => {
+export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }) => {
   return (
     <div
       className={className}
@@ -16,7 +18,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`unit`}>
+      <div className={`unit full`}>
         <div className={"header"}>
           <UnitName name={unit.name} subname={unit.subname} points={unit.points} legends={unit.legends} />
           <UnitStats stats={unit.stats} />
@@ -29,6 +31,10 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
         <div className="data_container">
           <div className="data">
             <UnitWeapons unit={unit} />
+            <div className="multi-data">
+              <UnitWargear unit={unit} />
+              <UnitLoadout unit={unit} />
+            </div>
             <UnitExtra unit={unit} />
           </div>
         </div>

@@ -66,6 +66,21 @@ export function UnitInvulnerableSave() {
                 }}
               />
             </Form.Item>
+            <Form.Item label={"Show at top"}>
+              <Switch
+                checked={ability.showAtTop}
+                onChange={(value) => {
+                  updateActiveCard(() => {
+                    const newAbility = { ...activeCard.abilities.invul };
+                    newAbility.showAtTop = value;
+                    return {
+                      ...activeCard,
+                      abilities: { ...activeCard.abilities, invul: newAbility },
+                    };
+                  });
+                }}
+              />
+            </Form.Item>
             <Form.Item label={"Extra info"}>
               <MDEditor
                 preview="edit"

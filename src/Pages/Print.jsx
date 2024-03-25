@@ -291,8 +291,12 @@ export const Print = () => {
                         });
                       }}
                       options={[
-                        { label: "Standard Backgrounds", value: "standard" },
-                        { label: "Light Backgrounds", value: "light" },
+                        { label: "Standard Background", value: "standard" },
+                        { label: "Light Background", value: "light" },
+                        { label: "Coloured Ink Saver", value: "colourprint" },
+                        { label: "Greyscale Ink Saver", value: "greyprint" },
+                        // uncomment the below option to allow debug colour mode which clearly shows each element
+                        // { label: "Debug Background", value: "debug" },
                       ]}
                       size={"small"}
                     />
@@ -300,6 +304,7 @@ export const Print = () => {
                   <Form.Item label={"Force Print Side"} tooltip="Force the print side even if datacards have one saved">
                     <Select
                       defaultValue={force_print_side}
+                      disabled={settings.showCardsAsDoubleSided === true}
                       onChange={(val) => {
                         setForcePrintSide(val);
                         updateSettings({
@@ -317,6 +322,7 @@ export const Print = () => {
                   <Form.Item label={"Print Side"} tooltip="Set the print side if the datacard does not have one saved">
                     <Select
                       defaultValue={print_side}
+                      disabled={settings.showCardsAsDoubleSided === true}
                       onChange={(val) => {
                         setPrintSide(val);
                         updateSettings({

@@ -1,5 +1,5 @@
 import { UnitAbility } from "./UnitAbility";
-import { UnitAbilityDescription } from "./UnitAbilityDescription";
+import { UnitAbilityDescription, replaceKeywords } from "./UnitAbilityDescription";
 import { UnitInvul } from "./UnitInvul";
 
 export const UnitExtra = ({ unit }) => {
@@ -17,14 +17,14 @@ export const UnitExtra = ({ unit }) => {
             return (
               <UnitAbilityDescription
                 name={ability.name}
-                description={ability.description}
-                showDescription={ability.showDescription}
+                description={ability?.description}
+                showDescription={ability?.showDescription}
                 key={`ability-${index}`}
               />
             );
           })}
       </div>
-      {unit.abilities?.wargear?.filter((ability) => ability.showAbility).length > 0 && (
+      {unit.abilities?.wargear?.filter((ability) => ability.showAbility)?.length > 0 && (
         <div className="abilities">
           <div className="heading">
             <div className="title">Wargear abilities</div>
@@ -49,7 +49,7 @@ export const UnitExtra = ({ unit }) => {
             <div className="title">Damaged: {unit.abilities?.damaged?.range}</div>
           </div>
           {unit.abilities?.damaged.showDescription && (
-            <div className="description">{unit.abilities?.damaged?.description}</div>
+            <div className="description">{replaceKeywords(unit.abilities?.damaged?.description)}</div>
           )}
         </div>
       )}
@@ -63,13 +63,17 @@ export const UnitExtra = ({ unit }) => {
                   <div className="heading">
                     <div className="title">{ability.name}</div>
                   </div>
-                  <div className="description">{ability.description}</div>
+                  {ability.showDescription && (
+                    <div className="description-container">
+                      <span className="description">{replaceKeywords(ability.description)}</span>
+                    </div>
+                  )}
                 </div>
               );
             })}
         </>
       )}
-      {unit.abilities?.invul && unit.abilities?.invul.showInvulnerableSave && (
+      {unit.abilities?.invul?.showInvulnerableSave && !unit.abilities?.invul?.showAtTop && (
         <UnitInvul invul={unit.abilities?.invul} />
       )}
     </div>

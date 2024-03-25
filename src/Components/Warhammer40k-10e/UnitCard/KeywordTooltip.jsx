@@ -6,7 +6,7 @@ export const tooltipProps = {
 };
 
 export const KeywordTooltip = ({ keyword }) => {
-  if (keyword.includes("anti-")) {
+  if (keyword.toLowerCase().includes("anti-")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -15,14 +15,14 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("one shot")) {
+  if (keyword.toLowerCase().includes("one shot")) {
     return (
       <Tooltip {...tooltipProps} title={"The bearer can only shoot with this weapon once per battle."}>
         <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
-  if (keyword.includes("linked fire")) {
+  if (keyword.toLowerCase().includes("linked fire")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -33,7 +33,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("plasma warhead")) {
+  if (keyword.toLowerCase().includes("plasma warhead")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -44,7 +44,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("feel no pain")) {
+  if (keyword.toLowerCase().includes("feel no pain")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -55,23 +55,14 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("anti-")) {
-    return (
-      <Tooltip
-        {...tooltipProps}
-        title={"An unmodified Wound roll of ‘x+’ against a target with the matching keyword scores a Critical Wound."}>
-        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
-      </Tooltip>
-    );
-  }
-  if (keyword.includes("assault")) {
+  if (keyword.toLowerCase().includes("assault")) {
     return (
       <Tooltip {...tooltipProps} title={"Can be shot even if the bearer’s unit Advanced."}>
         <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
-  if (keyword.includes("pistol")) {
+  if (keyword.toLowerCase().includes("pistol")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -88,7 +79,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("melta")) {
+  if (keyword.toLowerCase().includes("melta")) {
     return (
       <Tooltip
         title={
@@ -99,14 +90,14 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("rapid fire")) {
+  if (keyword.toLowerCase().includes("rapid fire")) {
     return (
       <Tooltip title={"Increase the Attacks by ‘x’ when targeting units within half range."} {...tooltipProps}>
         <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
-  if (keyword.includes("torrent")) {
+  if (keyword.toLowerCase().includes("torrent")) {
     return (
       <Tooltip
         title={"Each time an attack is made with this weapon, that attack automatically hits the target."}
@@ -115,7 +106,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("ignores cover")) {
+  if (keyword.toLowerCase().includes("ignores cover")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -126,7 +117,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("lethal hits")) {
+  if (keyword.toLowerCase().includes("lethal hits")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -135,7 +126,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("lance")) {
+  if (keyword.toLowerCase().includes("lance")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -146,7 +137,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("indirect fire")) {
+  if (keyword.toLowerCase().includes("indirect fire")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -164,7 +155,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("precision")) {
+  if (keyword.toLowerCase().includes("precision")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -175,7 +166,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("blast")) {
+  if (keyword.toLowerCase().includes("blast")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -192,14 +183,14 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("heavy")) {
+  if (keyword.toLowerCase().includes("heavy")) {
     return (
       <Tooltip {...tooltipProps} title={"Add 1 to Hit rolls if the bearer’s unit Remained Stationary this turn."}>
         <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
-  if (keyword.includes("twin-linked")) {
+  if (keyword.toLowerCase().includes("twin-linked")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -208,7 +199,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("hazardous")) {
+  if (keyword.toLowerCase().includes("hazardous")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -219,7 +210,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("devastating wounds")) {
+  if (keyword.toLowerCase().includes("devastating wounds")) {
     return (
       <Tooltip
         title={
@@ -230,14 +221,14 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("sustained hits")) {
+  if (keyword.toLowerCase().includes("sustained hits")) {
     return (
       <Tooltip {...tooltipProps} title={"Each Critical Hit scores ‘x’ additional hits on the target."}>
         <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );
   }
-  if (keyword.includes("extra attacks")) {
+  if (keyword.toLowerCase().includes("extra attacks")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -246,7 +237,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("extra attacks")) {
+  if (keyword.toLowerCase().includes("extra attacks")) {
     return (
       <Tooltip
         {...tooltipProps}
@@ -255,7 +246,7 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  if (keyword.includes("psychic")) {
+  if (keyword.toLowerCase().includes("psychic")) {
     return (
       <Tooltip
         {...tooltipProps}

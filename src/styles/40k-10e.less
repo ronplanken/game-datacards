@@ -18,10 +18,22 @@
   }
 }
 
+.mobile-list-overview-item {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  width: 100vw;
+  border-bottom: 2px solid #f0f2f5;
+  flex-direction: column;
+
+  &:active {
+    background-color: #00000011;
+  }
+}
 .points_table-container {
   .ant-popover-inner-content {
     padding: 0px 0px;
-    background-color: #001529;
+    background-color: var(--title-background-colour);
     border: 1px solid white;
   }
   .point-tabel {
@@ -43,8 +55,8 @@
       z-index: 2;
     }
     tbody {
-      background-color: #dfe0e2;
-      color: black;
+      background-color: var(--text-background-colour);
+      color: var(--text-text-colour);
       font-size: 1.1em;
       font-weight: 800;
       text-align: center;
@@ -53,6 +65,12 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .multi-line {
+    position: relative;
+    .value:first-child {
+      padding-left: 18px;
+    }
+  }
   .ant-tabs-nav-wrap {
     background-color: white;
     .ant-tabs-nav-list {
@@ -70,6 +88,164 @@
         display: flex;
         justify-content: center;
         width: 45%;
+      }
+    }
+  }
+  .shared-stratagem {
+    height: 458px;
+    width: 262px;
+    transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    each(@factions, {
+        &.@{value}::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      });
+    &.AM::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 55%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 85px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    &.basic::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 150px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    background-color: var(--stratagem-colour);
+    .border {
+      background-color: white;
+      border-radius: 8px;
+      height: 456px;
+      width: 260px;
+      .background-side-bar {
+        position: absolute;
+        top: 22.67px;
+        left: 22.67px;
+        height: 377.95px;
+        width: 15.11px;
+        background-color: var(--stratagem-colour);
+      }
+      .background-header-bar {
+        position: absolute;
+        top: 32.12px;
+        left: 41.57px;
+        height: 3.77px;
+        width: 200.31px;
+        background-color: var(--stratagem-colour);
+      }
+      .header {
+        padding-left: 4px;
+        position: absolute;
+        top: 9.44px;
+        left: 52.91px;
+        color: var(--stratagem-colour);
+        width: 185.19px;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .type {
+        padding-left: 4px;
+        position: absolute;
+        top: 35.9px;
+        left: 52.91px;
+        width: 188.97;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px dotted #aaadb0;
+      }
+      .content {
+        position: absolute;
+        top: 56.69px;
+        left: 52.91px;
+        width: 188.97px;
+        height: auto;
+        padding-left: 4px;
+        .section {
+          padding-top: 4px;
+          line-height: 1rem;
+          .title {
+            text-transform: uppercase;
+            color: var(--stratagem-colour);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding-right: 4px;
+          }
+          .text {
+            color: black;
+            font-size: 0.7rem;
+            font-weight: 400;
+          }
+        }
+      }
+      .containers {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+
+        gap: 20px;
+
+        width: 35.9px;
+        height: auto;
+
+        top: 16.06px;
+        left: 12.28px;
+
+        .cp-container {
+          height: 35.9px;
+          width: 35.9px;
+          border: 3.4px solid var(--stratagem-colour);
+          background-color: var(--rows-colour);
+
+          rotate: 45deg;
+          overflow: hidden;
+          line-height: 28.34px;
+
+          .value {
+            rotate: -45deg;
+            text-align: center;
+            font-weight: 600;
+            color: var(--stratagem-colour);
+            font-size: 1.1rem;
+          }
+        }
       }
     }
   }
@@ -91,7 +267,8 @@
         }
         .text {
           color: black;
-          font-size: 14px;
+          font-size: 0.9rem;
+          line-height: 0.9rem;
         }
       }
     }
@@ -99,7 +276,7 @@
       height: 35.9px;
       width: 35.9px;
       border: 3.4px solid var(--header-colour);
-      background-color: #d8d8da;
+      background-color: var(--rows-colour);
       position: absolute;
       top: 16.06px;
       left: 12.28px;
@@ -110,7 +287,7 @@
       height: 35.9px;
       width: 35.9px;
       border: 3.4px solid var(--header-colour);
-      background-color: #d8d8da;
+      background-color: var(--rows-colour);
       position: absolute;
       top: 83.14px;
       left: 12.28px;
@@ -185,6 +362,7 @@
   html {
     font-size: 15px;
   }
+
   .welcome-background {
     border-radius: 4px;
     width: 100%;
@@ -251,17 +429,18 @@
 .data-40k-10e {
   page-break-inside: avoid;
 
-  .stratagem {
+  .stratagem,
+  .shared-stratagem {
     &.either {
-      --stratagem-colour: #2c594c;
+      --stratagem-colour: var(--green-stratagem-colour);
     }
 
     &.own {
-      --stratagem-colour: #234461;
+      --stratagem-colour: var(--blue-stratagem-colour);
     }
 
     &.other {
-      --stratagem-colour: #a2151a;
+      --stratagem-colour: var(--red-stratagem-colour);
     }
 
     .containers {
@@ -269,7 +448,7 @@
         height: 35.9px;
         width: 35.9px;
         border: 3.5px solid var(--stratagem-colour);
-        background-color: #d8d8da;
+        background-color: var(--rows-colour);
         rotate: 45deg;
         overflow: hidden;
 
@@ -575,7 +754,7 @@
             height: 35.9px;
             width: 35.9px;
             border: 3.4px solid var(--stratagem-colour);
-            background-color: #d8d8da;
+            background-color: var(--rows-colour);
 
             rotate: 45deg;
             overflow: hidden;
@@ -909,10 +1088,22 @@
   --card-scaling-factor: 1;
 
   --header-colour: #456664;
+  --header-text-colour: white;
+  --stat-text-colour: #456664;
+  --stat-title-colour: white;
   --banner-colour: #103344;
-
+  --text-background-colour: #dfe0e2;
+  --rows-colour: #d8d8da;
+  --alt-rows-colour: #dee3e0;
+  --keywords-background-colour: #d8d8da;
+  --weapon-keyword-colour: #456664;
   --background-colour: black;
   --faction-text-colour: white;
+  --title-text-colour: white;
+
+  --green-stratagem-colour: #2c594c;
+  --blue-stratagem-colour: #234461;
+  --red-stratagem-colour: #a2151a;
 
   .unit {
     height: calc(714px);
@@ -953,6 +1144,98 @@
       }
       .stats_container:nth-child(6) {
         grid-area: c6;
+      }
+
+      .invul_container {
+        z-index: 2;
+        position: relative;
+        padding-left: 120px;
+        display: flex;
+        flex-direction: column;
+
+        .info {
+          color: white;
+          font-size: 0.7rem;
+          font-weight: 400;
+          letter-spacing: normal;
+          font-style: italic;
+          margin-top: -12px;
+          padding-left: 54px;
+        }
+        .invul {
+          z-index: 2;
+          position: relative;
+
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+
+          &::before {
+            content: " ";
+            position: absolute;
+            width: 100%;
+            height: 22px;
+            background-color: var(--banner-colour);
+            top: calc(50% - 11px);
+          }
+
+          .title {
+            text-transform: uppercase;
+            color: var(--header-text-colour);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1rem;
+            z-index: 2;
+
+            white-space: nowrap;
+
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+
+          .value_container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+
+            height: 44px;
+            width: 44px;
+            z-index: 1;
+
+            mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+
+            background-color: var(--banner-colour);
+
+            .value {
+              text-align: center;
+
+              height: 38px;
+              width: 39px;
+
+              text-transform: uppercase;
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: var(--stat-text-colour);
+              z-index: 2;
+
+              justify-content: center;
+              align-items: center;
+              display: flex;
+
+              background-color: white;
+
+              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+              mask-repeat: no-repeat;
+              mask-position: center;
+              mask-size: contain;
+            }
+          }
+        }
       }
 
       .header_container {
@@ -997,7 +1280,7 @@
             text-transform: uppercase;
             font-size: 2rem;
             font-weight: 800;
-            color: white;
+            color: var(--title-text-colour);
             z-index: 3;
             line-height: 2.5rem;
             letter-spacing: 0.1rem;
@@ -1006,7 +1289,7 @@
             padding-left: 8px;
             text-transform: uppercase;
             font-style: italic;
-            color: white;
+            color: var(--title-text-colour);
             font-size: 1.1rem;
             z-index: 2;
             font-weight: 600;
@@ -1027,17 +1310,17 @@
             text-transform: uppercase;
             font-size: 1rem;
             font-weight: 600;
-            color: white;
+            color: var(--title-text-colour);
             z-index: 2;
             line-height: 2.2rem;
             letter-spacing: 0.1rem;
             padding-left: 8px;
             padding-right: 8px;
-            border: 1px solid #dfe0e2;
+            border: 1px solid var(--title-text-colour);
             border-radius: 4px;
 
             &:hover {
-              border: 1px solid #dfe0e2;
+              border: 1px solid var(--title-text-colour);
               background-color: #ffffff44;
               cursor: pointer;
             }
@@ -1058,7 +1341,7 @@
           text-transform: uppercase;
           font-size: 1rem;
           font-weight: 600;
-          color: white;
+          color: var(--stat-title-colour);
           z-index: 2;
           letter-spacing: 0.1rem;
           white-space: nowrap;
@@ -1074,7 +1357,7 @@
           .caption {
             text-align: center;
             font-size: 0.9rem;
-            color: white;
+            color: var(--title-text-colour);
             font-weight: 600;
             width: 44px;
             height: 20px;
@@ -1122,7 +1405,7 @@
               text-transform: uppercase;
               font-size: 1.3rem;
               font-weight: 600;
-              color: var(--header-colour);
+              color: var(--stat-text-colour);
               z-index: 2;
               background-color: white;
 
@@ -1167,7 +1450,114 @@
         }
       }
     }
+    &.full {
+      height: auto;
+      min-height: calc(714px);
+      margin-bottom: 64px;
+      .footer {
+        position: initial;
+        margin-top: -32px;
+        z-index: 200;
+      }
+      .faction {
+        z-index: 201;
+        position: initial;
+        margin-top: -64px;
+        margin-left: 339px;
+      }
+      .extra {
+        height: initial !important;
+        border-bottom: 2px solid var(--header-colour);
+        & > div:last-child {
+          padding-bottom: 32px;
+        }
+      }
+      .data_container {
+        height: auto;
+        min-height: 468px;
 
+        .data {
+          height: auto;
+          min-height: 468px;
+
+          display: grid;
+          grid-template-areas:
+            " weapons extra "
+            " multi-data extra";
+
+          .weapons {
+            grid-area: weapons;
+            height: auto;
+          }
+
+          .multi-data {
+            grid-area: multi-data;
+          }
+          .extra {
+            grid-area: extra;
+          }
+
+          .multi-data {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border-right: 2px solid var(--header-colour);
+            padding-bottom: 48px;
+
+            .wargear_container {
+              padding: 0px;
+              height: auto;
+              border-right: none;
+
+              .content {
+                grid-template-rows: auto !important;
+                grid-template-columns: 1fr !important;
+                grid-auto-flow: row !important;
+
+                ul {
+                  list-style: none;
+                  padding: 0;
+                  li::before {
+                    content: "◦"; /* Insert content that looks like bullets */
+                    padding-right: 8px;
+                    list-style-position: inside;
+                  }
+                }
+              }
+            }
+            .extra {
+              padding: 0px;
+              height: auto;
+              border-right: none;
+              border-bottom: none;
+              .heading:nth-of-type(1) {
+                margin-top: 0px;
+              }
+              .heading {
+                margin-top: 16px;
+              }
+              .ledBy {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+
+                .description {
+                  grid-column: span 2;
+                }
+              }
+              .composition_container > div {
+                padding-left: 16px;
+                .description {
+                  padding-left: 0px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
     .data_container {
       position: relative;
       height: 468px;
@@ -1185,12 +1575,12 @@
         margin-top: -4px;
         height: 468px;
         width: 1028px;
-        background-color: rgb(223, 224, 226);
+        background-color: var(--text-background-colour);
         clip-path: polygon(0 0, 100% 0, 100% 100%, 2% 100%, 0 96%);
 
         display: grid;
         grid-template-columns: 2fr 1fr;
-        grid-template-rows: 1fr;
+        grid-template-rows: auto auto;
         grid-column-gap: 0px;
         grid-row-gap: 0px;
 
@@ -1202,6 +1592,7 @@
           display: flex;
           flex-direction: column;
           gap: 16px;
+          padding-bottom: 16px;
 
           .ranged {
             position: relative;
@@ -1229,22 +1620,36 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
                 z-index: 2;
               }
             }
+            .multi-line {
+              position: relative;
+            }
+            .multi-line::after {
+              content: "";
+              position: absolute;
+              top: 8px;
+              left: 8px;
+              width: 16px;
+              height: 8px;
+              background-color: var(--header-colour);
+              clip-path: polygon(0% 0%, 55% 0%, 100% 50%, 55% 100%, 0% 100%);
+              z-index: 1;
+            }
             .weapon {
               padding-left: 32px;
               border-bottom: 1px dotted #636567;
 
               &:nth-of-type(even) {
-                background: #d8d8da;
+                background: var(--rows-colour);
               }
               &:nth-of-type(odd) {
-                background: #dee3e0;
+                background: var(--alt-rows-colour);
               }
               .line {
                 display: grid;
@@ -1285,7 +1690,20 @@
               height: 20px;
               margin-top: 2px;
             }
-
+            .multi-line {
+              position: relative;
+            }
+            .multi-line::after {
+              content: "";
+              position: absolute;
+              top: 8px;
+              left: 8px;
+              width: 16px;
+              height: 8px;
+              background-color: var(--header-colour);
+              clip-path: polygon(0% 0%, 55% 0%, 100% 50%, 55% 100%, 0% 100%);
+              z-index: 1;
+            }
             .heading {
               background-color: var(--header-colour);
               padding-left: 32px;
@@ -1297,7 +1715,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1309,10 +1727,10 @@
               border-bottom: 1px dotted #636567;
 
               &:nth-of-type(even) {
-                background: #d8d8da;
+                background: var(--rows-colour);
               }
               &:nth-of-type(odd) {
-                background: #dee3e0;
+                background: var(--alt-rows-colour);
               }
               .line {
                 display: grid;
@@ -1328,7 +1746,7 @@
                   z-index: 2;
 
                   .keyword {
-                    white-space: nowrap;
+                    // white-space: nowrap;
                   }
                 }
               }
@@ -1362,6 +1780,7 @@
           position: relative;
           display: flex;
           flex-direction: column;
+
           gap: 16px;
 
           .wargear {
@@ -1379,7 +1798,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1466,7 +1885,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1501,7 +1920,7 @@
                   text-transform: uppercase;
                   font-size: 1.3rem;
                   font-weight: 600;
-                  color: var(--header-colour);
+                  color: var(--stat-text-colour);
                   z-index: 2;
 
                   justify-content: center;
@@ -1525,7 +1944,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1580,7 +1999,7 @@
               margin-bottom: 4px;
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 letter-spacing: 0.1rem;
@@ -1711,7 +2130,7 @@
 
               .title {
                 text-transform: uppercase;
-                color: white;
+                color: var(--header-text-colour);
                 font-size: 1rem;
                 font-weight: 600;
                 z-index: 2;
@@ -1737,22 +2156,25 @@
       }
     }
     .special {
-      .description {
-        font-size: 0.7rem;
-        color: black;
-        font-weight: 400;
+      .description-container {
         line-height: 1.1rem;
         padding-left: 4px;
         padding-top: 4px;
+        .description {
+          font-size: 0.7rem;
+          color: black;
+          font-weight: 400;
+        }
       }
       .heading {
         background-color: var(--header-colour);
         padding-left: 8px;
         position: relative;
+        line-height: 1.5rem;
 
         .title {
           text-transform: uppercase;
-          color: white;
+          color: var(--header-text-colour);
           font-size: 1rem;
           font-weight: 600;
           z-index: 2;
@@ -1803,7 +2225,7 @@
       height: 64px;
       width: 1000px;
       border: 2px solid var(--header-colour);
-      background-color: #dfe0e2;
+      background-color: var(--text-background-colour);
       position: absolute;
       bottom: 32px;
 
@@ -1821,7 +2243,7 @@
         padding-left: 16px;
         position: relative;
         padding-right: 48px;
-        background-color: #d8d8da;
+        background-color: var(--keywords-background-colour);
 
         .title {
           text-transform: uppercase;
@@ -1876,7 +2298,7 @@
       height: 64px;
       width: 64px;
       border: 2px solid var(--header-colour);
-      background-color: #d8d8da;
+      background-color: var(--rows-colour);
       position: absolute;
       bottom: 32px;
       left: 677px;
@@ -1968,6 +2390,7 @@
       flex-direction: column;
       align-items: center;
       position: relative;
+      font-size: 1rem;
 
       .header {
         width: 100%;
@@ -2076,6 +2499,13 @@
           grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
           grid-gap: 2px;
 
+          .invul_container {
+            padding-left: 0px;
+            grid-column-start: column-3;
+            grid-column-end: column-5;
+            margin-left: -4px;
+          }
+
           grid-template-areas:
             "column-7 column-7 column-7 column-7 column-7 column-7"
             "column-1 column-2 column-3 column-4 column-5 column-6";
@@ -2121,7 +2551,7 @@
             .caption {
               text-align: center;
               font-size: 0.8rem;
-              color: white;
+              color: var(--title-text-colour);
               font-weight: 600;
               width: 34px;
               height: 12px;
@@ -2241,14 +2671,36 @@
           margin-top: -4px;
           height: auto;
           width: 100%;
-          background-color: rgb(223, 224, 226);
+          background-color: var(--text-background-colour);
           clip-path: initial;
 
           display: grid;
-          grid-template-columns: 1fr;
           grid-template-rows: 1fr;
+          grid-template-columns: 1fr;
           grid-column-gap: 0px;
           grid-row-gap: 0px;
+
+          display: grid;
+          grid-template-areas:
+            " weapons "
+            " extra "
+            " multi-data ";
+
+          .weapons {
+            grid-area: weapons;
+          }
+          .multi-data {
+            grid-area: multi-data;
+            border-right: none;
+          }
+          .extra {
+            grid-area: extra;
+            padding-bottom: 16px !important;
+
+            div:last-child {
+              padding-bottom: 0px;
+            }
+          }
 
           .weapons {
             height: auto;
@@ -2320,10 +2772,10 @@
                 border-bottom: 1px dotted #636567;
                 padding-right: 8px;
                 &:nth-of-type(even) {
-                  background: #d8d8da;
+                  background: var(--rows-colour);
                 }
                 &:nth-of-type(odd) {
-                  background: #dee3e0;
+                  background: var(--alt-rows-colour);
                 }
                 .line {
                   display: grid;
@@ -2445,10 +2897,10 @@
                 padding-right: 8px;
 
                 &:nth-of-type(even) {
-                  background: #d8d8da;
+                  background: var(--rows-colour);
                 }
                 &:nth-of-type(odd) {
-                  background: #dee3e0;
+                  background: var(--alt-rows-colour);
                 }
                 .line {
                   display: grid;
@@ -2762,7 +3214,7 @@
         height: auto;
         width: 100%;
         border: 0px solid var(--header-colour);
-        background-color: #dfe0e2;
+        background-color: var(--text-background-colour);
         position: initial;
         grid-template-columns: 1fr;
 
@@ -2780,7 +3232,7 @@
             "column-2";
 
           padding-left: 0px;
-          background-color: #d8d8da;
+          background-color: var(--rows-colour);
 
           .title {
             padding-left: 8px;
@@ -2828,7 +3280,7 @@
             "column-2";
 
           padding-left: 0px;
-          background-color: #d8d8da;
+          background-color: var(--rows-colour);
 
           .title {
             padding: 4px;
@@ -2868,7 +3320,7 @@
         height: 64px;
         width: 64px;
         border: 2px solid var(--header-colour);
-        background-color: #d8d8da;
+        background-color: var(--rows-colour);
         position: absolute;
         bottom: 32px;
         left: 677px;
@@ -2957,15 +3409,18 @@
   }
   .keyword {
     text-transform: uppercase;
-    color: var(--header-colour);
+    color: var(--weapon-keyword-colour);
     font-size: 0.7rem;
     font-weight: 600;
     z-index: 2;
     cursor: pointer;
 
+    padding-left: 2px;
+    padding-right: 2px;
+
     .keyword-button {
       text-transform: uppercase;
-      color: var(--header-colour);
+      color: var(--weapon-keyword-colour);
       font-size: 0.7rem;
       font-weight: 600;
       height: 16px;

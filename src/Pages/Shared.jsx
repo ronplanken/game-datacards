@@ -1,4 +1,4 @@
-import { ForkOutlined, HeartFilled, HeartOutlined } from "@ant-design/icons";
+import { ForkOutlined, HeartFilled, HeartOutlined, RedoOutlined, UndoOutlined } from "@ant-design/icons";
 import { Badge, Button, Carousel, Col, Grid, Image, Layout, Row, Space, Tooltip, Typography } from "antd";
 import { Content, Header } from "antd/lib/layout/layout";
 import clone from "just-clone";
@@ -149,11 +149,46 @@ export const Shared = () => {
             {sharedStorage?.category?.cards?.map((card, index) => {
               return (
                 <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                  {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
-                  {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} type="print" />}
-                  {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
-                  {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
-                  {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}
+                  <Row>
+                    <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                      {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
+                      {card?.source === "40k-10e" && (
+                        <Warhammer40K10eCardDisplay card={card} type="print" side={card.print_side} />
+                      )}
+                      {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
+                      {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
+                      {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}
+                    </Col>
+                  </Row>
+                  <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
+                    <Col>
+                      {card?.source === "40k-10e" && (
+                        <>
+                          {card?.variant !== "full" && (
+                            <Button
+                              type={"primary"}
+                              onClick={() => {
+                                if (card.print_side === "back") {
+                                  setSharedStorage((prev) => {
+                                    const oldCards = clone(prev.category.cards);
+                                    oldCards[index].print_side = "front";
+                                    return { ...prev, category: { ...prev.category, cards: oldCards } };
+                                  });
+                                } else {
+                                  setSharedStorage((prev) => {
+                                    const oldCards = clone(prev.category.cards);
+                                    oldCards[index].print_side = "back";
+                                    return { ...prev, category: { ...prev.category, cards: oldCards } };
+                                  });
+                                }
+                              }}>
+                              {card.print_side === "back" ? "Show front" : "Show back"}
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </Col>
+                  </Row>
                 </Col>
               );
             })}
@@ -163,12 +198,51 @@ export const Shared = () => {
           <Carousel dots={{ className: "dots" }}>
             {sharedStorage?.category?.cards?.map((card, index) => {
               return (
-                <div className={`data-${card?.source ? card?.source : "40k"}`} key={`${card.name}-${index}`}>
-                  {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
-                  {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} type="viewer" />}
-                  {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
-                  {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
-                  {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}
+                <div key={`${card.name}-${index}`}>
+                  <Row style={{ display: "flex", justifyContent: "center", backgroundColor: "#001529" }}>
+                    <Col>
+                      <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
+                        {card?.source === "40k-10e" && (
+                          <>
+                            <Button
+                              icon={card.print_side === "front" ? <RedoOutlined /> : <UndoOutlined />}
+                              type="ghost"
+                              size="large"
+                              shape="round"
+                              className="button-bar"
+                              onClick={() => {
+                                if (card.print_side === "back") {
+                                  setSharedStorage((prev) => {
+                                    const oldCards = clone(prev.category.cards);
+                                    oldCards[index].print_side = "front";
+                                    return { ...prev, category: { ...prev.category, cards: oldCards } };
+                                  });
+                                } else {
+                                  setSharedStorage((prev) => {
+                                    const oldCards = clone(prev.category.cards);
+                                    oldCards[index].print_side = "back";
+                                    return { ...prev, category: { ...prev.category, cards: oldCards } };
+                                  });
+                                }
+                              }}></Button>
+                          </>
+                        )}
+                      </Space>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <div className={`data-${card?.source ? card?.source : "40k"}`}>
+                        {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
+                        {card?.source === "40k-10e" && (
+                          <Warhammer40K10eCardDisplay card={card} type="viewer" side={card.print_side} />
+                        )}
+                        {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
+                        {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
+                        {!card?.source && <Warhammer40KCardDisplay card={card} type="print" />}
+                      </div>
+                    </Col>
+                  </Row>
                 </div>
               );
             })}
