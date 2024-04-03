@@ -4,32 +4,32 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 export const UnitLoadout = ({ unit }) => {
   const { selectedFaction } = useDataSourceStorage();
 
-  const unitLoadouts = unit.loadout.split(".").filter((val) => val);
+  const unitLoadouts = unit?.loadout?.split(".").filter((val) => val);
   return (
     <div className="extra">
       <div className="composition_container">
         <div className="heading">
           <div className="title">Unit Composition</div>
         </div>
-        {unit.composition?.map((composition, index) => {
+        {unit?.composition?.map((composition, index) => {
           return (
-            <div className="composition" key={`composition-${index}`}>
+            <div className="composition" key={`composition-${composition}`}>
               <span className="description">{composition}</span>
             </div>
           );
         })}
-        {unitLoadouts.map((loadout, index) => {
-          const line = loadout.split(":");
+        {unitLoadouts?.map((loadout, index) => {
+          const line = loadout?.split(":");
           if (line?.length > 1) {
             return (
-              <div className="loadout" key={`loadout-${index}`}>
+              <div className="loadout" key={`loadout-${line[0]}`}>
                 <span className="name">{line[0]}</span>
                 <span className="description">{line[1]}.</span>
               </div>
             );
           }
           return (
-            <div className="loadout" key={`loadout-${index}`}>
+            <div className="loadout" key={`loadout-${loadout}`}>
               <span className="description">{loadout}</span>
             </div>
           );
