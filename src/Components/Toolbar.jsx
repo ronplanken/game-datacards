@@ -1,4 +1,4 @@
-import { FolderAddOutlined, PrinterOutlined, SaveOutlined } from "@ant-design/icons";
+import { FileImageOutlined, FolderAddOutlined, PrinterOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Col, Row, Tooltip, message } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,9 +25,8 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
   const { cardStorage, activeCategory, saveActiveCard, cardUpdated, addCategory } = useCardStorage();
 
   return (
-    <Row>
+    <Row style={{ justifyContent: "space-between", background: "white" }}>
       <Col
-        span={16}
         style={{
           display: "flex",
           flexDirection: "row",
@@ -50,6 +49,19 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
               }
             }}
             icon={<PrinterOutlined />}
+          />
+        </Tooltip>
+        <Tooltip title={"Export category to images"} placement="bottomLeft">
+          <Button
+            type={"text"}
+            shape={"circle"}
+            disabled={!(activeCategory && activeCategory.cards.length > 0)}
+            onClick={() => {
+              const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
+              logScreenView("Export");
+              navigate(`/image-export/${categoryIndex}`);
+            }}
+            icon={<FileImageOutlined />}
           />
         </Tooltip>
         <Exporter />
@@ -76,7 +88,6 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
         </Tooltip>
       </Col>
       <Col
-        span={8}
         style={{
           display: "flex",
           flexDirection: "row",

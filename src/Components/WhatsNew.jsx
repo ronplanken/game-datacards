@@ -45,21 +45,22 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.6.1
+                Whats new in 2.7.0
               </h1>
             </div>
             <div className="welcome-cover">
               <>
                 <Row style={{ padding: "16px" }} className="whatsnew-content">
                   <Col>
-                    <Typography.Title level={5}>Datasource update</Typography.Title>
+                    <Typography.Title level={5}>Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Latest codex support</strong>
+                          <strong>Image Exporter</strong>
                           <br />
-                          We have updated to the latest datasources to include the Golden Banana boys and Space Fungus.
-                          Make sure you update your datasoures.
+                          An image exporter has been added to the print menu. This will allow you to export your cards
+                          directly to a PNG. This is useful for printing services that require a specific format or if
+                          the printing feature does not properly work.
                         </li>
                       </ul>
                     </Typography.Paragraph>

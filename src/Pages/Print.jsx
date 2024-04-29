@@ -1,7 +1,25 @@
-import { Button, Col, Collapse, Form, Grid, Input, Layout, Row, Select, Slider, Space, Typography } from "antd";
+import {
+  Badge,
+  Button,
+  Col,
+  Collapse,
+  Form,
+  Grid,
+  Image,
+  Input,
+  Layout,
+  Row,
+  Select,
+  Slider,
+  Space,
+  Typography,
+} from "antd";
+import { useNavigate } from "react-router-dom";
+import logo from "../Images/logo.png";
+
 import split from "just-split";
 import { useRef, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import "../App.css";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Page } from "../Components/Print/Page";
@@ -44,16 +62,26 @@ export const Print = () => {
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
     return (
       <Layout>
-        <Header className="no-print">
+        <Header className="no-print" style={{ paddingLeft: "32px" }}>
           <Row style={{ justifyContent: "space-between" }}>
             <Col>
               <Space size={"large"}>
-                {/* <Image preview={false} src={logo} width={50} /> */}
+                {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
+                  <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
+                    <Image preview={false} src={logo} width={50} />
+                  </Badge.Ribbon>
+                ) : (
+                  <Image preview={false} src={logo} width={50} />
+                )}
                 <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
                   Game Datacards
                 </Typography.Title>
+                <Typography.Title level={4} style={{ color: "white", marginBottom: 0 }}>
+                  Print
+                </Typography.Title>
               </Space>
             </Col>
+            <Col></Col>
           </Row>
         </Header>
         <Layout>
