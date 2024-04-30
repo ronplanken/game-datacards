@@ -1,5 +1,5 @@
 import { BorderOutlined, CheckSquareOutlined } from "@ant-design/icons";
-import { Badge, Button, Col, Grid, Image, Layout, Row, Select, Space, Typography } from "antd";
+import { Badge, Button, Col, Grid, Image, Layout, Row, Select, Space, Spin, Typography } from "antd";
 import { Content, Header } from "antd/lib/layout/layout";
 import { toBlob } from "html-to-image";
 import { useEffect, useRef, useState } from "react";
@@ -272,7 +272,7 @@ export const ImageGenerator = () => {
           </Col>
         </Row>
       </Header>
-      <Content style={{ minHeight: "calc(100vh - 64px)", overflowX: "hidden" }} className="image-generator">
+      <Layout>
         <div
           ref={overlayRef}
           style={{
@@ -286,95 +286,103 @@ export const ImageGenerator = () => {
             zIndex: 9999,
             alignItems: "center",
             justifyContent: "center",
-          }}></div>
-        <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
-          {dataSource?.data
-            .filter((faction) => {
-              return selectedFactions.includes(faction.id);
-            })
-            .map((faction) => {
-              return (
-                <>
-                  {addDatasheets &&
-                    faction?.datasheets?.map((card, index) => {
-                      return (
-                        <div
-                          style={{
-                            "--banner-colour": faction?.colours?.banner,
-                            "--header-colour": faction?.colours?.header,
-                          }}
-                          key={faction.id}>
+            overflowX: "hidden",
+            overflowY: "hidden",
+          }}>
+          <Spin tip="Preparing download..." size="large"></Spin>
+        </div>
+        <Content style={{ minHeight: "calc(100vh - 64px)", overflowX: "hidden" }} className="image-generator">
+          <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
+            {dataSource?.data
+              .filter((faction) => {
+                return selectedFactions.includes(faction.id);
+              })
+              .map((faction) => {
+                return (
+                  <>
+                    {addDatasheets &&
+                      faction?.datasheets?.map((card, index) => {
+                        return (
+                          <div
+                            style={{
+                              "--banner-colour": faction?.colours?.banner,
+                              "--header-colour": faction?.colours?.header,
+                            }}
+                            key={faction.id}>
+                            <Col
+                              key={`${card.name}-${index}`}
+                              className={`data-${card?.source ? card?.source : "40k"}`}>
+                              <Row>
+                                <Col
+                                  key={`${card.name}-${index}`}
+                                  className={`data-${card?.source ? card?.source : "40k"}`}>
+                                  <div
+                                    ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
+                                    style={{
+                                      "--banner-colour": faction?.colours?.banner,
+                                      "--header-colour": faction?.colours?.header,
+                                    }}>
+                                    {card?.source === "40k-10e" && (
+                                      <Warhammer40K10eCardDisplay card={card} side={"front"} />
+                                    )}
+                                  </div>
+                                  <div
+                                    ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
+                                    style={{
+                                      "--banner-colour": faction?.colours?.banner,
+                                      "--header-colour": faction?.colours?.header,
+                                    }}>
+                                    {card?.source === "40k-10e" && settings.showCardsAsDoubleSided !== true && (
+                                      <Warhammer40K10eCardDisplay card={card} side={"back"} />
+                                    )}
+                                  </div>
+                                </Col>
+                              </Row>
+                            </Col>
+                          </div>
+                        );
+                      })}
+                    {addStratagems &&
+                      faction?.stratagems?.map((card, index) => {
+                        return (
                           <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
                             <Row>
                               <Col
                                 key={`${card.name}-${index}`}
                                 className={`data-${card?.source ? card?.source : "40k"}`}>
                                 <div
-                                  ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
+                                  ref={(el) => (cardsStratagems.current[faction.id][index] = el)}
                                   style={{
                                     "--banner-colour": faction?.colours?.banner,
                                     "--header-colour": faction?.colours?.header,
                                   }}>
-                                  {card?.source === "40k-10e" && (
-                                    <Warhammer40K10eCardDisplay card={card} side={"front"} />
-                                  )}
-                                </div>
-                                <div
-                                  ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
-                                  style={{
-                                    "--banner-colour": faction?.colours?.banner,
-                                    "--header-colour": faction?.colours?.header,
-                                  }}>
-                                  {card?.source === "40k-10e" && settings.showCardsAsDoubleSided !== true && (
-                                    <Warhammer40K10eCardDisplay card={card} side={"back"} />
-                                  )}
+                                  {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
                                 </div>
                               </Col>
                             </Row>
                           </Col>
+                        );
+                      })}
+                  </>
+                );
+              })}
+            {addStratagems &&
+              dataSource.data[0]?.basicStratagems?.map((card, index) => {
+                return (
+                  <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                    <Row>
+                      <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
+                        <div ref={(el) => (basicStratagems.current[index] = el)}>
+                          {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
                         </div>
-                      );
-                    })}
-                  {addStratagems &&
-                    faction?.stratagems?.map((card, index) => {
-                      return (
-                        <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                          <Row>
-                            <Col
-                              key={`${card.name}-${index}`}
-                              className={`data-${card?.source ? card?.source : "40k"}`}>
-                              <div
-                                ref={(el) => (cardsStratagems.current[faction.id][index] = el)}
-                                style={{
-                                  "--banner-colour": faction?.colours?.banner,
-                                  "--header-colour": faction?.colours?.header,
-                                }}>
-                                {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
-                              </div>
-                            </Col>
-                          </Row>
-                        </Col>
-                      );
-                    })}
-                </>
-              );
-            })}
-          {addStratagems &&
-            dataSource.data[0]?.basicStratagems?.map((card, index) => {
-              return (
-                <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                  <Row>
-                    <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
-                      <div ref={(el) => (basicStratagems.current[index] = el)}>
-                        {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-              );
-            })}
-        </Row>
-      </Content>
+                      </Col>
+                    </Row>
+                  </Col>
+                );
+              })}
+          </Row>
+        </Content>
+      </Layout>
     </Layout>
   );
 };

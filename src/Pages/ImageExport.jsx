@@ -1,4 +1,4 @@
-import { Badge, Button, Col, Form, Grid, Image, Layout, Row, Select, Space, Typography } from "antd";
+import { Badge, Button, Col, Form, Grid, Image, Layout, Row, Select, Space, Spin, Typography } from "antd";
 import { toBlob } from "html-to-image";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -26,8 +26,6 @@ export const ImageExport = () => {
   const navigate = useNavigate();
 
   const overlayRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(false);
-
   const { cardStorage } = useCardStorage();
 
   const { settings } = useSettingsStorage();
@@ -35,7 +33,6 @@ export const ImageExport = () => {
   const getPics = async () => {
     const zip = new JSZip();
     overlayRef.current.style.display = "inline-flex";
-    setIsLoading(true);
     await sleep(100);
 
     const files = cardsFrontRef?.current?.map(async (card, index) => {
@@ -73,7 +70,6 @@ export const ImageExport = () => {
       link.download = `datacards_${cardStorage.categories[CategoryId].name.toLowerCase()}.zip`;
       link.click();
       overlayRef.current.style.display = "none";
-      setIsLoading(false);
     });
   };
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
@@ -117,7 +113,9 @@ export const ImageExport = () => {
               justifyContent: "center",
               overflowX: "hidden",
               overflowY: "hidden",
-            }}></div>
+            }}>
+            <Spin tip="Preparing download..." size="large"></Spin>
+          </div>
           <Sider
             style={{
               backgroundColor: "#F0F2F5",
@@ -144,8 +142,7 @@ export const ImageExport = () => {
                   block
                   type="primary"
                   onClick={() => {
-                    setIsLoading(true);
-                    overlayRef.current.style.display = "block";
+                    overlayRef.current.style.display = "inline-flex";
                     getPics();
                   }}>
                   Download
