@@ -272,7 +272,7 @@ export const ImageGenerator = () => {
           </Col>
         </Row>
       </Header>
-      <Content style={{ minHeight: "calc(100vh - 64px)" }} className="image-generator">
+      <Content style={{ minHeight: "calc(100vh - 64px)", overflowX: "hidden" }} className="image-generator">
         <div
           ref={overlayRef}
           style={{
@@ -296,7 +296,7 @@ export const ImageGenerator = () => {
               return (
                 <>
                   {addDatasheets &&
-                    faction.datasheets.map((card, index) => {
+                    faction?.datasheets?.map((card, index) => {
                       return (
                         <div
                           style={{
@@ -336,7 +336,7 @@ export const ImageGenerator = () => {
                       );
                     })}
                   {addStratagems &&
-                    faction.stratagems.map((card, index) => {
+                    faction?.stratagems?.map((card, index) => {
                       return (
                         <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
                           <Row>
@@ -360,7 +360,7 @@ export const ImageGenerator = () => {
               );
             })}
           {addStratagems &&
-            dataSource.data[0].basicStratagems.map((card, index) => {
+            dataSource.data[0]?.basicStratagems?.map((card, index) => {
               return (
                 <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
                   <Row>
