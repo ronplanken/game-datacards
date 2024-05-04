@@ -307,6 +307,15 @@
   .battlerule {
     position: relative;
 
+    .background-header-bar {
+      position: absolute;
+      top: 32.12px;
+      left: 8px;
+      height: 3.77px;
+      width: 244px;
+      background-color: var(--stratagem-colour);
+    }
+
     .content {
       height: auto;
       .section {
@@ -336,26 +345,6 @@
       left: 12.28px;
       rotate: 45deg;
       overflow: hidden;
-    }
-    .cp-container {
-      height: 35.9px;
-      width: 35.9px;
-      border: 3.4px solid var(--header-colour);
-      background-color: #d8d8da;
-      position: absolute;
-      top: 83.14px;
-      left: 12.28px;
-      rotate: 45deg;
-      overflow: hidden;
-      line-height: 28.34px;
-
-      .value {
-        rotate: -45deg;
-        text-align: center;
-        font-weight: 600;
-        color: var(--header-colour);
-        font-size: 1.1rem;
-      }
     }
   }
 
@@ -833,19 +822,27 @@
         border-radius: 8px;
         height: 456px;
         width: 260px;
+
+        display: grid;
+        align-items: start;
+        align-content: start;
+        justify-items: center;
+        /* justify-content: start; */
+        grid-template-rows: auto;
+
         .background-header-bar {
-          position: absolute;
-          top: 32.12px;
-          left: 20px;
+          // position: absolute;
+          // top: 32.12px;
+          // left: 9px;
           height: 3.77px;
-          width: 220px;
+          width: 240px;
           background-color: var(--stratagem-colour);
         }
         .header {
           padding-left: 4px;
-          position: absolute;
-          top: 9.44px;
-          left: 20px;
+          // position: absolute;
+          // top: 9.44px;
+          // left: 20px;
           color: var(--stratagem-colour);
           width: 220px;
           font-size: 1.1rem;
@@ -855,9 +852,9 @@
         }
         .type {
           padding-left: 4px;
-          position: absolute;
-          top: 35.9px;
-          left: 22.91px;
+          // position: absolute;
+          // top: 35.9px;
+          // left: 22.91px;
           width: 216px;
           font-size: 0.8rem;
           text-transform: uppercase;
@@ -867,24 +864,34 @@
         }
 
         .content {
-          position: absolute;
-          top: 56.69px;
-          left: 22px;
-          width: 220px;
+          // position: absolute;
+          // top: 56.69px;
+          // left: 22px;
+          width: 234px;
           height: auto;
-          padding-left: 4px;
           .callout {
             padding-top: 4px;
             line-height: 1rem;
             font-size: 0.6rem;
 
+            ul {
+              list-style: none;
+              padding: 0;
+              li::before {
+                content: "◦"; /* Insert content that looks like bullets */
+                padding-right: 4px;
+                font-weight: 600;
+                list-style-position: inside;
+              }
+            }
+
             .title {
+              width: 234px;
               text-transform: uppercase;
               color: white;
               background-color: var(--stratagem-colour);
               font-size: 0.5rem;
               font-weight: 600;
-              padding-left: 4px;
               text-align: center;
               line-height: 0.9rem;
             }

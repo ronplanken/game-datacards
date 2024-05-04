@@ -5,7 +5,6 @@ import React from "react";
 import { reorder } from "../../../Helpers/generic.helpers";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
-import { reorder } from "../../../Helpers/generic.helpers";
 
 const { Option } = Select;
 
