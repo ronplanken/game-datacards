@@ -176,7 +176,8 @@ export const ImageExport = () => {
                             </div>
                             {card?.source === "40k-10e" &&
                               settings.showCardsAsDoubleSided !== true &&
-                              card?.cardType === "DataCard" && (
+                              card?.cardType === "DataCard" &&
+                              card?.variant !== "full" && (
                                 <div ref={(el) => (cardsBackRef.current[index] = el)}>
                                   <Warhammer40K10eCardDisplay card={card} type="print" side={"back"} />
                                 </div>
