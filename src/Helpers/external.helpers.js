@@ -450,7 +450,7 @@ export const get40k10eData = async () => {
 
   return {
     version: process.env.REACT_APP_VERSION,
-    lastUpdated: new Date().toISOString(),
+    lastUpdated: allFactionsData[0].updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
     noDatasheetByRole: true,
