@@ -62,6 +62,12 @@ export const WhatsNew = () => {
                           directly to a PNG. This is useful for printing services that require a specific format or if
                           the printing feature does not properly work.
                         </li>
+                        <li>
+                          <strong>Datasource last updated</strong>
+                          <br />
+                          The time stamp shown in the &quot;last updated&quot; section of the datasources now shows the
+                          actual date the datasource has received changes.
+                        </li>
                       </ul>
                     </Typography.Paragraph>
                   </Col>
