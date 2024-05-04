@@ -372,6 +372,32 @@ export const WelcomeWizard = () => {
                     <Col span={16}>
                       <Card
                         type={"inner"}
+                        title={"10th Combat Patrol datacards"}
+                        bodyStyle={{
+                          padding: 0,
+                          borderBottom: "1px solid #001529",
+                        }}
+                        style={{
+                          marginBottom: "16px",
+                          border: "1px solid #001529",
+                          borderBottom: "0px",
+                        }}
+                        extra={
+                          <Switch
+                            onChange={() =>
+                              updateSettings({
+                                ...settings,
+                                selectedDataSource: "40k-10e-cp",
+                              })
+                            }
+                            disabled={settings.selectedDataSource === "40k-10e-cp"}
+                            checked={settings.selectedDataSource === "40k-10e-cp"}
+                          />
+                        }></Card>
+                    </Col>
+                    <Col span={16}>
+                      <Card
+                        type={"inner"}
                         title={"Necromunda"}
                         bodyStyle={{
                           padding: 0,

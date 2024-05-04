@@ -63,6 +63,11 @@ export const WhatsNew = () => {
                           the printing feature does not properly work.
                         </li>
                         <li>
+                          <strong>Warhammer 40k Combat Patrol</strong>
+                          <br />
+                          You can now switch to the external resource for Warhammer 40k Combat Patrols.
+                        </li>
+                        <li>
                           <strong>Datasource last updated</strong>
                           <br />
                           The time stamp shown in the &quot;last updated&quot; section of the datasources now shows the

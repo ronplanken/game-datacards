@@ -20,7 +20,13 @@ export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }
       }}>
       <div className={`unit full`}>
         <div className={"header"}>
-          <UnitName name={unit.name} subname={unit.subname} points={unit.points} legends={unit.legends} />
+          <UnitName
+            name={unit.name}
+            subname={unit.subname}
+            points={unit.points}
+            legends={unit.legends}
+            combatPatrol={unit.combatPatrol}
+          />
           <UnitStats stats={unit.stats} />
           <div className="stats_container" key={`stat-line-invul`}>
             {unit.abilities?.invul?.showInvulnerableSave && unit.abilities?.invul?.showAtTop && (

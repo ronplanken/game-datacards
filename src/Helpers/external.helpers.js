@@ -473,6 +473,77 @@ export const get40k10eData = async () => {
   };
 };
 
+export const get40k10eCombatPatrolData = async () => {
+  const factions = [
+    "amonhotekhs_guard",
+    "aurellios_banishers",
+    "butchers_of_hyporia",
+    "dark_zealots",
+    "gordrangs_gitstompas",
+    "guardians_of_the_throne",
+    "hand_of_the_magus",
+    "karagars_rampagers",
+    "karsks_gunners",
+    "maniple_verask-alpha",
+    "mordekais_judgement",
+    "morgrims_butchas",
+    "protectors_of_aunshar",
+    "purge_corps_deltic-9",
+    "siguards_crusaders",
+    "strike_force_marcellos",
+    "strike_force_octavius",
+    "strike_team_solarien",
+    "the_blades_of_torment",
+    "the_coven_temporus",
+    "the_fatebreakers",
+    "the_penitent_host",
+    "the_shambling_horde",
+    "the_vardenghast_swarm",
+    "the_vengeful_brethren",
+    "thoryks_void_hunters",
+    "tristraens_gilded_blades",
+    "vigil_force_alphion",
+    "warspekes_prospect",
+  ];
+
+  const fetchData = async (faction) => {
+    const url = `${process.env.REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL}/${faction}.json?${new Date().getTime()}`;
+    const data = await readCsv(url);
+    return data;
+  };
+
+  const fetchAllData = async () => {
+    const sortedFactions = factions.sort();
+    const promises = sortedFactions.map((faction) => fetchData(faction));
+    const allData = await Promise.all(promises);
+    return allData;
+  };
+
+  const allFactionsData = await fetchAllData();
+
+  return {
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: allFactionsData[0].updated,
+    lastCheckedForUpdate: new Date().toISOString(),
+    noDatasheetOptions: false,
+    noDatasheetByRole: true,
+    noStratagemOptions: false,
+    noSubfactionOptions: true,
+    noSecondaryOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: false,
+    data: allFactionsData.map((val) => {
+      return {
+        ...val,
+        stratagems: val?.stratagems?.map((strat) => {
+          return { ...strat, cardType: "stratagem", source: "40k-10e" };
+        }),
+        basicStratagems: [],
+      };
+    }),
+  };
+};
+
 export const getMessages = async () => {
   const url = `${process.env.REACT_APP_MESSAGES_URL}?${new Date().getTime()}`;
   const data = await readCsv(url);

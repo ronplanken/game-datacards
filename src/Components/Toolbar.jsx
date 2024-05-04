@@ -25,14 +25,13 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
   const { cardStorage, activeCategory, saveActiveCard, cardUpdated, addCategory } = useCardStorage();
 
   return (
-    <Row style={{ justifyContent: "space-between", background: "white" }}>
+    <Row style={{ justifyContent: "space-between", background: "white", borderBottom: "1px solid #E5E5E5" }}>
       <Col
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "start",
           background: "white",
-          borderBottom: "1px solid #E5E5E5",
         }}>
         <Tooltip title={"Print cards from category"} placement="bottomLeft">
           <Button
@@ -93,7 +92,6 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
           flexDirection: "row",
           justifyContent: "end",
           background: "white",
-          borderBottom: "1px solid #E5E5E5",
           alignItems: "center",
           paddingRight: "4px",
         }}>

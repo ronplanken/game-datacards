@@ -5,15 +5,16 @@ on:
     branches:
       - develop
     tags-ignore:
-      - '**'
+      - "**"
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
   workflow_call:
   workflow_dispatch:
-  
+
 env:
   REACT_APP_URL: https://game-datacards-staging.netlify.app
   REACT_APP_DATASOURCE_10TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/develop/10th/gdc
+  REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL: https://raw.githubusercontent.com/game-datacards/datasources/develop/10th/combatpatrol
   REACT_APP_DATASOURCE_9TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/develop/40k
   REACT_APP_MESSAGES_URL: https://raw.githubusercontent.com/game-datacards/messages/develop/messages.json
   REACT_APP_ENVIRONMENT: staging
@@ -52,7 +53,7 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.2.3
         with:
-          publish-dir: './build'
+          publish-dir: "./build"
           production-branch: develop
           github-token: ${{ secrets.SECRET_NAME }}
           deploy-message: "Deploy from GitHub Actions"
@@ -68,4 +69,4 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         uses: "Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9"
         with:
-          args: 'A new staging version has been deployed: {{ EVENT_PAYLOAD.head_commit.message }}. Check it out at: https://game-datacards-staging.netlify.app/'
+          args: "A new staging version has been deployed: {{ EVENT_PAYLOAD.head_commit.message }}. Check it out at: https://game-datacards-staging.netlify.app/"

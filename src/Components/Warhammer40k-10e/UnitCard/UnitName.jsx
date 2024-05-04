@@ -1,6 +1,6 @@
 import { UnitPoints } from "./UnitPoints";
 
-export const UnitName = ({ name, subname, points, legends }) => {
+export const UnitName = ({ name, subname, points, legends, combatPatrol }) => {
   return (
     <div className="header_container">
       <div className="name_container">
@@ -8,6 +8,7 @@ export const UnitName = ({ name, subname, points, legends }) => {
         {subname && <div className="subname">{subname}</div>}
       </div>
       {legends && <div className="legends" />}
+      {combatPatrol && <div className="combatpatrol" />}
       <UnitPoints points={points} />
     </div>
   );

@@ -159,7 +159,80 @@ export const SettingsModal = () => {
                 <Card
                   type={"inner"}
                   size={"small"}
-                  title={"Wahapedia data import"}
+                  title={"40k 10th Combat Patrol import"}
+                  bodyStyle={{ padding: 0 }}
+                  style={{ marginBottom: "16px" }}
+                  extra={
+                    <Switch
+                      onChange={() =>
+                        updateSettings({
+                          ...settings,
+                          selectedDataSource: "40k-10e-cp",
+                          selectedFactionIndex: 0,
+                        })
+                      }
+                      disabled={settings.selectedDataSource === "40k-10e-cp"}
+                      checked={settings.selectedDataSource === "40k-10e-cp"}
+                    />
+                  }>
+                  {settings.selectedDataSource === "40k-10e-cp" && (
+                    <>
+                      <Row>
+                        <Col span={7} style={{ textAlign: "right" }}>
+                          <Typography.Text strong={true}>Checked for update:</Typography.Text>
+                        </Col>
+                        <Col span={14} push={1}>
+                          <Typography>{dataSource.lastCheckedForUpdate}</Typography>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={7} style={{ textAlign: "right" }}>
+                          <Typography.Text strong={true}>Data snapshot:</Typography.Text>
+                        </Col>
+                        <Col span={14} push={1}>
+                          <Typography>{dataSource.lastUpdated}</Typography>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={7} style={{ textAlign: "right" }}>
+                          <Typography.Text strong={true}>Version:</Typography.Text>
+                        </Col>
+                        <Col span={14} push={1}>
+                          <Typography>{dataSource.version}</Typography>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={7} style={{ textAlign: "right" }}>
+                          <Typography.Text strong={true}>Number of factions:</Typography.Text>
+                        </Col>
+                        <Col span={14} push={1}>
+                          <Typography>{dataSource.data.length || 0}</Typography>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={7} style={{ textAlign: "right" }}>
+                          <Typography.Text strong={true}>Data store method:</Typography.Text>
+                        </Col>
+                        <Col span={14} push={1}>
+                          <Typography>Locally on IndexDB</Typography>
+                        </Col>
+                      </Row>
+                      <Row style={{ paddingTop: 16 }} justify="center">
+                        <Col span={4}>
+                          <Button type="default" loading={checkingForUpdate} onClick={refreshData}>
+                            Check for update
+                          </Button>
+                        </Col>
+                      </Row>
+                    </>
+                  )}
+                </Card>
+              </Col>
+              <Col span={23}>
+                <Card
+                  type={"inner"}
+                  size={"small"}
+                  title={"Wahapedia data import 9th edition"}
                   bodyStyle={{
                     padding: settings.selectedDataSource === "40k" ? 8 : 0,
                   }}
