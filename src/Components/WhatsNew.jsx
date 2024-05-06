@@ -45,14 +45,14 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.7.0
+                Whats new in 2.7.1
               </h1>
             </div>
             <div className="welcome-cover">
               <>
                 <Row style={{ padding: "16px" }} className="whatsnew-content">
                   <Col>
-                    <Typography.Title level={5}>Features</Typography.Title>
+                    <Typography.Title level={4}>Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
@@ -72,6 +72,14 @@ export const WhatsNew = () => {
                           <br />
                           The time stamp shown in the &quot;last updated&quot; section of the datasources now shows the
                           actual date the datasource has received changes.
+                        </li>
+                        <li>
+                          <strong>
+                            Background & Scaling options (<i>2.7.1</i>)
+                          </strong>
+                          <br />
+                          Options to remove or downscale the background colour of the exported images have been added.
+                          Also added a slider to choose the scaling of the exported images.
                         </li>
                       </ul>
                     </Typography.Paragraph>

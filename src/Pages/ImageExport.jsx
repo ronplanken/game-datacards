@@ -1,4 +1,19 @@
-import { Badge, Button, Col, Form, Grid, Image, Layout, Row, Select, Space, Spin, Typography } from "antd";
+import {
+  Badge,
+  Button,
+  Col,
+  Collapse,
+  Form,
+  Grid,
+  Image,
+  Layout,
+  Row,
+  Select,
+  Slider,
+  Space,
+  Spin,
+  Typography,
+} from "antd";
 import { toBlob } from "html-to-image";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -15,7 +30,7 @@ import JSZip from "jszip";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 const { Header, Footer, Sider, Content } = Layout;
-
+const { Panel } = Collapse;
 const { useBreakpoint } = Grid;
 const { Option } = Select;
 export const ImageExport = () => {
@@ -28,7 +43,9 @@ export const ImageExport = () => {
   const overlayRef = useRef(null);
   const { cardStorage } = useCardStorage();
 
-  const { settings } = useSettingsStorage();
+  const { settings, updateSettings } = useSettingsStorage();
+  const [backgrounds, setBackgrounds] = useState(settings.printSettings?.backgrounds || "standard");
+  const [pixelScaling, setPixelScaling] = useState(1.5);
 
   const getPics = async () => {
     const zip = new JSZip();
@@ -36,7 +53,7 @@ export const ImageExport = () => {
     await sleep(100);
 
     const files = cardsFrontRef?.current?.map(async (card, index) => {
-      const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+      const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
       return data;
     });
 
@@ -44,13 +61,18 @@ export const ImageExport = () => {
       zip.file(
         `${cardStorage.categories[CategoryId].name}/${cardStorage.categories[CategoryId].cards[index].name
           .replaceAll(" ", "_")
-          .toLowerCase()}-front.png`,
+          .toLowerCase()}${
+          cardStorage.categories[CategoryId]?.cards[index]?.variant === "full" ||
+          settings.showCardsAsDoubleSided !== false
+            ? ".png"
+            : "-front.png"
+        }`,
         file
       );
     });
     if (settings.showCardsAsDoubleSided !== true) {
       const backFiles = cardsBackRef?.current?.map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+        const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
         return data;
       });
 
@@ -105,7 +127,7 @@ export const ImageExport = () => {
               position: "absolute",
               height: "100vh",
               width: "100vw",
-              backgroundColor: "#00000099",
+              backgroundColor: "#000000CC",
               top: "0px",
               bottom: "0px",
               zIndex: 9999,
@@ -113,6 +135,7 @@ export const ImageExport = () => {
               justifyContent: "center",
               overflowX: "hidden",
               overflowY: "hidden",
+              color: "white",
             }}>
             <Spin tip="Preparing download..." size="large"></Spin>
           </div>
@@ -126,6 +149,46 @@ export const ImageExport = () => {
               height: "calc(100vh - 64px)",
             }}
             className="no-print small-form">
+            <Row style={{ paddingTop: 8, paddingLeft: 8, borderBottom: "1px solid lightgray" }}>
+              <Col flex="auto">
+                <Typography.Title level={5}>Settings</Typography.Title>
+              </Col>
+            </Row>
+            <Form
+              layout="vertical"
+              style={{ padding: 0, maxHeight: "calc(100vh - 205px)", zIndex: 100, overflowY: "auto" }}>
+              <Collapse>
+                <Panel header={"Other"} key={"other"}>
+                  <Form.Item label={"Background"}>
+                    <Select
+                      defaultValue={backgrounds}
+                      onChange={(val) => {
+                        setBackgrounds(val);
+                      }}
+                      options={[
+                        { label: "Standard Background", value: "standard" },
+                        { label: "Light Background", value: "light" },
+                        { label: "Coloured Ink Saver", value: "colourprint" },
+                        { label: "Greyscale Ink Saver", value: "greyprint" },
+                        // uncomment the below option to allow debug colour mode which clearly shows each element
+                        // { label: "Debug Background", value: "debug" },
+                      ]}
+                      size={"small"}
+                    />
+                  </Form.Item>
+                  <Form.Item label={`Image pixel scaling (${pixelScaling})`}>
+                    <Slider
+                      min={0.5}
+                      max={2.5}
+                      step={0.25}
+                      onChange={(val) => {
+                        setPixelScaling(val);
+                      }}
+                      value={pixelScaling}></Slider>
+                  </Form.Item>
+                </Panel>
+              </Collapse>
+            </Form>
             <Form
               style={{
                 padding: 8,
@@ -169,7 +232,12 @@ export const ImageExport = () => {
                             <div ref={(el) => (cardsFrontRef.current[index] = el)}>
                               {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
                               {card?.source === "40k-10e" && (
-                                <Warhammer40K10eCardDisplay card={card} type="print" side={"front"} />
+                                <Warhammer40K10eCardDisplay
+                                  card={card}
+                                  type="print"
+                                  side={"front"}
+                                  backgrounds={backgrounds}
+                                />
                               )}
                               {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
                               {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
@@ -179,7 +247,12 @@ export const ImageExport = () => {
                               card?.cardType === "DataCard" &&
                               card?.variant !== "full" && (
                                 <div ref={(el) => (cardsBackRef.current[index] = el)}>
-                                  <Warhammer40K10eCardDisplay card={card} type="print" side={"back"} />
+                                  <Warhammer40K10eCardDisplay
+                                    card={card}
+                                    type="print"
+                                    side={"back"}
+                                    backgrounds={backgrounds}
+                                  />
                                 </div>
                               )}
                           </Col>
