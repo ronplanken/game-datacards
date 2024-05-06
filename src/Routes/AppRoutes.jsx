@@ -2,11 +2,12 @@ import * as React from "react";
 import { Route, Routes } from "react-router-dom";
 import App from "../App";
 // import { Embed } from "../Pages/Embed";
+import { ImageExport } from "../Pages/ImageExport";
+import { ImageGenerator } from "../Pages/ImageGenerator";
 import { LegacyPrint } from "../Pages/LegacyPrint";
 import { Print } from "../Pages/Print";
 import { Shared } from "../Pages/Shared";
 import { Viewer } from "../Pages/Viewer";
-import { ImageGenerator } from "../Pages/ImageGenerator";
 
 const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
 
@@ -22,6 +23,7 @@ export const AppRoutes = () => {
       <Route path="print/:CategoryId" element={<Print />} />
       <Route path="legacy-print/:CategoryId" element={<LegacyPrint />} />
       <Route path="image-generator" element={<ImageGenerator />} />
+      <Route path="image-export/:CategoryId" element={<ImageExport />} />
     </Routes>
   );
 };

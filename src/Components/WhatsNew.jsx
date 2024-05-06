@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.6.0
+                Whats new in 2.7.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,59 +56,24 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Full sized cards display</strong>
+                          <strong>Image Exporter</strong>
                           <br />
-                          Finally! The technology has arrived to display Warhammer 10e cards in a single full sized card
-                          side. This is a feature that has been requested for a long time and is finally here. You can
-                          toggle the feature per card (as a Variant) or globally in the settings.
-                          <br />
-                          The settings option can be found next to the faction selection dropdown on desktop and in the
-                          settings menu on mobile. Please note this overrides any options regarding the back & front
-                          options of a card.
+                          An image exporter has been added to the print menu. This will allow you to export your cards
+                          directly to a PNG. This is useful for printing services that require a specific format or if
+                          the printing feature does not properly work.
                         </li>
                         <li>
-                          <strong>Complete and thorough cleanup of datasources</strong>
+                          <strong>Warhammer 40k Combat Patrol</strong>
                           <br />
-                          We have set all our servitors to work and managed to automate the error checking and cleanup
-                          of our datasources. This means we are now able to provide a more consistent and reliable
-                          experience with your datacards!
-                          <br />
-                          During this setup we also changed all cards to default to the invulnerable save at the top of
-                          the card. Your old cards are unfortunately not updated to this new standard and need a manual
-                          update or create a new duplicate card.
+                          You can now switch to the external resource for Warhammer 40k Combat Patrols.
                         </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Known issues</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
                         <li>
-                          <strong>Printing full sized cards</strong>
+                          <strong>Datasource last updated</strong>
                           <br />
-                          Unfortunately the full sized cards currently do not play nice with other cards while printing.
-                          This means when you try to print multiple cards on a page they might take up more space then
-                          you wish. You can still print them, but min/maxing the page might be tricky. We are working on
-                          a fix and will keep you updated.
+                          The time stamp shown in the &quot;last updated&quot; section of the datasources now shows the
+                          actual date the datasource has received changes.
                         </li>
                       </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Social</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>We need your help!</strong>
-                          <br />
-                          Please report any issues you find to the Discord or join us to chat about new and upcoming
-                          features!
-                        </li>
-                      </ul>
-                      <Row style={{ padding: "16px" }} justify={"center"}>
-                        <Col span={24} style={{ textAlign: "center" }}>
-                          <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
-                            <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
-                          </a>
-                        </Col>
-                      </Row>
                     </Typography.Paragraph>
                   </Col>
                 </Row>

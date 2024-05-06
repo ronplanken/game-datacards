@@ -347,6 +347,109 @@ export const FactionSettingsModal = () => {
                           </Row>
                         </>
                       )}
+                      {settings.selectedDataSource === "40k-10e-cp" && (
+                        <>
+                          <Row style={{ paddingTop: "8px" }}>
+                            <Col span={23}>
+                              <Typography.Paragraph
+                                style={{
+                                  fontSize: "0.9rem",
+                                  fontWeight: 600,
+                                  textTransform: "uppercase",
+                                  marginBottom: 0,
+                                  color: "#888888",
+                                  borderBottom: "2px solid #f0f0f0",
+                                }}>
+                                Warhammer 10th Combat Patrol options
+                              </Typography.Paragraph>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "8px" }}>
+                            <Col span={23}>
+                              <Typography.Paragraph
+                                style={{
+                                  fontSize: "0.8rem",
+                                  fontWeight: 400,
+                                  textTransform: "uppercase",
+                                  marginBottom: 0,
+                                  color: "#888888",
+                                }}>
+                                Datacards
+                              </Typography.Paragraph>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "8px" }}>
+                            <Col span={23}>
+                              <Typography.Paragraph
+                                style={{
+                                  fontSize: "0.8rem",
+                                  fontWeight: 400,
+                                  textTransform: "uppercase",
+                                  marginBottom: 0,
+                                  color: "#888888",
+                                }}>
+                                display
+                              </Typography.Paragraph>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-01`}
+                                size={"small"}
+                                title={"Show points in listview"}
+                                bodyStyle={{ padding: 0 }}
+                                extra={
+                                  <Switch
+                                    checked={settings.showPointsInListview}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, showPointsInListview: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-01`}
+                                size={"small"}
+                                title={"Always show cards in single-side view"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.showCardsAsDoubleSided || false}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, showCardsAsDoubleSided: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                          <Row style={{ paddingTop: "0px" }}>
+                            <Col span={23}>
+                              <Card
+                                type={"inner"}
+                                key={`display-04`}
+                                size={"small"}
+                                title={"Group cards by role"}
+                                bodyStyle={{ padding: 0 }}
+                                style={{ marginBottom: "8px", marginTop: "8px" }}
+                                extra={
+                                  <Switch
+                                    checked={settings.groupByRole}
+                                    onChange={(value) => {
+                                      updateSettings({ ...settings, groupByRole: value });
+                                    }}
+                                  />
+                                }></Card>
+                            </Col>
+                          </Row>
+                        </>
+                      )}
                     </Tabs.TabPane>
                   )}
                   {!dataSource.noStratagemOptions && (

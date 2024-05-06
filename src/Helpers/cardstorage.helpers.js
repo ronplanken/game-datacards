@@ -19,7 +19,7 @@ export const useDataSourceType = (searchText) => {
   const { dataSource, selectedFaction } = useDataSourceStorage();
 
   let filteredSheets = [];
-  if (selectedFaction && settings.selectedDataSource === "40k-10e") {
+  if (selectedFaction && (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")) {
     try {
       filteredSheets = [
         { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
@@ -112,7 +112,7 @@ export const useDataSourceType = (searchText) => {
       return [];
     }
   } //
-  if (selectedFaction && settings.selectedDataSource !== "40k-10e") {
+  if (selectedFaction && settings.selectedDataSource !== "40k-10e" && settings.selectedDataSource !== "40k-10e-cp") {
     filteredSheets = searchText
       ? selectedFaction?.datasheets?.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
       : selectedFaction?.datasheets;

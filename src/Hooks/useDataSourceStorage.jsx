@@ -1,6 +1,12 @@
 import localForage from "localforage";
 import React, { useEffect } from "react";
-import { get40KData, get40k10eData, getBasicData, getNecromundaBasicData } from "../Helpers/external.helpers";
+import {
+  get40KData,
+  get40k10eData,
+  get40k10eCombatPatrolData,
+  getBasicData,
+  getNecromundaBasicData,
+} from "../Helpers/external.helpers";
 import { useFirebase } from "./useFirebase";
 import { useSettingsStorage } from "./useSettingsStorage";
 
@@ -60,6 +66,18 @@ export const DataSourceStorageProviderComponent = (props) => {
         dataStore.setItem("40k-10e", dataFactions);
         setDataSource(dataFactions);
       }
+      if (settings.selectedDataSource === "40k-10e-cp") {
+        const storedData = await dataStore.getItem("40k-10e-cp");
+        if (storedData) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+          return;
+        }
+        const dataFactions = await get40k10eCombatPatrolData();
+
+        dataStore.setItem("40k-10e-cp", dataFactions);
+        setDataSource(dataFactions);
+      }
       if (settings.selectedDataSource === "basic") {
         const basicData = getBasicData();
         setDataSource(basicData);
@@ -92,6 +110,12 @@ export const DataSourceStorageProviderComponent = (props) => {
     if (settings.selectedDataSource === "40k-10e") {
       const dataFactions = await get40k10eData();
       dataStore.setItem("40k-10e", dataFactions);
+
+      setDataSource(dataFactions);
+    }
+    if (settings.selectedDataSource === "40k-10e-cp") {
+      const dataFactions = await get40k10eCombatPatrolData();
+      dataStore.setItem("40k-10e-cp", dataFactions);
 
       setDataSource(dataFactions);
     }

@@ -82,7 +82,10 @@ function App() {
   const getDataSourceType = () => {
     if (selectedContentType === "datasheets") {
       let filteredSheets = [];
-      if (selectedFaction && settings.selectedDataSource === "40k-10e") {
+      if (
+        selectedFaction &&
+        (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")
+      ) {
         try {
           filteredSheets = [
             { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
