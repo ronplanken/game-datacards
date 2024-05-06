@@ -202,7 +202,7 @@ export const Shared = () => {
                   <Row style={{ display: "flex", justifyContent: "center", backgroundColor: "#001529" }}>
                     <Col>
                       <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
-                        {card?.source === "40k-10e" && (
+                        {card?.source === "40k-10e" && card.variant !== "full" && (
                           <>
                             <Button
                               icon={card.print_side === "front" ? <RedoOutlined /> : <UndoOutlined />}
