@@ -504,6 +504,7 @@ export const get40k10eCombatPatrolData = async () => {
     "tristraens_gilded_blades",
     "vigil_force_alphion",
     "warspekes_prospect",
+    "sudden_dawn_cadre",
   ];
 
   const fetchData = async (faction) => {
