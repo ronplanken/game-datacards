@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.7.1
+                Whats new in 2.7.2
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,30 +56,14 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Image Exporter</strong>
+                          <strong>Emperor&apos;s Children</strong>
                           <br />
-                          An image exporter has been added to the print menu. This will allow you to export your cards
-                          directly to a PNG. This is useful for printing services that require a specific format or if
-                          the printing feature does not properly work.
+                          The Emperor&apos;s Children faction is now available for 10th edition.
                         </li>
                         <li>
-                          <strong>Warhammer 40k Combat Patrol</strong>
+                          <strong>New Combat Patrols</strong>
                           <br />
-                          You can now switch to the external resource for Warhammer 40k Combat Patrols.
-                        </li>
-                        <li>
-                          <strong>Datasource last updated</strong>
-                          <br />
-                          The time stamp shown in the &quot;last updated&quot; section of the datasources now shows the
-                          actual date the datasource has received changes.
-                        </li>
-                        <li>
-                          <strong>
-                            Background & Scaling options (<i>2.7.1</i>)
-                          </strong>
-                          <br />
-                          Options to remove or downscale the background colour of the exported images have been added.
-                          Also added a slider to choose the scaling of the exported images.
+                          New Combat patrols have been added.
                         </li>
                       </ul>
                     </Typography.Paragraph>

@@ -429,6 +429,7 @@ export const get40k10eData = async () => {
     "drukhari",
     "gsc",
     "unaligned",
+    "emperors_children",
   ];
 
   const fetchData = async (faction) => {
@@ -505,6 +506,8 @@ export const get40k10eCombatPatrolData = async () => {
     "vigil_force_alphion",
     "warspekes_prospect",
     "sudden_dawn_cadre",
+    "insidious_invaders",
+    "zarkans_daemonkin",
   ];
 
   const fetchData = async (faction) => {
