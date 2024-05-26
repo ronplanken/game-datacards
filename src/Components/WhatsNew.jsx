@@ -56,6 +56,11 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
+                          <strong>Chaos Space Marines</strong>
+                          <br />
+                          The new Chaos Space Marines have poppuped up in the 10th edition.
+                        </li>
+                        <li>
                           <strong>Emperor&apos;s Children</strong>
                           <br />
                           The Emperor&apos;s Children faction is now available for 10th edition.
