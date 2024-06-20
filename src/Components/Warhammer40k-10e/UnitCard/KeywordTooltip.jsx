@@ -1,4 +1,4 @@
-import { Button, Tooltip } from "antd";
+import { Button, Popover, Tooltip } from "antd";
 
 export const tooltipProps = {
   placement: "bottomLeft",
@@ -146,8 +146,8 @@ export const KeywordTooltip = ({ keyword }) => {
             <li>Can target and make attacks against units that are not visible to the attacking unit.</li>
             <li>
               If no models are visible in a target unit when it is selected, then when making an attack against that
-              target with an Indirect Fire weapon, subtract 1 from that attack’s Hit roll and the target has the Benefit
-              of Cover against that attack.
+              target with an Indirect Fire weapon, subtract 1 from that attack’s Hit roll, an unmodified Hit roll of 1-3
+              always fails, and the target has the Benefit of Cover against that attack.
             </li>
           </ul>
         }>
@@ -201,24 +201,63 @@ export const KeywordTooltip = ({ keyword }) => {
   }
   if (keyword.toLowerCase().includes("hazardous")) {
     return (
-      <Tooltip
-        {...tooltipProps}
-        title={
-          "After a unit shoots or fights, roll one Hazardous test (one D6) for each Hazardous weapon used. For each 1, one model equipped with a Hazardous weapon is destroyed (Characters, Monsters and Vehicles suffer 3 mortal wounds instead). "
-        }>
-        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
-      </Tooltip>
+      <Button type="text" size="small" className="keyword-button">
+        <Popover
+          placement="bottomRight"
+          arrow="hide"
+          color="rgba(0, 0, 0, 0.75)"
+          overlayClassName="keyword-popover"
+          content={
+            <>
+              <p>
+                Each time a unit is selected to shoot or fight, after that unit has resolved all of its attacks, for
+                each Hazardous weapon that targets were selected for when resolving those attacks, that unit must take
+                one Hazardous test. To do so, roll one D6: on a 1, that test is failed. For each failed test you must
+                resolve the following sequence (resolve each failed test one at a time).
+              </p>
+              <ul>
+                <li>
+                  If possible, select one model in that unit that has lost one or more wounds and is equipped with one
+                  or more Hazardous weapons.
+                </li>
+                <li>
+                  Otherwise, if possible, select one model in that unit (excluding Character models) equipped with one
+                  or more Hazardous weapons.
+                </li>
+                <li>Otherwise, select one Character model in that unit equipped with one or more Hazardous weapons.</li>
+              </ul>
+              <p>
+                If a model was selected, that unit suffers 3 mortal wounds and when allocating those mortal wounds, they
+                must be allocated to the selected model.
+              </p>
+              <p>
+                If a unit from a player’s army is selected as the target of the Fire Overwatch Stratagem in their
+                opponent’s Charge phase, any mortal wounds inflicted by Hazardous tests are allocated after the charging
+                unit has ended its Charge move.
+              </p>
+            </>
+          }>{`${keyword}`}</Popover>
+      </Button>
     );
   }
   if (keyword.toLowerCase().includes("devastating wounds")) {
     return (
-      <Tooltip
-        title={
-          "Saving throws cannot be made against Critical Wounds scored by this weapon (including invulnerable saving throws)."
-        }
-        {...tooltipProps}>
-        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
-      </Tooltip>
+      <Button type="text" size="small" className="keyword-button">
+        <Popover
+          placement="bottomLeft"
+          arrow="hide"
+          color="rgba(0, 0, 0, 0.75)"
+          overlayClassName="keyword-popover"
+          content={
+            <p>
+              Each time an attack is made with such a weapon, if that attack scores a Critical Wound, no saving throw of
+              any kind can be made against that attack (including invulnerable saving throws). Such attacks are only
+              allocated to models after all other attacks made by the attacking unit have been allocated and resolved.
+              After that attack is allocated and after any modifiers are applied, it inflicts a number of mortal wounds
+              on the target equal to the Damage characteristic of that attack, instead of inflicting damage normally.’
+            </p>
+          }>{`${keyword}`}</Popover>
+      </Button>
     );
   }
   if (keyword.toLowerCase().includes("sustained hits")) {
@@ -232,16 +271,15 @@ export const KeywordTooltip = ({ keyword }) => {
     return (
       <Tooltip
         {...tooltipProps}
-        title={"The bearer can attack with this weapon in addition to any other weapons it can make attacks with."}>
-        <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
-      </Tooltip>
-    );
-  }
-  if (keyword.toLowerCase().includes("extra attacks")) {
-    return (
-      <Tooltip
-        {...tooltipProps}
-        title={"The bearer can attack with this weapon in addition to any other weapons it can make attacks with."}>
+        title={
+          <p>
+            Each time the bearer of one or more Extra Attacks weapons fights, it makes attacks with each of the Extra
+            Attacks melee weapons it is equipped with and it makes attacks with one of the melee weapons it is equipped
+            with that does not have the [EXTRA ATTACKS] ability (if any). The number of attacks made with an Extra
+            Attacks weapon cannot be modified by other rules, unless that weapon’s name is explicitly specified in that
+            rule.
+          </p>
+        }>
         <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
       </Tooltip>
     );

@@ -51,10 +51,28 @@ export const RuleTooltip = ({ keyword }) => {
             <li>
               Unit can be set up in your Reinforcements step, more than 9&quot; horizontally away from all enemy models.
             </li>
+            <li>
+              If a unit with the Deep Strike ability arrives from Strategic Reserves, the controlling player can choose
+              for that unit to be set up either using the rules for Strategic Reserves or using the Deep Strike ability.
+            </li>
           </ul>
         }
         keyword={keyword}
       />
+    );
+  }
+  if (keyword.includes("firing deck")) {
+    return (
+      <CustomTooltip
+        title={
+          <p>
+            Each time this Transport shoots, select one weapon (excluding weapons with the [ONE SHOT] ability) from up
+            to ‘x’ models embarked within it whose units have not shot this phase; this Transport counts as being
+            equipped with those weapons as well. Until the end of the phase, those selected models’ units are not
+            eligible to shoot.
+          </p>
+        }
+        keyword={keyword}></CustomTooltip>
     );
   }
   if (keyword.includes("scouts")) {

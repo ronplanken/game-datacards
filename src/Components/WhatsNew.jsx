@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.7.2
+                Whats new in 2.8.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,19 +56,26 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Chaos Space Marines</strong>
+                          <strong>Genestealer Cults & Sisters of Battle</strong>
                           <br />
-                          The new Chaos Space Marines have poppuped up in the 10th edition.
+                          Two new codexes have been added.
                         </li>
                         <li>
-                          <strong>Emperor&apos;s Children</strong>
+                          <strong>Datasources updated</strong>
                           <br />
-                          The Emperor&apos;s Children faction is now available for 10th edition.
+                          The latest datasources have been updated for errata and point values. Make sure to update
+                          them.
                         </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
                         <li>
-                          <strong>New Combat Patrols</strong>
+                          <strong>Keywords updated</strong>
                           <br />
-                          New Combat patrols have been added.
+                          Several keywords have been updated based on the latest core rules changes. If you find any
+                          that might have been missed, make sure to let us know.
                         </li>
                       </ul>
                     </Typography.Paragraph>
