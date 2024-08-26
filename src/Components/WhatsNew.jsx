@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.8.0
+                Whats new in 2.9.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,26 +56,24 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Genestealer Cults & Sisters of Battle</strong>
+                          <strong>Agents of the Imperium</strong>
                           <br />
-                          Two new codexes have been added.
+                          The new Agents of the Imperium faction is now available for 10th edition.
                         </li>
                         <li>
-                          <strong>Datasources updated</strong>
+                          <strong>New Combat Patrols</strong>
                           <br />
-                          The latest datasources have been updated for errata and point values. Make sure to update
-                          them.
+                          New Combat patrols have been added.
                         </li>
                       </ul>
                     </Typography.Paragraph>
-                    <Typography.Title level={4}>Fixes</Typography.Title>
+                    <Typography.Title level={4}>Removed</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Keywords updated</strong>
+                          <strong>Deathwatch</strong>
                           <br />
-                          Several keywords have been updated based on the latest core rules changes. If you find any
-                          that might have been missed, make sure to let us know.
+                          The Deatchwatch faction has been removed from 10th edition.
                         </li>
                       </ul>
                     </Typography.Paragraph>

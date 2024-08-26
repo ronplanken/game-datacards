@@ -41,6 +41,7 @@ export function UnitBasicInfo() {
               onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}>
               <Option value="full">Full card</Option>
               <Option value="double">Double sided</Option>
+              {/* <Option value="basic">Basic card</Option> */}
             </Select>
           </Form.Item>
           {activeCard.variant !== "full" && (

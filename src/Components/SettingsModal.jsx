@@ -462,6 +462,59 @@ export const SettingsModal = () => {
                       </Row>
                     </Typography.Paragraph>
                   </Panel>
+                  <Panel header={"Version 2.8.0"} key={"2.8.0"}>
+                    <b> 26-08-2024 </b>
+                    <Typography.Title level={4}>Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Genestealer Cults & Sisters of Battle</strong>
+                          <br />
+                          Two new codexes have been added.
+                        </li>
+                        <li>
+                          <strong>Datasources updated</strong>
+                          <br />
+                          The latest datasources have been updated for errata and point values. Make sure to update
+                          them.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Keywords updated</strong>
+                          <br />
+                          Several keywords have been updated based on the latest core rules changes. If you find any
+                          that might have been missed, make sure to let us know.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
+                  <Panel header={"Version 2.7.0"} key={"2.7.0"}>
+                    <b> 20-06-2024 </b>
+                    <Typography.Title level={4}>Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Chaos Space Marines</strong>
+                          <br />
+                          The new Chaos Space Marines have popped up in the 10th edition.
+                        </li>
+                        <li>
+                          <strong>Emperor&apos;s Children</strong>
+                          <br />
+                          The Emperor&apos;s Children faction is now available for 10th edition.
+                        </li>
+                        <li>
+                          <strong>New Combat Patrols</strong>
+                          <br />
+                          New Combat patrols have been added.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.5.0"} key={"2.5.0"}>
                     <b> 19-03-2024 </b>
                     <Typography.Title level={5}>Updates</Typography.Title>
