@@ -104,6 +104,7 @@ export const ListAdd = ({ setIsVisible }) => {
               .map((point, index) => {
                 return {
                   models: point.models,
+                  keyword: point.keyword,
                   cost: point.cost,
                   icon: <AddCard />,
                   onClick: () => {
@@ -115,10 +116,16 @@ export const ListAdd = ({ setIsVisible }) => {
               return (
                 <List.Item
                   onClick={item.onClick}
-                  className={selectedUnitSize?.models === item?.models ? "selected" : ""}>
+                  className={
+                    selectedUnitSize?.models === item?.models && selectedUnitSize.keyword === item.keyword
+                      ? "selected"
+                      : ""
+                  }>
                   <Row style={{ width: "100%", fontSize: "1.2rem" }}>
                     <Col span={9}>
-                      <Typography.Text>{item.models} models</Typography.Text>
+                      <Typography.Text>
+                        {item.models} models {item.keyword ? `(${item.keyword})` : ""}
+                      </Typography.Text>
                     </Col>
                     <Col span={9}>
                       <Typography.Text>{item.cost} pts</Typography.Text>
