@@ -86,6 +86,27 @@ export const SettingsModal = () => {
                 <Card
                   type={"inner"}
                   size={"small"}
+                  title={"Custom Cards"}
+                  bodyStyle={{ padding: 0 }}
+                  style={{ marginBottom: "16px" }}
+                  extra={
+                    <Switch
+                      onChange={() =>
+                        updateSettings({
+                          ...settings,
+                          selectedDataSource: "fullcustom",
+                          selectedFactionIndex: 0,
+                        })
+                      }
+                      disabled={settings.selectedDataSource === "fullcustom"}
+                      checked={settings.selectedDataSource === "fullcustom"}
+                    />
+                  }></Card>
+              </Col>
+              <Col span={23}>
+                <Card
+                  type={"inner"}
+                  size={"small"}
                   title={"40k 10th Edition import"}
                   bodyStyle={{ padding: 0 }}
                   style={{ marginBottom: "16px" }}

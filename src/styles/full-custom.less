@@ -1,0 +1,2928 @@
+@import "./factions.less";
+
+.viewer-drawer {
+  .ant-drawer-title {
+    color: white;
+  }
+  .ant-drawer-close {
+    color: white;
+  }
+  .ant-drawer-body {
+    padding: 0px;
+  }
+  .ant-list {
+    border: 0px;
+  }
+  .ant-drawer-content-wrapper {
+    width: 100% !important;
+  }
+}
+
+.mobile-list-overview-item {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  width: 100vw;
+  border-bottom: 2px solid #f0f2f5;
+  flex-direction: column;
+
+  &:active {
+    background-color: #00000011;
+  }
+}
+.points_table-container {
+  .ant-popover-inner-content {
+    padding: 0px 0px;
+    background-color: var(--title-background-colour);
+    border: 1px solid white;
+  }
+  .point-tabel {
+    padding: 8px;
+    font-family: "Heebo", sans-serif;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    width: 150px;
+    border: 0px solid #001529;
+
+    thead {
+      text-align: center;
+      background-color: #001529;
+      text-transform: uppercase;
+      color: white;
+      font-size: 0.9em;
+      font-weight: 800;
+      letter-spacing: 0.1rem;
+      z-index: 2;
+    }
+    tbody {
+      background-color: var(--text-background-colour);
+      color: var(--text-text-colour);
+      font-size: 1.1em;
+      font-weight: 800;
+      text-align: center;
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .ant-tabs-nav-wrap {
+    background-color: white;
+    .ant-tabs-nav-list {
+      width: 90%;
+      .ant-tabs-ink-bar {
+        border-color: var(--header-colour) !important;
+        background-color: var(--header-colour) !important;
+      }
+      .ant-tabs-tab-active {
+        .ant-tabs-tab-btn {
+          color: var(--banner-colour);
+        }
+      }
+      .ant-tabs-tab {
+        display: flex;
+        justify-content: center;
+        width: 45%;
+      }
+    }
+  }
+  .shared-stratagem {
+    height: 458px;
+    width: 262px;
+    transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    each(@factions, {
+        &.@{value}::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      });
+    &.AM::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 55%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 85px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    &.basic::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 150px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    background-color: var(--stratagem-colour);
+    .border {
+      background-color: white;
+      border-radius: 8px;
+      height: 456px;
+      width: 260px;
+      .background-side-bar {
+        position: absolute;
+        top: 22.67px;
+        left: 22.67px;
+        height: 377.95px;
+        width: 15.11px;
+        background-color: var(--stratagem-colour);
+      }
+      .background-header-bar {
+        position: absolute;
+        top: 32.12px;
+        left: 41.57px;
+        height: 3.77px;
+        width: 200.31px;
+        background-color: var(--stratagem-colour);
+      }
+      .header {
+        padding-left: 4px;
+        position: absolute;
+        top: 9.44px;
+        left: 52.91px;
+        color: var(--stratagem-colour);
+        width: 185.19px;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .type {
+        padding-left: 4px;
+        position: absolute;
+        top: 35.9px;
+        left: 52.91px;
+        width: 188.97;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px dotted #aaadb0;
+      }
+      .content {
+        position: absolute;
+        top: 56.69px;
+        left: 52.91px;
+        width: 188.97px;
+        height: auto;
+        padding-left: 4px;
+        .section {
+          padding-top: 4px;
+          line-height: 1rem;
+          .title {
+            text-transform: uppercase;
+            color: var(--stratagem-colour);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding-right: 4px;
+          }
+          .text {
+            color: black;
+            font-size: 0.7rem;
+            font-weight: 400;
+          }
+        }
+      }
+      .containers {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+
+        gap: 20px;
+
+        width: 35.9px;
+        height: auto;
+
+        top: 16.06px;
+        left: 12.28px;
+
+        .cp-container {
+          height: 35.9px;
+          width: 35.9px;
+          border: 3.4px solid var(--stratagem-colour);
+          background-color: var(--rows-colour);
+
+          rotate: 45deg;
+          overflow: hidden;
+          line-height: 28.34px;
+
+          .value {
+            rotate: -45deg;
+            text-align: center;
+            font-weight: 600;
+            color: var(--stratagem-colour);
+            font-size: 1.1rem;
+          }
+        }
+      }
+    }
+  }
+  .stratagem {
+    position: relative;
+
+    .content {
+      height: auto;
+      .section {
+        &:nth-of-type(1) {
+          padding-top: 0px;
+        }
+        padding-top: 4px;
+        .title {
+          text-transform: uppercase;
+          color: var(--banner-colour);
+          font-weight: 600;
+          padding-right: 4px;
+        }
+        .text {
+          color: black;
+          font-size: 14px;
+        }
+      }
+    }
+    .type-container {
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
+      background-color: var(--rows-colour);
+      position: absolute;
+      top: 16.06px;
+      left: 12.28px;
+      rotate: 45deg;
+      overflow: hidden;
+    }
+    .cp-container {
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
+      background-color: var(--rows-colour);
+      position: absolute;
+      top: 83.14px;
+      left: 12.28px;
+      rotate: 45deg;
+      overflow: hidden;
+      line-height: 28.34px;
+
+      .value {
+        rotate: -45deg;
+        text-align: center;
+        font-weight: 600;
+        color: var(--header-colour);
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  html {
+    font-size: 15px;
+  }
+  .welcome-background {
+    border-radius: 4px;
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    background: white;
+    top: 0;
+    left: 0;
+    transform: initial;
+
+    z-index: 10000;
+
+    .welcome-cover {
+      // height: 100vh;
+    }
+
+    .whatsnew-container {
+      width: 100%;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      transform: initial;
+
+      .whatsnew-content {
+        overflow-y: auto;
+        height: calc(100vh - 175px);
+      }
+    }
+  }
+  .list-item {
+    each(@factions, {
+      .@{value}::before {
+      right: 80px;
+    }}) &.legends {
+      &::before {
+        position: absolute;
+        right: 86px;
+        content: "L";
+        font-size: 1.3rem;
+        font-weight: 600;
+        font-family: "EB Garamond", serif;
+      }
+    }
+  }
+}
+@media only screen and (min-width: 600px) {
+  html {
+    font-size: 16px;
+  }
+  .list-item {
+    &.legends {
+      &::before {
+        position: absolute;
+        right: 16px;
+        content: "L";
+        font-size: 1.3rem;
+        font-weight: 600;
+        font-family: "EB Garamond", serif;
+      }
+    }
+  }
+}
+
+.data-full-custom {
+  page-break-inside: avoid;
+
+  .stratagem,
+  .shared-stratagem {
+    &.either {
+      --stratagem-colour: var(--green-stratagem-colour);
+    }
+
+    &.own {
+      --stratagem-colour: var(--blue-stratagem-colour);
+    }
+
+    &.other {
+      --stratagem-colour: var(--red-stratagem-colour);
+    }
+
+    .containers {
+      .type-container {
+        height: 35.9px;
+        width: 35.9px;
+        border: 3.5px solid var(--stratagem-colour);
+        background-color: var(--rows-colour);
+        rotate: 45deg;
+        overflow: hidden;
+
+        .any {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/any.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 95%;
+          height: 95%;
+
+          margin-left: 1px;
+          margin-top: -1px;
+
+          rotate: -45deg;
+        }
+        .charge {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/charge.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 100%;
+          height: 100%;
+
+          margin-top: -2px;
+          margin-left: -2px;
+
+          rotate: -45deg;
+        }
+        .fight {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/combat.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 95%;
+          height: 95%;
+
+          rotate: -45deg;
+        }
+        .command {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/command.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 100%;
+          height: 100%;
+
+          rotate: -45deg;
+        }
+        .movement {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/movement.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 95%;
+          height: 95%;
+
+          rotate: -45deg;
+        }
+        .shooting {
+          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/shooting.svg");
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-size: contain;
+
+          background-color: var(--stratagem-colour);
+
+          display: block;
+          width: 100%;
+          height: 100%;
+
+          rotate: -45deg;
+        }
+      }
+    }
+  }
+
+  .mobile {
+    .stratagem {
+      .border {
+        border-left: 5px solid var(--stratagem-colour);
+        padding-left: 15px;
+        margin-left: 4px;
+      }
+      .header,
+      .cp-container {
+        display: none;
+      }
+      .containers {
+        .type-container {
+          height: 25px;
+          width: 25px;
+          border-width: 2px;
+          top: 0.5px;
+          left: -6.4px;
+        }
+      }
+      .type {
+        margin-left: 5px;
+      }
+    }
+  }
+
+  @media print, (min-width: 600px) {
+    .stratagem {
+      height: 458px;
+      width: 262px;
+      transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      each(@factions, {
+        &.@{value}::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      });
+      &.AM::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 55%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 85px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+      &.basic::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 150px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+      background-color: var(--stratagem-colour);
+      .border {
+        background-color: white;
+        border-radius: 8px;
+        height: 456px;
+        width: 260px;
+        .background-side-bar {
+          position: absolute;
+          top: 22.67px;
+          left: 22.67px;
+          height: 377.95px;
+          width: 15.11px;
+          background-color: var(--stratagem-colour);
+        }
+        .background-header-bar {
+          position: absolute;
+          top: 32.12px;
+          left: 41.57px;
+          height: 3.77px;
+          width: 200.31px;
+          background-color: var(--stratagem-colour);
+        }
+        .header {
+          padding-left: 4px;
+          position: absolute;
+          top: 9.44px;
+          left: 52.91px;
+          color: var(--stratagem-colour);
+          width: 185.19px;
+          font-size: 1.1rem;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+        .type {
+          padding-left: 4px;
+          position: absolute;
+          top: 35.9px;
+          left: 52.91px;
+          width: 188.97;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          font-weight: 600;
+          border-bottom: 1px dotted #aaadb0;
+        }
+        .content {
+          position: absolute;
+          top: 56.69px;
+          left: 52.91px;
+          width: 188.97px;
+          height: auto;
+          padding-left: 4px;
+          .section {
+            padding-top: 4px;
+            line-height: 1rem;
+            .title {
+              text-transform: uppercase;
+              color: var(--stratagem-colour);
+              font-size: 0.7rem;
+              font-weight: 600;
+              padding-right: 4px;
+            }
+            .text {
+              color: black;
+              font-size: 0.7rem;
+              font-weight: 400;
+            }
+          }
+        }
+        .containers {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+
+          gap: 20px;
+
+          width: 35.9px;
+          height: auto;
+
+          top: 16.06px;
+          left: 12.28px;
+
+          .cp-container {
+            height: 35.9px;
+            width: 35.9px;
+            border: 3.4px solid var(--stratagem-colour);
+            background-color: var(--rows-colour);
+
+            rotate: 45deg;
+            overflow: hidden;
+            line-height: 28.34px;
+
+            .value {
+              rotate: -45deg;
+              text-align: center;
+              font-weight: 600;
+              color: var(--stratagem-colour);
+              font-size: 1.1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .card-editor {
+    .stats_container {
+      padding-left: 8px;
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+
+      .stat {
+        z-index: 2;
+        position: relative;
+
+        flex-direction: row;
+        justify-content: center;
+        .caption {
+          text-align: center;
+          font-size: 0.9rem;
+          color: black;
+          font-weight: 600;
+          width: 40px;
+          height: 20px;
+        }
+
+        .value_container {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          background: var(--header-colour);
+          height: 40px;
+          width: 40px;
+          z-index: 1;
+          clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+
+          .value {
+            text-align: center;
+
+            height: 36px;
+            width: 36px;
+
+            text-transform: uppercase;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--header-colour);
+            z-index: 2;
+            background-color: white;
+
+            justify-content: center;
+            align-items: center;
+            display: flex;
+
+            clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+
+            input {
+              border: 0;
+              font-size: 1.1rem;
+              font-weight: 600;
+              color: var(--header-colour);
+              text-align: center;
+              width: 100%;
+              padding: 0;
+            }
+          }
+        }
+      }
+    }
+
+    .weapons_header {
+      background-color: #fafafa;
+      color: black;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .keywords_header {
+      background-color: #fafafa;
+      color: black;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding-left: 8px;
+    }
+    .keywords_container {
+      display: flex;
+      flex-direction: column;
+      padding-left: 16px;
+      padding-right: 16px;
+
+      .keyword_container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 2px;
+        margin: 2px;
+        border-bottom: 1px dotted #aaadb0;
+      }
+    }
+    .weapons_container,
+    .weapons_header {
+      padding-left: 8px;
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+
+      .tag {
+        border: 1px solid var(--header-colour);
+        border-radius: 2px;
+        padding-left: 4px;
+        padding-right: 4px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+
+      .weapon {
+        z-index: 2;
+        position: relative;
+
+        flex-direction: row;
+        justify-content: center;
+        .caption {
+          text-align: center;
+          font-size: 0.9rem;
+          color: black;
+          font-weight: 600;
+          width: 36px;
+          height: 20px;
+        }
+        .value {
+          text-align: center;
+
+          width: 36px;
+
+          text-transform: uppercase;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: var(--header-colour);
+          z-index: 2;
+          background-color: white;
+
+          justify-content: center;
+          align-items: center;
+          display: flex;
+
+          input {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--header-colour);
+            text-align: center;
+            width: 100%;
+            padding: 0;
+          }
+        }
+        .double {
+          width: 72px;
+        }
+      }
+    }
+  }
+  --card-scaling: 100;
+  --card-scaling-factor: 1;
+
+  --header-colour: #456664;
+  --header-text-colour: white;
+  --stat-text-colour: #456664;
+  --stat-title-colour: white;
+  --banner-colour: #103344;
+  --text-background-colour: #dfe0e2;
+  --rows-colour: #d8d8da;
+  --alt-rows-colour: #dee3e0;
+  --keywords-background-colour: #d8d8da;
+  --weapon-keyword-colour: #456664;
+  --background-colour: black;
+  --faction-text-colour: white;
+  --title-text-colour: white;
+
+  --green-stratagem-colour: #2c594c;
+  --blue-stratagem-colour: #234461;
+  --red-stratagem-colour: #a2151a;
+
+  .unit {
+    height: calc(714px);
+    width: calc(1077px);
+    transform: scale(var(--card-scaling-factor));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    .header {
+      height: 196px;
+      width: 1077px;
+      background-color: var(--background-colour);
+      position: relative;
+
+      display: grid;
+      row-gap: 2px;
+      grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+
+      grid-template-areas:
+        " c1  c1 "
+        " c2  c2 "
+        " c3  c5 "
+        " c4  c6";
+
+      .stats_container:nth-child(2) {
+        grid-area: c2;
+      }
+      .stats_container:nth-child(3) {
+        grid-area: c3;
+      }
+      .stats_container:nth-child(4) {
+        grid-area: c4;
+      }
+      .stats_container:nth-child(5) {
+        grid-area: c5;
+      }
+      .stats_container:nth-child(6) {
+        grid-area: c6;
+      }
+
+      .header_container {
+        grid-area: c1;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding-top: 32px;
+        padding-left: 32px;
+        @media only screen and (max-width: 600px) {
+          .legends {
+            position: absolute;
+            right: 16px;
+            top: 8px;
+            font-size: 1rem;
+            &::before {
+              content: "Legends";
+            }
+          }
+        }
+        @media only screen and (min-width: 600px) {
+          .legends {
+            &::before {
+              content: "Warhammer Legends";
+            }
+            position: absolute;
+            top: 38px;
+            right: 110px;
+            z-index: 10;
+            font-size: 1.3rem;
+            font-weight: 600;
+            font-family: "EB Garamond", "serif";
+            color: var(--faction-text-colour);
+          }
+        }
+        .name_container {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+
+          .name {
+            text-transform: uppercase;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--title-text-colour);
+            z-index: 3;
+            line-height: 2.5rem;
+            letter-spacing: 0.1rem;
+          }
+          .subname {
+            padding-left: 8px;
+            text-transform: uppercase;
+            font-style: italic;
+            color: var(--title-text-colour);
+            font-size: 1.1rem;
+            z-index: 2;
+            font-weight: 600;
+            letter-spacing: 0.1rem;
+          }
+        }
+
+        .points_container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding-right: 16px;
+          z-index: 2;
+          padding-top: 4px;
+          height: auto;
+          .points {
+            white-space: nowrap;
+            text-transform: uppercase;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--title-text-colour);
+            z-index: 2;
+            line-height: 2.2rem;
+            letter-spacing: 0.1rem;
+            padding-left: 8px;
+            padding-right: 8px;
+            border: 1px solid var(--title-text-colour);
+            border-radius: 4px;
+
+            &:hover {
+              border: 1px solid var(--title-text-colour);
+              background-color: #ffffff44;
+              cursor: pointer;
+            }
+          }
+        }
+      }
+      .stats_container {
+        padding-left: 32px;
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+
+        &:last-child {
+          padding-top: 4px;
+        }
+
+        .name {
+          text-transform: uppercase;
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--stat-title-colour);
+          z-index: 2;
+          letter-spacing: 0.1rem;
+          white-space: nowrap;
+          width: 135px;
+        }
+
+        .stat {
+          z-index: 2;
+          position: relative;
+
+          flex-direction: row;
+          justify-content: center;
+          .caption {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--title-text-colour);
+            font-weight: 600;
+            width: 44px;
+            height: 20px;
+          }
+
+          .damageTable {
+            position: absolute;
+            bottom: -14px;
+            height: 24px;
+            width: 24px;
+            left: 10px;
+            border-radius: 32px;
+            background-color: var(--header-colour);
+
+            &::after {
+              content: " ";
+              position: absolute;
+              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+              background-repeat: no-repeat;
+              background-size: contain;
+              background-position: center;
+              height: 100%;
+              width: 100%;
+              scale: 0.75;
+            }
+          }
+          .value_container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            background: var(--header-colour);
+            height: 44px;
+            width: 44px;
+            z-index: 1;
+            clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+
+            .value {
+              text-align: center;
+
+              height: 40px;
+              width: 40px;
+
+              text-transform: uppercase;
+              font-size: 1.3rem;
+              font-weight: 600;
+              color: var(--stat-text-colour);
+              z-index: 2;
+              background-color: white;
+
+              justify-content: center;
+              align-items: center;
+              display: flex;
+
+              clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+            }
+
+            &.wide {
+              width: 60px;
+
+              .value {
+                width: 54px;
+              }
+            }
+          }
+        }
+      }
+
+      &::after {
+        position: absolute;
+        content: "";
+        top: 32px;
+        left: 24px;
+        width: calc(1077px - 24px);
+        height: 90px;
+        background-color: var(--banner-colour);
+        clip-path: polygon(0% 0%, 0% 100%, 42% 100%, 52% 50%, 100% 50%, 100% 0%);
+      }
+      &.back {
+        &::after {
+          position: absolute;
+          content: "";
+          top: 32px;
+          left: 24px;
+          width: calc(1077px - 24px);
+          height: 90px;
+          background-color: var(--banner-colour);
+          clip-path: polygon(0% 0%, 0% 50%, 0% 50%, 52% 50%, 100% 50%, 100% 0%) !important;
+        }
+      }
+    }
+
+    .data_container {
+      position: relative;
+      height: 468px;
+      width: 1032px;
+      background-color: var(--header-colour);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 2% 100%, 0 96%);
+
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+
+      .data {
+        top: 0;
+        margin-top: -4px;
+        height: 468px;
+        width: 1028px;
+        background-color: var(--text-background-colour);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 2% 100%, 0 96%);
+
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        grid-template-rows: 1fr;
+        grid-column-gap: 0px;
+        grid-row-gap: 0px;
+
+        .weapons {
+          height: 500px;
+          border-right: 2px solid var(--header-colour);
+          padding-top: 16px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .ranged {
+            position: relative;
+
+            &::before {
+              content: "";
+              position: absolute;
+              left: 4px;
+              top: 0;
+              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
+              background-repeat: none;
+              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+              width: 24px;
+              height: 24px;
+            }
+
+            .heading {
+              background-color: var(--header-colour);
+              padding-left: 32px;
+              display: grid;
+              grid-template-columns: 7fr 2fr repeat(5, 1fr);
+              grid-template-rows: 1fr;
+              grid-column-gap: 0px;
+              grid-row-gap: 0px;
+
+              .title {
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .weapon {
+              padding-left: 32px;
+              border-bottom: 1px dotted #636567;
+
+              &:nth-of-type(even) {
+                background: var(--rows-colour);
+              }
+              &:nth-of-type(odd) {
+                background: var(--alt-rows-colour);
+              }
+              .line {
+                display: grid;
+                grid-template-columns: 7fr 2fr repeat(5, 1fr);
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+                .value {
+                  color: black;
+                  font-size: 0.9rem;
+                  font-weight: 400;
+                  letter-spacing: normal;
+                  z-index: 2;
+
+                  .name {
+                    white-space: pre-line;
+                  }
+
+                  .keyword {
+                    white-space: nowrap;
+                  }
+                }
+              }
+            }
+          }
+          .melee {
+            position: relative;
+
+            &::before {
+              content: "";
+              position: absolute;
+              left: 4px;
+              top: 0;
+              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
+              background-repeat: none;
+              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+              width: 20px;
+              height: 20px;
+              margin-top: 2px;
+            }
+
+            .heading {
+              background-color: var(--header-colour);
+              padding-left: 32px;
+              display: grid;
+              grid-template-columns: 7fr 2fr repeat(5, 1fr);
+              grid-template-rows: 1fr;
+              grid-column-gap: 0px;
+              grid-row-gap: 0px;
+
+              .title {
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .weapon {
+              padding-left: 32px;
+              border-bottom: 1px dotted #636567;
+
+              &:nth-of-type(even) {
+                background: var(--rows-colour);
+              }
+              &:nth-of-type(odd) {
+                background: var(--alt-rows-colour);
+              }
+              .line {
+                display: grid;
+                grid-template-columns: 7fr 2fr repeat(5, 1fr);
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+                .value {
+                  color: black;
+                  font-size: 0.9rem;
+                  font-weight: 400;
+                  letter-spacing: normal;
+                  z-index: 2;
+
+                  .keyword {
+                    white-space: nowrap;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        &.back {
+          .wargear_container {
+            height: auto !important;
+            padding-left: 0px;
+            padding-right: 0px;
+
+            .content {
+              grid-template-rows: auto !important;
+              grid-template-columns: 1fr !important;
+              grid-auto-flow: row !important;
+            }
+          }
+          .composition,
+          .loadout,
+          .transport,
+          .leader {
+            padding-left: 14px !important;
+          }
+        }
+        .wargear_container {
+          height: 500px;
+          border-right: 2px solid var(--header-colour);
+          padding: 16px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .wargear {
+            position: relative;
+
+            .heading {
+              background-color: var(--header-colour);
+              padding-left: 8px;
+              display: grid;
+              grid-template-columns: 1fr;
+              grid-template-rows: 1fr;
+              grid-column-gap: 0px;
+              grid-row-gap: 0px;
+              margin-bottom: 4px;
+
+              .title {
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .explanation {
+              margin-left: 16px;
+              padding-right: 16px;
+              &:before {
+                content: "*";
+              }
+              font-size: 0.7rem;
+              color: black;
+              font-weight: 400;
+              padding-left: 4px;
+            }
+            .content {
+              display: grid;
+              grid-template-rows: 1fr 1fr;
+              grid-auto-flow: column;
+              .item {
+                align-self: flex-start;
+                padding-left: 16px;
+                padding-right: 16px;
+                line-height: 1.1rem;
+                &:before {
+                  content: "■";
+                }
+                white-space: pre-wrap;
+                .description {
+                  font-size: 0.8rem;
+                  color: black;
+                  font-weight: 400;
+                  padding-left: 4px;
+                }
+              }
+            }
+          }
+        }
+
+        .extra {
+          padding: 16px;
+          height: 100%;
+
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .invul_container {
+            z-index: 2;
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+
+            .info {
+              color: black;
+              font-size: 0.7rem;
+              font-weight: 400;
+              letter-spacing: normal;
+              font-style: italic;
+              margin-top: -12px;
+              padding-left: 8px;
+              padding-right: 32px;
+            }
+            .invul {
+              z-index: 2;
+              position: relative;
+
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: center;
+
+              &::before {
+                content: " ";
+                position: absolute;
+                width: 100%;
+                height: 22px;
+                background-color: var(--header-colour);
+                top: calc(50% - 11px);
+              }
+
+              .title {
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+
+                padding-left: 8px;
+              }
+
+              .value_container {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+
+                height: 50px;
+                width: 50px;
+                z-index: 1;
+
+                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+                mask-repeat: no-repeat;
+                mask-position: center;
+                mask-size: contain;
+
+                background-color: var(--header-colour);
+
+                .value {
+                  text-align: center;
+
+                  height: 44px;
+                  width: 45px;
+
+                  text-transform: uppercase;
+                  font-size: 1.3rem;
+                  font-weight: 600;
+                  color: var(--stat-text-colour);
+                  z-index: 2;
+
+                  justify-content: center;
+                  align-items: center;
+                  display: flex;
+
+                  background-color: white;
+
+                  mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+                  mask-repeat: no-repeat;
+                  mask-position: center;
+                  mask-size: contain;
+                }
+              }
+            }
+          }
+          .abilities {
+            .heading {
+              background-color: var(--header-colour);
+              padding-left: 8px;
+
+              .title {
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .ability {
+              padding: 4px;
+              border-bottom: 1px dotted #636567;
+              line-height: 1rem;
+
+              .title {
+                text-transform: uppercase;
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 300;
+
+                &::after {
+                  content: ":";
+                }
+              }
+
+              .value {
+                text-transform: capitalize;
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+              }
+              .description {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 400;
+                padding-left: 4px;
+              }
+
+              .name {
+                text-transform: capitalize;
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+
+                &::after {
+                  content: ":";
+                }
+              }
+            }
+          }
+          .composition_container {
+            .heading {
+              background-color: var(--header-colour);
+              padding-left: 8px;
+              margin-bottom: 4px;
+              .title {
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: 0.1rem;
+                z-index: 2;
+              }
+            }
+            .composition {
+              padding: 2px;
+              line-height: 1rem;
+
+              .description {
+                font-size: 0.8rem;
+                color: black;
+                font-weight: 600;
+                padding-left: 4px;
+                &:before {
+                  content: "■ ";
+                }
+              }
+            }
+            .leader {
+              padding: 2px;
+              line-height: 1rem;
+
+              .description {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 400;
+                white-space: pre-wrap;
+              }
+              .value {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+                white-space: pre-wrap;
+                margin-left: 4px;
+                @media screen {
+                  &::before {
+                    content: "[ ";
+                  }
+                  &::after {
+                    content: " ]";
+                  }
+                }
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+            .ledBy {
+              padding: 2px;
+              padding-left: 14px !important;
+              line-height: 1rem;
+
+              .description {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 400;
+                white-space: pre-wrap;
+              }
+              .value {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+                white-space: pre-wrap;
+                margin-left: 4px;
+                @media screen {
+                  &::before {
+                    content: "[ ";
+                  }
+                  &::after {
+                    content: " ]";
+                  }
+                }
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+            .transport {
+              padding: 2px;
+              line-height: 1rem;
+
+              .description {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 400;
+                white-space: pre-wrap;
+              }
+            }
+            .loadout {
+              padding-left: 4px;
+              padding-right: 4px;
+              line-height: 1.2rem;
+
+              .description {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 400;
+                text-transform: capitalize;
+              }
+              .name {
+                font-size: 0.7rem;
+                color: black;
+                font-weight: 600;
+                padding-right: 4px;
+
+                &::after {
+                  content: ":";
+                }
+              }
+            }
+          }
+
+          .damaged {
+            .description {
+              font-size: 0.7rem;
+              color: black;
+              font-weight: 400;
+              line-height: 1.1rem;
+              padding-left: 4px;
+              padding-top: 4px;
+            }
+            .heading {
+              background-color: var(--header-colour);
+              padding-left: 8px;
+              position: relative;
+
+              .title {
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                z-index: 2;
+                padding-left: 16px;
+
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 6px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+                  background-repeat: no-repeat;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 20px;
+                  height: 20px;
+                  margin-top: 2px;
+                  scale: 0.8;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .special {
+      .description {
+        font-size: 0.7rem;
+        color: black;
+        font-weight: 400;
+        line-height: 1.1rem;
+        padding-left: 4px;
+        padding-top: 4px;
+      }
+      .heading {
+        background-color: var(--header-colour);
+        padding-left: 8px;
+        position: relative;
+
+        .title {
+          text-transform: uppercase;
+          color: var(--header-text-colour);
+          font-size: 1rem;
+          font-weight: 600;
+          z-index: 2;
+        }
+      }
+      .ability {
+        padding: 4px;
+        border-bottom: 1px dotted #636567;
+        line-height: 1rem;
+
+        .title {
+          text-transform: uppercase;
+          font-size: 0.7rem;
+          color: black;
+          font-weight: 300;
+
+          &::after {
+            content: ":";
+          }
+        }
+
+        .value {
+          text-transform: capitalize;
+          font-size: 0.7rem;
+          color: black;
+          font-weight: 600;
+        }
+        .description {
+          font-size: 0.7rem;
+          color: black;
+          font-weight: 400;
+          padding-left: 4px;
+        }
+
+        .name {
+          text-transform: capitalize;
+          font-size: 0.7rem;
+          color: black;
+          font-weight: 600;
+
+          &::after {
+            content: ":";
+          }
+        }
+      }
+    }
+    .footer {
+      height: 64px;
+      width: 1000px;
+      border: 2px solid var(--header-colour);
+      background-color: var(--text-background-colour);
+      position: absolute;
+      bottom: 32px;
+
+      display: grid;
+      grid-template-columns: 670px auto;
+      grid-template-rows: 1fr;
+      grid-column-gap: 0px;
+      grid-row-gap: 0px;
+
+      .keywords {
+        border-right: 2px solid var(--header-colour);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding-left: 16px;
+        position: relative;
+        padding-right: 48px;
+        background-color: var(--keywords-background-colour);
+
+        .title {
+          text-transform: uppercase;
+          font-size: 1rem;
+          color: black;
+          font-weight: 400;
+          padding-right: 4px;
+
+          &::after {
+            content: ":";
+          }
+        }
+
+        .value {
+          text-transform: capitalize;
+          font-size: 1rem;
+          color: black;
+          font-weight: 600;
+        }
+      }
+      .factions {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        padding-left: 48px;
+        background-color: var(--background-colour);
+
+        .title {
+          text-transform: uppercase;
+          font-size: 1rem;
+          color: var(--faction-text-colour);
+          font-weight: 400;
+          padding-right: 4px;
+          line-height: 1.1rem;
+
+          &::after {
+            content: ":";
+          }
+        }
+
+        .value {
+          text-transform: capitalize;
+          font-size: 1rem;
+          color: var(--faction-text-colour);
+          font-weight: 600;
+          line-height: 1.1rem;
+        }
+      }
+    }
+    .faction {
+      height: 64px;
+      width: 64px;
+      border: 2px solid var(--header-colour);
+      background-color: var(--rows-colour);
+      position: absolute;
+      bottom: 32px;
+      left: 677px;
+      rotate: 45deg;
+      overflow: hidden;
+
+      each(@factions, {
+          .@{value} {
+            content: " ";
+            display: block;
+            width: 100%;
+            height: 100%;
+            scale: 0.8;
+            background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
+            rotate: -45deg;
+          }
+        });
+      .AoI {
+        scale: 1.3;
+      }
+      .CHDW {
+        scale: 0.7;
+      }
+      .DRU {
+        scale: 1;
+      }
+      .GK {
+        scale: 1;
+      }
+      .ORK {
+        scale: 1;
+      }
+      .SM {
+        scale: 1.4;
+      }
+      .CHSW {
+        scale: 1;
+      }
+      .TYR {
+        scale: 1;
+      }
+      .LoV {
+        scale: 1;
+      }
+      .WE {
+        scale: 1;
+      }
+      .AE {
+        scale: 1;
+      }
+      .AM {
+        content: " ";
+        display: block;
+        width: 100%;
+        height: 100%;
+        scale: 1.3;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
+        rotate: -45deg;
+      }
+      .basic {
+        content: " ";
+        display: block;
+        width: 100%;
+        height: 100%;
+        scale: 1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+        filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
+        rotate: -45deg;
+      }
+    }
+  }
+
+  .viewer {
+    .unit {
+      height: auto;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+
+      .header {
+        width: 100%;
+        height: auto;
+        min-height: 110px;
+        background-color: var(--background-colour);
+        position: relative;
+        display: block;
+
+        &.back {
+          min-height: 65px;
+          &::after {
+            position: absolute;
+            content: "";
+            top: 8px;
+            left: 0px;
+            width: 100%;
+            height: 85px;
+            background-color: var(--banner-colour);
+          }
+        }
+        .header_container {
+          grid-area: c1;
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          padding-top: 12px;
+          padding-left: 8px;
+
+          @media only screen and (max-width: 600px) {
+            .legends {
+              position: absolute;
+              right: 16px;
+              top: 12px;
+              font-size: 1rem;
+              z-index: 10;
+              color: var(--faction-text-colour);
+              font-weight: 600;
+              font-family: "EB Garamond", "serif";
+              &::before {
+                content: "Legends";
+              }
+            }
+          }
+          @media only screen and (min-width: 600px) {
+            .legends {
+              &::before {
+                content: "Warhammer Legends";
+              }
+              position: absolute;
+              top: 38px;
+              right: 110px;
+              z-index: 10;
+              font-size: 1.3rem;
+              font-weight: 600;
+              font-family: "EB Garamond", "serif";
+              color: var(--faction-text-colour);
+            }
+          }
+
+          .name_container {
+            flex-basis: 100%;
+            display: flex;
+            align-items: flex-end;
+            .name {
+              text-transform: uppercase;
+              font-size: 1.2rem;
+              font-weight: 800;
+              color: white;
+              z-index: 2;
+              line-height: 1.5rem;
+              letter-spacing: 0.1rem;
+            }
+            .subname {
+              padding-left: 8px;
+              text-transform: uppercase;
+              font-style: italic;
+              color: white;
+              font-size: 1rem;
+              z-index: 2;
+              font-weight: 600;
+              letter-spacing: 0.1rem;
+            }
+          }
+          .points_container {
+            padding-top: 0px;
+            padding-left: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            z-index: 2;
+            .points {
+              text-transform: uppercase;
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: white;
+              z-index: 2;
+              line-height: 1rem;
+              letter-spacing: 0.1rem;
+            }
+          }
+        }
+        .stats_container {
+          padding-left: 16px;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+          grid-gap: 2px;
+
+          grid-template-areas:
+            "column-7 column-7 column-7 column-7 column-7 column-7"
+            "column-1 column-2 column-3 column-4 column-5 column-6";
+
+          .stat:nth-child(1) {
+            grid-area: column-1;
+          }
+          .stat:nth-child(2) {
+            grid-area: column-2;
+          }
+          .stat:nth-child(3) {
+            grid-area: column-3;
+          }
+          .stat:nth-child(4) {
+            grid-area: column-4;
+          }
+          .stat:nth-child(5) {
+            grid-area: column-5;
+          }
+          .stat:nth-child(6) {
+            grid-area: column-6;
+          }
+
+          .name {
+            text-transform: uppercase;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            z-index: 2;
+            line-height: 1.5rem;
+            letter-spacing: 0.1rem;
+            height: 1.2rem;
+            width: 100%;
+            grid-area: column-7;
+          }
+
+          .stat {
+            z-index: 2;
+            position: relative;
+
+            flex-direction: row;
+            justify-content: center;
+            .caption {
+              text-align: center;
+              font-size: 0.8rem;
+              color: var(--title-text-colour);
+              font-weight: 600;
+              width: 34px;
+              height: 12px;
+            }
+
+            .damageTable {
+              position: absolute;
+              bottom: -14px;
+              height: 24px;
+              width: 24px;
+              left: 10px;
+              border-radius: 32px;
+              background-color: var(--header-colour);
+
+              &::after {
+                content: " ";
+                position: absolute;
+                filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center;
+                height: 100%;
+                width: 100%;
+                scale: 0.75;
+              }
+            }
+
+            .damageTable {
+              position: absolute;
+              bottom: -14px;
+              height: 24px;
+              width: 24px;
+              left: 10px;
+              border-radius: 32px;
+              background-color: var(--header-colour);
+
+              &::after {
+                content: " ";
+                position: absolute;
+                filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+                background-repeat: no-repeat;
+                background-size: contain;
+                background-position: center;
+                height: 100%;
+                width: 100%;
+                scale: 0.75;
+              }
+            }
+            @media only screen and (max-width: 600px) {
+              .damageTable {
+                left: 5px;
+              }
+            }
+            .value_container {
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              align-items: center;
+              background: var(--header-colour);
+              height: 34px;
+              width: 34px;
+              z-index: 1;
+              clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+
+              .value {
+                text-align: center;
+
+                height: 30px;
+                width: 30px;
+
+                text-transform: uppercase;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--header-colour);
+                z-index: 2;
+                background-color: white;
+
+                justify-content: center;
+                align-items: center;
+                display: flex;
+
+                clip-path: polygon(100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%, 10% 0);
+              }
+
+              &.wide {
+                width: 60px;
+
+                .value {
+                  width: 54px;
+                }
+              }
+            }
+          }
+        }
+
+        &::after {
+          position: absolute;
+          content: "";
+          top: 8px;
+          left: 0px;
+          width: 100%;
+          height: 90px;
+          background-color: var(--banner-colour);
+          clip-path: polygon(0% 0%, 0% 100%, 42% 100%, 52% 50%, 100% 50%, 100% 0%);
+        }
+      }
+      .data_container {
+        height: auto;
+        width: 100%;
+        background-color: var(--header-colour);
+        clip-path: initial;
+
+        .data {
+          top: 0;
+          margin-top: -4px;
+          height: auto;
+          width: 100%;
+          background-color: var(--text-background-colour);
+          clip-path: initial;
+
+          display: grid;
+          grid-template-columns: 1fr;
+          grid-template-rows: 1fr;
+          grid-column-gap: 0px;
+          grid-row-gap: 0px;
+
+          .weapons {
+            height: auto;
+            border-right: 0px solid var(--header-colour);
+            padding-top: 16px;
+            padding-bottom: 16px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .ranged {
+              position: relative;
+
+              @media only screen and (max-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 16px;
+                  height: 16px;
+                  margin-top: 2px;
+                }
+              }
+              @media only screen and (min-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 24px;
+                  height: 24px;
+                }
+              }
+
+              .heading {
+                background-color: var(--header-colour);
+                padding-left: 0px;
+                display: grid;
+                grid-template-columns: 7fr 2fr repeat(5, 1fr);
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+                padding-right: 8px;
+
+                .title {
+                  text-transform: uppercase;
+                  color: white;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  letter-spacing: 0.1rem;
+                  z-index: 2;
+
+                  &:first-child {
+                    margin-left: 24px;
+                  }
+                }
+              }
+
+              .weapon {
+                padding-left: 8px;
+                border-bottom: 1px dotted #636567;
+                padding-right: 8px;
+                &:nth-of-type(even) {
+                  background: var(--rows-colour);
+                }
+                &:nth-of-type(odd) {
+                  background: var(--alt-rows-colour);
+                }
+                .line {
+                  display: grid;
+                  grid-template-columns: 7fr 2fr repeat(5, 1fr);
+                  grid-template-rows: 1fr;
+                  grid-column-gap: 0px;
+                  grid-row-gap: 0px;
+
+                  grid-template-areas:
+                    " column-1 column-2 column-3 column-4 column-5 column-6 column-7 "
+                    " column-8 column-8 column-8 column-8 column-8 column-8 column-8";
+
+                  .value:nth-child(1) {
+                    grid-area: column-1;
+                  }
+                  .value:nth-child(2) {
+                    grid-area: column-2;
+                  }
+                  .value:nth-child(3) {
+                    grid-area: column-3;
+                  }
+                  .value:nth-child(4) {
+                    grid-area: column-4;
+                  }
+                  .value:nth-child(5) {
+                    grid-area: column-5;
+                  }
+                  .value:nth-child(6) {
+                    grid-area: column-6;
+                  }
+                  .value:nth-child(7) {
+                    grid-area: column-7;
+                  }
+                  .keyword:nth-child(8) {
+                    grid-area: column-8;
+                  }
+
+                  .value {
+                    color: black;
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    letter-spacing: normal;
+                    z-index: 2;
+
+                    .name {
+                      white-space: pre-line;
+                    }
+
+                    .keyword {
+                      white-space: nowrap;
+                    }
+                  }
+                }
+              }
+            }
+            .melee {
+              position: relative;
+              @media only screen and (max-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 16px;
+                  height: 16px;
+                  margin-top: 4px;
+                }
+              }
+              @media only screen and (min-width: 600px) {
+                &::before {
+                  content: "";
+                  position: absolute;
+                  left: 4px;
+                  top: 0;
+                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
+                  background-repeat: none;
+                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                  width: 20px;
+                  height: 20px;
+                  margin-top: 3px;
+                }
+              }
+
+              .heading {
+                background-color: var(--header-colour);
+                padding-left: 0px;
+                display: grid;
+                grid-template-columns: 7fr 2fr repeat(5, 1fr);
+                grid-template-rows: 1fr;
+                grid-column-gap: 0px;
+                grid-row-gap: 0px;
+                padding-right: 8px;
+
+                .title {
+                  text-transform: uppercase;
+                  color: white;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  letter-spacing: 0.1rem;
+                  z-index: 2;
+                  padding-top: 2px;
+
+                  &:first-child {
+                    margin-left: 24px;
+                  }
+                }
+              }
+              .special {
+                .ability {
+                  padding-left: 8px !important;
+                }
+              }
+              .weapon {
+                padding-left: 8px;
+                border-bottom: 1px dotted #636567;
+                padding-right: 8px;
+
+                &:nth-of-type(even) {
+                  background: var(--rows-colour);
+                }
+                &:nth-of-type(odd) {
+                  background: var(--alt-rows-colour);
+                }
+                .line {
+                  display: grid;
+                  grid-template-columns: 7fr 2fr 1fr 1fr 1fr 1fr 1fr;
+
+                  grid-template-areas:
+                    " column-1 column-2 column-3 column-4 column-5 column-6 column-7 "
+                    " column-8 column-8 column-8 column-8 column-8 column-8 column-8";
+
+                  .value:nth-child(1) {
+                    grid-area: column-1;
+                  }
+                  .value:nth-child(2) {
+                    grid-area: column-2;
+                  }
+                  .value:nth-child(3) {
+                    grid-area: column-3;
+                  }
+                  .value:nth-child(4) {
+                    grid-area: column-4;
+                  }
+                  .value:nth-child(5) {
+                    grid-area: column-5;
+                  }
+                  .value:nth-child(6) {
+                    grid-area: column-6;
+                  }
+                  .value:nth-child(7) {
+                    grid-area: column-7;
+                  }
+
+                  .value {
+                    color: black;
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    letter-spacing: normal;
+                    z-index: 2;
+
+                    .keyword {
+                      white-space: nowrap;
+                      grid-area: column-8;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .extra {
+            padding: 0px;
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .invul_container {
+              z-index: 2;
+              position: relative;
+
+              display: flex;
+              flex-direction: column;
+
+              .info {
+                color: black;
+                font-size: 0.7rem;
+                font-weight: 400;
+                letter-spacing: normal;
+                font-style: italic;
+                margin-top: -12px;
+                padding-left: 8px;
+                padding-right: 32px;
+              }
+              .invul {
+                z-index: 2;
+                position: relative;
+
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+
+                &::before {
+                  content: " ";
+                  position: absolute;
+                  width: 100%;
+                  height: 22px;
+                  background-color: var(--header-colour);
+                  top: calc(50% - 11px);
+                }
+
+                .title {
+                  text-transform: uppercase;
+                  color: white;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  letter-spacing: 0.1rem;
+                  z-index: 2;
+
+                  padding-left: 8px;
+                }
+
+                .value_container {
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: center;
+                  align-items: center;
+
+                  height: 50px;
+                  width: 50px;
+                  z-index: 1;
+
+                  mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+                  mask-repeat: no-repeat;
+                  mask-position: center;
+                  mask-size: contain;
+
+                  background-color: var(--header-colour);
+
+                  .value {
+                    text-align: center;
+
+                    height: 44px;
+                    width: 45px;
+
+                    text-transform: uppercase;
+                    font-size: 1.3rem;
+                    font-weight: 600;
+                    color: var(--header-colour);
+                    z-index: 2;
+
+                    justify-content: center;
+                    align-items: center;
+                    display: flex;
+
+                    background-color: white;
+
+                    mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
+                    mask-repeat: no-repeat;
+                    mask-position: center;
+                    mask-size: contain;
+                  }
+                }
+              }
+            }
+            .abilities {
+              .heading {
+                background-color: var(--header-colour);
+                padding-left: 8px;
+
+                .title {
+                  text-transform: uppercase;
+                  color: white;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  letter-spacing: 0.1rem;
+                  z-index: 2;
+                }
+              }
+              .ability {
+                padding: 4px;
+                padding-left: 8px;
+                padding-right: 8px;
+                border-bottom: 1px dotted #636567;
+                line-height: 1rem;
+
+                .title {
+                  text-transform: uppercase;
+                  font-size: 0.8rem;
+                  color: black;
+                  font-weight: 300;
+
+                  &::after {
+                    content: ":";
+                  }
+                }
+
+                .value {
+                  text-transform: capitalize;
+                  font-size: 0.8rem;
+                  color: black;
+                  font-weight: 600;
+                }
+                .description {
+                  font-size: 0.8rem;
+                  color: black;
+                  font-weight: 400;
+                  padding-left: 4px;
+                }
+
+                .name {
+                  text-transform: capitalize;
+                  font-size: 0.8rem;
+                  color: black;
+                  font-weight: 600;
+
+                  &::after {
+                    content: ":";
+                  }
+                }
+              }
+            }
+
+            .damaged {
+              .description {
+                font-size: 0.8rem;
+                color: black;
+                font-weight: 400;
+                line-height: 1.1rem;
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-top: 4px;
+              }
+              .heading {
+                background-color: var(--header-colour);
+                padding-left: 8px;
+                position: relative;
+
+                .title {
+                  text-transform: uppercase;
+                  color: white;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  z-index: 2;
+                  padding-left: 16px;
+
+                  &::before {
+                    content: "";
+                    position: absolute;
+                    left: 6px;
+                    top: 0;
+                    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
+                    background-repeat: no-repeat;
+                    filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+                    width: 20px;
+                    height: 20px;
+                    margin-top: 2px;
+                    scale: 0.8;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .special {
+        .description {
+          font-size: 0.8rem;
+          color: black;
+          font-weight: 400;
+          line-height: 1.1rem;
+          padding-left: 16px;
+          padding-top: 4px;
+        }
+        .heading {
+          background-color: var(--header-colour);
+          padding-left: 8px;
+          position: relative;
+
+          .title {
+            text-transform: uppercase;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            z-index: 2;
+          }
+        }
+        .ability {
+          padding: 4px;
+          border-bottom: 1px dotted #636567;
+          line-height: 1rem;
+
+          .title {
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: black;
+            font-weight: 300;
+
+            &::after {
+              content: ":";
+            }
+          }
+
+          .value {
+            text-transform: capitalize;
+            font-size: 0.8rem;
+            color: black;
+            font-weight: 600;
+          }
+          .description {
+            font-size: 0.8rem;
+            color: black;
+            font-weight: 400;
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+
+          .name {
+            text-transform: capitalize;
+            font-size: 0.8rem;
+            color: black;
+            font-weight: 600;
+
+            &::after {
+              content: ":";
+            }
+          }
+        }
+      }
+      .footer {
+        height: auto;
+        width: 100%;
+        border: 0px solid var(--header-colour);
+        background-color: var(--text-background-colour);
+        position: initial;
+        grid-template-columns: 1fr;
+
+        .keywords {
+          width: 100%;
+          border-right: 0px solid var(--header-colour);
+          display: grid;
+          grid-template-columns: 1fr;
+          grid-gap: 0px;
+
+          padding-right: 0px;
+
+          grid-template-areas:
+            "column-1"
+            "column-2";
+
+          padding-left: 0px;
+          background-color: var(--rows-colour);
+
+          .title {
+            padding-left: 8px;
+            margin-top: 16px;
+            text-transform: uppercase;
+            padding-right: 4px;
+            grid-area: column-1;
+
+            text-transform: uppercase;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.1rem;
+            z-index: 2;
+            width: 100%;
+
+            background-color: var(--header-colour);
+
+            &::after {
+              content: "";
+            }
+          }
+
+          .value {
+            padding: 8px;
+            text-transform: capitalize;
+            font-size: 0.7rem;
+            color: black;
+            font-weight: 600;
+            width: 100%;
+            grid-area: column-2;
+          }
+        }
+        .factions {
+          width: 100%;
+          border-right: 0px solid var(--header-colour);
+          display: grid;
+          grid-template-columns: 1fr;
+          grid-gap: 0px;
+
+          padding-right: 0px;
+
+          grid-template-areas:
+            "column-1"
+            "column-2";
+
+          padding-left: 0px;
+          background-color: var(--rows-colour);
+
+          .title {
+            padding: 4px;
+            padding-left: 8px;
+            margin-top: 0px;
+            text-transform: uppercase;
+            grid-area: column-1;
+
+            text-transform: uppercase;
+            color: var(--faction-text-colour);
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.1rem;
+            z-index: 2;
+            width: 100%;
+
+            background-color: var(--header-colour);
+
+            &::after {
+              content: "";
+            }
+          }
+
+          .value {
+            padding: 8px;
+            text-transform: capitalize;
+            font-size: 0.7rem;
+            color: black;
+            font-weight: 600;
+            width: 100%;
+            grid-area: column-2;
+          }
+        }
+      }
+      .faction {
+        display: none;
+        height: 64px;
+        width: 64px;
+        border: 2px solid var(--header-colour);
+        background-color: var(--rows-colour);
+        position: absolute;
+        bottom: 32px;
+        left: 677px;
+        rotate: 45deg;
+        overflow: hidden;
+
+        each(@factions, {
+          .@{value} {
+            content: " ";
+            display: block;
+            width: 100%;
+            height: 100%;
+            scale: 0.8;
+            background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
+            rotate: -45deg;
+          }
+        });
+
+        .AM {
+          content: " ";
+          display: block;
+          width: 100%;
+          height: 100%;
+          scale: 1.8;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+          filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
+          rotate: -45deg;
+        }
+        .basic {
+          content: " ";
+          display: block;
+          width: 100%;
+          height: 100%;
+          scale: 1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+          filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
+          rotate: -45deg;
+        }
+      }
+    }
+  }
+
+  .center {
+    text-align: center;
+  }
+  .rule {
+    cursor: pointer;
+    text-transform: capitalize;
+    color: black;
+    font-weight: 600;
+
+    .rule-button {
+      font-size: inherit;
+      height: 16px;
+      padding: 0px;
+
+      @media screen {
+        span {
+          &::before {
+            content: "[ ";
+          }
+          &::after {
+            content: " ]";
+          }
+        }
+      }
+    }
+    &:hover {
+      text-decoration: underline;
+    }
+    span {
+      text-transform: capitalize;
+      color: black;
+      font-weight: 600;
+    }
+  }
+  .keyword {
+    text-transform: uppercase;
+    color: var(--weapon-keyword-colour);
+    font-size: 0.7rem;
+    font-weight: 600;
+    z-index: 2;
+    cursor: pointer;
+
+    .keyword-button {
+      text-transform: uppercase;
+      color: var(--weapon-keyword-colour);
+      font-size: 0.7rem;
+      font-weight: 600;
+      height: 16px;
+      padding: 0px;
+
+      &::after {
+        content: ", ";
+      }
+    }
+    .keyword-button:first-child {
+      &::before {
+        content: "";
+      }
+    }
+    .keyword-button:last-child {
+      &::after {
+        content: "";
+      }
+    }
+    &::after {
+      content: "]";
+    }
+    &::before {
+      content: "[";
+    }
+  }
+}

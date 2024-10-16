@@ -26,6 +26,7 @@ import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { AddCard } from "./Icons/AddCard";
 import "./style.less";
+import { FullCustomCardDisplay } from "./Components/FullCustom/CardDisplay";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
@@ -175,7 +176,7 @@ function App() {
           return [];
         }
       }
-
+      console.log(selectedFaction);
       filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
@@ -594,6 +595,7 @@ function App() {
                 )}
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+                {activeCard?.source === "fullcustom" && <FullCustomCardDisplay />}
               </Row>
               <Row style={{ overflow: "hidden", justifyContent: "center" }}>
                 <Col

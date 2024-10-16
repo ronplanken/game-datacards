@@ -23,7 +23,7 @@ export const UnitPoints = ({ points }) => {
                     .map((point, index) => {
                       return (
                         <tr className="points" key={`points-${index}-${point.model}`}>
-                          <td>{`${point.models}`}</td>
+                          <td>{`${point.models}${point.keyword ? ` (${point.keyword})` : ""}`}</td>
                           <td>{`${point.cost} pts`}</td>
                         </tr>
                       );
