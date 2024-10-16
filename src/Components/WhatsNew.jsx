@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.9.0
+                Whats new in 2.9.1
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,24 +56,15 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Agents of the Imperium</strong>
+                          <strong>Updated to latest datasources</strong>
                           <br />
-                          The new Agents of the Imperium faction is now available for 10th edition.
+                          All the latest changes are now available!
                         </li>
                         <li>
-                          <strong>New Combat Patrols</strong>
+                          <strong>Points values with multiple keywords</strong>
                           <br />
-                          New Combat patrols have been added.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={4}>Removed</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Deathwatch</strong>
-                          <br />
-                          The Deatchwatch faction has been removed from 10th edition.
+                          If a points value is used with a certain keyword (such as Agents of the Imperium) it will now
+                          be displayed using the specific keyword.
                         </li>
                       </ul>
                     </Typography.Paragraph>

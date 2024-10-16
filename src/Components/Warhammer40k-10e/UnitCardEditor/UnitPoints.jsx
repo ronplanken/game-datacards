@@ -93,6 +93,19 @@ export function UnitPoints() {
                                     }}
                                   />
                                 </Form.Item>
+                                <Form.Item label={"Keyword"}>
+                                  <Input
+                                    type={"text"}
+                                    value={point.keyword}
+                                    onChange={(e) => {
+                                      updateActiveCard(() => {
+                                        const newPoints = [...activeCard.points];
+                                        newPoints[index]["keyword"] = e.target.value;
+                                        return { ...activeCard, points: newPoints };
+                                      });
+                                    }}
+                                  />
+                                </Form.Item>
                               </Form>
                             )}
                           </Card>
