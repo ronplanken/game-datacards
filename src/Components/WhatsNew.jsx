@@ -45,26 +45,20 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.9.1
+                Whats new in 2.9.2
               </h1>
             </div>
             <div className="welcome-cover">
               <>
                 <Row style={{ padding: "16px" }} className="whatsnew-content">
                   <Col>
-                    <Typography.Title level={4}>Features</Typography.Title>
+                    <Typography.Title level={4}>Fixed</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Updated to latest datasources</strong>
+                          <strong>Necromunda fonts</strong>
                           <br />
-                          All the latest changes are now available!
-                        </li>
-                        <li>
-                          <strong>Points values with multiple keywords</strong>
-                          <br />
-                          If a points value is used with a certain keyword (such as Agents of the Imperium) it will now
-                          be displayed using the specific keyword.
+                          Fonts for Necromunda are now included and working in the image export
                         </li>
                       </ul>
                     </Typography.Paragraph>
