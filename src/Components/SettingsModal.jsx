@@ -401,6 +401,25 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.9.1"} key={"2.9.1"}>
+                    <b> 18-10-2024 </b>
+                    <Typography.Title level={4}>Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Updated to latest datasources</strong>
+                          <br />
+                          All the latest changes are now available!
+                        </li>
+                        <li>
+                          <strong>Points values with multiple keywords</strong>
+                          <br />
+                          If a points value is used with a certain keyword (such as Agents of the Imperium) it will now
+                          be displayed using the specific keyword.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.9.0"} key={"2.9.0"}>
                     <b> 16-10-2024 </b>
                     <Typography.Title level={4}>Features</Typography.Title>

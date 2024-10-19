@@ -1,283 +1,287 @@
 @import "./factions.less";
 
-.data-necromunda .ganger {
-  .page {
-    padding: 8px;
-    border-radius: 16px;
-    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-background.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-  }
-  .card {
-    height: 75mm;
-    width: 110mm;
-  }
-  .large {
-    height: 90mm;
-    width: 130mm;
-  }
-  .header {
-    padding: 10px;
-    height: 48px;
-    border-top-left-radius: 8px;
-    background-color: #ffffff88;
-
-    .name {
-      font-size: 20px;
-      font-family: "Passion One", cursive;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .type {
-      font-size: 16px;
-      font-family: "Passion One", cursive;
-      letter-spacing: 1px;
-      margin-left: 8px;
-    }
-  }
-
-  .cost {
-    top: -4px;
-    position: relative;
-    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-gear.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    height: 50px;
-    width: 50px;
-    border-radius: 50px;
-    text-align: center;
-    padding-top: 8px;
-    font-family: "Passion One", cursive;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .cost::after {
-    position: absolute;
-    width: 100%;
-    content: "CREDITS";
-    font-size: 9px;
-    text-align: center;
-    left: 0;
-    bottom: 10px;
-  }
-  .divider {
-    margin-top: 6px;
-  }
-  .wargear {
-    display: grid;
-    grid-template-columns: 2fr 10fr;
-    column-gap: 4px;
-    font-size: 10px;
-    margin-top: 2px;
-
-    .title {
-      padding-left: 4px;
-      background-color: #ffffff88;
-      text-transform: uppercase;
-    }
-    .options {
-      padding-left: 4px;
-      background-color: #ffffff88;
-    }
-    p {
-      margin-bottom: 0px;
-    }
-  }
-  .rules {
-    display: grid;
-    grid-template-columns: 2fr 10fr;
-    column-gap: 4px;
-    font-size: 10px;
-    margin-top: 2px;
-
-    .title {
-      padding-left: 4px;
-      background-color: #ffffff88;
-      text-transform: uppercase;
-    }
-    .options {
-      padding-left: 4px;
-      background-color: #ffffff88;
-    }
-    p {
-      margin-bottom: 0px;
-    }
-  }
-  .abilities {
-    display: grid;
-    grid-template-columns: 2fr 10fr;
-    column-gap: 4px;
-    font-size: 10px;
-    margin-top: 2px;
-
-    .title {
-      padding-left: 4px;
-      background-color: #ffffff88;
-      text-transform: uppercase;
-    }
-    .options {
-      padding-left: 4px;
-      background-color: #ffffff88;
-    }
-    p {
-      margin-bottom: 0px;
-    }
-  }
-
-  .weapons {
-    .legend {
-      display: grid;
-      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
-      column-gap: 2px;
-      font-size: 10px;
-      font-weight: 600;
-      padding-right: 2px;
-
-      margin-top: 6px;
-
-      div {
-        text-align: center;
-      }
-
-      :nth-child(1) {
-        text-align: left;
-        padding-left: 4px;
-        border-right: 1px solid black;
-      }
-      :nth-child(3) {
-        border-right: 1px solid black;
-      }
-      :nth-child(5) {
-        border-right: 1px solid black;
-      }
-      :last-child {
-        text-align: left;
-        border-left: 1px solid black;
-        padding-left: 4px;
-      }
-    }
-    .line {
-      display: grid;
-      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
-      column-gap: 2px;
-      font-size: 10px;
-      padding-right: 2px;
-      padding-top: 2px;
-
-      div {
-        background-color: #ffffffaa;
-        text-align: center;
-      }
-
-      :nth-child(1) {
-        text-align: left;
-        border-right: 1px solid black;
-        padding-right: 8px;
-        padding-left: 4px;
-      }
-      :nth-child(3) {
-        border-right: 1px solid black;
-      }
-      :nth-child(5) {
-        border-right: 1px solid black;
-      }
-      :last-child {
-        text-align: left;
-        border-left: 1px solid black;
-        padding-left: 4px;
-      }
-    }
-  }
-
-  .datasheet {
-    .legend {
-      display: grid;
-      grid-template-columns: 8fr 5fr;
-      border-bottom: 2px solid #a05236;
-      font-size: 11px;
-
-      .stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-        column-gap: 2px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        color: darkred;
-        font-weight: 600;
-        padding-right: 2px;
-      }
-
-      .data {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-        column-gap: 2px;
-        text-align: center;
-        padding-left: 4px;
-        padding-right: 4px;
-        color: darkred;
-        font-weight: 600;
-        background-color: #c2ada399;
-      }
-    }
-    .line {
-      display: grid;
-      grid-template-columns: 8fr 5fr;
-      font-size: 11px;
-
-      .data {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-        column-gap: 2px;
-        text-align: center;
-        background-color: #c2ada399;
-        padding-right: 4px;
-        padding-left: 4px;
-        padding-top: 4px;
-        padding-bottom: 4px;
-
-        div {
-          background-color: #ffffffaa;
-        }
-      }
-
-      .stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-        column-gap: 2px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        padding-right: 2px;
-        padding-top: 4px;
-        padding-bottom: 4px;
-
-        div {
-          background-color: #ffffffaa;
-        }
-      }
-    }
-  }
-}
 .data-necromunda {
-  .stratagem {
-    .card {
-      position: relative;
-      height: 410px;
-      width: 295px;
-      background-color: #d0d0d0;
-      padding: 8px;
-    }
-    .frame {
-      display: block;
-      height: 100%;
-      width: 100%;
-      background: black;
-      border-radius: 13.5px;
-      background-color: #e2e2dd;
-      overflow: hidden;
+  --necromunda-font-family: -apple-system, BlinkMacSystemFont, "PassionOne", "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 
-      each(@factions, {
+  .ganger {
+    ö .page {
+      padding: 8px;
+      border-radius: 16px;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-background.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+    }
+    .card {
+      height: 75mm;
+      width: 110mm;
+    }
+    .large {
+      height: 90mm;
+      width: 130mm;
+    }
+    .header {
+      padding: 10px;
+      height: 48px;
+      border-top-left-radius: 8px;
+      background-color: #ffffff88;
+
+      .name {
+        font-size: 20px;
+        font-family: var(--necromunda-font-family);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .type {
+        font-size: 16px;
+        font-family: var(--necromunda-font-family);
+        letter-spacing: 1px;
+        margin-left: 8px;
+      }
+    }
+
+    .cost {
+      top: -4px;
+      position: relative;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-gear.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      height: 50px;
+      width: 50px;
+      border-radius: 50px;
+      text-align: center;
+      padding-top: 8px;
+      font-family: var(--necromunda-font-family);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .cost::after {
+      position: absolute;
+      width: 100%;
+      content: "CREDITS";
+      font-size: 9px;
+      text-align: center;
+      left: 0;
+      bottom: 10px;
+    }
+    .divider {
+      margin-top: 6px;
+    }
+    .wargear {
+      display: grid;
+      grid-template-columns: 2fr 10fr;
+      column-gap: 4px;
+      font-size: 10px;
+      margin-top: 2px;
+
+      .title {
+        padding-left: 4px;
+        background-color: #ffffff88;
+        text-transform: uppercase;
+      }
+      .options {
+        padding-left: 4px;
+        background-color: #ffffff88;
+      }
+      p {
+        margin-bottom: 0px;
+      }
+    }
+    .rules {
+      display: grid;
+      grid-template-columns: 2fr 10fr;
+      column-gap: 4px;
+      font-size: 10px;
+      margin-top: 2px;
+
+      .title {
+        padding-left: 4px;
+        background-color: #ffffff88;
+        text-transform: uppercase;
+      }
+      .options {
+        padding-left: 4px;
+        background-color: #ffffff88;
+      }
+      p {
+        margin-bottom: 0px;
+      }
+    }
+    .abilities {
+      display: grid;
+      grid-template-columns: 2fr 10fr;
+      column-gap: 4px;
+      font-size: 10px;
+      margin-top: 2px;
+
+      .title {
+        padding-left: 4px;
+        background-color: #ffffff88;
+        text-transform: uppercase;
+      }
+      .options {
+        padding-left: 4px;
+        background-color: #ffffff88;
+      }
+      p {
+        margin-bottom: 0px;
+      }
+    }
+
+    .weapons {
+      .legend {
+        display: grid;
+        grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
+        column-gap: 2px;
+        font-size: 10px;
+        font-weight: 600;
+        padding-right: 2px;
+
+        margin-top: 6px;
+
+        div {
+          text-align: center;
+        }
+
+        :nth-child(1) {
+          text-align: left;
+          padding-left: 4px;
+          border-right: 1px solid black;
+        }
+        :nth-child(3) {
+          border-right: 1px solid black;
+        }
+        :nth-child(5) {
+          border-right: 1px solid black;
+        }
+        :last-child {
+          text-align: left;
+          border-left: 1px solid black;
+          padding-left: 4px;
+        }
+      }
+      .line {
+        display: grid;
+        grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
+        column-gap: 2px;
+        font-size: 10px;
+        padding-right: 2px;
+        padding-top: 2px;
+
+        div {
+          background-color: #ffffffaa;
+          text-align: center;
+        }
+
+        :nth-child(1) {
+          text-align: left;
+          border-right: 1px solid black;
+          padding-right: 8px;
+          padding-left: 4px;
+        }
+        :nth-child(3) {
+          border-right: 1px solid black;
+        }
+        :nth-child(5) {
+          border-right: 1px solid black;
+        }
+        :last-child {
+          text-align: left;
+          border-left: 1px solid black;
+          padding-left: 4px;
+        }
+      }
+    }
+
+    .datasheet {
+      .legend {
+        display: grid;
+        grid-template-columns: 8fr 5fr;
+        border-bottom: 2px solid #a05236;
+        font-size: 11px;
+
+        .stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          color: darkred;
+          font-weight: 600;
+          padding-right: 2px;
+        }
+
+        .data {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          padding-left: 4px;
+          padding-right: 4px;
+          color: darkred;
+          font-weight: 600;
+          background-color: #c2ada399;
+        }
+      }
+      .line {
+        display: grid;
+        grid-template-columns: 8fr 5fr;
+        font-size: 11px;
+
+        .data {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          background-color: #c2ada399;
+          padding-right: 4px;
+          padding-left: 4px;
+          padding-top: 4px;
+          padding-bottom: 4px;
+
+          div {
+            background-color: #ffffffaa;
+          }
+        }
+
+        .stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          padding-right: 2px;
+          padding-top: 4px;
+          padding-bottom: 4px;
+
+          div {
+            background-color: #ffffffaa;
+          }
+        }
+      }
+    }
+  }
+  .data-necromunda {
+    .stratagem {
+      .card {
+        position: relative;
+        height: 410px;
+        width: 295px;
+        background-color: #d0d0d0;
+        padding: 8px;
+      }
+      .frame {
+        display: block;
+        height: 100%;
+        width: 100%;
+        background: black;
+        border-radius: 13.5px;
+        background-color: #e2e2dd;
+        overflow: hidden;
+
+        each(@factions, {
         .@{value}::before {
           content: " ";
           display: block;
@@ -295,415 +299,416 @@
         }
       });
 
-      .AM::before {
-        content: " ";
-        display: block;
-        position: absolute;
-        left: 0;
-        top: 55%;
-        width: 100%;
-        transform: translateY(-75px);
-        height: 85px;
-        opacity: 0.1;
-        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
-        background-repeat: no-repeat;
-        background-size: contain;
-        background-position: center;
+        .AM::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 55%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 85px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+        .necromunda::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 45%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 175px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/necromunda.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+        .basic::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
       }
-      .necromunda::before {
-        content: " ";
-        display: block;
+      .stratagem_footer {
+        border-top: 2px solid #000;
         position: absolute;
+        text-transform: uppercase;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+        bottom: 16px;
+        text-align: center;
+        padding-left: 15px;
+        padding-right: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 4.5em;
+        background: #e2e2dd;
+        z-index: 10;
+        margin-left: 15px;
+        margin-right: 15px;
+        margin-bottom: 4px;
+        width: calc(100% - 30px);
         left: 0;
-        top: 45%;
-        width: 100%;
-        transform: translateY(-75px);
-        height: 175px;
-        opacity: 0.1;
-        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/necromunda.svg");
-        background-repeat: no-repeat;
-        background-size: contain;
-        background-position: center;
       }
-      .basic::before {
-        content: " ";
+
+      .stratagem_header {
         display: block;
-        position: absolute;
-        left: 0;
-        top: 50%;
-        width: 100%;
-        transform: translateY(-75px);
-        height: 150px;
-        opacity: 0.1;
-        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
-        background-repeat: no-repeat;
-        background-size: contain;
-        background-position: center;
+        height: auto;
+        margin: 0 8px;
+      }
+
+      .stratagem_type {
+        font-family: "Heebo", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        border-bottom: 2px solid #000;
+        text-transform: uppercase;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .stratagem_name {
+        font-family: "Heebo", sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        text-align: center;
+        margin-top: 8px;
+      }
+
+      .stratagem_description {
+        margin: 8px 8px;
+        margin-top: 16px;
+        padding: 0 4px;
+        vertical-align: middle;
+        font-family: "Heebo", sans-serif;
+        font-size: 13px;
+        text-align: justify;
+        letter-spacing: 0px;
+        line-height: 14px;
       }
     }
-    .stratagem_footer {
-      border-top: 2px solid #000;
+  }
+  .data-necromunda .vehicle {
+    .page {
+      padding: 8px;
+      border-radius: 16px;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-background.jpg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    .card {
+      height: 75mm;
+      width: 110mm;
+    }
+    .large {
+      height: 90mm;
+      width: 130mm;
+    }
+    .header {
+      padding: 10px;
+      height: 48px;
+      border-top-left-radius: 8px;
+      background-color: #ffffff88;
+
+      .name {
+        font-size: 20px;
+        font-family: var(--necromunda-font-family);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .type {
+        font-size: 16px;
+        font-family: var(--necromunda-font-family);
+        letter-spacing: 1px;
+        margin-left: 8px;
+      }
+    }
+
+    .cost {
+      top: -4px;
+      position: relative;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-gear.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+      height: 50px;
+      width: 50px;
+      border-radius: 50px;
+      text-align: center;
+      padding-top: 8px;
+      font-family: var(--necromunda-font-family);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .cost::after {
       position: absolute;
-      text-transform: uppercase;
-      font-size: 16px;
-      font-weight: 700;
+      width: 100%;
+      content: "CREDITS";
+      font-size: 9px;
       text-align: center;
-      bottom: 16px;
-      text-align: center;
-      padding-left: 15px;
-      padding-right: 15px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-height: 4.5em;
-      background: #e2e2dd;
-      z-index: 10;
-      margin-left: 15px;
-      margin-right: 15px;
-      margin-bottom: 4px;
-      width: calc(100% - 30px);
       left: 0;
+      bottom: 10px;
     }
-
-    .stratagem_header {
-      display: block;
-      height: auto;
-      margin: 0 8px;
-    }
-
-    .stratagem_type {
-      font-family: "Heebo", sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      border-bottom: 2px solid #000;
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: 8px;
-    }
-    .stratagem_name {
-      font-family: "Heebo", sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      text-transform: uppercase;
-      text-align: center;
-      margin-top: 8px;
-    }
-
-    .stratagem_description {
-      margin: 8px 8px;
-      margin-top: 16px;
-      padding: 0 4px;
-      vertical-align: middle;
-      font-family: "Heebo", sans-serif;
-      font-size: 13px;
-      text-align: justify;
-      letter-spacing: 0px;
-      line-height: 14px;
-    }
-  }
-}
-.data-necromunda .vehicle {
-  .page {
-    padding: 8px;
-    border-radius: 16px;
-    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-background.jpg");
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-  }
-  .card {
-    height: 75mm;
-    width: 110mm;
-  }
-  .large {
-    height: 90mm;
-    width: 130mm;
-  }
-  .header {
-    padding: 10px;
-    height: 48px;
-    border-top-left-radius: 8px;
-    background-color: #ffffff88;
-
-    .name {
-      font-size: 20px;
-      font-family: "Passion One", cursive;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .type {
-      font-size: 16px;
-      font-family: "Passion One", cursive;
-      letter-spacing: 1px;
-      margin-left: 8px;
-    }
-  }
-
-  .cost {
-    top: -4px;
-    position: relative;
-    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/necromunda-gear.png");
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    height: 50px;
-    width: 50px;
-    border-radius: 50px;
-    text-align: center;
-    padding-top: 8px;
-    font-family: "Passion One", cursive;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .cost::after {
-    position: absolute;
-    width: 100%;
-    content: "CREDITS";
-    font-size: 9px;
-    text-align: center;
-    left: 0;
-    bottom: 10px;
-  }
-  .divider {
-    margin-top: 6px;
-  }
-  .wargear {
-    display: grid;
-    grid-template-columns: 2fr 10fr;
-    column-gap: 4px;
-    font-size: 10px;
-    margin-top: 8px;
-
-    p {
-      margin-bottom: 0px;
-    }
-    .title {
-      padding-left: 4px;
-      background-color: #ffffff88;
-      text-transform: uppercase;
-    }
-    .options {
-      padding-left: 4px;
-      background-color: #ffffff88;
-    }
-  }
-  .rules {
-    display: grid;
-    grid-template-columns: 2fr 10fr;
-    column-gap: 4px;
-    font-size: 10px;
-    margin-top: 2px;
-    p {
-      margin-bottom: 0px;
-    }
-    .title {
-      padding-left: 4px;
-      background-color: #ffffff88;
-      text-transform: uppercase;
-    }
-    .options {
-      padding-left: 4px;
-      background-color: #ffffff88;
-    }
-  }
-  .abilities {
-    display: grid;
-    grid-template-columns: 2fr 10fr;
-    column-gap: 4px;
-    font-size: 10px;
-    margin-top: 2px;
-    p {
-      margin-bottom: 0px;
-    }
-    .title {
-      padding-left: 4px;
-      background-color: #ffffff88;
-      text-transform: uppercase;
-    }
-    .options {
-      padding-left: 4px;
-      background-color: #ffffff88;
-    }
-  }
-
-  .weapons {
-    .legend {
-      display: grid;
-      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
-      column-gap: 2px;
-      font-size: 10px;
-      font-weight: 600;
-      padding-right: 2px;
-
+    .divider {
       margin-top: 6px;
-
-      div {
-        text-align: center;
-      }
-
-      :nth-child(1) {
-        text-align: left;
-        padding-left: 4px;
-        border-right: 1px solid black;
-      }
-      :nth-child(3) {
-        border-right: 1px solid black;
-      }
-      :nth-child(5) {
-        border-right: 1px solid black;
-      }
-      :last-child {
-        text-align: left;
-        border-left: 1px solid black;
-        padding-left: 4px;
-      }
     }
-    .line {
+    .wargear {
       display: grid;
-      grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
-      column-gap: 2px;
+      grid-template-columns: 2fr 10fr;
+      column-gap: 4px;
       font-size: 10px;
-      padding-right: 2px;
-      padding-top: 2px;
+      margin-top: 8px;
 
-      div {
-        background-color: #ffffffaa;
-        text-align: center;
+      p {
+        margin-bottom: 0px;
       }
-
-      :nth-child(1) {
-        text-align: left;
-        border-right: 1px solid black;
-        padding-right: 8px;
+      .title {
         padding-left: 4px;
+        background-color: #ffffff88;
+        text-transform: uppercase;
       }
-      :nth-child(3) {
-        border-right: 1px solid black;
-      }
-      :nth-child(5) {
-        border-right: 1px solid black;
-      }
-      :last-child {
-        text-align: left;
-        border-left: 1px solid black;
+      .options {
         padding-left: 4px;
+        background-color: #ffffff88;
       }
     }
-  }
-
-  .datasheet {
-    .categories {
+    .rules {
       display: grid;
-      grid-template-columns: 1fr 6fr 5fr;
+      grid-template-columns: 2fr 10fr;
+      column-gap: 4px;
       font-size: 10px;
-      height: 11px;
-
-      :nth-child(1) {
-        border-right: 2px solid #a05236;
+      margin-top: 2px;
+      p {
+        margin-bottom: 0px;
       }
-      :nth-child(2) {
-        text-align: center;
-        border-right: 2px solid #a05236;
+      .title {
+        padding-left: 4px;
+        background-color: #ffffff88;
+        text-transform: uppercase;
       }
-      :nth-child(3) {
-        text-align: center;
+      .options {
+        padding-left: 4px;
+        background-color: #ffffff88;
       }
     }
-    .legend {
+    .abilities {
       display: grid;
-      grid-template-columns: 1fr 3fr 3fr 5fr;
-      border-bottom: 2px solid #a05236;
-      font-size: 11px;
+      grid-template-columns: 2fr 10fr;
+      column-gap: 4px;
+      font-size: 10px;
+      margin-top: 2px;
+      p {
+        margin-bottom: 0px;
+      }
+      .title {
+        padding-left: 4px;
+        background-color: #ffffff88;
+        text-transform: uppercase;
+      }
+      .options {
+        padding-left: 4px;
+        background-color: #ffffff88;
+      }
+    }
 
-      .movement {
+    .weapons {
+      .legend {
         display: grid;
-        grid-template-columns: 1fr;
-        column-gap: 8px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        color: darkred;
+        grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
+        column-gap: 2px;
+        font-size: 10px;
         font-weight: 600;
         padding-right: 2px;
+
+        margin-top: 6px;
+
+        div {
+          text-align: center;
+        }
+
+        :nth-child(1) {
+          text-align: left;
+          padding-left: 4px;
+          border-right: 1px solid black;
+        }
+        :nth-child(3) {
+          border-right: 1px solid black;
+        }
+        :nth-child(5) {
+          border-right: 1px solid black;
+        }
+        :last-child {
+          text-align: left;
+          border-left: 1px solid black;
+          padding-left: 4px;
+        }
       }
-      .toughness {
+      .line {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 5fr;
         column-gap: 2px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        color: darkred;
-        font-weight: 600;
-        font-size: 9px;
+        font-size: 10px;
         padding-right: 2px;
         padding-top: 2px;
-      }
-      .stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        column-gap: 8px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        color: darkred;
-        font-weight: 600;
-        padding-right: 2px;
-      }
 
-      .crew {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-        column-gap: 8px;
-        text-align: center;
-        padding-left: 4px;
-        padding-right: 4px;
-        color: darkred;
-        font-weight: 600;
-        background-color: #c2ada399;
+        div {
+          background-color: #ffffffaa;
+          text-align: center;
+        }
+
+        :nth-child(1) {
+          text-align: left;
+          border-right: 1px solid black;
+          padding-right: 8px;
+          padding-left: 4px;
+        }
+        :nth-child(3) {
+          border-right: 1px solid black;
+        }
+        :nth-child(5) {
+          border-right: 1px solid black;
+        }
+        :last-child {
+          text-align: left;
+          border-left: 1px solid black;
+          padding-left: 4px;
+        }
       }
     }
-    .line {
-      display: grid;
-      grid-template-columns: 1fr 3fr 3fr 5fr;
-      font-size: 11px;
 
-      div {
-        background-color: #ffffff66;
-        text-align: center;
-      }
+    .datasheet {
+      .categories {
+        display: grid;
+        grid-template-columns: 1fr 6fr 5fr;
+        font-size: 10px;
+        height: 11px;
 
-      .movement {
-        display: grid;
-        grid-template-columns: 1fr;
-        column-gap: 2px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        padding-right: 2px;
+        :nth-child(1) {
+          border-right: 2px solid #a05236;
+        }
+        :nth-child(2) {
+          text-align: center;
+          border-right: 2px solid #a05236;
+        }
+        :nth-child(3) {
+          text-align: center;
+        }
       }
-      .toughness {
+      .legend {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        column-gap: 2px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        padding-right: 2px;
-      }
-      .stats {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        column-gap: 2px;
-        text-align: center;
-        border-right: 2px solid #a05236;
-        padding-right: 2px;
-      }
+        grid-template-columns: 1fr 3fr 3fr 5fr;
+        border-bottom: 2px solid #a05236;
+        font-size: 11px;
 
-      .crew {
+        .movement {
+          display: grid;
+          grid-template-columns: 1fr;
+          column-gap: 8px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          color: darkred;
+          font-weight: 600;
+          padding-right: 2px;
+        }
+        .toughness {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          color: darkred;
+          font-weight: 600;
+          font-size: 9px;
+          padding-right: 2px;
+          padding-top: 2px;
+        }
+        .stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          column-gap: 8px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          color: darkred;
+          font-weight: 600;
+          padding-right: 2px;
+        }
+
+        .crew {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+          column-gap: 8px;
+          text-align: center;
+          padding-left: 4px;
+          padding-right: 4px;
+          color: darkred;
+          font-weight: 600;
+          background-color: #c2ada399;
+        }
+      }
+      .line {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-        column-gap: 2px;
-        text-align: center;
-        padding-left: 4px;
-        padding-right: 4px;
+        grid-template-columns: 1fr 3fr 3fr 5fr;
+        font-size: 11px;
+
+        div {
+          background-color: #ffffff66;
+          text-align: center;
+        }
+
+        .movement {
+          display: grid;
+          grid-template-columns: 1fr;
+          column-gap: 2px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          padding-right: 2px;
+        }
+        .toughness {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          padding-right: 2px;
+        }
+        .stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          border-right: 2px solid #a05236;
+          padding-right: 2px;
+        }
+
+        .crew {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+          column-gap: 2px;
+          text-align: center;
+          padding-left: 4px;
+          padding-right: 4px;
+        }
       }
     }
   }
