@@ -174,4 +174,4 @@ const generateModelWargear = (model) => {
   return wargear;
 };
 
-export { extractDatasheet, generateDatasheets, generateAbilities, generateModelWargear };
+export { extractDatasheet, generateUnits, generateAbilities, generateModelWargear };

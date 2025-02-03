@@ -15,8 +15,7 @@ export const UnitWeapon = ({ weapon }) => {
           <div
             className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
             key={`weapon-line-${index}`}
-            data-name={line.name}
-          >
+            data-name={line.name}>
             <div className="line">
               <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
                 <span>{line.name}</span>

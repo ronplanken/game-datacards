@@ -4,7 +4,6 @@
     margin-right: 0px;
     margin-top: 0px;
     margin-bottom: 0px;
-
   }
 
   body {
@@ -20,12 +19,13 @@
   .print-page {
     display: flex;
     flex-wrap: wrap;
-    background-color: #FFF;
+    background-color: #fff;
     page-break-after: always;
     overflow: hidden;
   }
 
-  .print-content {}
+  .print-content {
+  }
 
   .print-page:last-child {
     page-break-after: avoid;
@@ -36,7 +36,7 @@
   }
 
   .ant-layout {
-    background-color: #FFF;
+    background-color: #fff;
   }
 }
 
@@ -50,7 +50,6 @@
     transform-origin: top left;
     box-shadow: 3px 3px 8px 0 rgba(0, 0, 0, 0.75);
     page-break-after: always;
-
   }
 
   .print-content {
@@ -154,7 +153,7 @@
   overflow: hidden;
 }
 
-.tree-item-container.selected>.tree-item {
+.tree-item-container.selected > .tree-item {
   width: 100%;
   padding-left: 4px;
 }

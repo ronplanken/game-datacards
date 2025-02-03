@@ -16,11 +16,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
         justifyItems: "center",
         display: "flex",
       }}>
-      <div
-        className={`unit front`}
-        data-name={unit.name}
-        data-fullname={`${unit.name} ${unit.subname}`}
-      >
+      <div className={`unit front`} data-name={unit.name} data-fullname={`${unit.name} ${unit.subname}`}>
         <div className={"header"}>
           <UnitName
             name={unit.name}

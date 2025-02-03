@@ -33,6 +33,5 @@ export const ServiceMessagesProvider = (props) => {
     }
   });
 
-
   return <ServiceMessagesContext.Provider value={context}>{props.children}</ServiceMessagesContext.Provider>;
 };
