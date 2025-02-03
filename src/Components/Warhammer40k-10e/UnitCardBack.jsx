@@ -14,7 +14,11 @@ export const UnitCardBack = ({ unit, cardStyle, paddingTop = "32px", className }
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`unit`}>
+      <div
+        className={`unit back`}
+        data-name={unit.name}
+        data-fullname={`${unit.name} ${unit.subname}`}
+      >
         <div className={"header back"}>
           <UnitName name={unit.name} subname={unit.subname} />
         </div>
