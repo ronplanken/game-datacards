@@ -12,7 +12,11 @@ export const UnitWeapon = ({ weapon }) => {
       {weapon.profiles
         ?.filter((line) => line.active)
         ?.map((line, index, profiles) => (
-          <div className={`${profiles.length > 1 && "multi-line"} weapon`} key={`weapon-line-${index}`}>
+          <div
+            className={`${profiles.length > 1 && "multi-line"} weapon`}
+            key={`weapon-line-${index}`}
+            data-name={line.name}
+          >
             <div className="line">
               <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
                 <span>{line.name}</span>
