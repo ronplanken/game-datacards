@@ -1,21 +1,23 @@
 {
   "files": {
-    "main.css": "/static/css/main.6c13fe17.css",
-    "main.js": "/static/js/main.3f40d42f.js",
+    "main.css": "/static/css/main.5773b73d.css",
+    "main.js": "/static/js/main.ef8503e2.js",
     "static/js/787.7fac9dc2.chunk.js": "/static/js/787.7fac9dc2.chunk.js",
     "static/media/Conduit ITC Regular.otf": "/static/media/Conduit ITC Regular.680338878461b073eabc.otf",
     "static/media/Conduit ITC Bold.otf": "/static/media/Conduit ITC Bold.91ce84b04c6096513f5d.otf",
     "static/media/Conduit ITC Italic.otf": "/static/media/Conduit ITC Italic.bc98e3abfdae528710b5.otf",
     "static/media/wizard06.png": "/static/media/wizard06.e2d009ac01ce715ce288.png",
     "static/media/wizard03.png": "/static/media/wizard03.b1087efc936e1a45fafb.png",
+    "static/media/PassionOne-Regular.ttf": "/static/media/PassionOne-Regular.9c9b8a782e5c499ad7cb.ttf",
+    "static/media/PassionOne-Bold.ttf": "/static/media/PassionOne-Bold.6cbab5ccd7e564c52036.ttf",
     "static/media/wizard04.png": "/static/media/wizard04.fdbd9ef4a40c26782d34.png",
     "index.html": "/index.html",
-    "main.6c13fe17.css.map": "/static/css/main.6c13fe17.css.map",
-    "main.3f40d42f.js.map": "/static/js/main.3f40d42f.js.map",
+    "main.5773b73d.css.map": "/static/css/main.5773b73d.css.map",
+    "main.ef8503e2.js.map": "/static/js/main.ef8503e2.js.map",
     "787.7fac9dc2.chunk.js.map": "/static/js/787.7fac9dc2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.6c13fe17.css",
-    "static/js/main.3f40d42f.js"
+    "static/css/main.5773b73d.css",
+    "static/js/main.ef8503e2.js"
   ]
 }
