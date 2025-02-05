@@ -64,22 +64,23 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 className="button-bar mobile-icon-button"
                 onClick={() => setAddListvisible((val) => !val)}></Button>
             )}
-            {activeCard && settings.showCardsAsDoubleSided === false && (
-              <Button
-                icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
-                type="ghost"
-                size="large"
-                shape="round"
-                className="button-bar"
-                onClick={() => {
-                  setSide((current) => {
-                    if (current === "front") {
-                      return "back";
-                    }
-                    return "front";
-                  });
-                }}></Button>
-            )}
+            {activeCard &&
+              (settings.showCardsAsDoubleSided === false || settings.showCardsAsDoubleSided === undefined) && (
+                <Button
+                  icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
+                  type="ghost"
+                  size="large"
+                  shape="round"
+                  className="button-bar"
+                  onClick={() => {
+                    setSide((current) => {
+                      if (current === "front") {
+                        return "back";
+                      }
+                      return "front";
+                    });
+                  }}></Button>
+              )}
           </Space>
         </Col>
         <Col span={8}>

@@ -45,20 +45,43 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.9.2
+                Whats new in 2.9.3
               </h1>
             </div>
             <div className="welcome-cover">
               <>
                 <Row style={{ padding: "16px" }} className="whatsnew-content">
                   <Col>
+                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>html-data tags for external CSS</strong>
+                          <br />
+                          Thanks to ambre-m we have now added html-data tags to the Datacards that allow you to use
+                          custom CSS and finetune cards to your liking. Join us on Discord if you want an example or
+                          help!
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Updated</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Latest Coded support</strong>
+                          <br />
+                          We have updated to the latest Pointy-eared Codex!
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
                     <Typography.Title level={4}>Fixed</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Necromunda fonts</strong>
+                          <strong>Double Sided cards on Mobile</strong>
                           <br />
-                          Fonts for Necromunda are now included and working in the image export
+                          Somehow we missed that new users would not get the button to swap between front / back of
+                          mobile cards. That has now been fixed.
                         </li>
                       </ul>
                     </Typography.Paragraph>

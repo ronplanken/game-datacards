@@ -20,6 +20,7 @@ const defaultSettings = {
     customSize: { height: "15cm", width: "15cm" },
     verticalAlignment: "flex-start",
   },
+  showCardsAsDoubleSided: false,
 };
 
 export function useSettingsStorage() {
