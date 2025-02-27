@@ -36,181 +36,268 @@ export const TreeView = ({
   const [isLoading] = useState(false);
 
   /**
-   * Filters and formats data based on selected content type and search text
+   * Filters items based on search text
+   * @param {Array} items - Array of items to filter
+   * @param {string} searchText - Text to search for
+   * @returns {Array} - Filtered array
+   */
+  const filterBySearchText = (items, searchText) => {
+    if (!searchText) return items;
+
+    return items.filter((item) => {
+      // Always include category and header type items in search results
+      if (item.type === "category" || item.type === "header") {
+        return true;
+      }
+      return item.name.toLowerCase().includes(searchText.toLowerCase());
+    });
+  };
+
+  /**
+   * Handles 10e datasheets with advanced filtering and grouping
+   * @returns {Array} - Processed datasheets
+   */
+  const get10eDatasheets = () => {
+    if (!selectedFaction) return [];
+
+    try {
+      // Start with the base faction
+      let sheets = [
+        { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
+        ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+      ];
+
+      // Add parent faction sheets if needed
+      if (selectedFaction.is_subfaction && settings.combineParentFactions) {
+        const parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
+        if (parentFaction) {
+          const parentDatasheets = parentFaction?.datasheets
+            ?.filter((val) => val.factions.length === 1 && val.factions.includes(selectedFaction.parent_keyword))
+            .map((val) => ({ ...val, nonBase: true }));
+
+          sheets = [
+            ...sheets,
+            { type: "category", name: parentFaction.name, id: parentFaction.id, closed: true },
+            ...parentDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+          ];
+        }
+      }
+
+      // Filter out legends if setting is enabled
+      if (!settings?.showLegends) {
+        sheets = sheets?.filter((sheet) => !sheet.legends);
+      }
+
+      // Sort if not grouping by faction
+      if (!settings.groupByFaction) {
+        sheets = sheets?.toSorted((a, b) => a.name.localeCompare(b.name));
+      }
+
+      // Group by role if setting is enabled
+      if (settings.groupByRole) {
+        const types = ["Battleline", "Character", "Dedicated Transport"];
+        let byRole = [];
+
+        // Add each role type with its sheets
+        types.forEach((role) => {
+          byRole = [
+            ...byRole,
+            { type: "role", name: role },
+            ...sheets?.filter((sheet) => sheet?.keywords?.includes(role)).map((val) => ({ ...val, role: role })),
+          ];
+        });
+
+        // Add "Other" category for remaining sheets
+        byRole = [
+          ...byRole,
+          { type: "role", name: "Other" },
+          ...sheets
+            ?.filter((sheet) => {
+              return types.every((t) => !sheet?.keywords?.includes(t));
+            })
+            .map((val) => ({ ...val, role: "Other" })),
+        ];
+
+        sheets = byRole;
+      }
+
+      // Add allied faction sheets if needed
+      if (selectedFaction.allied_factions?.length > 0 && settings.combineAlliedFactions) {
+        selectedFaction.allied_factions.forEach((alliedFactionId) => {
+          const alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
+          if (alliedFaction) {
+            const alliedFactionDatasheets = alliedFaction?.datasheets.map((val) => ({
+              ...val,
+              nonBase: true,
+              allied: true,
+            }));
+
+            sheets = [
+              ...sheets,
+              { type: "allied", name: alliedFaction.name, id: alliedFaction.id, closed: true },
+              ...alliedFactionDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
+            ];
+          }
+        });
+      }
+
+      // Apply search filter
+      return filterBySearchText(sheets, searchText);
+    } catch (error) {
+      console.error("An error occurred processing 10e datasheets", error);
+      return [];
+    }
+  };
+
+  /**
+   * Handles standard datasheets with role-based grouping
+   * @returns {Array} - Processed datasheets
+   */
+  const getStandardDatasheets = () => {
+    if (!selectedFaction) return [];
+
+    let sheets = selectedFaction?.datasheets || [];
+
+    // Apply search filter
+    if (searchText) {
+      sheets = sheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()));
+    }
+
+    // Filter out legends if setting is enabled
+    if (!settings?.showLegends) {
+      sheets = sheets?.filter((sheet) => !sheet.legends);
+    }
+
+    // Group by role if setting enabled
+    if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
+      const types = [...new Set(sheets?.map((item) => item.role))];
+      let byRole = [];
+
+      types.forEach((role) => {
+        byRole = [...byRole, { type: "header", name: role }, ...sheets?.filter((sheet) => sheet.role === role)];
+      });
+
+      return byRole;
+    }
+
+    return sheets;
+  };
+
+  /**
+   * Processes stratagems with basic/faction grouping
+   * @returns {Array} - Processed stratagems
+   */
+  const getStratagems = () => {
+    if (!selectedFaction) return [];
+
+    // Filter out ignored subfactions
+    const filteredStratagems = selectedFaction?.stratagems.filter(
+      (stratagem) => !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id)
+    );
+
+    // Apply search filter
+    const mainStratagems = searchText
+      ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
+      : filteredStratagems;
+
+    // Return without basic stratagems if setting enabled
+    if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
+      return mainStratagems;
+    }
+
+    // Get basic stratagems
+    const basicStratagems = searchText
+      ? selectedFaction.basicStratagems?.filter((stratagem) =>
+          stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+      : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
+
+    // Combine with headers
+    return [
+      { type: "header", name: "Basic stratagems" },
+      ...basicStratagems,
+      { type: "header", name: "Faction stratagems" },
+      ...mainStratagems,
+    ];
+  };
+
+  /**
+   * Processes secondaries with basic/faction grouping
+   * @returns {Array} - Processed secondaries
+   */
+  const getSecondaries = () => {
+    if (!selectedFaction) return [];
+
+    // Filter out ignored subfactions
+    const filteredSecondaries = selectedFaction?.secondaries.filter(
+      (secondary) => !settings?.ignoredSubFactions?.includes(secondary.faction_id)
+    );
+
+    // Return without basic secondaries if setting enabled
+    if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
+      return filteredSecondaries;
+    }
+
+    // Get basic secondaries
+    const basicSecondaries = searchText
+      ? selectedFaction.basicSecondaries?.filter((secondary) =>
+          secondary.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+      : selectedFaction.basicSecondaries ?? [{ name: "Update your datasources" }];
+
+    // Combine with headers
+    return [
+      { type: "header", name: "Basic secondaries" },
+      ...basicSecondaries,
+      { type: "header", name: "Faction secondaries" },
+      ...filteredSecondaries,
+    ];
+  };
+
+  /**
+   * Processes psychic powers
+   * @returns {Array} - Processed psychic powers
+   */
+  const getPsychicPowers = () => {
+    if (!selectedFaction) return [];
+
+    // Filter out ignored subfactions
+    const filteredPowers = selectedFaction?.psychicpowers.filter(
+      (power) => !settings?.ignoredSubFactions?.includes(power.faction_id)
+    );
+
+    // Apply search filter
+    return searchText
+      ? filteredPowers?.filter((power) => power.name.toLowerCase().includes(searchText.toLowerCase()))
+      : filteredPowers;
+  };
+
+  /**
+   * Main function to retrieve and format data based on selected content type
    */
   const getDataSourceType = () => {
-    if (selectedContentType === "datasheets") {
-      let filteredSheets = [];
-      if (
-        selectedFaction &&
-        (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")
-      ) {
-        try {
-          filteredSheets = [
-            { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
-            ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-          ];
-          if (selectedFaction.is_subfaction && settings.combineParentFactions) {
-            let parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
-
-            let parentDatasheets = parentFaction?.datasheets
-              ?.filter((val) => val.factions.length === 1 && val.factions.includes(selectedFaction.parent_keyword))
-              .map((val) => {
-                return { ...val, nonBase: true };
-              });
-
-            filteredSheets = [
-              ...filteredSheets,
-              { type: "category", name: parentFaction.name, id: parentFaction.id, closed: true },
-              ...parentDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-            ];
-          }
-
-          if (!settings?.showLegends) {
-            filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
-          }
-          if (!settings.groupByFaction) {
-            filteredSheets = filteredSheets?.toSorted((a, b) => a.name.localeCompare(b.name));
-          }
-          if (settings.groupByRole) {
-            const types = ["Battleline", "Character", "Dedicated Transport"];
-            let byRole = [];
-
-            types.map((role) => {
-              byRole = [...byRole, { type: "role", name: role }];
-              byRole = [
-                ...byRole,
-                ...filteredSheets
-                  ?.filter((sheet) => sheet?.keywords?.includes(role))
-                  .map((val) => {
-                    return { ...val, role: role };
-                  }),
-              ];
-            });
-
-            byRole = [
-              ...byRole,
-              { type: "role", name: "Other" },
-              ...filteredSheets
-                ?.filter((sheet) => {
-                  return types.every((t) => !sheet?.keywords?.includes(t));
-                })
-                .map((val) => {
-                  return { ...val, role: "Other" };
-                }),
-            ];
-
-            filteredSheets = byRole;
-          }
-
-          if (
-            selectedFaction.allied_factions &&
-            selectedFaction.allied_factions.length > 0 &&
-            settings.combineAlliedFactions
-          ) {
-            selectedFaction.allied_factions.forEach((alliedFactionId) => {
-              let alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
-
-              let alliedFactionDatasheets = alliedFaction?.datasheets.map((val) => {
-                return { ...val, nonBase: true, allied: true };
-              });
-
-              filteredSheets = [
-                ...filteredSheets,
-                { type: "allied", name: alliedFaction.name, id: alliedFaction.id, closed: true },
-                ...alliedFactionDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-              ];
-            });
-          }
-          filteredSheets = searchText
-            ? filteredSheets.filter((sheet) => {
-                if (sheet.type === "category" || sheet.type === "header") {
-                  return true;
-                }
-                return sheet.name.toLowerCase().includes(searchText.toLowerCase());
-              })
-            : filteredSheets;
-
-          return filteredSheets;
-        } catch (error) {
-          console.error("An error occured", error);
-          return [];
+    switch (selectedContentType) {
+      case "datasheets":
+        // Use specialized handling for 10e datasheets
+        if (
+          selectedFaction &&
+          (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")
+        ) {
+          return get10eDatasheets();
         }
-      }
+        return getStandardDatasheets();
 
-      filteredSheets = searchText
-        ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
-        : selectedFaction?.datasheets;
-      if (!settings?.showLegends) {
-        filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
-      }
-      if (settings?.splitDatasheetsByRole && !settings?.noDatasheetOptions) {
-        const types = [...new Set(filteredSheets?.map((item) => item.role))];
-        let byRole = [];
-        types.map((role) => {
-          byRole = [...byRole, { type: "header", name: role }];
-          byRole = [...byRole, ...filteredSheets?.filter((sheet) => sheet.role === role)];
-        });
-        return byRole;
-      }
-      return filteredSheets;
-    }
-    if (selectedContentType === "stratagems") {
-      const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
-        return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
-      });
-      const mainStratagems = searchText
-        ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
-        : filteredStratagems;
+      case "stratagems":
+        return getStratagems();
 
-      if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
-        return mainStratagems;
-      } else {
-        const basicStratagems = searchText
-          ? selectedFaction.basicStratagems?.filter((stratagem) =>
-              stratagem.name.toLowerCase().includes(searchText.toLowerCase())
-            )
-          : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
+      case "secondaries":
+        return getSecondaries();
 
-        return [
-          { type: "header", name: "Basic stratagems" },
-          ...basicStratagems,
-          { type: "header", name: "Faction stratagems" },
-          ...mainStratagems,
-        ];
-      }
-    }
-    if (selectedContentType === "secondaries") {
-      if (selectedContentType === "secondaries") {
-        const filteredSecondaries = selectedFaction?.secondaries.filter((secondary) => {
-          return !settings?.ignoredSubFactions?.includes(secondary.faction_id);
-        });
-        if (settings.hideBasicSecondaries || settings?.noSecondaryOptions) {
-          return filteredSecondaries;
-        } else {
-          const basicSecondaries = searchText
-            ? selectedFaction.basicSecondaries?.filter((secondary) =>
-                secondary.name.toLowerCase().includes(searchText.toLowerCase())
-              )
-            : selectedFaction.basicSecondaries ?? [{ name: "Update your datasources" }];
+      case "psychicpowers":
+        return getPsychicPowers();
 
-          return [
-            { type: "header", name: "Basic secondaries" },
-            ...basicSecondaries,
-            { type: "header", name: "Faction secondaries" },
-            ...filteredSecondaries,
-          ];
-        }
-      }
-    }
-    if (selectedContentType === "psychicpowers") {
-      const filteredPowers = selectedFaction?.psychicpowers.filter((power) => {
-        return !settings?.ignoredSubFactions?.includes(power.faction_id);
-      });
-
-      return searchText
-        ? filteredPowers?.filter((power) => power.name.toLowerCase().includes(searchText.toLowerCase()))
-        : filteredPowers;
+      default:
+        return [];
     }
   };
 
