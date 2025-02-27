@@ -38,7 +38,7 @@ export const StratagemCard = ({
             </ReactFitty>
           </div>
           <div className="type">
-            <ReactFitty maxSize={10} minSize={8}>
+            <ReactFitty maxSize={10} minSize={4}>
               {stratagem.detachment} - {stratagem.type}
             </ReactFitty>
           </div>
