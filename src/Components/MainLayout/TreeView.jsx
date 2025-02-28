@@ -1,6 +1,7 @@
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import { Col, Divider, Input, List, Row, Select } from "antd";
 import classNames from "classnames";
+import clone from "just-clone";
 import React, { useState } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Panel, PanelResizeHandle } from "react-resizable-panels";
