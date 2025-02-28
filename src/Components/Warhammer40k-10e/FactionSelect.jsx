@@ -14,6 +14,7 @@ export const FactionSelect = ({ value, onChange }) => {
       <Option value="AM">Astra Militarum</Option>
       <Option value="AS">Adepta Sororitas</Option>
       <Option value="AdM">Adeptus Mechanicus</Option>
+      <Option value="AoI">Agents of the Imperium</Option>
       <Option value="CHBA">Blood Angels</Option>
       <Option value="LGBL">Black Legion</Option>
       <Option value="CHBT">Black Templar</Option>
