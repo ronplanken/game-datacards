@@ -7,7 +7,6 @@ const { Option } = Select;
 
 export function StratagemBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
-  console.log(activeCard);
   return (
     <Form>
       <Form.Item label={"Name"}>
