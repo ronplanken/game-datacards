@@ -361,6 +361,7 @@ export const Print = () => {
                       options={[
                         { label: "Front", value: "front" },
                         { label: "Back", value: "back" },
+                        { label: "Front & Back", value: "frontAndBack" },
                       ]}
                       size={"small"}
                     />
