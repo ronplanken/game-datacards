@@ -1,4 +1,4 @@
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Slider } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
@@ -7,7 +7,7 @@ const { Option } = Select;
 
 export function StratagemBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
-
+  console.log(activeCard);
   return (
     <Form>
       <Form.Item label={"Name"}>
@@ -51,6 +51,42 @@ export function StratagemBasicInfo() {
           type={"text"}
           value={activeCard.cost}
           onChange={(e) => updateActiveCard({ ...activeCard, cost: e.target.value })}
+        />
+      </Form.Item>
+      <Form.Item label={"Phases"}>
+        <Select
+          mode="multiple"
+          allowClear
+          style={{ width: "100%" }}
+          placeholder="Select a phase"
+          value={[...activeCard.phase]}
+          onChange={(val) => updateActiveCard({ ...activeCard, phase: val })}
+          options={[
+            {
+              label: "Any phase",
+              value: "any",
+            },
+            {
+              label: "Charge phase",
+              value: "charge",
+            },
+            {
+              label: "Fight phase",
+              value: "fight",
+            },
+            {
+              label: "Command phase",
+              value: "command",
+            },
+            {
+              label: "Movement phase",
+              value: "movement",
+            },
+            {
+              label: "Shooting phase",
+              value: "shooting",
+            },
+          ]}
         />
       </Form.Item>
     </Form>

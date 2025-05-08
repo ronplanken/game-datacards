@@ -1,6 +1,6 @@
 {
   "name": "game-datacards",
-  "version": "2.9.3",
+  "version": "2.10.0",
   "description": "The only tool you will ever need for your custom datacards",
   "private": false,
   "homepage": "https://game-datacards.eu",
@@ -52,6 +52,7 @@
     "remark-gfm": "^3.0.1",
     "remark-stringify": "^10.0.2",
     "string-width": "^5.1.2",
+    "styled-components": "^6.1.18",
     "timers-browserify": "^2.0.12",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
