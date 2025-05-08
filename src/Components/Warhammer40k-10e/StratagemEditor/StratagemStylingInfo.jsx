@@ -16,7 +16,7 @@ export function StratagemStylingInfo() {
           max={32}
           step={1}
           onChange={(val) => updateActiveCard({ ...activeCard, textSize: val })}
-          value={activeCard.textSize || "16"}></Slider>
+          value={activeCard.textSize || 16}></Slider>
       </Form.Item>
     </Form>
   );
