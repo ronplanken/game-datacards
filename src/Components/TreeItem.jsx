@@ -35,6 +35,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     removeCardFromCategory,
     addCardToCategory,
     saveCard,
+    saveActiveCard,
   } = useCardStorage();
   const cardIndex = `card-${card.uuid}`;
   const { dataSource } = useDataSourceStorage();
@@ -178,12 +179,12 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                   if (cardUpdated) {
                     confirm({
                       title: "You have unsaved changes",
-                      content: "Are you sure you want to discard your changes?",
+                      content: "Do you want to save before switching?",
                       icon: <ExclamationCircleOutlined />,
-                      okText: "Yes",
-                      okType: "danger",
-                      cancelText: "No",
+                      okText: "Save",
+                      cancelText: "Cancel",
                       onOk: () => {
+                        saveActiveCard();
                         onSelect();
                       },
                     });

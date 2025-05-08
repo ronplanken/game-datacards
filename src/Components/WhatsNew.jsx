@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.9.3
+                Whats new in 2.10.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,32 +56,39 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>html-data tags for external CSS</strong>
+                          <strong>Added external image option for 10e Unit Cards</strong>
                           <br />
-                          Thanks to ambre-m we have now added html-data tags to the Datacards that allow you to use
-                          custom CSS and finetune cards to your liking. Join us on Discord if you want an example or
-                          help!
+                          Based on our previous update, we added the option to add an external image to your 10e cards.
+                          This image has to be hosted on an external website and have a direct link to the image. You
+                          can add this image in the card editor.
+                        </li>
+                        <li>
+                          <strong>Text Size option for 10e Stratagem Cards</strong>
+                          <br />
+                          You can now manually set the text size for your stratagem cards. This is useful if you want to
+                          make sure the text fits on the card.
                         </li>
                       </ul>
                     </Typography.Paragraph>
-                    <Typography.Title level={4}>Updated</Typography.Title>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Latest Coded support</strong>
+                          <strong>Unsaved changes popup</strong>
                           <br />
-                          We have updated to the latest Pointy-eared Codex!
+                          We have changed the logic when the unsaved changes popup is shown. It will now give you the
+                          option to immediately save your changes and continue or cancel the action.
                         </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={4}>Fixed</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
                         <li>
-                          <strong>Double Sided cards on Mobile</strong>
+                          <strong>10e Stratagem Card type</strong>
                           <br />
-                          Somehow we missed that new users would not get the button to swap between front / back of
-                          mobile cards. That has now been fixed.
+                          The text size of a Stratagem Card&apos;s type will now auto scale based on the available
+                          space.
+                        </li>
+                        <li>
+                          <strong>Agents of the Imperium</strong>
+                          <br />
+                          Agents of the Imperium are now correctly displayed in the list of factions.
                         </li>
                       </ul>
                     </Typography.Paragraph>

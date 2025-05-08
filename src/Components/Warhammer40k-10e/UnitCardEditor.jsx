@@ -10,6 +10,7 @@ import { UnitPoints } from "./UnitCardEditor/UnitPoints";
 import { UnitPrimarchAbilities } from "./UnitCardEditor/UnitPrimarchAbilities";
 import { UnitStats } from "./UnitCardEditor/UnitStats";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
+import { UnitStylingInfo } from "./UnitCardEditor/UnitStylingInfo";
 
 const { Panel } = Collapse;
 
@@ -20,6 +21,9 @@ export const UnitCardEditor = () => {
     <Collapse defaultActiveKey={["1"]}>
       <Panel header="Basic information" style={{ width: "100%" }} key="1">
         <UnitBasicInfo />
+      </Panel>
+      <Panel header="Styling" style={{ width: "100%" }} key="styling">
+        <UnitStylingInfo />
       </Panel>
       <Panel header="Datasheets" style={{ width: "100%" }} key="2">
         <UnitStats />

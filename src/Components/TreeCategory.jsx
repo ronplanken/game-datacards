@@ -14,8 +14,16 @@ import { List } from "../Icons/List";
 const { confirm } = Modal;
 
 export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children }) {
-  const { cardStorage, setActiveCard, setActiveCategory, removeCategory, renameCategory, cardUpdated, updateCategory } =
-    useCardStorage();
+  const {
+    cardStorage,
+    setActiveCard,
+    setActiveCategory,
+    removeCategory,
+    saveActiveCard,
+    renameCategory,
+    cardUpdated,
+    updateCategory,
+  } = useCardStorage();
 
   const inputRef = useRef(null);
 
@@ -118,12 +126,12 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
                   if (cardUpdated) {
                     confirm({
                       title: "You have unsaved changes",
-                      content: "Are you sure you want to discard your changes?",
+                      content: "Do you want to save before switching?",
                       icon: <ExclamationCircleOutlined />,
-                      okText: "Yes",
-                      okType: "danger",
-                      cancelText: "No",
+                      okText: "Save",
+                      cancelText: "Cancel",
                       onOk: () => {
+                        saveActiveCard();
                         onSelect();
                       },
                     });

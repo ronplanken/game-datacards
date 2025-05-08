@@ -38,11 +38,11 @@ export const StratagemCard = ({
             </ReactFitty>
           </div>
           <div className="type">
-            <ReactFitty maxSize={10} minSize={8}>
+            <ReactFitty maxSize={10} minSize={2}>
               {stratagem.detachment} - {stratagem.type}
             </ReactFitty>
           </div>
-          <div className="content">
+          <div className="content" style={{ fontSize: stratagem?.textSize ?? "16px" }}>
             {stratagem.when && (
               <div className="section">
                 <span className="title">When:</span>
