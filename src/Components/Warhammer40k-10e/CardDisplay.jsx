@@ -43,8 +43,8 @@ export const Warhammer40K10eCardDisplay = ({
         </>
       )}
       {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
-      {!type && card && card.cardType === "stratagem" && <EnhancementCard enhancement={activeCard} />}
-      {!type && card && card.cardType === "enhancement" && <StratagemCard stratagem={card} />}
+      {!type && card && card.cardType === "enhancement" && <EnhancementCard enhancement={card} />}
+      {!type && card && card.cardType === "stratagem" && <StratagemCard stratagem={card} />}
       {type === "print" && card && (
         <div className="data-40k-10e" style={{}}>
           {card?.cardType === "DataCard" && (
