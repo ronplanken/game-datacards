@@ -61,7 +61,7 @@ export const WhatsNew = () => {
                           your collections.
                         </li>
                         <li>
-                          <strong>Resizeable 10e stratagems & enhancement cards</strong>
+                          <strong>Resizable 10e stratagems & enhancement cards</strong>
                           <br />
                           We have added the first kind of resizeable cards to the desktop editor. You can now resize
                           then using a slider, and change the font-size of the content.
