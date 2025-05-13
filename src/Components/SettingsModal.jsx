@@ -54,7 +54,7 @@ export const SettingsModal = () => {
             Content of Tab 1
           </TabPane> */}
           <TabPane tab="Datasources" key="2">
-            <Row>
+            <Row style={{ paddingRight: "16px" }}>
               <Col>
                 Please select your prefered game and datasource system. If no system is selected it will default to the
                 Basic Card system.
@@ -369,7 +369,7 @@ export const SettingsModal = () => {
             </Row>
           </TabPane>
           <TabPane tab="Changelog" key="5">
-            <Row>
+            <Row style={{ overflowY: "scroll", maxHeight: "400px" }}>
               <Col span={23}>
                 <Collapse>
                   {/* <Panel header={"Version 1.3.1"} key={"1.3.1"}>
@@ -401,6 +401,121 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.11.0"} key={"2.11.0"}>
+                    <b> 13-05-2025</b>
+                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Enhancement Cards</strong>
+                          <br />A new option for the desktop editor has been added. You can now add Enhancement Cards to
+                          your collections.
+                        </li>
+                        <li>
+                          <strong>Resizeable 10e stratagems & enhancement cards</strong>
+                          <br />
+                          We have added the first kind of resizeable cards to the desktop editor. You can now resize
+                          then using a slider, and change the font-size of the content.
+                          <br /> <br />
+                          <i>
+                            More customization will be added in a later update, join the Discord to let me know what
+                            should be prioritised.
+                          </i>
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Unsaved changes popup</strong>
+                          <br />
+                          After our previous change to the unsaved changes popup, you could get in a loop where you did
+                          not want to save changes but couldnt swap cards. You now have the extra option to discard your
+                          changes.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
+                  <Panel header={"Version 2.10.0"} key={"2.10.0"}>
+                    <b> 13-05-2025</b>
+                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Added external image option for 10e Unit Cards</strong>
+                          <br />
+                          Based on our previous update, we added the option to add an external image to your 10e cards.
+                          This image has to be hosted on an external website and have a direct link to the image. You
+                          can add this image in the card editor.
+                        </li>
+                        <li>
+                          <strong>Text Size option for 10e Stratagem Cards</strong>
+                          <br />
+                          You can now manually set the text size for your stratagem cards. This is useful if you want to
+                          make sure the text fits on the card.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Unsaved changes popup</strong>
+                          <br />
+                          We have changed the logic when the unsaved changes popup is shown. It will now give you the
+                          option to immediately save your changes and continue or cancel the action.
+                        </li>
+                        <li>
+                          <strong>10e Stratagem Card type</strong>
+                          <br />
+                          The text size of a Stratagem Card&apos;s type will now auto scale based on the available
+                          space.
+                        </li>
+                        <li>
+                          <strong>Agents of the Imperium</strong>
+                          <br />
+                          Agents of the Imperium are now correctly displayed in the list of factions.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
+                  <Panel header={"Version 2.9.3"} key={"2.9.3"}>
+                    <b> 09-05-2025</b>
+                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>html-data tags for external CSS</strong>
+                          <br />
+                          Thanks to ambre-m we have now added html-data tags to the Datacards that allow you to use
+                          custom CSS and finetune cards to your liking. Join us on Discord if you want an example or
+                          help!
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Updated</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Latest Coded support</strong>
+                          <br />
+                          We have updated to the latest Pointy-eared Codex!
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Fixed</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Double Sided cards on Mobile</strong>
+                          <br />
+                          Somehow we missed that new users would not get the button to swap between front / back of
+                          mobile cards. That has now been fixed.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.9.1"} key={"2.9.1"}>
                     <b> 18-10-2024 </b>
                     <Typography.Title level={4}>Features</Typography.Title>
