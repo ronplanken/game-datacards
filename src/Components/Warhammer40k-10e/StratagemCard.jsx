@@ -13,6 +13,8 @@ export const StratagemCard = ({
     <div
       style={{
         ...cardStyle,
+        "--width": `${stratagem.styling?.width ?? "260"}px`,
+        "--height": `${stratagem.styling?.height ?? "458"}px`,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
@@ -42,9 +44,9 @@ export const StratagemCard = ({
               {stratagem.detachment} - {stratagem.type}
             </ReactFitty>
           </div>
-          <div className="content" style={{ fontSize: stratagem?.textSize ?? "16px" }}>
+          <div className="content" style={{ fontSize: stratagem?.styling?.textSize ?? 16 }}>
             {stratagem.when && (
-              <div className="section">
+              <div className="section" style={{ lineHeight: `${stratagem.styling?.lineHeight ?? "1"}rem` }}>
                 <span className="title">When:</span>
                 <span className="text">
                   <MarkdownSpanDisplay content={stratagem.when} />
@@ -52,7 +54,7 @@ export const StratagemCard = ({
               </div>
             )}
             {stratagem.target && (
-              <div className="section">
+              <div className="section" style={{ lineHeight: `${stratagem.styling?.lineHeight ?? "1"}rem` }}>
                 <span className="title">target:</span>
                 <span className="text">
                   <MarkdownSpanDisplay content={stratagem.target} />
@@ -60,7 +62,7 @@ export const StratagemCard = ({
               </div>
             )}
             {stratagem.effect && (
-              <div className="section">
+              <div className="section" style={{ lineHeight: `${stratagem.styling?.lineHeight ?? "1"}rem` }}>
                 <span className="title">effect:</span>
                 <span className="text">
                   <MarkdownSpanDisplay content={stratagem.effect} />

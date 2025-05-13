@@ -164,7 +164,7 @@ export const Shared = () => {
                     <Col>
                       {card?.source === "40k-10e" && (
                         <>
-                          {card?.variant !== "full" && (
+                          {card?.variant !== "full" && card?.variant !== "full" && card?.cardType === "DataCard" && (
                             <Button
                               type={"primary"}
                               onClick={() => {

@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.10.0
+                Whats new in 2.11.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,17 +56,20 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Added external image option for 10e Unit Cards</strong>
-                          <br />
-                          Based on our previous update, we added the option to add an external image to your 10e cards.
-                          This image has to be hosted on an external website and have a direct link to the image. You
-                          can add this image in the card editor.
+                          <strong>Enhancement Cards</strong>
+                          <br />A new option for the desktop editor has been added. You can now add Enhancement Cards to
+                          your collections.
                         </li>
                         <li>
-                          <strong>Text Size option for 10e Stratagem Cards</strong>
+                          <strong>Resizeable 10e stratagems & enhancement cards</strong>
                           <br />
-                          You can now manually set the text size for your stratagem cards. This is useful if you want to
-                          make sure the text fits on the card.
+                          We have added the first kind of resizeable cards to the desktop editor. You can now resize
+                          then using a slider, and change the font-size of the content.
+                          <br /> <br />
+                          <i>
+                            More customization will be added in a later update, join the Discord to let me know what
+                            should be prioritised.
+                          </i>
                         </li>
                       </ul>
                     </Typography.Paragraph>
@@ -76,19 +79,9 @@ export const WhatsNew = () => {
                         <li>
                           <strong>Unsaved changes popup</strong>
                           <br />
-                          We have changed the logic when the unsaved changes popup is shown. It will now give you the
-                          option to immediately save your changes and continue or cancel the action.
-                        </li>
-                        <li>
-                          <strong>10e Stratagem Card type</strong>
-                          <br />
-                          The text size of a Stratagem Card&apos;s type will now auto scale based on the available
-                          space.
-                        </li>
-                        <li>
-                          <strong>Agents of the Imperium</strong>
-                          <br />
-                          Agents of the Imperium are now correctly displayed in the list of factions.
+                          After our previous change to the unsaved changes popup, you could get in a loop where you did
+                          not want to save changes but couldnt swap cards. You now have the extra option to discard your
+                          changes.
                         </li>
                       </ul>
                     </Typography.Paragraph>

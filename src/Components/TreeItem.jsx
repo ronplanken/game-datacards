@@ -23,8 +23,10 @@ import { PsychicPower } from "../Icons/PsychicPower";
 import { Secondary } from "../Icons/Secondary";
 import { Stratagem } from "../Icons/Stratagem";
 import { Vehicle } from "../Icons/Vehicle";
+import { confirmDialog } from "./ConfirmChangesModal";
+import { Enhancement } from "../Icons/Enhancement";
+import { Battlerule } from "../Icons/Battlerule";
 
-const { confirm } = Modal;
 const { Option } = Select;
 export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeIndex, index }) {
   const {
@@ -177,15 +179,18 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               <div
                 onClick={() => {
                   if (cardUpdated) {
-                    confirm({
+                    confirmDialog({
                       title: "You have unsaved changes",
                       content: "Do you want to save before switching?",
-                      icon: <ExclamationCircleOutlined />,
-                      okText: "Save",
-                      cancelText: "Cancel",
-                      onOk: () => {
+                      handleSave: () => {
                         saveActiveCard();
                         onSelect();
+                      },
+                      handleDiscard: () => {
+                        onSelect();
+                      },
+                      handleCancel: () => {
+                        //do nothing
                       },
                     });
                   } else {
@@ -196,6 +201,8 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                 {card.cardType === "datasheet" && <Datacard />}
                 {card.cardType === "DataCard" && <Datacard10e />}
                 {card.cardType === "stratagem" && <Stratagem />}
+                {card.cardType === "enhancement" && <Enhancement />}
+                {card.cardType === "battlerule" && <Battlerule />}
                 {card.cardType === "secondary" && <Secondary />}
                 {card.cardType === "psychic" && <PsychicPower />}
                 {card.cardType === "ganger" && <Ganger />}

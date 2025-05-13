@@ -1,5 +1,11 @@
-import { DownOutlined, RightOutlined, ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import { Button, Col, Divider, Dropdown, Grid, Input, Layout, List, Menu, Row, Select, Space } from "antd";
+import {
+  DownOutlined,
+  ExclamationCircleOutlined,
+  RightOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
+} from "@ant-design/icons";
+import { Button, Col, Divider, Dropdown, Grid, Input, Layout, List, Menu, Modal, Row, Select, Space } from "antd";
 import "antd/dist/antd.min.css";
 import classNames from "classnames";
 import clone from "just-clone";
@@ -26,6 +32,7 @@ import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { AddCard } from "./Icons/AddCard";
 import "./style.less";
+import { confirmDialog } from "./Components/ConfirmChangesModal";
 
 const { Header, Content } = Layout;
 const { Option } = Select;
@@ -46,6 +53,7 @@ function App() {
   const [selectedTreeIndex, setSelectedTreeIndex] = useState(null);
 
   const {
+    cardUpdated,
     cardStorage,
     activeCard,
     setActiveCard,
@@ -54,6 +62,7 @@ function App() {
     activeCategory,
     setActiveCategory,
     updateActiveCard,
+    saveActiveCard,
   } = useCardStorage();
   const categoryMenu = (
     <Menu
@@ -220,6 +229,18 @@ function App() {
           ...mainStratagems,
         ];
       }
+    }
+    if (selectedContentType === "enhancements") {
+      const filteredEnhancements = selectedFaction?.enhancements.map((enhancement) => {
+        return { ...enhancement, cardType: "enhancement", source: "40k-10e" };
+      });
+
+      const mainEnhancements = searchText
+        ? filteredEnhancements?.filter((enhancement) =>
+            enhancement.name.toLowerCase().includes(searchText.toLowerCase())
+          )
+        : filteredEnhancements;
+      return mainEnhancements;
     }
     if (selectedContentType === "secondaries") {
       if (selectedContentType === "secondaries") {
@@ -425,6 +446,11 @@ function App() {
                                     Secondaries
                                   </Option>
                                 )}
+                                {selectedFaction?.enhancements && selectedFaction?.enhancements.length > 0 && (
+                                  <Option value={"enhancements"} key={`enhancements`}>
+                                    Enhancements
+                                  </Option>
+                                )}
                                 {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
                                   <Option value={"psychicpowers"} key={`psychicpowers`}>
                                     Psychic powers
@@ -543,7 +569,27 @@ function App() {
                         <List.Item
                           key={`list-${card.id}`}
                           onClick={() => {
-                            setActiveCard(card);
+                            if (cardUpdated) {
+                              confirmDialog({
+                                title: "You have unsaved changes",
+                                content: "Do you want to save before switching?",
+                                handleSave: () => {
+                                  saveActiveCard();
+                                  setSelectedTreeIndex(null);
+                                  setActiveCard(card);
+                                },
+                                handleDiscard: () => {
+                                  setSelectedTreeIndex(null);
+                                  setActiveCard(card);
+                                },
+                                handleCancel: () => {
+                                  //do nothing
+                                },
+                              });
+                            } else {
+                              setSelectedTreeIndex(null);
+                              setActiveCard(card);
+                            }
                           }}
                           className={classNames({
                             "list-item": true,
@@ -638,19 +684,21 @@ function App() {
                             }}
                           />
                         </Space.Compact>
-                        {settings.showCardsAsDoubleSided !== true && activeCard?.variant !== "full" && (
-                          <Button
-                            type={"primary"}
-                            onClick={() => {
-                              if (activeCard.print_side === "back") {
-                                updateActiveCard({ ...activeCard, print_side: "front" }, true);
-                              } else {
-                                updateActiveCard({ ...activeCard, print_side: "back" }, true);
-                              }
-                            }}>
-                            {activeCard.print_side === "back" ? "Show front" : "Show back"}
-                          </Button>
-                        )}
+                        {settings.showCardsAsDoubleSided !== true &&
+                          activeCard?.variant !== "full" &&
+                          activeCard?.cardType === "DataCard" && (
+                            <Button
+                              type={"primary"}
+                              onClick={() => {
+                                if (activeCard.print_side === "back") {
+                                  updateActiveCard({ ...activeCard, print_side: "front" }, true);
+                                } else {
+                                  updateActiveCard({ ...activeCard, print_side: "back" }, true);
+                                }
+                              }}>
+                              {activeCard.print_side === "back" ? "Show front" : "Show back"}
+                            </Button>
+                          )}
                       </>
                     )}
                     {activeCard && !activeCard.isCustom && (

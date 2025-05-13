@@ -5,7 +5,7 @@ import { FactionSelect } from "../FactionSelect";
 
 const { Option } = Select;
 
-export function StratagemStylingInfo() {
+export function EnhancementStylingInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
   console.log(activeCard);
   return (
