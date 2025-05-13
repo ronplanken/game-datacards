@@ -401,6 +401,42 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.11.0"} key={"2.11.0"}>
+                    <b> 13-05-2025</b>
+                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Enhancement Cards</strong>
+                          <br />A new option for the desktop editor has been added. You can now add Enhancement Cards to
+                          your collections.
+                        </li>
+                        <li>
+                          <strong>Resizeable 10e stratagems & enhancement cards</strong>
+                          <br />
+                          We have added the first kind of resizeable cards to the desktop editor. You can now resize
+                          then using a slider, and change the font-size of the content.
+                          <br /> <br />
+                          <i>
+                            More customization will be added in a later update, join the Discord to let me know what
+                            should be prioritised.
+                          </i>
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Unsaved changes popup</strong>
+                          <br />
+                          After our previous change to the unsaved changes popup, you could get in a loop where you did
+                          not want to save changes but couldnt swap cards. You now have the extra option to discard your
+                          changes.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.10.0"} key={"2.10.0"}>
                     <b> 13-05-2025</b>
                     <Typography.Title level={4}>Added</Typography.Title>
