@@ -1,6 +1,9 @@
 import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { MarkdownSpanDisplay } from "../MarkdownSpanDisplay";
+import { Grid } from "antd";
+
+const { useBreakpoint } = Grid;
 
 export const StratagemCard = ({
   stratagem,
@@ -9,6 +12,11 @@ export const StratagemCard = ({
   className = "stratagem",
   containerClass = "",
 }) => {
+  const screens = useBreakpoint();
+
+  const lineHeight = screens.xs || screens.sm ? "default" : `${stratagem?.styling?.lineHeight}rem` ?? "1rem";
+  const typeSize = screens.xs || screens.sm ? 12 : 10;
+
   return (
     <div
       style={{
@@ -40,13 +48,13 @@ export const StratagemCard = ({
             </ReactFitty>
           </div>
           <div className="type">
-            <ReactFitty maxSize={10} minSize={2}>
+            <ReactFitty maxSize={14} minSize={2}>
               {stratagem.detachment} - {stratagem.type}
             </ReactFitty>
           </div>
           <div className="content" style={{ fontSize: stratagem?.styling?.textSize ?? 16 }}>
             {stratagem.when && (
-              <div className="section" style={{ lineHeight: `${stratagem.styling?.lineHeight ?? "1"}rem` }}>
+              <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">When:</span>
                 <span className="text">
                   <MarkdownSpanDisplay content={stratagem.when} />
@@ -54,7 +62,7 @@ export const StratagemCard = ({
               </div>
             )}
             {stratagem.target && (
-              <div className="section" style={{ lineHeight: `${stratagem.styling?.lineHeight ?? "1"}rem` }}>
+              <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">target:</span>
                 <span className="text">
                   <MarkdownSpanDisplay content={stratagem.target} />
@@ -62,7 +70,7 @@ export const StratagemCard = ({
               </div>
             )}
             {stratagem.effect && (
-              <div className="section" style={{ lineHeight: `${stratagem.styling?.lineHeight ?? "1"}rem` }}>
+              <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">effect:</span>
                 <span className="text">
                   <MarkdownSpanDisplay content={stratagem.effect} />
@@ -70,7 +78,7 @@ export const StratagemCard = ({
               </div>
             )}
             {stratagem.restrictions && (
-              <div className="section">
+              <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">restrictions:</span>
                 <span className="text">
                   <MarkdownSpanDisplay content={stratagem.restrictions} />
