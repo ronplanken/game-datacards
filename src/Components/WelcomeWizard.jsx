@@ -320,32 +320,6 @@ export const WelcomeWizard = () => {
                     <Col span={16}>
                       <Card
                         type={"inner"}
-                        title={"Wahapedia data import"}
-                        bodyStyle={{
-                          padding: 0,
-                          borderBottom: "1px solid #001529",
-                        }}
-                        style={{
-                          marginBottom: "16px",
-                          border: "1px solid #001529",
-                          borderBottom: "0px",
-                        }}
-                        extra={
-                          <Switch
-                            onChange={() =>
-                              updateSettings({
-                                ...settings,
-                                selectedDataSource: "40k",
-                              })
-                            }
-                            disabled={settings.selectedDataSource === "40k"}
-                            checked={settings.selectedDataSource === "40k"}
-                          />
-                        }></Card>
-                    </Col>
-                    <Col span={16}>
-                      <Card
-                        type={"inner"}
                         title={"10th Edition datacards"}
                         bodyStyle={{
                           padding: 0,
@@ -366,6 +340,32 @@ export const WelcomeWizard = () => {
                             }
                             disabled={settings.selectedDataSource === "40k-10e"}
                             checked={settings.selectedDataSource === "40k-10e"}
+                          />
+                        }></Card>
+                    </Col>
+                    <Col span={16}>
+                      <Card
+                        type={"inner"}
+                        title={"Wahapedia data import 9th edition"}
+                        bodyStyle={{
+                          padding: 0,
+                          borderBottom: "1px solid #001529",
+                        }}
+                        style={{
+                          marginBottom: "16px",
+                          border: "1px solid #001529",
+                          borderBottom: "0px",
+                        }}
+                        extra={
+                          <Switch
+                            onChange={() =>
+                              updateSettings({
+                                ...settings,
+                                selectedDataSource: "40k",
+                              })
+                            }
+                            disabled={settings.selectedDataSource === "40k"}
+                            checked={settings.selectedDataSource === "40k"}
                           />
                         }></Card>
                     </Col>

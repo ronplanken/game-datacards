@@ -4,13 +4,13 @@ import { UnitWeaponsType } from "./UnitWeaponsType";
 export const UnitWeapons = ({ unit }) => {
   return (
     <div className="weapons">
-      {unit.rangedWeapons && unit.rangedWeapons.length > 0 && (
+      {unit.showWeapons?.["rangedWeapons"] !== false && unit.rangedWeapons && unit.rangedWeapons.length > 0 && (
         <UnitWeaponsType
           weaponType={{ name: "Ranged weapons", class: "ranged", skill: "BS" }}
           weapons={unit.rangedWeapons}
         />
       )}
-      {unit.meleeWeapons && unit.meleeWeapons.length > 0 && (
+      {unit.showWeapons?.["meleeWeapons"] !== false && unit.meleeWeapons && unit.meleeWeapons.length > 0 && (
         <UnitWeaponsType
           weaponType={{ name: "Melee weapons", class: "melee", skill: "WS" }}
           weapons={unit.meleeWeapons}

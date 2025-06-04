@@ -1,9 +1,10 @@
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { EnhancementEditor } from "./EnhancementEditor";
 import { StratagemEditor } from "./StratagemEditor";
 import { UnitCardBackEditor } from "./UnitCardBackEditor";
 import { UnitCardEditor } from "./UnitCardEditor";
-import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { UnitCardFullEditor } from "./UnitCardFullEditor";
 
 export const Warhammer40K10eCardEditor = () => {
@@ -18,6 +19,7 @@ export const Warhammer40K10eCardEditor = () => {
             <UnitCardEditor />
           )}
           {activeCard.cardType === "stratagem" && <StratagemEditor />}
+          {activeCard.cardType === "enhancement" && <EnhancementEditor />}
           {activeCard.cardType === "DataCard" && activeCard.print_side === "back" && <UnitCardBackEditor />}
         </Col>
       )}

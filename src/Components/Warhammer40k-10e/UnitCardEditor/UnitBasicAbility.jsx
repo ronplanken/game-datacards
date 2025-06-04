@@ -1,5 +1,5 @@
 import { DeleteFilled } from "@ant-design/icons";
-import { Button, Card, Select, Typography } from "antd";
+import { Button, Card, Select, Typography, Space, Switch } from "antd";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
@@ -9,9 +9,35 @@ const { Option } = Select;
 
 export function UnitBasicAbility({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
+  const typeTitle = type.charAt(0).toUpperCase() + type.slice(1);
 
+  console.log("UnitBasicAbility", type, activeCard.showAbilities);
   return (
     <>
+      <Card
+        type={"inner"}
+        size={"small"}
+        title={`${typeTitle} section visibility`}
+        style={{ marginBottom: "16px" }}
+        bodyStyle={{ padding: 0 }}
+        extra={
+          <Space>
+            <Switch
+              checked={activeCard.showAbilities?.[type] !== false}
+              onChange={(value) => {
+                updateActiveCard(() => {
+                  return {
+                    ...activeCard,
+                    showAbilities: {
+                      ...activeCard.showAbilities,
+                      [type]: value,
+                    },
+                  };
+                });
+              }}
+            />
+          </Space>
+        }></Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {
@@ -24,7 +50,7 @@ export function UnitBasicAbility({ type }) {
         <Card
           type={"inner"}
           size={"small"}
-          title={<Typography.Text>{type} abilities</Typography.Text>}
+          title={<Typography.Text>{typeTitle} abilities</Typography.Text>}
           style={{ marginBottom: "16px" }}>
           <div className="keywords_container" style={{ paddingBottom: "4px", paddingTop: "4px" }}>
             <Droppable droppableId={`droppable-abilities-${type}`}>

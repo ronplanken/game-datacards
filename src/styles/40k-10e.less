@@ -106,8 +106,9 @@
     }
   }
   .shared-stratagem {
-    height: 458px;
-    width: 262px;
+    height: var(--height);
+    width: var(--width);
+    max-width: 100vw;
     transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
     border-radius: 8px;
     position: relative;
@@ -165,13 +166,14 @@
     .border {
       background-color: white;
       border-radius: 8px;
-      height: 456px;
-      width: 260px;
+      height: calc(var(--height) - 2px);
+      width: calc(var(--width) - 2px);
+      max-width: calc(var(100vw) - 2px);
       .background-side-bar {
         position: absolute;
         top: 22.67px;
         left: 22.67px;
-        height: 377.95px;
+        height: calc(var(--height) - 81px);
         width: 15.11px;
         background-color: var(--stratagem-colour);
       }
@@ -180,7 +182,7 @@
         top: 32.12px;
         left: 41.57px;
         height: 3.77px;
-        width: 200.31px;
+        width: calc(var(--width) - 60px);
         background-color: var(--stratagem-colour);
       }
       .header {
@@ -189,7 +191,7 @@
         top: 9.44px;
         left: 52.91px;
         color: var(--stratagem-colour);
-        width: 185.19px;
+        width: calc(var(--width) - 60px);
         font-size: 1.1rem;
         text-transform: uppercase;
         font-weight: 600;
@@ -199,7 +201,7 @@
         position: absolute;
         top: 35.9px;
         left: 52.91px;
-        width: 188.97px;
+        width: calc(var(--width) - 60px);
         font-size: 0.8rem;
         text-transform: uppercase;
         font-weight: 600;
@@ -209,12 +211,14 @@
         position: absolute;
         top: 56.69px;
         left: 52.91px;
-        width: 188.97px;
-        height: 300px;
+        width: calc(var(--width) - 60px);
+        height: calc(var(--height) - 148px);
         padding-left: 4px;
         .section {
           padding-top: 4px;
           line-height: 1rem;
+          width: calc(var(--width) - 60px);
+
           .title {
             text-transform: uppercase;
             color: var(--stratagem-colour);
@@ -263,7 +267,221 @@
       }
     }
   }
+  .shared-enhancement {
+    height: var(--height);
+    width: var(--width);
+    transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    each(@factions, {
+      &.@{value}::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 150px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+    });
+    &.AM::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 55%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 85px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    &.basic::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 150px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+    background-color: var(--header-colour);
+    .border {
+      background-color: white;
+      border-radius: 8px;
+      height: calc(var(--height) - 2px);
+      width: calc(var(--width) - 2px);
+      .background-side-bar {
+        position: absolute;
+        top: 22.67px;
+        left: 22.67px;
+        height: calc(var(--height) - 81px);
+        width: 15.11px;
+        background-color: var(--header-colour);
+      }
+      .background-header-bar {
+        position: absolute;
+        top: 32.12px;
+        left: 41.57px;
+        height: 3.77px;
+        width: calc(var(--width) - 60px);
+        background-color: var(--header-colour);
+      }
+      .header {
+        padding-left: 4px;
+        position: absolute;
+        top: 9.44px;
+        left: 52.91px;
+        color: var(--header-colour);
+        width: calc(var(--width) - 60px);
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .type {
+        padding-left: 4px;
+        position: absolute;
+        top: 35.9px;
+        left: 52.91px;
+        width: calc(var(--width) - 60px);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px dotted #aaadb0;
+      }
+      .content {
+        position: absolute;
+        top: 56.69px;
+        left: 52.91px;
+        width: calc(var(--width) - 60px);
+        height: calc(var(--height) - 148px);
+        padding-left: 4px;
+        .section {
+          padding-top: 4px;
+          line-height: 1rem;
+          width: calc(var(--width) - 60px);
+          color: black;
+          font-size: 0.7em;
+          font-weight: 400;
+        }
+      }
+      .containers {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+
+        gap: 20px;
+
+        width: 35.9px;
+        height: auto;
+
+        top: 16.06px;
+        left: 12.28px;
+
+        .cost-container {
+          height: 35.9px;
+          width: 35.9px;
+          border: 3.4px solid var(--header-colour);
+          background-color: var(--rows-colour);
+
+          rotate: 45deg;
+          overflow: hidden;
+          line-height: 28.34px;
+
+          .value {
+            rotate: -45deg;
+            text-align: center;
+            font-weight: 600;
+            color: var(--header-colour);
+            font-size: 1.1rem;
+            padding-right: 2px;
+          }
+        }
+      }
+    }
+  }
+
   .stratagem {
+    position: relative;
+
+    .type {
+      color: black;
+      font-size: 0.9rem !important;
+      line-height: 0.9rem !important;
+    }
+
+    .content {
+      height: auto;
+
+      .section {
+        &:nth-of-type(1) {
+          padding-top: 0px;
+        }
+        padding-top: 4px;
+        .title {
+          text-transform: uppercase;
+          color: var(--banner-colour);
+          font-weight: 600;
+          padding-right: 4px;
+        }
+        .text {
+          color: black;
+          font-size: 0.9rem !important;
+          line-height: 0.9rem !important;
+        }
+      }
+    }
+    .type-container {
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
+      background-color: var(--rows-colour);
+      position: absolute;
+      top: 16.06px;
+      left: 12.28px;
+      rotate: 45deg;
+      overflow: hidden;
+    }
+    .cp-container {
+      height: 35.9px;
+      width: 35.9px;
+      border: 3.4px solid var(--header-colour);
+      background-color: var(--rows-colour);
+      position: absolute;
+      top: 83.14px;
+      left: 12.28px;
+      rotate: 45deg;
+      overflow: hidden;
+      line-height: 28.34px;
+
+      .value {
+        rotate: -45deg;
+        text-align: center;
+        font-weight: 600;
+        color: var(--header-colour);
+        font-size: 1.1rem;
+      }
+    }
+  }
+  .enhancement {
     position: relative;
 
     .content {
@@ -297,7 +515,7 @@
       rotate: 45deg;
       overflow: hidden;
     }
-    .cp-container {
+    .cost-container {
       height: 35.9px;
       width: 35.9px;
       border: 3.4px solid var(--header-colour);
@@ -506,8 +724,57 @@
     }
   }
 
+  .enhancement,
+  .shared-enhancement {
+    &.either {
+      --stratagem-colour: var(--green-stratagem-colour);
+    }
+
+    &.own {
+      --stratagem-colour: var(--blue-stratagem-colour);
+    }
+
+    &.other {
+      --stratagem-colour: var(--red-stratagem-colour);
+    }
+
+    .containers {
+      .type-container {
+        height: 35.9px;
+        width: 35.9px;
+        border: 3.5px solid var(--stratagem-colour);
+        background-color: var(--rows-colour);
+        rotate: 45deg;
+        overflow: hidden;
+      }
+    }
+  }
+
   .mobile {
     .stratagem {
+      .border {
+        border-left: 5px solid var(--stratagem-colour);
+        padding-left: 15px;
+        margin-left: 4px;
+      }
+      .header,
+      .cp-container {
+        display: none;
+      }
+      .containers {
+        .type-container {
+          height: 25px;
+          width: 25px;
+          border-width: 2px;
+          top: 0.5px;
+          left: -6.4px;
+        }
+      }
+      .type {
+        margin-left: 5px;
+      }
+    }
+    .enhancement {
       .border {
         border-left: 5px solid var(--stratagem-colour);
         padding-left: 15px;
@@ -534,8 +801,8 @@
 
   @media print, (min-width: 600px) {
     .stratagem {
-      height: 458px;
-      width: 262px;
+      height: var(--height);
+      width: var(--width);
       transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
       border-radius: 8px;
       position: relative;
@@ -593,13 +860,13 @@
       .border {
         background-color: white;
         border-radius: 8px;
-        height: 456px;
-        width: 260px;
+        height: calc(var(--height) - 2px);
+        width: calc(var(--width) - 2px);
         .background-side-bar {
           position: absolute;
           top: 22.67px;
           left: 22.67px;
-          height: 377.95px;
+          height: calc(var(--height) - 81px);
           width: 15.11px;
           background-color: var(--stratagem-colour);
         }
@@ -608,7 +875,7 @@
           top: 32.12px;
           left: 41.57px;
           height: 3.77px;
-          width: 200.31px;
+          width: calc(var(--width) - 60px);
           background-color: var(--stratagem-colour);
         }
         .header {
@@ -617,7 +884,7 @@
           top: 9.44px;
           left: 52.91px;
           color: var(--stratagem-colour);
-          width: 185.19px;
+          width: calc(var(--width) - 60px);
           font-size: 1.1rem;
           text-transform: uppercase;
           font-weight: 600;
@@ -627,7 +894,7 @@
           position: absolute;
           top: 35.9px;
           left: 52.91px;
-          width: 188.97px;
+          width: calc(var(--width) - 60px);
           font-size: 0.8rem;
           text-transform: uppercase;
           font-weight: 600;
@@ -637,13 +904,13 @@
           position: absolute;
           top: 56.69px;
           left: 52.91px;
-          width: 188.97px;
-          height: 380px;
+          width: calc(var(--width) - 60px);
+          height: calc(var(--height) - 148px);
           padding-left: 4px;
           .section {
             padding-top: 4px;
             line-height: 1rem;
-            width: 188.97px;
+            width: calc(var(--width) - 60px);
             .title {
               text-transform: uppercase;
               color: var(--stratagem-colour);
@@ -687,6 +954,157 @@
               font-weight: 600;
               color: var(--stratagem-colour);
               font-size: 1.1rem;
+            }
+          }
+        }
+      }
+    }
+    .enhancement {
+      height: var(--height);
+      width: var(--width);
+      transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      each(@factions, {
+        &.@{value}::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          width: 100%;
+          transform: translateY(-75px);
+          height: 150px;
+          opacity: 0.1;
+          background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+          background-repeat: no-repeat;
+          background-size: contain;
+          background-position: center;
+        }
+      });
+      &.AM::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 55%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 85px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+      &.basic::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 150px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+      background-color: var(--header-colour);
+      .border {
+        background-color: white;
+        border-radius: 8px;
+        height: calc(var(--height) - 2px);
+        width: calc(var(--width) - 2px);
+        .background-side-bar {
+          position: absolute;
+          top: 22.67px;
+          left: 22.67px;
+          height: calc(var(--height) - 81px);
+          width: 15.11px;
+          background-color: var(--header-colour);
+        }
+        .background-header-bar {
+          position: absolute;
+          top: 32.12px;
+          left: 41.57px;
+          height: 3.77px;
+          width: calc(var(--width) - 60px);
+          background-color: var(--header-colour);
+        }
+        .header {
+          padding-left: 4px;
+          position: absolute;
+          top: 9.44px;
+          left: 52.91px;
+          color: var(--header-colour);
+          width: calc(var(--width) - 60px);
+          font-size: 1.1rem;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+        .type {
+          padding-left: 4px;
+          position: absolute;
+          top: 35.9px;
+          left: 52.91px;
+          width: calc(var(--width) - 60px);
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          font-weight: 600;
+          border-bottom: 1px dotted #aaadb0;
+        }
+        .content {
+          position: absolute;
+          top: 56.69px;
+          left: 52.91px;
+          width: calc(var(--width) - 60px);
+          height: calc(var(--height) - 148px);
+          padding-left: 4px;
+          .section {
+            padding-top: 4px;
+            line-height: 1rem;
+            width: calc(var(--width) - 60px);
+            color: black;
+            font-size: 0.7em;
+            font-weight: 400;
+          }
+        }
+        .containers {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+
+          gap: 20px;
+
+          width: 35.9px;
+          height: auto;
+
+          top: 16.06px;
+          left: 12.28px;
+
+          .cost-container {
+            height: 35.9px;
+            width: 35.9px;
+            border: 3.4px solid var(--header-colour);
+            background-color: var(--rows-colour);
+
+            rotate: 45deg;
+            overflow: hidden;
+            line-height: 28.34px;
+
+            .value {
+              rotate: -45deg;
+              text-align: center;
+              font-weight: 600;
+              color: var(--header-colour);
+              font-size: 1.1rem;
+              padding-right: 2px;
             }
           }
         }
@@ -1024,7 +1442,6 @@
         justify-content: space-between;
         padding-top: 32px;
         padding-left: 32px;
-
 
         @media only screen and (max-width: 600px) {
           .legends {

@@ -45,50 +45,21 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.10.0
+                Whats new in 2.12.0
               </h1>
             </div>
             <div className="welcome-cover">
               <>
                 <Row style={{ padding: "16px" }} className="whatsnew-content">
                   <Col>
-                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Title level={4}>Features</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Added external image option for 10e Unit Cards</strong>
+                          <strong>Panel visibility toggles for 10e cards</strong>
                           <br />
-                          Based on our previous update, we added the option to add an external image to your 10e cards.
-                          This image has to be hosted on an external website and have a direct link to the image. You
-                          can add this image in the card editor.
-                        </li>
-                        <li>
-                          <strong>Text Size option for 10e Stratagem Cards</strong>
-                          <br />
-                          You can now manually set the text size for your stratagem cards. This is useful if you want to
-                          make sure the text fits on the card.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={4}>Fixes</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Unsaved changes popup</strong>
-                          <br />
-                          We have changed the logic when the unsaved changes popup is shown. It will now give you the
-                          option to immediately save your changes and continue or cancel the action.
-                        </li>
-                        <li>
-                          <strong>10e Stratagem Card type</strong>
-                          <br />
-                          The text size of a Stratagem Card&apos;s type will now auto scale based on the available
-                          space.
-                        </li>
-                        <li>
-                          <strong>Agents of the Imperium</strong>
-                          <br />
-                          Agents of the Imperium are now correctly displayed in the list of factions.
+                          Added toggle switches to show/hide Wargear, Loadout, and Abilities sections in the card
+                          editor.
                         </li>
                       </ul>
                     </Typography.Paragraph>

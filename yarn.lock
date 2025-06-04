@@ -10553,6 +10553,11 @@ react-beautiful-dnd@^13.1.0:
     redux "^4.0.4"
     use-memo-one "^1.1.1"
 
+react-confirm@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-confirm/-/react-confirm-0.3.0.tgz#e67ea02732a1437af24b6dd8afce7a8e9c660a31"
+  integrity sha512-xd14cjreB+ndQFqO2iZSMFRelf7MXya7dhGEyZh1km1oCeudQaF7VoIMAzSDLB4wrZiFS3KfGxeqZLnoxq6dwA==
+
 react-dev-utils@^12.0.0:
   version "12.0.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-12.0.1.tgz#ba92edb4a1f379bd46ccd6bcd4e7bc398df33e73"
