@@ -401,6 +401,19 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.12.0"} key={"2.12.0"}>
+                    <b> 04-06-2025</b>
+                    <Typography.Title level={4}>Features</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Panel visibility toggles for 10e cards</strong>
+                          <br />
+                          Added toggle switches to show/hide Wargear, Loadout, and Abilities sections in the card editor.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.11.0"} key={"2.11.0"}>
                     <b> 13-05-2025</b>
                     <Typography.Title level={4}>Added</Typography.Title>

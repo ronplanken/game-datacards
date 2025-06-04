@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Button, Card, Space, Switch } from "antd";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
@@ -7,9 +7,33 @@ import { UnitWeapon } from "./UnitWeapon";
 
 export function UnitWeapons({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
-
+  const typeTitle = type.charAt(0).toUpperCase() + type.slice(1);
   return (
     <>
+      <Card
+        type={"inner"}
+        size={"small"}
+        title={`${typeTitle} section visibility`}
+        style={{ marginBottom: "16px" }}
+        bodyStyle={{ padding: 0 }}
+        extra={
+          <Space>
+            <Switch
+              checked={activeCard.showWeapons?.[type] !== false}
+              onChange={(value) => {
+                updateActiveCard(() => {
+                  return {
+                    ...activeCard,
+                    showWeapons: {
+                      ...activeCard.showWeapons,
+                      [type]: value,
+                    },
+                  };
+                });
+              }}
+            />
+          </Space>
+        }></Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {
