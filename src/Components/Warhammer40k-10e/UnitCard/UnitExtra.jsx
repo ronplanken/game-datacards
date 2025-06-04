@@ -5,44 +5,54 @@ import { UnitInvul } from "./UnitInvul";
 export const UnitExtra = ({ unit }) => {
   return (
     <div className="extra">
-      <div className="abilities">
-        <div className="heading">
-          <div className="title">Abilities</div>
-        </div>
-        <UnitAbility name={"core"} value={unit.abilities?.core?.join(", ")} />
-        <UnitAbility name={"faction"} value={unit.abilities?.faction?.join(", ")} />
-        {unit.abilities?.other
-          ?.filter((ability) => ability.showAbility)
-          ?.map((ability, index) => {
-            return (
-              <UnitAbilityDescription
-                name={ability.name}
-                description={ability?.description}
-                showDescription={ability?.showDescription}
-                key={`ability-${index}`}
-              />
-            );
-          })}
-      </div>
-      {unit.abilities?.wargear?.filter((ability) => ability.showAbility)?.length > 0 && (
+      {(unit?.showAbilities?.["core"] !== false ||
+        unit?.showAbilities?.["faction"] !== false ||
+        unit?.showAbilities?.["other"] !== false) && (
         <div className="abilities">
           <div className="heading">
-            <div className="title">Wargear abilities</div>
+            <div className="title">Abilities</div>
           </div>
-          {unit.abilities?.wargear
-            ?.filter((ability) => ability.showAbility)
-            ?.map((ability, index) => {
-              return (
-                <UnitAbilityDescription
-                  name={ability.name}
-                  description={ability.description}
-                  showDescription={ability.showDescription}
-                  key={`ability-${index}`}
-                />
-              );
-            })}
+          {unit?.showAbilities?.["core"] !== false && (
+            <UnitAbility name={"core"} value={unit.abilities?.core?.join(", ")} />
+          )}
+          {unit?.showAbilities?.["faction"] !== false && (
+            <UnitAbility name={"faction"} value={unit.abilities?.faction?.join(", ")} />
+          )}
+          {unit?.showAbilities?.["other"] !== false &&
+            unit.abilities?.other
+              ?.filter((ability) => ability.showAbility)
+              ?.map((ability, index) => {
+                return (
+                  <UnitAbilityDescription
+                    name={ability.name}
+                    description={ability?.description}
+                    showDescription={ability?.showDescription}
+                    key={`ability-${index}`}
+                  />
+                );
+              })}
         </div>
       )}
+      {unit?.showAbilities?.["wargear"] !== false &&
+        unit.abilities?.wargear?.filter((ability) => ability.showAbility)?.length > 0 && (
+          <div className="abilities">
+            <div className="heading">
+              <div className="title">Wargear abilities</div>
+            </div>
+            {unit.abilities?.wargear
+              ?.filter((ability) => ability.showAbility)
+              ?.map((ability, index) => {
+                return (
+                  <UnitAbilityDescription
+                    name={ability.name}
+                    description={ability.description}
+                    showDescription={ability.showDescription}
+                    key={`ability-${index}`}
+                  />
+                );
+              })}
+          </div>
+        )}
       {unit.abilities?.damaged && unit.abilities?.damaged.showDamagedAbility && (
         <div className="damaged">
           <div className="heading">
@@ -53,7 +63,7 @@ export const UnitExtra = ({ unit }) => {
           )}
         </div>
       )}
-      {unit.abilities?.special && (
+      {unit?.showAbilities?.["special"] !== false && unit.abilities?.special && (
         <>
           {unit.abilities?.special
             ?.filter((ability) => ability.showAbility)

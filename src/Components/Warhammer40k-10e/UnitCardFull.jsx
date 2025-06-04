@@ -42,7 +42,7 @@ export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }
               <UnitWargear unit={unit} />
               <UnitLoadout unit={unit} />
             </div>
-            <UnitExtra unit={unit} />
+            {unit.showAbilities !== false && <UnitExtra unit={unit} />}
           </div>
         </div>
         <div className="footer">

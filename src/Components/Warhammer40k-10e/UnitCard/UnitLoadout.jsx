@@ -3,37 +3,46 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 
 export const UnitLoadout = ({ unit }) => {
   const { selectedFaction } = useDataSourceStorage();
-
   const unitLoadouts = unit?.loadout?.split(".").filter((val) => val);
   return (
     <div className="extra">
       <div className="composition_container">
-        <div className="heading">
-          <div className="title">Unit Composition</div>
-        </div>
-        {unit?.composition?.map((composition, index) => {
-          return (
-            <div className="composition" key={`composition-${composition}`}>
-              <span className="description">{composition}</span>
+        {unit.showComposition !== false && (
+          <>
+            <div className="heading">
+              <div className="title">Unit Composition</div>
             </div>
-          );
-        })}
-        {unitLoadouts?.map((loadout, index) => {
-          const line = loadout?.split(":");
-          if (line?.length > 1) {
-            return (
-              <div className="loadout" key={`loadout-${line[0]}`}>
-                <span className="name">{line[0]}</span>
-                <span className="description">{line[1]}.</span>
-              </div>
-            );
-          }
-          return (
-            <div className="loadout" key={`loadout-${loadout}`}>
-              <span className="description">{loadout}</span>
-            </div>
-          );
-        })}
+
+            {unit?.composition?.map((composition, index) => {
+              return (
+                <div className="composition" key={`composition-${composition}`}>
+                  <span className="description">{composition}</span>
+                </div>
+              );
+            })}
+          </>
+        )}
+        {unit.showLoadout !== false && (
+          <>
+            {unitLoadouts?.map((loadout, index) => {
+              console.log("UnitLoadout", loadout);
+              const line = loadout?.split(":");
+              if (line?.length > 1) {
+                return (
+                  <div className="loadout" key={`loadout-${line[0]}`}>
+                    <span className="name">{line[0]}</span>
+                    <span className="description">{line[1]}.</span>
+                  </div>
+                );
+              }
+              return (
+                <div className="loadout" key={`loadout-${loadout}`}>
+                  <span className="description">{loadout}</span>
+                </div>
+              );
+            })}
+          </>
+        )}
         {unit.leads && (
           <>
             <div className="heading">

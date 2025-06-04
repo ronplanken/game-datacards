@@ -1,6 +1,6 @@
 import { DeleteFilled } from "@ant-design/icons";
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Button, Card, Form, Popconfirm, Select, Space } from "antd";
+import { Button, Card, Form, Popconfirm, Select, Space, Switch } from "antd";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
@@ -13,6 +13,27 @@ export function UnitComposition() {
 
   return (
     <>
+      <Card
+        type={"inner"}
+        size={"small"}
+        title={`Unit Composition section visibility`}
+        style={{ marginBottom: "16px" }}
+        bodyStyle={{ padding: 0 }}
+        extra={
+          <Space>
+            <Switch
+              checked={activeCard.showComposition !== false}
+              onChange={(value) => {
+                updateActiveCard(() => {
+                  return {
+                    ...activeCard,
+                    showComposition: value,
+                  };
+                });
+              }}
+            />
+          </Space>
+        }></Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {

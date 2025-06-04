@@ -10,9 +10,33 @@ const { Option } = Select;
 
 export function UnitExtendedAbilities({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
-
+  const typeTitle = type.charAt(0).toUpperCase() + type.slice(1);
   return (
     <>
+      <Card
+        type={"inner"}
+        size={"small"}
+        title={`${typeTitle} section visibility`}
+        style={{ marginBottom: "16px" }}
+        bodyStyle={{ padding: 0 }}
+        extra={
+          <Space>
+            <Switch
+              checked={activeCard?.showAbilities?.[type] !== false}
+              onChange={(value) => {
+                updateActiveCard(() => {
+                  return {
+                    ...activeCard,
+                    showAbilities: {
+                      ...activeCard.showAbilities,
+                      [type]: value,
+                    },
+                  };
+                });
+              }}
+            />
+          </Space>
+        }></Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {

@@ -1,5 +1,5 @@
 import MDEditor, { commands } from "@uiw/react-md-editor";
-import { Card, Form, Select } from "antd";
+import { Card, Form, Select, Switch, Space } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
@@ -10,7 +10,26 @@ export function UnitLoadout() {
 
   return (
     <>
-      <Card type={"inner"} size={"small"} title={`Loadout`} style={{ marginBottom: "16px" }}>
+      <Card
+        type={"inner"}
+        size={"small"}
+        title={`Loadout`}
+        style={{ marginBottom: "16px" }}
+        extra={
+          <Space>
+            <Switch
+              checked={activeCard.showLoadout !== false}
+              onChange={(value) => {
+                updateActiveCard(() => {
+                  return {
+                    ...activeCard,
+                    showLoadout: value,
+                  };
+                });
+              }}
+            />
+          </Space>
+        }>
         <Form size="small">
           <Form.Item>
             <MDEditor
