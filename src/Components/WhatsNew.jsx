@@ -58,7 +58,8 @@ export const WhatsNew = () => {
                         <li>
                           <strong>Panel visibility toggles for 10e cards</strong>
                           <br />
-                          Added toggle switches to show/hide Wargear, Loadout, and Abilities sections in the card editor.
+                          Added toggle switches to show/hide Wargear, Loadout, and Abilities sections in the card
+                          editor.
                         </li>
                       </ul>
                     </Typography.Paragraph>
