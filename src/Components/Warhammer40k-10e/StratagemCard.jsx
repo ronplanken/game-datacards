@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
-import { MarkdownSpanDisplay } from "../MarkdownSpanDisplay";
 import { Grid } from "antd";
+import { MarkdownSpanWrapDisplay } from "../MarkdownSpanWrapDisplay";
 
 const { useBreakpoint } = Grid;
 
@@ -56,7 +56,7 @@ export const StratagemCard = ({
               <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">When:</span>
                 <span className="text">
-                  <MarkdownSpanDisplay content={stratagem.when} />
+                  <MarkdownSpanWrapDisplay content={stratagem.when} />
                 </span>
               </div>
             )}
@@ -64,7 +64,7 @@ export const StratagemCard = ({
               <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">target:</span>
                 <span className="text">
-                  <MarkdownSpanDisplay content={stratagem.target} />
+                  <MarkdownSpanWrapDisplay content={stratagem.target} />
                 </span>
               </div>
             )}
@@ -72,7 +72,7 @@ export const StratagemCard = ({
               <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">effect:</span>
                 <span className="text">
-                  <MarkdownSpanDisplay content={stratagem.effect} />
+                  <MarkdownSpanWrapDisplay content={stratagem.effect} />
                 </span>
               </div>
             )}
@@ -80,7 +80,7 @@ export const StratagemCard = ({
               <div className="section" style={{ lineHeight: `${lineHeight}` }}>
                 <span className="title">restrictions:</span>
                 <span className="text">
-                  <MarkdownSpanDisplay content={stratagem.restrictions} />
+                  <MarkdownSpanWrapDisplay content={stratagem.restrictions} />
                 </span>
               </div>
             )}
