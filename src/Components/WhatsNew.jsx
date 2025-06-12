@@ -45,21 +45,24 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.12.0
+                Whats new in 2.12.1
               </h1>
             </div>
             <div className="welcome-cover">
               <>
                 <Row style={{ padding: "16px" }} className="whatsnew-content">
                   <Col>
-                    <Typography.Title level={4}>Features</Typography.Title>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Panel visibility toggles for 10e cards</strong>
+                          <strong>
+                            Fixed the delete modal not showing up and Line Height not working correct with
+                            StratagemCards
+                          </strong>
                           <br />
-                          Added toggle switches to show/hide Wargear, Loadout, and Abilities sections in the card
-                          editor.
+                          Resolved issues with delete confirmation modal visibility and improved line height formatting
+                          for Stratagem cards.
                         </li>
                       </ul>
                     </Typography.Paragraph>

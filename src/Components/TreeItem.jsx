@@ -27,6 +27,8 @@ import { confirmDialog } from "./ConfirmChangesModal";
 import { Enhancement } from "../Icons/Enhancement";
 import { Battlerule } from "../Icons/Battlerule";
 
+const { confirm } = Modal;
+
 const { Option } = Select;
 export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeIndex, index }) {
   const {

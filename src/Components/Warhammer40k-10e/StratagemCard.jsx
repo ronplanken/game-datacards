@@ -14,9 +14,8 @@ export const StratagemCard = ({
 }) => {
   const screens = useBreakpoint();
 
-  const lineHeight = screens.xs || screens.sm ? "default" : `${stratagem?.styling?.lineHeight}rem` ?? "1rem";
-  const typeSize = screens.xs || screens.sm ? 12 : 10;
-
+  const lineHeight = screens.xs ? "default" : `${stratagem?.styling?.lineHeight}rem` ?? "1rem";
+  const typeSize = screens.xs ? 12 : 10;
   return (
     <div
       style={{
