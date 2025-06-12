@@ -23,8 +23,8 @@ export const FactionSelect = ({ value, onChange }) => {
       <Option value="CSM">Chaos Space Marines</Option>
       <Option value="CHDA">Dark Angels</Option>
       <Option value="DG">Death Guard</Option>
-      <Option value="DRU">Drukhari</Option>
       <Option value="CHDW">Deathwatch</Option>
+      <Option value="DRU">Drukhari</Option>
       <Option value="LGEC">Emperor&apos;s Children</Option>
       <Option value="GC">Genestealer Cult</Option>
       <Option value="GK">Grey Knights</Option>

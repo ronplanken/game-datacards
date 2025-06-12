@@ -403,6 +403,16 @@ export const SettingsModal = () => {
                   </Panel> */}
                   <Panel header={"Version 2.12.1"} key={"2.12.1"}>
                     <b> 12-06-2025</b>
+                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Added Deathwatch to 10e cards</strong>
+                          <br />
+                          Deathwatch faction is now available for Warhammer 40k 10th edition cards.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
                     <Typography.Title level={4}>Fixes</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
@@ -414,6 +424,12 @@ export const SettingsModal = () => {
                           <br />
                           Resolved issues with delete confirmation modal visibility and improved line height formatting
                           for Stratagem cards.
+                        </li>
+                        <li>
+                          <strong>Fixed multi-line not working properly on Stratagems and Enhancements</strong>
+                          <br />
+                          Improved text formatting to properly handle multi-line content in Stratagem and Enhancement
+                          cards.
                         </li>
                       </ul>
                     </Typography.Paragraph>

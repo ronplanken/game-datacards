@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
-import { MarkdownSpanDisplay } from "../MarkdownSpanDisplay";
+import { MarkdownSpanWrapDisplay } from "../MarkdownSpanWrapDisplay";
 
 export const EnhancementCard = ({
   enhancement,
@@ -38,7 +38,7 @@ export const EnhancementCard = ({
           <div className="content" style={{ fontSize: enhancement?.styling?.textSize ?? 16 }}>
             {enhancement.description && (
               <div className="section" style={{ lineHeight: `${enhancement.styling?.lineHeight ?? "1"}rem` }}>
-                <MarkdownSpanDisplay content={enhancement.description} />
+                <MarkdownSpanWrapDisplay content={enhancement.description} />
               </div>
             )}
           </div>
