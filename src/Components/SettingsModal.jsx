@@ -401,6 +401,23 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.12.1"} key={"2.12.1"}>
+                    <b> 12-06-2025</b>
+                    <Typography.Title level={4}>Fixes</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>
+                            Fixed the delete modal not showing up and Line Height not working correct with
+                            StratagemCards
+                          </strong>
+                          <br />
+                          Resolved issues with delete confirmation modal visibility and improved line height formatting
+                          for Stratagem cards.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.12.0"} key={"2.12.0"}>
                     <b> 04-06-2025</b>
                     <Typography.Title level={4}>Features</Typography.Title>
