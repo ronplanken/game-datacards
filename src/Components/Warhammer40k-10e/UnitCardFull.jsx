@@ -89,6 +89,8 @@ export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }
             externalImage={unit.externalImage}
             localImageUrl={localImageUrl}
             imageZIndex={unit.imageZIndex}
+            imagePositionX={unit.imagePositionX}
+            imagePositionY={unit.imagePositionY}
           />
           <UnitStats stats={unit.stats} />
           <div className="stats_container" key={`stat-line-invul`}>

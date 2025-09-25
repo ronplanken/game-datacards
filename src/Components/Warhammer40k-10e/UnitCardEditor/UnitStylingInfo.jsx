@@ -1,4 +1,4 @@
-import { Form, Input, Select, Switch, Upload, Button, Space, Typography, message } from "antd";
+import { Form, Input, Select, Switch, Upload, Button, Space, Typography, message, Slider } from "antd";
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import React, { useState, useEffect, useCallback } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -178,7 +178,7 @@ export function UnitStylingInfo() {
               }}
               disabled={!isReady}>
               <Button icon={<UploadOutlined />} loading={uploading} disabled={!isReady}>
-                Upload Local Image
+                Upload
               </Button>
             </Upload>
           ) : (
@@ -204,6 +204,40 @@ export function UnitStylingInfo() {
           <Option value="default">Default</Option>
           <Option value="onTop">On top</Option>
         </Select>
+      </Form.Item>
+
+      <Form.Item label={"Horizontal Position"}>
+        <div style={{ paddingRight: "20px" }}>
+          <Slider
+            min={-200}
+            max={200}
+            value={activeCard.imagePositionX || 0}
+            onChange={(value) => updateActiveCard({ ...activeCard, imagePositionX: value })}
+            marks={{
+              [-200]: "Left",
+              0: "Center",
+              200: "Right",
+            }}
+            tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+          />
+        </div>
+      </Form.Item>
+
+      <Form.Item label={"Vertical Position"}>
+        <div style={{ paddingRight: "20px" }}>
+          <Slider
+            min={-200}
+            max={200}
+            value={activeCard.imagePositionY || 0}
+            onChange={(value) => updateActiveCard({ ...activeCard, imagePositionY: value })}
+            marks={{
+              [-200]: "Top",
+              0: "Center",
+              200: "Bottom",
+            }}
+            tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+          />
+        </div>
       </Form.Item>
     </Form>
   );

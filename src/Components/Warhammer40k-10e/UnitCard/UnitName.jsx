@@ -5,8 +5,8 @@ const HeaderContainer = styled.div`
   &:before {
     content: " ";
     position: absolute;
-    right: 0;
-    top: 0;
+    right: ${(props) => (props.imagepositionx ? `calc(0px - ${props.imagepositionx}px)` : "0")};
+    top: ${(props) => (props.imagepositiony ? `calc(0px + ${props.imagepositiony}px)` : "0")};
     width: 380px;
     height: 196px;
     background-color: black;
@@ -26,6 +26,8 @@ export const UnitName = ({
   externalImage,
   localImageUrl,
   imageZIndex,
+  imagePositionX,
+  imagePositionY,
 }) => {
   const imageUrl = localImageUrl || externalImage;
 
@@ -35,10 +37,17 @@ export const UnitName = ({
     externalImage,
     finalImageUrl: imageUrl,
     imageZIndex,
+    imagePositionX,
+    imagePositionY,
   });
 
   return (
-    <HeaderContainer className="header_container" imageurl={imageUrl} imagezindex={imageZIndex}>
+    <HeaderContainer
+      className="header_container"
+      imageurl={imageUrl}
+      imagezindex={imageZIndex}
+      imagepositionx={imagePositionX}
+      imagepositiony={imagePositionY}>
       <div className="name_container">
         <div className="name">{name}</div>
         {subname && <div className="subname">{subname}</div>}
