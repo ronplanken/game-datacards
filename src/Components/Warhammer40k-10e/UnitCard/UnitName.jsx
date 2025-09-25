@@ -12,14 +12,33 @@ const HeaderContainer = styled.div`
     background-color: black;
     background: top right no-repeat;
     background-size: contain;
-    background-image: url(${(props) => props.externalimage});
+    background-image: url(${(props) => props.imageurl});
     z-index: ${(props) => (props.imagezindex === "onTop" ? 100 : "auto")};
   }
 `;
 
-export const UnitName = ({ name, subname, points, legends, combatPatrol, externalImage, imageZIndex }) => {
+export const UnitName = ({
+  name,
+  subname,
+  points,
+  legends,
+  combatPatrol,
+  externalImage,
+  localImageUrl,
+  imageZIndex,
+}) => {
+  const imageUrl = localImageUrl || externalImage;
+
+  console.log("[UnitName] Rendering with:", {
+    name,
+    localImageUrl,
+    externalImage,
+    finalImageUrl: imageUrl,
+    imageZIndex,
+  });
+
   return (
-    <HeaderContainer className="header_container" externalimage={externalImage} imagezindex={imageZIndex}>
+    <HeaderContainer className="header_container" imageurl={imageUrl} imagezindex={imageZIndex}>
       <div className="name_container">
         <div className="name">{name}</div>
         {subname && <div className="subname">{subname}</div>}
