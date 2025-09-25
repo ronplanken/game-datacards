@@ -1,4 +1,4 @@
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import { Card, Form, Input, Select, Space, Switch, Typography } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -82,19 +82,7 @@ export function UnitInvulnerableSave() {
               />
             </Form.Item>
             <Form.Item label={"Extra info"}>
-              <MDEditor
-                preview="edit"
-                commands={[
-                  commands.bold,
-                  commands.italic,
-                  commands.strikethrough,
-                  commands.hr,
-                  commands.divider,
-                  commands.unorderedListCommand,
-                  commands.orderedListCommand,
-                  commands.divider,
-                ]}
-                extraCommands={[]}
+              <CustomMarkdownEditor
                 value={ability.info}
                 onChange={(value) => {
                   updateActiveCard(() => {

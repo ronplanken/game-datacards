@@ -1,5 +1,5 @@
-import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Form, Select, Switch, Space } from "antd";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
@@ -32,19 +32,7 @@ export function UnitLoadout() {
         }>
         <Form size="small">
           <Form.Item>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
-              extraCommands={[]}
+            <CustomMarkdownEditor
               value={activeCard.loadout}
               onChange={(value) => {
                 updateActiveCard(() => {

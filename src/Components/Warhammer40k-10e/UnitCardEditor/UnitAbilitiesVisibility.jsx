@@ -25,7 +25,6 @@ export function UnitAbilitiesVisibility() {
             }}
           />
         </Space>
-      }>
-    </Card>
+      }></Card>
   );
 }
