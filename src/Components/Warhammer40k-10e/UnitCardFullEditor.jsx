@@ -9,6 +9,7 @@ import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
 import { UnitPoints } from "./UnitCardEditor/UnitPoints";
 import { UnitPrimarchAbilities } from "./UnitCardEditor/UnitPrimarchAbilities";
 import { UnitStats } from "./UnitCardEditor/UnitStats";
+import { UnitStylingInfo } from "./UnitCardEditor/UnitStylingInfo";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 import { UnitWargearOptions } from "./UnitCardEditor/UnitWargearOptions";
 import { UnitComposition } from "./UnitCardEditor/UnitComposition";
@@ -26,6 +27,9 @@ export const UnitCardFullEditor = () => {
     <Collapse defaultActiveKey={["1"]}>
       <Panel header="Basic information" style={{ width: "100%" }} key="1">
         <UnitBasicInfo />
+      </Panel>
+      <Panel header="Styling" style={{ width: "100%" }} key="styling">
+        <UnitStylingInfo />
       </Panel>
       <Panel header="Datasheets" style={{ width: "100%" }} key="2">
         <UnitStats />

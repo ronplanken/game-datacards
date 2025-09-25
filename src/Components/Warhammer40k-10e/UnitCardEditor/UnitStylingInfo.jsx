@@ -19,6 +19,14 @@ export function UnitStylingInfo() {
           onChange={(e) => updateActiveCard({ ...activeCard, externalImage: e.target.value })}
         />
       </Form.Item>
+      <Form.Item label={"Show on top"}>
+        <Select
+          value={activeCard.imageZIndex || "default"}
+          onChange={(value) => updateActiveCard({ ...activeCard, imageZIndex: value })}>
+          <Option value="default">Default</Option>
+          <Option value="onTop">On top</Option>
+        </Select>
+      </Form.Item>
     </Form>
   );
 }

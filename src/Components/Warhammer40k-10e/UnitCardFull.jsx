@@ -27,6 +27,7 @@ export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }
             legends={unit.legends}
             combatPatrol={unit.combatPatrol}
             externalImage={unit.externalImage}
+            imageZIndex={unit.imageZIndex}
           />
           <UnitStats stats={unit.stats} />
           <div className="stats_container" key={`stat-line-invul`}>
