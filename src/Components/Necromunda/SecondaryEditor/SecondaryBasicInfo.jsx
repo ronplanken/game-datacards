@@ -1,4 +1,4 @@
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import { Card, Col, Form, Input, Row, Select } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -47,18 +47,7 @@ export function SecondaryBasicInfo() {
         style={{ marginBottom: "16px" }}>
         <Row justify="space-between" align="middle">
           <Col span={24}>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
+            <CustomMarkdownEditor
               extraCommands={[]}
               value={activeCard.description}
               onChange={(value) =>

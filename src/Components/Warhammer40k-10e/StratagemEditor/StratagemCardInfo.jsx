@@ -1,8 +1,8 @@
-import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Col, Form, Input, Row, Select } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 
 const { Option } = Select;
 
@@ -14,19 +14,7 @@ export function StratagemCardInfo() {
       <Card type={"inner"} size={"small"} title={"When"} bodyStyle={{ padding: 0 }}>
         <Row justify="space-between" align="middle">
           <Col span={24}>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
-              extraCommands={[]}
+            <CustomMarkdownEditor
               value={activeCard.when}
               onChange={(value) =>
                 updateActiveCard(() => {
@@ -40,19 +28,7 @@ export function StratagemCardInfo() {
       <Card type={"inner"} size={"small"} title={"Target"} bodyStyle={{ padding: 0 }}>
         <Row justify="space-between" align="middle">
           <Col span={24}>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
-              extraCommands={[]}
+            <CustomMarkdownEditor
               value={activeCard.target}
               onChange={(value) =>
                 updateActiveCard(() => {
@@ -66,19 +42,7 @@ export function StratagemCardInfo() {
       <Card type={"inner"} size={"small"} title={"Effect"} bodyStyle={{ padding: 0 }}>
         <Row justify="space-between" align="middle">
           <Col span={24}>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
-              extraCommands={[]}
+            <CustomMarkdownEditor
               value={activeCard.effect}
               onChange={(value) =>
                 updateActiveCard(() => {
@@ -92,19 +56,7 @@ export function StratagemCardInfo() {
       <Card type={"inner"} size={"small"} title={"Restrictions"} bodyStyle={{ padding: 0 }}>
         <Row justify="space-between" align="middle">
           <Col span={24}>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
-              extraCommands={[]}
+            <CustomMarkdownEditor
               value={activeCard.restrictions}
               onChange={(value) =>
                 updateActiveCard(() => {

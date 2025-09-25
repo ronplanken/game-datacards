@@ -1,7 +1,7 @@
-import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Card, Col, Row, Space, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 
 export function UnitDescription() {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -27,19 +27,7 @@ export function UnitDescription() {
       {activeCard.unit_composition_active && (
         <Row justify="space-between" align="middle">
           <Col span={24}>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
-              extraCommands={[]}
+            <CustomMarkdownEditor
               value={activeCard.unit_composition}
               onChange={(e) =>
                 updateActiveCard(() => {

@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.12.1
+                Whats new in 2.13.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,29 +56,34 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Added Deathwatch to 10e cards</strong>
+                          <strong>Local Image Upload</strong>
                           <br />
-                          Deathwatch faction is now available for Warhammer 40k 10th edition cards.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={4}>Fixes</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>
-                            Fixed the delete modal not showing up and Line Height not working correct with
-                            StratagemCards
-                          </strong>
-                          <br />
-                          Resolved issues with delete confirmation modal visibility and improved line height formatting
-                          for Stratagem cards.
+                          Upload custom images that save to your browser (not shared with others).
                         </li>
                         <li>
-                          <strong>Fixed multi-line not working properly on Stratagems and Enhancements</strong>
+                          <strong>Image Positioning</strong>
                           <br />
-                          Improved text formatting to properly handle multi-line content in Stratagem and Enhancement
-                          cards.
+                          Move images left/right and up/down with slider controls.
+                        </li>
+                        <li>
+                          <strong>Image Layer Control</strong>
+                          <br />
+                          Choose if images appear above or below other card elements.
+                        </li>
+                        <li>
+                          <strong>Styling Panel Everywhere</strong>
+                          <br />
+                          Image controls now work in both single and double-sided views.
+                        </li>
+                        <li>
+                          <strong>Enhanced Text Editor</strong>
+                          <br />
+                          All text editors now support text coloring and proper line breaks.
+                        </li>
+                        <li>
+                          <strong>Unified Editor Experience</strong>
+                          <br />
+                          Consistent editing features across 10th Edition and Necromunda cards.
                         </li>
                       </ul>
                     </Typography.Paragraph>
