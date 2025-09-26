@@ -2,7 +2,7 @@ import { DeleteFilled } from "@ant-design/icons";
 import { Button, Card, Divider, Form, Input, Popconfirm, Space, Switch, Typography } from "antd";
 import React, { useState } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 
 export function UnitWeapon({ weapon, index, type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -278,19 +278,7 @@ export function UnitWeapon({ weapon, index, type }) {
                 </Form.Item>
                 {line.showDescription && (
                   <Form.Item label={"Description"}>
-                    <MDEditor
-                      preview="edit"
-                      commands={[
-                        commands.bold,
-                        commands.italic,
-                        commands.strikethrough,
-                        commands.hr,
-                        commands.divider,
-                        commands.unorderedListCommand,
-                        commands.orderedListCommand,
-                        commands.divider,
-                      ]}
-                      extraCommands={[]}
+                    <CustomMarkdownEditor
                       value={line.description}
                       onChange={(value) => {
                         const newWeapons = [...activeCard[type]];

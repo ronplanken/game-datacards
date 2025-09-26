@@ -1,5 +1,5 @@
 import { DeleteFilled } from "@ant-design/icons";
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import { Button, Card, Col, Popconfirm, Row, Space, Switch, Typography } from "antd";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -93,18 +93,7 @@ export function VehicleWargear() {
                           {gear.active && (
                             <Row justify="space-between" align="middle">
                               <Col span={24}>
-                                <MDEditor
-                                  preview="edit"
-                                  commands={[
-                                    commands.bold,
-                                    commands.italic,
-                                    commands.strikethrough,
-                                    commands.hr,
-                                    commands.divider,
-                                    commands.unorderedListCommand,
-                                    commands.orderedListCommand,
-                                    commands.divider,
-                                  ]}
+                                <CustomMarkdownEditor
                                   extraCommands={[]}
                                   value={gear.description}
                                   onChange={(value) => {

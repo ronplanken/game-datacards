@@ -401,6 +401,44 @@ export const SettingsModal = () => {
                       </ul>
                     </Typography.Paragraph>
                   </Panel> */}
+                  <Panel header={"Version 2.13.0"} key={"2.13.0"}>
+                    <b> 25-09-2025</b>
+                    <Typography.Title level={4}>Added</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
+                        <li>
+                          <strong>Local Image Upload</strong>
+                          <br />
+                          Upload custom images that save to your browser (not shared with others).
+                        </li>
+                        <li>
+                          <strong>Image Positioning</strong>
+                          <br />
+                          Move images left/right and up/down with slider controls.
+                        </li>
+                        <li>
+                          <strong>Image Layer Control</strong>
+                          <br />
+                          Choose if images appear above or below other card elements.
+                        </li>
+                        <li>
+                          <strong>Styling Panel Everywhere</strong>
+                          <br />
+                          Image controls now work in both single and double-sided views.
+                        </li>
+                        <li>
+                          <strong>Enhanced Text Editor</strong>
+                          <br />
+                          All text editors now support text coloring and proper line breaks.
+                        </li>
+                        <li>
+                          <strong>Unified Editor Experience</strong>
+                          <br />
+                          Consistent editing features across 10th Edition and Necromunda cards.
+                        </li>
+                      </ul>
+                    </Typography.Paragraph>
+                  </Panel>
                   <Panel header={"Version 2.12.1"} key={"2.12.1"}>
                     <b> 12-06-2025</b>
                     <Typography.Title level={4}>Added</Typography.Title>

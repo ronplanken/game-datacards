@@ -1,6 +1,6 @@
 import { DeleteFilled } from "@ant-design/icons";
-import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Button, Card, Form, Popconfirm, Select, Space, Switch, Typography } from "antd";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -169,19 +169,7 @@ export function UnitPrimarchAbilities() {
                                           />
                                         </Form.Item>
                                         <Form.Item label={"Description"}>
-                                          <MDEditor
-                                            preview="edit"
-                                            commands={[
-                                              commands.bold,
-                                              commands.italic,
-                                              commands.strikethrough,
-                                              commands.hr,
-                                              commands.divider,
-                                              commands.unorderedListCommand,
-                                              commands.orderedListCommand,
-                                              commands.divider,
-                                            ]}
-                                            extraCommands={[]}
+                                          <CustomMarkdownEditor
                                             value={ability.description}
                                             onChange={(value) => {
                                               updateActiveCard(() => {

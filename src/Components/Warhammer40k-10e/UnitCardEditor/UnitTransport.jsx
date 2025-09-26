@@ -1,4 +1,4 @@
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import { Card, Form, Select } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -13,19 +13,7 @@ export function UnitTransport() {
       <Card type={"inner"} size={"small"} title={`Transport`} style={{ marginBottom: "16px" }}>
         <Form size="small">
           <Form.Item>
-            <MDEditor
-              preview="edit"
-              commands={[
-                commands.bold,
-                commands.italic,
-                commands.strikethrough,
-                commands.hr,
-                commands.divider,
-                commands.unorderedListCommand,
-                commands.orderedListCommand,
-                commands.divider,
-              ]}
-              extraCommands={[]}
+            <CustomMarkdownEditor
               value={activeCard.transport}
               onChange={(value) => {
                 updateActiveCard(() => {
