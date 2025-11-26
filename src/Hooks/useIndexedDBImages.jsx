@@ -193,12 +193,40 @@ export function useIndexedDBImages() {
     }
   };
 
+  // Faction symbol methods - use prefixed keys to store separately from card images
+  const getFactionSymbolKey = (cardId) => `faction-${cardId}`;
+
+  const saveFactionSymbol = async (cardId, file) => {
+    return saveImage(getFactionSymbolKey(cardId), file);
+  };
+
+  const getFactionSymbol = async (cardId) => {
+    return getImage(getFactionSymbolKey(cardId));
+  };
+
+  const getFactionSymbolData = async (cardId) => {
+    return getImageData(getFactionSymbolKey(cardId));
+  };
+
+  const deleteFactionSymbol = async (cardId) => {
+    return deleteImage(getFactionSymbolKey(cardId));
+  };
+
+  const getFactionSymbolUrl = async (cardId) => {
+    return getImageUrl(getFactionSymbolKey(cardId));
+  };
+
   return {
     saveImage,
     getImage,
     getImageData,
     deleteImage,
     getImageUrl,
+    saveFactionSymbol,
+    getFactionSymbol,
+    getFactionSymbolData,
+    deleteFactionSymbol,
+    getFactionSymbolUrl,
     isReady,
   };
 }

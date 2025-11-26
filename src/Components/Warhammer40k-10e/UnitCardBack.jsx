@@ -1,4 +1,5 @@
 import { UnitFactions } from "./UnitCard/UnitFactions";
+import { UnitFactionSymbol } from "./UnitCard/UnitFactionSymbol";
 import { UnitKeywords } from "./UnitCard/UnitKeywords";
 import { UnitLoadout } from "./UnitCard/UnitLoadout";
 import { UnitName } from "./UnitCard/UnitName";
@@ -28,9 +29,7 @@ export const UnitCardBack = ({ unit, cardStyle, paddingTop = "32px", className }
           <UnitKeywords keywords={unit.keywords} />
           <UnitFactions factions={unit.factions} />
         </div>
-        <div className="faction">
-          <div className={unit.faction_id}></div>
-        </div>
+        <UnitFactionSymbol unit={unit} />
       </div>
     </div>
   );
