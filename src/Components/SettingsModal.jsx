@@ -372,35 +372,45 @@ export const SettingsModal = () => {
             <Row style={{ overflowY: "scroll", maxHeight: "400px" }}>
               <Col span={23}>
                 <Collapse>
-                  {/* <Panel header={"Version 1.3.1"} key={"1.3.1"}>
-                    <b> DATE </b>
-                    <Typography.Title level={5}>New Features</Typography.Title>
+                  <Panel header={"Version 2.14.0"} key={"2.14.0"}>
+                    <b> 26-11-2025</b>
+                    <Typography.Title level={4}>Added</Typography.Title>
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong> feature</strong>
+                          <strong>Custom Faction Symbol</strong>
                           <br />
-                          description
+                          Upload a custom faction symbol image or provide an external URL. Symbols are stored locally in
+                          your browser.
                         </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Changes</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
                         <li>
-                          <strong> datasource:</strong> Description
+                          <strong>Faction Symbol Positioning</strong>
+                          <br />
+                          Adjust your custom faction symbol position with horizontal and vertical offset sliders.
                         </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={5}>Fixes</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
                         <li>
-                          <strong> datasource:</strong> Description
+                          <strong>Faction Symbol Scaling</strong>
+                          <br />
+                          Scale your custom faction symbol from 50% to 200% of the original size.
+                        </li>
+                        <li>
+                          <strong>Show All Points</strong>
+                          <br />
+                          Display all point options directly on the card instead of just the primary one.
+                        </li>
+                        <li>
+                          <strong>Primary Point Designation</strong>
+                          <br />
+                          Mark a specific point option as primary to show it when not displaying all points.
+                        </li>
+                        <li>
+                          <strong>Show Models Count</strong>
+                          <br />
+                          Optionally display the number of models alongside the point cost.
                         </li>
                       </ul>
                     </Typography.Paragraph>
-                  </Panel> */}
+                  </Panel>
                   <Panel header={"Version 2.13.0"} key={"2.13.0"}>
                     <b> 25-09-2025</b>
                     <Typography.Title level={4}>Added</Typography.Title>

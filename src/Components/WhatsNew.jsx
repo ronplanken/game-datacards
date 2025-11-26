@@ -45,7 +45,7 @@ export const WhatsNew = () => {
                   fontSize: "32px",
                   color: "white",
                 }}>
-                Whats new in 2.13.0
+                Whats new in 2.14.0
               </h1>
             </div>
             <div className="welcome-cover">
@@ -56,34 +56,34 @@ export const WhatsNew = () => {
                     <Typography.Paragraph style={{ fontSize: "16px" }}>
                       <ul>
                         <li>
-                          <strong>Local Image Upload</strong>
+                          <strong>Custom Faction Symbol</strong>
                           <br />
-                          Upload custom images that save to your browser (not shared with others).
+                          Upload a custom faction symbol image or provide an external URL.
                         </li>
                         <li>
-                          <strong>Image Positioning</strong>
+                          <strong>Faction Symbol Positioning</strong>
                           <br />
-                          Move images left/right and up/down with slider controls.
+                          Adjust your custom faction symbol with horizontal and vertical offset sliders.
                         </li>
                         <li>
-                          <strong>Image Layer Control</strong>
+                          <strong>Faction Symbol Scaling</strong>
                           <br />
-                          Choose if images appear above or below other card elements.
+                          Scale your custom faction symbol from 50% to 200% of the original size.
                         </li>
                         <li>
-                          <strong>Styling Panel Everywhere</strong>
+                          <strong>Show All Points</strong>
                           <br />
-                          Image controls now work in both single and double-sided views.
+                          Display all point options directly on the card instead of just the primary one.
                         </li>
                         <li>
-                          <strong>Enhanced Text Editor</strong>
+                          <strong>Primary Point Designation</strong>
                           <br />
-                          All text editors now support text coloring and proper line breaks.
+                          Mark a specific point option as primary to show when not displaying all points.
                         </li>
                         <li>
-                          <strong>Unified Editor Experience</strong>
+                          <strong>Show Models Count</strong>
                           <br />
-                          Consistent editing features across 10th Edition and Necromunda cards.
+                          Optionally display the number of models alongside the point cost.
                         </li>
                       </ul>
                     </Typography.Paragraph>
