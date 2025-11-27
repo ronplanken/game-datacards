@@ -1,15 +1,40 @@
-import { DeleteFilled } from "@ant-design/icons";
-import { Button, Card, Form, Input, Popconfirm, Space, Switch } from "antd";
+import { DeleteFilled, StarFilled, StarOutlined } from "@ant-design/icons";
+import { Button, Card, Form, Input, Popconfirm, Space, Switch, Tooltip } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
 
 export function UnitPoints() {
-  const { activeCard, updateActiveCard } = useCardStorage();
+  const { activeCard, updateActiveCard, saveActiveCard } = useCardStorage();
 
   return (
     <>
+      <Card
+        type={"inner"}
+        title="Display Options"
+        size="small"
+        bodyStyle={{ padding: 16 }}
+        style={{ marginBottom: 16 }}>
+        <Form size="small">
+          <Form.Item label={"Show All Points"}>
+            <Switch
+              checked={activeCard.showAllPoints || false}
+              onChange={(value) => {
+                updateActiveCard({ ...activeCard, showAllPoints: value });
+              }}
+            />
+          </Form.Item>
+          <Form.Item label={"Show Models Count"} style={{ marginBottom: 0 }}>
+            <Switch
+              checked={activeCard.showPointsModels || false}
+              onChange={(value) => {
+                updateActiveCard({ ...activeCard, showPointsModels: value });
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {
@@ -41,6 +66,24 @@ export function UnitPoints() {
                             style={{ marginBottom: "16px" }}
                             extra={
                               <Space>
+                                <Tooltip title={point.primary ? "Primary point" : "Set as primary"}>
+                                  <Button
+                                    type="text"
+                                    size="small"
+                                    icon={
+                                      point.primary ? <StarFilled style={{ color: "#faad14" }} /> : <StarOutlined />
+                                    }
+                                    onClick={() =>
+                                      updateActiveCard(() => {
+                                        const newPoints = activeCard.points.map((p, i) => ({
+                                          ...p,
+                                          primary: i === index,
+                                        }));
+                                        return { ...activeCard, points: newPoints };
+                                      })
+                                    }
+                                  />
+                                </Tooltip>
                                 <Popconfirm
                                   title={"Are you sure you want to delete these points?"}
                                   placement="topRight"

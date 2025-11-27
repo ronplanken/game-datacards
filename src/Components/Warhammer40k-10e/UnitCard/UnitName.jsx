@@ -28,6 +28,8 @@ export const UnitName = ({
   imageZIndex,
   imagePositionX,
   imagePositionY,
+  showAllPoints,
+  showPointsModels,
 }) => {
   const imageUrl = localImageUrl || externalImage;
 
@@ -54,7 +56,7 @@ export const UnitName = ({
       </div>
       {legends && <div className="legends" />}
       {combatPatrol && <div className="combatpatrol" />}
-      <UnitPoints points={points} />
+      <UnitPoints points={points} showAllPoints={showAllPoints} showPointsModels={showPointsModels} />
     </HeaderContainer>
   );
 };
