@@ -22,7 +22,6 @@ import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 
-import "../Images.css";
 import logo from "../Images/logo.png";
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
