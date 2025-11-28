@@ -380,33 +380,24 @@ export const SettingsModal = () => {
                         <li>
                           <strong>Custom Faction Symbol</strong>
                           <br />
-                          Upload a custom faction symbol image or provide an external URL. Symbols are stored locally in
-                          your browser.
+                          Upload a custom faction symbol image with positioning and scaling options.
                         </li>
                         <li>
-                          <strong>Faction Symbol Positioning</strong>
+                          <strong>Points Display Options</strong>
                           <br />
-                          Adjust your custom faction symbol position with horizontal and vertical offset sliders.
+                          Configure how points are displayed with options to show all points, designate a primary point,
+                          and display model counts.
                         </li>
+                      </ul>
+                    </Typography.Paragraph>
+                    <Typography.Title level={4}>Fixed</Typography.Title>
+                    <Typography.Paragraph style={{ fontSize: "16px" }}>
+                      <ul>
                         <li>
-                          <strong>Faction Symbol Scaling</strong>
+                          <strong>Points Not Showing in Image Export</strong>
                           <br />
-                          Scale your custom faction symbol from 50% to 200% of the original size.
-                        </li>
-                        <li>
-                          <strong>Show All Points</strong>
-                          <br />
-                          Display all point options directly on the card instead of just the primary one.
-                        </li>
-                        <li>
-                          <strong>Primary Point Designation</strong>
-                          <br />
-                          Mark a specific point option as primary to show it when not displaying all points.
-                        </li>
-                        <li>
-                          <strong>Show Models Count</strong>
-                          <br />
-                          Optionally display the number of models alongside the point cost.
+                          Fixed an issue where points were not visible when exporting Warhammer 10th edition cards as
+                          images.
                         </li>
                       </ul>
                     </Typography.Paragraph>
