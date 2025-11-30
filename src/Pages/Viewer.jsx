@@ -19,6 +19,7 @@ import { WhatsNew } from "../Components/WhatsNew";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { useAutoFitScale } from "../Hooks/useAutoFitScale";
 import { Discord } from "../Icons/Discord";
 
 import logo from "../Images/logo.png";
@@ -56,6 +57,22 @@ export const Viewer = () => {
   const fullCardRef = useRef(null);
   const viewerCardRef = useRef(null);
   const overlayRef = useRef(null);
+  const desktopCardContainerRef = useRef(null);
+
+  // Determine card type for proper scaling
+  const getCardType = () => {
+    if (!activeCard) return "unit";
+    if (activeCard.cardType === "stratagem") return "stratagem";
+    if (activeCard.cardType === "enhancement") return "enhancement";
+    if (settings.showCardsAsDoubleSided || activeCard.variant === "full") return "unitFull";
+    return "unit";
+  };
+
+  // Use auto-fit hook for desktop view
+  const { autoScale } = useAutoFitScale(desktopCardContainerRef, getCardType(), settings.autoFitEnabled !== false);
+
+  // Determine effective scale based on mode
+  const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
 
   const screens = useBreakpoint();
 
@@ -227,11 +244,12 @@ export const Viewer = () => {
           {screens.md && (
             <Col sm={24} lg={20}>
               <div
+                ref={desktopCardContainerRef}
                 style={{
                   height: "calc(100vh - 64px)",
                   display: "block",
                   overflow: "auto",
-                  "--card-scaling-factor": settings.zoom / 100,
+                  "--card-scaling-factor": effectiveScale,
                   "--banner-colour": cardFaction?.colours?.banner,
                   "--header-colour": cardFaction?.colours?.header,
                 }}
@@ -255,9 +273,24 @@ export const Viewer = () => {
                       <Space>
                         <Space.Compact block>
                           <Button
+                            type={settings.autoFitEnabled !== false ? "primary" : "default"}
+                            onClick={() => {
+                              updateSettings({
+                                ...settings,
+                                autoFitEnabled: !settings.autoFitEnabled,
+                              });
+                            }}
+                            title={
+                              settings.autoFitEnabled !== false
+                                ? "Auto-fit enabled (click for manual)"
+                                : "Manual mode (click for auto-fit)"
+                            }>
+                            {settings.autoFitEnabled !== false ? "Auto" : "Manual"}
+                          </Button>
+                          <Button
                             type={"primary"}
                             icon={<ZoomInOutlined />}
-                            disabled={settings.zoom === 100}
+                            disabled={settings.autoFitEnabled !== false || settings.zoom === 100}
                             onClick={() => {
                               let newZoom = settings.zoom || 100;
                               newZoom = newZoom + 5;
@@ -270,7 +303,7 @@ export const Viewer = () => {
                           <Button
                             type={"primary"}
                             icon={<ZoomOutOutlined />}
-                            disabled={settings.zoom === 25}
+                            disabled={settings.autoFitEnabled !== false || settings.zoom === 25}
                             onClick={() => {
                               let newZoom = settings.zoom || 100;
                               newZoom = newZoom - 5;

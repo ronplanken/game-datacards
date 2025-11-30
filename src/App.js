@@ -9,7 +9,7 @@ import { Button, Col, Divider, Dropdown, Grid, Input, Layout, List, Menu, Modal,
 import "antd/dist/antd.min.css";
 import classNames from "classnames";
 import clone from "just-clone";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +30,7 @@ import { getBackgroundColor, getMinHeight, move, reorder } from "./Helpers/treev
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
+import { useAutoFitScale } from "./Hooks/useAutoFitScale";
 import { AddCard } from "./Icons/AddCard";
 import "./style.less";
 import { confirmDialog } from "./Components/ConfirmChangesModal";
@@ -64,6 +65,25 @@ function App() {
     updateActiveCard,
     saveActiveCard,
   } = useCardStorage();
+
+  // Ref for the card display container
+  const cardContainerRef = useRef(null);
+
+  // Determine card type for proper scaling
+  const getCardType = () => {
+    if (!activeCard) return "unit";
+    if (activeCard.cardType === "stratagem") return "stratagem";
+    if (activeCard.cardType === "enhancement") return "enhancement";
+    if (settings.showCardsAsDoubleSided || activeCard.variant === "full") return "unitFull";
+    return "unit";
+  };
+
+  // Use auto-fit hook
+  const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), settings.autoFitEnabled !== false);
+
+  // Determine effective scale based on mode
+  const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
+
   const categoryMenu = (
     <Menu
       onClick={(e) => {
@@ -627,11 +647,12 @@ function App() {
           <PanelResizeHandle className="vertical-resizer" />
           <Panel defaultSize={41} order={2}>
             <div
+              ref={cardContainerRef}
               style={{
                 height: "calc(100vh - 64px)",
                 display: "block",
                 overflow: "auto",
-                "--card-scaling-factor": settings.zoom / 100,
+                "--card-scaling-factor": effectiveScale,
                 "--banner-colour": cardFaction?.colours?.banner,
                 "--header-colour": cardFaction?.colours?.header,
               }}
@@ -658,9 +679,24 @@ function App() {
                       <>
                         <Space.Compact block>
                           <Button
+                            type={settings.autoFitEnabled !== false ? "primary" : "default"}
+                            onClick={() => {
+                              updateSettings({
+                                ...settings,
+                                autoFitEnabled: !settings.autoFitEnabled,
+                              });
+                            }}
+                            title={
+                              settings.autoFitEnabled !== false
+                                ? "Auto-fit enabled (click for manual)"
+                                : "Manual mode (click for auto-fit)"
+                            }>
+                            {settings.autoFitEnabled !== false ? "Auto" : "Manual"}
+                          </Button>
+                          <Button
                             type={"primary"}
                             icon={<ZoomInOutlined />}
-                            disabled={settings.zoom === 100}
+                            disabled={settings.autoFitEnabled !== false || settings.zoom === 100}
                             onClick={() => {
                               let newZoom = settings.zoom || 100;
                               newZoom = newZoom + 5;
@@ -673,7 +709,7 @@ function App() {
                           <Button
                             type={"primary"}
                             icon={<ZoomOutOutlined />}
-                            disabled={settings.zoom === 25}
+                            disabled={settings.autoFitEnabled !== false || settings.zoom === 25}
                             onClick={() => {
                               let newZoom = settings.zoom || 100;
                               newZoom = newZoom - 5;

@@ -388,6 +388,12 @@ export const SettingsModal = () => {
                           Configure how points are displayed with options to show all points, designate a primary point,
                           and display model counts.
                         </li>
+                        <li>
+                          <strong>Auto-fit Card Scaling</strong>
+                          <br />
+                          Cards now automatically scale to fit the available space. Toggle between Auto and Manual zoom
+                          modes using the new button next to the zoom controls.
+                        </li>
                       </ul>
                     </Typography.Paragraph>
                     <Typography.Title level={4}>Fixed</Typography.Title>

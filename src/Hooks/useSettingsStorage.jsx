@@ -21,6 +21,8 @@ const defaultSettings = {
     verticalAlignment: "flex-start",
   },
   showCardsAsDoubleSided: false,
+  autoFitEnabled: true,
+  zoom: 100,
 };
 
 export function useSettingsStorage() {
