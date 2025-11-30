@@ -1,175 +1,187 @@
 import { DeleteOutlined, FileOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
-import { Button, Col, Modal, Row, Tabs, Tooltip } from "antd";
-import Dragger from "antd/lib/upload/Dragger";
+import { Button, Tooltip } from "antd";
 import { compare } from "compare-versions";
-import React from "react";
+import React, { useRef, useState } from "react";
+import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useFirebase } from "../../Hooks/useFirebase";
+import { v4 as uuidv4 } from "uuid";
+import "./ImportExport.css";
+
+const modalRoot = document.getElementById("modal-root");
 
 export const Importer = () => {
-  const [isModalVisible, setIsModalVisible] = React.useState(false);
-  const [uploadFile, setUploadFile] = React.useState(null);
-  const [fileList, setFileList] = React.useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [fileInfo, setFileInfo] = useState(null);
+  const [fileError, setFileError] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
+
   const { importCategory } = useCardStorage();
   const { logScreenView } = useFirebase();
 
+  const handleClose = () => {
+    setIsModalVisible(false);
+    setUploadFile(null);
+    setFileInfo(null);
+    setFileError(false);
+  };
+
+  const handleImport = () => {
+    if (!uploadFile) return;
+
+    if (compare(uploadFile.version, "0.4.0", "=")) {
+      importCategory({
+        uuid: uuidv4(),
+        name: "Imported Cards",
+        cards: uploadFile.cards,
+      });
+    }
+    if (compare(uploadFile.version, "0.5.0", ">=") && compare(uploadFile.version, "1.2.0", "<=")) {
+      importCategory({
+        ...uploadFile.category,
+        cards: uploadFile.category.cards.map((card) => {
+          return { ...card, source: "40k" };
+        }),
+      });
+    }
+    if (compare(uploadFile.version, "1.3.0", ">=")) {
+      importCategory(uploadFile.category);
+    }
+
+    handleClose();
+  };
+
+  const processFile = (file) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      try {
+        const importedJson = JSON.parse(event.target.result);
+        if (importedJson.website && importedJson.website === "https://game-datacards.eu") {
+          setFileInfo({
+            name: `${file.name} [ver. ${importedJson.version}]`,
+            size: file.size,
+          });
+          setUploadFile(importedJson);
+          setFileError(false);
+        } else {
+          setFileInfo({
+            name: file.name,
+            size: file.size,
+          });
+          setUploadFile(null);
+          setFileError(true);
+        }
+      } catch (e) {
+        setFileInfo({
+          name: file.name,
+          size: file.size,
+        });
+        setUploadFile(null);
+        setFileError(true);
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.name.endsWith(".json")) {
+      processFile(file);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleRemoveFile = () => {
+    setUploadFile(null);
+    setFileInfo(null);
+    setFileError(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <>
-      <Modal
-        title="Import Game Datacards"
-        visible={isModalVisible}
-        okButtonProps={{ disabled: !uploadFile }}
-        onOk={() => {
-          if (compare(uploadFile.version, "0.4.0", "=")) {
-            importCategory({
-              uuid: uuidv4(),
-              name: "Imported Cards",
-              cards: uploadFile.cards,
-            });
-          }
-          if (compare(uploadFile.version, "0.5.0", ">=") && compare(uploadFile.version, "1.2.0", "<=")) {
-            importCategory({
-              ...uploadFile.category,
-              cards: uploadFile.category.cards.map((card) => {
-                return { ...card, source: "40k" };
-              }),
-            });
-          }
-          if (compare(uploadFile.version, "1.3.0", ">=")) {
-            importCategory(uploadFile.category);
-          }
-          setFileList([]);
-          setUploadFile(null);
-          setIsModalVisible(false);
-        }}
-        onCancel={() => {
-          setIsModalVisible(false);
-          setFileList([]);
-          setUploadFile(null);
-        }}>
-        <Tabs>
-          <Tabs.TabPane tab={"Game-datacards"} key={"game-datacards"} style={{ minHeight: 250 }}>
-            <Row>
-              <Col span={24}>
-                <Dragger
-                  fileList={fileList}
-                  multiple={false}
-                  maxCount={1}
-                  action={null}
-                  accept={".json"}
-                  itemRender={(node, file) => {
-                    return file.status === "success" ? (
-                      <Row
-                        style={{
-                          marginTop: "4px",
-                          padding: "8px",
-                          border: `1px solid #E5E5E5`,
-                          borderRadius: 4,
-                        }}
-                        align={"middle"}
-                        justify={"space-around"}>
-                        <Col>
-                          <FileOutlined style={{ fontSize: "18px" }} />
-                        </Col>
-                        <Col>{file.name}</Col>
-                        <Col>{`${Math.round(file.size / 1024, 1)}KiB`}</Col>
-                        <Col>
-                          <Button
-                            type={"text"}
-                            shape={"circle"}
-                            onClick={() => {
-                              setFileList(null);
-                              setUploadFile(null);
-                            }}
-                            icon={<DeleteOutlined />}
-                          />
-                        </Col>
-                      </Row>
-                    ) : (
-                      <Tooltip title={"This file cannot be read as an Game Datacards export."} color={"red"}>
-                        <Row
-                          style={{
-                            marginTop: "4px",
-                            padding: "8px",
-                            border: `1px solid red`,
-                            borderRadius: 4,
-                          }}
-                          align={"middle"}
-                          justify={"space-around"}>
-                          <Col>
-                            <FileOutlined style={{ fontSize: "18px" }} />
-                          </Col>
-                          <Col>{file.name}</Col>
-                          <Col>{`${Math.round(file.size / 1024, 1)}KiB`}</Col>
-                          <Col>
-                            <Button
-                              type={"text"}
-                              shape={"circle"}
-                              onClick={() => {
-                                setFileList(null);
-                                setUploadFile(null);
-                              }}
-                              icon={<DeleteOutlined />}
-                            />
-                          </Col>
-                        </Row>
-                      </Tooltip>
-                    );
-                  }}
-                  beforeUpload={(file) => {
-                    var reader = new FileReader();
+      {isModalVisible &&
+        ReactDOM.createPortal(
+          <div className="import-export-modal-overlay" onClick={handleClose}>
+            <div className="import-export-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="import-export-modal-header">
+                <h2 className="import-export-modal-title">Import Game Datacards</h2>
+              </div>
+              <div className="import-export-modal-body">
+                <div className="import-export-tabs">
+                  <div className="import-export-tab active">Game-datacards</div>
+                </div>
+                <div className="import-export-content">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".json"
+                    onChange={handleFileSelect}
+                    style={{ display: "none" }}
+                  />
+                  <div
+                    className={`import-dropzone ${isDragging ? "dragging" : ""}`}
+                    onClick={() => fileInputRef.current?.click()}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}>
+                    <div className="import-dropzone-icon">
+                      <InboxOutlined />
+                    </div>
+                    <p className="import-dropzone-text">Click or drag a file to this area to upload</p>
+                    <p className="import-dropzone-hint">Support for a single file upload. Only .json files.</p>
+                  </div>
 
-                    reader.onload = function (event) {
-                      try {
-                        const importedJson = JSON.parse(event.target.result);
-                        if (importedJson.website && importedJson.website === "https://game-datacards.eu") {
-                          setFileList([
-                            {
-                              uid: "-1",
-                              name: `${file.name} [ver. ${importedJson.version}]`,
-                              status: "success",
-                              size: file.size,
-                            },
-                          ]);
-                          setUploadFile(importedJson);
-                        } else {
-                          setFileList([
-                            {
-                              uid: "-1",
-                              name: file.name,
-                              status: "error",
-                              size: file.size,
-                            },
-                          ]);
-                          setUploadFile(null);
-                        }
-                      } catch (e) {
-                        setFileList([
-                          {
-                            uid: "-1",
-                            name: file.name,
-                            status: "error",
-                            size: file.size,
-                          },
-                        ]);
-                        setUploadFile(null);
-                      }
-                    };
-                    reader.readAsText(file);
-
-                    return false;
-                  }}>
-                  <p className="ant-upload-drag-icon">
-                    <InboxOutlined />
-                  </p>
-                  <p className="ant-upload-text">Click or drag a file to this area to upload</p>
-                  <p className="ant-upload-hint">Support for a single file upload. Only .json files.</p>
-                </Dragger>
-              </Col>
-            </Row>
-          </Tabs.TabPane>
-        </Tabs>
-      </Modal>
+                  {fileInfo && (
+                    <div className={`import-file-item ${fileError ? "error" : "success"}`}>
+                      <FileOutlined className="import-file-icon" />
+                      <span className="import-file-name">{fileInfo.name}</span>
+                      <span className="import-file-size">{Math.round(fileInfo.size / 1024)}KiB</span>
+                      <button className="import-file-remove" onClick={handleRemoveFile}>
+                        <DeleteOutlined />
+                      </button>
+                    </div>
+                  )}
+                  {fileError && (
+                    <p className="import-file-error-text">This file cannot be read as a Game Datacards export.</p>
+                  )}
+                </div>
+              </div>
+              <div className="import-export-modal-footer">
+                <button className="ie-btn" onClick={handleClose}>
+                  Cancel
+                </button>
+                <button className="ie-btn-primary" onClick={handleImport} disabled={!uploadFile}>
+                  Import
+                </button>
+              </div>
+            </div>
+          </div>,
+          modalRoot
+        )}
       <Tooltip title={"Import category from JSON"} placement="bottomLeft">
         <Button
           type={"text"}
