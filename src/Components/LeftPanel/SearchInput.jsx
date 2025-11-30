@@ -1,22 +1,48 @@
-import React from "react";
-import { Col, Row, Input } from "antd";
+import React, { useState } from "react";
+import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
+import "./SearchInput.css";
 
 export const SearchInput = ({ setSearchText }) => {
+  const [value, setValue] = useState("");
+
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    if (newValue.length > 0) {
+      setSearchText(newValue);
+    } else {
+      setSearchText(undefined);
+    }
+  };
+
+  const handleClear = () => {
+    setValue("");
+    setSearchText(undefined);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      handleClear();
+    }
+  };
+
   return (
-    <Row style={{ marginBottom: "4px" }}>
-      <Col span={24}>
-        <Input.Search
-          placeholder={"Search"}
-          onSearch={(value) => {
-            if (value.length > 0) {
-              setSearchText(value);
-            } else {
-              setSearchText(undefined);
-            }
-          }}
-          allowClear={true}
-        />
-      </Col>
-    </Row>
+    <div className="search-input-container">
+      <input
+        type="text"
+        className="search-input"
+        placeholder="Search"
+        value={value}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      />
+      {value ? (
+        <button className="search-input-clear" onClick={handleClear} type="button">
+          <CloseOutlined />
+        </button>
+      ) : (
+        <SearchOutlined className="search-input-icon" />
+      )}
+    </div>
   );
 };

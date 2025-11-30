@@ -1,54 +1,90 @@
-import React from "react";
-import { Col, Row, Select } from "antd";
+import React, { useState, useRef, useEffect } from "react";
+import { DownOutlined } from "@ant-design/icons";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import "./ContentTypeSelector.css";
 
-const { Option } = Select;
+const CONTENT_TYPES = [
+  { value: "datasheets", label: "Datasheets", key: "datasheets" },
+  { value: "stratagems", label: "Stratagems", key: "stratagems" },
+  { value: "secondaries", label: "Secondaries", key: "secondaries" },
+  { value: "enhancements", label: "Enhancements", key: "enhancements" },
+  { value: "psychicpowers", label: "Psychic powers", key: "psychicpowers" },
+];
 
-export const ContentTypeSelector = ({ isLoading, selectedContentType, setSelectedContentType }) => {
+export const ContentTypeSelector = ({ selectedContentType, setSelectedContentType }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   const { selectedFaction } = useDataSourceStorage();
+
+  // Get available content types based on faction data
+  const availableTypes = CONTENT_TYPES.filter((type) => {
+    const data = selectedFaction?.[type.key];
+    return data && data.length > 0;
+  });
+
+  // Get the label for the selected content type
+  const selectedLabel = CONTENT_TYPES.find((t) => t.value === selectedContentType)?.label || "Select a type";
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Handle escape key to close dropdown
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen]);
+
+  const handleSelect = (value) => {
+    setSelectedContentType(value);
+    setIsOpen(false);
+  };
 
   if (!selectedFaction) {
     return null;
   }
 
   return (
-    <Row style={{ marginBottom: "4px" }}>
-      <Col span={24}>
-        <Select
-          loading={isLoading}
-          style={{ width: "100%" }}
-          onChange={(value) => {
-            setSelectedContentType(value);
-          }}
-          placeholder="Select a type"
-          value={selectedContentType}>
-          {selectedFaction?.datasheets && selectedFaction?.datasheets.length > 0 && (
-            <Option value={"datasheets"} key={`datasheets`}>
-              Datasheets
-            </Option>
-          )}
-          {selectedFaction?.stratagems && selectedFaction?.stratagems.length > 0 && (
-            <Option value={"stratagems"} key={`stratagems`}>
-              Stratagems
-            </Option>
-          )}
-          {selectedFaction?.secondaries && selectedFaction?.secondaries.length > 0 && (
-            <Option value={"secondaries"} key={`secondaries`}>
-              Secondaries
-            </Option>
-          )}
-          {selectedFaction?.enhancements && selectedFaction?.enhancements.length > 0 && (
-            <Option value={"enhancements"} key={`enhancements`}>
-              Enhancements
-            </Option>
-          )}
-          {selectedFaction?.psychicpowers && selectedFaction?.psychicpowers.length > 0 && (
-            <Option value={"psychicpowers"} key={`psychicpowers`}>
-              Psychic powers
-            </Option>
-          )}
-        </Select>
-      </Col>
-    </Row>
+    <div className="content-type-selector" ref={dropdownRef}>
+      <button className={`content-type-trigger ${isOpen ? "open" : ""}`} onClick={() => setIsOpen(!isOpen)}>
+        <span className="content-type-trigger-text">{selectedLabel}</span>
+        <DownOutlined className="content-type-trigger-icon" />
+      </button>
+
+      {isOpen && (
+        <div className="content-type-dropdown">
+          {availableTypes.map((type) => (
+            <div
+              key={type.value}
+              className={`content-type-option ${selectedContentType === type.value ? "selected" : ""}`}
+              onClick={() => handleSelect(type.value)}>
+              {type.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };

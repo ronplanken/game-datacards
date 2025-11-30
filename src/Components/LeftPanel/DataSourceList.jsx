@@ -155,7 +155,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
       size="small"
       loading={isLoading}
       dataSource={dataSource}
-      style={{ overflowY: "auto", height: "calc(100% - 36px)" }}
+      style={{ overflowY: "auto", flex: 1, minHeight: 0 }}
       locale={{
         emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
       }}

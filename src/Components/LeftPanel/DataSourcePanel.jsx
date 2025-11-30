@@ -18,9 +18,11 @@ export const DataSourcePanel = ({ setSelectedTreeIndex }) => {
     <div
       style={{
         height: "100%",
-        overflow: "auto",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
       }}>
-      <div style={{ padding: "8px 8px 0 8px" }}>
+      <div style={{ padding: "8px 8px 0 8px", flexShrink: 0 }}>
         <FactionSelector isLoading={isLoading} />
         <SearchInput setSearchText={setSearchText} />
         <ContentTypeSelector

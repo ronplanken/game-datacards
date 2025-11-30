@@ -1,45 +1,125 @@
-import React from "react";
-import { Col, Row, Select, Divider } from "antd";
+import React, { useState, useRef, useEffect } from "react";
+import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { FactionSettingsModal } from "../FactionSettingsModal";
+import "./FactionSelector.css";
 
-const { Option } = Select;
+export const FactionSelector = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const dropdownRef = useRef(null);
+  const searchInputRef = useRef(null);
 
-export const FactionSelector = ({ isLoading }) => {
-  const { dataSource, selectedFactionIndex, updateSelectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
 
+  // Filter factions based on search text
+  const filteredFactions = dataSource.data.filter((faction) =>
+    faction.name.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setSearchText("");
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Handle escape key to close dropdown
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false);
+        setSearchText("");
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen]);
+
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (isOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+    if (isOpen) {
+      setSearchText("");
+    }
+  };
+
+  const handleSelectFaction = (faction) => {
+    updateSelectedFaction(faction);
+    setIsOpen(false);
+    setSearchText("");
+  };
+
+  // Don't render if only one faction
   if (dataSource.data.length <= 1) {
     return null;
   }
 
   return (
     <>
-      <Row style={{ marginBottom: "4px" }}>
-        <Col span={24}>
-          <Select
-            loading={isLoading}
-            style={{
-              width: "calc(100% - 32px)",
-            }}
-            onChange={(value) => {
-              updateSelectedFaction(dataSource.data.find((faction) => faction.id === value));
-            }}
-            placeholder="Select a faction"
-            value={dataSource?.data[selectedFactionIndex]?.name}>
-            {dataSource.data.map((faction, index) => (
-              <Option value={faction.id} key={`${faction.id}-${index}`}>
-                {faction.name}
-              </Option>
-            ))}
-          </Select>
-          {!dataSource?.noFactionOptions && <FactionSettingsModal />}
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <Divider style={{ marginTop: 4, marginBottom: 8 }} />
-        </Col>
-      </Row>
+      <div className="faction-selector" ref={dropdownRef}>
+        <button className={`faction-selector-trigger ${isOpen ? "open" : ""}`} onClick={handleToggle}>
+          <span
+            className={`faction-selector-trigger-text ${
+              !selectedFaction ? "faction-selector-trigger-placeholder" : ""
+            }`}>
+            {selectedFaction?.name || "Select a faction"}
+          </span>
+          <DownOutlined className="faction-selector-trigger-icon" />
+        </button>
+
+        {!dataSource?.noFactionOptions && <FactionSettingsModal />}
+
+        {isOpen && (
+          <div className="faction-dropdown">
+            <div className="faction-search">
+              <SearchOutlined className="faction-search-icon" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search factions..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+              />
+            </div>
+            <div className="faction-list">
+              {filteredFactions.length > 0 ? (
+                filteredFactions.map((faction, index) => (
+                  <div
+                    key={`${faction.id}-${index}`}
+                    className={`faction-option ${selectedFaction?.id === faction.id ? "selected" : ""}`}
+                    onClick={() => handleSelectFaction(faction)}>
+                    {faction.name}
+                  </div>
+                ))
+              ) : (
+                <div className="faction-empty">No factions found</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="faction-selector-divider" />
     </>
   );
 };
