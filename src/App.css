@@ -154,3 +154,88 @@
   margin-right: auto !important;
   background: #001529;
 }
+
+/* Floating Toolbar - Figma-style */
+.floating-toolbar {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2c2c2c;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 100;
+}
+
+.floating-toolbar .ant-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 6px 8px;
+  height: auto;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-toolbar .ant-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.floating-toolbar .ant-btn:disabled {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.floating-toolbar .ant-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.floating-toolbar .toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 6px;
+}
+
+.floating-toolbar .ant-dropdown-trigger {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.floating-toolbar .ant-dropdown-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Floating Toolbar Menu - Dark theme dropdown */
+.floating-toolbar-menu {
+  background: #2c2c2c;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 4px;
+}
+
+.floating-toolbar-menu .ant-dropdown-menu-item {
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.floating-toolbar-menu .ant-dropdown-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.floating-toolbar-menu .ant-dropdown-menu-item-selected {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}

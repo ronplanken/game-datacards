@@ -1,5 +1,12 @@
-import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
-import { Button, Col, Dropdown, Layout, Menu, Row, Space } from "antd";
+import {
+  ExpandOutlined,
+  CompressOutlined,
+  ZoomInOutlined,
+  ZoomOutOutlined,
+  SwapOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import { Button, Dropdown, Layout, Menu, Row } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useState, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -17,7 +24,6 @@ import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { useAutoFitScale } from "./Hooks/useAutoFitScale";
-import { AddCard } from "./Icons/AddCard";
 import "./style.less";
 
 const { Content } = Layout;
@@ -52,14 +58,14 @@ function App() {
   // Build menu items with sub-categories shown under their parents
   const buildCategoryMenuItems = () => {
     const items = [];
-    // Get top-level categories (skip first one as it's the default)
-    const topLevelCategories = cardStorage.categories.filter((cat, index) => index !== 0 && !cat.parentId);
+    // Get all top-level categories
+    const topLevelCategories = cardStorage.categories.filter((cat) => !cat.parentId);
 
     topLevelCategories.forEach((cat) => {
       // Add parent category
       items.push({
         key: cat.uuid,
-        label: `Add to ${cat.name}`,
+        label: cat.name,
       });
 
       // Add sub-categories with indent styling (only for regular categories)
@@ -68,7 +74,7 @@ function App() {
         subCategories.forEach((sub) => {
           items.push({
             key: sub.uuid,
-            label: <span style={{ paddingLeft: 16, color: "rgba(0,0,0,0.65)" }}>└ Add to {sub.name}</span>,
+            label: <span style={{ paddingLeft: 12, opacity: 0.7 }}>└ {sub.name}</span>,
           });
         });
       }
@@ -79,6 +85,7 @@ function App() {
 
   const categoryMenu = (
     <Menu
+      className="floating-toolbar-menu"
       onClick={(e) => {
         const newCard = {
           ...activeCard,
@@ -113,6 +120,7 @@ function App() {
                 height: "calc(100vh - 64px)",
                 display: "block",
                 overflow: "auto",
+                position: "relative",
                 "--card-scaling-factor": effectiveScale,
                 "--banner-colour": cardFaction?.colours?.banner,
                 "--header-colour": cardFaction?.colours?.header,
@@ -126,123 +134,91 @@ function App() {
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
               </Row>
-              <Row style={{ overflow: "hidden", justifyContent: "center" }}>
-                <Col
-                  span={20}
-                  style={{
-                    overflow: "hidden",
-                    justifyContent: "center",
-                    display: "flex",
-                    marginTop: "16px",
-                  }}>
-                  <Space>
-                    {activeCard?.source === "40k-10e" && (
-                      <>
-                        <Space.Compact block>
-                          <Button
-                            type={settings.autoFitEnabled !== false ? "primary" : "default"}
-                            onClick={() => {
-                              updateSettings({
-                                ...settings,
-                                autoFitEnabled: !settings.autoFitEnabled,
-                              });
-                            }}
-                            title={
-                              settings.autoFitEnabled !== false
-                                ? "Auto-fit enabled (click for manual)"
-                                : "Manual mode (click for auto-fit)"
-                            }>
-                            {settings.autoFitEnabled !== false ? "Auto" : "Manual"}
-                          </Button>
-                          <Button
-                            type={"primary"}
-                            icon={<ZoomInOutlined />}
-                            disabled={settings.autoFitEnabled !== false || settings.zoom === 100}
-                            onClick={() => {
-                              let newZoom = settings.zoom || 100;
-                              newZoom = newZoom + 5;
-                              if (newZoom >= 100) {
-                                newZoom = 100;
-                              }
-                              updateSettings({ ...settings, zoom: newZoom });
-                            }}
-                          />
-                          <Button
-                            type={"primary"}
-                            icon={<ZoomOutOutlined />}
-                            disabled={settings.autoFitEnabled !== false || settings.zoom === 25}
-                            onClick={() => {
-                              let newZoom = settings.zoom || 100;
-                              newZoom = newZoom - 5;
-                              if (newZoom <= 25) {
-                                newZoom = newZoom = 25;
-                              }
-                              updateSettings({ ...settings, zoom: newZoom });
-                            }}
-                          />
-                        </Space.Compact>
-                        {settings.showCardsAsDoubleSided !== true &&
-                          activeCard?.variant !== "full" &&
-                          activeCard?.cardType === "DataCard" && (
+              {/* Floating Toolbar */}
+              {activeCard && (
+                <div className="floating-toolbar">
+                  {activeCard?.source === "40k-10e" && (
+                    <>
+                      {/* Auto-fit toggle */}
+                      <Button
+                        type="text"
+                        icon={settings.autoFitEnabled !== false ? <ExpandOutlined /> : <CompressOutlined />}
+                        className={settings.autoFitEnabled !== false ? "active" : ""}
+                        onClick={() => {
+                          updateSettings({
+                            ...settings,
+                            autoFitEnabled: !settings.autoFitEnabled,
+                          });
+                        }}
+                        title={
+                          settings.autoFitEnabled !== false
+                            ? "Auto-fit enabled (click for manual)"
+                            : "Manual mode (click for auto-fit)"
+                        }
+                      />
+                      <div className="toolbar-divider" />
+                      {/* Zoom controls */}
+                      <Button
+                        type="text"
+                        icon={<ZoomOutOutlined />}
+                        disabled={settings.autoFitEnabled !== false || settings.zoom === 25}
+                        onClick={() => {
+                          let newZoom = settings.zoom || 100;
+                          newZoom = newZoom - 5;
+                          if (newZoom <= 25) {
+                            newZoom = 25;
+                          }
+                          updateSettings({ ...settings, zoom: newZoom });
+                        }}
+                        title="Zoom out"
+                      />
+                      <Button
+                        type="text"
+                        icon={<ZoomInOutlined />}
+                        disabled={settings.autoFitEnabled !== false || settings.zoom === 100}
+                        onClick={() => {
+                          let newZoom = settings.zoom || 100;
+                          newZoom = newZoom + 5;
+                          if (newZoom >= 100) {
+                            newZoom = 100;
+                          }
+                          updateSettings({ ...settings, zoom: newZoom });
+                        }}
+                        title="Zoom in"
+                      />
+                      {/* Front/Back toggle */}
+                      {settings.showCardsAsDoubleSided !== true &&
+                        activeCard?.variant !== "full" &&
+                        activeCard?.cardType === "DataCard" && (
+                          <>
+                            <div className="toolbar-divider" />
                             <Button
-                              type={"primary"}
+                              type="text"
+                              icon={<SwapOutlined />}
                               onClick={() => {
                                 if (activeCard.print_side === "back") {
                                   updateActiveCard({ ...activeCard, print_side: "front" }, true);
                                 } else {
                                   updateActiveCard({ ...activeCard, print_side: "back" }, true);
                                 }
-                              }}>
-                              {activeCard.print_side === "back" ? "Show front" : "Show back"}
-                            </Button>
-                          )}
-                      </>
-                    )}
-                    {activeCard && !activeCard.isCustom && (
-                      <>
-                        {cardStorage.categories?.length > 1 ? (
-                          <Dropdown.Button
-                            overlay={categoryMenu}
-                            icon={<AddCard />}
-                            type={"primary"}
-                            style={{ width: "auto" }}
-                            onClick={() => {
-                              const newCard = {
-                                ...activeCard,
-                                isCustom: true,
-                                uuid: uuidv4(),
-                              };
-                              const cat = { ...cardStorage.categories[0] };
-                              addCardToCategory(newCard);
-                              setActiveCard(newCard);
-                              setActiveCategory(cat);
-                              setSelectedTreeIndex(`card-${newCard.uuid}`);
-                            }}>
-                            Add card to {cardStorage.categories[0].name}
-                          </Dropdown.Button>
-                        ) : (
-                          <Button
-                            type={"primary"}
-                            onClick={() => {
-                              const newCard = {
-                                ...activeCard,
-                                isCustom: true,
-                                uuid: uuidv4(),
-                              };
-                              const cat = { ...cardStorage.categories[0] };
-                              addCardToCategory(newCard);
-                              setActiveCard(newCard);
-                              setActiveCategory(cat);
-                              setSelectedTreeIndex(`card-${newCard.uuid}`);
-                            }}>
-                            Add card to {cardStorage.categories[0].name}
-                          </Button>
+                              }}
+                              title={activeCard.print_side === "back" ? "Show front" : "Show back"}
+                            />
+                          </>
                         )}
-                      </>
-                    )}
-                  </Space>
-                </Col>
-              </Row>
+                    </>
+                  )}
+                  {/* Add to category */}
+                  {!activeCard.isCustom && (
+                    <>
+                      {activeCard?.source === "40k-10e" && <div className="toolbar-divider" />}
+                      <Dropdown overlay={categoryMenu} trigger={["click"]}>
+                        <Button type="text" icon={<PlusOutlined />} title="Add card to category" />
+                      </Dropdown>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />
