@@ -10,11 +10,22 @@ import "./ImportExport.css";
 
 const modalRoot = document.getElementById("modal-root");
 
+// Helper to get all cards from a category including sub-categories
+const getAllCategoryCards = (category, allCategories) => {
+  const mainCards = category?.cards || [];
+  if (category?.type !== "list") {
+    const subCategories = allCategories.filter((cat) => cat.parentId === category?.uuid);
+    const subCategoryCards = subCategories.flatMap((sub) => sub.cards || []);
+    return [...mainCards, ...subCategoryCards];
+  }
+  return mainCards;
+};
+
 export const Exporter = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("json");
   const { logScreenView } = useFirebase();
-  const { activeCategory } = useCardStorage();
+  const { activeCategory, cardStorage } = useCardStorage();
 
   const handleClose = () => {
     setIsModalVisible(false);
@@ -22,11 +33,13 @@ export const Exporter = () => {
   };
 
   const handleExportJson = () => {
+    // Get all cards including sub-category cards
+    const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
     const exportCategory = {
       ...activeCategory,
       closed: false,
       uuid: uuidv4(),
-      cards: activeCategory?.cards?.map((card) => {
+      cards: allCards?.map((card) => {
         return { ...card, uuid: uuidv4() };
       }),
     };
@@ -51,7 +64,9 @@ export const Exporter = () => {
 
   const handleCopyGwApp = () => {
     let listText = activeCategory.name;
-    const sortedCards = activeCategory?.cards?.reduce(
+    // Get all cards including sub-category cards
+    const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
+    const sortedCards = allCards?.reduce(
       (exportCards, card) => {
         if (card.keywords.includes("Character")) {
           exportCards.characters.push(card);

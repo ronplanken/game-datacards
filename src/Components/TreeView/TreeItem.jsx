@@ -1,36 +1,30 @@
-import {
-  CloseOutlined,
-  CopyOutlined,
-  CrownFilled,
-  DeleteOutlined,
-  ExclamationCircleOutlined,
-  HeatMapOutlined,
-} from "@ant-design/icons";
-import { Button, Col, Dropdown, List, Menu, Modal, Row, Select, Space, Tooltip, Typography, message } from "antd";
-import classNames from "classnames";
 import React, { useEffect, useState } from "react";
+import { CloseOutlined, CopyOutlined, CrownFilled, DeleteOutlined, HeatMapOutlined } from "@ant-design/icons";
+import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
+import classNames from "classnames";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
-import { capitalizeSentence } from "../Helpers/external.helpers";
-import { useCardStorage } from "../Hooks/useCardStorage";
-import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
-import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-import { AddCard } from "../Icons/AddCard";
-import { Datacard } from "../Icons/Datacard";
-import { Datacard10e } from "../Icons/Datacard10e";
-import { Ganger } from "../Icons/Ganger";
-import { PsychicPower } from "../Icons/PsychicPower";
-import { Secondary } from "../Icons/Secondary";
-import { Stratagem } from "../Icons/Stratagem";
-import { Vehicle } from "../Icons/Vehicle";
-import { confirmDialog } from "./ConfirmChangesModal";
-import { Enhancement } from "../Icons/Enhancement";
-import { Battlerule } from "../Icons/Battlerule";
-
-const { confirm } = Modal;
+import { capitalizeSentence } from "../../Helpers/external.helpers";
+import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { AddCard } from "../../Icons/AddCard";
+import { Datacard } from "../../Icons/Datacard";
+import { Datacard10e } from "../../Icons/Datacard10e";
+import { Ganger } from "../../Icons/Ganger";
+import { PsychicPower } from "../../Icons/PsychicPower";
+import { Secondary } from "../../Icons/Secondary";
+import { Stratagem } from "../../Icons/Stratagem";
+import { Vehicle } from "../../Icons/Vehicle";
+import { Enhancement } from "../../Icons/Enhancement";
+import { Battlerule } from "../../Icons/Battlerule";
+import { confirmDialog } from "../ConfirmChangesModal";
+import { ContextMenu } from "./ContextMenu";
+import "./TreeView.css";
 
 const { Option } = Select;
-export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeIndex, index }) {
+
+export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeIndex, index, isInSubCategory = false }) {
   const {
     setActiveCard,
     activeCategory,
@@ -46,6 +40,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
   const { settings, updateSettings } = useSettingsStorage();
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
 
   const [selectedEnhancement, setSelectedEnhancement] = useState(() => card.selectedEnhancement);
   const [isWarlord, setIsWarlord] = useState(() => {
@@ -100,49 +95,62 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     }
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item
-        key="1"
-        icon={<CopyOutlined />}
-        onClick={() => {
-          const newCard = {
-            ...card,
-            name: `${card.name} Copy`,
-            unitSize: undefined,
-            selectedEnhancement: undefined,
-            isWarlord: undefined,
-            isCustom: true,
-            uuid: uuidv4(),
-          };
-          addCardToCategory(newCard, activeCategory.uuid);
-          setActiveCard(newCard);
-        }}>
-        Duplicate
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item
-        key="2"
-        icon={<DeleteOutlined />}
-        onClick={() => {
-          confirm({
-            title: "Are you sure you want to delete this card?",
-            icon: <ExclamationCircleOutlined />,
-            okText: "Yes",
-            okType: "danger",
-            cancelText: "No",
-            onOk: () => {
-              removeCardFromCategory(card.uuid, category.uuid);
-              setActiveCard(null);
-              setSelectedTreeIndex(null);
-              message.success("Card has been deleted.");
-            },
-          });
-        }}>
-        Delete
-      </Menu.Item>
-    </Menu>
-  );
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleDuplicate = () => {
+    const newCard = {
+      ...card,
+      name: `${card.name} Copy`,
+      unitSize: undefined,
+      selectedEnhancement: undefined,
+      isWarlord: undefined,
+      isCustom: true,
+      uuid: uuidv4(),
+    };
+    addCardToCategory(newCard, activeCategory.uuid);
+    setActiveCard(newCard);
+  };
+
+  const handleDelete = () => {
+    confirmDialog({
+      title: "Are you sure you want to delete this card?",
+      content: "This action cannot be undone.",
+      handleSave: () => {
+        removeCardFromCategory(card.uuid, category.uuid);
+        setActiveCard(null);
+        setSelectedTreeIndex(null);
+        message.success("Card has been deleted.");
+      },
+      handleDiscard: () => {},
+      handleCancel: () => {},
+      saveText: "Delete",
+      discardText: "Cancel",
+      hideDiscard: true,
+    });
+  };
+
+  const contextMenuItems = [
+    {
+      key: "duplicate",
+      label: "Duplicate",
+      icon: <CopyOutlined />,
+      onClick: handleDuplicate,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "delete",
+      label: "Delete",
+      icon: <DeleteOutlined />,
+      danger: true,
+      onClick: handleDelete,
+    },
+  ];
 
   const onSelect = () => {
     if (selectedTreeIndex === cardIndex) {
@@ -156,114 +164,128 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     }
   };
 
+  const handleClick = () => {
+    if (cardUpdated) {
+      confirmDialog({
+        title: "You have unsaved changes",
+        content: "Do you want to save before switching?",
+        handleSave: () => {
+          saveActiveCard();
+          onSelect();
+        },
+        handleDiscard: () => {
+          onSelect();
+        },
+        handleCancel: () => {},
+      });
+    } else {
+      onSelect();
+    }
+  };
+
   const isListItem =
     category?.type === "list" && card?.source === "40k-10e" && card?.cardType === "DataCard" && !card?.unitSize;
+
+  const getCardIcon = () => {
+    switch (card.cardType) {
+      case "datasheet":
+        return <Datacard />;
+      case "DataCard":
+        return <Datacard10e />;
+      case "stratagem":
+        return <Stratagem />;
+      case "enhancement":
+        return <Enhancement />;
+      case "battlerule":
+        return <Battlerule />;
+      case "secondary":
+        return <Secondary />;
+      case "psychic":
+        return <PsychicPower />;
+      case "ganger":
+      case "empty-ganger":
+        return <Ganger />;
+      case "vehicle":
+      case "empty-vehicle":
+        return <Vehicle />;
+      default:
+        return null;
+    }
+  };
+
+  const isSelected = selectedTreeIndex === cardIndex;
 
   return (
     <>
       <Draggable key={`${cardIndex}-draggable`} draggableId={card.uuid} index={index}>
-        {(provided) => (
-          <Dropdown overlay={menu} trigger={["contextMenu"]}>
-            <div
-              className={["tree-item-container", selectedTreeIndex === cardIndex ? "selected" : ""].join(" ")}
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              style={{
-                paddingLeft: 38,
-                height: 24,
-                fontSize: "14px",
-                alignContent: "center",
-                display: "flex",
-                width: "100%",
-                ...provided.draggableProps.style,
-              }}>
-              <div
-                onClick={() => {
-                  if (cardUpdated) {
-                    confirmDialog({
-                      title: "You have unsaved changes",
-                      content: "Do you want to save before switching?",
-                      handleSave: () => {
-                        saveActiveCard();
-                        onSelect();
-                      },
-                      handleDiscard: () => {
-                        onSelect();
-                      },
-                      handleCancel: () => {
-                        //do nothing
-                      },
-                    });
-                  } else {
-                    onSelect();
-                  }
-                }}
-                className={"tree-item"}>
-                {card.cardType === "datasheet" && <Datacard />}
-                {card.cardType === "DataCard" && <Datacard10e />}
-                {card.cardType === "stratagem" && <Stratagem />}
-                {card.cardType === "enhancement" && <Enhancement />}
-                {card.cardType === "battlerule" && <Battlerule />}
-                {card.cardType === "secondary" && <Secondary />}
-                {card.cardType === "psychic" && <PsychicPower />}
-                {card.cardType === "ganger" && <Ganger />}
-                {card.cardType === "vehicle" && <Vehicle />}
-                {card.cardType === "empty-ganger" && <Ganger />}
-                {card.cardType === "empty-vehicle" && <Vehicle />}
-                &nbsp;{card.name}
-              </div>
+        {(provided, snapshot) => (
+          <div
+            className={classNames("tree-item-row", {
+              selected: isSelected,
+              dragging: snapshot.isDragging,
+              "in-sub-category": isInSubCategory,
+            })}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            style={provided.draggableProps.style}
+            onClick={handleClick}
+            onContextMenu={handleContextMenu}>
+            <div className="tree-item-icon">{getCardIcon()}</div>
+            <span className="tree-item-name">{card.name}</span>
+
+            <div className="tree-item-indicators">
               {category?.type === "list" && card?.source === "40k-10e" && card?.selectedEnhancement && (
-                <span style={{ paddingRight: "8px" }}>
-                  <Tooltip
-                    title={
-                      <>
-                        Enhancement:
-                        <br /> <strong>{capitalizeSentence(card?.selectedEnhancement?.name)}</strong> (+
-                        {card?.selectedEnhancement?.cost}pts)
-                      </>
-                    }>
-                    <HeatMapOutlined />
-                  </Tooltip>
+                <span
+                  className="tree-item-indicator"
+                  title={`Enhancement: ${capitalizeSentence(card?.selectedEnhancement?.name)} (+${
+                    card?.selectedEnhancement?.cost
+                  }pts)`}>
+                  <HeatMapOutlined />
                 </span>
               )}
               {category?.type === "list" && card?.source === "40k-10e" && card?.isWarlord && (
-                <span style={{ paddingRight: "8px" }}>
-                  <Tooltip title={"This unit is the warlord."}>
-                    <CrownFilled />
-                  </Tooltip>
+                <span className="tree-item-indicator" title="This unit is the warlord">
+                  <CrownFilled />
                 </span>
-              )}
-              {category?.type === "list" && card?.source === "40k-10e" && card?.unitSize?.cost && (
-                <span
-                  className="list-select"
-                  style={{
-                    minWidth: "40px",
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setModalVisible(true);
-                  }}>
-                  <strong>{Number(card?.unitSize?.cost) + (Number(card.selectedEnhancement?.cost) || 0)}</strong>
-                </span>
-              )}
-              {isListItem && (
-                <>
-                  <button
-                    type="primary"
-                    className="list-select"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setModalVisible(true);
-                    }}>
-                    <strong>select</strong>
-                  </button>
-                </>
               )}
             </div>
-          </Dropdown>
+
+            {category?.type === "list" && card?.source === "40k-10e" && card?.unitSize?.cost && (
+              <button
+                className="tree-item-points"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setModalVisible(true);
+                }}>
+                {Number(card?.unitSize?.cost) + (Number(card.selectedEnhancement?.cost) || 0)}
+              </button>
+            )}
+
+            {isListItem && (
+              <button
+                className="tree-item-select"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setModalVisible(true);
+                }}>
+                select
+              </button>
+            )}
+          </div>
         )}
       </Draggable>
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={contextMenuItems}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
+
+      {/* Keep existing unit config modal as-is */}
       {modalVisible && (
         <div
           onClick={(e) => {
@@ -343,7 +365,8 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                         </Row>
                       </List.Item>
                     );
-                  }}></List>
+                  }}
+                />
               </Space>
               {(card?.keywords?.includes("Character") || card?.keywords?.includes("Epic Hero")) && (
                 <>
@@ -478,7 +501,8 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                             </Row>
                           </List.Item>
                         );
-                      }}></List>
+                      }}
+                    />
                   </Space>
                 </>
               )}

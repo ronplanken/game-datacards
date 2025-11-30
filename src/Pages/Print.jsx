@@ -31,6 +31,18 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
 const { useBreakpoint } = Grid;
+
+// Helper to get all cards from a category including sub-categories
+const getAllCategoryCards = (category, allCategories) => {
+  const mainCards = category.cards || [];
+  // Get cards from sub-categories (only for regular categories, not lists)
+  if (category.type !== "list") {
+    const subCategories = allCategories.filter((cat) => cat.parentId === category.uuid);
+    const subCategoryCards = subCategories.flatMap((sub) => sub.cards || []);
+    return [...mainCards, ...subCategoryCards];
+  }
+  return mainCards;
+};
 const { Panel } = Collapse;
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -422,47 +434,49 @@ export const Print = () => {
           </Sider>
           <Content className={"print-content"}>
             <Printer>
-              {split(cardStorage.categories[CategoryId].cards, cardsPerPage).map((row, rowIndex) => {
-                return (
-                  <Page
-                    key={rowIndex}
-                    size={pageSize}
-                    customSize={customSize}
-                    orientation={pageOrientation}
-                    style={{
-                      padding: pagePadding,
-                      justifyContent: cardAlignment,
-                      alignContent: verticalAlignment,
-                      rowGap: rowGap,
-                      columnGap: columnGap,
-                    }}>
-                    {row.map((card, index) => {
-                      return (
-                        <div key={`${card.name}-${index}`} ref={(element) => cardRefs.current.push(element)}>
-                          {card?.source === "40k" && (
-                            <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
-                          )}
-                          {card?.source === "40k-10e" && (
-                            <Warhammer40K10eCardDisplay
-                              card={card}
-                              type="print"
-                              cardScaling={cardScaling}
-                              side={!card.print_side || force_print_side ? print_side : card.print_side}
-                              backgrounds={backgrounds}
-                            />
-                          )}
-                          {card?.source === "basic" && (
-                            <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
-                          )}
-                          {card?.source === "necromunda" && (
-                            <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </Page>
-                );
-              })}
+              {split(getAllCategoryCards(cardStorage.categories[CategoryId], cardStorage.categories), cardsPerPage).map(
+                (row, rowIndex) => {
+                  return (
+                    <Page
+                      key={rowIndex}
+                      size={pageSize}
+                      customSize={customSize}
+                      orientation={pageOrientation}
+                      style={{
+                        padding: pagePadding,
+                        justifyContent: cardAlignment,
+                        alignContent: verticalAlignment,
+                        rowGap: rowGap,
+                        columnGap: columnGap,
+                      }}>
+                      {row.map((card, index) => {
+                        return (
+                          <div key={`${card.name}-${index}`} ref={(element) => cardRefs.current.push(element)}>
+                            {card?.source === "40k" && (
+                              <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
+                            )}
+                            {card?.source === "40k-10e" && (
+                              <Warhammer40K10eCardDisplay
+                                card={card}
+                                type="print"
+                                cardScaling={cardScaling}
+                                side={!card.print_side || force_print_side ? print_side : card.print_side}
+                                backgrounds={backgrounds}
+                              />
+                            )}
+                            {card?.source === "basic" && (
+                              <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />
+                            )}
+                            {card?.source === "necromunda" && (
+                              <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </Page>
+                  );
+                }
+              )}
             </Printer>
           </Content>
         </Layout>

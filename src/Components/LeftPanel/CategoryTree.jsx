@@ -1,13 +1,15 @@
 import React from "react";
 import clone from "just-clone";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { TreeCategory } from "../TreeCategory";
-import { TreeItem } from "../TreeItem";
+import { TreeCategory, TreeItem } from "../TreeView";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { getBackgroundColor, getMinHeight, move, reorder } from "../../Helpers/treeview.helpers";
 
 export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
-  const { cardStorage, updateCategory } = useCardStorage();
+  const { cardStorage, updateCategory, getSubCategories } = useCardStorage();
+
+  // Get only top-level categories (no parentId)
+  const topLevelCategories = cardStorage.categories.filter((cat) => !cat.parentId);
 
   const handleDragEnd = (result) => {
     const { source, destination } = result;
@@ -38,6 +40,46 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
     }
   };
 
+  const renderSubCategories = (parentCategory) => {
+    if (parentCategory.type === "list") return null;
+
+    const subCategories = getSubCategories(parentCategory.uuid);
+    if (subCategories.length === 0) return null;
+
+    return subCategories.map((subCategory, subIndex) => (
+      <Droppable key={`${subCategory.uuid}-droppable`} droppableId={subCategory.uuid}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            style={{
+              minHeight: getMinHeight(snapshot),
+              backgroundColor: getBackgroundColor(snapshot),
+            }}>
+            <TreeCategory
+              category={subCategory}
+              selectedTreeIndex={selectedTreeIndex}
+              setSelectedTreeIndex={setSelectedTreeIndex}
+              isSubCategory>
+              {subCategory.cards.map((card, cardIndex) => (
+                <TreeItem
+                  card={card}
+                  category={subCategory}
+                  selectedTreeIndex={selectedTreeIndex}
+                  setSelectedTreeIndex={setSelectedTreeIndex}
+                  index={cardIndex}
+                  key={`${subCategory.uuid}-item-${cardIndex}`}
+                  isInSubCategory
+                />
+              ))}
+            </TreeCategory>
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    ));
+  };
+
   return (
     <div
       style={{
@@ -46,7 +88,7 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
         background: "white",
       }}>
       <DragDropContext onDragEnd={handleDragEnd}>
-        {cardStorage.categories.map((category, categoryIndex) => (
+        {topLevelCategories.map((category, categoryIndex) => (
           <div key={`category-${category.name}-${categoryIndex}`}>
             <Droppable key={`${category.uuid}-droppable`} droppableId={category.uuid}>
               {(provided, snapshot) => (
@@ -76,6 +118,8 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
                 </div>
               )}
             </Droppable>
+            {/* Render sub-categories after the parent category's droppable */}
+            {!category.closed && renderSubCategories(category)}
           </div>
         ))}
       </DragDropContext>

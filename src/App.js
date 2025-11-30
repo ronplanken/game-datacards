@@ -49,6 +49,34 @@ function App() {
   // Determine effective scale based on mode
   const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
 
+  // Build menu items with sub-categories shown under their parents
+  const buildCategoryMenuItems = () => {
+    const items = [];
+    // Get top-level categories (skip first one as it's the default)
+    const topLevelCategories = cardStorage.categories.filter((cat, index) => index !== 0 && !cat.parentId);
+
+    topLevelCategories.forEach((cat) => {
+      // Add parent category
+      items.push({
+        key: cat.uuid,
+        label: `Add to ${cat.name}`,
+      });
+
+      // Add sub-categories with indent styling (only for regular categories)
+      if (cat.type !== "list") {
+        const subCategories = cardStorage.categories.filter((sub) => sub.parentId === cat.uuid);
+        subCategories.forEach((sub) => {
+          items.push({
+            key: sub.uuid,
+            label: <span style={{ paddingLeft: 16, color: "rgba(0,0,0,0.65)" }}>└ Add to {sub.name}</span>,
+          });
+        });
+      }
+    });
+
+    return items;
+  };
+
   const categoryMenu = (
     <Menu
       onClick={(e) => {
@@ -63,13 +91,7 @@ function App() {
         setActiveCategory(cat);
         setSelectedTreeIndex(`card-${newCard.uuid}`);
       }}
-      items={cardStorage.categories.map((cat, index) => {
-        if (index === 0) return;
-        return {
-          key: cat.uuid,
-          label: `Add to ${cat.name}`,
-        };
-      })}
+      items={buildCategoryMenuItems()}
     />
   );
 

@@ -15,6 +15,18 @@ const parser = new Parser({ mergeAttrs: true, explicitArray: false });
 
 const parseString = parser.parseString;
 
+// Helper to get total card count including sub-categories
+const getTotalCardCount = (category, allCategories) => {
+  if (!category) return 0;
+  const mainCards = category.cards?.length || 0;
+  if (category.type !== "list") {
+    const subCategories = allCategories.filter((cat) => cat.parentId === category.uuid);
+    const subCardCount = subCategories.reduce((sum, sub) => sum + (sub.cards?.length || 0), 0);
+    return mainCards + subCardCount;
+  }
+  return mainCards;
+};
+
 export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
   const { settings } = useSettingsStorage();
 
@@ -37,7 +49,7 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
           <Button
             type={"text"}
             shape={"circle"}
-            disabled={!(activeCategory && activeCategory.cards.length > 0)}
+            disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
               logScreenView("Print");
@@ -54,7 +66,7 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
           <Button
             type={"text"}
             shape={"circle"}
-            disabled={!(activeCategory && activeCategory.cards.length > 0)}
+            disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
               logScreenView("Export");

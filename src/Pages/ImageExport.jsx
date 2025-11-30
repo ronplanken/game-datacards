@@ -28,6 +28,18 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 import JSZip from "jszip";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+
+// Helper to get all cards from a category including sub-categories
+const getAllCategoryCards = (category, allCategories) => {
+  const mainCards = category.cards || [];
+  if (category.type !== "list") {
+    const subCategories = allCategories.filter((cat) => cat.parentId === category.uuid);
+    const subCategoryCards = subCategories.flatMap((sub) => sub.cards || []);
+    return [...mainCards, ...subCategoryCards];
+  }
+  return mainCards;
+};
+
 const { Header, Footer, Sider, Content } = Layout;
 const { Panel } = Collapse;
 const { useBreakpoint } = Grid;
@@ -46,6 +58,10 @@ export const ImageExport = () => {
   const [backgrounds, setBackgrounds] = useState(settings.printSettings?.backgrounds || "standard");
   const [pixelScaling, setPixelScaling] = useState(1.5);
 
+  // Get all cards including sub-category cards
+  const category = cardStorage.categories[CategoryId];
+  const allCards = category ? getAllCategoryCards(category, cardStorage.categories) : [];
+
   const getPics = async () => {
     const zip = new JSZip();
     overlayRef.current.style.display = "inline-flex";
@@ -58,13 +74,8 @@ export const ImageExport = () => {
 
     files?.forEach(async (file, index) => {
       zip.file(
-        `${cardStorage.categories[CategoryId].name}/${cardStorage.categories[CategoryId].cards[index].name
-          .replaceAll(" ", "_")
-          .toLowerCase()}${
-          cardStorage.categories[CategoryId]?.cards[index]?.variant === "full" ||
-          settings.showCardsAsDoubleSided !== false
-            ? ".png"
-            : "-front.png"
+        `${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}${
+          allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
         }`,
         file
       );
@@ -76,19 +87,14 @@ export const ImageExport = () => {
       });
 
       backFiles?.forEach(async (file, index) => {
-        zip.file(
-          `${cardStorage.categories[CategoryId].name}/${cardStorage.categories[CategoryId].cards[index].name
-            .replaceAll(" ", "_")
-            .toLowerCase()}-back.png`,
-          file
-        );
+        zip.file(`${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
       });
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
-      link.download = `datacards_${cardStorage.categories[CategoryId].name.toLowerCase()}.zip`;
+      link.download = `datacards_${category.name.toLowerCase()}.zip`;
       link.click();
       overlayRef.current.style.display = "none";
     });
@@ -222,7 +228,7 @@ export const ImageExport = () => {
             className="image-generator">
             <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
               <>
-                {cardStorage.categories[CategoryId]?.cards.map((card, index) => {
+                {allCards.map((card, index) => {
                   return (
                     <div key={card.uuid}>
                       <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>

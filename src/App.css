@@ -146,32 +146,6 @@
   color: #40a9ff;
 }
 
-.tree-item {
-  width: 100%;
-  padding-left: 8px;
-  align-items: center;
-  overflow: hidden;
-}
-
-.tree-item-container.selected > .tree-item {
-  width: 100%;
-  padding-left: 4px;
-}
-
-.tree-item-container.selected {
-  background-color: #bae7ff;
-  border-left: 4px solid #0070d6;
-}
-
-.tree-item-container:hover {
-  cursor: pointer;
-  background-color: #f5f5f5;
-}
-
-.tree-item-container.selected:hover {
-  background-color: #a2dfff;
-}
-
 .dots {
   bottom: -80px !important;
   padding-top: 1em;
