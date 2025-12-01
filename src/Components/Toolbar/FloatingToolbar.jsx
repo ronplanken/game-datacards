@@ -52,7 +52,7 @@ export const FloatingToolbar = ({
     const isSelected = !isAutoFit && currentZoom === value;
     return (
       <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        {isSelected && <Check size={14} />}
+        {isSelected && <Check size={19} />}
         <span style={{ marginLeft: isSelected ? 0 : 22 }}>{value}%</span>
       </span>
     );
@@ -63,7 +63,7 @@ export const FloatingToolbar = ({
       key: "auto",
       label: (
         <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {isAutoFit && <Check size={14} />}
+          {isAutoFit && <Check size={19} />}
           <span style={{ marginLeft: isAutoFit ? 0 : 22 }}>Auto</span>
         </span>
       ),
@@ -111,9 +111,24 @@ export const FloatingToolbar = ({
     activeCard?.variant !== "full" &&
     activeCard?.cardType === "DataCard";
 
+  // Determine which button groups are visible
+  const showZoom = is40k10e;
+  const showAddToCategory = !activeCard.isCustom;
+  const showSave = activeCard.isCustom && cardUpdated;
+
+  // Count visible button groups to determine if we need dividers
+  const visibleGroupCount = [showZoom, showFrontBackToggle, showAddToCategory, showSave].filter(Boolean).length;
+
+  // Hide toolbar if no buttons are visible
+  if (visibleGroupCount === 0) return null;
+
+  // Helper to determine if divider should show before a group
+  // Only show divider if there are multiple groups AND there's a visible group before this one
+  const needsDividerBefore = (previousGroupsVisible) => visibleGroupCount > 1 && previousGroupsVisible;
+
   return (
     <div className="floating-toolbar">
-      {is40k10e && (
+      {showZoom && (
         <>
           {/* Zoom dropdown */}
           <Tooltip content="Zoom level">
@@ -125,36 +140,38 @@ export const FloatingToolbar = ({
               </Dropdown>
             </span>
           </Tooltip>
-          {/* Front/Back toggle */}
-          {showFrontBackToggle && (
-            <>
-              <div className="toolbar-divider" />
-              <Tooltip content={activeCard.print_side === "back" ? "Show front" : "Show back"}>
-                <Button type="text" icon={<ArrowLeftRight size={14} />} onClick={handleToggleSide} />
-              </Tooltip>
-            </>
-          )}
+        </>
+      )}
+      {/* Front/Back toggle */}
+      {showFrontBackToggle && (
+        <>
+          {needsDividerBefore(showZoom) && <div className="toolbar-divider" />}
+          <Tooltip content={activeCard.print_side === "back" ? "Show front" : "Show back"}>
+            <Button type="text" icon={<ArrowLeftRight size={19} />} onClick={handleToggleSide} />
+          </Tooltip>
         </>
       )}
       {/* Add to category */}
-      {!activeCard.isCustom && (
+      {showAddToCategory && (
         <>
-          {is40k10e && <div className="toolbar-divider" />}
+          {needsDividerBefore(showZoom || showFrontBackToggle) && <div className="toolbar-divider" />}
           <Tooltip content="Add card to category">
             <span>
               <Dropdown overlay={categoryMenu} trigger={["click"]}>
-                <Button type="text" icon={<Plus size={14} />} />
+                <Button type="text" icon={<Plus size={19} />} />
               </Dropdown>
             </span>
           </Tooltip>
         </>
       )}
       {/* Save button */}
-      {activeCard.isCustom && cardUpdated && (
+      {showSave && (
         <>
-          <div className="toolbar-divider" />
+          {needsDividerBefore(showZoom || showFrontBackToggle || showAddToCategory) && (
+            <div className="toolbar-divider" />
+          )}
           <Tooltip content="Save card">
-            <Button type="text" icon={<Save size={14} />} onClick={handleSave} />
+            <Button type="text" icon={<Save size={19} />} onClick={handleSave} />
           </Tooltip>
         </>
       )}
