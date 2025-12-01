@@ -5,9 +5,9 @@ on:
     branches:
       - main
     tags-ignore:
-      - '**'
+      - "**"
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
 
 jobs:
   Run:
@@ -34,7 +34,7 @@ jobs:
         run: NODE_ENV=production yarn --production=false --immutable --immutable-cache --check-cache --prefer-offline
 
       #- name: Run Linting
-      #  run: yarn lint 
+      #  run: yarn lint
 
       - name: Run Tests
         run: yarn test:ci
