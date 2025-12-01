@@ -1,5 +1,6 @@
 import { Link, Share2 } from "lucide-react";
-import { Button, Col, Modal, Row, Tooltip, Typography, message } from "antd";
+import { Button, Col, Modal, Row, Typography, message } from "antd";
+import { Tooltip } from "./Tooltip/Tooltip";
 import React from "react";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
@@ -63,7 +64,7 @@ export const ShareModal = () => {
           </Col>
           {shareId && (
             <Col span={5}>
-              <Tooltip title="Copy to clipboard">
+              <Tooltip content="Copy to clipboard">
                 <Button
                   icon={<Link size={14} />}
                   type={"primary"}
@@ -100,7 +101,7 @@ export const ShareModal = () => {
           </Col>
         </Row>
       </Modal>
-      <Tooltip title={"Share category"} placement="bottomLeft">
+      <Tooltip content="Share category" placement="bottom-start">
         <Button
           type={"ghost"}
           icon={<Share2 size={14} />}

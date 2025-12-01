@@ -1,5 +1,6 @@
 import { Trash2, Star } from "lucide-react";
-import { Button, Card, Form, Input, Popconfirm, Space, Switch, Tooltip } from "antd";
+import { Button, Card, Form, Input, Popconfirm, Space, Switch } from "antd";
+import { Tooltip } from "../../Tooltip/Tooltip";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -66,7 +67,7 @@ export function UnitPoints() {
                             style={{ marginBottom: "16px" }}
                             extra={
                               <Space>
-                                <Tooltip title={point.primary ? "Primary point" : "Set as primary"}>
+                                <Tooltip content={point.primary ? "Primary point" : "Set as primary"}>
                                   <Button
                                     type="text"
                                     size="small"

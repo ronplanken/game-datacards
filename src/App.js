@@ -1,10 +1,10 @@
-import { Check, ArrowLeftRight, Plus, Save } from "lucide-react";
-import { Button, Dropdown, Layout, Menu, Row, message } from "antd";
+import { Layout, Row } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useState, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
+import { FloatingToolbar } from "./Components/Toolbar/FloatingToolbar";
 import { AppHeader } from "./Components/AppHeader";
 import { LeftPanel } from "./Components/LeftPanel";
 import { NecromundaCardDisplay } from "./Components/Necromunda/CardDisplay";
@@ -56,97 +56,23 @@ function App() {
   // Determine effective scale based on mode
   const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
 
-  // Build menu items with sub-categories shown under their parents
-  const buildCategoryMenuItems = () => {
-    const items = [];
-    // Get all top-level categories
-    const topLevelCategories = cardStorage.categories.filter((cat) => !cat.parentId);
-
-    topLevelCategories.forEach((cat) => {
-      // Add parent category
-      items.push({
-        key: cat.uuid,
-        label: cat.name,
-      });
-
-      // Add sub-categories with indent styling (only for regular categories)
-      if (cat.type !== "list") {
-        const subCategories = cardStorage.categories.filter((sub) => sub.parentId === cat.uuid);
-        subCategories.forEach((sub) => {
-          items.push({
-            key: sub.uuid,
-            label: <span style={{ paddingLeft: 12, opacity: 0.7 }}>└ {sub.name}</span>,
-          });
-        });
-      }
-    });
-
-    return items;
-  };
-
-  const categoryMenu = (
-    <Menu
-      className="floating-toolbar-menu"
-      onClick={(e) => {
-        const newCard = {
-          ...activeCard,
-          isCustom: true,
-          uuid: uuidv4(),
-        };
-        const cat = { ...cardStorage.categories.find((c) => c.uuid === e.key) };
-        addCardToCategory(newCard, cat.uuid);
-        setActiveCard(newCard);
-        setActiveCategory(cat);
-        setSelectedTreeIndex(`card-${newCard.uuid}`);
-      }}
-      items={buildCategoryMenuItems()}
-    />
-  );
-
-  // Zoom dropdown menu
+  // Zoom settings
   const currentZoom = settings.zoom || 100;
   const isAutoFit = settings.autoFitEnabled !== false;
 
-  const zoomMenuItems = [
-    {
-      key: "auto",
-      label: (
-        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {isAutoFit && <Check size={14} />}
-          <span style={{ marginLeft: isAutoFit ? 0 : 22 }}>Auto</span>
-        </span>
-      ),
-    },
-    { type: "divider" },
-    { key: "100", label: renderZoomOption(100) },
-    { key: "75", label: renderZoomOption(75) },
-    { key: "50", label: renderZoomOption(50) },
-    { key: "25", label: renderZoomOption(25) },
-  ];
-
-  function renderZoomOption(value) {
-    const isSelected = !isAutoFit && currentZoom === value;
-    return (
-      <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        {isSelected && <Check size={14} />}
-        <span style={{ marginLeft: isSelected ? 0 : 22 }}>{value}%</span>
-      </span>
-    );
-  }
-
-  const zoomMenu = (
-    <Menu
-      className="floating-toolbar-menu"
-      onClick={(e) => {
-        if (e.key === "auto") {
-          updateSettings({ ...settings, autoFitEnabled: true });
-        } else {
-          updateSettings({ ...settings, autoFitEnabled: false, zoom: parseInt(e.key) });
-        }
-      }}
-      items={zoomMenuItems}
-    />
-  );
+  // Handle add to category from toolbar
+  const handleAddToCategory = (categoryUuid) => {
+    const newCard = {
+      ...activeCard,
+      isCustom: true,
+      uuid: uuidv4(),
+    };
+    const cat = { ...cardStorage.categories.find((c) => c.uuid === categoryUuid) };
+    addCardToCategory(newCard, cat.uuid);
+    setActiveCard(newCard);
+    setActiveCategory(cat);
+    setSelectedTreeIndex(`card-${newCard.uuid}`);
+  };
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
 
@@ -180,65 +106,19 @@ function App() {
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
               </Row>
-              {/* Floating Toolbar */}
-              {activeCard && (
-                <div className="floating-toolbar">
-                  {activeCard?.source === "40k-10e" && (
-                    <>
-                      {/* Zoom dropdown */}
-                      <Dropdown overlay={zoomMenu} trigger={["click"]}>
-                        <Button type="text" className="zoom-button" title="Zoom level">
-                          {isAutoFit ? "Auto" : `${currentZoom}%`}
-                        </Button>
-                      </Dropdown>
-                      {/* Front/Back toggle */}
-                      {settings.showCardsAsDoubleSided !== true &&
-                        activeCard?.variant !== "full" &&
-                        activeCard?.cardType === "DataCard" && (
-                          <>
-                            <div className="toolbar-divider" />
-                            <Button
-                              type="text"
-                              icon={<ArrowLeftRight size={14} />}
-                              onClick={() => {
-                                if (activeCard.print_side === "back") {
-                                  updateActiveCard({ ...activeCard, print_side: "front" }, true);
-                                } else {
-                                  updateActiveCard({ ...activeCard, print_side: "back" }, true);
-                                }
-                              }}
-                              title={activeCard.print_side === "back" ? "Show front" : "Show back"}
-                            />
-                          </>
-                        )}
-                    </>
-                  )}
-                  {/* Add to category */}
-                  {!activeCard.isCustom && (
-                    <>
-                      {activeCard?.source === "40k-10e" && <div className="toolbar-divider" />}
-                      <Dropdown overlay={categoryMenu} trigger={["click"]}>
-                        <Button type="text" icon={<Plus size={14} />} title="Add card to category" />
-                      </Dropdown>
-                    </>
-                  )}
-                  {/* Save button */}
-                  {activeCard.isCustom && cardUpdated && (
-                    <>
-                      <div className="toolbar-divider" />
-                      <Button
-                        type="text"
-                        icon={<Save size={14} />}
-                        onClick={() => {
-                          saveActiveCard();
-                          message.success("Card has been updated");
-                        }}
-                        title="Save card"
-                      />
-                    </>
-                  )}
-                </div>
-              )}
+              <FloatingToolbar
+                activeCard={activeCard}
+                settings={settings}
+                cardUpdated={cardUpdated}
+                currentZoom={currentZoom}
+                isAutoFit={isAutoFit}
+                categories={cardStorage.categories}
+                updateActiveCard={updateActiveCard}
+                saveActiveCard={saveActiveCard}
+                onZoomChange={(zoom) => updateSettings({ ...settings, autoFitEnabled: false, zoom })}
+                onAutoFitToggle={() => updateSettings({ ...settings, autoFitEnabled: true })}
+                onAddToCategory={handleAddToCategory}
+              />
             </div>
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />

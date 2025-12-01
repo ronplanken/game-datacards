@@ -1,5 +1,6 @@
 import { GitFork, Heart, Redo2, Undo2 } from "lucide-react";
-import { Badge, Button, Carousel, Col, Grid, Image, Layout, Row, Space, Tooltip, Typography } from "antd";
+import { Badge, Button, Carousel, Col, Grid, Image, Layout, Row, Space, Typography } from "antd";
+import { Tooltip } from "../Components/Tooltip/Tooltip";
 import { Content, Header } from "antd/lib/layout/layout";
 import clone from "just-clone";
 import { useEffect, useState } from "react";
@@ -87,7 +88,7 @@ export const Shared = () => {
             <Space>
               {historyStorage.liked.includes(Id) ? (
                 <Badge count={sharedStorage?.likes} offset={[-4, 14]} size="small" color={"blue"} overflowCount={999}>
-                  <Tooltip title={"You have already liked this set."}>
+                  <Tooltip content="You have already liked this set.">
                     <Button
                       className="button-bar"
                       type="text"

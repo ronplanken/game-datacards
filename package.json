@@ -15,6 +15,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "@tippyjs/react": "^4.2.6",
     "@uiw/react-md-editor": "^3.17.0",
     "antd": "^4.24.10",
     "antd-prompt": "^0.7.1",
@@ -58,6 +59,7 @@
     "string-width": "^5.1.2",
     "styled-components": "^6.1.18",
     "timers-browserify": "^2.0.12",
+    "tippy.js": "^6.3.7",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
     "xml2js": "^0.5.0"

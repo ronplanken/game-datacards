@@ -1,4 +1,5 @@
-import { Badge, Button, Col, Grid, Image, Layout, Row, Space, Tooltip, Typography } from "antd";
+import { Badge, Button, Col, Grid, Image, Layout, Row, Space, Typography } from "antd";
+import { Tooltip } from "./Tooltip/Tooltip";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -68,7 +69,7 @@ export const AppHeader = ({ selectedTreeKey, setSelectedTreeKey }) => {
             <Space>
               {activeCategory && activeCategory.cards.length > 0 && <ShareModal />}
               <AboutModal />
-              <Tooltip title={"Join us on discord!"} placement="bottomRight">
+              <Tooltip content="Join us on discord!" placement="bottom-end">
                 <Button
                   className="button-bar"
                   type="ghost"

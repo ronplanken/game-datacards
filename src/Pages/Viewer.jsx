@@ -1,6 +1,7 @@
 import { ZoomIn, ZoomOut } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Button, Col, Grid, Image, Layout, Modal, Row, Select, Space, Tooltip, Typography } from "antd";
+import { Button, Col, Grid, Image, Layout, Modal, Row, Select, Space, Typography } from "antd";
+import { Tooltip } from "../Components/Tooltip/Tooltip";
 import "antd/dist/antd.min.css";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -198,7 +199,7 @@ export const Viewer = () => {
             <Col>
               <Space>
                 <AboutModal />
-                <Tooltip title={"Join us on discord!"} placement="bottomRight">
+                <Tooltip content="Join us on discord!" placement="bottom-end">
                   <Button
                     className="button-bar"
                     type="ghost"

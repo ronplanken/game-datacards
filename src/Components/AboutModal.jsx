@@ -1,4 +1,5 @@
-import { Button, Modal, Space, Tooltip, Typography } from "antd";
+import { Button, Modal, Space, Typography } from "antd";
+import { Tooltip } from "./Tooltip/Tooltip";
 import React from "react";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
@@ -61,7 +62,7 @@ export const AboutModal = () => {
           </Button>
         </div>
       </Modal>
-      <Tooltip title={"About & Help"} placement="bottomLeft">
+      <Tooltip content="About & Help" placement="bottom-start">
         <Button
           size="large"
           type={"ghost"}

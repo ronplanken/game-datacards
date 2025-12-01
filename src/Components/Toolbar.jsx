@@ -1,5 +1,6 @@
 import { Image, FolderPlus, Printer } from "lucide-react";
-import { Button, Col, Row, Tooltip } from "antd";
+import { Button, Col, Row } from "antd";
+import { Tooltip } from "./Tooltip/Tooltip";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
@@ -45,7 +46,7 @@ export const Toolbar = () => {
           justifyContent: "start",
           background: "white",
         }}>
-        <Tooltip title={"Print cards from category"} placement="bottomLeft">
+        <Tooltip content="Print cards from category" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}
@@ -62,7 +63,7 @@ export const Toolbar = () => {
             icon={<Printer size={14} />}
           />
         </Tooltip>
-        <Tooltip title={"Export category to images"} placement="bottomLeft">
+        <Tooltip content="Export category to images" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}
@@ -77,7 +78,7 @@ export const Toolbar = () => {
         </Tooltip>
         <Exporter />
         <Importer />
-        <Tooltip title={"Add new category"} placement="bottomLeft">
+        <Tooltip content="Add new category" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}
@@ -87,7 +88,7 @@ export const Toolbar = () => {
             }}
           />
         </Tooltip>
-        <Tooltip title={"Add new list"} placement="bottomLeft">
+        <Tooltip content="Add new list" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}

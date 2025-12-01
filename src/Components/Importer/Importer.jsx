@@ -1,5 +1,6 @@
 import { Trash2, File, Inbox, Upload } from "lucide-react";
-import { Button, Tooltip } from "antd";
+import { Button } from "antd";
+import { Tooltip } from "../Tooltip/Tooltip";
 import { compare } from "compare-versions";
 import React, { useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
@@ -191,7 +192,7 @@ export const Importer = () => {
           </div>,
           modalRoot
         )}
-      <Tooltip title={"Import category from JSON"} placement="bottomLeft">
+      <Tooltip content="Import category from JSON" placement="bottom-start">
         <Button
           type={"text"}
           shape={"circle"}

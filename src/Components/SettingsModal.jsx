@@ -1,5 +1,6 @@
 import { Settings, Database, Trash2, Printer, History } from "lucide-react";
-import { Button, Popconfirm, Tooltip } from "antd";
+import { Button, Popconfirm } from "antd";
+import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
@@ -508,7 +509,7 @@ export const SettingsModal = () => {
         </div>
       )}
 
-      <Tooltip title={`Configuration`} placement="bottomLeft">
+      <Tooltip content="Configuration" placement="bottom-start">
         <Button
           type={"ghost"}
           icon={<Settings size={14} />}

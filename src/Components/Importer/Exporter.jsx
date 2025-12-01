@@ -1,5 +1,6 @@
 import { Download } from "lucide-react";
-import { Button, Tooltip, message } from "antd";
+import { Button, message } from "antd";
+import { Tooltip } from "../Tooltip/Tooltip";
 import React, { useState } from "react";
 import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
@@ -219,7 +220,7 @@ export const Exporter = () => {
           </div>,
           modalRoot
         )}
-      <Tooltip title={activeCategory ? "Export category" : "Select a category first"} placement="bottomLeft">
+      <Tooltip content={activeCategory ? "Export category" : "Select a category first"} placement="bottom-start">
         <Button
           type={"text"}
           shape={"circle"}
