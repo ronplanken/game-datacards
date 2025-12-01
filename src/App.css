@@ -239,3 +239,15 @@
   background: rgba(255, 255, 255, 0.15);
   color: white;
 }
+
+.floating-toolbar-menu .ant-dropdown-menu-item-divider {
+  background: rgba(255, 255, 255, 0.15);
+  margin: 4px 8px;
+}
+
+/* Zoom button text styling */
+.floating-toolbar .zoom-button {
+  min-width: 48px;
+  font-size: 13px;
+  font-weight: 500;
+}

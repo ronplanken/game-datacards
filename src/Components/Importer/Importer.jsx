@@ -31,6 +31,9 @@ export const Importer = () => {
   const handleImport = () => {
     if (!uploadFile) return;
 
+    // Get sub-categories from export (if present)
+    const subCategories = uploadFile.subCategories || [];
+
     if (compare(uploadFile.version, "0.4.0", "=")) {
       importCategory({
         uuid: uuidv4(),
@@ -47,7 +50,13 @@ export const Importer = () => {
       });
     }
     if (compare(uploadFile.version, "1.3.0", ">=")) {
-      importCategory(uploadFile.category);
+      // Generate new UUIDs for sub-categories
+      const importedSubCategories = subCategories.map((sub) => ({
+        ...sub,
+        uuid: uuidv4(),
+        cards: sub.cards?.map((card) => ({ ...card, uuid: uuidv4() })),
+      }));
+      importCategory(uploadFile.category, importedSubCategories);
     }
 
     handleClose();

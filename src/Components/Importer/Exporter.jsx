@@ -33,18 +33,39 @@ export const Exporter = () => {
   };
 
   const handleExportJson = () => {
-    // Get all cards including sub-category cards
-    const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
+    // Get sub-categories for this category
+    const subCategories = cardStorage.categories.filter((cat) => cat.parentId === activeCategory?.uuid);
+
+    // Export parent category with only its direct cards
     const exportCategory = {
       ...activeCategory,
       closed: false,
       uuid: uuidv4(),
-      cards: allCards?.map((card) => {
+      cards: activeCategory?.cards?.map((card) => {
         return { ...card, uuid: uuidv4() };
       }),
     };
+    // Remove parentId from export (will be set on import)
+    delete exportCategory.parentId;
+
+    // Export sub-categories with their own cards
+    const exportSubCategories = subCategories.map((sub) => {
+      const exportedSub = {
+        ...sub,
+        closed: false,
+        uuid: uuidv4(),
+        cards: sub.cards?.map((card) => {
+          return { ...card, uuid: uuidv4() };
+        }),
+      };
+      // Remove parentId - will be regenerated on import
+      delete exportedSub.parentId;
+      return exportedSub;
+    });
+
     const exportData = {
       category: exportCategory,
+      subCategories: exportSubCategories.length > 0 ? exportSubCategories : undefined,
       createdAt: new Date().toISOString(),
       version: process.env.REACT_APP_VERSION,
       website: "https://game-datacards.eu",

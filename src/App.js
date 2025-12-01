@@ -1,11 +1,4 @@
-import {
-  ExpandOutlined,
-  CompressOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined,
-  SwapOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { CheckOutlined, SwapOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Layout, Menu, Row } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useState, useRef } from "react";
@@ -102,6 +95,51 @@ function App() {
     />
   );
 
+  // Zoom dropdown menu
+  const currentZoom = settings.zoom || 100;
+  const isAutoFit = settings.autoFitEnabled !== false;
+
+  const zoomMenuItems = [
+    {
+      key: "auto",
+      label: (
+        <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {isAutoFit && <CheckOutlined />}
+          <span style={{ marginLeft: isAutoFit ? 0 : 22 }}>Auto</span>
+        </span>
+      ),
+    },
+    { type: "divider" },
+    { key: "100", label: renderZoomOption(100) },
+    { key: "75", label: renderZoomOption(75) },
+    { key: "50", label: renderZoomOption(50) },
+    { key: "25", label: renderZoomOption(25) },
+  ];
+
+  function renderZoomOption(value) {
+    const isSelected = !isAutoFit && currentZoom === value;
+    return (
+      <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {isSelected && <CheckOutlined />}
+        <span style={{ marginLeft: isSelected ? 0 : 22 }}>{value}%</span>
+      </span>
+    );
+  }
+
+  const zoomMenu = (
+    <Menu
+      className="floating-toolbar-menu"
+      onClick={(e) => {
+        if (e.key === "auto") {
+          updateSettings({ ...settings, autoFitEnabled: true });
+        } else {
+          updateSettings({ ...settings, autoFitEnabled: false, zoom: parseInt(e.key) });
+        }
+      }}
+      items={zoomMenuItems}
+    />
+  );
+
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
 
   return (
@@ -139,53 +177,12 @@ function App() {
                 <div className="floating-toolbar">
                   {activeCard?.source === "40k-10e" && (
                     <>
-                      {/* Auto-fit toggle */}
-                      <Button
-                        type="text"
-                        icon={settings.autoFitEnabled !== false ? <ExpandOutlined /> : <CompressOutlined />}
-                        className={settings.autoFitEnabled !== false ? "active" : ""}
-                        onClick={() => {
-                          updateSettings({
-                            ...settings,
-                            autoFitEnabled: !settings.autoFitEnabled,
-                          });
-                        }}
-                        title={
-                          settings.autoFitEnabled !== false
-                            ? "Auto-fit enabled (click for manual)"
-                            : "Manual mode (click for auto-fit)"
-                        }
-                      />
-                      <div className="toolbar-divider" />
-                      {/* Zoom controls */}
-                      <Button
-                        type="text"
-                        icon={<ZoomOutOutlined />}
-                        disabled={settings.autoFitEnabled !== false || settings.zoom === 25}
-                        onClick={() => {
-                          let newZoom = settings.zoom || 100;
-                          newZoom = newZoom - 5;
-                          if (newZoom <= 25) {
-                            newZoom = 25;
-                          }
-                          updateSettings({ ...settings, zoom: newZoom });
-                        }}
-                        title="Zoom out"
-                      />
-                      <Button
-                        type="text"
-                        icon={<ZoomInOutlined />}
-                        disabled={settings.autoFitEnabled !== false || settings.zoom === 100}
-                        onClick={() => {
-                          let newZoom = settings.zoom || 100;
-                          newZoom = newZoom + 5;
-                          if (newZoom >= 100) {
-                            newZoom = 100;
-                          }
-                          updateSettings({ ...settings, zoom: newZoom });
-                        }}
-                        title="Zoom in"
-                      />
+                      {/* Zoom dropdown */}
+                      <Dropdown overlay={zoomMenu} trigger={["click"]}>
+                        <Button type="text" className="zoom-button" title="Zoom level">
+                          {isAutoFit ? "Auto" : `${currentZoom}%`}
+                        </Button>
+                      </Dropdown>
                       {/* Front/Back toggle */}
                       {settings.showCardsAsDoubleSided !== true &&
                         activeCard?.variant !== "full" &&

@@ -33,16 +33,6 @@ export const UnitName = ({
 }) => {
   const imageUrl = localImageUrl || externalImage;
 
-  console.log("[UnitName] Rendering with:", {
-    name,
-    localImageUrl,
-    externalImage,
-    finalImageUrl: imageUrl,
-    imageZIndex,
-    imagePositionX,
-    imagePositionY,
-  });
-
   return (
     <HeaderContainer
       className="header_container"

@@ -109,7 +109,7 @@ export const CardStorageProviderComponent = (props) => {
     }
   };
 
-  const importCategory = (category) => {
+  const importCategory = (category, subCategories = []) => {
     if (!category) {
       return;
     }
@@ -118,7 +118,15 @@ export const CardStorageProviderComponent = (props) => {
     }
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
+      // Add the parent category
       newStorage.categories.push(category);
+      // Add sub-categories with parentId set to the imported category's uuid
+      subCategories.forEach((sub) => {
+        newStorage.categories.push({
+          ...sub,
+          parentId: category.uuid,
+        });
+      });
       return {
         ...newStorage,
       };
