@@ -1,4 +1,4 @@
-import { ForkOutlined, HeartFilled, HeartOutlined, RedoOutlined, UndoOutlined } from "@ant-design/icons";
+import { GitFork, Heart, Redo2, Undo2 } from "lucide-react";
 import { Badge, Button, Carousel, Col, Grid, Image, Layout, Row, Space, Tooltip, Typography } from "antd";
 import { Content, Header } from "antd/lib/layout/layout";
 import clone from "just-clone";
@@ -93,7 +93,7 @@ export const Shared = () => {
                       type="text"
                       size="large"
                       disabled={true}
-                      icon={<HeartFilled style={{ color: "#40a9ff", cursor: "cursor" }} />}
+                      icon={<Heart size={14} fill="#40a9ff" color="#40a9ff" style={{ cursor: "cursor" }} />}
                     />
                   </Tooltip>
                 </Badge>
@@ -103,7 +103,7 @@ export const Shared = () => {
                     className="button-bar"
                     type="ghost"
                     size="large"
-                    icon={<HeartOutlined />}
+                    icon={<Heart size={14} />}
                     onClick={() => {
                       const newStorage = clone(historyStorage);
                       newStorage.liked.push(Id);
@@ -121,7 +121,7 @@ export const Shared = () => {
                   className="button-bar"
                   type="ghost"
                   size="large"
-                  icon={<ForkOutlined />}
+                  icon={<GitFork size={14} />}
                   onClick={() => {
                     logScreenView("Clone cards");
                     const cloneCategory = {
@@ -205,7 +205,7 @@ export const Shared = () => {
                         {card?.source === "40k-10e" && card.variant !== "full" && (
                           <>
                             <Button
-                              icon={card.print_side === "front" ? <RedoOutlined /> : <UndoOutlined />}
+                              icon={card.print_side === "front" ? <Redo2 size={14} /> : <Undo2 size={14} />}
                               type="ghost"
                               size="large"
                               shape="round"

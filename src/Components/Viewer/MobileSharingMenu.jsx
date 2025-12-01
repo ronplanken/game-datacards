@@ -1,4 +1,4 @@
-import { FileImageOutlined, LinkOutlined } from "@ant-design/icons";
+import { FileImage, Link } from "lucide-react";
 import { Col, List, Row, Space, Typography } from "antd";
 import React from "react";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -43,7 +43,7 @@ export const MobileSharingMenu = ({ setIsVisible, shareFullCard, shareMobileCard
               dataSource={[
                 {
                   title: "Link",
-                  icon: <LinkOutlined />,
+                  icon: <Link size={14} />,
                   onClick: () => {
                     shareLink();
                     setIsVisible(false);
@@ -51,7 +51,7 @@ export const MobileSharingMenu = ({ setIsVisible, shareFullCard, shareMobileCard
                 },
                 {
                   title: "Full datacard",
-                  icon: <FileImageOutlined />,
+                  icon: <FileImage size={14} />,
                   onClick: () => {
                     shareFullCard();
                     setIsVisible(false);
@@ -59,7 +59,7 @@ export const MobileSharingMenu = ({ setIsVisible, shareFullCard, shareMobileCard
                 },
                 {
                   title: "Mobile datacard",
-                  icon: <FileImageOutlined />,
+                  icon: <FileImage size={14} />,
                   onClick: () => {
                     shareMobileCard();
                     setIsVisible(false);

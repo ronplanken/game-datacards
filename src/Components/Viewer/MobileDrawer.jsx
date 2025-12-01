@@ -1,4 +1,4 @@
-import { DownOutlined, RightOutlined } from "@ant-design/icons";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Col, Divider, Drawer, Input, List, Row, Select } from "antd";
 import classNames from "classnames";
 import { useState } from "react";
@@ -125,7 +125,11 @@ export const MobileDrawer = ({ open, setOpen }) => {
                       });
                     }}>
                     <span className="icon">
-                      {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+                      {settings?.mobile?.closedFactions?.includes(card.id) ? (
+                        <ChevronRight size={14} />
+                      ) : (
+                        <ChevronDown size={14} />
+                      )}
                     </span>
                     <span className="name">{card.name}</span>
                   </List.Item>
@@ -152,7 +156,11 @@ export const MobileDrawer = ({ open, setOpen }) => {
                     });
                   }}>
                   <span className="icon">
-                    {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+                    {settings?.mobile?.closedFactions?.includes(card.id) ? (
+                      <ChevronRight size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    )}
                   </span>
                   <span className="name">{card.name}</span>
                 </List.Item>
@@ -176,7 +184,11 @@ export const MobileDrawer = ({ open, setOpen }) => {
                     });
                   }}>
                   <span className="icon">
-                    {settings?.mobile?.closedRoles?.includes(card.name) ? <RightOutlined /> : <DownOutlined />}
+                    {settings?.mobile?.closedRoles?.includes(card.name) ? (
+                      <ChevronRight size={14} />
+                    ) : (
+                      <ChevronDown size={14} />
+                    )}
                   </span>
                   <span className="name">{card.name}</span>
                 </List.Item>

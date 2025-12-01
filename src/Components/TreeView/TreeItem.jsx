@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CloseOutlined, CopyOutlined, CrownFilled, DeleteOutlined, HeatMapOutlined } from "@ant-design/icons";
+import { X, Copy, Crown, Trash2, Flame } from "lucide-react";
 import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
 import classNames from "classnames";
 import { Draggable } from "react-beautiful-dnd";
@@ -137,7 +137,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     {
       key: "duplicate",
       label: "Duplicate",
-      icon: <CopyOutlined />,
+      icon: <Copy size={14} />,
       onClick: handleDuplicate,
     },
     {
@@ -146,7 +146,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     {
       key: "delete",
       label: "Delete",
-      icon: <DeleteOutlined />,
+      icon: <Trash2 size={14} />,
       danger: true,
       onClick: handleDelete,
     },
@@ -241,12 +241,12 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                   title={`Enhancement: ${capitalizeSentence(card?.selectedEnhancement?.name)} (+${
                     card?.selectedEnhancement?.cost
                   }pts)`}>
-                  <HeatMapOutlined />
+                  <Flame size={14} />
                 </span>
               )}
               {category?.type === "list" && card?.source === "40k-10e" && card?.isWarlord && (
                 <span className="tree-item-indicator" title="This unit is the warlord">
-                  <CrownFilled />
+                  <Crown size={14} fill="currentColor" />
                 </span>
               )}
             </div>
@@ -319,7 +319,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                   style={{ fontSize: "20px" }}
                   type="ghost"
                   shape="circle"
-                  icon={<CloseOutlined />}
+                  icon={<X size={14} />}
                   onClick={() => {
                     setModalVisible(false);
                   }}

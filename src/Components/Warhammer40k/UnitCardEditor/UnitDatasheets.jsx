@@ -1,4 +1,4 @@
-import { DeleteFilled, SettingOutlined } from "@ant-design/icons";
+import { Trash2, Settings } from "lucide-react";
 import { Button, Card, Checkbox, Dropdown, Input, Menu, Popconfirm, Space, Switch, Typography } from "antd";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import React, { useState } from "react";

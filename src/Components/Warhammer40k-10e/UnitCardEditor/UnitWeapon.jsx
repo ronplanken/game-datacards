@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import { Button, Card, Divider, Form, Input, Popconfirm, Space, Switch, Typography } from "antd";
 import React, { useState } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -54,7 +54,7 @@ export function UnitWeapon({ weapon, index, type }) {
                       return { ...activeCard, [type]: newWeapons };
                     })
                   }>
-                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                 </Popconfirm>
                 <Switch
                   checked={line.active}
@@ -180,7 +180,7 @@ export function UnitWeapon({ weapon, index, type }) {
                         <Button
                           type="text"
                           size="small"
-                          icon={<DeleteFilled />}
+                          icon={<Trash2 size={14} />}
                           onClick={(value) =>
                             updateActiveCard(() => {
                               const newWeapons = [...activeCard[type]];
@@ -248,7 +248,7 @@ export function UnitWeapon({ weapon, index, type }) {
                       return { ...activeCard, [type]: newWeapons };
                     })
                   }>
-                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                 </Popconfirm>
                 <Switch
                   checked={line.showAbility}

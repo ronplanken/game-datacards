@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { CloseOutlined } from "@ant-design/icons";
+import { X } from "lucide-react";
 
 export const RenameModal = ({ isOpen, title, initialValue, onConfirm, onCancel }) => {
   const [value, setValue] = useState(initialValue || "");
@@ -56,7 +56,7 @@ export const RenameModal = ({ isOpen, title, initialValue, onConfirm, onCancel }
         <div className="tree-rename-modal-header">
           <h3 className="tree-rename-modal-title">{title}</h3>
           <button className="tree-rename-modal-close" onClick={onCancel}>
-            <CloseOutlined />
+            <X size={14} />
           </button>
         </div>
         <div className="tree-rename-modal-body">

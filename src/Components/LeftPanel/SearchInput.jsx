@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
+import { Search, X } from "lucide-react";
 import "./SearchInput.css";
 
 export const SearchInput = ({ setSearchText }) => {
@@ -38,10 +38,10 @@ export const SearchInput = ({ setSearchText }) => {
       />
       {value ? (
         <button className="search-input-clear" onClick={handleClear} type="button">
-          <CloseOutlined />
+          <X size={14} />
         </button>
       ) : (
-        <SearchOutlined className="search-input-icon" />
+        <Search size={14} className="search-input-icon" />
       )}
     </div>
   );

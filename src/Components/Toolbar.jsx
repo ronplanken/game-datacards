@@ -1,4 +1,4 @@
-import { FileImageOutlined, FolderAddOutlined, PrinterOutlined } from "@ant-design/icons";
+import { Image, FolderPlus, Printer } from "lucide-react";
 import { Button, Col, Row, Tooltip } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +59,7 @@ export const Toolbar = () => {
                 navigate(`/print/${categoryIndex}`);
               }
             }}
-            icon={<PrinterOutlined />}
+            icon={<Printer size={14} />}
           />
         </Tooltip>
         <Tooltip title={"Export category to images"} placement="bottomLeft">
@@ -72,7 +72,7 @@ export const Toolbar = () => {
               logScreenView("Export");
               navigate(`/image-export/${categoryIndex}`);
             }}
-            icon={<FileImageOutlined />}
+            icon={<Image size={14} />}
           />
         </Tooltip>
         <Exporter />
@@ -81,7 +81,7 @@ export const Toolbar = () => {
           <Button
             type={"text"}
             shape={"circle"}
-            icon={<FolderAddOutlined />}
+            icon={<FolderPlus size={14} />}
             onClick={() => {
               addCategory("New Category");
             }}

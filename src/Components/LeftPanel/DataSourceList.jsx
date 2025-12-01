@@ -1,5 +1,5 @@
 import React from "react";
-import { DownOutlined, RightOutlined } from "@ant-design/icons";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { List } from "antd";
 import classNames from "classnames";
 import { useCardStorage } from "../../Hooks/useCardStorage";
@@ -79,7 +79,11 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
             className={`list-category`}
             onClick={() => handleCategoryClick(card)}>
             <span className="icon">
-              {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+              {settings?.mobile?.closedFactions?.includes(card.id) ? (
+                <ChevronRight size={14} />
+              ) : (
+                <ChevronDown size={14} />
+              )}
             </span>
             <span className="name">{card.name}</span>
           </List.Item>
@@ -92,7 +96,11 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
       return (
         <List.Item key={`list-category-${index}`} className={`list-category`} onClick={() => handleCategoryClick(card)}>
           <span className="icon">
-            {settings?.mobile?.closedFactions?.includes(card.id) ? <RightOutlined /> : <DownOutlined />}
+            {settings?.mobile?.closedFactions?.includes(card.id) ? (
+              <ChevronRight size={14} />
+            ) : (
+              <ChevronDown size={14} />
+            )}
           </span>
           <span className="name">{card.name}</span>
         </List.Item>
@@ -103,7 +111,11 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
       return (
         <List.Item key={`list-role-${index}`} className={`list-category`} onClick={() => handleRoleClick(card)}>
           <span className="icon">
-            {settings?.mobile?.closedRoles?.includes(card.name) ? <RightOutlined /> : <DownOutlined />}
+            {settings?.mobile?.closedRoles?.includes(card.name) ? (
+              <ChevronRight size={14} />
+            ) : (
+              <ChevronDown size={14} />
+            )}
           </span>
           <span className="name">{card.name}</span>
         </List.Item>

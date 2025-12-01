@@ -1,4 +1,4 @@
-import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
+import { ZoomIn, ZoomOut } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Button, Col, Grid, Image, Layout, Modal, Row, Select, Space, Tooltip, Typography } from "antd";
 import "antd/dist/antd.min.css";
@@ -289,7 +289,7 @@ export const Viewer = () => {
                           </Button>
                           <Button
                             type={"primary"}
-                            icon={<ZoomInOutlined />}
+                            icon={<ZoomIn size={14} />}
                             disabled={settings.autoFitEnabled !== false || settings.zoom === 100}
                             onClick={() => {
                               let newZoom = settings.zoom || 100;
@@ -302,7 +302,7 @@ export const Viewer = () => {
                           />
                           <Button
                             type={"primary"}
-                            icon={<ZoomOutOutlined />}
+                            icon={<ZoomOut size={14} />}
                             disabled={settings.autoFitEnabled !== false || settings.zoom === 25}
                             onClick={() => {
                               let newZoom = settings.zoom || 100;

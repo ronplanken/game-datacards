@@ -1,4 +1,4 @@
-import { LinkOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { Link, Share2 } from "lucide-react";
 import { Button, Col, Modal, Row, Tooltip, Typography, message } from "antd";
 import React from "react";
 import { useCardStorage } from "../Hooks/useCardStorage";
@@ -65,7 +65,7 @@ export const ShareModal = () => {
             <Col span={5}>
               <Tooltip title="Copy to clipboard">
                 <Button
-                  icon={<LinkOutlined />}
+                  icon={<Link size={14} />}
                   type={"primary"}
                   onClick={() => {
                     navigator.clipboard.writeText(`${process.env.REACT_APP_URL}/shared/${shareId}`);
@@ -103,7 +103,7 @@ export const ShareModal = () => {
       <Tooltip title={"Share category"} placement="bottomLeft">
         <Button
           type={"ghost"}
-          icon={<ShareAltOutlined />}
+          icon={<Share2 size={14} />}
           size={"large"}
           onClick={() => {
             logScreenView("Share category");

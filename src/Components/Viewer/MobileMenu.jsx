@@ -1,4 +1,4 @@
-import { DatabaseOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Database, Loader2 } from "lucide-react";
 import { Button, Card, Col, Space, Switch, Typography, message } from "antd";
 import React from "react";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -160,9 +160,9 @@ export const MobileMenu = ({ setIsVisible }) => {
               }}
               icon={
                 checkingForUpdate ? (
-                  <LoadingOutlined style={{ color: "white" }} />
+                  <Loader2 size={14} color="white" className="animate-spin" />
                 ) : (
-                  <DatabaseOutlined style={{ color: "white" }} />
+                  <Database size={14} color="white" />
                 )
               }>
               Update datasources

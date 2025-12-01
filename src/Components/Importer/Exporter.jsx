@@ -1,4 +1,4 @@
-import { DownloadOutlined } from "@ant-design/icons";
+import { Download } from "lucide-react";
 import { Button, Tooltip, message } from "antd";
 import React, { useState } from "react";
 import * as ReactDOM from "react-dom";
@@ -223,7 +223,7 @@ export const Exporter = () => {
         <Button
           type={"text"}
           shape={"circle"}
-          icon={<DownloadOutlined />}
+          icon={<Download size={14} />}
           disabled={!activeCategory}
           onClick={() => {
             logScreenView("Export Category");

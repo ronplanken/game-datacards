@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import { Button, Card, Select, Typography } from "antd";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -60,7 +60,7 @@ export function UnitKeywords({ type }) {
                                 <Button
                                   type="text"
                                   size="small"
-                                  icon={<DeleteFilled />}
+                                  icon={<Trash2 size={14} />}
                                   onClick={(value) =>
                                     updateActiveCard(() => {
                                       const newKeywords = [...activeCard[type]];

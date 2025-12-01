@@ -1,5 +1,5 @@
 import { Form, Input, Select, Switch, Upload, Button, Space, Typography, message, Slider, Card } from "antd";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Upload as UploadIcon, Trash2 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
@@ -283,7 +283,7 @@ export function UnitStylingInfo() {
                     return false; // Prevent default upload behavior
                   }}
                   disabled={!isReady}>
-                  <Button icon={<UploadOutlined />} loading={uploading} disabled={!isReady}>
+                  <Button icon={<UploadIcon size={14} />} loading={uploading} disabled={!isReady}>
                     Upload
                   </Button>
                 </Upload>
@@ -292,7 +292,7 @@ export function UnitStylingInfo() {
                   <Text>
                     {localImageInfo.filename} ({formatFileSize(localImageInfo.size)})
                   </Text>
-                  <Button icon={<DeleteOutlined />} size="small" danger onClick={handleDeleteLocalImage}>
+                  <Button icon={<Trash2 size={14} />} size="small" danger onClick={handleDeleteLocalImage}>
                     Remove
                   </Button>
                 </Space>
@@ -384,7 +384,7 @@ export function UnitStylingInfo() {
                       return false;
                     }}
                     disabled={!isReady}>
-                    <Button icon={<UploadOutlined />} loading={uploadingFactionSymbol} disabled={!isReady}>
+                    <Button icon={<UploadIcon size={14} />} loading={uploadingFactionSymbol} disabled={!isReady}>
                       Upload Symbol
                     </Button>
                   </Upload>
@@ -393,7 +393,7 @@ export function UnitStylingInfo() {
                     <Text>
                       {factionSymbolInfo.filename} ({formatFileSize(factionSymbolInfo.size)})
                     </Text>
-                    <Button icon={<DeleteOutlined />} size="small" danger onClick={handleDeleteFactionSymbol}>
+                    <Button icon={<Trash2 size={14} />} size="small" danger onClick={handleDeleteFactionSymbol}>
                       Remove
                     </Button>
                   </Space>

@@ -1,4 +1,4 @@
-import { MinusSquareOutlined, PlusSquareOutlined, SettingOutlined } from "@ant-design/icons";
+import { MinusSquare, PlusSquare, Settings } from "lucide-react";
 import React from "react";
 import * as ReactDOM from "react-dom";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -64,7 +64,7 @@ export const FactionSettingsModal = () => {
             });
             updateSettings({ ...settings, ignoredSubFactions: [...newSubFactions] });
           }}>
-          <MinusSquareOutlined />
+          <MinusSquare size={14} />
         </button>
         <button
           className="faction-bulk-btn"
@@ -79,7 +79,7 @@ export const FactionSettingsModal = () => {
             });
             updateSettings({ ...settings, ignoredSubFactions: [...newSubFactions] });
           }}>
-          <PlusSquareOutlined />
+          <PlusSquare size={14} />
         </button>
       </div>
       {selectedFaction?.subfactions?.map((subfaction) => (
@@ -288,7 +288,7 @@ export const FactionSettingsModal = () => {
         }}
         disabled={!selectedFaction}
         onClick={() => setIsFactionSettingsVisible(true)}>
-        <SettingOutlined />
+        <Settings size={14} />
       </button>
     </>
   );

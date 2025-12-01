@@ -1,4 +1,4 @@
-import { SettingOutlined, DatabaseOutlined, DeleteOutlined, PrinterOutlined, HistoryOutlined } from "@ant-design/icons";
+import { Settings, Database, Trash2, Printer, History } from "lucide-react";
 import { Button, Popconfirm, Tooltip } from "antd";
 import React, { useEffect, useCallback } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -44,10 +44,10 @@ export const SettingsModal = () => {
   };
 
   const navItems = [
-    { key: "datasources", label: "Datasources", icon: <DatabaseOutlined className="settings-nav-icon" /> },
-    { key: "storage", label: "Storage", icon: <DeleteOutlined className="settings-nav-icon" /> },
-    { key: "printing", label: "Printing", icon: <PrinterOutlined className="settings-nav-icon" /> },
-    { key: "changelog", label: "Changelog", icon: <HistoryOutlined className="settings-nav-icon" /> },
+    { key: "datasources", label: "Datasources", icon: <Database size={16} className="settings-nav-icon" /> },
+    { key: "storage", label: "Storage", icon: <Trash2 size={16} className="settings-nav-icon" /> },
+    { key: "printing", label: "Printing", icon: <Printer size={16} className="settings-nav-icon" /> },
+    { key: "changelog", label: "Changelog", icon: <History size={16} className="settings-nav-icon" /> },
   ];
 
   // Datasource details component
@@ -511,7 +511,7 @@ export const SettingsModal = () => {
       <Tooltip title={`Configuration`} placement="bottomLeft">
         <Button
           type={"ghost"}
-          icon={<SettingOutlined />}
+          icon={<Settings size={14} />}
           style={{ color: "white", fontSize: "16px" }}
           size={"large"}
           onClick={() => {

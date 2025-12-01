@@ -30,6 +30,7 @@
     "just-split": "^3.0.1",
     "lint-staged": "^11.1.2",
     "localforage": "^1.10.0",
+    "lucide-react": "^0.555.0",
     "moment": "^2.29.4",
     "node-fetch": "^3.2.3",
     "node-polyfill-webpack-plugin": "^2.0.1",

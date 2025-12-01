@@ -1,4 +1,4 @@
-import { DeleteOutlined, FileOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import { Trash2, File, Inbox, Upload } from "lucide-react";
 import { Button, Tooltip } from "antd";
 import { compare } from "compare-versions";
 import React, { useRef, useState } from "react";
@@ -158,7 +158,7 @@ export const Importer = () => {
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}>
                     <div className="import-dropzone-icon">
-                      <InboxOutlined />
+                      <Inbox size={24} />
                     </div>
                     <p className="import-dropzone-text">Click or drag a file to this area to upload</p>
                     <p className="import-dropzone-hint">Support for a single file upload. Only .json files.</p>
@@ -166,11 +166,11 @@ export const Importer = () => {
 
                   {fileInfo && (
                     <div className={`import-file-item ${fileError ? "error" : "success"}`}>
-                      <FileOutlined className="import-file-icon" />
+                      <File size={14} className="import-file-icon" />
                       <span className="import-file-name">{fileInfo.name}</span>
                       <span className="import-file-size">{Math.round(fileInfo.size / 1024)}KiB</span>
                       <button className="import-file-remove" onClick={handleRemoveFile}>
-                        <DeleteOutlined />
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   )}
@@ -195,7 +195,7 @@ export const Importer = () => {
         <Button
           type={"text"}
           shape={"circle"}
-          icon={<UploadOutlined />}
+          icon={<Upload size={14} />}
           onClick={() => {
             logScreenView("Import Category");
             setIsModalVisible(true);

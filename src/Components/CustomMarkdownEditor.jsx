@@ -1,6 +1,6 @@
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import React from "react";
-import { BgColorsOutlined } from "@ant-design/icons";
+import { Palette } from "lucide-react";
 
 // Custom command for line break
 const lineBreakCommand = {
@@ -73,7 +73,7 @@ const colorCommand = commands.group(colorCommands, {
   name: "color",
   groupName: "color",
   buttonProps: { "aria-label": "Color text" },
-  icon: <BgColorsOutlined />,
+  icon: <Palette size={12} />,
 });
 
 export function CustomMarkdownEditor({ value, onChange, preview = "edit", height = 200, ...props }) {

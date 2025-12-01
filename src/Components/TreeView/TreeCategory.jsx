@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  CaretRightOutlined,
-  DeleteOutlined,
-  FolderOpenOutlined,
-  FolderOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { ChevronRight, Trash2, FolderOpen, Folder, Plus } from "lucide-react";
 import { message } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { List } from "../../Icons/List";
@@ -95,7 +89,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
           {
             key: "add-subcategory",
             label: "Add sub-category",
-            icon: <PlusOutlined />,
+            icon: <Plus size={14} />,
             onClick: () => setIsSubCategoryModalOpen(true),
           },
           {
@@ -114,7 +108,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     {
       key: "delete",
       label: "Delete",
-      icon: <DeleteOutlined />,
+      icon: <Trash2 size={14} />,
       danger: true,
       // Disable delete if this is the last top-level category (sub-categories can always be deleted)
       disabled: !isSubCategory && topLevelCategoryCount === 1,
@@ -168,10 +162,10 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     <>
       <div className={categoryClasses} onClick={handleClick} onContextMenu={handleContextMenu}>
         <div className={`tree-category-toggle ${!category.closed ? "expanded" : ""}`} onClick={handleToggle}>
-          <CaretRightOutlined style={{ fontSize: 10 }} />
+          <ChevronRight size={10} />
         </div>
         <div className="tree-category-icon">
-          {category.type === "list" ? <List /> : isSubCategory ? <FolderOpenOutlined /> : <FolderOutlined />}
+          {category.type === "list" ? <List /> : isSubCategory ? <FolderOpen size={14} /> : <Folder size={14} />}
         </div>
         <span className="tree-category-name">{category.name}</span>
         {category.type === "list" && <span className="tree-category-badge">{pointsTotal}</span>}

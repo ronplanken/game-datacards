@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import { Button, Card, Form, Select, Typography } from "antd";
 import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import React from "react";
@@ -61,7 +61,7 @@ export function UnitLeader() {
                                 <Button
                                   type="text"
                                   size="small"
-                                  icon={<DeleteFilled />}
+                                  icon={<Trash2 size={14} />}
                                   onClick={(value) =>
                                     updateActiveCard(() => {
                                       const newLeads = [...activeCard.leads.units];

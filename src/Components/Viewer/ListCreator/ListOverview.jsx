@@ -1,10 +1,4 @@
-import {
-  CrownFilled,
-  DeleteOutlined,
-  FileTextOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-} from "@ant-design/icons";
+import { Crown, Trash2, FileText, Minimize2, Maximize2 } from "lucide-react";
 import { Button, Col, Row, Space, message } from "antd";
 import { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -90,7 +84,7 @@ export const ListOverview = ({ setShowList }) => {
               type="text"
               shape="circle"
               size="large"
-              icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+              icon={fullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
               className="mobile-icon-button"
               onClick={() => {
                 setFullscreen((val) => !val);
@@ -99,7 +93,7 @@ export const ListOverview = ({ setShowList }) => {
               type="text"
               shape="circle"
               size="large"
-              icon={<FileTextOutlined />}
+              icon={<FileText size={14} />}
               className="mobile-icon-button"
               onClick={() => {
                 let listText = "Warhammer 40K List";
@@ -247,7 +241,7 @@ export const ListOverview = ({ setShowList }) => {
                     }}>
                     {line.warlord && (
                       <span style={{ paddingRight: "8px" }}>
-                        <CrownFilled />
+                        <Crown size={14} fill="currentColor" />
                       </span>
                     )}
                     {line.card.name}
@@ -261,7 +255,7 @@ export const ListOverview = ({ setShowList }) => {
                       type="text"
                       size="large"
                       onClick={() => removeDatacard(line.id)}
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 size={14} />}
                     />
                   </Col>
                   {line.enhancement && (
@@ -330,7 +324,7 @@ export const ListOverview = ({ setShowList }) => {
                     }}>
                     {line.warlord && (
                       <span style={{ paddingRight: "8px" }}>
-                        <CrownFilled />
+                        <Crown size={14} fill="currentColor" />
                       </span>
                     )}
                     {line.card.name}
@@ -344,7 +338,7 @@ export const ListOverview = ({ setShowList }) => {
                       type="text"
                       size="large"
                       onClick={() => removeDatacard(line.id)}
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 size={14} />}
                     />
                   </Col>
                   {line.enhancement && (
@@ -413,7 +407,7 @@ export const ListOverview = ({ setShowList }) => {
                     }}>
                     {line.warlord && (
                       <span style={{ paddingRight: "8px" }}>
-                        <CrownFilled />
+                        <Crown size={14} fill="currentColor" />
                       </span>
                     )}
                     {line.card.name}
@@ -427,7 +421,7 @@ export const ListOverview = ({ setShowList }) => {
                       type="text"
                       size="large"
                       onClick={() => removeDatacard(line.id)}
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 size={14} />}
                     />
                   </Col>
                   {line.enhancement && (

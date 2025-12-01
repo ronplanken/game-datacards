@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { DownOutlined, SearchOutlined } from "@ant-design/icons";
+import { ChevronDown, Search } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { FactionSettingsModal } from "../FactionSettingsModal";
 import "./FactionSelector.css";
@@ -85,7 +85,7 @@ export const FactionSelector = () => {
             }`}>
             {selectedFaction?.name || "Select a faction"}
           </span>
-          <DownOutlined className="faction-selector-trigger-icon" />
+          <ChevronDown size={14} className="faction-selector-trigger-icon" />
         </button>
 
         {!dataSource?.noFactionOptions && <FactionSettingsModal />}
@@ -93,7 +93,7 @@ export const FactionSelector = () => {
         {isOpen && (
           <div className="faction-dropdown">
             <div className="faction-search">
-              <SearchOutlined className="faction-search-icon" />
+              <Search size={14} className="faction-search-icon" />
               <input
                 ref={searchInputRef}
                 type="text"

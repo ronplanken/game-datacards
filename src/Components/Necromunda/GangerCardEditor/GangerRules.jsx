@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import { Button, Card, Col, Popconfirm, Row, Space, Switch, Typography } from "antd";
 import React from "react";
@@ -73,7 +73,7 @@ export function GangerRules() {
                                     return { ...activeCard, rules: newRules };
                                   })
                                 }>
-                                <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                                <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                               </Popconfirm>
                               <Switch
                                 checked={gear.active}

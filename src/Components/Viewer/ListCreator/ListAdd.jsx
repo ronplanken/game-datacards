@@ -1,4 +1,4 @@
-import { CloseOutlined } from "@ant-design/icons";
+import { X } from "lucide-react";
 import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
@@ -89,7 +89,7 @@ export const ListAdd = ({ setIsVisible }) => {
             style={{ fontSize: "20px" }}
             type="ghost"
             shape="circle"
-            icon={<CloseOutlined />}
+            icon={<X size={14} />}
             onClick={() => {
               setIsVisible(false);
             }}

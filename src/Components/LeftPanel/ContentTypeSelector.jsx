@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { DownOutlined } from "@ant-design/icons";
+import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import "./ContentTypeSelector.css";
 
@@ -70,7 +70,7 @@ export const ContentTypeSelector = ({ selectedContentType, setSelectedContentTyp
     <div className="content-type-selector" ref={dropdownRef}>
       <button className={`content-type-trigger ${isOpen ? "open" : ""}`} onClick={() => setIsOpen(!isOpen)}>
         <span className="content-type-trigger-text">{selectedLabel}</span>
-        <DownOutlined className="content-type-trigger-icon" />
+        <ChevronDown size={14} className="content-type-trigger-icon" />
       </button>
 
       {isOpen && (

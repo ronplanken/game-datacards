@@ -1,4 +1,4 @@
-import { CheckOutlined, SwapOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import { Check, ArrowLeftRight, Plus, Save } from "lucide-react";
 import { Button, Dropdown, Layout, Menu, Row, message } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useState, useRef } from "react";
@@ -112,7 +112,7 @@ function App() {
       key: "auto",
       label: (
         <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {isAutoFit && <CheckOutlined />}
+          {isAutoFit && <Check size={14} />}
           <span style={{ marginLeft: isAutoFit ? 0 : 22 }}>Auto</span>
         </span>
       ),
@@ -128,7 +128,7 @@ function App() {
     const isSelected = !isAutoFit && currentZoom === value;
     return (
       <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        {isSelected && <CheckOutlined />}
+        {isSelected && <Check size={14} />}
         <span style={{ marginLeft: isSelected ? 0 : 22 }}>{value}%</span>
       </span>
     );
@@ -199,7 +199,7 @@ function App() {
                             <div className="toolbar-divider" />
                             <Button
                               type="text"
-                              icon={<SwapOutlined />}
+                              icon={<ArrowLeftRight size={14} />}
                               onClick={() => {
                                 if (activeCard.print_side === "back") {
                                   updateActiveCard({ ...activeCard, print_side: "front" }, true);
@@ -218,7 +218,7 @@ function App() {
                     <>
                       {activeCard?.source === "40k-10e" && <div className="toolbar-divider" />}
                       <Dropdown overlay={categoryMenu} trigger={["click"]}>
-                        <Button type="text" icon={<PlusOutlined />} title="Add card to category" />
+                        <Button type="text" icon={<Plus size={14} />} title="Add card to category" />
                       </Dropdown>
                     </>
                   )}
@@ -228,7 +228,7 @@ function App() {
                       <div className="toolbar-divider" />
                       <Button
                         type="text"
-                        icon={<SaveOutlined />}
+                        icon={<Save size={14} />}
                         onClick={() => {
                           saveActiveCard();
                           message.success("Card has been updated");

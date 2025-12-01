@@ -1,4 +1,4 @@
-import { RedoOutlined, SettingOutlined, ShareAltOutlined, UndoOutlined } from "@ant-design/icons";
+import { Redo2, Settings, Share2, Undo2 } from "lucide-react";
 import { Button, Col, Row, Space } from "antd";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
@@ -67,7 +67,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
             {activeCard &&
               (settings.showCardsAsDoubleSided === false || settings.showCardsAsDoubleSided === undefined) && (
                 <Button
-                  icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
+                  icon={side === "front" ? <Redo2 size={14} /> : <Undo2 size={14} />}
                   type="ghost"
                   size="large"
                   shape="round"
@@ -92,7 +92,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 size="large"
                 className="mobile-icon-button"
                 onClick={() => setSharingVisible(true)}
-                icon={<ShareAltOutlined />}
+                icon={<Share2 size={14} />}
               />
             )}
             <Button
@@ -101,7 +101,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
               size="large"
               className="mobile-icon-button"
               onClick={() => setMenuVisible(true)}
-              icon={<SettingOutlined />}
+              icon={<Settings size={14} />}
             />
           </Space>
         </Col>

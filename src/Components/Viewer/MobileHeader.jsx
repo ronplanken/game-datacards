@@ -1,4 +1,4 @@
-import { CaretDownOutlined, MenuOutlined } from "@ant-design/icons";
+import { ChevronDown, Menu } from "lucide-react";
 import { Button, Col, Image, List, Row, Typography } from "antd";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
@@ -103,8 +103,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
                 node.style.height = "calc(100dvh - 128px)";
               }
             }}>
-            {faction ? selectedFaction?.name : "Game Datacards"}{" "}
-            <CaretDownOutlined style={{ color: "white", fontSize: "1.0rem" }} />
+            {faction ? selectedFaction?.name : "Game Datacards"} <ChevronDown size={16} color="white" />
           </Button>
         </Col>
         <Col style={{ display: "flex", alignItems: "center" }}>
@@ -114,7 +113,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
             size="large"
             className="mobile-icon-button"
             onClick={() => setOpen(true)}
-            icon={<MenuOutlined />}
+            icon={<Menu size={14} />}
           />
         </Col>
       </Row>
