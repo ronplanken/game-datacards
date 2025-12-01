@@ -10,10 +10,10 @@ export const UnitCardBack = ({ unit, cardStyle, paddingTop = "32px", className }
     <div
       className={className}
       style={{
-        ...cardStyle,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
+        ...cardStyle,
       }}>
       <div className={`unit back`} data-name={unit.name} data-fullname={`${unit.name} ${unit.subname}`}>
         <div className={"header back"}>

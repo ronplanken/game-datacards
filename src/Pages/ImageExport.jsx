@@ -18,6 +18,7 @@ import { toBlob } from "html-to-image";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
+import "../Components/Print/Print.css";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
@@ -144,67 +145,45 @@ export const ImageExport = () => {
             }}>
             <Spin tip="Preparing download..." size="large"></Spin>
           </div>
-          <Sider
-            style={{
-              backgroundColor: "#F0F2F5",
-              zIndex: 1000,
-              borderRight: "1px solid lightgray",
-              boxShadow: "1px 0px 8px 0px rgb(0 0 0 / 15%)",
-              clipPath: "inset(0px -8px 0px 0px)",
-              height: "calc(100vh - 64px)",
-            }}
-            className="no-print small-form">
-            <Row style={{ paddingTop: 8, paddingLeft: 8, borderBottom: "1px solid lightgray" }}>
-              <Col flex="auto">
-                <Typography.Title level={5}>Settings</Typography.Title>
-              </Col>
-            </Row>
-            <Form
-              layout="vertical"
-              style={{ padding: 0, maxHeight: "calc(100vh - 205px)", zIndex: 100, overflowY: "auto" }}>
-              <Collapse>
-                <Panel header={"Other"} key={"other"}>
-                  <Form.Item label={"Background"}>
-                    <Select
-                      defaultValue={backgrounds}
-                      onChange={(val) => {
-                        setBackgrounds(val);
-                      }}
-                      options={[
-                        { label: "Standard Background", value: "standard" },
-                        { label: "Light Background", value: "light" },
-                        { label: "Coloured Ink Saver", value: "colourprint" },
-                        { label: "Greyscale Ink Saver", value: "greyprint" },
-                        // uncomment the below option to allow debug colour mode which clearly shows each element
-                        // { label: "Debug Background", value: "debug" },
-                      ]}
-                      size={"small"}
-                    />
-                  </Form.Item>
-                  <Form.Item label={`Image pixel scaling (${pixelScaling})`}>
-                    <Slider
-                      min={0.5}
-                      max={2.5}
-                      step={0.25}
-                      onChange={(val) => {
-                        setPixelScaling(val);
-                      }}
-                      value={pixelScaling}></Slider>
-                  </Form.Item>
-                </Panel>
-              </Collapse>
-            </Form>
-            <Form
-              style={{
-                padding: 8,
-                maxHeight: "100px",
-                background: "rgb(240, 242, 245)",
-                position: "absolute",
-                bottom: 0,
-                width: "100%",
-                borderTop: "1px solid lightgray",
-                zIndex: 101,
-              }}>
+          <Sider className="no-print print-sider small-form">
+            <div className="print-sider-header">
+              <h4 className="print-sider-title">Export Settings</h4>
+            </div>
+            <div className="print-settings-scroll">
+              <Form layout="vertical">
+                <Collapse defaultActiveKey={["other"]}>
+                  <Panel header={"Other"} key={"other"}>
+                    <Form.Item label={"Background"}>
+                      <Select
+                        defaultValue={backgrounds}
+                        onChange={(val) => {
+                          setBackgrounds(val);
+                        }}
+                        options={[
+                          { label: "Standard Background", value: "standard" },
+                          { label: "Light Background", value: "light" },
+                          { label: "Coloured Ink Saver", value: "colourprint" },
+                          { label: "Greyscale Ink Saver", value: "greyprint" },
+                        ]}
+                        size={"small"}
+                      />
+                    </Form.Item>
+                    <Form.Item label={`Image pixel scaling (${pixelScaling})`}>
+                      <Slider
+                        min={0.5}
+                        max={2.5}
+                        step={0.25}
+                        onChange={(val) => {
+                          setPixelScaling(val);
+                        }}
+                        value={pixelScaling}
+                      />
+                    </Form.Item>
+                  </Panel>
+                </Collapse>
+              </Form>
+            </div>
+            <div className="print-sider-footer">
               <Form.Item>
                 <Button
                   block
@@ -221,7 +200,7 @@ export const ImageExport = () => {
                   Cancel
                 </Button>
               </Form.Item>
-            </Form>
+            </div>
           </Sider>
           <Content
             style={{ minHeight: "calc(100vh - 64px)", maxHeight: "calc(100vh - 64px)", overflowX: "hidden" }}
