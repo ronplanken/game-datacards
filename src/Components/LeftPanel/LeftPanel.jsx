@@ -7,7 +7,7 @@ import { DataSourcePanel } from "./DataSourcePanel";
 export const LeftPanel = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
   return (
     <>
-      <Toolbar selectedTreeKey={selectedTreeIndex} setSelectedTreeKey={setSelectedTreeIndex} />
+      <Toolbar />
       <PanelGroup direction="vertical" autoSaveId="toolbarLayout">
         <Panel defaultSize={30} minSize={20} maxSize={80}>
           <CategoryTree selectedTreeIndex={selectedTreeIndex} setSelectedTreeIndex={setSelectedTreeIndex} />

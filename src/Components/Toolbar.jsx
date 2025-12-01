@@ -1,5 +1,5 @@
-import { FileImageOutlined, FolderAddOutlined, PrinterOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Tooltip, message } from "antd";
+import { FileImageOutlined, FolderAddOutlined, PrinterOutlined } from "@ant-design/icons";
+import { Button, Col, Row, Tooltip } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
@@ -27,14 +27,14 @@ const getTotalCardCount = (category, allCategories) => {
   return mainCards;
 };
 
-export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
+export const Toolbar = () => {
   const { settings } = useSettingsStorage();
 
   const navigate = useNavigate();
 
   const { logScreenView } = useFirebase();
 
-  const { cardStorage, activeCategory, saveActiveCard, cardUpdated, addCategory } = useCardStorage();
+  const { cardStorage, activeCategory, addCategory } = useCardStorage();
 
   return (
     <Row style={{ justifyContent: "space-between", background: "white", borderBottom: "1px solid #E5E5E5" }}>
@@ -97,33 +97,6 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
             }}
           />
         </Tooltip>
-      </Col>
-      <Col
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "end",
-          background: "white",
-          alignItems: "center",
-          paddingRight: "4px",
-        }}>
-        {selectedTreeKey?.includes("card") && (
-          <>
-            <Tooltip title={"Update selected card"} placement="bottom">
-              <Button
-                icon={<SaveOutlined />}
-                type={"ghost"}
-                size={"small"}
-                disabled={!cardUpdated}
-                onClick={() => {
-                  saveActiveCard();
-                  message.success("Card has been updated");
-                }}>
-                save
-              </Button>
-            </Tooltip>
-          </>
-        )}
       </Col>
     </Row>
   );

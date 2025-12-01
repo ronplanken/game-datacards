@@ -1,5 +1,5 @@
-import { CheckOutlined, SwapOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Layout, Menu, Row } from "antd";
+import { CheckOutlined, SwapOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Layout, Menu, Row, message } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useState, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -27,8 +27,16 @@ function App() {
 
   const [selectedTreeIndex, setSelectedTreeIndex] = useState(null);
 
-  const { cardStorage, activeCard, setActiveCard, addCardToCategory, setActiveCategory, updateActiveCard } =
-    useCardStorage();
+  const {
+    cardStorage,
+    activeCard,
+    setActiveCard,
+    addCardToCategory,
+    setActiveCategory,
+    updateActiveCard,
+    saveActiveCard,
+    cardUpdated,
+  } = useCardStorage();
 
   // Ref for the card display container
   const cardContainerRef = useRef(null);
@@ -212,6 +220,21 @@ function App() {
                       <Dropdown overlay={categoryMenu} trigger={["click"]}>
                         <Button type="text" icon={<PlusOutlined />} title="Add card to category" />
                       </Dropdown>
+                    </>
+                  )}
+                  {/* Save button */}
+                  {activeCard.isCustom && cardUpdated && (
+                    <>
+                      <div className="toolbar-divider" />
+                      <Button
+                        type="text"
+                        icon={<SaveOutlined />}
+                        onClick={() => {
+                          saveActiveCard();
+                          message.success("Card has been updated");
+                        }}
+                        title="Save card"
+                      />
                     </>
                   )}
                 </div>
