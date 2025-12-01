@@ -42,7 +42,7 @@ export const Warhammer40K10eCardDisplay = ({
     <>
       {!type && activeCard && (
         <>
-          <Col span={24}>
+          <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
             {activeCard?.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
             {activeCard?.cardType === "enhancement" && <EnhancementCard enhancement={activeCard} />}
             {activeCard?.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}

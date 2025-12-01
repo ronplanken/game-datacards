@@ -70,11 +70,8 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
   }, [unit?.uuid, unit?.hasLocalImage, isReady]); // Removed getImageUrl from dependencies
   return (
     <div
-      className={className}
+      className={`unit-card-front-wrapper ${className || ""}`}
       style={{
-        justifyContent: "center",
-        justifyItems: "center",
-        display: "flex",
         ...cardStyle,
       }}>
       <div className={`unit front`} data-name={unit.name} data-fullname={`${unit.name} ${unit.subname}`}>

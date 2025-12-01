@@ -1,6 +1,6 @@
 /* Floating Toolbar - Figma-style */
 .floating-toolbar {
-  position: absolute;
+  position: fixed;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);

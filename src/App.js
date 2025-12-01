@@ -102,7 +102,7 @@ function App() {
                   : cardFaction?.colours?.header,
               }}
               className={`data-${activeCard?.source}`}>
-              <Row style={{ overflow: "hidden" }}>
+              <Row style={{ overflow: "hidden", justifyContent: "center" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "40k-10e" && (
                   <Warhammer40K10eCardDisplay side={activeCard.print_side || "front"} />
