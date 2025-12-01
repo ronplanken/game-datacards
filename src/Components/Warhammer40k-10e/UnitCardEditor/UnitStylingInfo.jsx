@@ -5,6 +5,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
+import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -12,6 +13,7 @@ const { Text } = Typography;
 export function UnitStylingInfo() {
   const { activeCard, updateActiveCard, saveActiveCard } = useCardStorage();
   const { settings, updateSettings } = useSettingsStorage();
+  const { dataSource } = useDataSourceStorage();
   const {
     saveImage,
     deleteImage,
@@ -454,6 +456,96 @@ export function UnitStylingInfo() {
                   tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
                 />
               </div>
+            </Form.Item>
+          </Form>
+        )}
+      </Card>
+
+      <Card
+        type={"inner"}
+        title="Custom Colours"
+        size="small"
+        bodyStyle={{ padding: activeCard.useCustomColours ? 16 : 0 }}
+        style={{ marginTop: 16 }}
+        extra={
+          <Switch
+            checked={activeCard.useCustomColours || false}
+            onChange={(value) => {
+              // When enabling, initialize with faction colors if not already set
+              const cardFaction = dataSource?.data?.find((f) => f.id === activeCard?.faction_id);
+              const updates = { useCustomColours: value };
+              if (value && !activeCard.customBannerColour) {
+                updates.customBannerColour = cardFaction?.colours?.banner || "#103344";
+              }
+              if (value && !activeCard.customHeaderColour) {
+                updates.customHeaderColour = cardFaction?.colours?.header || "#456664";
+              }
+              updateActiveCard({ ...activeCard, ...updates });
+            }}
+          />
+        }>
+        {activeCard.useCustomColours && (
+          <Form size="small">
+            <Form.Item label={"Banner Colour"}>
+              <Space>
+                <input
+                  type="color"
+                  value={activeCard.customBannerColour || "#103344"}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customBannerColour: e.target.value });
+                  }}
+                  style={{
+                    width: 40,
+                    height: 28,
+                    padding: 0,
+                    border: "1px solid #d9d9d9",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                  }}
+                />
+                <Input
+                  size="small"
+                  value={activeCard.customBannerColour || "#103344"}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customBannerColour: e.target.value });
+                  }}
+                  style={{ width: 90, fontFamily: "monospace" }}
+                />
+              </Space>
+              <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
+                Used for the unit name background and stat headers
+              </Text>
+            </Form.Item>
+
+            <Form.Item label={"Header Colour"} style={{ marginBottom: 0 }}>
+              <Space>
+                <input
+                  type="color"
+                  value={activeCard.customHeaderColour || "#456664"}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customHeaderColour: e.target.value });
+                  }}
+                  style={{
+                    width: 40,
+                    height: 28,
+                    padding: 0,
+                    border: "1px solid #d9d9d9",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                  }}
+                />
+                <Input
+                  size="small"
+                  value={activeCard.customHeaderColour || "#456664"}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customHeaderColour: e.target.value });
+                  }}
+                  style={{ width: 90, fontFamily: "monospace" }}
+                />
+              </Space>
+              <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
+                Used for weapon/ability headers and card borders
+              </Text>
             </Form.Item>
           </Form>
         )}

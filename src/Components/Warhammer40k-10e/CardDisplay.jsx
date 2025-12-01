@@ -19,7 +19,8 @@ export const Warhammer40K10eCardDisplay = ({
   const { settings } = useSettingsStorage();
   const { dataSource } = useDataSourceStorage();
 
-  const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+  const displayCard = card || activeCard;
+  const cardFaction = dataSource.data.find((faction) => faction.id === displayCard?.faction_id);
 
   // if no background selected, use standard
   // this does assume standard will always exist but the alternative is duplicating the data?
@@ -28,8 +29,14 @@ export const Warhammer40K10eCardDisplay = ({
   }
 
   if (backgrounds === "standard" || backgrounds === "colourprint" || backgrounds === "light") {
-    COLOURS[backgrounds].headerColour = cardFaction?.colours?.header;
-    COLOURS[backgrounds].bannerColour = cardFaction?.colours?.banner;
+    // Use custom colours if enabled, otherwise fall back to faction colours
+    if (displayCard?.useCustomColours) {
+      COLOURS[backgrounds].headerColour = displayCard.customHeaderColour || cardFaction?.colours?.header;
+      COLOURS[backgrounds].bannerColour = displayCard.customBannerColour || cardFaction?.colours?.banner;
+    } else {
+      COLOURS[backgrounds].headerColour = cardFaction?.colours?.header;
+      COLOURS[backgrounds].bannerColour = cardFaction?.colours?.banner;
+    }
   }
   return (
     <>

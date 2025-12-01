@@ -1,29 +1,13 @@
-import {
-  Badge,
-  Button,
-  Col,
-  Collapse,
-  Form,
-  Grid,
-  Image,
-  Layout,
-  Row,
-  Select,
-  Slider,
-  Space,
-  Spin,
-  Typography,
-} from "antd";
+import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Spin } from "antd";
 import { toBlob } from "html-to-image";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import "../Components/Print/Print.css";
+import { AppHeader } from "../Components/AppHeader";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
-
-import logo from "../Images/logo.png";
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 import JSZip from "jszip";
@@ -41,10 +25,8 @@ const getAllCategoryCards = (category, allCategories) => {
   return mainCards;
 };
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Sider, Content } = Layout;
 const { Panel } = Collapse;
-const { useBreakpoint } = Grid;
-const { Option } = Select;
 export const ImageExport = () => {
   const { CategoryId } = useParams();
 
@@ -103,28 +85,13 @@ export const ImageExport = () => {
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
     return (
       <Layout>
-        <Header className="no-print" style={{ paddingLeft: "32px" }}>
-          <Row style={{ justifyContent: "space-between" }}>
-            <Col>
-              <Space size={"large"}>
-                {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
-                  <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
-                    <Image preview={false} src={logo} width={50} />
-                  </Badge.Ribbon>
-                ) : (
-                  <Image preview={false} src={logo} width={50} />
-                )}
-                <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
-                  Game Datacards
-                </Typography.Title>
-                <Typography.Title level={4} style={{ color: "white", marginBottom: 0 }}>
-                  Image Export
-                </Typography.Title>
-              </Space>
-            </Col>
-            <Col></Col>
-          </Row>
-        </Header>
+        <AppHeader
+          showModals={false}
+          pageTitle="Image Export"
+          showNav={false}
+          showActions={false}
+          className="no-print"
+        />
         <Layout>
           <div
             ref={overlayRef}

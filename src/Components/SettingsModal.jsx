@@ -1,5 +1,5 @@
 import { Settings, Database, Trash2, Printer, History } from "lucide-react";
-import { Button, Popconfirm } from "antd";
+import { Popconfirm } from "antd";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -231,7 +231,37 @@ export const SettingsModal = () => {
                 {activeTab === "changelog" && (
                   <div className="changelog-container">
                     <div className="changelog-timeline">
-                      <ChangelogEntry version="Version 2.14.0" date="26-11-2025" defaultExpanded={true}>
+                      <ChangelogEntry version="Version 3.0.0" date="01-12-2025" defaultExpanded={true}>
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Updated Styling</strong>
+                            Refreshed modal designs and UI components for a more modern look and feel.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Custom Faction Icons</strong>
+                            Upload your own faction symbol with positioning and scaling controls.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Custom Colours</strong>
+                            Override faction colours with custom banner and header colours per card.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Linkable Leaders</strong>
+                            Link Leader and Led By entries to your own custom cards.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Updated Controls</strong>
+                            Auto-fit card scaling and improved zoom controls in the editor.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Sub-categories</strong>
+                            Organise your cards with nested sub-categories in the tree view.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 2.14.0" date="26-11-2025">
                         <h4 className="changelog-section-title">Added</h4>
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
@@ -510,15 +540,13 @@ export const SettingsModal = () => {
       )}
 
       <Tooltip content="Configuration" placement="bottom-start">
-        <Button
-          type={"ghost"}
-          icon={<Settings size={14} />}
-          style={{ color: "white", fontSize: "16px" }}
-          size={"large"}
+        <button
+          className="app-header-icon-btn"
           onClick={() => {
             setIsModalVisible(true);
-          }}
-        />
+          }}>
+          <Settings size={20} />
+        </button>
       </Tooltip>
     </>
   );

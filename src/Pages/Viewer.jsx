@@ -6,9 +6,8 @@ import "antd/dist/antd.min.css";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
-import { AboutModal } from "../Components/AboutModal";
+import { AppHeader } from "../Components/AppHeader";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
-import { SettingsModal } from "../Components/SettingsModal";
 import { UpdateReminder } from "../Components/UpdateReminder";
 import { MobileHeader } from "../Components/Viewer/MobileHeader";
 import { MobileMenu } from "../Components/Viewer/MobileMenu";
@@ -16,12 +15,10 @@ import { MobileNav } from "../Components/Viewer/MobileNav";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
-import { WhatsNew } from "../Components/WhatsNew";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { useAutoFitScale } from "../Hooks/useAutoFitScale";
-import { Discord } from "../Icons/Discord";
 
 import logo from "../Images/logo.png";
 import "../style.less";
@@ -161,58 +158,20 @@ export const Viewer = () => {
 
   return (
     <Layout>
-      <WhatsNew />
-      <UpdateReminder />
-      <Header
-        style={{
-          paddingLeft: screens.xs ? "8px" : "32px",
-          paddingRight: screens.xs ? "12px" : "32px",
-        }}>
-        {screens.xs && <MobileHeader setOpen={setOpen} padding={"24px"} />}
-        {screens.sm && !screens.lg && <MobileHeader setOpen={setOpen} padding={"64px"} />}
-        {screens.lg && (
-          <Row style={{ justifyContent: "space-between" }}>
-            <Col>
-              <Space size={"large"}>
-                <Image preview={false} src={logo} width={50} />
-                <Typography.Title level={2} style={{ color: "white", marginBottom: 0, marginTop: "0px" }}>
-                  Game Datacards
-                </Typography.Title>
-                <Space>
-                  <div className="nav-menu-item" onClick={() => navigate("/")}>
-                    <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
-                      <Link to={"/"} style={{ fontSize: "1.1rem", color: "white" }}>
-                        Editor
-                      </Link>
-                    </Typography.Text>
-                  </div>
-                  <div className="nav-menu-item selected" onClick={() => navigate("/viewer")}>
-                    <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
-                      <Link to={"/viewer"} style={{ fontSize: "1.1rem", color: "white" }}>
-                        Viewer
-                      </Link>
-                    </Typography.Text>
-                  </div>
-                </Space>
-              </Space>
-            </Col>
-            <Col>
-              <Space>
-                <AboutModal />
-                <Tooltip content="Join us on discord!" placement="bottom-end">
-                  <Button
-                    className="button-bar"
-                    type="ghost"
-                    size="large"
-                    icon={<Discord />}
-                    onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}></Button>
-                </Tooltip>
-                <SettingsModal />
-              </Space>
-            </Col>
-          </Row>
-        )}
-      </Header>
+      {/* Desktop: Use unified AppHeader */}
+      {screens.lg && <AppHeader showModals={true} />}
+
+      {/* Mobile/Tablet: Use MobileHeader */}
+      {!screens.lg && (
+        <Header
+          style={{
+            paddingLeft: screens.xs ? "8px" : "32px",
+            paddingRight: screens.xs ? "12px" : "32px",
+          }}>
+          {screens.xs && <MobileHeader setOpen={setOpen} padding={"24px"} />}
+          {screens.sm && !screens.lg && <MobileHeader setOpen={setOpen} padding={"64px"} />}
+        </Header>
+      )}
 
       <MobileDrawer open={open} setOpen={setOpen} />
 

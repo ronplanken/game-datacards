@@ -94,8 +94,12 @@ function App() {
                 overflow: "auto",
                 position: "relative",
                 "--card-scaling-factor": effectiveScale,
-                "--banner-colour": cardFaction?.colours?.banner,
-                "--header-colour": cardFaction?.colours?.header,
+                "--banner-colour": activeCard?.useCustomColours
+                  ? activeCard.customBannerColour
+                  : cardFaction?.colours?.banner,
+                "--header-colour": activeCard?.useCustomColours
+                  ? activeCard.customHeaderColour
+                  : cardFaction?.colours?.header,
               }}
               className={`data-${activeCard?.source}`}>
               <Row style={{ overflow: "hidden" }}>

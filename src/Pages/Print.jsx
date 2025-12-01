@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { Badge, Button, Col, Collapse, Form, Image, Layout, Row, Select, Slider, Input, Space, Typography } from "antd";
+import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Input, Typography } from "antd";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import split from "just-split";
 
-import logo from "../Images/logo.png";
 import "../App.css";
 import "../Components/Print/Print.css";
 
+import { AppHeader } from "../Components/AppHeader";
 import { Page } from "../Components/Print/Page";
 import { Printer } from "../Components/Print/Printer";
 import { CardRenderer } from "../Components/Print/CardRenderer";
@@ -58,28 +58,7 @@ export const Print = () => {
 
   return (
     <Layout>
-      <Header className="no-print" style={{ paddingLeft: "32px" }}>
-        <Row style={{ justifyContent: "space-between" }}>
-          <Col>
-            <Space size={"large"}>
-              {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
-                <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
-                  <Image preview={false} src={logo} width={50} />
-                </Badge.Ribbon>
-              ) : (
-                <Image preview={false} src={logo} width={50} />
-              )}
-              <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
-                Game Datacards
-              </Typography.Title>
-              <Typography.Title level={4} style={{ color: "white", marginBottom: 0 }}>
-                Print
-              </Typography.Title>
-            </Space>
-          </Col>
-          <Col></Col>
-        </Row>
-      </Header>
+      <AppHeader showModals={false} pageTitle="Print" showNav={false} showActions={false} className="no-print" />
       <Layout>
         <Sider width={220} className="no-print small-form print-sider">
           {/* Header */}

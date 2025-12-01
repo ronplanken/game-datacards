@@ -1,42 +1,53 @@
-import { Badge, Button, Col, Grid, Image, Layout, Row, Space, Typography } from "antd";
+import { Badge, Grid, Image, Layout } from "antd";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
-import { AboutModal } from "./AboutModal";
 import { ServiceMessage } from "./ServiceMessage";
 import { SettingsModal } from "./SettingsModal";
 import { ShareModal } from "./ShareModal";
 import { UpdateReminder } from "./UpdateReminder";
 import { WelcomeWizard } from "./WelcomeWizard";
 import { WhatsNew } from "./WhatsNew";
+import "./AppHeader.css";
 
-const { Header, Content } = Layout;
+const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
-export const AppHeader = ({ selectedTreeKey, setSelectedTreeKey }) => {
+export const AppHeader = ({
+  showModals = true,
+  pageTitle = null,
+  showNav = true,
+  showActions = true,
+  className = "",
+}) => {
   const screens = useBreakpoint();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { activeCategory } = useCardStorage();
 
+  const isEditorPage = location.pathname === "/" || location.pathname === "";
+  const isViewerPage = location.pathname.startsWith("/viewer");
+
   return (
     <>
-      <WelcomeWizard />
-      <WhatsNew />
-      <ServiceMessage />
-      <UpdateReminder />
-      <Header
-        style={{
-          paddingLeft: screens.xs ? "8px" : "32px",
-          paddingRight: screens.xs ? "12px" : "32px",
-        }}>
-        <Row style={{ justifyContent: "space-between" }}>
-          <Col>
-            <Space size={"large"}>
+      {showModals && (
+        <>
+          <WelcomeWizard />
+          <WhatsNew />
+          <ServiceMessage />
+          <UpdateReminder />
+        </>
+      )}
+      <Header className={`app-header ${className}`}>
+        <div className="app-header-content">
+          {/* Left section - Logo and Navigation */}
+          <div className="app-header-left">
+            <div className="app-header-brand" onClick={() => navigate("/")}>
               {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
                 <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
                   <Image preview={false} src={logo} width={50} />
@@ -44,43 +55,42 @@ export const AppHeader = ({ selectedTreeKey, setSelectedTreeKey }) => {
               ) : (
                 <Image preview={false} src={logo} width={50} />
               )}
-              <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
-                Game Datacards
-              </Typography.Title>
-              <Space>
-                <div className="nav-menu-item selected" onClick={() => navigate("/")}>
-                  <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
-                    <Link to={"/"} style={{ fontSize: "1.1rem", color: "white" }}>
-                      Editor
-                    </Link>
-                  </Typography.Text>
-                </div>
-                <div className="nav-menu-item" onClick={() => navigate("/viewer")}>
-                  <Typography.Text style={{ marginBottom: 0, lineHeight: "4rem" }}>
-                    <Link to={"/viewer"} style={{ fontSize: "1.1rem", color: "white" }}>
-                      Viewer
-                    </Link>
-                  </Typography.Text>
-                </div>
-              </Space>
-            </Space>
-          </Col>
-          <Col>
-            <Space>
-              {activeCategory && activeCategory.cards.length > 0 && <ShareModal />}
-              <AboutModal />
+              {screens.md && <span className="app-header-title">Game Datacards</span>}
+            </div>
+            {pageTitle && screens.md && <span className="app-header-page-title">{pageTitle}</span>}
+
+            {showNav && screens.sm && (
+              <nav className="app-header-nav">
+                <Link to="/" className={`app-header-nav-item ${isEditorPage ? "active" : ""}`}>
+                  Editor
+                </Link>
+                <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
+                  Viewer
+                </Link>
+              </nav>
+            )}
+          </div>
+
+          {/* Right section - Actions and User */}
+          <div className="app-header-right">
+            {showActions && activeCategory && activeCategory.cards?.length > 0 && <ShareModal />}
+
+            {showActions && (
               <Tooltip content="Join us on discord!" placement="bottom-end">
-                <Button
-                  className="button-bar"
-                  type="ghost"
-                  size="large"
-                  icon={<Discord />}
-                  onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}></Button>
+                <button
+                  className="app-header-icon-btn"
+                  onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}>
+                  <Discord />
+                </button>
               </Tooltip>
-              <SettingsModal />
-            </Space>
-          </Col>
-        </Row>
+            )}
+
+            <SettingsModal />
+
+            {/* User menu - hidden for now, will be implemented with auth later */}
+            {/* <UserMenu onSettingsClick={() => {}} /> */}
+          </div>
+        </div>
       </Header>
     </>
   );

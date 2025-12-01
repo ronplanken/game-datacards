@@ -1,0 +1,158 @@
+/* AppHeader.css */
+
+/* ===========================================
+   HEADER CONTAINER
+   =========================================== */
+
+.app-header {
+  background: #001529 !important;
+  padding: 0 24px !important;
+  height: 64px;
+  line-height: 64px;
+}
+
+.app-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  max-width: 100%;
+}
+
+/* ===========================================
+   LEFT SECTION - Logo & Nav
+   =========================================== */
+
+.app-header-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+}
+
+.app-header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.app-header-page-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  margin-left: 24px;
+}
+
+/* ===========================================
+   NAVIGATION
+   =========================================== */
+
+.app-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.app-header-nav-item {
+  padding: 0 16px;
+  height: 64px;
+  line-height: 64px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.app-header-nav-item:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.app-header-nav-item.active {
+  color: #fff;
+  border-bottom-color: #1677ff;
+}
+
+/* ===========================================
+   RIGHT SECTION - Actions
+   =========================================== */
+
+.app-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-header-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-header-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.app-header-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.app-header-icon-btn-with-text {
+  width: auto;
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.app-header-icon-btn-with-text svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===========================================
+   RESPONSIVE ADJUSTMENTS
+   =========================================== */
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 16px !important;
+  }
+
+  .app-header-left {
+    gap: 16px;
+  }
+
+  .app-header-right {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .app-header {
+    padding: 0 12px !important;
+  }
+
+  .app-header-title {
+    display: none;
+  }
+}

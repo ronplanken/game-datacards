@@ -1,8 +1,11 @@
-import { Button, Col, Row, Typography } from "antd";
 import { compare } from "compare-versions";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
+import * as ReactDOM from "react-dom";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
+import "./WhatsNew.css";
+
+const modalRoot = document.getElementById("modal-root");
 
 export const WhatsNew = () => {
   const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
@@ -17,6 +20,21 @@ export const WhatsNew = () => {
     });
   };
 
+  // Handle escape key
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Escape" && isWhatsNewVisible) {
+        closeWhatsNew();
+      }
+    },
+    [isWhatsNewVisible]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   useEffect(() => {
     if (
       compare(settings.wizardCompleted, LAST_WIZARD_VERSION, ">=") &&
@@ -26,89 +44,59 @@ export const WhatsNew = () => {
     }
   }, [settings]);
 
-  return (
-    <>
-      {isWhatsNewVisible && (
-        <div className="welcome-background">
-          <div className="whatsnew-container">
-            <div
-              style={{
-                backgroundColor: "#001529",
-                width: "100%",
-                height: "90px",
-                textAlign: "center",
-              }}>
-              <h1
-                style={{
-                  height: "100%",
-                  lineHeight: "90px",
-                  fontSize: "32px",
-                  color: "white",
-                }}>
-                Whats new in 2.14.0
-              </h1>
-            </div>
-            <div className="welcome-cover">
-              <>
-                <Row style={{ padding: "16px" }} className="whatsnew-content">
-                  <Col>
-                    <Typography.Title level={4}>Added</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Custom Faction Symbol</strong>
-                          <br />
-                          Upload a custom faction symbol image with positioning and scaling options.
-                        </li>
-                        <li>
-                          <strong>Points Display Options</strong>
-                          <br />
-                          Configure how points are displayed with options to show all points, designate a primary point,
-                          and display model counts.
-                        </li>
-                        <li>
-                          <strong>Auto-fit Card Scaling</strong>
-                          <br />
-                          Cards now automatically scale to fit the available space. Toggle between Auto and Manual zoom
-                          modes using the new button next to the zoom controls.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                    <Typography.Title level={4}>Fixed</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Points Not Showing in Image Export</strong>
-                          <br />
-                          Fixed an issue where points were not visible when exporting Warhammer 10th edition cards as
-                          images.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    paddingLeft: "16px",
-                    paddingRight: "16px",
-                    position: "absolute",
-                    bottom: "16px",
-                    width: "100%",
-                  }}
-                  justify={"space-between"}>
-                  <Col></Col>
-                  <Col>
-                    <Button type="primary" size="large" onClick={() => closeWhatsNew()}>
-                      Close
-                    </Button>
-                  </Col>
-                  <Col></Col>
-                </Row>
-              </>
-            </div>
-          </div>
+  // Handle overlay click
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeWhatsNew();
+    }
+  };
+
+  if (!isWhatsNewVisible) return null;
+
+  return ReactDOM.createPortal(
+    <div className="whatsnew-modal-overlay" onClick={handleOverlayClick}>
+      <div className="whatsnew-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="whatsnew-modal-header">
+          <h1 className="whatsnew-modal-title">What&apos;s new in {process.env.REACT_APP_VERSION}</h1>
         </div>
-      )}
-    </>
+
+        <div className="whatsnew-modal-body">
+          <h3 className="whatsnew-section-title">New in 3.0</h3>
+          <ul className="whatsnew-list">
+            <li className="whatsnew-list-item">
+              <strong>Updated Styling</strong>
+              <span>Refreshed modal designs and UI components for a more modern look and feel.</span>
+            </li>
+            <li className="whatsnew-list-item">
+              <strong>Custom Faction Icons</strong>
+              <span>Upload your own faction symbol with positioning and scaling controls.</span>
+            </li>
+            <li className="whatsnew-list-item">
+              <strong>Custom Colours</strong>
+              <span>Override faction colours with custom banner and header colours per card.</span>
+            </li>
+            <li className="whatsnew-list-item">
+              <strong>Linkable Leaders</strong>
+              <span>Link Leader and Led By entries to your own custom cards.</span>
+            </li>
+            <li className="whatsnew-list-item">
+              <strong>Updated Controls</strong>
+              <span>Auto-fit card scaling and improved zoom controls in the editor.</span>
+            </li>
+            <li className="whatsnew-list-item">
+              <strong>Sub-categories</strong>
+              <span>Organise your cards with nested sub-categories in the tree view.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="whatsnew-modal-footer">
+          <button className="whatsnew-close-btn" onClick={closeWhatsNew}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>,
+    modalRoot
   );
 };

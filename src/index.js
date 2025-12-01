@@ -8,6 +8,7 @@ import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
+import { UserProviderComponent } from "./Hooks/useUser";
 import { AppRoutes } from "./Routes/AppRoutes";
 
 import { Col, Grid, Result, Row, Typography } from "antd";
@@ -69,17 +70,19 @@ const root = createRoot(container);
 root.render(
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <SettingsStorageProviderComponent>
-      <FirebaseProviderComponent>
-        <DataSourceStorageProviderComponent>
-          <CardStorageProviderComponent>
-            <MobileListProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </MobileListProvider>
-          </CardStorageProviderComponent>
-        </DataSourceStorageProviderComponent>
-      </FirebaseProviderComponent>
+      <UserProviderComponent>
+        <FirebaseProviderComponent>
+          <DataSourceStorageProviderComponent>
+            <CardStorageProviderComponent>
+              <MobileListProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </MobileListProvider>
+            </CardStorageProviderComponent>
+          </DataSourceStorageProviderComponent>
+        </FirebaseProviderComponent>
+      </UserProviderComponent>
     </SettingsStorageProviderComponent>
   </ErrorBoundary>
 );

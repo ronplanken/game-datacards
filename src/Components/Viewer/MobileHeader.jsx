@@ -106,7 +106,8 @@ export const MobileHeader = ({ setOpen, padding }) => {
             {faction ? selectedFaction?.name : "Game Datacards"} <ChevronDown size={16} color="white" />
           </Button>
         </Col>
-        <Col style={{ display: "flex", alignItems: "center" }}>
+        <Col style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {/* User indicator - hidden for now, will be implemented with auth later */}
           <Button
             type="text"
             style={{ color: "white" }}

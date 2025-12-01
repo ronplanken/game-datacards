@@ -102,17 +102,15 @@ export const ShareModal = () => {
         </Row>
       </Modal>
       <Tooltip content="Share category" placement="bottom-start">
-        <Button
-          type={"ghost"}
-          icon={<Share2 size={14} />}
-          size={"large"}
+        <button
+          className="app-header-icon-btn app-header-icon-btn-with-text"
           onClick={() => {
             logScreenView("Share category");
             setIsModalVisible(true);
-          }}
-          className={"button-bar"}>
+          }}>
+          <Share2 size={16} />
           Share
-        </Button>
+        </button>
       </Tooltip>
     </>
   );

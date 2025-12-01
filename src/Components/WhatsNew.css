@@ -1,0 +1,199 @@
+/* WhatsNew.css */
+
+/* ===========================================
+   MODAL OVERLAY & CONTAINER
+   =========================================== */
+
+.whatsnew-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: whatsnewFadeIn 0.2s ease-out;
+}
+
+.whatsnew-modal {
+  width: 750px;
+  max-width: 95vw;
+  max-height: 85vh;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: whatsnewSlideIn 0.2s ease-out;
+}
+
+/* ===========================================
+   MODAL HEADER
+   =========================================== */
+
+.whatsnew-modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 24px;
+  background: #001529;
+  flex-shrink: 0;
+}
+
+.whatsnew-modal-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+/* ===========================================
+   MODAL BODY
+   =========================================== */
+
+.whatsnew-modal-body {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto;
+  background: #fff;
+  min-height: 0;
+}
+
+.whatsnew-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.whatsnew-list {
+  margin: 0 0 20px 0;
+  padding-left: 20px;
+}
+
+.whatsnew-list-item {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.whatsnew-list-item strong {
+  color: rgba(0, 0, 0, 0.88);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.whatsnew-list-item span {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/* ===========================================
+   MODAL FOOTER
+   =========================================== */
+
+.whatsnew-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 24px;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.whatsnew-close-btn {
+  padding: 8px 32px;
+  height: 40px;
+  background-color: #1677ff;
+  border: 1px solid #1677ff;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.whatsnew-close-btn:hover {
+  background-color: #4096ff;
+  border-color: #4096ff;
+}
+
+/* ===========================================
+   SCROLLBAR STYLING
+   =========================================== */
+
+.whatsnew-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.whatsnew-modal-body::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.whatsnew-modal-body::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.whatsnew-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+@keyframes whatsnewSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes whatsnewFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================================
+   RESPONSIVE ADJUSTMENTS
+   =========================================== */
+
+@media (max-width: 640px) {
+  .whatsnew-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .whatsnew-modal-header {
+    padding: 16px;
+  }
+
+  .whatsnew-modal-title {
+    font-size: 20px;
+  }
+
+  .whatsnew-modal-body {
+    padding: 16px;
+  }
+}
