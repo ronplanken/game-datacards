@@ -1,0 +1,174 @@
+/* ListOverview.css - List overview bottom sheet styles */
+
+/* ===========================================
+   HEADER ACTIONS
+   =========================================== */
+
+.list-overview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-overview-header-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: #f5f5f5;
+  color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.list-overview-header-button:active {
+  background: #e8e8e8;
+}
+
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+
+.list-overview-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+
+.list-overview-empty svg {
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.list-overview-empty-text {
+  font-size: 15px;
+}
+
+/* ===========================================
+   SECTION HEADERS
+   =========================================== */
+
+.list-overview-section {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background: #001529;
+  padding: 8px 16px;
+  margin: 0 -16px;
+}
+
+.list-overview-section:first-of-type {
+  margin-top: 0;
+}
+
+/* ===========================================
+   LIST ITEMS
+   =========================================== */
+
+.list-overview-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-overview-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  margin: 0 -16px;
+  border-bottom: 1px solid #f0f2f5;
+  gap: 12px;
+}
+
+.list-overview-item:last-child {
+  border-bottom: none;
+}
+
+.list-overview-item-main {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.list-overview-item-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-overview-item-name svg {
+  flex-shrink: 0;
+  color: #faad14;
+}
+
+.list-overview-item-enhancement {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+  margin-top: 4px;
+  padding-left: 22px;
+}
+
+.list-overview-item-points {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.list-overview-item-delete {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.list-overview-item-delete:active {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+/* ===========================================
+   TOTAL
+   =========================================== */
+
+.list-overview-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  margin: 16px -16px -16px -16px;
+  background: #f5f5f5;
+  border-radius: 0 0 16px 16px;
+  font-weight: 600;
+}
+
+.list-overview-total-label {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.list-overview-total-value {
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.88);
+}

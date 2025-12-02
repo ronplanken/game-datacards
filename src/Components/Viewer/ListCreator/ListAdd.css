@@ -1,0 +1,220 @@
+/* ListAdd.css - Add to list bottom sheet styles */
+
+/* ===========================================
+   CONTENT
+   =========================================== */
+
+.list-add-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ===========================================
+   SECTIONS
+   =========================================== */
+
+.list-add-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-add-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 10px 0;
+}
+
+/* ===========================================
+   OPTIONS (Unit Size, Enhancements)
+   =========================================== */
+
+.list-add-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.list-add-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.list-add-option:active:not(:disabled) {
+  background: #e8e8e8;
+}
+
+.list-add-option.selected {
+  background: #e6f4ff;
+  border-color: #0070d6;
+}
+
+.list-add-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.option-label {
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.option-value {
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+}
+
+.list-add-option.selected .option-label,
+.list-add-option.selected .option-value {
+  color: #0070d6;
+}
+
+/* ===========================================
+   TOGGLE ROW (Warlord)
+   =========================================== */
+
+.list-add-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.list-add-toggle-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 16px;
+}
+
+.list-add-toggle-content svg {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.list-add-toggle-content svg.active {
+  color: #faad14;
+}
+
+/* Custom Toggle */
+.list-add-toggle {
+  width: 50px;
+  height: 30px;
+  border-radius: 15px;
+  background: #e5e5e5;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.list-add-toggle.active {
+  background: #0070d6;
+}
+
+.list-add-toggle.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.list-add-toggle-thumb {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.list-add-toggle.active .list-add-toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* ===========================================
+   SELECT (Detachment)
+   =========================================== */
+
+.list-add-select {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.list-add-select:active {
+  background: #e8e8e8;
+}
+
+.list-add-select svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   WARNING
+   =========================================== */
+
+.list-add-warning {
+  padding: 12px 16px;
+  background: #fff2e8;
+  border-radius: 8px;
+  color: #d46b08;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ===========================================
+   SUBMIT BUTTON
+   =========================================== */
+
+.list-add-submit {
+  width: 100%;
+  padding: 14px 16px;
+  background: #0070d6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: inherit;
+  margin-top: 4px;
+}
+
+.list-add-submit:active:not(:disabled) {
+  background: #005bb5;
+}
+
+.list-add-submit:disabled {
+  background: #d9d9d9;
+  cursor: not-allowed;
+}

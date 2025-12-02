@@ -1,0 +1,434 @@
+/* MobileFaction.css - Faction page styles */
+
+/* ===========================================
+   PAGE CONTAINER
+   =========================================== */
+
+.mobile-faction-page {
+  min-height: 100%;
+  background: #fff;
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+
+.mobile-faction-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: var(--banner-colour, #001529);
+}
+
+.mobile-faction-title {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+/* ===========================================
+   BROWSE UNITS BUTTON
+   =========================================== */
+
+.mobile-faction-units-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 32px);
+  margin: 16px;
+  padding: 14px 16px;
+  background: var(--header-colour, #0070d6);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.mobile-faction-units-button:active {
+  opacity: 0.9;
+}
+
+.mobile-faction-units-button svg:first-child {
+  flex-shrink: 0;
+}
+
+.mobile-faction-units-button span:first-of-type {
+  flex: 1;
+  text-align: left;
+}
+
+.mobile-faction-units-button .units-count {
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.mobile-faction-units-button svg:last-child {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ===========================================
+   SECTION HEADER
+   =========================================== */
+
+.mobile-faction-section-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--banner-colour, #001529);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===========================================
+   DETACHMENT SELECTOR
+   =========================================== */
+
+.mobile-faction-detachment {
+  margin-bottom: 0;
+}
+
+.detachment-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: calc(100% - 32px);
+  margin: 12px 16px;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+
+.detachment-selector:active {
+  background: #e8e8e8;
+}
+
+.detachment-selector svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   STRATAGEM TOGGLE
+   =========================================== */
+
+.stratagem-toggle {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f5f5f5;
+}
+
+.stratagem-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.stratagem-toggle-btn:active {
+  background: #f0f0f0;
+}
+
+.stratagem-toggle-btn.active {
+  background: var(--banner-colour, #001529);
+  border-color: var(--banner-colour, #001529);
+  color: #fff;
+}
+
+.stratagem-toggle-btn.active:active {
+  opacity: 0.9;
+}
+
+/* ===========================================
+   EXPANDABLE ITEM
+   =========================================== */
+
+.stratagem-list,
+.enhancement-list,
+.rules-list {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.expandable-item {
+  background: #f5f5f5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.expandable-item-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.expandable-item-header:active {
+  background: #e8e8e8;
+}
+
+.expandable-item-title {
+  flex: 1;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.expandable-item-cost {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--header-colour, #0070d6);
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.expandable-item-header svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+.expandable-item-content {
+  padding: 0 16px 16px;
+}
+
+.expandable-item.open .expandable-item-header {
+  border-bottom: 1px solid #e8e8e8;
+}
+
+/* ===========================================
+   ENHANCEMENT DESCRIPTION
+   =========================================== */
+
+.enhancement-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.75);
+  padding-top: 12px;
+}
+
+.enhancement-description p {
+  margin: 0 0 8px 0;
+}
+
+.enhancement-description p:last-child {
+  margin-bottom: 0;
+}
+
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+
+.empty-state {
+  text-align: center;
+  padding: 24px 16px;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.45);
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+/* ===========================================
+   DETACHMENT PICKER
+   =========================================== */
+
+.detachment-picker-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.detachment-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f2f5;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+  transition: background 0.15s ease;
+  width: 100%;
+  margin: 0 -16px;
+  width: calc(100% + 32px);
+}
+
+.detachment-picker-item:first-child {
+  margin-top: -8px;
+}
+
+.detachment-picker-item:last-child {
+  border-bottom: none;
+}
+
+.detachment-picker-item:active {
+  background: #f5f5f5;
+}
+
+.detachment-picker-item.selected {
+  color: var(--header-colour, #0070d6);
+}
+
+.detachment-check {
+  color: var(--header-colour, #0070d6);
+  font-weight: 600;
+}
+
+/* ===========================================
+   RULE CONTENT
+   =========================================== */
+
+.rule-content {
+  padding-top: 12px;
+}
+
+.rule-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.75);
+  margin-bottom: 12px;
+}
+
+.rule-text:last-child {
+  margin-bottom: 0;
+}
+
+.rule-text p {
+  margin: 0 0 12px 0;
+}
+
+.rule-text p:last-child {
+  margin-bottom: 0;
+}
+
+.rule-header {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 16px 0 8px 0;
+}
+
+.rule-header:first-child {
+  margin-top: 0;
+}
+
+.rule-quote {
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.65);
+  background: #e8e8e8;
+  border-left: 3px solid var(--header-colour, #0070d6);
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.rule-quote:last-child {
+  margin-bottom: 0;
+}
+
+.rule-quote p {
+  margin: 0 0 12px 0;
+}
+
+.rule-quote p:last-child {
+  margin-bottom: 0;
+}
+
+.rule-text-italic {
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.rule-text-italic:last-child {
+  margin-bottom: 0;
+}
+
+.rule-text-italic p {
+  margin: 0 0 12px 0;
+}
+
+.rule-text-italic p:last-child {
+  margin-bottom: 0;
+}
+
+.rule-accordion-item {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.75);
+  padding: 10px 12px 10px 28px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.rule-accordion-item::before {
+  content: "•";
+  position: absolute;
+  left: 12px;
+  color: var(--header-colour, #0070d6);
+  font-weight: bold;
+}
+
+.rule-accordion-item:last-child {
+  margin-bottom: 0;
+}
+
+/* ===========================================
+   SECTIONS SPACING
+   =========================================== */
+
+.mobile-faction-stratagems,
+.mobile-faction-enhancements,
+.mobile-faction-army-rules,
+.mobile-faction-detachment-rules {
+  margin-bottom: 0;
+}

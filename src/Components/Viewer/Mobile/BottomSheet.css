@@ -1,0 +1,106 @@
+/* BottomSheet.css - iOS/Android style bottom sheet */
+
+/* ===========================================
+   BACKDROP
+   =========================================== */
+
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+  opacity: 0;
+  animation: bottomSheetBackdropFadeIn 0.3s ease forwards;
+}
+
+@keyframes bottomSheetBackdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================================
+   SHEET CONTAINER
+   =========================================== */
+
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  animation: bottomSheetSlideUp 0.3s ease-out forwards;
+}
+
+@keyframes bottomSheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   DRAG HANDLE
+   =========================================== */
+
+.bottom-sheet-handle-container {
+  padding: 12px 0 8px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.bottom-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #d9d9d9;
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+
+.bottom-sheet-header {
+  padding: 0 16px 12px;
+  font-weight: 600;
+  font-size: 17px;
+  color: rgba(0, 0, 0, 0.88);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* ===========================================
+   CONTENT
+   =========================================== */
+
+.bottom-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar styling */
+.bottom-sheet-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.bottom-sheet-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bottom-sheet-content::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 2px;
+}

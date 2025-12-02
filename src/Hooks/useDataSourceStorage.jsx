@@ -143,6 +143,12 @@ export const DataSourceStorageProviderComponent = (props) => {
       selectedFactionIndex: dataSource?.data?.findIndex((f) => f?.id === faction?.id),
     });
   };
+
+  // Clear faction state without updating settings (preserves last faction for "continue to" feature)
+  const clearSelectedFaction = () => {
+    setSelectedFaction(null);
+  };
+
   const updateSelectedFactionWithIndex = (index) => {
     setSelectedFaction(dataSource.data[index]);
   };
@@ -163,6 +169,7 @@ export const DataSourceStorageProviderComponent = (props) => {
     selectedFactionIndex,
     selectedFaction,
     updateSelectedFaction,
+    clearSelectedFaction,
     selectedSubFactions,
     setSelectedSubFactions,
     updateSelectedFactionWithIndex,

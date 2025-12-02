@@ -1,0 +1,147 @@
+/* MobileMenu.css - Settings bottom sheet styles */
+
+/* ===========================================
+   SETTINGS CONTENT
+   =========================================== */
+
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===========================================
+   SETTINGS SECTION
+   =========================================== */
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.settings-section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ===========================================
+   SETTINGS ROW
+   =========================================== */
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #fff;
+}
+
+.settings-row:not(:last-child) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.settings-label {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+/* ===========================================
+   CUSTOM TOGGLE
+   =========================================== */
+
+.settings-toggle {
+  width: 50px;
+  height: 30px;
+  border-radius: 15px;
+  background: #e5e5e5;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.settings-toggle.active {
+  background: #0070d6;
+}
+
+.settings-toggle-thumb {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.settings-toggle.active .settings-toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* ===========================================
+   ACTION BUTTON
+   =========================================== */
+
+.settings-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  background: #0070d6;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  font-family: inherit;
+}
+
+.settings-action-button:active:not(:disabled) {
+  background: #005bb5;
+}
+
+.settings-action-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.settings-action-button.loading {
+  background: #0070d6;
+}
+
+.settings-action-button svg {
+  flex-shrink: 0;
+}
+
+/* Animate spin for loader */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

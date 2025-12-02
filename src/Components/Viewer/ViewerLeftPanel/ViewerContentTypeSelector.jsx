@@ -1,0 +1,87 @@
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
+import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import "./ViewerContentTypeSelector.css";
+
+const CONTENT_TYPES = [
+  { value: "datasheets", label: "Datasheets", key: "datasheets" },
+  { value: "stratagems", label: "Stratagems", key: "stratagems" },
+];
+
+export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedContentType }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const { selectedFaction } = useDataSourceStorage();
+
+  // Get available content types based on faction data
+  const availableTypes = CONTENT_TYPES.filter((type) => {
+    const data = selectedFaction?.[type.key];
+    return data && data.length > 0;
+  });
+
+  // Get the label for the selected content type
+  const selectedLabel = CONTENT_TYPES.find((t) => t.value === selectedContentType)?.label || "Select a type";
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Handle escape key to close dropdown
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen]);
+
+  const handleSelect = (value) => {
+    setSelectedContentType(value);
+    setIsOpen(false);
+  };
+
+  if (!selectedFaction) {
+    return null;
+  }
+
+  return (
+    <div className="viewer-content-type-selector" ref={dropdownRef}>
+      <button className={`viewer-content-type-trigger ${isOpen ? "open" : ""}`} onClick={() => setIsOpen(!isOpen)}>
+        <span className="viewer-content-type-trigger-text">{selectedLabel}</span>
+        <ChevronDown size={14} className="viewer-content-type-trigger-icon" />
+      </button>
+
+      {isOpen && (
+        <div className="viewer-content-type-dropdown">
+          {availableTypes.map((type) => (
+            <div
+              key={type.value}
+              className={`viewer-content-type-option ${selectedContentType === type.value ? "selected" : ""}`}
+              onClick={() => handleSelect(type.value)}>
+              {type.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};

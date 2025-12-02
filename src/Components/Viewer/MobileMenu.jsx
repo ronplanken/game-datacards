@@ -1,175 +1,82 @@
+import { useState } from "react";
 import { Database, Loader2 } from "lucide-react";
-import { Button, Card, Col, Space, Switch, Typography, message } from "antd";
-import React from "react";
-import OutsideClickHandler from "react-outside-click-handler";
+import { message } from "antd";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { BottomSheet } from "./Mobile/BottomSheet";
+import "./MobileMenu.css";
 
-export const MobileMenu = ({ setIsVisible }) => {
-  const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
+// Custom toggle component
+const Toggle = ({ checked, onChange }) => (
+  <button className={`settings-toggle ${checked ? "active" : ""}`} onClick={() => onChange(!checked)}>
+    <span className="settings-toggle-thumb" />
+  </button>
+);
+
+// Settings row component
+const SettingsRow = ({ label, checked, onChange }) => (
+  <div className="settings-row">
+    <span className="settings-label">{label}</span>
+    <Toggle checked={checked} onChange={onChange} />
+  </div>
+);
+
+export const MobileMenu = ({ isVisible, setIsVisible }) => {
+  const [checkingForUpdate, setCheckingForUpdate] = useState(false);
   const { checkForUpdate } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
+
+  const handleClose = () => setIsVisible(false);
+
+  const handleUpdateDatasources = () => {
+    setCheckingForUpdate(true);
+    checkForUpdate().then(() => {
+      setCheckingForUpdate(false);
+      handleClose();
+      message.success({
+        content: "The datasource has been successfully updated.",
+        style: { marginTop: "10vh" },
+      });
+    });
+  };
+
   return (
-    <>
-      <div
-        style={{
-          display: "block",
-          position: "absolute",
-          height: "100vh",
-          width: "100vw",
-          backgroundColor: "#00000099",
-          top: "0px",
-          bottom: "0px",
-          zIndex: 888,
-        }}
-      />
-      <Col
-        style={{
-          display: "block",
-          backgroundColor: "#001529",
-          height: "auto",
-          padding: "8px",
-          paddingBottom: "64px",
-          width: "100vw",
-          position: "sticky",
-          bottom: "0",
-          zIndex: 999,
-          borderTop: "2px solid #f0f2f5",
-        }}
-        className="mobile-menu">
-        <OutsideClickHandler
-          onOutsideClick={() => {
-            setIsVisible(false);
-          }}>
-          <Space direction="vertical" style={{ width: "100%" }}>
-            <Typography.Text style={{ color: "white" }}>Types</Typography.Text>
-            <Card
-              type={"inner"}
-              key={`Types-01`}
-              size={"small"}
-              title={"Show Legend cards"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.showLegends}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, showLegends: value });
-                  }}
-                />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`Types-02`}
-              size={"small"}
-              title={"Show main faction cards"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.combineParentFactions}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, combineParentFactions: value });
-                  }}
-                />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`Types-03`}
-              size={"small"}
-              title={"Show allied faction cards"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.combineAlliedFactions}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, combineAlliedFactions: value });
-                  }}
-                />
-              }></Card>
-            <Typography.Text style={{ color: "white" }}>Display</Typography.Text>
-            {/* <Card
-              type={"inner"}
-              key={`display-01`}
-              size={"small"}
-              title={"Group cards by faction"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.groupByFaction}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, groupByFaction: value });
-                  }}
-                />
-              }></Card> */}
-            <Card
-              type={"inner"}
-              key={`display-01`}
-              size={"small"}
-              title={"Show points in listview"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.showPointsInListview}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, showPointsInListview: value });
-                  }}
-                />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`display-02`}
-              size={"small"}
-              title={"Group cards by role"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.groupByRole}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, groupByRole: value });
-                  }}
-                />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`display-full-size`}
-              size={"small"}
-              title={"Always show cards in single-side view"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.showCardsAsDoubleSided || false}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, showCardsAsDoubleSided: value });
-                  }}
-                />
-              }></Card>
-            <Typography.Text style={{ color: "white" }}>Actions</Typography.Text>
-            <Button
-              size="large"
-              type="primary"
-              block
-              onClick={() => {
-                setCheckingForUpdate(true);
-                checkForUpdate().then(() => {
-                  setCheckingForUpdate(false);
-                  setIsVisible(false);
-                  message.success({
-                    content: "The datasource has been successfully updated.",
-                    style: { marginTop: "10vh" },
-                  });
-                });
-              }}
-              icon={
-                checkingForUpdate ? (
-                  <Loader2 size={14} color="white" className="animate-spin" />
-                ) : (
-                  <Database size={14} color="white" />
-                )
-              }>
-              Update datasources
-            </Button>
-          </Space>
-        </OutsideClickHandler>
-      </Col>
-    </>
+    <BottomSheet isOpen={isVisible} onClose={handleClose} title="Settings">
+      <div className="settings-content">
+        {/* Card Types Section */}
+        <div className="settings-section">
+          <h4 className="settings-section-title">Card Types</h4>
+          <div className="settings-section-content">
+            <SettingsRow
+              label="Show Legend cards"
+              checked={settings.showLegends}
+              onChange={(value) => updateSettings({ ...settings, showLegends: value })}
+            />
+            <SettingsRow
+              label="Show main faction cards"
+              checked={settings.combineParentFactions}
+              onChange={(value) => updateSettings({ ...settings, combineParentFactions: value })}
+            />
+            <SettingsRow
+              label="Show allied faction cards"
+              checked={settings.combineAlliedFactions}
+              onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
+            />
+          </div>
+        </div>
+
+        {/* Actions Section */}
+        <div className="settings-section">
+          <h4 className="settings-section-title">Data</h4>
+          <button
+            className={`settings-action-button ${checkingForUpdate ? "loading" : ""}`}
+            onClick={handleUpdateDatasources}
+            disabled={checkingForUpdate}>
+            {checkingForUpdate ? <Loader2 size={18} className="animate-spin" /> : <Database size={18} />}
+            <span>{checkingForUpdate ? "Updating..." : "Update datasources"}</span>
+          </button>
+        </div>
+      </div>
+    </BottomSheet>
   );
 };

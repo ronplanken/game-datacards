@@ -1,0 +1,73 @@
+/* MobileSearchFactionFilter.css - Faction selector bottom sheet */
+
+/* ===========================================
+   CONTENT CONTAINER
+   =========================================== */
+
+.faction-filter-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===========================================
+   FACTION ITEMS
+   =========================================== */
+
+.faction-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #f0f2f5;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+  transition: background 0.15s ease;
+  width: 100%;
+  margin: 0 -16px;
+  width: calc(100% + 32px);
+}
+
+.faction-filter-item:first-child {
+  margin-top: -8px;
+}
+
+.faction-filter-item:last-child {
+  border-bottom: none;
+}
+
+.faction-filter-item:active {
+  background: #f5f5f5;
+}
+
+/* ===========================================
+   COLOUR INDICATOR
+   =========================================== */
+
+.faction-colour-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--faction-colour, #666);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   ITEM CONTENT
+   =========================================== */
+
+.faction-filter-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.faction-filter-chevron {
+  color: rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}

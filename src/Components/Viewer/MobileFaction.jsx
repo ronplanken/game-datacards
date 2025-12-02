@@ -1,16 +1,95 @@
-import { Col, Collapse, Select, Tabs } from "antd";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
+import { BottomSheet } from "./Mobile/BottomSheet";
+import "./MobileFaction.css";
 
-const { Option } = Select;
+// Expandable item component for stratagems, enhancements, and rules
+const ExpandableItem = ({ title, cost, costLabel = "CP", children, defaultOpen = false }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className={`expandable-item ${isOpen ? "open" : ""}`}>
+      <button className="expandable-item-header" onClick={() => setIsOpen(!isOpen)}>
+        <span className="expandable-item-title">{title}</span>
+        {cost !== undefined && (
+          <span className="expandable-item-cost">
+            {cost} {costLabel}
+          </span>
+        )}
+        {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+      </button>
+      {isOpen && <div className="expandable-item-content">{children}</div>}
+    </div>
+  );
+};
+
+// Helper to convert single newlines to markdown line breaks
+const formatRuleText = (text) => {
+  // Replace single newlines with double newlines for proper paragraph breaks
+  // But preserve existing double newlines
+  return text?.replace(/\n/g, "\n\n").replace(/\n\n\n\n/g, "\n\n") || "";
+};
+
+// Rule content component for rendering rule parts with different types
+const RuleContent = ({ rules }) => (
+  <div className="rule-content">
+    {[...rules]
+      .sort((a, b) => a.order - b.order)
+      .map((part, index) => {
+        // Skip examples (quote and textItalic types)
+        if (part.type === "quote" || part.type === "textItalic") {
+          return null;
+        }
+        const formattedText = formatRuleText(part.text);
+        switch (part.type) {
+          case "header":
+            return (
+              <h4 key={index} className="rule-header">
+                {part.text}
+              </h4>
+            );
+          case "accordion":
+            return (
+              <div key={index} className="rule-accordion-item">
+                <MarkdownDisplay content={formattedText} />
+              </div>
+            );
+          default:
+            return (
+              <div key={index} className="rule-text">
+                <MarkdownDisplay content={formattedText} />
+              </div>
+            );
+        }
+      })}
+  </div>
+);
+
+// Section header component
+const SectionHeader = ({ title }) => (
+  <div className="mobile-faction-section-header">
+    <span>{title}</span>
+  </div>
+);
 
 export const MobileFaction = () => {
+  const navigate = useNavigate();
   const { selectedFaction } = useDataSourceStorage();
   const [selectedDetachment, setSelectedDetachment] = useState();
+  const [showDetachmentPicker, setShowDetachmentPicker] = useState(false);
+  const [stratagemTab, setStratagemTab] = useState("faction");
   const { settings, updateSettings } = useSettingsStorage();
+
+  const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
+
+  const handleBrowseUnits = () => {
+    navigate(`/mobile/${factionSlug}/units`);
+  };
 
   useEffect(() => {
     if (settings?.selectedDetachment?.[selectedFaction?.id]) {
@@ -20,228 +99,189 @@ export const MobileFaction = () => {
     }
   }, [selectedFaction, settings]);
 
+  const handleSelectDetachment = (detachment) => {
+    setSelectedDetachment(detachment);
+    updateSettings({
+      ...settings,
+      selectedDetachment: { ...settings.selectedDetachment, [selectedFaction.id]: detachment },
+    });
+    setShowDetachmentPicker(false);
+  };
+
+  // Filter stratagems by detachment
+  const factionStratagems =
+    selectedFaction?.stratagems?.filter(
+      (stratagem) => stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment
+    ) || [];
+
+  const coreStratagems = selectedFaction?.basicStratagems || [];
+
+  // Filter enhancements by detachment
+  const enhancements =
+    selectedFaction?.enhancements?.filter(
+      (enhancement) =>
+        enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
+    ) || [];
+
+  // Filter detachment rules by selected detachment
+  const detachmentRules =
+    selectedFaction?.rules?.detachment?.filter(
+      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase()
+    ) || [];
+
   return (
-    <Col
-      className="mobile-faction"
+    <div
+      className="mobile-faction-page"
       style={{
-        width: "100dvw",
         "--banner-colour": selectedFaction?.colours?.banner,
         "--header-colour": selectedFaction?.colours?.header,
       }}>
-      <div className="stratagems">
-        {selectedFaction?.detachments?.length > 1 && (
-          <>
-            <div className="heading">
-              <div className="title">Detachment</div>
-            </div>
-            <Select
-              style={{ width: "100%" }}
-              onChange={(value) => {
-                setSelectedDetachment(value);
-                updateSettings({
-                  ...settings,
-                  selectedDetachment: { ...settings.selectedDetachment, [selectedFaction.id]: value },
-                });
-              }}
-              value={selectedDetachment}>
-              {selectedFaction?.detachments?.map((d) => {
-                return (
-                  <Option value={d} key={d}>
-                    {d}
-                  </Option>
-                );
-              })}
-            </Select>
-          </>
-        )}
-        <div className="heading">
-          <div className="title">Stratagems</div>
+      {/* Header */}
+      <div className="mobile-faction-header">
+        <h1 className="mobile-faction-title">{selectedFaction?.name}</h1>
+      </div>
+
+      {/* Browse Units Button */}
+      <button className="mobile-faction-units-button" onClick={handleBrowseUnits}>
+        <List size={18} />
+        <span>Browse All Units</span>
+        <span className="units-count">{selectedFaction?.datasheets?.length || 0}</span>
+        <ChevronRight size={18} />
+      </button>
+
+      {/* Detachment Picker */}
+      {selectedFaction?.detachments?.length > 1 && (
+        <div className="mobile-faction-detachment">
+          <SectionHeader title="Detachment" />
+          <button className="detachment-selector" onClick={() => setShowDetachmentPicker(true)}>
+            <span>{selectedDetachment || "Select Detachment"}</span>
+            <ChevronDown size={18} />
+          </button>
         </div>
-        <Tabs
-          defaultActiveKey={settings.defaultStratagemTab || 1}
-          centered
-          onChange={(key) => {
-            updateSettings({ ...settings, defaultStratagemTab: key });
-          }}
-          style={{ padding: 0 }}
-          tabBarStyle={{ marginBottom: 0 }}
-          size="small"
-          items={[
-            {
-              label: `FACTION`,
-              key: "1",
-              children: (
-                <>
-                  {selectedFaction?.stratagems?.filter(
-                    (stratagem) =>
-                      stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
-                      !stratagem.detachment
-                  ).length > 0 ? (
-                    <Collapse
-                      style={{ margin: 16 }}
-                      defaultActiveKey={settings.selectedStratagem?.[selectedFaction.id]}
-                      onChange={(val) => {
-                        updateSettings({
-                          ...settings,
-                          selectedStratagem: { ...settings.selectedStratagem, [selectedFaction.id]: val },
-                        });
-                      }}>
-                      {selectedFaction?.stratagems
-                        ?.filter(
-                          (stratagem) =>
-                            stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
-                            !stratagem.detachment
-                        )
-                        .map((val, index) => (
-                          <Collapse.Panel
-                            key={`${val.detachment}-${val.name}-${index}`}
-                            header={
-                              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <span>{val.name}</span>
-                                <span
-                                  style={{
-                                    fontSize: "0.90rem",
-                                    border: "1px solid white",
-                                    backgroundColor: "var(--header-colour)",
-                                    color: "white",
-                                    paddingTop: "2px",
-                                    paddingbottom: "2px",
-                                    paddingLeft: "8px",
-                                    paddingRight: "8px",
-                                    borderRadius: "6px",
-                                    textAlign: "center",
-                                  }}>
-                                  <strong>{val.cost}</strong> CP
-                                </span>
-                              </div>
-                            }>
-                            <div className="data-40k-10e">
-                              <StratagemCard stratagem={val} paddingTop={"0"} containerClass={"mobile"} />
-                            </div>
-                          </Collapse.Panel>
-                        ))}
-                    </Collapse>
-                  ) : (
-                    <div
-                      style={{
-                        fontSize: "16px",
-                        textAlign: "center",
-                        margin: 8,
-                        padding: 8,
-                        backgroundColor: "white",
-                        fontWeight: 400,
-                      }}>
-                      No stratagems founds for detachment
+      )}
+
+      {/* Army Rules Section */}
+      {selectedFaction?.rules?.army?.length > 0 && (
+        <div className="mobile-faction-army-rules">
+          <SectionHeader title="Army Rules" />
+          <div className="rules-list">
+            {selectedFaction.rules.army.map((rule) => (
+              <ExpandableItem key={rule.name} title={rule.name}>
+                <RuleContent rules={rule.rule} />
+              </ExpandableItem>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Detachment Rules Section */}
+      {detachmentRules.length > 0 && (
+        <div className="mobile-faction-detachment-rules">
+          <SectionHeader title="Detachment Rules" />
+          <div className="rules-list">
+            {detachmentRules.map((rule) => (
+              <ExpandableItem key={rule.name} title={rule.name}>
+                <RuleContent rules={rule.rule} />
+              </ExpandableItem>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Stratagems Section */}
+      <div className="mobile-faction-stratagems">
+        <SectionHeader title="Stratagems" />
+
+        {/* Stratagem Toggle */}
+        <div className="stratagem-toggle">
+          <button
+            className={`stratagem-toggle-btn ${stratagemTab === "faction" ? "active" : ""}`}
+            onClick={() => setStratagemTab("faction")}>
+            Faction
+          </button>
+          <button
+            className={`stratagem-toggle-btn ${stratagemTab === "core" ? "active" : ""}`}
+            onClick={() => setStratagemTab("core")}>
+            Core
+          </button>
+        </div>
+
+        {/* Stratagem List */}
+        <div className="stratagem-list">
+          {stratagemTab === "faction" && (
+            <>
+              {factionStratagems.length > 0 ? (
+                factionStratagems.map((stratagem, index) => (
+                  <ExpandableItem
+                    key={`${stratagem.detachment}-${stratagem.name}-${index}`}
+                    title={stratagem.name}
+                    cost={stratagem.cost}
+                    costLabel="CP">
+                    <div className="data-40k-10e">
+                      <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="mobile" />
                     </div>
-                  )}
-                </>
-              ),
-            },
-            {
-              label: `CORE`,
-              key: "2",
-              children: (
-                <Collapse
-                  style={{ margin: 16 }}
-                  defaultActiveKey={settings.selectedStratagem?.["core"]}
-                  onChange={(val) => {
-                    updateSettings({
-                      ...settings,
-                      selectedStratagem: { ...settings.selectedStratagem, core: val },
-                    });
-                  }}>
-                  {selectedFaction?.basicStratagems?.map((val) => (
-                    <Collapse.Panel
-                      key={val.name}
-                      header={
-                        <div style={{ display: "flex", justifyContent: "space-between" }}>
-                          <span>{val.name}</span>
-                          <span
-                            style={{
-                              fontSize: "0.90rem",
-                              border: "1px solid white",
-                              backgroundColor: "var(--header-colour)",
-                              color: "white",
-                              paddingTop: "2px",
-                              paddingbottom: "2px",
-                              paddingLeft: "8px",
-                              paddingRight: "8px",
-                              borderRadius: "6px",
-                              textAlign: "center",
-                            }}>
-                            <strong>{val.cost}</strong> CP
-                          </span>
-                        </div>
-                      }>
-                      <div className="data-40k-10e">
-                        <StratagemCard stratagem={val} paddingTop={"0"} containerClass={"stratagem mobile"} />
-                      </div>
-                    </Collapse.Panel>
-                  ))}
-                </Collapse>
-              ),
-            },
-          ]}
-        />
-      </div>
-      <div className="enhancements">
-        <div className="heading">
-          <div className="title">Enhancements</div>
-        </div>
-        <>
-          {selectedFaction?.enhancements?.filter(
-            (enhancement) =>
-              enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
-          ).length > 0 ? (
-            <Collapse style={{ margin: 16 }}>
-              {selectedFaction?.enhancements
-                ?.filter(
-                  (enhancement) =>
-                    enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
-                    !enhancement.detachment
-                )
-                .map((val) => (
-                  <Collapse.Panel
-                    key={`${val.detachment}-${val.name}`}
-                    header={
-                      <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        <span>{val.name}</span>
-                        <span
-                          style={{
-                            fontSize: "0.75rem",
-                            border: "1px solid white",
-                            backgroundColor: "var(--header-colour)",
-                            color: "white",
-                            paddingTop: "2px",
-                            paddingbottom: "2px",
-                            paddingLeft: "8px",
-                            paddingRight: "8px",
-                            borderRadius: "6px",
-                            textAlign: "center",
-                          }}>
-                          <strong>{val.cost}</strong> pts
-                        </span>
-                      </div>
-                    }>
-                    <MarkdownDisplay content={val.description.replaceAll("■", "\n ■")} />
-                  </Collapse.Panel>
-                ))}
-            </Collapse>
-          ) : (
-            <div
-              style={{
-                fontSize: "16px",
-                textAlign: "center",
-                margin: 8,
-                padding: 8,
-                backgroundColor: "white",
-                fontWeight: 400,
-              }}>
-              No enhancements founds for detachment
-            </div>
+                  </ExpandableItem>
+                ))
+              ) : (
+                <div className="empty-state">No stratagems found for this detachment</div>
+              )}
+            </>
           )}
-        </>
+
+          {stratagemTab === "core" && (
+            <>
+              {coreStratagems.map((stratagem) => (
+                <ExpandableItem key={stratagem.name} title={stratagem.name} cost={stratagem.cost} costLabel="CP">
+                  <div className="data-40k-10e">
+                    <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="stratagem mobile" />
+                  </div>
+                </ExpandableItem>
+              ))}
+            </>
+          )}
+        </div>
       </div>
-    </Col>
+
+      {/* Enhancements Section */}
+      <div className="mobile-faction-enhancements">
+        <SectionHeader title="Enhancements" />
+
+        <div className="enhancement-list">
+          {enhancements.length > 0 ? (
+            enhancements.map((enhancement) => (
+              <ExpandableItem
+                key={`${enhancement.detachment}-${enhancement.name}`}
+                title={enhancement.name}
+                cost={enhancement.cost}
+                costLabel="pts">
+                <div className="enhancement-description">
+                  <MarkdownDisplay content={enhancement.description.replaceAll("■", "\n ■")} />
+                </div>
+              </ExpandableItem>
+            ))
+          ) : (
+            <div className="empty-state">No enhancements found for this detachment</div>
+          )}
+        </div>
+      </div>
+
+      {/* Detachment Picker Bottom Sheet */}
+      <BottomSheet
+        isOpen={showDetachmentPicker}
+        onClose={() => setShowDetachmentPicker(false)}
+        title="Select Detachment">
+        <div className="detachment-picker-list">
+          {selectedFaction?.detachments?.map((detachment) => (
+            <button
+              key={detachment}
+              className={`detachment-picker-item ${selectedDetachment === detachment ? "selected" : ""}`}
+              onClick={() => handleSelectDetachment(detachment)}>
+              <span>{detachment}</span>
+              {selectedDetachment === detachment && <span className="detachment-check">✓</span>}
+            </button>
+          ))}
+        </div>
+      </BottomSheet>
+    </div>
   );
 };

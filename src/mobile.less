@@ -56,3 +56,45 @@
     }
   }
 }
+
+/* Mobile Card Viewer Header */
+.mobile-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--banner-colour, #001529);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-card-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--header-colour, #0070d6);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mobile-card-back:active {
+  opacity: 0.9;
+}
+
+.mobile-card-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

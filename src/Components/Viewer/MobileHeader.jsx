@@ -55,7 +55,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
                     onClick={() => {
                       dropdown.current.style.height = "0px";
                       navigate(
-                        `/viewer/${dataSource.data
+                        `/mobile/${dataSource.data
                           .find((faction) => faction.id === item.id)
                           ?.name?.toLowerCase()
                           .replaceAll(" ", "-")}`
@@ -87,7 +87,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
             width={42}
             onClick={() => {
               dropdown.current.style.height = "0px";
-              navigate(`/viewer/${selectedFaction.name?.toLowerCase().replaceAll(" ", "-")}`);
+              navigate(`/mobile/${selectedFaction?.name?.toLowerCase().replaceAll(" ", "-") || ""}`);
             }}
             style={{ width: 42 }}
           />

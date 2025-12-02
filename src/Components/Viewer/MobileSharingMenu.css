@@ -1,0 +1,33 @@
+/* MobileSharingMenu.css - Share action sheet styles */
+
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.share-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.share-option:active {
+  background: #f5f5f5;
+}
+
+.share-option svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}

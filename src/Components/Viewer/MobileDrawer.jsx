@@ -62,7 +62,7 @@ export const MobileDrawer = ({ open, setOpen }) => {
                           width: "100%",
                         }}
                         onChange={(value) => {
-                          navigate(`/viewer/${value.toLowerCase().replaceAll(" ", "-")}`);
+                          navigate(`/mobile/${value.toLowerCase().replaceAll(" ", "-")}`);
                         }}
                         placeholder="Select a faction"
                         value={dataSource?.data[selectedFactionIndex]?.name}>
@@ -208,14 +208,14 @@ export const MobileDrawer = ({ open, setOpen }) => {
                 onClick={() => {
                   if (!card.nonBase) {
                     navigate(
-                      `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
+                      `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
                         .replaceAll(" ", "-")
                         .toLowerCase()}`
                     );
                   }
                   if (card.nonBase) {
                     navigate(
-                      `/viewer/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
+                      `/mobile/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
                         .toLowerCase()
                         .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
                     );

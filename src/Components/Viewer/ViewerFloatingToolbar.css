@@ -1,0 +1,8 @@
+/* ViewerFloatingToolbar.css - Viewer-specific floating toolbar positioning */
+
+/* Override the fixed positioning to be relative to the card container */
+.viewer-card-container .floating-toolbar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

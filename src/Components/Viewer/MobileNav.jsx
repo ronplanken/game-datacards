@@ -1,16 +1,14 @@
-import { Redo2, Settings, Share2, Undo2 } from "lucide-react";
+import { Settings, Share2 } from "lucide-react";
 import { Button, Col, Row, Space } from "antd";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
-import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 
-export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, setAddListvisible }) => {
+export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible }) => {
   const { activeCard } = useCardStorage();
   const { lists, selectedList } = useMobileList();
-  const { settings, updateSettings } = useSettingsStorage();
 
   const [showList, setShowList] = useState(false);
 
@@ -26,7 +24,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
         display: "flex",
         alignItems: "center",
       }}>
-      {showList && <ListOverview setShowList={setShowList} />}
+      <ListOverview isVisible={showList} setIsVisible={setShowList} />
       <Row style={{ width: "100%" }}>
         <Col span={8} style={{ paddingLeft: "8px" }}>
           <Space.Compact block size="large">
@@ -64,23 +62,6 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 className="button-bar mobile-icon-button"
                 onClick={() => setAddListvisible((val) => !val)}></Button>
             )}
-            {activeCard &&
-              (settings.showCardsAsDoubleSided === false || settings.showCardsAsDoubleSided === undefined) && (
-                <Button
-                  icon={side === "front" ? <Redo2 size={14} /> : <Undo2 size={14} />}
-                  type="ghost"
-                  size="large"
-                  shape="round"
-                  className="button-bar"
-                  onClick={() => {
-                    setSide((current) => {
-                      if (current === "front") {
-                        return "back";
-                      }
-                      return "front";
-                    });
-                  }}></Button>
-              )}
           </Space>
         </Col>
         <Col span={8}>
