@@ -43,6 +43,52 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
     ];
   }
 
+  if (selectedContentType === "rules" && selectedFaction) {
+    const armyRules = selectedFaction?.rules?.army || [];
+    const detachmentRules = selectedFaction?.rules?.detachment || [];
+
+    // Filter army rules by search
+    const filteredArmyRules = searchText
+      ? armyRules.filter((rule) => rule.name.toLowerCase().includes(searchText.toLowerCase()))
+      : armyRules;
+
+    // Filter detachment rules by search
+    const filteredDetachmentRules = searchText
+      ? detachmentRules.filter((rule) => rule.name?.toLowerCase().includes(searchText.toLowerCase()))
+      : detachmentRules;
+
+    // Transform rules into card-compatible objects
+    const armyRuleCards = filteredArmyRules.map((rule) => ({
+      ...rule,
+      id: `army-rule-${rule.name}`,
+      cardType: "rule",
+      ruleType: "army",
+      faction_id: selectedFaction.id,
+    }));
+
+    // Flatten detachment rules - each detachment can have multiple rules
+    const detachmentRuleCards = filteredDetachmentRules.flatMap((detachmentRule) => {
+      if (detachmentRule.rules && Array.isArray(detachmentRule.rules)) {
+        return detachmentRule.rules.map((rule) => ({
+          ...rule,
+          id: `detachment-rule-${detachmentRule.detachment}-${rule.name}`,
+          cardType: "rule",
+          ruleType: "detachment",
+          detachment: detachmentRule.detachment,
+          faction_id: selectedFaction.id,
+        }));
+      }
+      return [];
+    });
+
+    unitList = [
+      ...(armyRuleCards.length > 0 ? [{ type: "header", name: "Army Rules" }] : []),
+      ...armyRuleCards,
+      ...(detachmentRuleCards.length > 0 ? [{ type: "header", name: "Detachment Rules" }] : []),
+      ...detachmentRuleCards,
+    ];
+  }
+
   const handleCategoryClick = (card) => {
     let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
     if (newClosedFactions.includes(card.id)) {
@@ -74,6 +120,10 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
 
     if (card.cardType === "stratagem") {
       navigateToStratagem(cardFaction.name, card.name);
+    } else if (card.cardType === "rule") {
+      // Rules don't need URL navigation, just set the active card
+      setActiveCard(card);
+      return;
     } else {
       if (!card.nonBase) {
         navigateToUnit(cardFaction.name, card.name);

@@ -21,6 +21,7 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
     if (!activeCard) return "unit";
     if (activeCard.cardType === "stratagem") return "stratagem";
     if (activeCard.cardType === "enhancement") return "enhancement";
+    if (activeCard.cardType === "rule") return "rule";
     if (settings.showCardsAsDoubleSided || activeCard.variant === "full") return "unitFull";
     return "unit";
   };

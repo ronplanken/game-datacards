@@ -6,6 +6,7 @@ import { UnitCard } from "./UnitCard";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage.jsx";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage.jsx";
 import { EnhancementCard } from "./EnhancementCard.jsx";
+import { RuleCard } from "./RuleCard.jsx";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -46,12 +47,14 @@ export const Warhammer40K10eCardDisplay = ({
             {activeCard?.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
             {activeCard?.cardType === "enhancement" && <EnhancementCard enhancement={activeCard} />}
             {activeCard?.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}
+            {activeCard?.cardType === "rule" && <RuleCard rule={activeCard} />}
           </Col>
         </>
       )}
       {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
       {!type && card && card.cardType === "enhancement" && <EnhancementCard enhancement={card} />}
       {!type && card && card.cardType === "stratagem" && <StratagemCard stratagem={card} />}
+      {!type && card && card.cardType === "rule" && <RuleCard rule={card} />}
       {type === "print" && card && card?.cardType === "DataCard" && (
         <div
           className="data-40k-10e"

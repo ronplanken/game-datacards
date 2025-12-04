@@ -5,6 +5,7 @@ const CARD_DIMENSIONS = {
   unitFull: { width: 1077, height: null },
   stratagem: { width: 266, height: 460 },
   enhancement: { width: 266, height: 460 },
+  rule: { width: 460, height: 620 },
 };
 
 export function useAutoFitScale(containerRef, cardType = "unit", isEnabled = true) {

@@ -9,6 +9,7 @@ const CONTENT_TYPES = [
   { value: "secondaries", label: "Secondaries", key: "secondaries" },
   { value: "enhancements", label: "Enhancements", key: "enhancements" },
   { value: "psychicpowers", label: "Psychic powers", key: "psychicpowers" },
+  { value: "rules", label: "Rules", key: "rules" },
 ];
 
 export const ContentTypeSelector = ({ selectedContentType, setSelectedContentType }) => {
@@ -19,6 +20,11 @@ export const ContentTypeSelector = ({ selectedContentType, setSelectedContentTyp
 
   // Get available content types based on faction data
   const availableTypes = CONTENT_TYPES.filter((type) => {
+    if (type.key === "rules") {
+      // Rules have a different structure with army and detachment sub-arrays
+      const rules = selectedFaction?.rules;
+      return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
+    }
     const data = selectedFaction?.[type.key];
     return data && data.length > 0;
   });
