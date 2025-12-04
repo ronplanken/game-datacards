@@ -125,7 +125,7 @@ export const MobileFaction = () => {
 
   // Filter detachment rules by selected detachment
   const detachmentRules =
-    selectedFaction?.rules?.detachment?.filter(
+    selectedFaction?.rules?.detachment?.find(
       (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase()
     ) || [];
 
@@ -175,15 +175,17 @@ export const MobileFaction = () => {
       )}
 
       {/* Detachment Rules Section */}
-      {detachmentRules.length > 0 && (
+      {detachmentRules?.rules?.length > 0 && (
         <div className="mobile-faction-detachment-rules">
           <SectionHeader title="Detachment Rules" />
           <div className="rules-list">
-            {detachmentRules.map((rule) => (
-              <ExpandableItem key={rule.name} title={rule.name}>
-                <RuleContent rules={rule.rules} />
-              </ExpandableItem>
-            ))}
+            {detachmentRules?.rules?.map((rule) => {
+              return (
+                <ExpandableItem key={rule.name} title={rule.name}>
+                  <RuleContent rules={rule.rules} />
+                </ExpandableItem>
+              );
+            })}
           </div>
         </div>
       )}
