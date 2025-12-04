@@ -167,7 +167,7 @@ export const MobileFaction = () => {
           <div className="rules-list">
             {selectedFaction.rules.army.map((rule) => (
               <ExpandableItem key={rule.name} title={rule.name}>
-                <RuleContent rules={rule.rule} />
+                <RuleContent rules={rule.rules} />
               </ExpandableItem>
             ))}
           </div>
@@ -181,7 +181,7 @@ export const MobileFaction = () => {
           <div className="rules-list">
             {detachmentRules.map((rule) => (
               <ExpandableItem key={rule.name} title={rule.name}>
-                <RuleContent rules={rule.rule} />
+                <RuleContent rules={rule.rules} />
               </ExpandableItem>
             ))}
           </div>

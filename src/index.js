@@ -3,13 +3,21 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
-import { BrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, ScrollRestoration, Outlet, Navigate } from "react-router-dom";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
 import { UserProviderComponent } from "./Hooks/useUser";
-import { AppRoutes } from "./Routes/AppRoutes";
+
+import App from "./App";
+import { ImageExport } from "./Pages/ImageExport";
+import { ImageGenerator } from "./Pages/ImageGenerator";
+import { LegacyPrint } from "./Pages/LegacyPrint";
+import { Print } from "./Pages/Print";
+import { Shared } from "./Pages/Shared";
+import { Viewer } from "./Pages/Viewer";
+import { ViewerMobile } from "./Pages/ViewerMobile";
 
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
@@ -64,10 +72,8 @@ function ErrorFallback({ error }) {
   );
 }
 
-const container = document.getElementById("root");
-const root = createRoot(container);
-
-root.render(
+// Layout component that wraps all routes with providers
+const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <SettingsStorageProviderComponent>
       <UserProviderComponent>
@@ -75,9 +81,8 @@ root.render(
           <DataSourceStorageProviderComponent>
             <CardStorageProviderComponent>
               <MobileListProvider>
-                <BrowserRouter>
-                  <AppRoutes />
-                </BrowserRouter>
+                <Outlet />
+                <ScrollRestoration />
               </MobileListProvider>
             </CardStorageProviderComponent>
           </DataSourceStorageProviderComponent>
@@ -86,6 +91,40 @@ root.render(
     </SettingsStorageProviderComponent>
   </ErrorBoundary>
 );
+
+const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    children: [
+      // Root route - redirect based on device
+      { path: "/", element: isMobile ? <Navigate to="/mobile" replace /> : <App /> },
+      // Shared card view
+      { path: "shared/:Id", element: <Shared /> },
+      // Desktop viewer routes
+      { path: "viewer/:faction?/:unit?", element: <Viewer /> },
+      { path: "viewer/:faction?/stratagem/:stratagem?", element: <Viewer /> },
+      { path: "viewer/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <Viewer /> },
+      // Mobile viewer routes
+      { path: "mobile", element: <ViewerMobile /> },
+      { path: "mobile/:faction/units", element: <ViewerMobile showUnits /> },
+      { path: "mobile/:faction?/:unit?", element: <ViewerMobile /> },
+      { path: "mobile/:faction?/stratagem/:stratagem?", element: <ViewerMobile /> },
+      { path: "mobile/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <ViewerMobile /> },
+      // Print and export routes
+      { path: "print/:CategoryId", element: <Print /> },
+      { path: "legacy-print/:CategoryId", element: <LegacyPrint /> },
+      { path: "image-generator", element: <ImageGenerator /> },
+      { path: "image-export/:CategoryId", element: <ImageExport /> },
+    ],
+  },
+]);
+
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(<RouterProvider router={router} />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
