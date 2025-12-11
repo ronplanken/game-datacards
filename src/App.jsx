@@ -61,9 +61,11 @@ function App() {
   const isAutoFit = settings.autoFitEnabled !== false;
 
   // Handle add to category from toolbar
-  const handleAddToCategory = (categoryUuid) => {
+  const handleAddToCategory = (categoryUuid, card = undefined) => {
+    const cardContent = card ?? activeCard;
+    console.log("App.jsx:handleAddToCategory", categoryUuid, cardContent, card, activeCard);
     const newCard = {
-      ...activeCard,
+      ...card,
       isCustom: true,
       uuid: uuidv4(),
     };
@@ -82,7 +84,11 @@ function App() {
       <Content style={{ height: "calc(100vh - 64px)" }}>
         <PanelGroup direction="horizontal" autoSaveId="mainLayout">
           <Panel defaultSize={18} order={1}>
-            <LeftPanel selectedTreeIndex={selectedTreeIndex} setSelectedTreeIndex={setSelectedTreeIndex} />
+            <LeftPanel
+              selectedTreeIndex={selectedTreeIndex}
+              setSelectedTreeIndex={setSelectedTreeIndex}
+              onAddToCategory={handleAddToCategory}
+            />
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />
           <Panel defaultSize={41} order={2}>

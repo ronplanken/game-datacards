@@ -1,13 +1,13 @@
 import React from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { List } from "antd";
+import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { Button, List, Tooltip } from "antd";
 import classNames from "classnames";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { confirmDialog } from "../ConfirmChangesModal";
 
-export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSelectedTreeIndex }) => {
+export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSelectedTreeIndex, onAddToCategory }) => {
   const { settings, updateSettings } = useSettingsStorage();
   const { cardUpdated, activeCard, setActiveCard, saveActiveCard } = useCardStorage();
   const { dataSource: dsStorage } = useDataSourceStorage();
@@ -60,6 +60,17 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
       ...settings,
       mobile: { ...settings.mobile, closedRoles: newClosedRoles },
     });
+  };
+  const handleAddCardToCategoryClick = (card, category = undefined) => {
+    switch (card.type) {
+      case "header":
+      case "category":
+      case "allied":
+      case "role":
+        break;
+      default:
+        onAddToCategory(category, card);
+    }
   };
 
   const renderItem = (card, index) => {
@@ -138,7 +149,21 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           "list-item": true,
           selected: activeCard && !activeCard.isCustom && activeCard.id === card.id,
           legends: card.legends,
-        })}>
+        })}
+        actions={[
+          <Tooltip title={`Add ${card.id} to category`} key={"asdf"}>
+            <Button
+              size="small"
+              key={"add"}
+              shape="circle"
+              onClick={() => {
+                console.log(`Clicked`, card);
+                handleAddCardToCategoryClick(card);
+              }}>
+              <Plus />
+            </Button>
+          </Tooltip>,
+        ]}>
         <div
           style={{
             display: "flex",
