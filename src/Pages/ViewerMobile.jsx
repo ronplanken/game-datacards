@@ -65,11 +65,10 @@ export const ViewerMobile = ({ showUnits = false }) => {
   const isAoS = settings.selectedDataSource === "aos";
 
   // Scroll-reveal header for AoS only
-  const { showHeader, headerReady, scrollContainerRef } = useScrollRevealHeader({
+  const { showHeader, headerReady, transitionsEnabled, scrollContainerRef } = useScrollRevealHeader({
     enabled: !!activeCard && activeCard.source === "aos",
     targetSelector: ".warscroll-unit-name",
     topOffset: 64,
-    readyDelay: 150,
   });
 
   // Handle back navigation from card viewer
@@ -217,7 +216,7 @@ export const ViewerMobile = ({ showUnits = false }) => {
                 <div
                   className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
                     showHeader ? "visible" : "hidden"
-                  }`}
+                  } ${!transitionsEnabled ? "no-transition" : ""}`}
                   style={{
                     "--banner-colour": cardFaction?.colours?.banner,
                     "--header-colour": cardFaction?.colours?.header,

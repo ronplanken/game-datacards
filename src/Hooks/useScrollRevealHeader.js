@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 
 /**
  * Hook for scroll-reveal header behavior.
@@ -9,51 +9,56 @@ import { useState, useEffect, useRef } from "react";
  * @param {boolean} options.enabled - Whether the feature is enabled
  * @param {string} options.targetSelector - CSS selector for the element to observe (e.g., ".warscroll-unit-name")
  * @param {number} options.topOffset - Offset from top to account for fixed headers (default: 64)
- * @param {number} options.readyDelay - Delay before showing UI to prevent flash (default: 150)
  * @returns {{ showHeader: boolean, headerReady: boolean, scrollContainerRef: React.RefObject }}
  */
-export function useScrollRevealHeader({ enabled = false, targetSelector, topOffset = 64, readyDelay = 150 } = {}) {
+export function useScrollRevealHeader({ enabled = false, targetSelector, topOffset = 64 } = {}) {
   const [showHeader, setShowHeader] = useState(false);
   const [headerReady, setHeaderReady] = useState(false);
+  const [transitionsEnabled, setTransitionsEnabled] = useState(false);
   const scrollContainerRef = useRef(null);
+  const observerRef = useRef(null);
 
-  useEffect(() => {
+  // Use useLayoutEffect for synchronous DOM measurement before paint
+  useLayoutEffect(() => {
     if (!enabled) {
       setShowHeader(false);
       setHeaderReady(false);
+      setTransitionsEnabled(false);
       return;
     }
 
-    // Delay to ensure DOM is ready and prevent flash
-    const timer = setTimeout(() => {
+    // Use requestAnimationFrame to ensure DOM is painted
+    const rafId = requestAnimationFrame(() => {
       const targetEl = document.querySelector(targetSelector);
       const scrollContainer = scrollContainerRef.current;
 
       if (!targetEl || !scrollContainer) {
         // Still mark as ready so floating button shows
         setHeaderReady(true);
+        // Enable transitions after a frame
+        requestAnimationFrame(() => setTransitionsEnabled(true));
         return;
       }
 
-      // Check initial scroll position BEFORE setting up observer
-      // This prevents the flash by determining state synchronously
-      const isScrolled = scrollContainer.scrollTop > 50;
+      // Calculate initial state synchronously
       const targetRect = targetEl.getBoundingClientRect();
       const containerRect = scrollContainer.getBoundingClientRect();
       const isTargetVisible = targetRect.bottom > containerRect.top + topOffset;
 
-      // Set initial state before marking ready
-      if (!isScrolled && isTargetVisible) {
-        setShowHeader(false);
-      } else {
-        setShowHeader(!isTargetVisible);
-      }
-
-      // Now mark as ready - state is already correct
+      // Set the correct initial state
+      setShowHeader(!isTargetVisible);
       setHeaderReady(true);
 
+      // Enable transitions after initial render is complete
+      // Use double rAF to ensure the initial state is painted first
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setTransitionsEnabled(true);
+        });
+      });
+
       // Set up observer for subsequent scroll events
-      const observer = new IntersectionObserver(
+      observerRef.current = new IntersectionObserver(
         ([entry]) => {
           setShowHeader(!entry.isIntersecting);
         },
@@ -64,25 +69,30 @@ export function useScrollRevealHeader({ enabled = false, targetSelector, topOffs
         }
       );
 
-      observer.observe(targetEl);
+      observerRef.current.observe(targetEl);
+    });
 
-      return () => observer.disconnect();
-    }, readyDelay);
-
-    return () => clearTimeout(timer);
-  }, [enabled, targetSelector, topOffset, readyDelay]);
+    return () => {
+      cancelAnimationFrame(rafId);
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [enabled, targetSelector, topOffset]);
 
   // Reset when disabled
   useEffect(() => {
     if (!enabled) {
       setShowHeader(false);
       setHeaderReady(false);
+      setTransitionsEnabled(false);
     }
   }, [enabled]);
 
   return {
     showHeader,
     headerReady,
+    transitionsEnabled,
     scrollContainerRef,
   };
 }
