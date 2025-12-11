@@ -6,7 +6,7 @@ import { WarscrollAbilities } from "./WarscrollCard/WarscrollAbilities";
 import { WarscrollKeywords } from "./WarscrollCard/WarscrollKeywords";
 import { useIndexedDBImages } from "../../Hooks/useIndexedDBImages";
 
-export const WarscrollCard = ({ warscroll, faction, grandAlliance = "order" }) => {
+export const WarscrollCard = ({ warscroll, faction, grandAlliance = "order", isMobile = false }) => {
   const { getImageUrl, isReady } = useIndexedDBImages();
   const [localImageUrl, setLocalImageUrl] = useState(null);
 
@@ -69,10 +69,20 @@ export const WarscrollCard = ({ warscroll, faction, grandAlliance = "order" }) =
       <div className="warscroll-body">
         {/* Weapons Section */}
         {hasRangedWeapons && warscroll.showWeapons?.ranged !== false && (
-          <WarscrollWeapons weapons={warscroll.weapons.ranged} type="ranged" grandAlliance={grandAlliance} />
+          <WarscrollWeapons
+            weapons={warscroll.weapons.ranged}
+            type="ranged"
+            grandAlliance={grandAlliance}
+            isMobile={isMobile}
+          />
         )}
         {hasMeleeWeapons && warscroll.showWeapons?.melee !== false && (
-          <WarscrollWeapons weapons={warscroll.weapons.melee} type="melee" grandAlliance={grandAlliance} />
+          <WarscrollWeapons
+            weapons={warscroll.weapons.melee}
+            type="melee"
+            grandAlliance={grandAlliance}
+            isMobile={isMobile}
+          />
         )}
 
         {/* Abilities Section */}

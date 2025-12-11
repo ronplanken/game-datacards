@@ -120,7 +120,6 @@ export const SettingsModal = () => {
                         updateSettings({
                           ...settings,
                           selectedDataSource: "basic",
-                          selectedFactionIndex: 0,
                         })
                       }
                       disabled={settings.selectedDataSource === "basic"}
@@ -133,7 +132,6 @@ export const SettingsModal = () => {
                         updateSettings({
                           ...settings,
                           selectedDataSource: "40k-10e",
-                          selectedFactionIndex: 0,
                         })
                       }
                       disabled={settings.selectedDataSource === "40k-10e"}
@@ -149,7 +147,6 @@ export const SettingsModal = () => {
                         updateSettings({
                           ...settings,
                           selectedDataSource: "40k-10e-cp",
-                          selectedFactionIndex: 0,
                         })
                       }
                       disabled={settings.selectedDataSource === "40k-10e-cp"}
@@ -180,7 +177,6 @@ export const SettingsModal = () => {
                         updateSettings({
                           ...settings,
                           selectedDataSource: "necromunda",
-                          selectedFactionIndex: 0,
                         })
                       }
                       disabled={settings.selectedDataSource === "necromunda"}
@@ -193,7 +189,6 @@ export const SettingsModal = () => {
                         updateSettings({
                           ...settings,
                           selectedDataSource: "aos",
-                          selectedFactionIndex: 0,
                         })
                       }
                       disabled={settings.selectedDataSource === "aos"}

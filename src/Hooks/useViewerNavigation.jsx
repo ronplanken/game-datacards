@@ -34,7 +34,9 @@ export function useViewerNavigation() {
       }
 
       if (unit) {
-        const foundUnit = foundFaction?.datasheets?.find((u) => {
+        // Support both datasheets (40K) and warscrolls (AoS)
+        const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
+        const foundUnit = units.find((u) => {
           return u.name.replaceAll(" ", "-").toLowerCase() === unit;
         });
         setActiveCard(foundUnit);
@@ -88,7 +90,9 @@ export function useViewerNavigation() {
       });
 
       if (alliedUnit) {
-        const foundUnit = foundAlliedFaction?.datasheets?.find((u) => {
+        // Support both datasheets (40K) and warscrolls (AoS)
+        const units = foundAlliedFaction?.datasheets || foundAlliedFaction?.warscrolls || [];
+        const foundUnit = units.find((u) => {
           return u.name.replaceAll(" ", "-").toLowerCase() === alliedUnit;
         });
         setActiveCard(foundUnit);

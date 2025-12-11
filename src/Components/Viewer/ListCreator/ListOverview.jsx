@@ -1,10 +1,12 @@
-import { Crown, Trash2, FileText, List } from "lucide-react";
+import { useState } from "react";
+import { Crown, Trash2, FileText, List, ChevronDown } from "lucide-react";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
 import { BottomSheet } from "../Mobile/BottomSheet";
+import { ListSelector } from "./ListSelector";
 import "./ListOverview.css";
 
 // Header actions component
@@ -46,6 +48,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, removeDatacard } = useMobileList();
   const { dataSource } = useDataSourceStorage();
   const navigate = useNavigate();
+  const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
 
   const sortedCards = lists[selectedList].datacards?.reduce(
     (exportCards, card) => {
@@ -124,53 +127,60 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   const headerContent = (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-      <span>{lists[selectedList].name}</span>
+      <button className="list-overview-name-selector" onClick={() => setIsListSelectorVisible(true)} type="button">
+        <span className="list-overview-name-text">{lists[selectedList].name}</span>
+        <ChevronDown size={16} />
+      </button>
       {!isEmpty && <HeaderActions onCopyToClipboard={handleCopyToClipboard} />}
     </div>
   );
 
   return (
-    <BottomSheet isOpen={isVisible} onClose={handleClose} title={headerContent} maxHeight="70vh">
-      {isEmpty ? (
-        <div className="list-overview-empty">
-          <List size={48} />
-          <span className="list-overview-empty-text">Your list is currently empty</span>
-        </div>
-      ) : (
-        <div className="list-overview-items">
-          {sortedCards.characters.length > 0 && (
-            <>
-              <div className="list-overview-section">Characters</div>
-              {sortCards(sortedCards.characters).map((item) => (
-                <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
-              ))}
-            </>
-          )}
-
-          {sortedCards.battleline.length > 0 && (
-            <>
-              <div className="list-overview-section">Battleline</div>
-              {sortCards(sortedCards.battleline).map((item) => (
-                <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
-              ))}
-            </>
-          )}
-
-          {sortedCards.other.length > 0 && (
-            <>
-              <div className="list-overview-section">Other</div>
-              {sortCards(sortedCards.other).map((item) => (
-                <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
-              ))}
-            </>
-          )}
-
-          <div className="list-overview-total">
-            <span className="list-overview-total-label">Total</span>
-            <span className="list-overview-total-value">{totalPoints} pts</span>
+    <>
+      <BottomSheet isOpen={isVisible} onClose={handleClose} title={headerContent} maxHeight="70vh">
+        {isEmpty ? (
+          <div className="list-overview-empty">
+            <List size={48} />
+            <span className="list-overview-empty-text">Your list is currently empty</span>
           </div>
-        </div>
-      )}
-    </BottomSheet>
+        ) : (
+          <div className="list-overview-items">
+            {sortedCards.characters.length > 0 && (
+              <>
+                <div className="list-overview-section">Characters</div>
+                {sortCards(sortedCards.characters).map((item) => (
+                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
+                ))}
+              </>
+            )}
+
+            {sortedCards.battleline.length > 0 && (
+              <>
+                <div className="list-overview-section">Battleline</div>
+                {sortCards(sortedCards.battleline).map((item) => (
+                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
+                ))}
+              </>
+            )}
+
+            {sortedCards.other.length > 0 && (
+              <>
+                <div className="list-overview-section">Other</div>
+                {sortCards(sortedCards.other).map((item) => (
+                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
+                ))}
+              </>
+            )}
+
+            <div className="list-overview-total">
+              <span className="list-overview-total-label">Total</span>
+              <span className="list-overview-total-value">{totalPoints} pts</span>
+            </div>
+          </div>
+        )}
+      </BottomSheet>
+
+      <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
+    </>
   );
 };

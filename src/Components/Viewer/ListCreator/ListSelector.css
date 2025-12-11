@@ -1,0 +1,222 @@
+/* ListSelector.css - List picker bottom sheet styles */
+
+/* ===========================================
+   CONTENT CONTAINER
+   =========================================== */
+
+.list-selector-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.list-selector-lists {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ===========================================
+   LIST ROW
+   =========================================== */
+
+.list-selector-row {
+  display: flex;
+  align-items: center;
+  background: #fff;
+}
+
+.list-selector-row.selected {
+  background: #f0f7ff;
+}
+
+.list-selector-row-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 8px 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  min-width: 0;
+}
+
+.list-selector-row-check {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0070d6;
+  flex-shrink: 0;
+}
+
+.list-selector-row-name {
+  flex: 1;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.88);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-selector-row.selected .list-selector-row-name {
+  color: #0070d6;
+  font-weight: 500;
+}
+
+.list-selector-row-points {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   ROW ACTIONS
+   =========================================== */
+
+.list-selector-row-actions {
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+}
+
+.list-selector-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.list-selector-action-btn:active {
+  background: #f0f0f0;
+}
+
+.list-selector-action-btn.delete:active {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+/* ===========================================
+   EDIT INPUT
+   =========================================== */
+
+.list-selector-edit-form {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-selector-edit-input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid #0070d6;
+  border-radius: 6px;
+  outline: none;
+  background: #fff;
+}
+
+/* ===========================================
+   CREATE NEW LIST
+   =========================================== */
+
+.list-selector-create {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.65);
+  transition: all 0.15s ease;
+}
+
+.list-selector-create:active {
+  background: #e8e8e8;
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.list-selector-create.creating {
+  padding: 8px;
+  border-style: solid;
+  border-color: #0070d6;
+  background: #fff;
+}
+
+.list-selector-create-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.list-selector-create-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  outline: none;
+}
+
+.list-selector-create-input:focus {
+  border-color: #0070d6;
+}
+
+.list-selector-create-save,
+.list-selector-create-cancel {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.list-selector-create-save {
+  background: #0070d6;
+  color: #fff;
+}
+
+.list-selector-create-save:disabled {
+  background: #d9d9d9;
+  cursor: not-allowed;
+}
+
+.list-selector-create-save:not(:disabled):active {
+  background: #005bb5;
+}
+
+.list-selector-create-cancel {
+  background: #f5f5f5;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.list-selector-create-cancel:active {
+  background: #e8e8e8;
+}

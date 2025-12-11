@@ -35,17 +35,29 @@ export const DataSourceStorageProviderComponent = (props) => {
   const [selectedSubFactions, setSelectedSubFactions] = React.useState([]);
   const [selectedFactionIndex, setSelectedFactionIndex] = React.useState(0);
 
+  // Helper to get faction index for current datasource
+  const getFactionIndexForDataSource = (ds) => {
+    const index = settings.selectedFactionIndex?.[ds];
+    // Handle migration from old format (number) to new format (object)
+    if (typeof settings.selectedFactionIndex === "number") {
+      return settings.selectedFactionIndex;
+    }
+    return typeof index === "number" ? index : 0;
+  };
+
   useEffect(() => {
     const fetch = async () => {
       if (!dataStore) {
         return;
       }
       logLocalEvent("select_datasource", { dataSource: settings.selectedDataSource });
+      const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
+
       if (settings.selectedDataSource === "40k") {
         const storedData = await dataStore.getItem("40k");
         if (storedData) {
           setDataSource(storedData);
-          setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+          setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
 
@@ -59,7 +71,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         const storedData = await dataStore.getItem("40k-10e");
         if (storedData) {
           setDataSource(storedData);
-          setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+          setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
         const dataFactions = await get40k10eData();
@@ -71,7 +83,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         const storedData = await dataStore.getItem("40k-10e-cp");
         if (storedData) {
           setDataSource(storedData);
-          setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+          setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
         const dataFactions = await get40k10eCombatPatrolData();
@@ -93,7 +105,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         const storedData = await dataStore.getItem("aos");
         if (storedData) {
           setDataSource(storedData);
-          setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+          setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
         const dataFactions = await getAoSData();
@@ -157,9 +169,16 @@ export const DataSourceStorageProviderComponent = (props) => {
   const updateSelectedFaction = (faction) => {
     logLocalEvent("select_faction", { faction: faction?.name, dataSource: settings.selectedDataSource });
     setSelectedFaction(faction);
+    const newIndex = dataSource?.data?.findIndex((f) => f?.id === faction?.id);
+    // Update the per-datasource faction index
+    const currentFactionIndexes =
+      typeof settings.selectedFactionIndex === "object" ? settings.selectedFactionIndex : {};
     updateSettings({
       ...settings,
-      selectedFactionIndex: dataSource?.data?.findIndex((f) => f?.id === faction?.id),
+      selectedFactionIndex: {
+        ...currentFactionIndexes,
+        [settings.selectedDataSource]: newIndex,
+      },
     });
   };
 
@@ -177,7 +196,10 @@ export const DataSourceStorageProviderComponent = (props) => {
     updateSettings({
       ...settings,
       selectedDataSource: "basic",
-      selectedFactionIndex: 0,
+      selectedFactionIndex: {
+        "40k-10e": 0,
+        aos: 0,
+      },
     });
     localStorage.setItem("storage", undefined);
   };

@@ -4,7 +4,7 @@
 // ============================================
 // GOOGLE FONTS IMPORT
 // ============================================
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
 
 // ============================================
 // GRAND ALLIANCE COLOR SCHEMES
@@ -400,11 +400,27 @@
   .ability-text {
     padding: 8px 10px;
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 1.5;
     color: #1a1a1a;
 
     strong {
       font-weight: 700;
+    }
+
+    // Flatten nested paragraphs from ReactMarkdown
+    .ability-declare,
+    .ability-effect {
+      margin: 0 0 6px 0;
+
+      p {
+        display: inline;
+        margin: 0;
+      }
+    }
+
+    .ability-declare:last-child,
+    .ability-effect:last-child {
+      margin-bottom: 0;
     }
   }
 
@@ -579,6 +595,286 @@
 
     &:has(.ant-card-head:hover) {
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  // ============================================
+  // MOBILE VIEWER LAYOUT
+  // ============================================
+  &.aos-mobile-wrapper {
+    // Use Lora for better mobile readability
+    font-family: "Lora", Georgia, serif;
+
+    // Keep Cinzel for headers and titles
+    .warscroll-unit-name,
+    .warscroll-faction-banner,
+    .section-title-banner,
+    .ability-name {
+      font-family: "Cinzel", serif;
+    }
+
+    .warscroll {
+      width: 100vw;
+      min-height: auto;
+      transform: none;
+    }
+
+    .stat-wheel-wrapper {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      height: auto;
+      filter: none;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      background-color: var(--bg-header);
+    }
+
+    .stat-wheel-svg {
+      width: 140px;
+      height: 140px;
+      filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.5));
+    }
+
+    .warscroll-header {
+      padding: 16px;
+      padding-top: 0;
+      min-height: auto;
+      display: flex;
+      flex-direction: column;
+      border-top: none;
+    }
+
+    .warscroll-header-image {
+      display: none;
+    }
+
+    .points-badge {
+      position: relative;
+      top: auto;
+      right: auto;
+      align-self: center;
+      margin-top: 12px;
+    }
+
+    .header-content {
+      order: -1;
+    }
+
+    .warscroll-faction-banner {
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    .warscroll-unit-name {
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .warscroll-subtitle {
+      font-size: 12px;
+    }
+
+    .warscroll-body {
+      padding: 16px;
+      gap: 16px;
+    }
+
+    .section-title-banner {
+      font-size: 10px;
+    }
+
+    // Weapons table - make it responsive
+    .weapon-row {
+      grid-template-columns: 1fr;
+      gap: 4px;
+      padding: 8px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+
+      &.header-row {
+        display: none;
+      }
+
+      span {
+        text-align: left;
+        font-size: 13px;
+
+        &::before {
+          font-family: "Cinzel", serif;
+          font-size: 9px;
+          color: #666;
+          text-transform: uppercase;
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .w-name {
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      padding-left: 0;
+      margin-bottom: 4px;
+    }
+
+    // Stats grid for mobile weapons
+    .weapon-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .weapon-stat-mobile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.03);
+      padding: 4px;
+      border-radius: 4px;
+
+      .stat-label {
+        font-family: "Cinzel", serif;
+        font-size: 8px;
+        color: #666;
+        text-transform: uppercase;
+      }
+
+      .stat-value {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+    }
+
+    .w-ability {
+      font-size: 12px !important;
+      margin-top: 4px;
+      padding-left: 0;
+    }
+
+    // Mobile weapon cards
+    .weapon-card {
+      padding: 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.4);
+
+      &.alt-bg {
+        background: rgba(0, 0, 0, 0.03);
+      }
+    }
+
+    .weapon-card-name {
+      font-family: "Cinzel", serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+
+    .weapon-card-stats {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .weapon-card-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.05);
+      padding: 6px 4px;
+      border-radius: 4px;
+
+      .stat-label {
+        font-family: "Cinzel", serif;
+        font-size: 8px;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-value {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+    }
+
+    .weapon-card-ability {
+      font-family: "Lora", Georgia, serif;
+      font-size: 13px;
+      font-style: italic;
+      font-weight: 400;
+      color: #555;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    // Abilities
+    .abilities-container {
+      gap: 16px;
+    }
+
+    .ability-strip {
+      padding: 6px 10px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .ability-tag {
+      font-size: 8px;
+    }
+
+    .ability-name {
+      font-size: 11px;
+    }
+
+    .ability-text {
+      font-size: 13px;
+      padding: 10px 12px;
+    }
+
+    .ability-keywords-label {
+      font-size: 10px;
+      padding: 6px 10px;
+      letter-spacing: 0.3px;
+    }
+
+    .ability-keywords-list {
+      font-family: "Lora", Georgia, serif;
+      font-size: 12px;
+      font-style: italic;
+      font-weight: 400;
+      padding: 6px 12px;
+      color: #444;
+    }
+
+    // Keywords footer
+    .keywords-footer {
+      flex-direction: column;
+    }
+
+    .keywords-badge {
+      padding: 6px 12px;
+      justify-content: center;
+    }
+
+    .keywords-text {
+      padding: 8px 12px;
+      font-size: 9px;
+      justify-content: center;
+      text-align: center;
+    }
+
+    // Hide image area on mobile
+    .warscroll-image-area {
+      display: none;
     }
   }
 }

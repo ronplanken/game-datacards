@@ -95,10 +95,10 @@ export const AgeOfSigmarCardDisplay = ({
       )}
       {type === "viewer" && (
         <div
-          className={`data-aos ${grandAlliance}`}
+          className={`data-aos ${grandAlliance} aos-mobile-wrapper`}
           style={{
             transformOrigin: "0% 0%",
-            transform: `scale(${cardScaling / 100})`,
+            ...(cardScaling && { transform: `scale(${cardScaling / 100})` }),
             ...(displayCard?.useCustomColours && {
               "--bg-header": headerColour,
               "--banner-colour": bannerColour,
@@ -111,6 +111,7 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               headerColour={headerColour}
               bannerColour={bannerColour}
+              isMobile={true}
             />
           )}
           {card?.cardType === "warscroll" && (
@@ -120,6 +121,7 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               headerColour={headerColour}
               bannerColour={bannerColour}
+              isMobile={true}
             />
           )}
         </div>

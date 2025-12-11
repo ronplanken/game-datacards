@@ -309,7 +309,6 @@ export const WelcomeWizard = () => {
                               updateSettings({
                                 ...settings,
                                 selectedDataSource: "basic",
-                                selectedFactionIndex: 0,
                               })
                             }
                             disabled={settings.selectedDataSource === "basic"}
@@ -414,7 +413,6 @@ export const WelcomeWizard = () => {
                               updateSettings({
                                 ...settings,
                                 selectedDataSource: "necromunda",
-                                selectedFactionIndex: 0,
                               })
                             }
                             disabled={settings.selectedDataSource === "necromunda"}

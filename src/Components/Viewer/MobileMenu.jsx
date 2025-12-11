@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Database, Loader2 } from "lucide-react";
+import { Database, Loader2, Repeat } from "lucide-react";
 import { message } from "antd";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -40,9 +40,44 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
     });
   };
 
+  const handleChangeGameSystem = () => {
+    updateSettings({
+      ...settings,
+      mobile: {
+        ...settings.mobile,
+        gameSystemSelected: false,
+      },
+    });
+    handleClose();
+  };
+
+  // Get current game system name
+  const getGameSystemName = () => {
+    switch (settings.selectedDataSource) {
+      case "40k-10e":
+        return "Warhammer 40K 10th Edition";
+      case "aos":
+        return "Age of Sigmar";
+      default:
+        return settings.selectedDataSource || "None";
+    }
+  };
+
   return (
     <BottomSheet isOpen={isVisible} onClose={handleClose} title="Settings">
       <div className="settings-content">
+        {/* Game System Section */}
+        <div className="settings-section">
+          <h4 className="settings-section-title">Game System</h4>
+          <div className="settings-game-system">
+            <span className="settings-game-system-current">{getGameSystemName()}</span>
+            <button className="settings-action-button secondary" onClick={handleChangeGameSystem}>
+              <Repeat size={18} />
+              <span>Change</span>
+            </button>
+          </div>
+        </div>
+
         {/* Card Types Section */}
         <div className="settings-section">
           <h4 className="settings-section-title">Card Types</h4>

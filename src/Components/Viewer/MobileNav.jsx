@@ -1,5 +1,5 @@
 import { Settings, Share2 } from "lucide-react";
-import { Button, Col, Row, Space } from "antd";
+import { Button, Col, Row, Space, message } from "antd";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { AddCard } from "../../Icons/AddCard";
@@ -8,7 +8,10 @@ import { useMobileList } from "./useMobileList";
 
 export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible }) => {
   const { activeCard } = useCardStorage();
-  const { lists, selectedList } = useMobileList();
+  const { lists, selectedList, addDatacard } = useMobileList();
+
+  // Check if current card is AoS (has scalar points, not array)
+  const isAoS = activeCard?.source === "aos";
 
   const [showList, setShowList] = useState(false);
 
@@ -60,7 +63,16 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
                 size="large"
                 shape="round"
                 className="button-bar mobile-icon-button"
-                onClick={() => setAddListvisible((val) => !val)}></Button>
+                onClick={() => {
+                  if (isAoS) {
+                    // AoS: Add directly with fixed points (no unit sizes/enhancements)
+                    addDatacard(activeCard, { cost: activeCard.points }, null, false);
+                    message.success(`${activeCard.name} added to list`);
+                  } else {
+                    // 40K: Open the ListAdd sheet for unit size selection
+                    setAddListvisible((val) => !val);
+                  }
+                }}></Button>
             )}
           </Space>
         </Col>

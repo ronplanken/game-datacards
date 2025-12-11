@@ -1,4 +1,5 @@
 import React from "react";
+import { MarkdownDisplay } from "../../MarkdownDisplay";
 
 export const WarscrollAbility = ({ ability, grandAlliance }) => {
   if (!ability) return null;
@@ -44,17 +45,16 @@ export const WarscrollAbility = ({ ability, grandAlliance }) => {
       {/* Ability Text */}
       <div className="ability-text">
         {ability.declare && (
-          <>
-            <strong>Declare:</strong> {ability.declare}
-            <br />
-          </>
+          <p className="ability-declare">
+            <MarkdownDisplay content={`**Declare:** ${ability.declare}`} />
+          </p>
         )}
         {ability.effect && (
-          <>
-            <strong>Effect:</strong> {ability.effect}
-          </>
+          <p className="ability-effect">
+            <MarkdownDisplay content={`**Effect:** ${ability.effect}`} />
+          </p>
         )}
-        {!ability.declare && !ability.effect && ability.lore && <>{ability.lore}</>}
+        {!ability.declare && !ability.effect && ability.lore && <MarkdownDisplay content={ability.lore} />}
       </div>
 
       {/* Keywords Bar */}

@@ -29,7 +29,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const [isWarlord, setIsWarlord] = useState(false);
   const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
   const [selectedUnitSize, setSelectedUnitSize] = useState(() => {
-    if (activeCard?.points?.length === 1) {
+    if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
       return activeCard.points[0];
     }
     return undefined;
@@ -56,7 +56,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     if (isVisible) {
       setSelectedEnhancement(undefined);
       setIsWarlord(false);
-      if (activeCard?.points?.length === 1) {
+      if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
         setSelectedUnitSize(activeCard.points[0]);
       } else {
         setSelectedUnitSize(undefined);
@@ -123,7 +123,8 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const showEnhancements = isCharacter && !isEpicHero;
   const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
 
-  if (!activeCard) return null;
+  // Don't show for cards without array-based points (e.g., AoS warscrolls)
+  if (!activeCard || !Array.isArray(activeCard?.points)) return null;
 
   return (
     <>

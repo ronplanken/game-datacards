@@ -29,6 +29,43 @@
 }
 
 /* ===========================================
+   NAME SELECTOR (Dropdown Trigger)
+   =========================================== */
+
+.list-overview-name-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 4px;
+  margin: -4px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+
+.list-overview-name-selector:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.list-overview-name-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-overview-name-selector svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+/* ===========================================
    EMPTY STATE
    =========================================== */
 
