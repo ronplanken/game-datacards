@@ -151,13 +151,11 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           legends: card.legends,
         })}
         actions={[
-          <Tooltip title={`Add ${card.id} to category`} key={"asdf"}>
+          <Tooltip title={`Add "${card.name}" to default category`} key={"add"}>
             <Button
               size="small"
-              key={"add"}
               shape="circle"
               onClick={() => {
-                console.log(`Clicked`, card);
                 handleAddCardToCategoryClick(card);
               }}>
               <Plus />
