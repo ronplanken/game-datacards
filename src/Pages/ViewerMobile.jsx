@@ -21,6 +21,7 @@ import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemS
 import { MobileAoSFaction, MobileAoSFactionUnits } from "../Components/Viewer/AoS";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
+import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
 
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
@@ -267,6 +268,7 @@ export const ViewerMobile = ({ showUnits = false }) => {
                 setAddListvisible={setIsListAddVisible}
               />
 
+              <PWAInstallPrompt />
               <ListAdd isVisible={isListAddVisible} setIsVisible={setIsListAddVisible} />
               <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
               <MobileSharingMenu

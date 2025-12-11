@@ -130,3 +130,29 @@ root.render(<RouterProvider router={router} />);
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+// Register service worker for PWA functionality (mobile only)
+if ("serviceWorker" in navigator && isMobile) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("Service Worker registered with scope:", registration.scope);
+
+        // Check for updates
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          console.log("Service Worker update found");
+
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              console.log("New Service Worker installed, refresh to update");
+            }
+          });
+        });
+      })
+      .catch((error) => {
+        console.error("Service Worker registration failed:", error);
+      });
+  });
+}
