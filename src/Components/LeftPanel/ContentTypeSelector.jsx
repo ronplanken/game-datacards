@@ -24,6 +24,14 @@ export const ContentTypeSelector = ({ selectedContentType, setSelectedContentTyp
   const isAoS = dataSource?.data?.[0]?.warscrolls !== undefined;
   const CONTENT_TYPES = isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
 
+  // Reset content type when data source changes (e.g., 40K to AoS)
+  useEffect(() => {
+    const defaultType = isAoS ? "warscrolls" : "datasheets";
+    if (selectedContentType !== defaultType && !CONTENT_TYPES.some((t) => t.value === selectedContentType)) {
+      setSelectedContentType(defaultType);
+    }
+  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES]);
+
   // Get available content types based on faction data
   const availableTypes = CONTENT_TYPES.filter((type) => {
     if (type.key === "rules") {

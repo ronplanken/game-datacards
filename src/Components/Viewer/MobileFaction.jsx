@@ -117,11 +117,12 @@ export const MobileFaction = () => {
   const coreStratagems = selectedFaction?.basicStratagems || [];
 
   // Filter enhancements by detachment
-  const enhancements =
-    selectedFaction?.enhancements?.filter(
-      (enhancement) =>
-        enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
-    ) || [];
+  const enhancements = Array.isArray(selectedFaction?.enhancements)
+    ? selectedFaction.enhancements.filter(
+        (enhancement) =>
+          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
+      )
+    : [];
 
   // Filter detachment rules by selected detachment
   const detachmentRules =

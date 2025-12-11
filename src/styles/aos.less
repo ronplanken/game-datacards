@@ -4,7 +4,7 @@
 // ============================================
 // GOOGLE FONTS IMPORT
 // ============================================
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap");
 
 // ============================================
 // GRAND ALLIANCE COLOR SCHEMES
@@ -28,7 +28,7 @@
   --stat-wheel-green: #3a5228;
   --card-scaling-factor: 1;
 
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: "Cormorant Garamond", Georgia, serif;
   -webkit-font-smoothing: antialiased;
 
   &.order {
@@ -59,7 +59,7 @@
     display: flex;
     flex-direction: column;
     transform: scale(var(--card-scaling-factor));
-    transform-origin: top center;
+    transform-origin: top left;
   }
 
   // ============================================
@@ -81,16 +81,16 @@
   }
 
   .stat-label {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 7px;
     fill: #ddd;
     text-anchor: middle;
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
   }
 
   .stat-value {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 14px;
     fill: #fff;
     text-anchor: middle;
@@ -115,8 +115,7 @@
   // ============================================
   .warscroll-header {
     background-color: var(--bg-header);
-    background-image:
-      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 60%),
+    background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 60%),
       url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
     color: white;
     padding: 30px 20px 30px 150px;
@@ -125,6 +124,17 @@
     border-right: 2px solid #000;
     border-left: 2px solid #000;
     min-height: calc(130px + 8px + 8px);
+    overflow: hidden;
+  }
+
+  .warscroll-header-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    z-index: 0;
   }
 
   .points-badge {
@@ -140,29 +150,34 @@
     align-items: center;
     justify-content: center;
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    z-index: 1;
 
     .points-value {
-      font-family: 'Cinzel', serif;
+      font-family: "Cinzel", serif;
       font-size: 16px;
       font-weight: 800;
       line-height: 1;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     }
 
     .points-label {
-      font-family: 'Cinzel', serif;
+      font-family: "Cinzel", serif;
       font-size: 7px;
       opacity: 0.9;
       letter-spacing: 1px;
       margin-top: 1px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     }
   }
 
   .header-content {
     text-align: center;
+    position: relative;
+    z-index: 1;
   }
 
   .warscroll-faction-banner {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 11px;
     letter-spacing: 3px;
     color: #aebdc4;
@@ -172,7 +187,7 @@
   }
 
   .warscroll-unit-name {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 38px;
     font-weight: 700;
     margin: 0;
@@ -184,7 +199,7 @@
   }
 
   .warscroll-subtitle {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 14px;
     font-weight: 500;
     font-style: italic;
@@ -211,9 +226,9 @@
   // SECTION TITLE BANNERS
   // ============================================
   .section-title-banner {
-    background-color: var(--bg-header);
+    background-color: var(--banner-colour, var(--bg-header));
     color: #fff;
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -243,7 +258,7 @@
 
     span {
       text-align: center;
-      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-family: "Cormorant Garamond", Georgia, serif;
       font-weight: 700;
       color: var(--text-dark);
       font-size: 14px;
@@ -254,7 +269,7 @@
       margin-bottom: 4px;
 
       span {
-        font-family: 'Cinzel', serif;
+        font-family: "Cinzel", serif;
         font-size: 9px;
         color: #555;
         text-transform: uppercase;
@@ -277,7 +292,7 @@
 
   .w-name {
     text-align: left !important;
-    font-family: 'Cinzel', serif !important;
+    font-family: "Cinzel", serif !important;
     font-weight: 700 !important;
     font-size: 12px !important;
     padding-left: 5px;
@@ -325,7 +340,9 @@
 
     &.phase-start {
       background-color: #3a3a3a;
-      .ability-name { color: #fff; }
+      .ability-name {
+        color: #fff;
+      }
     }
 
     &.phase-hero {
@@ -338,7 +355,9 @@
 
     &.phase-shooting {
       background-color: #1e6a7a;
-      .ability-name { color: #fff; }
+      .ability-name {
+        color: #fff;
+      }
     }
 
     &.phase-charge {
@@ -347,17 +366,21 @@
 
     &.phase-combat {
       background-color: #8b3a3a;
-      .ability-name { color: #fff; }
+      .ability-name {
+        color: #fff;
+      }
     }
 
     &.phase-end {
       background-color: #5c3a6a;
-      .ability-name { color: #fff; }
+      .ability-name {
+        color: #fff;
+      }
     }
   }
 
   .ability-tag {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-weight: 800;
     font-size: 9px;
     background: white;
@@ -367,7 +390,7 @@
   }
 
   .ability-name {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-weight: 700;
     font-size: 12px;
     text-transform: uppercase;
@@ -392,7 +415,7 @@
   }
 
   .ability-keywords-label {
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-weight: 700;
     font-size: 10px;
     text-transform: uppercase;
@@ -403,7 +426,7 @@
   }
 
   .ability-keywords-list {
-    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 12px;
     font-style: italic;
     color: #333;
@@ -458,7 +481,7 @@
   .keywords-badge {
     background-color: #9c8a5a;
     color: white;
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1px;
@@ -474,7 +497,7 @@
     align-items: center;
     flex-wrap: wrap;
     padding: 5px 15px;
-    font-family: 'Cinzel', serif;
+    font-family: "Cinzel", serif;
     font-size: 10px;
     font-weight: 600;
     color: #333;

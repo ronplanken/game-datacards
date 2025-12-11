@@ -35,34 +35,53 @@ export const AgeOfSigmarCardDisplay = ({
       {!type && activeCard && (
         <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
           {activeCard?.cardType === "warscroll" && (
-            <WarscrollCard
-              warscroll={activeCard}
-              faction={cardFaction}
-              grandAlliance={grandAlliance}
-              headerColour={headerColour}
-              bannerColour={bannerColour}
-            />
+            <div
+              className={`data-aos ${grandAlliance}`}
+              style={{
+                ...(displayCard?.useCustomColours && {
+                  "--bg-header": headerColour,
+                  "--banner-colour": bannerColour,
+                }),
+              }}>
+              <WarscrollCard
+                warscroll={activeCard}
+                faction={cardFaction}
+                grandAlliance={grandAlliance}
+                headerColour={headerColour}
+                bannerColour={bannerColour}
+              />
+            </div>
           )}
         </Col>
       )}
       {!type && card && card.cardType === "warscroll" && (
-        <WarscrollCard
-          warscroll={card}
-          faction={cardFaction}
-          grandAlliance={grandAlliance}
-          headerColour={headerColour}
-          bannerColour={bannerColour}
-        />
+        <div
+          className={`data-aos ${grandAlliance}`}
+          style={{
+            ...(displayCard?.useCustomColours && {
+              "--bg-header": headerColour,
+              "--banner-colour": bannerColour,
+            }),
+          }}>
+          <WarscrollCard
+            warscroll={card}
+            faction={cardFaction}
+            grandAlliance={grandAlliance}
+            headerColour={headerColour}
+            bannerColour={bannerColour}
+          />
+        </div>
       )}
       {type === "print" && card && card?.cardType === "warscroll" && (
         <div
           className={`data-aos ${grandAlliance}`}
           style={{
-            position: "relative",
-            overflow: "hidden",
-            "--card-scaling-factor": cardScaling / 100,
-            "--header-colour": headerColour,
-            "--banner-colour": bannerColour,
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
+            ...(displayCard?.useCustomColours && {
+              "--bg-header": headerColour,
+              "--banner-colour": bannerColour,
+            }),
           }}>
           <WarscrollCard
             warscroll={card}
@@ -76,9 +95,14 @@ export const AgeOfSigmarCardDisplay = ({
       )}
       {type === "viewer" && (
         <div
+          className={`data-aos ${grandAlliance}`}
           style={{
             transformOrigin: "0% 0%",
             transform: `scale(${cardScaling / 100})`,
+            ...(displayCard?.useCustomColours && {
+              "--bg-header": headerColour,
+              "--banner-colour": bannerColour,
+            }),
           }}>
           {activeCard?.cardType === "warscroll" && (
             <WarscrollCard

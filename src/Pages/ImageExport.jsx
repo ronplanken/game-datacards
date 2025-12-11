@@ -5,6 +5,7 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import "../Components/Print/Print.css";
 import { AppHeader } from "../Components/AppHeader";
+import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
@@ -192,6 +193,14 @@ export const ImageExport = () => {
                               )}
                               {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
                               {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
+                              {(card?.source === "aos" || card?.cardType === "warscroll") && (
+                                <AgeOfSigmarCardDisplay
+                                  card={card}
+                                  type="print"
+                                  cardScaling={100}
+                                  backgrounds={backgrounds}
+                                />
+                              )}
                             </div>
                             {card?.source === "40k-10e" &&
                               settings.showCardsAsDoubleSided !== true &&
