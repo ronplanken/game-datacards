@@ -7,6 +7,7 @@ import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
+import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
 
 export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
   const { activeCard } = useCardStorage();
@@ -22,6 +23,7 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
     if (activeCard.cardType === "stratagem") return "stratagem";
     if (activeCard.cardType === "enhancement") return "enhancement";
     if (activeCard.cardType === "rule") return "rule";
+    if (activeCard.cardType === "warscroll") return "warscroll";
     if (settings.showCardsAsDoubleSided || activeCard.variant === "full") return "unitFull";
     return "unit";
   };
@@ -48,6 +50,8 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
         return <Warhammer40KCardDisplay />;
       case "necromunda":
         return <NecromundaCardDisplay />;
+      case "aos":
+        return <AgeOfSigmarCardDisplay />;
       default:
         return null;
     }
@@ -89,6 +93,8 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
         return <Warhammer40KCardDisplay />;
       case "necromunda":
         return <NecromundaCardDisplay />;
+      case "aos":
+        return <AgeOfSigmarCardDisplay />;
       default:
         return null;
     }

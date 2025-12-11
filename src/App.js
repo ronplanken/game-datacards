@@ -7,6 +7,8 @@ import "./App.css";
 import { FloatingToolbar } from "./Components/Toolbar/FloatingToolbar";
 import { AppHeader } from "./Components/AppHeader";
 import { LeftPanel } from "./Components/LeftPanel";
+import { AgeOfSigmarCardDisplay } from "./Components/AgeOfSigmar/CardDisplay";
+import { AgeOfSigmarCardEditor } from "./Components/AgeOfSigmar/CardEditor";
 import { NecromundaCardDisplay } from "./Components/Necromunda/CardDisplay";
 import { NecromundaCardEditor } from "./Components/Necromunda/CardEditor";
 import { Warhammer40K10eCardDisplay } from "./Components/Warhammer40k-10e/CardDisplay";
@@ -109,6 +111,7 @@ function App() {
                 )}
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+                {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
               </Row>
               <FloatingToolbar
                 activeCard={activeCard}
@@ -133,6 +136,7 @@ function App() {
                 {activeCard?.source === "40k-10e" && <Warhammer40K10eCardEditor />}
                 {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "necromunda" && <NecromundaCardEditor />}
+                {activeCard?.source === "aos" && <AgeOfSigmarCardEditor />}
               </div>
             )}
           </Panel>

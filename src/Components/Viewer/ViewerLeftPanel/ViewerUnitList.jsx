@@ -89,6 +89,28 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
     ];
   }
 
+  if (selectedContentType === "warscrolls" && selectedFaction) {
+    let filteredWarscrolls = selectedFaction?.warscrolls || [];
+
+    // Apply search filter
+    if (searchText) {
+      filteredWarscrolls = filteredWarscrolls.filter((warscroll) =>
+        warscroll.name.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    // Sort alphabetically
+    filteredWarscrolls = [...filteredWarscrolls].sort((a, b) => a.name.localeCompare(b.name));
+
+    // Map with required properties
+    unitList = filteredWarscrolls.map((warscroll) => ({
+      ...warscroll,
+      cardType: "warscroll",
+      source: "aos",
+      faction_id: selectedFaction.id,
+    }));
+  }
+
   const handleCategoryClick = (card) => {
     let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
     if (newClosedFactions.includes(card.id)) {
@@ -124,6 +146,9 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
       // Rules don't need URL navigation, just set the active card
       setActiveCard(card);
       return;
+    } else if (card.cardType === "warscroll") {
+      // Warscrolls - navigate to unit
+      navigateToUnit(cardFaction.name, card.name);
     } else {
       if (!card.nonBase) {
         navigateToUnit(cardFaction.name, card.name);

@@ -1,0 +1,561 @@
+// Age of Sigmar Warscroll Styling
+// Based on warscroll_sample.html template
+
+// ============================================
+// GOOGLE FONTS IMPORT
+// ============================================
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+// ============================================
+// GRAND ALLIANCE COLOR SCHEMES
+// ============================================
+@order-header: #0f2b38;
+@chaos-header: #2a1a1a;
+@death-header: #1a1a2a;
+@destruction-header: #2a2a1a;
+
+// ============================================
+// BASE CARD STYLING
+// ============================================
+.data-aos {
+  --bg-parchment: #e8e6df;
+  --bg-header: @order-header;
+  --text-gold: #cfaa48;
+  --text-dark: #1a1a1a;
+  --text-light: #ffffff;
+  --border-gold: #c5a059;
+  --stat-wheel-gold: #8c7335;
+  --stat-wheel-green: #3a5228;
+  --card-scaling-factor: 1;
+
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+
+  &.order {
+    --bg-header: @order-header;
+  }
+
+  &.chaos {
+    --bg-header: @chaos-header;
+  }
+
+  &.death {
+    --bg-header: @death-header;
+  }
+
+  &.destruction {
+    --bg-header: @destruction-header;
+  }
+
+  // ============================================
+  // WARSCROLL CARD
+  // ============================================
+  .warscroll {
+    width: 650px;
+    min-height: 900px;
+    background-color: var(--bg-parchment);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transform: scale(var(--card-scaling-factor));
+    transform-origin: top center;
+  }
+
+  // ============================================
+  // STAT WHEEL
+  // ============================================
+  .stat-wheel-wrapper {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 130px;
+    height: 130px;
+    z-index: 20;
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.5));
+  }
+
+  .stat-wheel-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .stat-label {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    fill: #ddd;
+    text-anchor: middle;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    fill: #fff;
+    text-anchor: middle;
+    font-weight: 800;
+    dominant-baseline: central;
+  }
+
+  .rotate-90 {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: rotate(90deg);
+  }
+
+  .rotate-minus-90 {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: rotate(-90deg);
+  }
+
+  // ============================================
+  // HEADER
+  // ============================================
+  .warscroll-header {
+    background-color: var(--bg-header);
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 60%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+    color: white;
+    padding: 30px 20px 30px 150px;
+    position: relative;
+    border-top: 2px solid #000;
+    border-right: 2px solid #000;
+    border-left: 2px solid #000;
+    min-height: calc(130px + 8px + 8px);
+  }
+
+  .points-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--stat-wheel-gold);
+    color: #fff;
+    width: 44px;
+    height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
+    .points-value {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .points-label {
+      font-family: 'Cinzel', serif;
+      font-size: 7px;
+      opacity: 0.9;
+      letter-spacing: 1px;
+      margin-top: 1px;
+    }
+  }
+
+  .header-content {
+    text-align: center;
+  }
+
+  .warscroll-faction-banner {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #aebdc4;
+    text-align: center;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  .warscroll-unit-name {
+    font-family: 'Cinzel', serif;
+    font-size: 38px;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+    line-height: 0.9;
+    letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+  }
+
+  .warscroll-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 500;
+    font-style: italic;
+    color: #aebdc4;
+    text-align: center;
+    margin-top: 5px;
+  }
+
+  // ============================================
+  // BODY
+  // ============================================
+  .warscroll-body {
+    padding: 20px 25px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+  }
+
+  // ============================================
+  // SECTION TITLE BANNERS
+  // ============================================
+  .section-title-banner {
+    background-color: var(--bg-header);
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    display: inline-block;
+    border: 1px solid #000;
+    clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%);
+    margin-bottom: 4px;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  // ============================================
+  // WEAPONS SECTION
+  // ============================================
+  .section-block {
+    margin-bottom: 5px;
+  }
+
+  .weapon-row {
+    display: grid;
+    grid-template-columns: 2fr 40px 40px 40px 40px 40px 40px 1.5fr;
+    gap: 2px;
+    padding: 4px 0;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+    span {
+      text-align: center;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 700;
+      color: var(--text-dark);
+      font-size: 14px;
+    }
+
+    &.header-row {
+      border-bottom: 2px solid #666;
+      margin-bottom: 4px;
+
+      span {
+        font-family: 'Cinzel', serif;
+        font-size: 9px;
+        color: #555;
+        text-transform: uppercase;
+      }
+    }
+
+    &.alt-bg {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    &.empty {
+      span {
+        font-style: italic;
+        color: #777;
+        text-align: left;
+        padding-left: 5px;
+      }
+    }
+  }
+
+  .w-name {
+    text-align: left !important;
+    font-family: 'Cinzel', serif !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    padding-left: 5px;
+  }
+
+  .w-stat {
+    text-align: center;
+  }
+
+  .w-ability {
+    text-align: left !important;
+    font-style: italic;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+    padding-left: 5px;
+  }
+
+  // ============================================
+  // ABILITIES SECTION
+  // ============================================
+  .abilities-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .ability-box {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .ability-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+
+    // Phase colors based on AoS turn phases
+    &.phase-passive {
+      background-color: #d1d1d1;
+    }
+
+    &.phase-start {
+      background-color: #3a3a3a;
+      .ability-name { color: #fff; }
+    }
+
+    &.phase-hero {
+      background-color: #c9b44c;
+    }
+
+    &.phase-movement {
+      background-color: #a8a8a8;
+    }
+
+    &.phase-shooting {
+      background-color: #1e6a7a;
+      .ability-name { color: #fff; }
+    }
+
+    &.phase-charge {
+      background-color: #d4883a;
+    }
+
+    &.phase-combat {
+      background-color: #8b3a3a;
+      .ability-name { color: #fff; }
+    }
+
+    &.phase-end {
+      background-color: #5c3a6a;
+      .ability-name { color: #fff; }
+    }
+  }
+
+  .ability-tag {
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    font-size: 9px;
+    background: white;
+    padding: 2px 6px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #222;
+  }
+
+  .ability-name {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-dark);
+  }
+
+  .ability-text {
+    padding: 8px 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #1a1a1a;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  .ability-keywords-bar {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .ability-keywords-label {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .ability-keywords-list {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 12px;
+    font-style: italic;
+    color: #333;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  // Phase-specific keywords label backgrounds
+  .ability-box {
+    &:has(.phase-passive) .ability-keywords-label {
+      background-color: #d1d1d1;
+    }
+    &:has(.phase-start) .ability-keywords-label {
+      background-color: #3a3a3a;
+      color: #fff;
+    }
+    &:has(.phase-hero) .ability-keywords-label {
+      background-color: #c9b44c;
+    }
+    &:has(.phase-movement) .ability-keywords-label {
+      background-color: #a8a8a8;
+    }
+    &:has(.phase-shooting) .ability-keywords-label {
+      background-color: #1e6a7a;
+      color: #fff;
+    }
+    &:has(.phase-charge) .ability-keywords-label {
+      background-color: #d4883a;
+    }
+    &:has(.phase-combat) .ability-keywords-label {
+      background-color: #8b3a3a;
+      color: #fff;
+    }
+    &:has(.phase-end) .ability-keywords-label {
+      background-color: #5c3a6a;
+      color: #fff;
+    }
+  }
+
+  // ============================================
+  // KEYWORDS FOOTER
+  // ============================================
+  .keywords-footer {
+    display: flex;
+    background-color: #d6d3c9;
+    border-top: 2px solid #555;
+    margin-top: auto;
+    min-height: 36px;
+  }
+
+  .keywords-badge {
+    background-color: #9c8a5a;
+    color: white;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    text-transform: uppercase;
+  }
+
+  .keywords-text {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 5px 15px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    line-height: 1.5;
+  }
+
+  // ============================================
+  // IMAGE AREA
+  // ============================================
+  .warscroll-image-area {
+    flex: 1;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 14px;
+
+    img {
+      max-width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+    }
+  }
+
+  // ============================================
+  // WEAPON EDITOR INLINE LAYOUT
+  // ============================================
+  .editor-weapons_header {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    background: #fafafa;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .editor-weapons_row {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .editor-stat {
+    width: 50px;
+    text-align: center;
+
+    &.wide {
+      width: 70px;
+    }
+
+    span {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    input {
+      text-align: center;
+    }
+  }
+
+  .editor-keywords_row {
+    padding: 8px;
+  }
+
+  // ============================================
+  // DRAGGABLE CARD HOVER STYLES
+  // ============================================
+  .ant-card.ant-card-type-inner {
+    transition: box-shadow 0.2s ease;
+
+    .ant-card-head {
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    &:has(.ant-card-head:hover) {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+}

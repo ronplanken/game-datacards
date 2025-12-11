@@ -242,6 +242,27 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       ];
     }
 
+    if (selectedContentType === "warscrolls") {
+      let filteredWarscrolls = selectedFaction?.warscrolls || [];
+
+      // Apply search filter
+      if (searchText) {
+        filteredWarscrolls = filteredWarscrolls.filter((warscroll) =>
+          warscroll.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+      }
+
+      // Filter out legends if setting is disabled
+      if (!settings?.showLegends) {
+        filteredWarscrolls = filteredWarscrolls.filter((warscroll) => !warscroll.isLegends);
+      }
+
+      // Sort alphabetically
+      filteredWarscrolls = filteredWarscrolls.toSorted((a, b) => a.name.localeCompare(b.name));
+
+      return filteredWarscrolls;
+    }
+
     return [];
   };
 

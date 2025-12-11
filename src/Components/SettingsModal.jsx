@@ -185,6 +185,22 @@ export const SettingsModal = () => {
                       }
                       disabled={settings.selectedDataSource === "necromunda"}
                     />
+
+                    <DatasourceCard
+                      title="Age of Sigmar"
+                      isActive={settings.selectedDataSource === "aos"}
+                      onToggle={() =>
+                        updateSettings({
+                          ...settings,
+                          selectedDataSource: "aos",
+                          selectedFactionIndex: 0,
+                        })
+                      }
+                      disabled={settings.selectedDataSource === "aos"}
+                      onCheckUpdate={refreshData}
+                      isCheckingUpdate={checkingForUpdate}>
+                      {settings.selectedDataSource === "aos" && <DatasourceDetails />}
+                    </DatasourceCard>
                   </>
                 )}
 

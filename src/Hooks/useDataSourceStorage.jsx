@@ -4,6 +4,7 @@ import {
   get40KData,
   get40k10eData,
   get40k10eCombatPatrolData,
+  getAoSData,
   getBasicData,
   getNecromundaBasicData,
 } from "../Helpers/external.helpers";
@@ -88,6 +89,18 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
       }
+      if (settings.selectedDataSource === "aos") {
+        const storedData = await dataStore.getItem("aos");
+        if (storedData) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[settings.selectedFactionIndex]);
+          return;
+        }
+        const dataFactions = await getAoSData();
+
+        dataStore.setItem("aos", dataFactions);
+        setDataSource(dataFactions);
+      }
     };
     fetch();
   }, [settings]);
@@ -128,6 +141,12 @@ export const DataSourceStorageProviderComponent = (props) => {
       const basicData = getNecromundaBasicData();
       setDataSource(basicData);
       setSelectedFaction(basicData.data[0]);
+    }
+    if (settings.selectedDataSource === "aos") {
+      const dataFactions = await getAoSData();
+      dataStore.setItem("aos", dataFactions);
+
+      setDataSource(dataFactions);
     }
   };
 
