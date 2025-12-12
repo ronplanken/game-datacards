@@ -1,5 +1,4 @@
 import React from "react";
-import { MarkdownDisplay } from "../../MarkdownDisplay";
 
 export const WarscrollWeapons = ({ weapons, type, grandAlliance, isMobile = false }) => {
   if (!weapons || weapons.length === 0) return null;
@@ -45,11 +44,13 @@ export const WarscrollWeapons = ({ weapons, type, grandAlliance, isMobile = fals
                 <span className="stat-value">{weapon.damage || "-"}</span>
               </div>
             </div>
-            {weapon.abilities && (
-              <div className="weapon-card-ability">
-                <MarkdownDisplay
-                  content={Array.isArray(weapon.abilities) ? weapon.abilities.join(", ") : weapon.abilities}
-                />
+            {weapon.abilities && weapon.abilities.length > 0 && (
+              <div className="weapon-card-abilities">
+                {(Array.isArray(weapon.abilities) ? weapon.abilities : [weapon.abilities]).map((ability, i) => (
+                  <span key={i} className="weapon-ability-badge">
+                    {ability}
+                  </span>
+                ))}
               </div>
             )}
           </div>
@@ -86,10 +87,14 @@ export const WarscrollWeapons = ({ weapons, type, grandAlliance, isMobile = fals
           <span className="w-stat">{weapon.rend || "-"}</span>
           <span className="w-stat">{weapon.damage || "-"}</span>
           <span className="w-ability">
-            {weapon.abilities ? (
-              <MarkdownDisplay
-                content={Array.isArray(weapon.abilities) ? weapon.abilities.join(", ") : weapon.abilities}
-              />
+            {weapon.abilities && weapon.abilities.length > 0 ? (
+              <span className="weapon-abilities-list">
+                {(Array.isArray(weapon.abilities) ? weapon.abilities : [weapon.abilities]).map((ability, i) => (
+                  <span key={i} className="weapon-ability-badge">
+                    {ability}
+                  </span>
+                ))}
+              </span>
             ) : (
               "-"
             )}

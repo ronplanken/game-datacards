@@ -109,6 +109,10 @@ const router = createBrowserRouter([
       // Mobile viewer routes
       { path: "mobile", element: <ViewerMobile /> },
       { path: "mobile/:faction/units", element: <ViewerMobile showUnits /> },
+      { path: "mobile/:faction/manifestation-lores", element: <ViewerMobile showManifestationLores /> },
+      { path: "mobile/:faction/manifestation-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction/spell-lores", element: <ViewerMobile showSpellLores /> },
+      { path: "mobile/:faction/spell-lore/:spell", element: <ViewerMobile /> },
       { path: "mobile/:faction?/:unit?", element: <ViewerMobile /> },
       { path: "mobile/:faction?/stratagem/:stratagem?", element: <ViewerMobile /> },
       { path: "mobile/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <ViewerMobile /> },

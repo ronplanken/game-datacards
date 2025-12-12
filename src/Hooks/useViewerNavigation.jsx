@@ -1,11 +1,12 @@
 import { useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "./useDataSourceStorage";
 import { useCardStorage } from "./useCardStorage";
 
 export function useViewerNavigation() {
-  const { faction, unit, alliedFaction, alliedUnit, stratagem } = useParams();
+  const { faction, unit, alliedFaction, alliedUnit, stratagem, spell } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { dataSource, selectedFaction, updateSelectedFaction, clearSelectedFaction } = useDataSourceStorage();
   const { activeCard, setActiveCard } = useCardStorage();
 
@@ -23,8 +24,8 @@ export function useViewerNavigation() {
       return;
     }
 
-    // Handle faction + unit route
-    if (faction && !alliedFaction && !stratagem) {
+    // Handle faction + unit route (but not spell route)
+    if (faction && !alliedFaction && !stratagem && !spell) {
       const foundFaction = dataSource.data.find((f) => {
         return f.name.toLowerCase().replaceAll(" ", "-") === faction;
       });
@@ -75,6 +76,67 @@ export function useViewerNavigation() {
       }
     }
 
+    // Handle faction + spell route (AoS - both manifestation lores and spell lores)
+    if (faction && !alliedFaction && !stratagem && spell) {
+      const foundFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+      });
+
+      if (selectedFaction?.id !== foundFaction?.id) {
+        updateSelectedFaction(foundFaction);
+      }
+
+      // Determine which type of lore based on URL path
+      const isManifestationLore = location.pathname.includes("/manifestation-lore/");
+      const isSpellLore = location.pathname.includes("/spell-lore/");
+
+      let foundSpell = null;
+
+      if (isManifestationLore) {
+        // Search through manifestation lores
+        const manifestationLores = foundFaction?.manifestationLores || [];
+        for (const lore of manifestationLores) {
+          const spellMatch = lore.spells?.find((s) => {
+            return s.name.replaceAll(" ", "-").toLowerCase() === spell;
+          });
+          if (spellMatch) {
+            foundSpell = {
+              ...spellMatch,
+              cardType: "spell",
+              loreName: lore.name,
+              faction_id: foundFaction?.id,
+              source: "aos",
+            };
+            break;
+          }
+        }
+      } else if (isSpellLore) {
+        // Search through spell lores
+        const spellLores = foundFaction?.lores || [];
+        for (const lore of spellLores) {
+          const spellMatch = lore.spells?.find((s) => {
+            return s.name.replaceAll(" ", "-").toLowerCase() === spell;
+          });
+          if (spellMatch) {
+            foundSpell = {
+              ...spellMatch,
+              cardType: "spell",
+              loreName: lore.name,
+              faction_id: foundFaction?.id,
+              source: "aos",
+            };
+            break;
+          }
+        }
+      }
+
+      if (foundSpell) {
+        setActiveCard(foundSpell);
+      } else {
+        setActiveCard();
+      }
+    }
+
     // Handle faction + allied faction route
     if (faction && alliedFaction) {
       const foundFaction = dataSource.data.find((f) => {
@@ -100,7 +162,7 @@ export function useViewerNavigation() {
         setActiveCard();
       }
     }
-  }, [faction, unit, alliedFaction, alliedUnit, stratagem, dataSource]);
+  }, [faction, unit, alliedFaction, alliedUnit, stratagem, spell, dataSource, location.pathname]);
 
   // Navigation helpers
   const navigateToFaction = useCallback(

@@ -18,7 +18,12 @@ import { MobileFactionUnits } from "../Components/Viewer/MobileFactionUnits";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemSelector";
-import { MobileAoSFaction, MobileAoSFactionUnits } from "../Components/Viewer/AoS";
+import {
+  MobileAoSFaction,
+  MobileAoSFactionUnits,
+  MobileAoSManifestationLores,
+  MobileAoSSpellLores,
+} from "../Components/Viewer/AoS";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
@@ -39,7 +44,7 @@ import { useScrollRevealHeader } from "../Hooks/useScrollRevealHeader";
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
-export const ViewerMobile = ({ showUnits = false }) => {
+export const ViewerMobile = ({ showUnits = false, showManifestationLores = false, showSpellLores = false }) => {
   const [parent] = useAutoAnimate({ duration: 75 });
   const screens = useBreakpoint();
   const navigate = useNavigate();
@@ -55,6 +60,12 @@ export const ViewerMobile = ({ showUnits = false }) => {
     return settings.selectedFactionIndex ?? 0;
   };
   const lastFaction = dataSource?.data?.[getFactionIndex()];
+
+  // Check if user has explicitly selected a faction for current datasource
+  const hasFactionSelected =
+    typeof settings.hasFactionSelected === "object"
+      ? settings.hasFactionSelected?.[settings.selectedDataSource] ?? false
+      : false;
   const { activeCard } = useCardStorage();
   const { shareLink, htmlToImageConvert } = useMobileSharing();
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();
@@ -256,10 +267,15 @@ export const ViewerMobile = ({ showUnits = false }) => {
                     recentSearches={recentSearches}
                     onClearRecent={clearRecentSearches}
                     lastFaction={lastFaction}
+                    hasFactionSelected={hasFactionSelected}
+                    onBrowseFactions={() => setShowFactionSelector(true)}
                   />
                 )}
-                {!activeCard && selectedFaction && !showUnits && (isAoS ? <MobileAoSFaction /> : <MobileFaction />)}
+                {/* eslint-disable-next-line prettier/prettier */}
+                {!activeCard && selectedFaction && !showUnits && !showManifestationLores && !showSpellLores && (isAoS ? <MobileAoSFaction /> : <MobileFaction />)}
                 {showUnits && (isAoS ? <MobileAoSFactionUnits /> : <MobileFactionUnits />)}
+                {showManifestationLores && isAoS && <MobileAoSManifestationLores />}
+                {showSpellLores && isAoS && <MobileAoSSpellLores />}
               </div>
 
               <MobileNav

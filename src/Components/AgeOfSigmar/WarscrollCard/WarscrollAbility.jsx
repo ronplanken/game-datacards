@@ -40,6 +40,8 @@ export const WarscrollAbility = ({ ability, grandAlliance }) => {
       <div className={`ability-strip ${phaseClass}`}>
         <span className="ability-tag">{tagText}</span>
         <span className="ability-name">{ability.name}</span>
+        {ability.castingValue && <span className="ability-casting-badge">{ability.castingValue}+</span>}
+        {ability.chantValue && <span className="ability-chant-badge">{ability.chantValue}+</span>}
       </div>
 
       {/* Ability Text */}

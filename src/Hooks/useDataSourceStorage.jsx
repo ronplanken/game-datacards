@@ -115,7 +115,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       }
     };
     fetch();
-  }, [settings]);
+  }, [settings.selectedDataSource]);
 
   useEffect(() => {
     setSelectedFactionIndex(dataSource?.data?.findIndex((faction) => faction?.id === selectedFaction?.id));
@@ -173,11 +173,17 @@ export const DataSourceStorageProviderComponent = (props) => {
     // Update the per-datasource faction index
     const currentFactionIndexes =
       typeof settings.selectedFactionIndex === "object" ? settings.selectedFactionIndex : {};
+    const currentHasFactionSelected =
+      typeof settings.hasFactionSelected === "object" ? settings.hasFactionSelected : {};
     updateSettings({
       ...settings,
       selectedFactionIndex: {
         ...currentFactionIndexes,
         [settings.selectedDataSource]: newIndex,
+      },
+      hasFactionSelected: {
+        ...currentHasFactionSelected,
+        [settings.selectedDataSource]: true,
       },
     });
   };

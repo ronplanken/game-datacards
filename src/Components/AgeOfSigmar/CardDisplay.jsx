@@ -3,6 +3,7 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { WarscrollCard } from "./WarscrollCard";
+import { SpellCard } from "./SpellCard";
 
 export const AgeOfSigmarCardDisplay = ({
   type,
@@ -114,6 +115,15 @@ export const AgeOfSigmarCardDisplay = ({
               isMobile={true}
             />
           )}
+          {activeCard?.cardType === "spell" && (
+            <SpellCard
+              spell={activeCard}
+              loreName={activeCard.loreName}
+              faction={cardFaction}
+              grandAlliance={grandAlliance}
+              isMobile={true}
+            />
+          )}
           {card?.cardType === "warscroll" && (
             <WarscrollCard
               warscroll={card}
@@ -121,6 +131,15 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               headerColour={headerColour}
               bannerColour={bannerColour}
+              isMobile={true}
+            />
+          )}
+          {card?.cardType === "spell" && (
+            <SpellCard
+              spell={card}
+              loreName={card.loreName}
+              faction={cardFaction}
+              grandAlliance={grandAlliance}
               isMobile={true}
             />
           )}

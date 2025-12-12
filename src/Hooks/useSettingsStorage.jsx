@@ -11,6 +11,11 @@ const defaultSettings = {
     "40k-10e": 0,
     aos: 0,
   },
+  // Tracks whether user has explicitly selected a faction (per datasource)
+  hasFactionSelected: {
+    "40k-10e": false,
+    aos: false,
+  },
   ignoredSubFactions: [],
   mobile: {
     closedFactions: [],

@@ -113,89 +113,65 @@ export const SettingsModal = () => {
                       to the Basic Card system.
                     </p>
 
-                    <DatasourceCard
-                      title="Basic Cards"
-                      isActive={settings.selectedDataSource === "basic"}
-                      onToggle={() =>
-                        updateSettings({
-                          ...settings,
-                          selectedDataSource: "basic",
-                        })
-                      }
-                      disabled={settings.selectedDataSource === "basic"}
-                    />
+                    {/* Active Datasource Section */}
+                    <div className="datasource-section">
+                      <h3 className="datasource-section-title">Active Datasource</h3>
+                      {(() => {
+                        const datasources = [
+                          { id: "basic", title: "Basic Cards", hasUpdate: false },
+                          { id: "40k-10e", title: "40k 10th Edition import", hasUpdate: true },
+                          { id: "40k-10e-cp", title: "40k 10th Combat Patrol import", hasUpdate: true },
+                          { id: "40k", title: "Wahapedia data import 9th edition", hasUpdate: true },
+                          { id: "necromunda", title: "Necromunda", hasUpdate: false },
+                          { id: "aos", title: "Age of Sigmar", hasUpdate: true },
+                        ];
+                        const activeDs =
+                          datasources.find((ds) => ds.id === settings.selectedDataSource) || datasources[0];
+                        return (
+                          <DatasourceCard
+                            key={activeDs.id}
+                            title={activeDs.title}
+                            isActive={true}
+                            onToggle={() => {}}
+                            disabled={true}
+                            onCheckUpdate={activeDs.hasUpdate ? refreshData : undefined}
+                            isCheckingUpdate={checkingForUpdate}>
+                            {activeDs.hasUpdate && <DatasourceDetails />}
+                          </DatasourceCard>
+                        );
+                      })()}
+                    </div>
 
-                    <DatasourceCard
-                      title="40k 10th Edition import"
-                      isActive={settings.selectedDataSource === "40k-10e"}
-                      onToggle={() =>
-                        updateSettings({
-                          ...settings,
-                          selectedDataSource: "40k-10e",
-                        })
-                      }
-                      disabled={settings.selectedDataSource === "40k-10e"}
-                      onCheckUpdate={refreshData}
-                      isCheckingUpdate={checkingForUpdate}>
-                      {settings.selectedDataSource === "40k-10e" && <DatasourceDetails />}
-                    </DatasourceCard>
-
-                    <DatasourceCard
-                      title="40k 10th Combat Patrol import"
-                      isActive={settings.selectedDataSource === "40k-10e-cp"}
-                      onToggle={() =>
-                        updateSettings({
-                          ...settings,
-                          selectedDataSource: "40k-10e-cp",
-                        })
-                      }
-                      disabled={settings.selectedDataSource === "40k-10e-cp"}
-                      onCheckUpdate={refreshData}
-                      isCheckingUpdate={checkingForUpdate}>
-                      {settings.selectedDataSource === "40k-10e-cp" && <DatasourceDetails />}
-                    </DatasourceCard>
-
-                    <DatasourceCard
-                      title="Wahapedia data import 9th edition"
-                      isActive={settings.selectedDataSource === "40k"}
-                      onToggle={() =>
-                        updateSettings({
-                          ...settings,
-                          selectedDataSource: "40k",
-                        })
-                      }
-                      disabled={settings.selectedDataSource === "40k"}
-                      onCheckUpdate={refreshData}
-                      isCheckingUpdate={checkingForUpdate}>
-                      {settings.selectedDataSource === "40k" && <DatasourceDetails />}
-                    </DatasourceCard>
-
-                    <DatasourceCard
-                      title="Necromunda"
-                      isActive={settings.selectedDataSource === "necromunda"}
-                      onToggle={() =>
-                        updateSettings({
-                          ...settings,
-                          selectedDataSource: "necromunda",
-                        })
-                      }
-                      disabled={settings.selectedDataSource === "necromunda"}
-                    />
-
-                    <DatasourceCard
-                      title="Age of Sigmar"
-                      isActive={settings.selectedDataSource === "aos"}
-                      onToggle={() =>
-                        updateSettings({
-                          ...settings,
-                          selectedDataSource: "aos",
-                        })
-                      }
-                      disabled={settings.selectedDataSource === "aos"}
-                      onCheckUpdate={refreshData}
-                      isCheckingUpdate={checkingForUpdate}>
-                      {settings.selectedDataSource === "aos" && <DatasourceDetails />}
-                    </DatasourceCard>
+                    {/* Other Datasources Section */}
+                    <div className="datasource-section">
+                      <h3 className="datasource-section-title">Other Datasources</h3>
+                      {(() => {
+                        const datasources = [
+                          { id: "basic", title: "Basic Cards", hasUpdate: false },
+                          { id: "40k-10e", title: "40k 10th Edition import", hasUpdate: true },
+                          { id: "40k-10e-cp", title: "40k 10th Combat Patrol import", hasUpdate: true },
+                          { id: "40k", title: "Wahapedia data import 9th edition", hasUpdate: true },
+                          { id: "necromunda", title: "Necromunda", hasUpdate: false },
+                          { id: "aos", title: "Age of Sigmar", hasUpdate: true },
+                        ];
+                        return datasources
+                          .filter((ds) => ds.id !== settings.selectedDataSource)
+                          .map((ds) => (
+                            <DatasourceCard
+                              key={ds.id}
+                              title={ds.title}
+                              isActive={false}
+                              onToggle={() =>
+                                updateSettings({
+                                  ...settings,
+                                  selectedDataSource: ds.id,
+                                })
+                              }
+                              disabled={false}
+                            />
+                          ));
+                      })()}
+                    </div>
                   </>
                 )}
 

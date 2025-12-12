@@ -50,8 +50,14 @@ export const CardStorageProviderComponent = (props) => {
   };
 
   const changeActiveCard = (card) => {
-    setCardUpdated(false);
-    setActiveCard(card);
+    setActiveCard((prev) => {
+      // Only update if the card is actually different
+      if (prev?.id === card?.id && prev?.uuid === card?.uuid) {
+        return prev;
+      }
+      setCardUpdated(false);
+      return card;
+    });
   };
 
   const saveActiveCard = () => {

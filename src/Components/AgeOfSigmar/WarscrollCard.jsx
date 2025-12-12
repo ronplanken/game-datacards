@@ -63,6 +63,7 @@ export const WarscrollCard = ({ warscroll, faction, grandAlliance = "order", isM
         imagePositionX={warscroll.imagePositionX}
         imagePositionY={warscroll.imagePositionY}
         imageScale={warscroll.imageScale}
+        isMobile={isMobile}
       />
 
       {/* Body */}

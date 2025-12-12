@@ -10,16 +10,40 @@ const groupWarscrollsByRole = (warscrolls) => {
   return (warscrolls || []).reduce(
     (groups, unit) => {
       const keywords = unit.keywords || [];
-      if (keywords.some((k) => k.toLowerCase().includes("hero"))) {
+      const hasKeyword = (kw) => keywords.some((k) => k.toLowerCase().includes(kw));
+
+      if (hasKeyword("hero")) {
         groups.heroes.push(unit);
-      } else if (keywords.some((k) => k.toLowerCase().includes("battleline"))) {
+      } else if (hasKeyword("battleline")) {
         groups.battleline.push(unit);
+      } else if (hasKeyword("monster")) {
+        groups.monsters.push(unit);
+      } else if (hasKeyword("cavalry")) {
+        groups.cavalry.push(unit);
+      } else if (hasKeyword("infantry")) {
+        groups.infantry.push(unit);
+      } else if (hasKeyword("war machine")) {
+        groups.warMachines.push(unit);
+      } else if (hasKeyword("faction terrain")) {
+        groups.factionTerrain.push(unit);
+      } else if (hasKeyword("manifestation")) {
+        groups.manifestations.push(unit);
       } else {
         groups.other.push(unit);
       }
       return groups;
     },
-    { heroes: [], battleline: [], other: [] }
+    {
+      heroes: [],
+      battleline: [],
+      monsters: [],
+      cavalry: [],
+      infantry: [],
+      warMachines: [],
+      factionTerrain: [],
+      manifestations: [],
+      other: [],
+    }
   );
 };
 
@@ -123,6 +147,72 @@ export const MobileAoSFactionUnits = () => {
               <div className="aos-units-section">
                 <SectionHeader title="Battleline" count={groupedUnits.battleline.length} />
                 {groupedUnits.battleline
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((unit) => (
+                    <WarscrollItem key={unit.id} warscroll={unit} onClick={() => handleWarscrollClick(unit)} />
+                  ))}
+              </div>
+            )}
+
+            {groupedUnits.monsters.length > 0 && (
+              <div className="aos-units-section">
+                <SectionHeader title="Monsters" count={groupedUnits.monsters.length} />
+                {groupedUnits.monsters
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((unit) => (
+                    <WarscrollItem key={unit.id} warscroll={unit} onClick={() => handleWarscrollClick(unit)} />
+                  ))}
+              </div>
+            )}
+
+            {groupedUnits.cavalry.length > 0 && (
+              <div className="aos-units-section">
+                <SectionHeader title="Cavalry" count={groupedUnits.cavalry.length} />
+                {groupedUnits.cavalry
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((unit) => (
+                    <WarscrollItem key={unit.id} warscroll={unit} onClick={() => handleWarscrollClick(unit)} />
+                  ))}
+              </div>
+            )}
+
+            {groupedUnits.infantry.length > 0 && (
+              <div className="aos-units-section">
+                <SectionHeader title="Infantry" count={groupedUnits.infantry.length} />
+                {groupedUnits.infantry
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((unit) => (
+                    <WarscrollItem key={unit.id} warscroll={unit} onClick={() => handleWarscrollClick(unit)} />
+                  ))}
+              </div>
+            )}
+
+            {groupedUnits.warMachines.length > 0 && (
+              <div className="aos-units-section">
+                <SectionHeader title="War Machines" count={groupedUnits.warMachines.length} />
+                {groupedUnits.warMachines
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((unit) => (
+                    <WarscrollItem key={unit.id} warscroll={unit} onClick={() => handleWarscrollClick(unit)} />
+                  ))}
+              </div>
+            )}
+
+            {groupedUnits.factionTerrain.length > 0 && (
+              <div className="aos-units-section">
+                <SectionHeader title="Faction Terrain" count={groupedUnits.factionTerrain.length} />
+                {groupedUnits.factionTerrain
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((unit) => (
+                    <WarscrollItem key={unit.id} warscroll={unit} onClick={() => handleWarscrollClick(unit)} />
+                  ))}
+              </div>
+            )}
+
+            {groupedUnits.manifestations.length > 0 && (
+              <div className="aos-units-section">
+                <SectionHeader title="Manifestations" count={groupedUnits.manifestations.length} />
+                {groupedUnits.manifestations
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((unit) => (
                     <WarscrollItem key={unit.id} warscroll={unit} onClick={() => handleWarscrollClick(unit)} />
