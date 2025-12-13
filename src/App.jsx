@@ -66,7 +66,7 @@ function App() {
   const handleAddToCategory = (categoryUuid, card = undefined) => {
     const cardContent = card ?? activeCard;
     const newCard = {
-      ...card,
+      ...cardContent,
       isCustom: true,
       uuid: uuidv4(),
     };
