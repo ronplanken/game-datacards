@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import "./ContentTypeSelector.css";
 
-const CONTENT_TYPES = [
+const CONTENT_TYPES_40K = [
   { value: "datasheets", label: "Datasheets", key: "datasheets" },
   { value: "stratagems", label: "Stratagems", key: "stratagems" },
   { value: "secondaries", label: "Secondaries", key: "secondaries" },
@@ -12,11 +12,25 @@ const CONTENT_TYPES = [
   { value: "rules", label: "Rules", key: "rules" },
 ];
 
+const CONTENT_TYPES_AOS = [{ value: "warscrolls", label: "Warscrolls", key: "warscrolls" }];
+
 export const ContentTypeSelector = ({ selectedContentType, setSelectedContentType }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { selectedFaction } = useDataSourceStorage();
+  const { selectedFaction, dataSource } = useDataSourceStorage();
+
+  // Determine which content types to use based on the first item's source
+  const isAoS = dataSource?.data?.[0]?.warscrolls !== undefined;
+  const CONTENT_TYPES = isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
+
+  // Reset content type when data source changes (e.g., 40K to AoS)
+  useEffect(() => {
+    const defaultType = isAoS ? "warscrolls" : "datasheets";
+    if (selectedContentType !== defaultType && !CONTENT_TYPES.some((t) => t.value === selectedContentType)) {
+      setSelectedContentType(defaultType);
+    }
+  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES]);
 
   // Get available content types based on faction data
   const availableTypes = CONTENT_TYPES.filter((type) => {
@@ -30,7 +44,8 @@ export const ContentTypeSelector = ({ selectedContentType, setSelectedContentTyp
   });
 
   // Get the label for the selected content type
-  const selectedLabel = CONTENT_TYPES.find((t) => t.value === selectedContentType)?.label || "Select a type";
+  const allContentTypes = [...CONTENT_TYPES_40K, ...CONTENT_TYPES_AOS];
+  const selectedLabel = allContentTypes.find((t) => t.value === selectedContentType)?.label || "Select a type";
 
   // Handle click outside to close dropdown
   useEffect(() => {

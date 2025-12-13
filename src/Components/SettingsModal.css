@@ -137,6 +137,29 @@
 }
 
 /* ===========================================
+   DATASOURCE SECTIONS
+   =========================================== */
+
+.datasource-section {
+  margin-bottom: 20px;
+}
+
+.datasource-section:last-child {
+  margin-bottom: 0;
+}
+
+.datasource-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(0, 0, 0, 0.45);
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* ===========================================
    STORAGE TAB
    =========================================== */
 

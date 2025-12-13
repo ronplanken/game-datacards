@@ -145,3 +145,35 @@
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* ===========================================
+   GAME SYSTEM
+   =========================================== */
+
+.settings-game-system {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.settings-game-system-current {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.settings-action-button.secondary {
+  width: auto;
+  padding: 10px 16px;
+  background: #e5e5e5;
+  color: rgba(0, 0, 0, 0.88);
+  font-size: 14px;
+}
+
+.settings-action-button.secondary:active:not(:disabled) {
+  background: #d5d5d5;
+}

@@ -559,6 +559,73 @@ export const getMessages = async () => {
   return data;
 };
 
+export const getAoSData = async () => {
+  const factions = [
+    "beasts_of_chaos",
+    "blades_of_khorne",
+    "bonesplitterz",
+    "cities_of_sigmar",
+    "daughters_of_khaine",
+    "disciples_of_tzeentch",
+    "flesh_eater_courts",
+    "fyreslayers",
+    "gloomspite_gitz",
+    "hedonites_of_slaanesh",
+    "helsmiths_of_hashut",
+    "idoneth_deepkin",
+    "ironjawz",
+    "kharadron_overlords",
+    "kruleboyz",
+    "lumineth_realmlords",
+    "maggotkin_of_nurgle",
+    "nighthaunt",
+    "ogor_mawtribes",
+    "ossiarch_bonereapers",
+    "seraphon",
+    "skaven",
+    "slaves_to_darkness",
+    "sons_of_behemat",
+    "soulblight_gravelords",
+    "stormcast_eternals",
+    "sylvaneth",
+  ];
+
+  const fetchData = async (faction) => {
+    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/${faction}.json?${new Date().getTime()}`;
+    const data = await readCsv(url);
+    return data;
+  };
+
+  const fetchAllData = async () => {
+    const sortedFactions = factions.sort();
+    const promises = sortedFactions.map((faction) => fetchData(faction));
+    const allData = await Promise.all(promises);
+    return allData;
+  };
+
+  const allFactionsData = await fetchAllData();
+
+  return {
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: allFactionsData[0]?.updated,
+    lastCheckedForUpdate: new Date().toISOString(),
+    noDatasheetOptions: true,
+    noStratagemOptions: true,
+    noSubfactionOptions: true,
+    noSecondaryOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: false,
+    data: allFactionsData.map((val) => {
+      return {
+        ...val,
+        warscrolls: val?.warscrolls?.map((warscroll) => {
+          return { ...warscroll, cardType: "warscroll", source: "aos" };
+        }),
+      };
+    }),
+  };
+};
+
 export const getNecromundaBasicData = () => {
   return {
     version: process.env.REACT_APP_VERSION,

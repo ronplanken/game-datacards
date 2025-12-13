@@ -3,11 +3,13 @@ import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import "./ViewerContentTypeSelector.css";
 
-const CONTENT_TYPES = [
+const CONTENT_TYPES_40K = [
   { value: "datasheets", label: "Datasheets", key: "datasheets" },
   { value: "stratagems", label: "Stratagems", key: "stratagems" },
   { value: "rules", label: "Rules", key: "rules" },
 ];
+
+const CONTENT_TYPES_AOS = [{ value: "warscrolls", label: "Warscrolls", key: "warscrolls" }];
 
 export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedContentType }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,12 +17,28 @@ export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedCont
 
   const { selectedFaction } = useDataSourceStorage();
 
+  // Determine if this is AoS data (has warscrolls property)
+  const isAoS = selectedFaction?.warscrolls !== undefined;
+  const CONTENT_TYPES = isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
+
+  // Reset content type when data source changes (e.g., 40K to AoS)
+  useEffect(() => {
+    const defaultType = isAoS ? "warscrolls" : "datasheets";
+    if (selectedContentType !== defaultType && !CONTENT_TYPES.some((t) => t.value === selectedContentType)) {
+      setSelectedContentType(defaultType);
+    }
+  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES]);
+
   // Get available content types based on faction data
   const availableTypes = CONTENT_TYPES.filter((type) => {
     if (type.key === "rules") {
       // Rules have a different structure with army and detachment sub-arrays
       const rules = selectedFaction?.rules;
       return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
+    }
+    if (type.key === "warscrolls") {
+      const warscrolls = selectedFaction?.warscrolls;
+      return warscrolls && warscrolls.length > 0;
     }
     const data = selectedFaction?.[type.key];
     return data && data.length > 0;

@@ -75,6 +75,42 @@
 }
 
 /* ===========================================
+   BROWSE FACTIONS
+   =========================================== */
+
+.mobile-welcome-browse {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 24px;
+  transition: background 0.15s ease;
+}
+
+.mobile-welcome-browse:active {
+  background: #e8e8e8;
+}
+
+.mobile-welcome-browse span {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.88);
+  text-align: left;
+}
+
+.mobile-welcome-browse svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+/* ===========================================
    RECENT SEARCHES
    =========================================== */
 

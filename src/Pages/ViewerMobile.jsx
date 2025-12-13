@@ -17,12 +17,21 @@ import { MobileFaction } from "../Components/Viewer/MobileFaction";
 import { MobileFactionUnits } from "../Components/Viewer/MobileFactionUnits";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
+import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemSelector";
+import {
+  MobileAoSFaction,
+  MobileAoSFactionUnits,
+  MobileAoSManifestationLores,
+  MobileAoSSpellLores,
+} from "../Components/Viewer/AoS";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
+import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
 
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
+import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -30,11 +39,12 @@ import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { useViewerNavigation } from "../Hooks/useViewerNavigation";
 import { useMobileSharing } from "../Hooks/useMobileSharing";
 import { useRecentSearches } from "../Hooks/useRecentSearches";
+import { useScrollRevealHeader } from "../Hooks/useScrollRevealHeader";
 
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
-export const ViewerMobile = ({ showUnits = false }) => {
+export const ViewerMobile = ({ showUnits = false, showManifestationLores = false, showSpellLores = false }) => {
   const [parent] = useAutoAnimate({ duration: 75 });
   const screens = useBreakpoint();
   const navigate = useNavigate();
@@ -43,13 +53,35 @@ export const ViewerMobile = ({ showUnits = false }) => {
   const { settings, updateSettings } = useSettingsStorage();
 
   // Get last selected faction from settings (even when not currently viewing it)
-  const lastFaction = dataSource?.data?.[settings.selectedFactionIndex];
+  const getFactionIndex = () => {
+    if (typeof settings.selectedFactionIndex === "object") {
+      return settings.selectedFactionIndex?.[settings.selectedDataSource] ?? 0;
+    }
+    return settings.selectedFactionIndex ?? 0;
+  };
+  const lastFaction = dataSource?.data?.[getFactionIndex()];
+
+  // Check if user has explicitly selected a faction for current datasource
+  const hasFactionSelected =
+    typeof settings.hasFactionSelected === "object"
+      ? settings.hasFactionSelected?.[settings.selectedDataSource] ?? false
+      : false;
   const { activeCard } = useCardStorage();
   const { shareLink, htmlToImageConvert } = useMobileSharing();
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();
 
   // Initialize navigation hook to sync URL with state
   useViewerNavigation();
+
+  // Check if we're in AoS mode
+  const isAoS = settings.selectedDataSource === "aos";
+
+  // Scroll-reveal header for AoS only
+  const { showHeader, headerReady, transitionsEnabled, scrollContainerRef } = useScrollRevealHeader({
+    enabled: !!activeCard && activeCard.source === "aos",
+    targetSelector: ".warscroll-unit-name",
+    topOffset: 64,
+  });
 
   // Handle back navigation from card viewer
   const handleBackFromCard = () => {
@@ -71,14 +103,26 @@ export const ViewerMobile = ({ showUnits = false }) => {
   const viewerCardRef = useRef(null);
   const overlayRef = useRef(null);
 
-  // Set data source to 40k-10e on mount and force full card display
-  useEffect(() => {
+  // Handle game system selection
+  const handleGameSystemSelect = (system) => {
     updateSettings({
       ...settings,
-      selectedDataSource: "40k-10e",
+      selectedDataSource: system,
       showCardsAsDoubleSided: true,
+      mobile: {
+        ...settings.mobile,
+        gameSystemSelected: true,
+      },
     });
-  }, []);
+  };
+
+  // Check if game system has been selected
+  const gameSystemSelected = settings.mobile?.gameSystemSelected;
+
+  // If no game system selected, show selector
+  if (!gameSystemSelected) {
+    return <MobileGameSystemSelector onSelect={handleGameSystemSelect} />;
+  }
 
   // Get faction colors
   const cardFaction = dataSource?.data?.find((faction) => faction.id === activeCard?.faction_id);
@@ -96,6 +140,8 @@ export const ViewerMobile = ({ showUnits = false }) => {
         return <Warhammer40KCardDisplay />;
       case "necromunda":
         return <NecromundaCardDisplay />;
+      case "aos":
+        return <AgeOfSigmarCardDisplay type={type} />;
       default:
         return null;
     }
@@ -170,7 +216,32 @@ export const ViewerMobile = ({ showUnits = false }) => {
 
           <Row>
             <Col ref={parent} span={24}>
+              {/* AoS: Floating back button (visible before scroll, only after ready) */}
+              {activeCard && isAoS && headerReady && !showHeader && (
+                <button className="mobile-card-back-floating" onClick={handleBackFromCard} type="button">
+                  <ArrowLeft size={20} />
+                </button>
+              )}
+
+              {/* AoS: Slide-in header (visible after scroll, only render after ready) */}
+              {activeCard && isAoS && headerReady && (
+                <div
+                  className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
+                    showHeader ? "visible" : "hidden"
+                  } ${!transitionsEnabled ? "no-transition" : ""}`}
+                  style={{
+                    "--banner-colour": cardFaction?.colours?.banner,
+                    "--header-colour": cardFaction?.colours?.header,
+                  }}>
+                  <button className="mobile-card-back" onClick={handleBackFromCard} type="button">
+                    <ArrowLeft size={20} />
+                  </button>
+                  <h1 className="mobile-card-title">{activeCard.name}</h1>
+                </div>
+              )}
+
               <div
+                ref={scrollContainerRef}
                 style={{
                   height: "calc(100vh - 64px)",
                   display: "block",
@@ -181,10 +252,10 @@ export const ViewerMobile = ({ showUnits = false }) => {
                   paddingBottom: "64px",
                 }}
                 className={`data-${activeCard?.source}`}>
-                {/* Back button header when viewing a card */}
-                {activeCard && (
+                {/* Back button header for non-AoS cards (original sticky behavior) */}
+                {activeCard && !isAoS && (
                   <div className="mobile-card-header">
-                    <button className="mobile-card-back" onClick={handleBackFromCard}>
+                    <button className="mobile-card-back" onClick={handleBackFromCard} type="button">
                       <ArrowLeft size={20} />
                     </button>
                     <h1 className="mobile-card-title">{activeCard.name}</h1>
@@ -196,10 +267,15 @@ export const ViewerMobile = ({ showUnits = false }) => {
                     recentSearches={recentSearches}
                     onClearRecent={clearRecentSearches}
                     lastFaction={lastFaction}
+                    hasFactionSelected={hasFactionSelected}
+                    onBrowseFactions={() => setShowFactionSelector(true)}
                   />
                 )}
-                {!activeCard && selectedFaction && !showUnits && <MobileFaction />}
-                {showUnits && <MobileFactionUnits />}
+                {/* eslint-disable-next-line prettier/prettier */}
+                {!activeCard && selectedFaction && !showUnits && !showManifestationLores && !showSpellLores && (isAoS ? <MobileAoSFaction /> : <MobileFaction />)}
+                {showUnits && (isAoS ? <MobileAoSFactionUnits /> : <MobileFactionUnits />)}
+                {showManifestationLores && isAoS && <MobileAoSManifestationLores />}
+                {showSpellLores && isAoS && <MobileAoSSpellLores />}
               </div>
 
               <MobileNav
@@ -208,6 +284,7 @@ export const ViewerMobile = ({ showUnits = false }) => {
                 setAddListvisible={setIsListAddVisible}
               />
 
+              <PWAInstallPrompt />
               <ListAdd isVisible={isListAddVisible} setIsVisible={setIsListAddVisible} />
               <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
               <MobileSharingMenu

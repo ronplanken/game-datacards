@@ -69,6 +69,7 @@
     "deploy": "echo 'game-datacards.eu' > ./build/CNAME && gh-pages -d build",
     "start": "craco start",
     "build": "craco build",
+    "build:beta": "env-cmd -f .env.beta craco build",
     "test": "craco test",
     "test:ci": "CI=true craco test",
     "lint": "eslint './src/**/*.{js,jsx}'",
@@ -97,6 +98,7 @@
   "devDependencies": {
     "@craco/craco": "^6.4.5",
     "craco-less": "^2.0.0",
+    "env-cmd": "^11.0.0",
     "eslint": ">=5.16.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
@@ -104,6 +106,7 @@
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "^4.6.0",
     "gh-pages": "^6.0.0",
+    "playwright": "^1.57.0",
     "prettier": "^2.7.1"
   },
   "jest": {

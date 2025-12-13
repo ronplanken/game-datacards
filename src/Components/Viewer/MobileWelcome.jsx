@@ -1,8 +1,14 @@
-import { ChevronRight, Clock, Search, Trash2 } from "lucide-react";
+import { ChevronRight, Clock, Search, Trash2, List } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./MobileWelcome.css";
 
-export const MobileWelcome = ({ recentSearches = [], onClearRecent, lastFaction }) => {
+export const MobileWelcome = ({
+  recentSearches = [],
+  onClearRecent,
+  lastFaction,
+  hasFactionSelected,
+  onBrowseFactions,
+}) => {
   const navigate = useNavigate();
 
   const handleRecentClick = (item) => {
@@ -23,7 +29,8 @@ export const MobileWelcome = ({ recentSearches = [], onClearRecent, lastFaction 
         <p className="mobile-welcome-subtitle">Search for any unit to get started</p>
       </div>
 
-      {lastFaction && (
+      {/* Show "Continue to" only if user has previously selected a faction */}
+      {lastFaction && hasFactionSelected && (
         <button
           className="mobile-welcome-continue"
           onClick={handleContinueToFaction}
@@ -37,6 +44,13 @@ export const MobileWelcome = ({ recentSearches = [], onClearRecent, lastFaction 
           <ChevronRight size={18} />
         </button>
       )}
+
+      {/* Always show Browse Factions button */}
+      <button className="mobile-welcome-browse" onClick={onBrowseFactions} type="button">
+        <List size={18} />
+        <span>Browse Factions</span>
+        <ChevronRight size={18} />
+      </button>
 
       {recentSearches.length > 0 && (
         <div className="recent-searches-section">

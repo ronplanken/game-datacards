@@ -23,9 +23,10 @@ export function useGlobalSearch(searchText, factionFilter = null) {
     const matches = [];
 
     for (const faction of factions) {
-      const datasheets = faction.datasheets || [];
+      // Support both datasheets (40K) and warscrolls (AoS)
+      const units = faction.datasheets || faction.warscrolls || [];
 
-      for (const unit of datasheets) {
+      for (const unit of units) {
         // Skip non-active units if they have an active flag
         if (unit.active === false) continue;
 

@@ -4,6 +4,7 @@ import "./BottomSheet.css";
 
 export const BottomSheet = ({ isOpen, onClose, title, children, maxHeight = "80vh" }) => {
   const sheetRef = useRef(null);
+  const contentRef = useRef(null);
 
   // Handle escape key
   useEffect(() => {
@@ -33,7 +34,9 @@ export const BottomSheet = ({ isOpen, onClose, title, children, maxHeight = "80v
   // Swipe handlers for drag-to-dismiss
   const swipeHandlers = useSwipeable({
     onSwipedDown: (eventData) => {
-      if (eventData.velocity > 0.3 || eventData.deltaY > 100) {
+      // Only close if content is scrolled to top (prevents closing when user is scrolling)
+      const isAtTop = !contentRef.current || contentRef.current.scrollTop <= 0;
+      if (isAtTop && (eventData.velocity > 0.3 || eventData.deltaY > 100)) {
         onClose();
       }
     },
@@ -63,7 +66,9 @@ export const BottomSheet = ({ isOpen, onClose, title, children, maxHeight = "80v
         {title && <div className="bottom-sheet-header">{title}</div>}
 
         {/* Content */}
-        <div className="bottom-sheet-content">{children}</div>
+        <div ref={contentRef} className="bottom-sheet-content">
+          {children}
+        </div>
       </div>
     </>
   );
