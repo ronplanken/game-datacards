@@ -65,7 +65,6 @@ function App() {
   // Handle add to category from toolbar
   const handleAddToCategory = (categoryUuid, card = undefined) => {
     const cardContent = card ?? activeCard;
-    console.log("App.jsx:handleAddToCategory", categoryUuid, cardContent, card, activeCard);
     const newCard = {
       ...card,
       isCustom: true,
