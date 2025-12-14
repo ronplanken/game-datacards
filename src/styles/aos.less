@@ -389,6 +389,11 @@
     margin-top: 10px;
   }
 
+  .ability-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
   .ability-box {
     border: 1px solid rgba(0, 0, 0, 0.2);
     background: rgba(255, 255, 255, 0.4);
@@ -448,14 +453,35 @@
     }
   }
 
-  .ability-tag {
+  .ability-phase-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    background-color: #fff;
+    color: #333;
     font-family: "Cinzel", serif;
-    font-weight: 800;
     font-size: 9px;
-    background: white;
-    padding: 2px 6px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    color: #222;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 16px 3px 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-right: none;
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: -1px;
+      bottom: -1px;
+      width: 16px;
+      background-color: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.3);
+      border-left: none;
+      transform: skewX(-15deg);
+      transform-origin: bottom left;
+    }
   }
 
   .ability-name {
@@ -1168,6 +1194,120 @@
     color: #333;
   }
 
+  // ============================================
+  // LINKED WARSCROLL BUTTON (on spell cards)
+  // ============================================
+  .linked-warscroll-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    margin-top: 16px;
+    background: var(--bg-header, #1a3d4d);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s ease;
+
+    &:active {
+      opacity: 0.9;
+    }
+
+    .linked-warscroll-label {
+      font-family: "Cinzel", serif;
+      font-size: 11px;
+      opacity: 0.8;
+      text-transform: uppercase;
+    }
+
+    .linked-warscroll-name {
+      flex: 1;
+      text-align: left;
+      font-family: "Cinzel", serif;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    svg {
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+  }
+
+  // ============================================
+  // SUMMONED BY BUTTON (on warscroll cards)
+  // ============================================
+  .summoned-by-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease;
+
+    &:active {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .summoned-by-label {
+      font-family: "Cinzel", serif;
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+    }
+
+    .summoned-by-spell {
+      flex: 1;
+      text-align: left;
+      font-family: "Cinzel", serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .summoned-by-casting-value {
+      background: var(--stat-wheel-gold);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+
+      .casting-value-number {
+        font-family: "Cinzel", serif;
+        font-size: 14px;
+        font-weight: 800;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .casting-value-plus {
+        font-family: "Cinzel", serif;
+        font-size: 8px;
+        font-weight: 800;
+        margin-left: 1px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    svg {
+      color: #666;
+      flex-shrink: 0;
+    }
+  }
+
   // Mobile spell card adjustments
   &.aos-mobile-wrapper .spell-card {
     width: 100vw;
@@ -1210,6 +1350,93 @@
     .spell-card-section-text {
       font-family: "Lora", Georgia, serif;
       font-size: 14px;
+    }
+  }
+}
+
+// ============================================
+// REGULAR FONTS OVERRIDE
+// When fancy fonts are disabled, use sans-serif
+// fonts for better readability (matching 40K)
+// ============================================
+.data-aos.aos-regular-fonts {
+  font-family: "Heebo", sans-serif;
+
+  // Override all Cinzel (headers, titles)
+  .stat-label,
+  .stat-value,
+  .warscroll-unit-name,
+  .warscroll-subtitle,
+  .warscroll-points,
+  .ward-badge-text,
+  .wizard-badge-text,
+  .priest-badge-text,
+  .badge-text,
+  .weapons-header,
+  .weapon-ability-keyword,
+  .ability-phase-tag,
+  .ability-name,
+  .keywords-title,
+  .spell-card-header h1,
+  .spell-card-casting-value,
+  .spell-card-section-title,
+  .spell-card-lore-name {
+    font-family: "Heebo", sans-serif;
+  }
+
+  // Override all Cormorant Garamond (body text)
+  .ability-effect,
+  .ability-keywords,
+  .keywords-list,
+  .spell-card-section-text {
+    font-family: "Heebo", sans-serif;
+  }
+
+  // Override weapon table fonts
+  .weapon-row span,
+  .weapon-row.header-row span,
+  .w-name,
+  .w-ability,
+  .weapon-ability-badge {
+    font-family: "Heebo", sans-serif !important;
+  }
+
+  // Override Lora (mobile body text)
+  &.aos-mobile-wrapper {
+    font-family: "Heebo", sans-serif;
+
+    .warscroll-unit-name,
+    .warscroll-subtitle,
+    .weapons-header,
+    .weapon-name,
+    .weapon-stat-value,
+    .weapon-abilities-badge,
+    .weapon-card-name,
+    .weapon-card-stat,
+    .weapon-card-stat .stat-label,
+    .weapon-card-stat .stat-value,
+    .points-value,
+    .points-label,
+    .badge-value,
+    .badge-label,
+    .badge-text,
+    .ability-phase-tag,
+    .ability-name,
+    .ability-effect,
+    .ability-keywords-label,
+    .ability-keywords-list,
+    .keywords-title,
+    .keywords-list,
+    .keywords-badge,
+    .keywords-text,
+    .spell-card-section-text,
+    .linked-warscroll-label,
+    .linked-warscroll-name,
+    .summoned-by-label,
+    .summoned-by-spell,
+    .summoned-by-casting-value .casting-value-number,
+    .summoned-by-casting-value .casting-value-plus {
+      font-family: "Heebo", sans-serif;
     }
   }
 }

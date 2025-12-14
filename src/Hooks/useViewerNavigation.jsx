@@ -2,6 +2,7 @@ import { useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "./useDataSourceStorage";
 import { useCardStorage } from "./useCardStorage";
+import { useSettingsStorage } from "./useSettingsStorage";
 
 export function useViewerNavigation() {
   const { faction, unit, alliedFaction, alliedUnit, stratagem, spell } = useParams();
@@ -9,6 +10,7 @@ export function useViewerNavigation() {
   const location = useLocation();
   const { dataSource, selectedFaction, updateSelectedFaction, clearSelectedFaction } = useDataSourceStorage();
   const { activeCard, setActiveCard } = useCardStorage();
+  const { settings } = useSettingsStorage();
 
   // Parse URL and sync with state
   useEffect(() => {
@@ -37,9 +39,17 @@ export function useViewerNavigation() {
       if (unit) {
         // Support both datasheets (40K) and warscrolls (AoS)
         const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
-        const foundUnit = units.find((u) => {
+        let foundUnit = units.find((u) => {
           return u.name.replaceAll(" ", "-").toLowerCase() === unit;
         });
+
+        // If not found and generic manifestations are enabled, search generic warscrolls
+        if (!foundUnit && settings?.showGenericManifestations && dataSource?.genericData?.warscrolls) {
+          foundUnit = dataSource.genericData.warscrolls.find((u) => {
+            return u.name.replaceAll(" ", "-").toLowerCase() === unit;
+          });
+        }
+
         setActiveCard(foundUnit);
       } else {
         setActiveCard();
@@ -93,7 +103,7 @@ export function useViewerNavigation() {
       let foundSpell = null;
 
       if (isManifestationLore) {
-        // Search through manifestation lores
+        // Search through faction manifestation lores
         const manifestationLores = foundFaction?.manifestationLores || [];
         for (const lore of manifestationLores) {
           const spellMatch = lore.spells?.find((s) => {
@@ -108,6 +118,25 @@ export function useViewerNavigation() {
               source: "aos",
             };
             break;
+          }
+        }
+
+        // If not found in faction lores and generic manifestations are enabled, search generic lores
+        if (!foundSpell && settings?.showGenericManifestations && dataSource?.genericData?.manifestationLores) {
+          for (const lore of dataSource.genericData.manifestationLores) {
+            const spellMatch = lore.spells?.find((s) => {
+              return s.name.replaceAll(" ", "-").toLowerCase() === spell;
+            });
+            if (spellMatch) {
+              foundSpell = {
+                ...spellMatch,
+                cardType: "spell",
+                loreName: lore.name,
+                faction_id: "GENERIC",
+                source: "aos",
+              };
+              break;
+            }
           }
         }
       } else if (isSpellLore) {
@@ -162,7 +191,17 @@ export function useViewerNavigation() {
         setActiveCard();
       }
     }
-  }, [faction, unit, alliedFaction, alliedUnit, stratagem, spell, dataSource, location.pathname]);
+  }, [
+    faction,
+    unit,
+    alliedFaction,
+    alliedUnit,
+    stratagem,
+    spell,
+    dataSource,
+    location.pathname,
+    settings?.showGenericManifestations,
+  ]);
 
   // Navigation helpers
   const navigateToFaction = useCallback(
@@ -198,6 +237,28 @@ export function useViewerNavigation() {
         `/viewer/${mainFactionName.toLowerCase().replaceAll(" ", "-")}/allied/${alliedFactionName
           .toLowerCase()
           .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+      );
+    },
+    [navigate]
+  );
+
+  const navigateToManifestationLore = useCallback(
+    (factionName, spellName) => {
+      navigate(
+        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/manifestation-lore/${spellName
+          .replaceAll(" ", "-")
+          .toLowerCase()}`
+      );
+    },
+    [navigate]
+  );
+
+  const navigateToSpellLore = useCallback(
+    (factionName, spellName) => {
+      navigate(
+        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/spell-lore/${spellName
+          .replaceAll(" ", "-")
+          .toLowerCase()}`
       );
     },
     [navigate]
@@ -257,6 +318,8 @@ export function useViewerNavigation() {
     navigateToUnit,
     navigateToStratagem,
     navigateToAlliedUnit,
+    navigateToManifestationLore,
+    navigateToSpellLore,
     // Mobile navigation
     navigateToMobileFaction,
     navigateToMobileUnit,

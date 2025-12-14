@@ -103,6 +103,10 @@ const router = createBrowserRouter([
       // Shared card view
       { path: "shared/:Id", element: <Shared /> },
       // Desktop viewer routes
+      { path: "viewer/:faction/manifestation-lores", element: <Viewer showManifestationLores /> },
+      { path: "viewer/:faction/manifestation-lore/:spell", element: <Viewer /> },
+      { path: "viewer/:faction/spell-lores", element: <Viewer showSpellLores /> },
+      { path: "viewer/:faction/spell-lore/:spell", element: <Viewer /> },
       { path: "viewer/:faction?/:unit?", element: <Viewer /> },
       { path: "viewer/:faction?/stratagem/:stratagem?", element: <Viewer /> },
       { path: "viewer/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <Viewer /> },

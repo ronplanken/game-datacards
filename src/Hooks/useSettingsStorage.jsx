@@ -33,6 +33,8 @@ const defaultSettings = {
   showCardsAsDoubleSided: false,
   autoFitEnabled: true,
   zoom: 100,
+  useFancyFonts: true,
+  showGenericManifestations: false,
 };
 
 export function useSettingsStorage() {

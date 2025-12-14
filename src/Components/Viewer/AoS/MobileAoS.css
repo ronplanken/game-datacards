@@ -260,6 +260,16 @@
   border-radius: 10px;
 }
 
+.aos-generic-badge {
+  font-size: 0.8em;
+  font-weight: 400;
+  opacity: 0.65;
+  margin-left: 6px;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .aos-units-item {
   display: flex;
   justify-content: space-between;
@@ -301,4 +311,19 @@
   padding: 4px 10px;
   border-radius: 6px;
   flex-shrink: 0;
+}
+
+/* ===========================================
+   REGULAR FONTS OVERRIDE
+   When fancy fonts are disabled, use Heebo
+   =========================================== */
+
+.mobile-aos-faction.aos-regular-fonts,
+.aos-units-page.aos-regular-fonts {
+  font-family: "Heebo", sans-serif;
+}
+
+.mobile-aos-faction.aos-regular-fonts .aos-faction-title,
+.aos-units-page.aos-regular-fonts .aos-units-title {
+  font-family: "Heebo", sans-serif;
 }

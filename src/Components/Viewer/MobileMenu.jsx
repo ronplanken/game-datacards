@@ -78,6 +78,25 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
           </div>
         </div>
 
+        {/* Display Section - only for AoS */}
+        {settings.selectedDataSource === "aos" && (
+          <div className="settings-section">
+            <h4 className="settings-section-title">Display</h4>
+            <div className="settings-section-content">
+              <SettingsRow
+                label="Use fancy fonts"
+                checked={settings.useFancyFonts !== false}
+                onChange={(value) => updateSettings({ ...settings, useFancyFonts: value })}
+              />
+              <SettingsRow
+                label="Show generic manifestations"
+                checked={settings.showGenericManifestations}
+                onChange={(value) => updateSettings({ ...settings, showGenericManifestations: value })}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Card Types Section */}
         <div className="settings-section">
           <h4 className="settings-section-title">Card Types</h4>

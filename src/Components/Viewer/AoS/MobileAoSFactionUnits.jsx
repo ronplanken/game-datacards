@@ -69,11 +69,15 @@ const SectionHeader = ({ title, count }) => (
 
 export const MobileAoSFactionUnits = () => {
   const navigate = useNavigate();
-  const { selectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
   // View mode: "grouped" or "alphabetical"
   const [viewMode, setViewMode] = useState(settings.mobileUnitsViewMode || "grouped");
+
+  // Get generic data
+  const genericData = dataSource?.genericData;
+  const showGeneric = settings.showGenericManifestations;
 
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
@@ -82,6 +86,7 @@ export const MobileAoSFactionUnits = () => {
 
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
   const grandAlliance = selectedFaction?.grandAlliance?.toLowerCase() || "order";
+  const fontClass = settings.useFancyFonts === false ? "aos-regular-fonts" : "";
 
   const handleBack = () => {
     navigate(`/mobile/${factionSlug}`);
@@ -92,8 +97,10 @@ export const MobileAoSFactionUnits = () => {
     navigate(`/mobile/${factionSlug}/${unitSlug}`);
   };
 
-  // Get warscrolls data
-  const warscrolls = selectedFaction?.warscrolls || [];
+  // Get warscrolls data (faction + generic when enabled)
+  const factionWarscrolls = selectedFaction?.warscrolls || [];
+  const genericWarscrolls = (showGeneric && genericData?.warscrolls) || [];
+  const warscrolls = [...factionWarscrolls, ...genericWarscrolls];
   const groupedUnits = groupWarscrollsByRole(warscrolls);
   const alphabeticalUnits = [...warscrolls].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -102,7 +109,7 @@ export const MobileAoSFactionUnits = () => {
   }
 
   return (
-    <div className={`aos-units-page ${grandAlliance}`}>
+    <div className={`aos-units-page ${grandAlliance} ${fontClass}`}>
       {/* Header */}
       <div className="aos-units-header">
         <button className="aos-units-back" onClick={handleBack}>

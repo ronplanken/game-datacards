@@ -18,6 +18,7 @@ import { MobileFactionUnits } from "../Components/Viewer/MobileFactionUnits";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemSelector";
+import { MobileGameSystemSettings } from "../Components/Viewer/MobileGameSystemSettings";
 import {
   MobileAoSFaction,
   MobileAoSFactionUnits,
@@ -103,11 +104,35 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const viewerCardRef = useRef(null);
   const overlayRef = useRef(null);
 
+  // State for pending game system (shows settings screen before finalizing)
+  const [pendingGameSystem, setPendingGameSystem] = useState(null);
+
   // Handle game system selection
   const handleGameSystemSelect = (system) => {
+    if (system === "aos") {
+      // Show settings screen for AoS before finalizing
+      setPendingGameSystem(system);
+    } else {
+      // For other systems, proceed directly
+      updateSettings({
+        ...settings,
+        selectedDataSource: system,
+        showCardsAsDoubleSided: true,
+        mobile: {
+          ...settings.mobile,
+          gameSystemSelected: true,
+        },
+      });
+    }
+  };
+
+  // Handle continuing from settings screen
+  const handleSettingsContinue = () => {
+    const systemToSet = pendingGameSystem;
+    setPendingGameSystem(null); // Clear first to prevent re-render loop
     updateSettings({
       ...settings,
-      selectedDataSource: system,
+      selectedDataSource: systemToSet,
       showCardsAsDoubleSided: true,
       mobile: {
         ...settings.mobile,
@@ -118,6 +143,11 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
   // Check if game system has been selected
   const gameSystemSelected = settings.mobile?.gameSystemSelected;
+
+  // If pending game system, show settings screen
+  if (pendingGameSystem) {
+    return <MobileGameSystemSettings gameSystem={pendingGameSystem} onContinue={handleSettingsContinue} />;
+  }
 
   // If no game system selected, show selector
   if (!gameSystemSelected) {

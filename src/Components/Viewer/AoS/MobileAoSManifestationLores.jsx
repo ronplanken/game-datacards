@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import "./MobileAoS.css";
 
 // Spell list item component
@@ -14,19 +15,28 @@ const SpellItem = ({ spell, onClick }) => {
 };
 
 // Section header component
-const SectionHeader = ({ title, count }) => (
+const SectionHeader = ({ title, count, isGeneric }) => (
   <div className="aos-units-section-header">
-    <span>{title}</span>
+    <span>
+      {title}
+      {isGeneric && <span className="aos-generic-badge">(Generic)</span>}
+    </span>
     <span className="aos-units-section-count">{count}</span>
   </div>
 );
 
 export const MobileAoSManifestationLores = () => {
   const navigate = useNavigate();
-  const { selectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
   const grandAlliance = selectedFaction?.grandAlliance?.toLowerCase() || "order";
+  const fontClass = settings.useFancyFonts === false ? "aos-regular-fonts" : "";
+
+  // Get generic data
+  const genericData = dataSource?.genericData;
+  const showGeneric = settings.showGenericManifestations;
 
   const handleBack = () => {
     navigate(`/mobile/${factionSlug}`);
@@ -37,8 +47,10 @@ export const MobileAoSManifestationLores = () => {
     navigate(`/mobile/${factionSlug}/manifestation-lore/${spellSlug}`);
   };
 
-  // Get manifestation lores data
-  const manifestationLores = selectedFaction?.manifestationLores || [];
+  // Get manifestation lores data (faction + generic when enabled)
+  const factionManifestationLores = selectedFaction?.manifestationLores || [];
+  const genericManifestationLores = (showGeneric && genericData?.manifestationLores) || [];
+  const manifestationLores = [...factionManifestationLores, ...genericManifestationLores];
 
   // Count total spells
   const totalSpells = manifestationLores.reduce((total, lore) => total + (lore.spells?.length || 0), 0);
@@ -48,7 +60,7 @@ export const MobileAoSManifestationLores = () => {
   }
 
   return (
-    <div className={`aos-units-page ${grandAlliance}`}>
+    <div className={`aos-units-page ${grandAlliance} ${fontClass}`}>
       {/* Header */}
       <div className="aos-units-header">
         <button className="aos-units-back" onClick={handleBack}>
@@ -62,7 +74,11 @@ export const MobileAoSManifestationLores = () => {
       <div className="aos-units-list">
         {manifestationLores.map((lore) => (
           <div key={lore.id} className="aos-units-section">
-            <SectionHeader title={lore.name} count={lore.spells?.length || 0} />
+            <SectionHeader
+              title={lore.name}
+              count={lore.spells?.length || 0}
+              isGeneric={lore.faction_id === "GENERIC"}
+            />
             {lore.spells
               ?.sort((a, b) => a.name.localeCompare(b.name))
               .map((spell) => (

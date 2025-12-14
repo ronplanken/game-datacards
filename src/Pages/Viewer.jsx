@@ -24,7 +24,7 @@ import "../Components/Viewer/ViewerFloatingToolbar.css";
 
 const { Content } = Layout;
 
-export const Viewer = () => {
+export const Viewer = ({ showManifestationLores = false, showSpellLores = false }) => {
   const location = useLocation();
 
   // Check if mobile and redirect to mobile viewer

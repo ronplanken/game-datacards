@@ -603,7 +603,18 @@ export const getAoSData = async () => {
     return allData;
   };
 
-  const allFactionsData = await fetchAllData();
+  const fetchGenericData = async () => {
+    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/generic.json?${new Date().getTime()}`;
+    try {
+      const data = await readCsv(url);
+      return data;
+    } catch (e) {
+      // Generic data is optional, return empty structure if not available
+      return { warscrolls: [], manifestationLores: [] };
+    }
+  };
+
+  const [allFactionsData, genericData] = await Promise.all([fetchAllData(), fetchGenericData()]);
 
   return {
     version: process.env.REACT_APP_VERSION,
@@ -623,6 +634,12 @@ export const getAoSData = async () => {
         }),
       };
     }),
+    genericData: {
+      warscrolls: (genericData?.warscrolls || []).map((warscroll) => {
+        return { ...warscroll, cardType: "warscroll", source: "aos", faction_id: "GENERIC" };
+      }),
+      manifestationLores: genericData?.manifestationLores || [],
+    },
   };
 };
 

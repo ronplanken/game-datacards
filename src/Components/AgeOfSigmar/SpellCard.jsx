@@ -1,7 +1,8 @@
 import React from "react";
+import { ChevronRight } from "lucide-react";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 
-export const SpellCard = ({ spell, loreName, faction, grandAlliance = "order", isMobile = false }) => {
+export const SpellCard = ({ spell, loreName, faction, grandAlliance = "order", isMobile = false, onViewWarscroll }) => {
   if (!spell) return null;
 
   return (
@@ -48,6 +49,15 @@ export const SpellCard = ({ spell, loreName, faction, grandAlliance = "order", i
             <span className="spell-card-keywords-label">Keywords:</span>
             <span className="spell-card-keywords-list">{spell.keywords.join(", ")}</span>
           </div>
+        )}
+
+        {/* Linked Warscroll Button */}
+        {spell.linkedWarscroll && onViewWarscroll && (
+          <button className="linked-warscroll-button" onClick={() => onViewWarscroll(spell.linkedWarscroll)}>
+            <span className="linked-warscroll-label">Summons:</span>
+            <span className="linked-warscroll-name">{spell.linkedWarscroll}</span>
+            <ChevronRight size={18} />
+          </button>
         )}
       </div>
     </div>
