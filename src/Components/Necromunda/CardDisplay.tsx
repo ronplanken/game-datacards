@@ -6,8 +6,9 @@ import { GangerCard } from "./GangerCard";
 import { SecondaryCard } from "./SecondaryCard";
 import { StratagemCard } from "./StratagemCard";
 import { VehicleCard } from "./VehicleCard";
+import { CardDisplayProps } from "../../types/types";
 
-export const NecromundaCardDisplay = ({ type, card, cardScaling }) => {
+export const NecromundaCardDisplay = ({ type, card, cardScaling }: CardDisplayProps) => {
   const { activeCard } = useCardStorage();
 
   return (

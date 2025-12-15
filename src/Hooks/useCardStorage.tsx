@@ -3,8 +3,29 @@ import clone from "just-clone";
 import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { parseStorageJson } from "../Helpers/cardstorage.helpers";
+import { Card, CardStorageState, Category, CategoryType } from "../types/types";
 
-const CardStorageContext = React.createContext(undefined);
+type CardStorageContextType = {
+  cardStorage: CardStorageState;
+  activeCard: Card;
+  updateActiveCard: (card, noUpdate?: boolean) => void;
+  setActiveCard: (card: Card) => void;
+  activeCategory: Category;
+  cardUpdated;
+  saveActiveCard: () => void;
+  setActiveCategory: (cat: Category) => void;
+  addCardToCategory: (card: Card, category?: Category["uuid"]) => void;
+  removeCardFromCategory: (cardId: string, cat: string) => void;
+  importCategory: (category: Category, categories?: Category[]) => void;
+  renameCategory: (cateoryId: string, catroryName: string) => void;
+  removeCategory: (categoryName: string) => void;
+  addCategory: (categoryName: string, type?: CategoryType) => void;
+  addSubCategory: (categoryName: string, parentId: string) => void;
+  getSubCategories: (parentId: string) => void;
+  updateCategory: (category: Category, id: string) => void;
+  saveCard: (updatedCard: Card, category: Category) => void;
+};
+const CardStorageContext = React.createContext<CardStorageContextType>(undefined);
 
 export function useCardStorage() {
   const context = React.useContext(CardStorageContext);
@@ -15,7 +36,7 @@ export function useCardStorage() {
 }
 
 export const CardStorageProviderComponent = (props) => {
-  const [cardStorage, setCardStorage] = React.useState(() => {
+  const [cardStorage, setCardStorage] = React.useState<CardStorageState>(() => {
     try {
       const oldStorage = localStorage.getItem("cards");
       const newStorage = localStorage.getItem("storage");
@@ -138,7 +159,7 @@ export const CardStorageProviderComponent = (props) => {
       };
     });
   };
-  const addCategory = (categoryName, type = "category") => {
+  const addCategory = (categoryName, type: CategoryType = "category") => {
     if (!categoryName) {
       return;
     }
@@ -252,7 +273,7 @@ export const CardStorageProviderComponent = (props) => {
     });
   };
 
-  const context = {
+  const context: CardStorageContextType = {
     cardStorage,
     activeCard,
     updateActiveCard,
