@@ -1,6 +1,7 @@
 import React from "react";
+import { UserContextType } from "../types/types";
 
-const UserContext = React.createContext(undefined);
+const UserContext = React.createContext<UserContextType>(undefined);
 
 // Default user state (null = logged out)
 const defaultUser = null;

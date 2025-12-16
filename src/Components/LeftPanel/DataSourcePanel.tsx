@@ -8,7 +8,7 @@ import { useDataSourceItems } from "./useDataSourceItems";
 
 export const DataSourcePanel = ({ setSelectedTreeIndex }) => {
   const [isLoading] = useState(false);
-  const [searchText, setSearchText] = useState(undefined);
+  const [searchText, setSearchText] = useState<string>(undefined);
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
 
   const { selectedFaction } = useDataSourceStorage();

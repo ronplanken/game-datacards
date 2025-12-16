@@ -75,7 +75,7 @@ export const FirebaseProviderComponent = (props) => {
     });
   };
 
-  const logLocalEvent = (event, extras) => {
+  const logLocalEvent = (event?, extras?) => {
     logEvent(analytics, event, {
       ...extras,
     });

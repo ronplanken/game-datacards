@@ -11,7 +11,11 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
  * @param {number} options.topOffset - Offset from top to account for fixed headers (default: 64)
  * @returns {{ showHeader: boolean, headerReady: boolean, scrollContainerRef: React.RefObject }}
  */
-export function useScrollRevealHeader({ enabled = false, targetSelector, topOffset = 64 } = {}) {
+export function useScrollRevealHeader({
+  enabled = false,
+  targetSelector,
+  topOffset = 64,
+}: { enabled?: boolean; targetSelector?: keyof HTMLElementTagNameMap; topOffset?: number } = {}) {
   const [showHeader, setShowHeader] = useState(false);
   const [headerReady, setHeaderReady] = useState(false);
   const [transitionsEnabled, setTransitionsEnabled] = useState(false);

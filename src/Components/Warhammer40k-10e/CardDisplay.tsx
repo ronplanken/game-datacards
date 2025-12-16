@@ -1,12 +1,12 @@
 import { Col } from "antd";
-import { COLOURS } from "../../Helpers/printcolours.js";
+import { COLOURS } from "../../Helpers/printcolours";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
-import { useSettingsStorage } from "../../Hooks/useSettingsStorage.jsx";
-import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage.jsx";
-import { EnhancementCard } from "./EnhancementCard.jsx";
-import { RuleCard } from "./RuleCard.jsx";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { EnhancementCard } from "./EnhancementCard";
+import { RuleCard } from "./RuleCard";
 
 export const Warhammer40K10eCardDisplay = ({
   type,

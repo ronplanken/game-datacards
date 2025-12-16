@@ -1,7 +1,8 @@
 import { message } from "antd";
 import React from "react";
+import { SettingsStorageContextType } from "../types/types";
 
-const SettingsStorageContext = React.createContext(undefined);
+const SettingsStorageContext = React.createContext<SettingsStorageContextType>(undefined);
 
 const defaultSettings = {
   version: process.env.REACT_APP_VERSION,

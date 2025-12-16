@@ -10,8 +10,9 @@ import {
 } from "../Helpers/external.helpers";
 import { useFirebase } from "./useFirebase";
 import { useSettingsStorage } from "./useSettingsStorage";
+import { DataSourceStorageContextType } from "../types/types";
 
-const DataSourceStorageContext = React.createContext(undefined);
+const DataSourceStorageContext = React.createContext<DataSourceStorageContextType>(undefined);
 
 export function useDataSourceStorage() {
   const context = React.useContext(DataSourceStorageContext);

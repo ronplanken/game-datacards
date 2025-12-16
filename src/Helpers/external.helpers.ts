@@ -1,5 +1,6 @@
 import clone from "just-clone";
 import { v4 as uuidv4 } from "uuid";
+import { BasicData } from "../types/types";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -257,7 +258,7 @@ export const get40KData = async () => {
   };
 };
 
-export const getBasicData = () => {
+export const getBasicData = (): BasicData => {
   return {
     version: process.env.REACT_APP_VERSION,
     lastUpdated: new Date().toISOString(),
