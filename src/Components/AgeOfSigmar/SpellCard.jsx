@@ -1,14 +1,28 @@
 import React from "react";
-import { ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 
-export const SpellCard = ({ spell, loreName, faction, grandAlliance = "order", isMobile = false, onViewWarscroll }) => {
+export const SpellCard = ({
+  spell,
+  loreName,
+  faction,
+  grandAlliance = "order",
+  isMobile = false,
+  onViewWarscroll,
+  onBack,
+}) => {
   if (!spell) return null;
 
   return (
     <div className={`spell-card ${grandAlliance} ${isMobile ? "mobile" : ""}`}>
       {/* Header */}
       <div className="spell-card-header">
+        {/* Mobile Back Button */}
+        {isMobile && onBack && (
+          <button className="spell-back-button" onClick={onBack} type="button">
+            <ArrowLeft size={20} />
+          </button>
+        )}
         <div className="spell-card-title-row">
           <h1 className="spell-card-name">{spell.name}</h1>
           {spell.castingValue && (

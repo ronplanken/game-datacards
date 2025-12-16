@@ -13,6 +13,7 @@ export const AgeOfSigmarCardDisplay = ({
   printPadding,
   side = "front",
   backgrounds = "standard",
+  onBack,
 }) => {
   const { activeCard, setActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
@@ -214,7 +215,9 @@ export const AgeOfSigmarCardDisplay = ({
               headerColour={headerColour}
               bannerColour={bannerColour}
               isMobile={true}
+              statDisplayMode={settings.aosStatDisplayMode}
               onViewSpell={handleViewSpell}
+              onBack={onBack}
             />
           )}
           {activeCard?.cardType === "spell" && (
@@ -225,6 +228,7 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               isMobile={true}
               onViewWarscroll={handleViewWarscroll}
+              onBack={onBack}
             />
           )}
           {card?.cardType === "warscroll" && (
@@ -235,7 +239,9 @@ export const AgeOfSigmarCardDisplay = ({
               headerColour={headerColour}
               bannerColour={bannerColour}
               isMobile={true}
+              statDisplayMode={settings.aosStatDisplayMode}
               onViewSpell={handleViewSpell}
+              onBack={onBack}
             />
           )}
           {card?.cardType === "spell" && (
@@ -246,6 +252,7 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               isMobile={true}
               onViewWarscroll={handleViewWarscroll}
+              onBack={onBack}
             />
           )}
         </div>

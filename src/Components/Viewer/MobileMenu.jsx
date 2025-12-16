@@ -93,6 +93,11 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
                 checked={settings.showGenericManifestations}
                 onChange={(value) => updateSettings({ ...settings, showGenericManifestations: value })}
               />
+              <SettingsRow
+                label="Show stats as badges"
+                checked={settings.aosStatDisplayMode === "badges"}
+                onChange={(value) => updateSettings({ ...settings, aosStatDisplayMode: value ? "badges" : "wheel" })}
+              />
             </div>
           </div>
         )}
@@ -106,16 +111,20 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
               checked={settings.showLegends}
               onChange={(value) => updateSettings({ ...settings, showLegends: value })}
             />
-            <SettingsRow
-              label="Show main faction cards"
-              checked={settings.combineParentFactions}
-              onChange={(value) => updateSettings({ ...settings, combineParentFactions: value })}
-            />
-            <SettingsRow
-              label="Show allied faction cards"
-              checked={settings.combineAlliedFactions}
-              onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
-            />
+            {settings.selectedDataSource === "40k-10e" && (
+              <>
+                <SettingsRow
+                  label="Show main faction cards"
+                  checked={settings.combineParentFactions}
+                  onChange={(value) => updateSettings({ ...settings, combineParentFactions: value })}
+                />
+                <SettingsRow
+                  label="Show allied faction cards"
+                  checked={settings.combineAlliedFactions}
+                  onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
+                />
+              </>
+            )}
           </div>
         </div>
 

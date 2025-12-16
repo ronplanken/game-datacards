@@ -1,9 +1,8 @@
-/* ListSelector.css - List picker bottom sheet styles */
+/* ListSelector.css - Tactical Console Theme */
 
 /* ===========================================
    CONTENT CONTAINER
    =========================================== */
-
 .list-selector-content {
   display: flex;
   flex-direction: column;
@@ -13,8 +12,8 @@
 .list-selector-lists {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  background: #f5f5f5;
+  gap: 1px;
+  background: var(--bs-border);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -22,15 +21,14 @@
 /* ===========================================
    LIST ROW
    =========================================== */
-
 .list-selector-row {
   display: flex;
   align-items: center;
-  background: #fff;
+  background: var(--bs-surface);
 }
 
 .list-selector-row.selected {
-  background: #f0f7ff;
+  background: var(--bs-accent-muted);
 }
 
 .list-selector-row-main {
@@ -53,34 +51,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #0070d6;
+  color: var(--bs-accent);
   flex-shrink: 0;
 }
 
 .list-selector-row-name {
   flex: 1;
   font-size: 16px;
-  color: rgba(0, 0, 0, 0.88);
+  color: var(--bs-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .list-selector-row.selected .list-selector-row-name {
-  color: #0070d6;
+  color: var(--bs-accent);
   font-weight: 500;
 }
 
 .list-selector-row-points {
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--bs-text-secondary);
   flex-shrink: 0;
 }
 
 /* ===========================================
    ROW ACTIONS
    =========================================== */
-
 .list-selector-row-actions {
   display: flex;
   align-items: center;
@@ -93,7 +90,7 @@
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--bs-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,18 +99,17 @@
 }
 
 .list-selector-action-btn:active {
-  background: #f0f0f0;
+  background: var(--bs-surface-hover);
 }
 
 .list-selector-action-btn.delete:active {
-  background: #fff1f0;
-  color: #ff4d4f;
+  background: var(--bs-danger-bg);
+  color: var(--bs-danger);
 }
 
 /* ===========================================
    EDIT INPUT
    =========================================== */
-
 .list-selector-edit-form {
   flex: 1;
   min-width: 0;
@@ -124,16 +120,16 @@
   padding: 6px 8px;
   font-size: 16px;
   font-family: inherit;
-  border: 1px solid #0070d6;
+  border: 1px solid var(--bs-accent);
   border-radius: 6px;
   outline: none;
-  background: #fff;
+  background: var(--bs-bg);
+  color: var(--bs-text);
 }
 
 /* ===========================================
    CREATE NEW LIST
    =========================================== */
-
 .list-selector-create {
   display: flex;
   align-items: center;
@@ -141,26 +137,26 @@
   gap: 8px;
   width: 100%;
   padding: 14px 16px;
-  background: #f5f5f5;
-  border: 1px dashed rgba(0, 0, 0, 0.15);
+  background: transparent;
+  border: 1px dashed var(--bs-text-muted);
   border-radius: 10px;
   cursor: pointer;
   font-family: inherit;
   font-size: 15px;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--bs-text-secondary);
   transition: all 0.15s ease;
 }
 
 .list-selector-create:active {
-  background: #e8e8e8;
-  border-color: rgba(0, 0, 0, 0.25);
+  background: var(--bs-surface);
+  border-color: var(--bs-text-secondary);
 }
 
 .list-selector-create.creating {
   padding: 8px;
   border-style: solid;
-  border-color: #0070d6;
-  background: #fff;
+  border-color: var(--bs-accent);
+  background: var(--bs-surface);
 }
 
 .list-selector-create-form {
@@ -175,13 +171,19 @@
   padding: 8px 12px;
   font-size: 16px;
   font-family: inherit;
-  border: 1px solid #d9d9d9;
+  border: 1px solid var(--bs-border);
   border-radius: 6px;
   outline: none;
+  background: var(--bs-bg);
+  color: var(--bs-text);
 }
 
 .list-selector-create-input:focus {
-  border-color: #0070d6;
+  border-color: var(--bs-accent);
+}
+
+.list-selector-create-input::placeholder {
+  color: var(--bs-text-muted);
 }
 
 .list-selector-create-save,
@@ -199,24 +201,27 @@
 }
 
 .list-selector-create-save {
-  background: #0070d6;
+  background: var(--bs-accent);
   color: #fff;
+  box-shadow: 0 0 12px var(--bs-accent-glow);
 }
 
 .list-selector-create-save:disabled {
-  background: #d9d9d9;
+  background: var(--bs-surface-hover);
+  color: var(--bs-text-muted);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .list-selector-create-save:not(:disabled):active {
-  background: #005bb5;
+  filter: brightness(0.9);
 }
 
 .list-selector-create-cancel {
-  background: #f5f5f5;
-  color: rgba(0, 0, 0, 0.65);
+  background: var(--bs-surface);
+  color: var(--bs-text-secondary);
 }
 
 .list-selector-create-cancel:active {
-  background: #e8e8e8;
+  background: var(--bs-surface-hover);
 }

@@ -35,6 +35,7 @@ const defaultSettings = {
   zoom: 100,
   useFancyFonts: true,
   showGenericManifestations: false,
+  aosStatDisplayMode: "wheel", // "wheel" | "badges"
 };
 
 export function useSettingsStorage() {
