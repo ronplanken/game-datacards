@@ -58,7 +58,7 @@ export const WarscrollCard = ({
   const hasMeleeWeapons = warscroll.weapons?.melee?.length > 0;
   const hasAbilities = warscroll.abilities?.length > 0;
 
-  const showBadges = isMobile && statDisplayMode === "badges";
+  const showBadges = statDisplayMode === "badges";
 
   return (
     <div className="warscroll">

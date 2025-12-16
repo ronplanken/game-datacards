@@ -41,7 +41,7 @@ const features = [
 ];
 
 export const WhatsNew = () => {
-  const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(true); // TODO: change back to false
+  const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
 
   const { settings, updateSettings } = useSettingsStorage();
 

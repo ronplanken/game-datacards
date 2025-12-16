@@ -29,13 +29,15 @@ export const FactionSettingsModal = () => {
         setActiveTab("subfactions");
       } else if (!dataSource.noDatasheetOptions) {
         setActiveTab("datasheets");
+      } else if (settings.selectedDataSource === "aos") {
+        setActiveTab("warscrolls");
       } else if (!dataSource.noStratagemOptions) {
         setActiveTab("stratagems");
       } else if (!dataSource.noSecondaryOptions) {
         setActiveTab("secondaries");
       }
     }
-  }, [isFactionSettingsVisible, activeTab, dataSource, selectedFaction]);
+  }, [isFactionSettingsVisible, activeTab, dataSource, selectedFaction, settings.selectedDataSource]);
 
   const handleClose = () => {
     setIsFactionSettingsVisible(false);
@@ -180,6 +182,33 @@ export const FactionSettingsModal = () => {
     </>
   );
 
+  const renderWarscrollsTab = () => (
+    <>
+      <p className="faction-section-title">Warscrolls</p>
+      <SettingCard
+        title="Show Legends warscrolls"
+        checked={settings.showLegends}
+        onChange={(value) => updateSettings({ ...settings, showLegends: value })}
+      />
+      <p className="faction-section-title">Display</p>
+      <SettingCard
+        title="Use fancy fonts"
+        checked={settings.useFancyFonts !== false}
+        onChange={(value) => updateSettings({ ...settings, useFancyFonts: value })}
+      />
+      <SettingCard
+        title="Show generic manifestations"
+        checked={settings.showGenericManifestations}
+        onChange={(value) => updateSettings({ ...settings, showGenericManifestations: value })}
+      />
+      <SettingCard
+        title="Show stats as badges"
+        checked={settings.aosStatDisplayMode === "badges"}
+        onChange={(value) => updateSettings({ ...settings, aosStatDisplayMode: value ? "badges" : "wheel" })}
+      />
+    </>
+  );
+
   const renderStratagemsTab = () => (
     <>
       <p className="faction-section-description">Please select your preferred options here.</p>
@@ -208,6 +237,8 @@ export const FactionSettingsModal = () => {
         return renderSubfactionsTab();
       case "datasheets":
         return renderDatasheetsTab();
+      case "warscrolls":
+        return renderWarscrollsTab();
       case "stratagems":
         return renderStratagemsTab();
       case "secondaries":
@@ -242,6 +273,13 @@ export const FactionSettingsModal = () => {
                       className={`faction-nav-item ${activeTab === "datasheets" ? "active" : ""}`}
                       onClick={() => setActiveTab("datasheets")}>
                       <span>Datasheets</span>
+                    </div>
+                  )}
+                  {settings.selectedDataSource === "aos" && (
+                    <div
+                      className={`faction-nav-item ${activeTab === "warscrolls" ? "active" : ""}`}
+                      onClick={() => setActiveTab("warscrolls")}>
+                      <span>Warscrolls</span>
                     </div>
                   )}
                   {!dataSource.noStratagemOptions && (
