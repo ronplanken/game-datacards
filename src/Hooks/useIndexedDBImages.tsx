@@ -24,15 +24,17 @@ export function useIndexedDBImages() {
           console.error("[IndexedDB] Failed to open database:", request.error);
         };
 
-        request.onsuccess = (event) => {
-          const database = event.target.result;
+        request.onsuccess = function (event) {
+          console.log(event.target, request.result);
+
+          const database = request.result;
           console.log("[IndexedDB] Database opened successfully");
           setDb(database);
           setIsReady(true);
         };
 
         request.onupgradeneeded = (event) => {
-          const database = event.target.result;
+          const database = request.result;
           console.log("[IndexedDB] Database upgrade needed");
 
           if (!database.objectStoreNames.contains(STORE_NAME)) {
@@ -71,7 +73,7 @@ export function useIndexedDBImages() {
       throw new Error("IndexedDB is not ready");
     }
 
-    if (!(file instanceof Blob)) {
+    if (!(file instanceof File)) {
       console.error("[IndexedDB] File is not a Blob or File object:", file);
       throw new Error("File must be a Blob or File object");
     }
@@ -100,7 +102,7 @@ export function useIndexedDBImages() {
 
       request.onsuccess = () => {
         console.log("[IndexedDB] Image saved successfully for card:", cardId);
-        resolve();
+        resolve(undefined);
       };
 
       request.onerror = () => {
@@ -115,7 +117,7 @@ export function useIndexedDBImages() {
     });
   };
 
-  const getImage = async (cardId) => {
+  const getImage = async (cardId): Promise<File> => {
     if (!db || !isReady) {
       return null;
     }
@@ -167,7 +169,7 @@ export function useIndexedDBImages() {
       const request = store.delete(cardId);
 
       request.onsuccess = () => {
-        resolve();
+        resolve(undefined);
       };
 
       request.onerror = () => {

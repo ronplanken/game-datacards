@@ -14,7 +14,7 @@ const defaultCategories = {
   ],
 };
 
-export const useDataSourceType = (searchText : string) => {
+export const useDataSourceType = (searchText: string) => {
   const { settings } = useSettingsStorage();
   const { dataSource, selectedFaction } = useDataSourceStorage();
 

@@ -28,10 +28,10 @@ export const ServiceMessagesProvider = (props) => {
       }
       return [];
     } catch (e) {
-      message.error("An error occored while trying to load the service messages.");
+      console.error("An error occored while trying to load the service messages.");
       return [];
     }
   });
 
-  return <ServiceMessagesContext.Provider value={context}>{props.children}</ServiceMessagesContext.Provider>;
+  return <ServiceMessagesContext.Provider value={messages}>{props.children}</ServiceMessagesContext.Provider>;
 };
