@@ -1,6 +1,6 @@
 import clone from "just-clone";
 import { v4 as uuidv4 } from "uuid";
-import { BasicData } from "../types/types";
+import { BasicData, DatasheetWargear } from "../types/types";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -43,7 +43,7 @@ const readCsv = async (file) => {
     .then((text) => JSON.parse(text));
 };
 
-export const get40KData = async () => {
+export const get40KData = async (): Promise<BasicData> => {
   const lastUpdated = await readCsv(
     `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`
   );
@@ -56,7 +56,7 @@ export const get40KData = async () => {
   const dataAbilities = await readCsv(
     `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`
   );
-  const dataDatasheetWargear = await readCsv(
+  const dataDatasheetWargear: DatasheetWargear = await readCsv(
     `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`
   );
   const dataWargearList = await readCsv(
@@ -560,7 +560,7 @@ export const getMessages = async () => {
   return data;
 };
 
-export const getAoSData = async () => {
+export const getAoSData = async (): Promise<BasicData> => {
   const factions = [
     "beasts_of_chaos",
     "blades_of_khorne",

@@ -21,7 +21,7 @@ export function usePWAInstall() {
       }
 
       // Check for iOS Safari standalone
-      if (window.navigator.standalone === true) {
+      if (window.navigator.hasOwnProperty("standalone") && window.navigator["standalone"] === true) {
         setIsInstalled(true);
         return true;
       }

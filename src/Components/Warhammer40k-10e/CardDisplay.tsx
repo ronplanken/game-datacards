@@ -7,6 +7,7 @@ import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { EnhancementCard } from "./EnhancementCard";
 import { RuleCard } from "./RuleCard";
+import { Warhammer40K10eCardDisplayProps } from "../../types/types";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -15,7 +16,7 @@ export const Warhammer40K10eCardDisplay = ({
   printPadding,
   side = "front",
   backgrounds = "standard",
-}) => {
+}: Warhammer40K10eCardDisplayProps) => {
   const { activeCard } = useCardStorage();
   const { settings } = useSettingsStorage();
   const { dataSource } = useDataSourceStorage();

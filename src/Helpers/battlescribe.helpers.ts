@@ -72,16 +72,6 @@ const extractAbility = (profile) => {
   };
 };
 
-const generateUnits = (roster) => {
-  const units = [];
-  roster.forces.forEach((force) => {
-    for (const unit in force.units) {
-      units.push(extractUnit(unit));
-    }
-  });
-  return units;
-};
-
 const generateAbilities = (selection) => {
   const abilities = [];
   if (Array.isArray(selection?.profiles?.profile)) {
@@ -101,21 +91,21 @@ const generateAbilities = (selection) => {
   return abilities;
 };
 
-const generateUpgrades = (selection) => {
-  const abilities = [];
-  if (Array.isArray(selection?.profiles?.profile)) {
-    selection?.profiles?.profile?.forEach((profile) => {
-      if (profile.typeName === "Abilities") {
-        abilities.push(extractAbility(profile));
-      }
-    });
-  } else {
-    if (selection?.profiles?.profile) {
-      wargear.push(extractAbility(selection?.profiles?.profile));
-    }
-  }
-  return abilities;
-};
+// const generateUpgrades = (selection) => {
+//   const abilities = [];
+//   if (Array.isArray(selection?.profiles?.profile)) {
+//     selection?.profiles?.profile?.forEach((profile) => {
+//       if (profile.typeName === "Abilities") {
+//         abilities.push(extractAbility(profile));
+//       }
+//     });
+//   } else {
+//     if (selection?.profiles?.profile) {
+//       wargear.push(extractAbility(selection?.profiles?.profile));
+//     }
+//   }
+//   return abilities;
+// };
 
 const generateModelWargear = (model) => {
   const wargear = [];
@@ -139,7 +129,7 @@ const generateModelWargear = (model) => {
   if (!Array.isArray(model.selections.selection)) {
     console.log(model);
     model.selections.selection.forEach((selection) => {
-      if (smodel.selections.selection.type === "upgrade" && model.selections?.selection?.profiles?.profile) {
+      if (model.selections.selection.type === "upgrade" && model.selections?.selection?.profiles?.profile) {
         if (Array.isArray(model.selections?.selection?.profiles?.profile)) {
           selection.profiles.profile.forEach((profile) => {
             if (profile.typeName.toLowerCase() === "weapon") {
@@ -174,4 +164,4 @@ const generateModelWargear = (model) => {
   return wargear;
 };
 
-export { extractDatasheet, generateUnits, generateAbilities, generateModelWargear };
+export { extractDatasheet, generateAbilities, generateModelWargear };

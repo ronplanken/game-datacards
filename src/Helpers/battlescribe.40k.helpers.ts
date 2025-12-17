@@ -241,6 +241,7 @@ export class Unit extends BaseNotes {
   cost = new Costs();
 
   woundTracker = [];
+  role = undefined;
 
   nameWithExtraCosts() {
     const extraCosts = []; // Track extra costs like cabal points.

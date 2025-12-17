@@ -1,4 +1,4 @@
-type Wh40k10eCardType = "datasheet" | "stratagem" | "secondary" | "psychic" | "enhancement";
+type Wh40k10eCardType = "datasheet" | "stratagem" | "secondary" | "psychic" | "enhancement" | "DataCard" | "rule";
 type AosCardType = "warscroll" | "spell";
 type NecromundaCardType = "ganger" | "vehicle" | "empty-ganger" | "empty-vehicle";
 type DataSourceListItemType = "category" | "list" | "header" | "allied" | "role";
@@ -9,6 +9,11 @@ export type CardDisplayProps = {
   card?: Card;
   cardScaling?: number;
   printPadding?: number;
+};
+
+export type Warhammer40K10eCardDisplayProps = CardDisplayProps & {
+  side?;
+  backgrounds?;
 };
 
 export type Card = {
@@ -105,9 +110,30 @@ export type BasicData = {
   version;
   lastUpdated;
   lastCheckedForUpdate;
-  noDatasheetOptions;
-  noStratagemOptions;
-  noSecondaryOptions;
-  noPsychicOptions;
-  data: unknown[];
+  noDatasheetOptions?: boolean;
+  noStratagemOptions?: boolean;
+  noSecondaryOptions?: boolean;
+  noPsychicOptions?: boolean;
+  noSubfactionOptions?: boolean;
+  noFactionOptions?: boolean;
+  genericData?;
+  data: Faction[];
 };
+
+export type Faction = {
+  id: string;
+  link: string;
+  name: string;
+  datasheets: Datasheet[];
+  stratagems?: unknown[];
+  secondaries?: unknown[];
+  psychicpowers?: unknown[];
+};
+
+type Datasheet = {};
+
+export type DatasheetWargear = {
+  datasheet_id;
+  is_index_wargear;
+  wargear_id;
+}[];

@@ -10,7 +10,7 @@ import {
 } from "../Helpers/external.helpers";
 import { useFirebase } from "./useFirebase";
 import { useSettingsStorage } from "./useSettingsStorage";
-import { DataSourceStorageContextType } from "../types/types";
+import { BasicData, DataSourceStorageContextType } from "../types/types";
 
 const DataSourceStorageContext = React.createContext<DataSourceStorageContextType>(undefined);
 
@@ -55,7 +55,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
 
       if (settings.selectedDataSource === "40k") {
-        const storedData = await dataStore.getItem("40k");
+        const storedData = await dataStore.getItem<BasicData>("40k");
         if (storedData) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[factionIndex]);
@@ -64,12 +64,12 @@ export const DataSourceStorageProviderComponent = (props) => {
 
         const dataFactions = await get40KData();
 
-        dataStore.setItem("40k", dataFactions);
+        dataStore.setItem<BasicData>("40k", dataFactions);
 
         setDataSource(dataFactions);
       }
       if (settings.selectedDataSource === "40k-10e") {
-        const storedData = await dataStore.getItem("40k-10e");
+        const storedData = await dataStore.getItem<BasicData>("40k-10e");
         if (storedData) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[factionIndex]);
@@ -81,7 +81,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(dataFactions);
       }
       if (settings.selectedDataSource === "40k-10e-cp") {
-        const storedData = await dataStore.getItem("40k-10e-cp");
+        const storedData = await dataStore.getItem<BasicData>("40k-10e-cp");
         if (storedData) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[factionIndex]);
@@ -103,7 +103,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         setSelectedFaction(basicData.data[0]);
       }
       if (settings.selectedDataSource === "aos") {
-        const storedData = await dataStore.getItem("aos");
+        const storedData = await dataStore.getItem<BasicData>("aos");
         if (storedData) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[factionIndex]);
