@@ -197,6 +197,47 @@
 }
 
 /* ===========================================
+   HEADER ICON BUTTON
+   =========================================== */
+.settings-header-icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  border-radius: 10px;
+  color: var(--bs-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-header-icon-btn:active {
+  background: var(--bs-surface-hover);
+  transform: scale(0.95);
+}
+
+.settings-header-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ===========================================
    ANIMATIONS
    =========================================== */
 @keyframes spin {

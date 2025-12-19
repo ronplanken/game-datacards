@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useSwipeable } from "react-swipeable";
 import "./BottomSheet.css";
 
-export const BottomSheet = ({ isOpen, onClose, title, children, maxHeight = "80vh" }) => {
+export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, maxHeight = "80vh" }) => {
   const sheetRef = useRef(null);
   const contentRef = useRef(null);
 
@@ -63,7 +63,12 @@ export const BottomSheet = ({ isOpen, onClose, title, children, maxHeight = "80v
         </div>
 
         {/* Header */}
-        {title && <div className="bottom-sheet-header">{title}</div>}
+        {(title || headerRight) && (
+          <div className="bottom-sheet-header">
+            <span className="bottom-sheet-title">{title}</span>
+            {headerRight && <div className="bottom-sheet-header-right">{headerRight}</div>}
+          </div>
+        )}
 
         {/* Content */}
         <div ref={contentRef} className="bottom-sheet-content">

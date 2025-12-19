@@ -6,7 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
-import { ServiceMessage } from "./ServiceMessage";
+import { NotificationBell } from "./NotificationBell";
 import { SettingsModal } from "./SettingsModal";
 import { ShareModal } from "./ShareModal";
 import { UpdateReminder } from "./UpdateReminder";
@@ -39,7 +39,6 @@ export const AppHeader = ({
         <>
           <WelcomeWizard />
           <WhatsNew />
-          <ServiceMessage />
           <UpdateReminder />
         </>
       )}
@@ -74,6 +73,8 @@ export const AppHeader = ({
           {/* Right section - Actions and User */}
           <div className="app-header-right">
             {showActions && activeCategory && activeCategory.cards?.length > 0 && <ShareModal />}
+
+            {showActions && <NotificationBell />}
 
             {showActions && (
               <Tooltip content="Join us on discord!" placement="bottom-end">

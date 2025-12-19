@@ -123,13 +123,26 @@
 .bottom-sheet-header {
   background: var(--bs-bg);
   padding: 8px 20px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.bottom-sheet-title {
   font-weight: 600;
   font-size: 18px;
   color: var(--bs-text);
   letter-spacing: -0.01em;
   text-align: center;
+}
+
+.bottom-sheet-header-right {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 

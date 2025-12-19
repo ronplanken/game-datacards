@@ -1,0 +1,159 @@
+/* MobileNotifications.css - Mobile notification bottom sheet content */
+
+.mobile-notifications {
+  padding: 0 0 20px;
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+.mobile-notifications-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-notifications-mark-read {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b82f6;
+  cursor: pointer;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.mobile-notifications-mark-read:active {
+  background: #eff6ff;
+}
+
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+.mobile-notifications-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  color: #9ca3af;
+}
+
+.mobile-notifications-empty p {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+
+/* ===========================================
+   NOTIFICATION LIST
+   =========================================== */
+.mobile-notifications-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===========================================
+   NOTIFICATION ITEM
+   =========================================== */
+.mobile-notification-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.mobile-notification-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-notification-item--unread {
+  background: #f0f7ff;
+}
+
+.mobile-notification-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.mobile-notification-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.mobile-notification-item-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.mobile-notification-item-body {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+/* ===========================================
+   SEVERITY BADGES
+   =========================================== */
+.mobile-notification-item-severity {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mobile-notification-item-severity--info {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.mobile-notification-item-severity--warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mobile-notification-item-severity--error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.mobile-notification-item-severity--success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+/* ===========================================
+   META ROW (Author + Timestamp)
+   =========================================== */
+.mobile-notification-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.mobile-notification-item-author {
+  font-weight: 500;
+}
+
+.mobile-notification-item-author::after {
+  content: "·";
+  margin-left: 8px;
+}
+
+.mobile-notification-item-time {
+  color: #9ca3af;
+}
