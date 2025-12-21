@@ -1,0 +1,112 @@
+/* ViewerContentTypeSelector.css - Content type dropdown styles */
+
+.viewer-content-type-selector {
+  position: relative;
+  margin-bottom: 4px;
+}
+
+/* ===========================================
+   TRIGGER BUTTON
+   =========================================== */
+
+.viewer-content-type-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  transition: all 0.2s ease;
+  text-align: left;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.viewer-content-type-trigger:hover {
+  border-color: #1677ff;
+}
+
+.viewer-content-type-trigger.open {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.viewer-content-type-trigger-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewer-content-type-trigger-icon {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+}
+
+.viewer-content-type-trigger.open .viewer-content-type-trigger-icon {
+  transform: rotate(180deg);
+}
+
+/* ===========================================
+   DROPDOWN
+   =========================================== */
+
+.viewer-content-type-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  overflow: hidden;
+  animation: viewerContentTypeDropdownSlide 0.15s ease-out;
+}
+
+@keyframes viewerContentTypeDropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   OPTIONS
+   =========================================== */
+
+.viewer-content-type-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  transition: background 0.15s ease;
+}
+
+.viewer-content-type-option:hover {
+  background: #006fd610;
+}
+
+.viewer-content-type-option.selected {
+  background: #0070d6;
+  color: white;
+  font-weight: 500;
+}
+
+.viewer-content-type-option.selected:hover {
+  background: #0079eb;
+}

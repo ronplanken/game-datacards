@@ -1,0 +1,127 @@
+/* MobileSearchHeader.css - Search-first header styles */
+
+/* ===========================================
+   HEADER CONTAINER
+   =========================================== */
+
+.mobile-search-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  height: 64px;
+  background: #001529;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/* ===========================================
+   LOGO
+   =========================================== */
+
+.mobile-search-logo {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   SEARCH INPUT
+   =========================================== */
+
+.mobile-search-input-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.mobile-search-input-container {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 40px;
+  transition: all 0.2s ease;
+}
+
+.mobile-search-input-container:focus-within,
+.mobile-search-input-container.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mobile-search-icon {
+  color: rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.mobile-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 16px;
+  padding: 0;
+  min-width: 0;
+}
+
+.mobile-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mobile-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* ===========================================
+   CLEAR BUTTON
+   =========================================== */
+
+.mobile-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.mobile-search-clear:active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===========================================
+   FACTION SELECTOR BUTTON
+   =========================================== */
+
+.mobile-search-faction-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.mobile-search-faction-btn:active {
+  background: rgba(255, 255, 255, 0.1);
+}

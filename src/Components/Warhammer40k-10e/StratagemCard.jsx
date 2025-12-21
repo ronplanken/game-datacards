@@ -19,13 +19,13 @@ export const StratagemCard = ({
   return (
     <div
       style={{
-        ...cardStyle,
         "--width": `${stratagem.styling?.width ?? "260"}px`,
         "--height": `${stratagem.styling?.height ?? "458"}px`,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
         paddingTop: paddingTop,
+        ...cardStyle,
       }}
       className={containerClass}>
       <div

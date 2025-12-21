@@ -1,4 +1,4 @@
-import { DatabaseOutlined, LoadingOutlined } from "@ant-design/icons";
+import { Database, Loader2 } from "lucide-react";
 import { Popover, message } from "antd";
 import { compare } from "compare-versions";
 import moment from "moment";
@@ -54,8 +54,8 @@ export const UpdateReminder = () => {
                 message.success("The datasource has been successfully updated.");
               });
             }}>
-            {!checkingForUpdate && <DatabaseOutlined style={{ fontSize: "48px", color: "white" }} />}
-            {checkingForUpdate && <LoadingOutlined style={{ fontSize: "48px", color: "white" }} />}
+            {!checkingForUpdate && <Database size={48} color="white" />}
+            {checkingForUpdate && <Loader2 size={48} color="white" className="animate-spin" />}
           </div>
         </Popover>
       )}

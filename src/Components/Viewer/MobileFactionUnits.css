@@ -1,0 +1,200 @@
+/* MobileFactionUnits.css - Full page units list */
+
+/* ===========================================
+   PAGE CONTAINER
+   =========================================== */
+
+.faction-units-page {
+  min-height: 100vh;
+  background: #fff;
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+
+.faction-units-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--banner-colour, #001529);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.faction-units-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--header-colour, #0070d6);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.faction-units-back:active {
+  opacity: 0.9;
+}
+
+.faction-units-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.faction-units-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   VIEW TOGGLE
+   =========================================== */
+
+.faction-units-toggle {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.faction-units-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 10px 16px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.faction-units-toggle-btn:active {
+  background: #f0f0f0;
+}
+
+.faction-units-toggle-btn.active {
+  background: var(--banner-colour, #001529);
+  border-color: var(--banner-colour, #001529);
+  color: #fff;
+}
+
+.faction-units-toggle-btn.active:active {
+  opacity: 0.9;
+}
+
+/* ===========================================
+   UNITS LIST
+   =========================================== */
+
+.faction-units-list {
+  padding: 12px 16px 24px;
+}
+
+.faction-units-section {
+  margin-bottom: 20px;
+}
+
+.faction-units-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ===========================================
+   SECTION HEADER
+   =========================================== */
+
+.faction-units-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--header-colour, #0070d6);
+}
+
+.faction-units-section-header span:first-child {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.faction-units-section-count {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* ===========================================
+   UNIT ITEM
+   =========================================== */
+
+.faction-units-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  margin-bottom: 6px;
+  transition: background 0.15s ease;
+}
+
+.faction-units-item:last-child {
+  margin-bottom: 0;
+}
+
+.faction-units-item:active {
+  background: #e8e8e8;
+}
+
+.faction-units-item-name {
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 12px;
+}
+
+.faction-units-item-points {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+  background: #e8e8e8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}

@@ -1,4 +1,4 @@
-import { CaretDownOutlined, MenuOutlined } from "@ant-design/icons";
+import { ChevronDown, Menu } from "lucide-react";
 import { Button, Col, Image, List, Row, Typography } from "antd";
 import { useRef } from "react";
 import { createPortal } from "react-dom";
@@ -55,7 +55,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
                     onClick={() => {
                       dropdown.current.style.height = "0px";
                       navigate(
-                        `/viewer/${dataSource.data
+                        `/mobile/${dataSource.data
                           .find((faction) => faction.id === item.id)
                           ?.name?.toLowerCase()
                           .replaceAll(" ", "-")}`
@@ -87,7 +87,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
             width={42}
             onClick={() => {
               dropdown.current.style.height = "0px";
-              navigate(`/viewer/${selectedFaction.name?.toLowerCase().replaceAll(" ", "-")}`);
+              navigate(`/mobile/${selectedFaction?.name?.toLowerCase().replaceAll(" ", "-") || ""}`);
             }}
             style={{ width: 42 }}
           />
@@ -103,18 +103,18 @@ export const MobileHeader = ({ setOpen, padding }) => {
                 node.style.height = "calc(100dvh - 128px)";
               }
             }}>
-            {faction ? selectedFaction?.name : "Game Datacards"}{" "}
-            <CaretDownOutlined style={{ color: "white", fontSize: "1.0rem" }} />
+            {faction ? selectedFaction?.name : "Game Datacards"} <ChevronDown size={16} color="white" />
           </Button>
         </Col>
-        <Col style={{ display: "flex", alignItems: "center" }}>
+        <Col style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {/* User indicator - hidden for now, will be implemented with auth later */}
           <Button
             type="text"
             style={{ color: "white" }}
             size="large"
             className="mobile-icon-button"
             onClick={() => setOpen(true)}
-            icon={<MenuOutlined />}
+            icon={<Menu size={14} />}
           />
         </Col>
       </Row>

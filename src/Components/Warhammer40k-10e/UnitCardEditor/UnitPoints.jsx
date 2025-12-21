@@ -1,5 +1,6 @@
-import { DeleteFilled, StarFilled, StarOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Popconfirm, Space, Switch, Tooltip } from "antd";
+import { Trash2, Star } from "lucide-react";
+import { Button, Card, Form, Input, Popconfirm, Space, Switch } from "antd";
+import { Tooltip } from "../../Tooltip/Tooltip";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
@@ -66,12 +67,16 @@ export function UnitPoints() {
                             style={{ marginBottom: "16px" }}
                             extra={
                               <Space>
-                                <Tooltip title={point.primary ? "Primary point" : "Set as primary"}>
+                                <Tooltip content={point.primary ? "Primary point" : "Set as primary"}>
                                   <Button
                                     type="text"
                                     size="small"
                                     icon={
-                                      point.primary ? <StarFilled style={{ color: "#faad14" }} /> : <StarOutlined />
+                                      point.primary ? (
+                                        <Star size={14} fill="#faad14" color="#faad14" />
+                                      ) : (
+                                        <Star size={14} />
+                                      )
                                     }
                                     onClick={() =>
                                       updateActiveCard(() => {
@@ -94,7 +99,7 @@ export function UnitPoints() {
                                       return { ...activeCard, points: newPoints };
                                     })
                                   }>
-                                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                                 </Popconfirm>
                                 <Switch
                                   checked={point.active}

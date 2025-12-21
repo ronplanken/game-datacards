@@ -1,0 +1,33 @@
+/* MobileSharingMenu.css - Tactical Console Theme */
+
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.share-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  color: var(--bs-text);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.share-option:active {
+  background: var(--bs-surface-hover);
+}
+
+.share-option svg {
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+}

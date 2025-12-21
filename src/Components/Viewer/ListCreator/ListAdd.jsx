@@ -1,16 +1,25 @@
-import { CloseOutlined } from "@ant-design/icons";
-import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
-import classNames from "classnames";
 import { useEffect, useState } from "react";
+import { ChevronRight, Crown } from "lucide-react";
+import { message } from "antd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
-import { AddCard } from "../../../Icons/AddCard";
 import { useMobileList } from "../useMobileList";
+import { BottomSheet } from "../Mobile/BottomSheet";
+import { DetachmentPicker } from "../Mobile/DetachmentPicker";
+import "./ListAdd.css";
 
-const { Option } = Select;
+// Custom toggle for warlord selection
+const Toggle = ({ checked, onChange, disabled }) => (
+  <button
+    className={`list-add-toggle ${checked ? "active" : ""} ${disabled ? "disabled" : ""}`}
+    onClick={() => !disabled && onChange(!checked)}
+    disabled={disabled}>
+    <span className="list-add-toggle-thumb" />
+  </button>
+);
 
-export const ListAdd = ({ setIsVisible }) => {
+export const ListAdd = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, addDatacard } = useMobileList();
   const { activeCard } = useCardStorage();
   const { dataSource } = useDataSourceStorage();
@@ -18,8 +27,9 @@ export const ListAdd = ({ setIsVisible }) => {
 
   const [selectedEnhancement, setSelectedEnhancement] = useState();
   const [isWarlord, setIsWarlord] = useState(false);
+  const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
   const [selectedUnitSize, setSelectedUnitSize] = useState(() => {
-    if (activeCard?.points?.length === 1) {
+    if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
       return activeCard.points[0];
     }
     return undefined;
@@ -31,14 +41,6 @@ export const ListAdd = ({ setIsVisible }) => {
     return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.card.id;
   });
 
-  const selectEnhancement = (enhancement) => {
-    if (selectedEnhancement?.name === enhancement?.name) {
-      setSelectedEnhancement(undefined);
-    } else {
-      setSelectedEnhancement(enhancement);
-    }
-  };
-
   const [selectedDetachment, setSelectedDetachment] = useState();
 
   useEffect(() => {
@@ -47,244 +49,181 @@ export const ListAdd = ({ setIsVisible }) => {
     } else {
       setSelectedDetachment(cardFaction?.detachments?.[0]);
     }
-  }, [cardFaction, settings]);
+  }, [cardFaction, settings, activeCard?.faction_id]);
+
+  // Reset state when panel opens with new card
+  useEffect(() => {
+    if (isVisible) {
+      setSelectedEnhancement(undefined);
+      setIsWarlord(false);
+      if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
+        setSelectedUnitSize(activeCard.points[0]);
+      } else {
+        setSelectedUnitSize(undefined);
+      }
+    }
+  }, [isVisible, activeCard]);
+
+  const handleClose = () => setIsVisible(false);
+
+  const handleDetachmentSelect = (detachment) => {
+    setSelectedDetachment(detachment);
+    updateSettings({
+      ...settings,
+      selectedDetachment: { ...settings.selectedDetachment, [activeCard.faction_id]: detachment },
+    });
+    setSelectedEnhancement(undefined); // Reset enhancement when detachment changes
+  };
+
+  const handleAddToList = () => {
+    addDatacard(activeCard, selectedUnitSize, selectedEnhancement, isWarlord);
+    handleClose();
+    message.success(`${activeCard.name} added to list.`);
+  };
+
+  const selectEnhancement = (enhancement) => {
+    if (selectedEnhancement?.name === enhancement?.name) {
+      setSelectedEnhancement(undefined);
+    } else {
+      setSelectedEnhancement(enhancement);
+    }
+  };
+
+  // Check if enhancement is already used
+  const isEnhancementDisabled = (enhancement) => {
+    return lists[selectedList]?.datacards?.some((card) => card?.enhancement?.name === enhancement?.name);
+  };
+
+  // Filter enhancements for current detachment and card
+  const getAvailableEnhancements = () => {
+    if (!cardFaction?.enhancements) return [];
+
+    return cardFaction.enhancements
+      .filter(
+        (enhancement) =>
+          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
+      )
+      .filter((enhancement) => {
+        let isActiveEnhancement = false;
+        enhancement.keywords?.forEach((keyword) => {
+          if (activeCard?.keywords?.includes(keyword)) isActiveEnhancement = true;
+          if (activeCard?.factions?.includes(keyword)) isActiveEnhancement = true;
+        });
+        enhancement?.excludes?.forEach((exclude) => {
+          if (activeCard?.keywords?.includes(exclude)) isActiveEnhancement = false;
+          if (activeCard?.factions?.includes(exclude)) isActiveEnhancement = false;
+        });
+        return isActiveEnhancement;
+      });
+  };
+
+  const isCharacter = activeCard?.keywords?.includes("Character");
+  const isEpicHero = activeCard?.keywords?.includes("Epic Hero");
+  const showWarlord = isCharacter || isEpicHero;
+  const showEnhancements = isCharacter && !isEpicHero;
+  const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
+
+  // Don't show for cards without array-based points (e.g., AoS warscrolls)
+  if (!activeCard || !Array.isArray(activeCard?.points)) return null;
 
   return (
     <>
-      <div
-        className="mobile-modal-background"
-        style={{
-          display: "block",
-          position: "absolute",
-          height: "100vh",
-          width: "100vw",
-          backgroundColor: "#00000099",
-          top: "0px",
-          bottom: "0px",
-          zIndex: 888,
-        }}
-        onClick={(e) => {
-          if (e.target.getAttribute("class") === "mobile-modal-background") {
-            setIsVisible(false);
-          }
-        }}
-      />
-      <Col
-        style={{
-          display: "block",
-          backgroundColor: "#FFFFFF",
-          height: "auto",
-          width: "100vw",
-          position: "fixed",
-          bottom: "0px",
-          zIndex: "999",
-          padding: "8px",
-          paddingBottom: "32px",
-          borderTop: "2px solid #f0f2f5",
-        }}
-        className="mobile-menu">
-        <Space style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-          <Typography.Title level={4}>Add {activeCard.name}</Typography.Title>
-          <Button
-            style={{ fontSize: "20px" }}
-            type="ghost"
-            shape="circle"
-            icon={<CloseOutlined />}
-            onClick={() => {
-              setIsVisible(false);
-            }}
-          />
-        </Space>
-        <Typography.Text style={{ paddingTop: "8px" }}>Select unit size</Typography.Text>
-        <Space direction="vertical" style={{ width: "100%" }}>
-          <List
-            bordered
-            dataSource={activeCard?.points
-              ?.filter((p) => p.active)
-              .map((point, index) => {
-                return {
-                  models: point.models,
-                  keyword: point.keyword,
-                  cost: point.cost,
-                  icon: <AddCard />,
-                  onClick: () => {
-                    setSelectedUnitSize(point);
-                  },
-                };
-              })}
-            renderItem={(item) => {
-              return (
-                <List.Item
-                  onClick={item.onClick}
-                  className={
-                    selectedUnitSize?.models === item?.models && selectedUnitSize.keyword === item.keyword
-                      ? "selected"
-                      : ""
-                  }>
-                  <Row style={{ width: "100%", fontSize: "1.2rem" }}>
-                    <Col span={9}>
-                      <Typography.Text>
-                        {item.models} models {item.keyword ? `(${item.keyword})` : ""}
-                      </Typography.Text>
-                    </Col>
-                    <Col span={9}>
-                      <Typography.Text>{item.cost} pts</Typography.Text>
-                    </Col>
-                  </Row>
-                </List.Item>
-              );
-            }}></List>
-        </Space>
-        {(activeCard?.keywords?.includes("Character") || activeCard?.keywords?.includes("Epic Hero")) && (
-          <>
-            <div style={{ paddingTop: "16px" }}>
-              <Typography.Text>Warlord</Typography.Text>
+      <BottomSheet isOpen={isVisible} onClose={handleClose} title={`Add ${activeCard.name}`}>
+        <div className="list-add-content">
+          {/* Unit Size Section */}
+          <div className="list-add-section">
+            <h4 className="list-add-section-title">Unit Size</h4>
+            <div className="list-add-options">
+              {activeCard?.points
+                ?.filter((p) => p.active)
+                .map((point) => (
+                  <button
+                    key={`${point.models}-${point.keyword || ""}`}
+                    className={`list-add-option ${
+                      selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() => setSelectedUnitSize(point)}>
+                    <span className="option-label">
+                      {point.models} models{point.keyword ? ` (${point.keyword})` : ""}
+                    </span>
+                    <span className="option-value">{point.cost} pts</span>
+                  </button>
+                ))}
             </div>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <List bordered>
-                <List.Item
-                  onClick={() => {
-                    if (!warlordAlreadyAdded) {
-                      setIsWarlord((val) => !val);
-                    }
-                  }}
-                  className={classNames({
-                    listitem: true,
-                    selected: isWarlord,
-                    disabled: warlordAlreadyAdded,
-                  })}>
-                  <Row style={{ width: "100%", fontSize: "1.2rem" }}>
-                    {warlordAlreadyAdded ? (
-                      <Col span={24}>
-                        <Typography.Text>You already have a warlord</Typography.Text>
-                      </Col>
-                    ) : (
-                      <Col span={24}>
-                        <Typography.Text>Warlord</Typography.Text>
-                      </Col>
-                    )}
-                  </Row>
-                </List.Item>
-              </List>
-            </Space>
-          </>
-        )}
-        {activeCard?.keywords?.includes("Character") && !activeCard?.keywords?.includes("Epic Hero") && (
-          <>
-            {cardFaction?.detachments?.length > 1 && (
-              <>
-                <div style={{ paddingTop: "16px" }}>
-                  <Typography.Text>Detachment</Typography.Text>
+          </div>
+
+          {/* Warlord Section */}
+          {showWarlord && (
+            <div className="list-add-section">
+              <h4 className="list-add-section-title">Warlord</h4>
+              <div className="list-add-toggle-row">
+                <div className="list-add-toggle-content">
+                  <Crown size={18} className={isWarlord ? "active" : ""} />
+                  <span>{warlordAlreadyAdded ? "Warlord already assigned" : "Set as Warlord"}</span>
                 </div>
-                <Select
-                  style={{ width: "100%" }}
-                  onChange={(value) => {
-                    setSelectedDetachment(value);
-                    updateSettings({
-                      ...settings,
-                      selectedDetachment: { ...settings.selectedDetachment, [activeCard.faction_id]: value },
-                    });
-                  }}
-                  value={selectedDetachment}>
-                  {cardFaction?.detachments?.map((d) => {
-                    return (
-                      <Option value={d} key={d}>
-                        {d}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </>
-            )}
-            <div style={{ paddingTop: "16px" }}>
-              <Typography.Text>Enhancements</Typography.Text>
+                <Toggle checked={isWarlord} onChange={setIsWarlord} disabled={warlordAlreadyAdded} />
+              </div>
             </div>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              <List
-                bordered
-                dataSource={cardFaction.enhancements
-                  ?.filter(
-                    (enhancement) =>
-                      enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
-                      !enhancement.detachment
-                  )
-                  ?.filter((enhancement) => {
-                    let isActiveEnhancement = false;
-                    enhancement.keywords.forEach((keyword) => {
-                      if (activeCard?.keywords?.includes(keyword)) {
-                        isActiveEnhancement = true;
-                      }
-                      if (activeCard?.factions?.includes(keyword)) {
-                        isActiveEnhancement = true;
-                      }
-                    });
-                    enhancement?.excludes?.forEach((exclude) => {
-                      if (activeCard?.keywords?.includes(exclude)) {
-                        isActiveEnhancement = false;
-                      }
-                      if (activeCard?.factions?.includes(exclude)) {
-                        isActiveEnhancement = false;
-                      }
-                    });
-                    return isActiveEnhancement;
-                  })
-                  .map((enhancement, index) => {
-                    return {
-                      name: enhancement.name,
-                      cost: enhancement.cost,
-                      description: enhancement.description,
-                      onClick: () => {
-                        selectEnhancement(enhancement);
-                      },
-                      disabled: () => {
-                        let isDisabled = false;
-                        lists[selectedList].datacards.forEach((card) => {
-                          if (card?.enhancement?.name === enhancement?.name) {
-                            isDisabled = true;
-                          }
-                        });
-                        return isDisabled;
-                      },
-                    };
-                  })}
-                renderItem={(item) => {
+          )}
+
+          {/* Detachment Section */}
+          {showEnhancements && cardFaction?.detachments?.length > 1 && (
+            <div className="list-add-section">
+              <h4 className="list-add-section-title">Detachment</h4>
+              <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
+                <span>{selectedDetachment || "Select detachment"}</span>
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
+
+          {/* Enhancements Section */}
+          {showEnhancements && availableEnhancements.length > 0 && (
+            <div className="list-add-section">
+              <h4 className="list-add-section-title">Enhancement</h4>
+              <div className="list-add-options">
+                {availableEnhancements.map((enhancement) => {
+                  const disabled = isEnhancementDisabled(enhancement);
                   return (
-                    <List.Item
-                      onClick={!item.disabled() ? item.onClick : undefined}
-                      className={classNames({
-                        listitem: true,
-                        selected: selectedEnhancement?.name === item?.name,
-                        disabled: item.disabled(),
-                      })}>
-                      <Row style={{ width: "100%", fontSize: "1.0rem" }}>
-                        <Col span={20}>
-                          <Typography.Text>{item.name}</Typography.Text>
-                        </Col>
-                        <Col span={4} style={{ textAlign: "right" }}>
-                          <Typography.Text>{item.cost} pts</Typography.Text>
-                        </Col>
-                      </Row>
-                    </List.Item>
+                    <button
+                      key={enhancement.name}
+                      className={`list-add-option ${selectedEnhancement?.name === enhancement.name ? "selected" : ""} ${
+                        disabled ? "disabled" : ""
+                      }`}
+                      onClick={() => !disabled && selectEnhancement(enhancement)}
+                      disabled={disabled}>
+                      <span className="option-label">{enhancement.name}</span>
+                      <span className="option-value">{enhancement.cost} pts</span>
+                    </button>
                   );
-                }}></List>
-            </Space>
-          </>
-        )}
-        <Button
-          size="large"
-          type="primary"
-          block
-          onClick={() => {
-            addDatacard(activeCard, selectedUnitSize, selectedEnhancement, isWarlord);
-            setIsVisible(false);
-            message.success(`${activeCard.name} added to list.`);
-          }}
-          icon={<AddCard />}
-          disabled={!selectedUnitSize || epicHeroAlreadyAdded}
-          style={{ marginTop: "16px" }}>
-          Add unit to list
-        </Button>
-      </Col>
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Epic Hero Warning */}
+          {epicHeroAlreadyAdded && <div className="list-add-warning">This Epic Hero is already in your list.</div>}
+
+          {/* Add Button */}
+          <button
+            className="list-add-submit"
+            onClick={handleAddToList}
+            disabled={!selectedUnitSize || epicHeroAlreadyAdded}>
+            Add to List
+          </button>
+        </div>
+      </BottomSheet>
+
+      {/* Detachment Picker Sub-Sheet */}
+      <DetachmentPicker
+        isOpen={detachmentPickerOpen}
+        onClose={() => setDetachmentPickerOpen(false)}
+        detachments={cardFaction?.detachments}
+        selected={selectedDetachment}
+        onSelect={handleDetachmentSelect}
+      />
     </>
   );
 };

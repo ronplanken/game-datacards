@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import { Button, Card, Input, Popconfirm, Space, Switch, Typography } from "antd";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -105,7 +105,7 @@ export function GangerWeapons() {
                       newWeapons[index].profiles.splice(pindex, 1);
                       updateActiveCard({ ...activeCard, weapons: newWeapons });
                     }}>
-                    <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                    <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                   </Popconfirm>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export function GangerWeapons() {
                       return { ...activeCard, weapons: newWeapons };
                     })
                   }>
-                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                 </Popconfirm>
                 <Switch
                   checked={weapon.active}

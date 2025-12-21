@@ -14,7 +14,7 @@
 
 ### Origin
 
-The Game-Datacards project got started as a simple html page that rendered a datasheet for my personal usage. As a developer I kept on adding more and more functionality to easily customize the datasheets in a hacky way untill we ended up with the current version. 
+The Game-Datacards project got started as a simple html page that rendered a datasheet for my personal usage. As a developer I kept on adding more and more functionality to easily customize the datasheets in a hacky way untill we ended up with the current version.
 
 Game-Datacards allows a user to select a datasource and import or create datacards that can be used in Tabletop Wargaming games. You can customize them anyway you want, enable and disable lines to quickly modify them based on your current army setup. It also supports the printing of the cards in several ways.
 
@@ -38,4 +38,3 @@ Contributions are always welcome!
 See `contributing.md` for ways to get started.
 
 Please adhere to this project's `code_of_conduct.md`.
-

@@ -56,3 +56,116 @@
     }
   }
 }
+
+/* Mobile Card Viewer Header */
+.mobile-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--banner-colour, #001529);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-card-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--header-colour, #0070d6);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mobile-card-back:active {
+  opacity: 0.9;
+}
+
+.mobile-card-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// AoS-specific mobile card title styling
+.data-aos .mobile-card-title,
+.mobile-card-header-aos .mobile-card-title {
+  font-family: "Cinzel", serif;
+}
+
+// ============================================
+// AoS SCROLL-REVEAL HEADER
+// ============================================
+
+// Floating back button - positioned over card header
+.mobile-card-back-floating {
+  position: fixed;
+  top: 76px; // Below search header (64px) + padding
+  left: 16px;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(15, 43, 56, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  // Fade in animation on mount
+  animation: floatingButtonFadeIn 0.25s ease-out;
+}
+
+@keyframes floatingButtonFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mobile-card-back-floating:active {
+  transform: scale(0.92);
+  background: rgba(15, 43, 56, 0.95);
+}
+
+// Scroll-reveal header (shared base)
+.mobile-card-header-scroll {
+  position: fixed;
+  top: 64px; // Below search header
+  left: 0;
+  right: 0;
+  z-index: 100;
+
+  &.visible {
+    display: flex;
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
+// AoS-specific slide-in header styling
+.mobile-card-header-aos {
+  // Uses shared .mobile-card-header-scroll styles
+}

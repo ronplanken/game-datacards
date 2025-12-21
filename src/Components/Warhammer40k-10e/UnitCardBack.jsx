@@ -8,12 +8,9 @@ import { UnitWargear } from "./UnitCard/UnitWargear";
 export const UnitCardBack = ({ unit, cardStyle, paddingTop = "32px", className }) => {
   return (
     <div
-      className={className}
+      className={`unit-card-back-wrapper ${className || ""}`}
       style={{
         ...cardStyle,
-        justifyContent: "center",
-        justifyItems: "center",
-        display: "flex",
       }}>
       <div className={`unit back`} data-name={unit.name} data-fullname={`${unit.name} ${unit.subname}`}>
         <div className={"header back"}>

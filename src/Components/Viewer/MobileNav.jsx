@@ -1,16 +1,17 @@
-import { RedoOutlined, SettingOutlined, ShareAltOutlined, UndoOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Space } from "antd";
+import { Settings, Share2 } from "lucide-react";
+import { Button, Col, Row, Space, message } from "antd";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
-import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 
-export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, setAddListvisible }) => {
+export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible }) => {
   const { activeCard } = useCardStorage();
-  const { lists, selectedList } = useMobileList();
-  const { settings, updateSettings } = useSettingsStorage();
+  const { lists, selectedList, addDatacard } = useMobileList();
+
+  // Check if current card is AoS (has scalar points, not array)
+  const isAoS = activeCard?.source === "aos";
 
   const [showList, setShowList] = useState(false);
 
@@ -26,7 +27,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
         display: "flex",
         alignItems: "center",
       }}>
-      {showList && <ListOverview setShowList={setShowList} />}
+      <ListOverview isVisible={showList} setIsVisible={setShowList} />
       <Row style={{ width: "100%" }}>
         <Col span={8} style={{ paddingLeft: "8px" }}>
           <Space.Compact block size="large">
@@ -62,25 +63,17 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 size="large"
                 shape="round"
                 className="button-bar mobile-icon-button"
-                onClick={() => setAddListvisible((val) => !val)}></Button>
+                onClick={() => {
+                  if (isAoS) {
+                    // AoS: Add directly with fixed points (no unit sizes/enhancements)
+                    addDatacard(activeCard, { cost: activeCard.points }, null, false);
+                    message.success(`${activeCard.name} added to list`);
+                  } else {
+                    // 40K: Open the ListAdd sheet for unit size selection
+                    setAddListvisible((val) => !val);
+                  }
+                }}></Button>
             )}
-            {activeCard &&
-              (settings.showCardsAsDoubleSided === false || settings.showCardsAsDoubleSided === undefined) && (
-                <Button
-                  icon={side === "front" ? <RedoOutlined /> : <UndoOutlined />}
-                  type="ghost"
-                  size="large"
-                  shape="round"
-                  className="button-bar"
-                  onClick={() => {
-                    setSide((current) => {
-                      if (current === "front") {
-                        return "back";
-                      }
-                      return "front";
-                    });
-                  }}></Button>
-              )}
           </Space>
         </Col>
         <Col span={8}>
@@ -92,7 +85,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
                 size="large"
                 className="mobile-icon-button"
                 onClick={() => setSharingVisible(true)}
-                icon={<ShareAltOutlined />}
+                icon={<Share2 size={14} />}
               />
             )}
             <Button
@@ -101,7 +94,7 @@ export const MobileNav = ({ setSide, side, setMenuVisible, setSharingVisible, se
               size="large"
               className="mobile-icon-button"
               onClick={() => setMenuVisible(true)}
-              icon={<SettingOutlined />}
+              icon={<Settings size={14} />}
             />
           </Space>
         </Col>

@@ -1,5 +1,6 @@
-import { FileImageOutlined, FolderAddOutlined, PrinterOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Tooltip, message } from "antd";
+import { Image, FolderPlus, Printer } from "lucide-react";
+import { Button, Col, Row } from "antd";
+import { Tooltip } from "./Tooltip/Tooltip";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
@@ -15,14 +16,26 @@ const parser = new Parser({ mergeAttrs: true, explicitArray: false });
 
 const parseString = parser.parseString;
 
-export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
+// Helper to get total card count including sub-categories
+const getTotalCardCount = (category, allCategories) => {
+  if (!category) return 0;
+  const mainCards = category.cards?.length || 0;
+  if (category.type !== "list") {
+    const subCategories = allCategories.filter((cat) => cat.parentId === category.uuid);
+    const subCardCount = subCategories.reduce((sum, sub) => sum + (sub.cards?.length || 0), 0);
+    return mainCards + subCardCount;
+  }
+  return mainCards;
+};
+
+export const Toolbar = () => {
   const { settings } = useSettingsStorage();
 
   const navigate = useNavigate();
 
   const { logScreenView } = useFirebase();
 
-  const { cardStorage, activeCategory, saveActiveCard, cardUpdated, addCategory } = useCardStorage();
+  const { cardStorage, activeCategory, addCategory } = useCardStorage();
 
   return (
     <Row style={{ justifyContent: "space-between", background: "white", borderBottom: "1px solid #E5E5E5" }}>
@@ -33,11 +46,11 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
           justifyContent: "start",
           background: "white",
         }}>
-        <Tooltip title={"Print cards from category"} placement="bottomLeft">
+        <Tooltip content="Print cards from category" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}
-            disabled={!(activeCategory && activeCategory.cards.length > 0)}
+            disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
               logScreenView("Print");
@@ -47,35 +60,35 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
                 navigate(`/print/${categoryIndex}`);
               }
             }}
-            icon={<PrinterOutlined />}
+            icon={<Printer size={14} />}
           />
         </Tooltip>
-        <Tooltip title={"Export category to images"} placement="bottomLeft">
+        <Tooltip content="Export category to images" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}
-            disabled={!(activeCategory && activeCategory.cards.length > 0)}
+            disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
               logScreenView("Export");
               navigate(`/image-export/${categoryIndex}`);
             }}
-            icon={<FileImageOutlined />}
+            icon={<Image size={14} />}
           />
         </Tooltip>
         <Exporter />
         <Importer />
-        <Tooltip title={"Add new category"} placement="bottomLeft">
+        <Tooltip content="Add new category" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}
-            icon={<FolderAddOutlined />}
+            icon={<FolderPlus size={14} />}
             onClick={() => {
               addCategory("New Category");
             }}
           />
         </Tooltip>
-        <Tooltip title={"Add new list"} placement="bottomLeft">
+        <Tooltip content="Add new list" placement="bottom-start">
           <Button
             type={"text"}
             shape={"circle"}
@@ -85,33 +98,6 @@ export const Toolbar = ({ selectedTreeKey, setSelectedTreeKey }) => {
             }}
           />
         </Tooltip>
-      </Col>
-      <Col
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "end",
-          background: "white",
-          alignItems: "center",
-          paddingRight: "4px",
-        }}>
-        {selectedTreeKey?.includes("card") && (
-          <>
-            <Tooltip title={"Update selected card"} placement="bottom">
-              <Button
-                icon={<SaveOutlined />}
-                type={"ghost"}
-                size={"small"}
-                disabled={!cardUpdated}
-                onClick={() => {
-                  saveActiveCard();
-                  message.success("Card has been updated");
-                }}>
-                save
-              </Button>
-            </Tooltip>
-          </>
-        )}
       </Col>
     </Row>
   );

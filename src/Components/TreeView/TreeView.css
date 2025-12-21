@@ -1,0 +1,411 @@
+/* TreeView.css - Tree component styling */
+
+/* ===========================================
+   TREE CATEGORY
+   =========================================== */
+
+.tree-category {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  user-select: none;
+}
+
+.tree-category:hover {
+  background: #f5f5f5;
+}
+
+.tree-category.selected {
+  background: #e6f4ff;
+  border-left: 3px solid #1677ff;
+  padding-left: 5px;
+}
+
+.tree-category.selected:hover {
+  background: #bae0ff;
+}
+
+.tree-category-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  color: rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s ease;
+}
+
+.tree-category-toggle.expanded {
+  transform: rotate(90deg);
+}
+
+.tree-category-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.tree-category-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-category-badge {
+  background: #1677ff;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: auto;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Sub-category styling */
+.tree-category.sub-category {
+  padding-left: 24px;
+}
+
+.tree-category.sub-category.selected {
+  padding-left: 21px;
+}
+
+/* ===========================================
+   TREE ITEM
+   =========================================== */
+
+.tree-item-row {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px 0 32px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  user-select: none;
+}
+
+.tree-item-row:hover {
+  background: #f5f5f5;
+}
+
+.tree-item-row.selected {
+  background: #e6f4ff;
+  border-left: 3px solid #1677ff;
+  padding-left: 29px;
+}
+
+.tree-item-row.selected:hover {
+  background: #bae0ff;
+}
+
+.tree-item-row.dragging {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+/* Items in sub-categories get deeper indentation */
+.tree-item-row.in-sub-category {
+  padding-left: 48px;
+}
+
+.tree-item-row.in-sub-category.selected {
+  padding-left: 45px;
+}
+
+.tree-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.tree-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-item-indicators {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.tree-item-indicator {
+  display: flex;
+  align-items: center;
+  cursor: help;
+}
+
+.tree-item-points {
+  background: #1677ff;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border: none;
+}
+
+.tree-item-points:hover {
+  background: #4096ff;
+}
+
+.tree-item-select {
+  background: #f0f0f0;
+  color: rgba(0, 0, 0, 0.88);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #d9d9d9;
+}
+
+.tree-item-select:hover {
+  background: #e6e6e6;
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+/* ===========================================
+   CONTEXT MENU
+   =========================================== */
+
+.tree-context-menu {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  z-index: 1050;
+  min-width: 160px;
+  padding: 4px 0;
+  animation: contextMenuFadeIn 0.15s ease-out;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tree-context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  transition: background 0.15s ease;
+}
+
+.tree-context-menu-item:hover {
+  background: #f5f5f5;
+}
+
+.tree-context-menu-item.danger {
+  color: #ff4d4f;
+}
+
+.tree-context-menu-item.danger:hover {
+  background: #fff1f0;
+}
+
+.tree-context-menu-item.disabled {
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
+.tree-context-menu-item.disabled:hover {
+  background: transparent;
+}
+
+.tree-context-menu-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+}
+
+.tree-context-menu-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 4px 0;
+}
+
+/* ===========================================
+   RENAME MODAL
+   =========================================== */
+
+.tree-rename-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: modalOverlayFadeIn 0.2s ease-out;
+}
+
+@keyframes modalOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.tree-rename-modal {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  animation: modalSlideIn 0.2s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tree-rename-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tree-rename-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0;
+}
+
+.tree-rename-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.45);
+  transition: all 0.2s ease;
+}
+
+.tree-rename-modal-close:hover {
+  background: #f5f5f5;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.tree-rename-modal-body {
+  padding: 24px;
+}
+
+.tree-rename-modal-input {
+  width: 100%;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.tree-rename-modal-input:hover {
+  border-color: #1677ff;
+}
+
+.tree-rename-modal-input:focus {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+  outline: none;
+}
+
+.tree-rename-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.tree-rename-modal-btn {
+  height: 32px;
+  padding: 0 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tree-rename-modal-btn-cancel {
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.tree-rename-modal-btn-cancel:hover {
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+.tree-rename-modal-btn-ok {
+  background: #1677ff;
+  border: 1px solid #1677ff;
+  color: #fff;
+}
+
+.tree-rename-modal-btn-ok:hover {
+  background: #4096ff;
+  border-color: #4096ff;
+}

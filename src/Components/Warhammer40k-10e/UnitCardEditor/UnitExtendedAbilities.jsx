@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import { Button, Card, Form, Popconfirm, Select, Space, Switch, Typography } from "antd";
 import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import React from "react";
@@ -95,7 +95,7 @@ export function UnitExtendedAbilities({ type }) {
                                       };
                                     })
                                   }>
-                                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                                 </Popconfirm>
                                 <Switch
                                   checked={ability.showAbility}

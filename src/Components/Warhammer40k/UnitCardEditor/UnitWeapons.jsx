@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Button, Card, Input, Popconfirm, Space, Switch, Typography } from "antd";
 import React from "react";
@@ -90,7 +90,7 @@ export function UnitWeapons() {
                       newWargear[index].profiles.splice(pindex, 1);
                       updateActiveCard({ ...activeCard, wargear: newWargear });
                     }}>
-                    <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                    <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                   </Popconfirm>
                 </div>
               </div>
@@ -224,7 +224,7 @@ export function UnitWeapons() {
                                       return { ...activeCard, wargear: newWargear };
                                     })
                                   }>
-                                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                                 </Popconfirm>
                                 <Switch
                                   checked={wargear.active}

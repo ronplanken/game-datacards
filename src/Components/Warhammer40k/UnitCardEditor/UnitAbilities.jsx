@@ -1,4 +1,4 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import { Button, Card, Col, Empty, Form, Popconfirm, Row, Select, Space, Switch, Typography } from "antd";
 import React, { useState } from "react";
@@ -125,7 +125,7 @@ export function UnitAbilities() {
                                       return { ...activeCard, abilities: newAbilities };
                                     })
                                   }>
-                                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                                 </Popconfirm>
                                 <Switch
                                   checked={ability.showAbility}

@@ -1,0 +1,97 @@
+/* Floating Toolbar - Figma-style */
+.floating-toolbar {
+  position: sticky;
+  bottom: 24px;
+  width: fit-content;
+  margin: 0 auto;
+  background: #2c2c2c;
+  border-radius: 11px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 100;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.floating-toolbar .ant-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 8px 11px;
+  height: auto;
+  min-width: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-toolbar .ant-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.floating-toolbar .ant-btn:disabled {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.floating-toolbar .ant-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.floating-toolbar .toolbar-divider {
+  width: 1px;
+  height: 27px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 8px;
+}
+
+.floating-toolbar .ant-dropdown-trigger {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.floating-toolbar .ant-dropdown-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Floating Toolbar Menu - Dark theme dropdown */
+.floating-toolbar-menu {
+  background: #2c2c2c;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  padding: 4px;
+}
+
+.floating-toolbar-menu .ant-dropdown-menu-item {
+  color: rgba(255, 255, 255, 0.85);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.floating-toolbar-menu .ant-dropdown-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.floating-toolbar-menu .ant-dropdown-menu-item-selected {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+.floating-toolbar-menu .ant-dropdown-menu-item-divider {
+  background: rgba(255, 255, 255, 0.15);
+  margin: 4px 8px;
+}
+
+/* Zoom button text styling */
+.floating-toolbar .zoom-button {
+  min-width: 65px;
+  font-size: 18px;
+  font-weight: 500;
+}

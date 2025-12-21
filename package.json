@@ -1,6 +1,6 @@
 {
   "name": "game-datacards",
-  "version": "2.14.0",
+  "version": "3.0.0",
   "description": "The only tool you will ever need for your custom datacards",
   "private": false,
   "homepage": "https://game-datacards.eu",
@@ -15,6 +15,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "@tippyjs/react": "^4.2.6",
     "@uiw/react-md-editor": "^3.17.0",
     "antd": "^4.24.10",
     "antd-prompt": "^0.7.1",
@@ -30,6 +31,7 @@
     "just-split": "^3.0.1",
     "lint-staged": "^11.1.2",
     "localforage": "^1.10.0",
+    "lucide-react": "^0.555.0",
     "moment": "^2.29.4",
     "node-fetch": "^3.2.3",
     "node-polyfill-webpack-plugin": "^2.0.1",
@@ -57,6 +59,7 @@
     "string-width": "^5.1.2",
     "styled-components": "^6.1.18",
     "timers-browserify": "^2.0.12",
+    "tippy.js": "^6.3.7",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
     "xml2js": "^0.5.0"
@@ -66,6 +69,7 @@
     "deploy": "echo 'game-datacards.eu' > ./build/CNAME && gh-pages -d build",
     "start": "craco start",
     "build": "craco build",
+    "build:beta": "env-cmd -f .env.beta craco build",
     "test": "craco test",
     "test:ci": "CI=true craco test",
     "lint": "eslint './src/**/*.{js,jsx}'",
@@ -94,6 +98,7 @@
   "devDependencies": {
     "@craco/craco": "^6.4.5",
     "craco-less": "^2.0.0",
+    "env-cmd": "^11.0.0",
     "eslint": ">=5.16.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
@@ -101,6 +106,7 @@
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "^4.6.0",
     "gh-pages": "^6.0.0",
+    "playwright": "^1.57.0",
     "prettier": "^2.7.1"
   },
   "jest": {

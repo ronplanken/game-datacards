@@ -1,0 +1,35 @@
+.custom-toggle {
+  width: 40px;
+  height: 22px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 11px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.custom-toggle.active {
+  background: #1677ff;
+}
+
+.custom-toggle.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.custom-toggle-knob {
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.custom-toggle.active .custom-toggle-knob {
+  transform: translateX(18px);
+}

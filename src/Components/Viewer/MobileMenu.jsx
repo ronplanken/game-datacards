@@ -1,175 +1,174 @@
-import { DatabaseOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Space, Switch, Typography, message } from "antd";
-import React from "react";
-import OutsideClickHandler from "react-outside-click-handler";
+import { useState, useEffect } from "react";
+import { Bell, Database, Loader2, Repeat } from "lucide-react";
+import { message } from "antd";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { getMessages } from "../../Helpers/external.helpers";
+import { BottomSheet } from "./Mobile/BottomSheet";
+import { MobileNotifications } from "./MobileNotifications";
+import "./MobileMenu.css";
 
-export const MobileMenu = ({ setIsVisible }) => {
-  const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
+// Custom toggle component
+const Toggle = ({ checked, onChange }) => (
+  <button className={`settings-toggle ${checked ? "active" : ""}`} onClick={() => onChange(!checked)}>
+    <span className="settings-toggle-thumb" />
+  </button>
+);
+
+// Settings row component
+const SettingsRow = ({ label, checked, onChange }) => (
+  <div className="settings-row">
+    <span className="settings-label">{label}</span>
+    <Toggle checked={checked} onChange={onChange} />
+  </div>
+);
+
+export const MobileMenu = ({ isVisible, setIsVisible }) => {
+  const [checkingForUpdate, setCheckingForUpdate] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
   const { checkForUpdate } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
+
+  // Fetch messages for unread count
+  useEffect(() => {
+    getMessages().then((data) => {
+      if (data) setMessages(data.messages || []);
+    });
+  }, []);
+
+  const unreadCount = messages.filter((m) => m.id > settings.serviceMessage).length;
+
+  const handleClose = () => setIsVisible(false);
+
+  const handleUpdateDatasources = () => {
+    setCheckingForUpdate(true);
+    checkForUpdate().then(() => {
+      setCheckingForUpdate(false);
+      handleClose();
+      message.success({
+        content: "The datasource has been successfully updated.",
+        style: { marginTop: "10vh" },
+      });
+    });
+  };
+
+  const handleChangeGameSystem = () => {
+    updateSettings({
+      ...settings,
+      mobile: {
+        ...settings.mobile,
+        gameSystemSelected: false,
+      },
+    });
+    handleClose();
+  };
+
+  // Get current game system name
+  const getGameSystemName = () => {
+    switch (settings.selectedDataSource) {
+      case "40k-10e":
+        return "Warhammer 40K 10th Edition";
+      case "aos":
+        return "Age of Sigmar";
+      default:
+        return settings.selectedDataSource || "None";
+    }
+  };
+
+  const handleOpenNotifications = () => {
+    handleClose();
+    setNotificationsOpen(true);
+  };
+
+  const notificationButton = (
+    <button className="settings-header-icon-btn" onClick={handleOpenNotifications}>
+      <Bell size={20} />
+      {unreadCount > 0 && <span className="settings-header-badge">{unreadCount}</span>}
+    </button>
+  );
+
   return (
     <>
-      <div
-        style={{
-          display: "block",
-          position: "absolute",
-          height: "100vh",
-          width: "100vw",
-          backgroundColor: "#00000099",
-          top: "0px",
-          bottom: "0px",
-          zIndex: 888,
-        }}
-      />
-      <Col
-        style={{
-          display: "block",
-          backgroundColor: "#001529",
-          height: "auto",
-          padding: "8px",
-          paddingBottom: "64px",
-          width: "100vw",
-          position: "sticky",
-          bottom: "0",
-          zIndex: 999,
-          borderTop: "2px solid #f0f2f5",
-        }}
-        className="mobile-menu">
-        <OutsideClickHandler
-          onOutsideClick={() => {
-            setIsVisible(false);
-          }}>
-          <Space direction="vertical" style={{ width: "100%" }}>
-            <Typography.Text style={{ color: "white" }}>Types</Typography.Text>
-            <Card
-              type={"inner"}
-              key={`Types-01`}
-              size={"small"}
-              title={"Show Legend cards"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.showLegends}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, showLegends: value });
-                  }}
+      <BottomSheet isOpen={isVisible} onClose={handleClose} title="Settings" headerRight={notificationButton}>
+        <div className="settings-content">
+          {/* Game System Section */}
+          <div className="settings-section">
+            <h4 className="settings-section-title">Game System</h4>
+            <div className="settings-game-system">
+              <span className="settings-game-system-current">{getGameSystemName()}</span>
+              <button className="settings-action-button secondary" onClick={handleChangeGameSystem}>
+                <Repeat size={18} />
+                <span>Change</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Display Section - only for AoS */}
+          {settings.selectedDataSource === "aos" && (
+            <div className="settings-section">
+              <h4 className="settings-section-title">Display</h4>
+              <div className="settings-section-content">
+                <SettingsRow
+                  label="Use fancy fonts"
+                  checked={settings.useFancyFonts !== false}
+                  onChange={(value) => updateSettings({ ...settings, useFancyFonts: value })}
                 />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`Types-02`}
-              size={"small"}
-              title={"Show main faction cards"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.combineParentFactions}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, combineParentFactions: value });
-                  }}
+                <SettingsRow
+                  label="Show generic manifestations"
+                  checked={settings.showGenericManifestations}
+                  onChange={(value) => updateSettings({ ...settings, showGenericManifestations: value })}
                 />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`Types-03`}
-              size={"small"}
-              title={"Show allied faction cards"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.combineAlliedFactions}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, combineAlliedFactions: value });
-                  }}
+                <SettingsRow
+                  label="Show stats as badges"
+                  checked={settings.aosStatDisplayMode === "badges"}
+                  onChange={(value) => updateSettings({ ...settings, aosStatDisplayMode: value ? "badges" : "wheel" })}
                 />
-              }></Card>
-            <Typography.Text style={{ color: "white" }}>Display</Typography.Text>
-            {/* <Card
-              type={"inner"}
-              key={`display-01`}
-              size={"small"}
-              title={"Group cards by faction"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.groupByFaction}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, groupByFaction: value });
-                  }}
-                />
-              }></Card> */}
-            <Card
-              type={"inner"}
-              key={`display-01`}
-              size={"small"}
-              title={"Show points in listview"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.showPointsInListview}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, showPointsInListview: value });
-                  }}
-                />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`display-02`}
-              size={"small"}
-              title={"Group cards by role"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.groupByRole}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, groupByRole: value });
-                  }}
-                />
-              }></Card>
-            <Card
-              type={"inner"}
-              key={`display-full-size`}
-              size={"small"}
-              title={"Always show cards in single-side view"}
-              bodyStyle={{ padding: 0 }}
-              extra={
-                <Switch
-                  checked={settings.showCardsAsDoubleSided || false}
-                  onChange={(value) => {
-                    updateSettings({ ...settings, showCardsAsDoubleSided: value });
-                  }}
-                />
-              }></Card>
-            <Typography.Text style={{ color: "white" }}>Actions</Typography.Text>
-            <Button
-              size="large"
-              type="primary"
-              block
-              onClick={() => {
-                setCheckingForUpdate(true);
-                checkForUpdate().then(() => {
-                  setCheckingForUpdate(false);
-                  setIsVisible(false);
-                  message.success({
-                    content: "The datasource has been successfully updated.",
-                    style: { marginTop: "10vh" },
-                  });
-                });
-              }}
-              icon={
-                checkingForUpdate ? (
-                  <LoadingOutlined style={{ color: "white" }} />
-                ) : (
-                  <DatabaseOutlined style={{ color: "white" }} />
-                )
-              }>
-              Update datasources
-            </Button>
-          </Space>
-        </OutsideClickHandler>
-      </Col>
+              </div>
+            </div>
+          )}
+
+          {/* Card Types Section */}
+          <div className="settings-section">
+            <h4 className="settings-section-title">Card Types</h4>
+            <div className="settings-section-content">
+              <SettingsRow
+                label="Show Legend cards"
+                checked={settings.showLegends}
+                onChange={(value) => updateSettings({ ...settings, showLegends: value })}
+              />
+              {settings.selectedDataSource === "40k-10e" && (
+                <>
+                  <SettingsRow
+                    label="Show main faction cards"
+                    checked={settings.combineParentFactions}
+                    onChange={(value) => updateSettings({ ...settings, combineParentFactions: value })}
+                  />
+                  <SettingsRow
+                    label="Show allied faction cards"
+                    checked={settings.combineAlliedFactions}
+                    onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Actions Section */}
+          <div className="settings-section">
+            <h4 className="settings-section-title">Data</h4>
+            <button
+              className={`settings-action-button ${checkingForUpdate ? "loading" : ""}`}
+              onClick={handleUpdateDatasources}
+              disabled={checkingForUpdate}>
+              {checkingForUpdate ? <Loader2 size={18} className="animate-spin" /> : <Database size={18} />}
+              <span>{checkingForUpdate ? "Updating..." : "Update datasources"}</span>
+            </button>
+          </div>
+        </div>
+      </BottomSheet>
+
+      <MobileNotifications isVisible={notificationsOpen} setIsVisible={setNotificationsOpen} />
     </>
   );
 };

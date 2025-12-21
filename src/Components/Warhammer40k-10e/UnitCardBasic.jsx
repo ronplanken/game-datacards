@@ -4,13 +4,7 @@ export const UnitCardBasic = ({ unit, cardStyle, paddingTop = "32px" }) => {
   const style = unit.variant === "custom" ? { height: `${unit.height}cm`, width: `${unit.width}cm` } : {};
 
   return (
-    <div
-      style={{
-        paddingTop,
-        justifyContent: "center",
-        justifyItems: "center",
-        display: "flex",
-      }}>
+    <div className="unit-card-full-wrapper" style={{ paddingTop }}>
       <div className={`basic_unit`} style={cardStyle}>
         <div className={`page ${unit.variant || "card"} ${unit.icons || "icons"}`} style={style}>
           <div className="frame">
