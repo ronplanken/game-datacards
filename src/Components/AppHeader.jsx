@@ -12,6 +12,7 @@ import { ShareModal } from "./ShareModal";
 import { UpdateReminder } from "./UpdateReminder";
 import { WelcomeWizard } from "./WelcomeWizard";
 import { WhatsNew } from "./WhatsNew";
+import { WhatsNewWizard } from "./WhatsNewWizard";
 import "./AppHeader.css";
 
 const { Header } = Layout;
@@ -38,6 +39,7 @@ export const AppHeader = ({
       {showModals && (
         <>
           <WelcomeWizard />
+          <WhatsNewWizard />
           <WhatsNew />
           <UpdateReminder />
         </>

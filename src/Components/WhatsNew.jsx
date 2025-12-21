@@ -3,6 +3,7 @@ import React, { useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
+import { getMajorWizardVersion } from "./WhatsNewWizard";
 import "./WhatsNew.css";
 
 const modalRoot = document.getElementById("modal-root");
@@ -68,6 +69,15 @@ export const WhatsNew = () => {
   }, [handleKeyDown]);
 
   useEffect(() => {
+    // Check if major wizard should show instead
+    const currentVersion = process.env.REACT_APP_VERSION;
+    const majorVersion = getMajorWizardVersion(currentVersion);
+
+    // Don't show regular WhatsNew if major wizard should be showing
+    if (majorVersion && compare(settings.lastMajorWizardVersion, majorVersion, "<")) {
+      return;
+    }
+
     if (
       compare(settings.wizardCompleted, LAST_WIZARD_VERSION, ">=") &&
       compare(settings.wizardCompleted, process.env.REACT_APP_VERSION, "<")

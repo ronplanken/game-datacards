@@ -22,6 +22,7 @@ const defaultSettings = {
     gameSystemSelected: false,
   },
   wizardCompleted: "0.0.0",
+  lastMajorWizardVersion: "0.0.0",
   serviceMessage: 0,
   printSettings: {
     pageSize: "A4",
