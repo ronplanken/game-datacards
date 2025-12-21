@@ -1,0 +1,701 @@
+/* ===========================================
+   SHARED PAGE STYLES
+   Refined dark gaming aesthetic
+   =========================================== */
+
+/* Design Tokens */
+:root {
+  --shared-bg-primary: #0d1117;
+  --shared-bg-secondary: #161b22;
+  --shared-bg-tertiary: #21262d;
+  --shared-bg-card: #1a1f26;
+
+  --shared-border: #30363d;
+  --shared-border-light: #21262d;
+
+  --shared-text: #e6edf3;
+  --shared-text-secondary: #8b949e;
+  --shared-text-muted: #6e7681;
+
+  --shared-accent: #58a6ff;
+  --shared-accent-subtle: rgba(88, 166, 255, 0.15);
+  --shared-accent-hover: rgba(88, 166, 255, 0.25);
+
+  --shared-danger: #f85149;
+  --shared-success: #3fb950;
+
+  --shared-header-height: 64px;
+  --shared-mobile-nav-height: 72px;
+}
+
+/* ===========================================
+   LAYOUT - Desktop
+   =========================================== */
+.shared-page {
+  min-height: 100vh;
+  background: var(--shared-bg-primary);
+}
+
+.shared-header {
+  height: var(--shared-header-height);
+  background: var(--shared-bg-secondary);
+  border-bottom: 1px solid var(--shared-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.shared-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.shared-header-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+}
+
+.shared-header-title {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--shared-text);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.shared-header-category {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  color: var(--shared-text-secondary);
+  margin: 0;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shared-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Header Buttons */
+.shared-header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--shared-border);
+  background: var(--shared-bg-tertiary);
+  color: var(--shared-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.shared-header-btn:hover {
+  background: var(--shared-accent-subtle);
+  border-color: var(--shared-accent);
+}
+
+.shared-header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shared-header-btn.liked {
+  background: var(--shared-accent-subtle);
+  border-color: var(--shared-accent);
+}
+
+.shared-header-btn.liked svg {
+  fill: var(--shared-accent);
+  color: var(--shared-accent);
+}
+
+.shared-like-count {
+  font-size: 13px;
+  color: var(--shared-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================
+   DESKTOP LAYOUT - Panel
+   =========================================== */
+.shared-content {
+  height: calc(100vh - var(--shared-header-height));
+  display: flex;
+}
+
+/* Left Sidebar */
+.shared-sidebar {
+  background: var(--shared-bg-secondary);
+  border-right: 1px solid var(--shared-border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.shared-sidebar-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--shared-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shared-sidebar-title {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--shared-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.shared-card-count {
+  font-size: 12px;
+  color: var(--shared-text-muted);
+  background: var(--shared-bg-tertiary);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Card List */
+.shared-card-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.shared-card-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.shared-card-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.shared-card-list::-webkit-scrollbar-thumb {
+  background: var(--shared-border);
+  border-radius: 10px;
+}
+
+.shared-card-list::-webkit-scrollbar-thumb:hover {
+  background: var(--shared-text-muted);
+}
+
+.shared-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  margin-bottom: 4px;
+}
+
+.shared-list-item:hover {
+  background: var(--shared-bg-tertiary);
+}
+
+.shared-list-item.selected {
+  background: var(--shared-accent-subtle);
+  border-color: var(--shared-accent);
+}
+
+.shared-list-item-index {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--shared-text-muted);
+  min-width: 24px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.shared-list-item.selected .shared-list-item-index {
+  color: var(--shared-accent);
+}
+
+.shared-list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.shared-list-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--shared-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shared-list-item-type {
+  font-size: 12px;
+  color: var(--shared-text-muted);
+  margin-top: 2px;
+}
+
+/* ===========================================
+   CARD DISPLAY AREA
+   =========================================== */
+.shared-card-area {
+  height: 100%;
+  overflow: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 32px;
+  overflow: auto;
+  background:
+    radial-gradient(ellipse at top, rgba(88, 166, 255, 0.03) 0%, transparent 50%),
+    var(--shared-bg-primary);
+}
+
+.shared-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.shared-card-container {
+  animation: cardFadeIn 0.3s ease-out;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.shared-flip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--shared-border);
+  background: var(--shared-bg-secondary);
+  color: var(--shared-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.shared-flip-btn:hover {
+  background: var(--shared-accent-subtle);
+  border-color: var(--shared-accent);
+}
+
+.shared-no-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--shared-text-muted);
+  font-size: 15px;
+  padding: 48px;
+  text-align: center;
+}
+
+.shared-no-card svg {
+  opacity: 0.4;
+}
+
+/* ===========================================
+   MOBILE LAYOUT
+   =========================================== */
+.shared-mobile-container {
+  min-height: 100vh;
+  background: var(--shared-bg-primary);
+  padding-bottom: calc(var(--shared-mobile-nav-height) + env(safe-area-inset-bottom, 0px));
+}
+
+.shared-mobile-header {
+  height: 56px;
+  background: var(--shared-bg-secondary);
+  border-bottom: 1px solid var(--shared-border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.shared-mobile-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+}
+
+.shared-mobile-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--shared-text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shared-mobile-card-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+}
+
+.shared-mobile-card-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* ===========================================
+   MOBILE BOTTOM NAVIGATION
+   =========================================== */
+.shared-mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--shared-mobile-nav-height);
+  background: var(--shared-bg-secondary);
+  border-top: 1px solid var(--shared-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 200;
+}
+
+.shared-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: var(--shared-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.shared-nav-btn:hover {
+  background: var(--shared-bg-tertiary);
+}
+
+.shared-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.shared-nav-btn:disabled:hover {
+  background: transparent;
+}
+
+.shared-nav-btn.active {
+  color: var(--shared-accent);
+}
+
+.shared-nav-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.shared-nav-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: var(--shared-bg-tertiary);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid var(--shared-border);
+}
+
+.shared-nav-indicator:hover {
+  background: var(--shared-accent-subtle);
+  border-color: var(--shared-accent);
+}
+
+.shared-nav-indicator svg {
+  color: var(--shared-text-secondary);
+}
+
+.shared-nav-position {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--shared-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.shared-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.shared-nav-like {
+  position: relative;
+}
+
+.shared-nav-like-count {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--shared-accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===========================================
+   MOBILE CARD LIST (BottomSheet Content)
+   =========================================== */
+.shared-mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shared-mobile-list-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bs-surface, #f1f5f9);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.shared-mobile-list-item:active {
+  transform: scale(0.98);
+}
+
+.shared-mobile-list-item.selected {
+  background: var(--bs-accent-muted, rgba(0, 112, 214, 0.1));
+  border-color: var(--bs-accent, #0070d6);
+}
+
+.shared-mobile-list-item-index {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bs-text-muted, #64748b);
+  min-width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bs-bg, #ffffff);
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.shared-mobile-list-item.selected .shared-mobile-list-item-index {
+  background: var(--bs-accent, #0070d6);
+  color: white;
+}
+
+.shared-mobile-list-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.shared-mobile-list-item-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bs-text, #0f172a);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shared-mobile-list-item-type {
+  font-size: 13px;
+  color: var(--bs-text-muted, #64748b);
+  margin-top: 2px;
+}
+
+/* ===========================================
+   PANEL RESIZER
+   =========================================== */
+.shared-resizer {
+  width: 6px;
+  background: var(--shared-border);
+  cursor: col-resize;
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.shared-resizer::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px;
+  height: 40px;
+  background: var(--shared-text-muted);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.shared-resizer:hover {
+  background: var(--shared-accent);
+}
+
+.shared-resizer:hover::after {
+  opacity: 0.5;
+}
+
+/* ===========================================
+   LOADING STATE
+   =========================================== */
+.shared-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--shared-bg-primary);
+  gap: 16px;
+}
+
+.shared-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--shared-border);
+  border-top-color: var(--shared-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.shared-loading-text {
+  font-size: 14px;
+  color: var(--shared-text-secondary);
+}
+
+/* ===========================================
+   ERROR STATE
+   =========================================== */
+.shared-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--shared-bg-primary);
+  gap: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.shared-error-icon {
+  width: 64px;
+  height: 64px;
+  color: var(--shared-danger);
+  opacity: 0.8;
+}
+
+.shared-error-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--shared-text);
+  margin: 0;
+}
+
+.shared-error-message {
+  font-size: 14px;
+  color: var(--shared-text-secondary);
+  margin: 0;
+  max-width: 300px;
+}
+
+/* ===========================================
+   RESPONSIVE ADJUSTMENTS
+   =========================================== */
+@media (max-width: 768px) {
+  .shared-header-category {
+    display: none;
+  }
+
+  .shared-header-btn span {
+    display: none;
+  }
+
+  .shared-header-btn {
+    padding: 8px 12px;
+  }
+}
+
+/* Swipe hint animation */
+@keyframes swipeHint {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-8px);
+  }
+}
+
+.shared-swipe-hint {
+  animation: swipeHint 1.5s ease-in-out 3;
+}

@@ -2,21 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
 
-const FactionContainer = styled.div`
-  height: 64px;
-  width: 64px;
-  border: 2px solid var(--header-colour);
-  background-color: var(--rows-colour);
-  position: absolute;
-  bottom: 32px;
-  left: 677px;
-  rotate: 45deg;
-  overflow: hidden;
-`;
-
 const CustomSymbol = styled.div`
-  content: " ";
-  display: block;
   width: 100%;
   height: 100%;
   background-image: url(${(props) => props.$imageUrl});
@@ -71,14 +57,14 @@ export const UnitFactionSymbol = ({ unit }) => {
   // If custom symbol is enabled and we have a URL (local or external), render custom
   if (unit?.hasCustomFactionSymbol && symbolUrl) {
     return (
-      <FactionContainer>
+      <div className="faction">
         <CustomSymbol
           $imageUrl={symbolUrl}
           $scale={unit.factionSymbolScale}
           $positionX={unit.factionSymbolPositionX}
           $positionY={unit.factionSymbolPositionY}
         />
-      </FactionContainer>
+      </div>
     );
   }
 
