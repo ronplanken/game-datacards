@@ -12,13 +12,13 @@ export const EnhancementCard = ({
   return (
     <div
       style={{
-        ...cardStyle,
         "--width": `${enhancement.styling?.width ?? "260"}px`,
         "--height": `${enhancement.styling?.height ?? "458"}px`,
         justifyContent: "center",
         justifyItems: "center",
         display: "flex",
         paddingTop: paddingTop,
+        ...cardStyle,
       }}
       className={containerClass}>
       <div className={`own ${className} ${enhancement.faction_id}`}>

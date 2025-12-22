@@ -1,4 +1,4 @@
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { HelpCircle } from "lucide-react";
 import { Button, Col, Row, Typography } from "antd";
 import React from "react";
 import * as ReactDOM from "react-dom";
@@ -89,7 +89,7 @@ export const PrintFaq = () => {
         }}
         type="ghost"
         onClick={() => setIsPrintFaqVisible(true)}>
-        <QuestionCircleOutlined />
+        <HelpCircle size={14} />
       </Button>
     </>
   );

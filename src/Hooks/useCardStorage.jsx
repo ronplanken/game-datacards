@@ -50,8 +50,14 @@ export const CardStorageProviderComponent = (props) => {
   };
 
   const changeActiveCard = (card) => {
-    setCardUpdated(false);
-    setActiveCard(card);
+    setActiveCard((prev) => {
+      // Only update if the card is actually different
+      if (prev?.id === card?.id && prev?.uuid === card?.uuid) {
+        return prev;
+      }
+      setCardUpdated(false);
+      return card;
+    });
   };
 
   const saveActiveCard = () => {
@@ -109,7 +115,7 @@ export const CardStorageProviderComponent = (props) => {
     }
   };
 
-  const importCategory = (category) => {
+  const importCategory = (category, subCategories = []) => {
     if (!category) {
       return;
     }
@@ -118,7 +124,15 @@ export const CardStorageProviderComponent = (props) => {
     }
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
+      // Add the parent category
       newStorage.categories.push(category);
+      // Add sub-categories with parentId set to the imported category's uuid
+      subCategories.forEach((sub) => {
+        newStorage.categories.push({
+          ...sub,
+          parentId: category.uuid,
+        });
+      });
       return {
         ...newStorage,
       };
@@ -135,6 +149,30 @@ export const CardStorageProviderComponent = (props) => {
         name: categoryName,
         type,
         cards: [],
+      });
+      return {
+        ...newStorage,
+      };
+    });
+  };
+
+  const addSubCategory = (categoryName, parentId) => {
+    if (!categoryName || !parentId) {
+      return;
+    }
+    // Verify parent exists and is not itself a sub-category
+    const parentCategory = cardStorage.categories.find((cat) => cat.uuid === parentId);
+    if (!parentCategory || parentCategory.parentId || parentCategory.type === "list") {
+      return;
+    }
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      newStorage.categories.push({
+        uuid: uuidv4(),
+        name: categoryName,
+        type: "category",
+        cards: [],
+        parentId,
       });
       return {
         ...newStorage,
@@ -186,12 +224,20 @@ export const CardStorageProviderComponent = (props) => {
   const removeCategory = (categoryId) => {
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
-      const newCategories = newStorage.categories.filter((cat) => cat.uuid !== categoryId);
+      // Also remove any sub-categories that have this category as parent
+      const newCategories = newStorage.categories.filter(
+        (cat) => cat.uuid !== categoryId && cat.parentId !== categoryId
+      );
       return {
         ...newStorage,
         categories: [...newCategories],
       };
     });
+  };
+
+  // Helper to get sub-categories of a parent
+  const getSubCategories = (parentId) => {
+    return cardStorage.categories.filter((cat) => cat.parentId === parentId);
   };
 
   const updateCategory = (category, uuid) => {
@@ -221,6 +267,8 @@ export const CardStorageProviderComponent = (props) => {
     renameCategory,
     removeCategory,
     addCategory,
+    addSubCategory,
+    getSubCategories,
     updateCategory,
     saveCard,
   };

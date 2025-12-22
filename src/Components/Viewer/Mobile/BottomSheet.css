@@ -1,0 +1,183 @@
+/* BottomSheet.css - Modern Light Theme (High Contrast) */
+
+/* ===========================================
+   DESIGN TOKENS - Inherited by all content
+   =========================================== */
+.bottom-sheet {
+  /* Background Colors */
+  --bs-bg: #ffffff;
+  --bs-surface: #f1f5f9; /* Slate 100 - Slightly darker for contrast */
+  --bs-surface-hover: #e2e8f0; /* Slate 200 */
+
+  /* Accent Colors */
+  --bs-accent: #0070d6; /* App Blue */
+  --bs-accent-muted: rgba(0, 112, 214, 0.1);
+
+  /* Text Colors */
+  --bs-text: #0f172a; /* Slate 900 */
+  --bs-text-secondary: #475569; /* Slate 600 */
+  --bs-text-muted: #64748b; /* Slate 500 */
+
+  /* Border Colors */
+  --bs-border: #cbd5e1; /* Slate 300 - Higher contrast border */
+  --bs-border-light: #e2e8f0; /* Slate 200 */
+
+  /* Semantic Colors */
+  --bs-danger: #ef4444;
+  --bs-danger-bg: rgba(239, 68, 68, 0.1);
+  --bs-success: #22c55e;
+  --bs-warning: #eab308;
+}
+
+/* ===========================================
+   BACKDROP
+   =========================================== */
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4); /* Dark backdrop for contrast */
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 900;
+  opacity: 0;
+  animation: bsBackdropIn 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes bsBackdropIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================================
+   SHEET CONTAINER
+   =========================================== */
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bs-bg);
+  border-radius: 16px 16px 0 0; /* Reduced radius */
+  z-index: 901;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  animation: bsSlideUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+  overflow: hidden;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@media (min-width: 600px) {
+  .bottom-sheet {
+    bottom: 16px;
+    border-radius: 16px; /* Reduced radius */
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    width: calc(100% - 32px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  @keyframes bsSlideUp {
+    from {
+      transform: translateX(-50%) translateY(100%);
+    }
+    to {
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+}
+
+@keyframes bsSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   DRAG HANDLE
+   =========================================== */
+.bottom-sheet-handle-container {
+  padding: 10px 0 6px;
+  cursor: grab;
+  touch-action: none;
+  display: flex;
+  justify-content: center;
+  background: var(--bs-bg);
+}
+
+.bottom-sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #cbd5e1; /* Slate 300 */
+  border-radius: 100px;
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+.bottom-sheet-header {
+  background: var(--bs-bg);
+  padding: 8px 20px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.bottom-sheet-title {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--bs-text);
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.bottom-sheet-header-right {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+}
+
+/* ===========================================
+   CONTENT
+   =========================================== */
+.bottom-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 24px;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
+  background: var(--bs-bg);
+}
+
+/* Custom scrollbar */
+.bottom-sheet-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.bottom-sheet-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bottom-sheet-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .bottom-sheet-backdrop,
+  .bottom-sheet {
+    animation: none;
+  }
+}

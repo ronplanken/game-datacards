@@ -1,0 +1,50 @@
+/* DetachmentPicker.css - Modern Light Theme (Compact & High Contrast) */
+
+.detachment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detachment-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border); /* High contrast border */
+  border-radius: 8px; /* Reduced to 8px */
+  font-size: 16px;
+  color: var(--bs-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.detachment-option:active {
+  background: var(--bs-surface-hover);
+  transform: scale(0.99);
+}
+
+.detachment-option.selected {
+  background: #f0f9ff;
+  border-color: var(--bs-accent);
+  color: var(--bs-accent);
+  font-weight: 600;
+}
+
+.detachment-option.selected:active {
+  background: var(--bs-accent-muted);
+}
+
+.detachment-option svg {
+  color: var(--bs-accent);
+  flex-shrink: 0;
+}
+
+.detachment-name {
+  flex: 1;
+  line-height: 1.4;
+}

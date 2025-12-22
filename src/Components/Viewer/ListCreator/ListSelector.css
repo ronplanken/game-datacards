@@ -1,0 +1,227 @@
+/* ListSelector.css - Tactical Console Theme */
+
+/* ===========================================
+   CONTENT CONTAINER
+   =========================================== */
+.list-selector-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.list-selector-lists {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--bs-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ===========================================
+   LIST ROW
+   =========================================== */
+.list-selector-row {
+  display: flex;
+  align-items: center;
+  background: var(--bs-surface);
+}
+
+.list-selector-row.selected {
+  background: var(--bs-accent-muted);
+}
+
+.list-selector-row-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 8px 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  min-width: 0;
+}
+
+.list-selector-row-check {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bs-accent);
+  flex-shrink: 0;
+}
+
+.list-selector-row-name {
+  flex: 1;
+  font-size: 16px;
+  color: var(--bs-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-selector-row.selected .list-selector-row-name {
+  color: var(--bs-accent);
+  font-weight: 500;
+}
+
+.list-selector-row-points {
+  font-size: 14px;
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   ROW ACTIONS
+   =========================================== */
+.list-selector-row-actions {
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+}
+
+.list-selector-action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--bs-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.list-selector-action-btn:active {
+  background: var(--bs-surface-hover);
+}
+
+.list-selector-action-btn.delete:active {
+  background: var(--bs-danger-bg);
+  color: var(--bs-danger);
+}
+
+/* ===========================================
+   EDIT INPUT
+   =========================================== */
+.list-selector-edit-form {
+  flex: 1;
+  min-width: 0;
+}
+
+.list-selector-edit-input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid var(--bs-accent);
+  border-radius: 6px;
+  outline: none;
+  background: var(--bs-bg);
+  color: var(--bs-text);
+}
+
+/* ===========================================
+   CREATE NEW LIST
+   =========================================== */
+.list-selector-create {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  background: transparent;
+  border: 1px dashed var(--bs-text-muted);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--bs-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.list-selector-create:active {
+  background: var(--bs-surface);
+  border-color: var(--bs-text-secondary);
+}
+
+.list-selector-create.creating {
+  padding: 8px;
+  border-style: solid;
+  border-color: var(--bs-accent);
+  background: var(--bs-surface);
+}
+
+.list-selector-create-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.list-selector-create-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  outline: none;
+  background: var(--bs-bg);
+  color: var(--bs-text);
+}
+
+.list-selector-create-input:focus {
+  border-color: var(--bs-accent);
+}
+
+.list-selector-create-input::placeholder {
+  color: var(--bs-text-muted);
+}
+
+.list-selector-create-save,
+.list-selector-create-cancel {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.list-selector-create-save {
+  background: var(--bs-accent);
+  color: #fff;
+  box-shadow: 0 0 12px var(--bs-accent-glow);
+}
+
+.list-selector-create-save:disabled {
+  background: var(--bs-surface-hover);
+  color: var(--bs-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.list-selector-create-save:not(:disabled):active {
+  filter: brightness(0.9);
+}
+
+.list-selector-create-cancel {
+  background: var(--bs-surface);
+  color: var(--bs-text-secondary);
+}
+
+.list-selector-create-cancel:active {
+  background: var(--bs-surface-hover);
+}

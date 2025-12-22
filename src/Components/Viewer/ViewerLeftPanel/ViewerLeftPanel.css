@@ -1,0 +1,155 @@
+/* ViewerLeftPanel.css - Viewer left panel styles */
+
+.viewer-left-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #f0f2f5;
+}
+
+.viewer-left-panel-header {
+  padding: 8px 8px 0 8px;
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   LIST STYLING (matches editor DataSourceList)
+   =========================================== */
+
+.viewer-left-panel .ant-list {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  flex: 1;
+  min-height: 0;
+}
+
+.viewer-left-panel .ant-list-items {
+  height: 100%;
+}
+
+.viewer-left-panel .ant-list-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.viewer-left-panel .ant-list-item:hover {
+  background-color: #006fd610;
+}
+
+/* ===========================================
+   HEADER ITEMS
+   =========================================== */
+
+.viewer-left-panel .list-header {
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(0, 0, 0, 0.65);
+  background-color: #d3d3d36e;
+  cursor: default;
+  padding: 6px 12px;
+}
+
+.viewer-left-panel .list-header:hover {
+  background-color: #d3d3d36e;
+}
+
+/* ===========================================
+   CATEGORY ITEMS (collapsible sections)
+   =========================================== */
+
+.viewer-left-panel .list-category {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #d3d3d36e;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.viewer-left-panel .list-category:hover {
+  background-color: #c3c3c380;
+}
+
+.viewer-left-panel .list-category .icon {
+  display: flex;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.viewer-left-panel .list-category .name {
+  flex: 1;
+}
+
+/* ===========================================
+   REGULAR LIST ITEMS
+   =========================================== */
+
+.viewer-left-panel .list-item {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.viewer-left-panel .list-item.selected {
+  padding-left: 6px !important;
+  border-left: 2px solid #0070d6;
+  background-color: #0070d624;
+}
+
+.viewer-left-panel .list-item.selected:hover {
+  background-color: #0070d640;
+}
+
+.viewer-left-panel .list-item.legends {
+  color: rgba(0, 0, 0, 0.45);
+  font-style: italic;
+}
+
+/* ===========================================
+   POINTS COST BADGE
+   =========================================== */
+
+.viewer-left-panel .list-cost {
+  font-size: 11px;
+  border: 1px solid #d9d9d9;
+  background-color: var(--header-colour, #f0f0f0);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+
+.viewer-left-panel .ant-list-empty-text {
+  padding: 32px 16px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* ===========================================
+   SCROLLBAR STYLING
+   =========================================== */
+
+.viewer-left-panel .ant-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.viewer-left-panel .ant-list::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.viewer-left-panel .ant-list::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.viewer-left-panel .ant-list::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}

@@ -1,38 +1,33 @@
-import {
-  Badge,
-  Button,
-  Col,
-  Collapse,
-  Form,
-  Grid,
-  Image,
-  Layout,
-  Row,
-  Select,
-  Slider,
-  Space,
-  Spin,
-  Typography,
-} from "antd";
+import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Spin } from "antd";
 import { toBlob } from "html-to-image";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
+import "../Components/Print/Print.css";
+import { AppHeader } from "../Components/AppHeader";
+import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
-
-import "../Images.css";
-import logo from "../Images/logo.png";
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 import JSZip from "jszip";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-const { Header, Footer, Sider, Content } = Layout;
+
+// Helper to get all cards from a category including sub-categories
+const getAllCategoryCards = (category, allCategories) => {
+  const mainCards = category.cards || [];
+  if (category.type !== "list") {
+    const subCategories = allCategories.filter((cat) => cat.parentId === category.uuid);
+    const subCategoryCards = subCategories.flatMap((sub) => sub.cards || []);
+    return [...mainCards, ...subCategoryCards];
+  }
+  return mainCards;
+};
+
+const { Sider, Content } = Layout;
 const { Panel } = Collapse;
-const { useBreakpoint } = Grid;
-const { Option } = Select;
 export const ImageExport = () => {
   const { CategoryId } = useParams();
 
@@ -47,6 +42,10 @@ export const ImageExport = () => {
   const [backgrounds, setBackgrounds] = useState(settings.printSettings?.backgrounds || "standard");
   const [pixelScaling, setPixelScaling] = useState(1.5);
 
+  // Get all cards including sub-category cards
+  const category = cardStorage.categories[CategoryId];
+  const allCards = category ? getAllCategoryCards(category, cardStorage.categories) : [];
+
   const getPics = async () => {
     const zip = new JSZip();
     overlayRef.current.style.display = "inline-flex";
@@ -59,13 +58,8 @@ export const ImageExport = () => {
 
     files?.forEach(async (file, index) => {
       zip.file(
-        `${cardStorage.categories[CategoryId].name}/${cardStorage.categories[CategoryId].cards[index].name
-          .replaceAll(" ", "_")
-          .toLowerCase()}${
-          cardStorage.categories[CategoryId]?.cards[index]?.variant === "full" ||
-          settings.showCardsAsDoubleSided !== false
-            ? ".png"
-            : "-front.png"
+        `${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}${
+          allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
         }`,
         file
       );
@@ -77,19 +71,14 @@ export const ImageExport = () => {
       });
 
       backFiles?.forEach(async (file, index) => {
-        zip.file(
-          `${cardStorage.categories[CategoryId].name}/${cardStorage.categories[CategoryId].cards[index].name
-            .replaceAll(" ", "_")
-            .toLowerCase()}-back.png`,
-          file
-        );
+        zip.file(`${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
       });
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
-      link.download = `datacards_${cardStorage.categories[CategoryId].name.toLowerCase()}.zip`;
+      link.download = `datacards_${category.name.toLowerCase()}.zip`;
       link.click();
       overlayRef.current.style.display = "none";
     });
@@ -97,28 +86,13 @@ export const ImageExport = () => {
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
     return (
       <Layout>
-        <Header className="no-print" style={{ paddingLeft: "32px" }}>
-          <Row style={{ justifyContent: "space-between" }}>
-            <Col>
-              <Space size={"large"}>
-                {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
-                  <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
-                    <Image preview={false} src={logo} width={50} />
-                  </Badge.Ribbon>
-                ) : (
-                  <Image preview={false} src={logo} width={50} />
-                )}
-                <Typography.Title level={2} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
-                  Game Datacards
-                </Typography.Title>
-                <Typography.Title level={4} style={{ color: "white", marginBottom: 0 }}>
-                  Image Export
-                </Typography.Title>
-              </Space>
-            </Col>
-            <Col></Col>
-          </Row>
-        </Header>
+        <AppHeader
+          showModals={false}
+          pageTitle="Image Export"
+          showNav={false}
+          showActions={false}
+          className="no-print"
+        />
         <Layout>
           <div
             ref={overlayRef}
@@ -139,67 +113,45 @@ export const ImageExport = () => {
             }}>
             <Spin tip="Preparing download..." size="large"></Spin>
           </div>
-          <Sider
-            style={{
-              backgroundColor: "#F0F2F5",
-              zIndex: 1000,
-              borderRight: "1px solid lightgray",
-              boxShadow: "1px 0px 8px 0px rgb(0 0 0 / 15%)",
-              clipPath: "inset(0px -8px 0px 0px)",
-              height: "calc(100vh - 64px)",
-            }}
-            className="no-print small-form">
-            <Row style={{ paddingTop: 8, paddingLeft: 8, borderBottom: "1px solid lightgray" }}>
-              <Col flex="auto">
-                <Typography.Title level={5}>Settings</Typography.Title>
-              </Col>
-            </Row>
-            <Form
-              layout="vertical"
-              style={{ padding: 0, maxHeight: "calc(100vh - 205px)", zIndex: 100, overflowY: "auto" }}>
-              <Collapse>
-                <Panel header={"Other"} key={"other"}>
-                  <Form.Item label={"Background"}>
-                    <Select
-                      defaultValue={backgrounds}
-                      onChange={(val) => {
-                        setBackgrounds(val);
-                      }}
-                      options={[
-                        { label: "Standard Background", value: "standard" },
-                        { label: "Light Background", value: "light" },
-                        { label: "Coloured Ink Saver", value: "colourprint" },
-                        { label: "Greyscale Ink Saver", value: "greyprint" },
-                        // uncomment the below option to allow debug colour mode which clearly shows each element
-                        // { label: "Debug Background", value: "debug" },
-                      ]}
-                      size={"small"}
-                    />
-                  </Form.Item>
-                  <Form.Item label={`Image pixel scaling (${pixelScaling})`}>
-                    <Slider
-                      min={0.5}
-                      max={2.5}
-                      step={0.25}
-                      onChange={(val) => {
-                        setPixelScaling(val);
-                      }}
-                      value={pixelScaling}></Slider>
-                  </Form.Item>
-                </Panel>
-              </Collapse>
-            </Form>
-            <Form
-              style={{
-                padding: 8,
-                maxHeight: "100px",
-                background: "rgb(240, 242, 245)",
-                position: "absolute",
-                bottom: 0,
-                width: "100%",
-                borderTop: "1px solid lightgray",
-                zIndex: 101,
-              }}>
+          <Sider className="no-print print-sider small-form">
+            <div className="print-sider-header">
+              <h4 className="print-sider-title">Export Settings</h4>
+            </div>
+            <div className="print-settings-scroll">
+              <Form layout="vertical">
+                <Collapse defaultActiveKey={["other"]}>
+                  <Panel header={"Other"} key={"other"}>
+                    <Form.Item label={"Background"}>
+                      <Select
+                        defaultValue={backgrounds}
+                        onChange={(val) => {
+                          setBackgrounds(val);
+                        }}
+                        options={[
+                          { label: "Standard Background", value: "standard" },
+                          { label: "Light Background", value: "light" },
+                          { label: "Coloured Ink Saver", value: "colourprint" },
+                          { label: "Greyscale Ink Saver", value: "greyprint" },
+                        ]}
+                        size={"small"}
+                      />
+                    </Form.Item>
+                    <Form.Item label={`Image pixel scaling (${pixelScaling})`}>
+                      <Slider
+                        min={0.5}
+                        max={2.5}
+                        step={0.25}
+                        onChange={(val) => {
+                          setPixelScaling(val);
+                        }}
+                        value={pixelScaling}
+                      />
+                    </Form.Item>
+                  </Panel>
+                </Collapse>
+              </Form>
+            </div>
+            <div className="print-sider-footer">
               <Form.Item>
                 <Button
                   block
@@ -216,14 +168,14 @@ export const ImageExport = () => {
                   Cancel
                 </Button>
               </Form.Item>
-            </Form>
+            </div>
           </Sider>
           <Content
             style={{ minHeight: "calc(100vh - 64px)", maxHeight: "calc(100vh - 64px)", overflowX: "hidden" }}
             className="image-generator">
             <Row gutter={16} style={{ display: "flex", justifyContent: "center" }}>
               <>
-                {cardStorage.categories[CategoryId]?.cards.map((card, index) => {
+                {allCards.map((card, index) => {
                   return (
                     <div key={card.uuid}>
                       <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
@@ -241,6 +193,14 @@ export const ImageExport = () => {
                               )}
                               {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
                               {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
+                              {(card?.source === "aos" || card?.cardType === "warscroll") && (
+                                <AgeOfSigmarCardDisplay
+                                  card={card}
+                                  type="print"
+                                  cardScaling={100}
+                                  backgrounds={backgrounds}
+                                />
+                              )}
                             </div>
                             {card?.source === "40k-10e" &&
                               settings.showCardsAsDoubleSided !== true &&

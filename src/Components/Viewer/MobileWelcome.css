@@ -1,0 +1,254 @@
+/* MobileWelcome.css - Welcome screen with recent searches */
+
+/* ===========================================
+   CONTAINER
+   =========================================== */
+
+.mobile-welcome {
+  padding: 24px 16px;
+  min-height: calc(100vh - 128px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+
+.mobile-welcome-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.mobile-welcome-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0 0 8px 0;
+}
+
+.mobile-welcome-subtitle {
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.45);
+  margin: 0;
+}
+
+/* ===========================================
+   CONTINUE TO FACTION
+   =========================================== */
+
+.mobile-welcome-continue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--header-colour, #0070d6);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 24px;
+  transition: opacity 0.15s ease;
+}
+
+.mobile-welcome-continue:active {
+  opacity: 0.9;
+}
+
+.mobile-welcome-continue .continue-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mobile-welcome-continue .continue-faction {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-align: left;
+}
+
+.mobile-welcome-continue svg {
+  color: rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   BROWSE FACTIONS
+   =========================================== */
+
+.mobile-welcome-browse {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 24px;
+  transition: background 0.15s ease;
+}
+
+.mobile-welcome-browse:active {
+  background: #e8e8e8;
+}
+
+.mobile-welcome-browse span {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.88);
+  text-align: left;
+}
+
+.mobile-welcome-browse svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   RECENT SEARCHES
+   =========================================== */
+
+.recent-searches-section {
+  margin-bottom: 24px;
+}
+
+.recent-searches-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.recent-searches-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recent-searches-title svg {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.recent-searches-clear {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.recent-searches-clear:active {
+  background: #f0f0f0;
+}
+
+.recent-searches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recent-search-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.15s ease;
+  width: 100%;
+}
+
+.recent-search-item:active {
+  background: #e8e8e8;
+}
+
+.recent-search-name {
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.88);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 12px;
+}
+
+.recent-search-faction {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  background: #e8e8e8;
+  padding: 4px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+
+.mobile-welcome-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  flex: 1;
+}
+
+.mobile-welcome-empty-icon {
+  color: rgba(0, 0, 0, 0.15);
+  margin-bottom: 16px;
+}
+
+.mobile-welcome-empty p {
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.45);
+  margin: 0;
+}
+
+/* ===========================================
+   DISCORD
+   =========================================== */
+
+.mobile-welcome-discord {
+  text-align: center;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.mobile-welcome-discord p {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  margin: 0 0 12px 0;
+}
+
+.mobile-welcome-discord img {
+  max-width: 100%;
+  border-radius: 8px;
+}

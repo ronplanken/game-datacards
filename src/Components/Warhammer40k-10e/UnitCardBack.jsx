@@ -1,4 +1,5 @@
 import { UnitFactions } from "./UnitCard/UnitFactions";
+import { UnitFactionSymbol } from "./UnitCard/UnitFactionSymbol";
 import { UnitKeywords } from "./UnitCard/UnitKeywords";
 import { UnitLoadout } from "./UnitCard/UnitLoadout";
 import { UnitName } from "./UnitCard/UnitName";
@@ -7,12 +8,9 @@ import { UnitWargear } from "./UnitCard/UnitWargear";
 export const UnitCardBack = ({ unit, cardStyle, paddingTop = "32px", className }) => {
   return (
     <div
-      className={className}
+      className={`unit-card-back-wrapper ${className || ""}`}
       style={{
         ...cardStyle,
-        justifyContent: "center",
-        justifyItems: "center",
-        display: "flex",
       }}>
       <div className={`unit back`} data-name={unit.name} data-fullname={`${unit.name} ${unit.subname}`}>
         <div className={"header back"}>
@@ -28,9 +26,7 @@ export const UnitCardBack = ({ unit, cardStyle, paddingTop = "32px", className }
           <UnitKeywords keywords={unit.keywords} />
           <UnitFactions factions={unit.factions} />
         </div>
-        <div className="faction">
-          <div className={unit.faction_id}></div>
-        </div>
+        <UnitFactionSymbol unit={unit} />
       </div>
     </div>
   );

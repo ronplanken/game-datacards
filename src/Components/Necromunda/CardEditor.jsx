@@ -11,7 +11,7 @@ export const NecromundaCardEditor = () => {
 
   return (
     activeCard && (
-      <Col span={24} className="data-necromunda">
+      <Col span={24} className="card-editor data-necromunda">
         {activeCard.cardType === "ganger" && <GangerCardEditor />}
         {activeCard.cardType === "vehicle" && <VehicleCardEditor />}
         {activeCard.cardType === "empty-ganger" && <EmptyCardEditor />}

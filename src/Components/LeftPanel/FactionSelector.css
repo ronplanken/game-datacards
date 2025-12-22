@@ -1,0 +1,206 @@
+/* FactionSelector.css - Searchable faction dropdown styles */
+
+.faction-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Ensure FactionSettingsModal button matches trigger height */
+.faction-selector .faction-settings-trigger {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px;
+  min-height: 32px;
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   TRIGGER BUTTON
+   =========================================== */
+
+.faction-selector-trigger {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  transition: all 0.2s ease;
+  text-align: left;
+  height: 32px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.faction-selector-trigger:hover {
+  border-color: #1677ff;
+}
+
+.faction-selector-trigger.open {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.faction-selector-trigger-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.faction-selector-trigger-placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.faction-selector-trigger-icon {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+}
+
+.faction-selector-trigger.open .faction-selector-trigger-icon {
+  transform: rotate(180deg);
+}
+
+/* ===========================================
+   DROPDOWN
+   =========================================== */
+
+.faction-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 36px;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  overflow: hidden;
+  animation: factionDropdownSlide 0.15s ease-out;
+}
+
+@keyframes factionDropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   SEARCH INPUT
+   =========================================== */
+
+.faction-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.faction-search-icon {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.faction-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.faction-search input::placeholder {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* ===========================================
+   FACTION LIST
+   =========================================== */
+
+.faction-list {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.faction-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.faction-list::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.faction-list::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.faction-list::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* ===========================================
+   FACTION OPTION
+   =========================================== */
+
+.faction-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  transition: background 0.15s ease;
+}
+
+.faction-option:hover {
+  background: #f5f5f5;
+}
+
+.faction-option.selected {
+  background: #e6f4ff;
+  color: #1677ff;
+  font-weight: 500;
+}
+
+.faction-option.selected:hover {
+  background: #bae0ff;
+}
+
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+
+.faction-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 14px;
+}
+
+/* ===========================================
+   DIVIDER
+   =========================================== */
+
+.faction-selector-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 8px 0;
+}

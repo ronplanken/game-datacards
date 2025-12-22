@@ -1,13 +1,13 @@
-import { Button, Tooltip } from "antd";
+import { Button } from "antd";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 export const tooltipProps = {
-  placement: "bottomRight",
-  arrowPointAtCenter: true,
+  placement: "bottom-end",
 };
 
 const CustomTooltip = ({ title, keyword }) => {
   return (
-    <Tooltip {...tooltipProps} title={title}>
+    <Tooltip {...tooltipProps} content={title}>
       <Button type="text" size="small" className="rule-button">{`${keyword}`}</Button>
     </Tooltip>
   );

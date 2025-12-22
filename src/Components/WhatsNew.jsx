@@ -1,8 +1,45 @@
-import { Button, Col, Row, Typography } from "antd";
 import { compare } from "compare-versions";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
+import * as ReactDOM from "react-dom";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
+import { getMajorWizardVersion } from "./WhatsNewWizard";
+import "./WhatsNew.css";
+
+const modalRoot = document.getElementById("modal-root");
+
+const features = [
+  {
+    title: "Age of Sigmar Support",
+    description:
+      "Full support for Age of Sigmar warscrolls with spell lores, manifestations, and faction-specific styling.",
+    isNew: true,
+  },
+  {
+    title: "Updated Styling",
+    description: "Refreshed modal designs and UI components for a more modern look and feel.",
+  },
+  {
+    title: "Custom Faction Icons",
+    description: "Upload your own faction symbol with positioning and scaling controls.",
+  },
+  {
+    title: "Custom Colours",
+    description: "Override faction colours with custom banner and header colours per card.",
+  },
+  {
+    title: "Linkable Leaders",
+    description: "Link Leader and Led By entries to your own custom cards.",
+  },
+  {
+    title: "Updated Controls",
+    description: "Auto-fit card scaling and improved zoom controls in the editor.",
+  },
+  {
+    title: "Sub-categories",
+    description: "Organise your cards with nested sub-categories in the tree view.",
+  },
+];
 
 export const WhatsNew = () => {
   const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
@@ -17,7 +54,30 @@ export const WhatsNew = () => {
     });
   };
 
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Escape" && isWhatsNewVisible) {
+        closeWhatsNew();
+      }
+    },
+    [isWhatsNewVisible]
+  );
+
   useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
+  useEffect(() => {
+    // Check if major wizard should show instead
+    const currentVersion = process.env.REACT_APP_VERSION;
+    const majorVersion = getMajorWizardVersion(currentVersion);
+
+    // Don't show regular WhatsNew if major wizard should be showing
+    if (majorVersion && compare(settings.lastMajorWizardVersion, majorVersion, "<")) {
+      return;
+    }
+
     if (
       compare(settings.wizardCompleted, LAST_WIZARD_VERSION, ">=") &&
       compare(settings.wizardCompleted, process.env.REACT_APP_VERSION, "<")
@@ -26,91 +86,68 @@ export const WhatsNew = () => {
     }
   }, [settings]);
 
-  return (
-    <>
-      {isWhatsNewVisible && (
-        <div className="welcome-background">
-          <div className="whatsnew-container">
-            <div
-              style={{
-                backgroundColor: "#001529",
-                width: "100%",
-                height: "90px",
-                textAlign: "center",
-              }}>
-              <h1
-                style={{
-                  height: "100%",
-                  lineHeight: "90px",
-                  fontSize: "32px",
-                  color: "white",
-                }}>
-                Whats new in 2.13.0
-              </h1>
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeWhatsNew();
+    }
+  };
+
+  if (!isWhatsNewVisible) return null;
+
+  return ReactDOM.createPortal(
+    <div className="wn-overlay" onClick={handleOverlayClick}>
+      <div className="wn-modal" onClick={(e) => e.stopPropagation()}>
+        <header className="wn-header">
+          <div className="wn-header-content">
+            <div className="wn-title-row">
+              <h1 className="wn-title">What&apos;s New</h1>
+              <span className="wn-version-badge">v{process.env.REACT_APP_VERSION}</span>
             </div>
-            <div className="welcome-cover">
-              <>
-                <Row style={{ padding: "16px" }} className="whatsnew-content">
-                  <Col>
-                    <Typography.Title level={4}>Added</Typography.Title>
-                    <Typography.Paragraph style={{ fontSize: "16px" }}>
-                      <ul>
-                        <li>
-                          <strong>Local Image Upload</strong>
-                          <br />
-                          Upload custom images that save to your browser (not shared with others).
-                        </li>
-                        <li>
-                          <strong>Image Positioning</strong>
-                          <br />
-                          Move images left/right and up/down with slider controls.
-                        </li>
-                        <li>
-                          <strong>Image Layer Control</strong>
-                          <br />
-                          Choose if images appear above or below other card elements.
-                        </li>
-                        <li>
-                          <strong>Styling Panel Everywhere</strong>
-                          <br />
-                          Image controls now work in both single and double-sided views.
-                        </li>
-                        <li>
-                          <strong>Enhanced Text Editor</strong>
-                          <br />
-                          All text editors now support text coloring and proper line breaks.
-                        </li>
-                        <li>
-                          <strong>Unified Editor Experience</strong>
-                          <br />
-                          Consistent editing features across 10th Edition and Necromunda cards.
-                        </li>
-                      </ul>
-                    </Typography.Paragraph>
-                  </Col>
-                </Row>
-                <Row
-                  style={{
-                    paddingLeft: "16px",
-                    paddingRight: "16px",
-                    position: "absolute",
-                    bottom: "16px",
-                    width: "100%",
-                  }}
-                  justify={"space-between"}>
-                  <Col></Col>
-                  <Col>
-                    <Button type="primary" size="large" onClick={() => closeWhatsNew()}>
-                      Close
-                    </Button>
-                  </Col>
-                  <Col></Col>
-                </Row>
-              </>
-            </div>
+            <p className="wn-subtitle">Check out the latest updates and improvements.</p>
+          </div>
+          <button className="wn-close" onClick={closeWhatsNew} aria-label="Close">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </header>
+
+        <div className="wn-body">
+          <div className="wn-features">
+            {features.map((feature, index) => (
+              <article
+                key={index}
+                className={`wn-feature ${feature.isNew ? "wn-feature--new" : ""}`}
+                style={{ animationDelay: `${0.1 + index * 0.05}s` }}>
+                <div className="wn-feature-marker"></div>
+                <div className="wn-feature-content">
+                  <h3 className="wn-feature-title">
+                    {feature.title}
+                    {feature.isNew && <span className="wn-tag">New</span>}
+                  </h3>
+                  <p className="wn-feature-desc">{feature.description}</p>
+                </div>{" "}
+              </article>
+            ))}
           </div>
         </div>
-      )}
-    </>
+
+        <footer className="wn-footer">
+          <button className="wn-btn" onClick={closeWhatsNew}>
+            Okay, got it
+          </button>
+        </footer>
+      </div>
+    </div>,
+    modalRoot
   );
 };

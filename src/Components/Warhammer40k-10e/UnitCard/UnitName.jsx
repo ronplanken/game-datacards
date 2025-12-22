@@ -28,18 +28,10 @@ export const UnitName = ({
   imageZIndex,
   imagePositionX,
   imagePositionY,
+  showAllPoints,
+  showPointsModels,
 }) => {
   const imageUrl = localImageUrl || externalImage;
-
-  console.log("[UnitName] Rendering with:", {
-    name,
-    localImageUrl,
-    externalImage,
-    finalImageUrl: imageUrl,
-    imageZIndex,
-    imagePositionX,
-    imagePositionY,
-  });
 
   return (
     <HeaderContainer
@@ -54,7 +46,7 @@ export const UnitName = ({
       </div>
       {legends && <div className="legends" />}
       {combatPatrol && <div className="combatpatrol" />}
-      <UnitPoints points={points} />
+      <UnitPoints points={points} showAllPoints={showAllPoints} showPointsModels={showPointsModels} />
     </HeaderContainer>
   );
 };

@@ -1,4 +1,4 @@
-import { DeleteFilled, SettingOutlined } from "@ant-design/icons";
+import { Trash2, Settings } from "lucide-react";
 import { Button, Card, Checkbox, Dropdown, Input, Menu, Popconfirm, Space, Switch, Typography } from "antd";
 import React, { useState } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -59,7 +59,7 @@ export function UnitDatasheetLine({ sheet, index }) {
                 </Menu.Item>
               </Menu>
             }>
-            <Button type="icon" shape="circle" size="small" icon={<SettingOutlined />}></Button>
+            <Button type="icon" shape="circle" size="small" icon={<Settings size={14} />}></Button>
           </Dropdown>
 
           <Popconfirm
@@ -72,7 +72,7 @@ export function UnitDatasheetLine({ sheet, index }) {
                 return { ...activeCard, datasheet: newDatasheets };
               })
             }>
-            <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+            <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
           </Popconfirm>
           <Switch
             checked={sheet.active}

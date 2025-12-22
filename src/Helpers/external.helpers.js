@@ -430,6 +430,7 @@ export const get40k10eData = async () => {
     "unaligned",
     "emperors_children",
     "deathwatch",
+    "titan",
   ];
 
   const fetchData = async (faction) => {
@@ -557,6 +558,90 @@ export const getMessages = async () => {
   const url = `${process.env.REACT_APP_MESSAGES_URL}?${new Date().getTime()}`;
   const data = await readCsv(url);
   return data;
+};
+
+export const getAoSData = async () => {
+  const factions = [
+    "beasts_of_chaos",
+    "blades_of_khorne",
+    "bonesplitterz",
+    "cities_of_sigmar",
+    "daughters_of_khaine",
+    "disciples_of_tzeentch",
+    "flesh_eater_courts",
+    "fyreslayers",
+    "gloomspite_gitz",
+    "hedonites_of_slaanesh",
+    "helsmiths_of_hashut",
+    "idoneth_deepkin",
+    "ironjawz",
+    "kharadron_overlords",
+    "kruleboyz",
+    "lumineth_realmlords",
+    "maggotkin_of_nurgle",
+    "nighthaunt",
+    "ogor_mawtribes",
+    "ossiarch_bonereapers",
+    "seraphon",
+    "skaven",
+    "slaves_to_darkness",
+    "sons_of_behemat",
+    "soulblight_gravelords",
+    "stormcast_eternals",
+    "sylvaneth",
+  ];
+
+  const fetchData = async (faction) => {
+    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/${faction}.json?${new Date().getTime()}`;
+    const data = await readCsv(url);
+    return data;
+  };
+
+  const fetchAllData = async () => {
+    const sortedFactions = factions.sort();
+    const promises = sortedFactions.map((faction) => fetchData(faction));
+    const allData = await Promise.all(promises);
+    return allData;
+  };
+
+  const fetchGenericData = async () => {
+    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/generic.json?${new Date().getTime()}`;
+    try {
+      const data = await readCsv(url);
+      return data;
+    } catch (e) {
+      // Generic data is optional, return empty structure if not available
+      return { warscrolls: [], manifestationLores: [] };
+    }
+  };
+
+  const [allFactionsData, genericData] = await Promise.all([fetchAllData(), fetchGenericData()]);
+
+  return {
+    version: process.env.REACT_APP_VERSION,
+    lastUpdated: allFactionsData[0]?.updated,
+    lastCheckedForUpdate: new Date().toISOString(),
+    noDatasheetOptions: true,
+    noStratagemOptions: true,
+    noSubfactionOptions: true,
+    noSecondaryOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: false,
+    data: allFactionsData.map((val) => {
+      return {
+        ...val,
+        warscrolls: val?.warscrolls?.map((warscroll) => {
+          return { ...warscroll, cardType: "warscroll", source: "aos" };
+        }),
+      };
+    }),
+    genericData: {
+      warscrolls: (genericData?.warscrolls || []).map((warscroll) => {
+        return { ...warscroll, cardType: "warscroll", source: "aos", faction_id: "GENERIC" };
+      }),
+      manifestationLores: genericData?.manifestationLores || [],
+    },
+  };
 };
 
 export const getNecromundaBasicData = () => {

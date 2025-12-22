@@ -5,16 +5,16 @@ on:
     branches:
       - main
     tags-ignore:
-      - '**'
+      - "**"
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
 
 jobs:
   Run:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
 
@@ -22,7 +22,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -34,7 +34,7 @@ jobs:
         run: NODE_ENV=production yarn --production=false --immutable --immutable-cache --check-cache --prefer-offline
 
       #- name: Run Linting
-      #  run: yarn lint 
+      #  run: yarn lint
 
       - name: Run Tests
         run: yarn test:ci

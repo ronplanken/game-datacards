@@ -1,0 +1,365 @@
+/* WhatsNew.css - Clean Modern Aesthetic with More Color */
+
+/* ===========================================
+   DESIGN TOKENS
+   =========================================== */
+.wn-overlay {
+  --wn-primary: #3b82f6;       /* Vibrant Blue */
+  --wn-primary-light: #60a5fa; /* Lighter shade for accents */
+  --wn-primary-dark: #2563eb;  /* Darker shade for hover */
+  --wn-accent-green: #10b981;  /* Green for 'New' tag */
+  --wn-bg: #ffffff;
+  --wn-bg-subtle: #f3f4f6;     /* Light gray for background sections */
+  --wn-text-main: #1f2937;     /* Dark gray */
+  --wn-text-muted: #6b7280;    /* Medium gray */
+  --wn-border: #e5e7eb;        /* Light border gray */
+  --wn-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --wn-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --wn-radius: 16px;
+  --wn-radius-sm: 8px;
+}
+
+/* ===========================================
+   OVERLAY
+   =========================================== */
+.wn-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* Darker, more prominent backdrop */
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+  animation: wnFadeIn 0.2s ease-out;
+}
+
+/* ===========================================
+   MODAL
+   =========================================== */
+.wn-modal {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Slightly wider modal */
+  max-height: 85vh;
+  background: var(--wn-bg);
+  border-radius: var(--wn-radius);
+  box-shadow: var(--wn-shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: wnScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+.wn-header {
+  background: linear-gradient(135deg, var(--wn-primary-dark) 0%, var(--wn-primary) 100%); /* Darker blue gradient header */
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  color: #fff; /* White text on colored header */
+  position: relative; /* For the close button */
+}
+
+.wn-header-content {
+  flex: 1;
+}
+
+.wn-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px; /* More space */
+}
+
+.wn-title {
+  margin: 0;
+  font-size: 28px; /* Larger title */
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.wn-version-badge {
+  background: rgba(255, 255, 255, 0.2); /* Semi-transparent white badge */
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.wn-subtitle {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.wn-close {
+  background: rgba(255, 255, 255, 0.15); /* Semi-transparent white close button */
+  border: none;
+  padding: 8px;
+  margin: -8px -8px 0 0;
+  cursor: pointer;
+  color: #fff;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute; /* Position relative to header */
+  top: 16px;
+  right: 16px;
+}
+
+.wn-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg); /* Little animation */
+}
+
+/* ===========================================
+   BODY
+   =========================================== */
+.wn-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px; /* More padding */
+  background: var(--wn-bg);
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+.wn-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wn-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wn-body::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+/* ===========================================
+   FEATURES LIST
+   =========================================== */
+.wn-features {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* More space between features */
+}
+
+.wn-feature {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start; /* Align marker and text to top */
+  padding: 12px;
+  border-radius: var(--wn-radius-sm);
+  transition: background-color 0.2s;
+  animation: wnSlideInRight 0.4s ease-out backwards;
+}
+
+.wn-feature:hover {
+  background-color: var(--wn-bg-subtle);
+}
+
+.wn-feature-marker {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  background-color: var(--wn-primary-light); /* Colored dot */
+  border-radius: 50%;
+  margin-top: 6px; /* Align with first line of text */
+}
+
+.wn-feature--new .wn-feature-marker {
+  background-color: var(--wn-accent-green); /* Green for 'New' items */
+}
+
+.wn-feature-content {
+  flex: 1;
+}
+
+.wn-feature-title {
+  margin: 0 0 4px;
+  font-size: 16px; /* Slightly larger title */
+  font-weight: 600;
+  color: var(--wn-text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wn-tag {
+  font-size: 11px; /* Slightly larger tag */
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--wn-accent-green); /* Use new green accent */
+  padding: 3px 8px; /* More padding */
+  border-radius: 6px; /* More rounded */
+  line-height: 1;
+}
+
+.wn-feature-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6; /* Increased line height for readability */
+  color: var(--wn-text-muted);
+}
+
+/* ===========================================
+   FOOTER
+   =========================================== */
+.wn-footer {
+  padding: 20px 24px; /* More padding */
+  background: var(--wn-bg-subtle); /* Subtle background for footer */
+  border-top: 1px solid var(--wn-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.wn-btn {
+  background: var(--wn-primary);
+  color: #fff;
+  border: none;
+  padding: 12px 28px; /* Larger button */
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.wn-btn:hover {
+  background: var(--wn-primary-dark);
+}
+
+.wn-btn:active {
+  transform: scale(0.98);
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+@keyframes wnFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes wnScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wnSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+@media (max-width: 640px) {
+  .wn-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .wn-modal {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 20px 20px 0 0;
+    animation: wnSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .wn-header {
+    padding: 20px;
+  }
+  
+  .wn-title {
+    font-size: 24px;
+  }
+  
+  .wn-version-badge {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+  
+  .wn-subtitle {
+    font-size: 14px;
+  }
+
+  .wn-close {
+    top: 12px;
+    right: 12px;
+  }
+
+  .wn-body {
+    padding: 20px;
+  }
+  
+  .wn-features {
+    gap: 16px;
+  }
+
+  .wn-feature {
+    padding: 10px 0;
+  }
+  
+  .wn-feature-marker {
+    width: 8px;
+    height: 8px;
+    margin-top: 5px;
+  }
+
+  .wn-feature-title {
+    font-size: 15px;
+  }
+  
+  .wn-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .wn-feature-desc {
+    font-size: 13px;
+  }
+
+  .wn-footer {
+    padding: 16px 20px 32px;
+  }
+  
+  .wn-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+}
+
+@keyframes wnSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}

@@ -1,9 +1,24 @@
+/* ===========================================
+   SHARED PRINT PAGE STYLES
+   Base styles applied to both screen and print
+   =========================================== */
+
+.print-page {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #fff;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* ===========================================
+   PRINT MEDIA STYLES
+   Applied only when printing
+   =========================================== */
+
 @media print {
   @page {
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin: 0;
   }
 
   body {
@@ -17,14 +32,11 @@
   }
 
   .print-page {
-    display: flex;
-    flex-wrap: wrap;
-    background-color: #fff;
     page-break-after: always;
+    margin: 0;
+    box-shadow: none;
+    border: none;
     overflow: hidden;
-  }
-
-  .print-content {
   }
 
   .print-page:last-child {
@@ -40,28 +52,50 @@
   }
 }
 
-@media screen {
-  .print-page {
-    margin: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    background-color: white;
-    scale: 1;
-    transform-origin: top left;
-    box-shadow: 3px 3px 8px 0 rgba(0, 0, 0, 0.75);
-    page-break-after: always;
-  }
+/* ===========================================
+   SCREEN PREVIEW STYLES
+   Applied only on screen for preview
+   =========================================== */
 
+@media screen {
   .print-content {
     overflow-y: auto;
     max-height: calc(100vh - 64px);
+    background: #e8e8e8;
+    padding: 16px;
   }
 
   .printer {
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    /* background-color: green; */
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .print-page {
+    margin: 0 auto 24px auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid #d9d9d9;
+  }
+
+  /* Page number indicator - positioned above page */
+  .print-page[data-page-number] {
+    margin-top: 28px;
+  }
+
+  .print-page[data-page-number]::before {
+    content: attr(data-page-number);
+    position: absolute;
+    top: -24px;
+    left: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1677ff;
+    background: #e6f4ff;
+    padding: 2px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10;
   }
 }
 
@@ -134,6 +168,11 @@
   background-color: #0070d624;
 }
 
+/* Add padding to bottom of datasource list so last item is visible */
+.ant-list-bordered .ant-list-items {
+  padding-bottom: 32px;
+}
+
 .button-bar {
   color: white;
 }
@@ -146,32 +185,6 @@
   color: #40a9ff;
 }
 
-.tree-item {
-  width: 100%;
-  padding-left: 8px;
-  align-items: center;
-  overflow: hidden;
-}
-
-.tree-item-container.selected > .tree-item {
-  width: 100%;
-  padding-left: 4px;
-}
-
-.tree-item-container.selected {
-  background-color: #bae7ff;
-  border-left: 4px solid #0070d6;
-}
-
-.tree-item-container:hover {
-  cursor: pointer;
-  background-color: #f5f5f5;
-}
-
-.tree-item-container.selected:hover {
-  background-color: #a2dfff;
-}
-
 .dots {
   bottom: -80px !important;
   padding-top: 1em;
@@ -179,4 +192,70 @@
   margin-left: auto !important;
   margin-right: auto !important;
   background: #001529;
+}
+
+/* ===========================================
+   CARD EDITOR ACCORDION STYLES
+   Applied to all card editors across game systems
+   =========================================== */
+
+.card-editor .ant-collapse {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+.card-editor .ant-collapse > .ant-collapse-item {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.card-editor .ant-collapse > .ant-collapse-item:last-child {
+  border-bottom: none;
+}
+
+.card-editor .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  background: #fafafa;
+  border-radius: 0;
+}
+
+.card-editor .ant-collapse > .ant-collapse-item > .ant-collapse-header:hover {
+  background: #f5f5f5;
+}
+
+.card-editor .ant-collapse-content {
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+}
+
+.card-editor .ant-collapse-content > .ant-collapse-content-box {
+  padding: 12px 16px;
+}
+
+/* Form styling within card editors */
+.card-editor .ant-form-item {
+  margin-bottom: 12px;
+}
+
+.card-editor .ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.card-editor .ant-form-item-label {
+  padding-bottom: 4px;
+}
+
+.card-editor .ant-form-item-label > label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.65);
+  height: auto;
+}
+
+.card-editor .ant-select-selector,
+.card-editor .ant-input {
+  border-radius: 6px !important;
 }

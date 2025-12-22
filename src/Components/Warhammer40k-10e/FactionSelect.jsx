@@ -9,6 +9,7 @@ export const FactionSelect = ({ value, onChange }) => {
       <Option value="NONE">None</Option>
       <Option value="basic">Basic</Option>
       <Option value="AC">Adeptus Custodes</Option>
+      <Option value="AT">Adeptus Titanicus</Option>
       <Option value="AE">Aeldari</Option>
       <Option value="AoI">Agents of the Imperium</Option>
       <Option value="LGAL">Alpha Legion</Option>

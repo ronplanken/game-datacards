@@ -1,4 +1,4 @@
-import { BorderOutlined, CheckSquareOutlined } from "@ant-design/icons";
+import { Square, CheckSquare } from "lucide-react";
 import { Badge, Button, Col, Grid, Image, Layout, Row, Select, Space, Spin, Typography } from "antd";
 import { Content, Header } from "antd/lib/layout/layout";
 import { toBlob } from "html-to-image";
@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import "../App.css";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
-import "../Images.css";
 import logo from "../Images/logo.png";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -247,10 +246,10 @@ export const ImageGenerator = () => {
                     ))}
                   </Select>
                   <Button type={addStratagems ? "primary" : "default"} onClick={() => setAddStratagems((val) => !val)}>
-                    {addStratagems ? <CheckSquareOutlined /> : <BorderOutlined />}Stratagems
+                    {addStratagems ? <CheckSquare size={14} /> : <Square size={14} />}Stratagems
                   </Button>
                   <Button type={addDatasheets ? "primary" : "default"} onClick={() => setAddDatasheets((val) => !val)}>
-                    {addDatasheets ? <CheckSquareOutlined /> : <BorderOutlined />}Datasheets
+                    {addDatasheets ? <CheckSquare size={14} /> : <Square size={14} />}Datasheets
                   </Button>
                 </Space>
               </Typography.Title>

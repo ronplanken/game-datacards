@@ -1,0 +1,281 @@
+/* MobileMenu.css - Modern Light Theme (High Contrast & Compact) */
+
+/* ===========================================
+   SETTINGS CONTENT
+   =========================================== */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ===========================================
+   SECTION
+   =========================================== */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: settingsFadeIn 0.4s ease backwards;
+}
+
+.settings-section:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.settings-section:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.settings-section:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.settings-section:nth-child(4) {
+  animation-delay: 0.25s;
+}
+
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bs-text-muted);
+  margin: 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-section-content {
+  display: flex;
+  flex-direction: column;
+  background: var(--bs-surface);
+  border-radius: 8px; /* Reduced to match rect toggles */
+  border: 1px solid var(--bs-border); /* High contrast border */
+}
+
+/* ===========================================
+   SETTINGS ROW
+   =========================================== */
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: transparent;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.settings-row:active {
+  background-color: var(--bs-surface-hover);
+}
+
+.settings-row:not(:last-child) {
+  border-bottom: 1px solid var(--bs-border); /* High contrast border */
+}
+
+.settings-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-text);
+  line-height: 1.4;
+}
+
+/* ===========================================
+   TOGGLE SWITCH - Rectangular Style
+   =========================================== */
+.settings-toggle {
+  width: 46px;
+  height: 26px;
+  border-radius: 6px;
+  background: #94a3b8; /* Slate 400 - Higher contrast than Slate 300 */
+  border: none;
+  padding: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.settings-toggle.active {
+  background: var(--bs-accent);
+}
+
+.settings-toggle-thumb {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+
+.settings-toggle.active .settings-toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* ===========================================
+   ACTION BUTTONS
+   =========================================== */
+.settings-action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background: var(--bs-surface);
+  color: var(--bs-accent);
+  border: 1px solid var(--bs-border); /* High contrast border */
+  border-radius: 8px; /* Reduced to match rect toggles */
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-action-button:active:not(:disabled) {
+  background: var(--bs-surface-hover);
+  transform: scale(0.98);
+}
+
+.settings-action-button.loading {
+  opacity: 0.8;
+}
+
+.settings-action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   GAME SYSTEM DISPLAY
+   =========================================== */
+.settings-game-system {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border); /* High contrast border */
+  border-radius: 8px; /* Reduced radius */
+  min-height: 56px;
+}
+
+.settings-game-system-current {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--bs-text);
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Secondary button style - for the 'Change' button */
+.settings-action-button.secondary {
+  width: auto;
+  padding: 8px 16px;
+  background: #e2e8f0; /* Slate 200 */
+  color: var(--bs-text);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px; /* Reduced radius */
+  box-shadow: none;
+  flex-shrink: 0;
+}
+
+.settings-action-button.secondary:active:not(:disabled) {
+  background: #cbd5e1; /* Slate 300 */
+}
+
+/* ===========================================
+   HEADER ICON BUTTON
+   =========================================== */
+.settings-header-icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  border-radius: 10px;
+  color: var(--bs-text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-header-icon-btn:active {
+  background: var(--bs-surface-hover);
+  transform: scale(0.95);
+}
+
+.settings-header-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ===========================================
+   ENTRANCE ANIMATIONS
+   =========================================== */
+@keyframes settingsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .settings-toggle,
+  .settings-toggle-thumb,
+  .settings-action-button,
+  .settings-section {
+    animation: none;
+    transition: none;
+  }
+}

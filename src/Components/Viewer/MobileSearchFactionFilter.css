@@ -1,0 +1,72 @@
+/* MobileSearchFactionFilter.css - Modern Light Theme (Compact & High Contrast) */
+
+/* ===========================================
+   CONTENT CONTAINER
+   =========================================== */
+.faction-filter-content {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px;
+}
+
+/* ===========================================
+   FACTION ITEMS
+   =========================================== */
+.faction-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--bs-border); /* High contrast border */
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--bs-text);
+  transition: background 0.2s ease;
+  width: calc(100% + 40px);
+  margin: 0 -20px;
+}
+
+.faction-filter-item:first-child {
+  margin-top: -6px;
+}
+
+.faction-filter-item:last-child {
+  border-bottom: none;
+}
+
+.faction-filter-item:active {
+  background: var(--bs-surface-hover);
+}
+
+/* ===========================================
+   COLOUR INDICATOR
+   =========================================== */
+.faction-colour-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--faction-colour, var(--bs-text-muted));
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.2); /* Higher contrast border */
+}
+
+/* ===========================================
+   ITEM CONTENT
+   =========================================== */
+.faction-filter-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.faction-filter-chevron {
+  color: var(--bs-text-muted);
+  flex-shrink: 0;
+  opacity: 0.6; /* Increased opacity */
+}

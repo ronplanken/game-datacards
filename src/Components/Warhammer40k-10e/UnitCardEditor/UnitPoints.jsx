@@ -1,15 +1,41 @@
-import { DeleteFilled } from "@ant-design/icons";
+import { Trash2, Star } from "lucide-react";
 import { Button, Card, Form, Input, Popconfirm, Space, Switch } from "antd";
+import { Tooltip } from "../../Tooltip/Tooltip";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
 
 export function UnitPoints() {
-  const { activeCard, updateActiveCard } = useCardStorage();
+  const { activeCard, updateActiveCard, saveActiveCard } = useCardStorage();
 
   return (
     <>
+      <Card
+        type={"inner"}
+        title="Display Options"
+        size="small"
+        bodyStyle={{ padding: 16 }}
+        style={{ marginBottom: 16 }}>
+        <Form size="small">
+          <Form.Item label={"Show All Points"}>
+            <Switch
+              checked={activeCard.showAllPoints || false}
+              onChange={(value) => {
+                updateActiveCard({ ...activeCard, showAllPoints: value });
+              }}
+            />
+          </Form.Item>
+          <Form.Item label={"Show Models Count"} style={{ marginBottom: 0 }}>
+            <Switch
+              checked={activeCard.showPointsModels || false}
+              onChange={(value) => {
+                updateActiveCard({ ...activeCard, showPointsModels: value });
+              }}
+            />
+          </Form.Item>
+        </Form>
+      </Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {
@@ -41,6 +67,28 @@ export function UnitPoints() {
                             style={{ marginBottom: "16px" }}
                             extra={
                               <Space>
+                                <Tooltip content={point.primary ? "Primary point" : "Set as primary"}>
+                                  <Button
+                                    type="text"
+                                    size="small"
+                                    icon={
+                                      point.primary ? (
+                                        <Star size={14} fill="#faad14" color="#faad14" />
+                                      ) : (
+                                        <Star size={14} />
+                                      )
+                                    }
+                                    onClick={() =>
+                                      updateActiveCard(() => {
+                                        const newPoints = activeCard.points.map((p, i) => ({
+                                          ...p,
+                                          primary: i === index,
+                                        }));
+                                        return { ...activeCard, points: newPoints };
+                                      })
+                                    }
+                                  />
+                                </Tooltip>
                                 <Popconfirm
                                   title={"Are you sure you want to delete these points?"}
                                   placement="topRight"
@@ -51,7 +99,7 @@ export function UnitPoints() {
                                       return { ...activeCard, points: newPoints };
                                     })
                                   }>
-                                  <Button type="icon" shape="circle" size="small" icon={<DeleteFilled />}></Button>
+                                  <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                                 </Popconfirm>
                                 <Switch
                                   checked={point.active}

@@ -1,27 +1,57 @@
-import {
-  CrownFilled,
-  DeleteOutlined,
-  FileTextOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-} from "@ant-design/icons";
-import { Button, Col, Row, Space, message } from "antd";
 import { useState } from "react";
-import OutsideClickHandler from "react-outside-click-handler";
+import { Crown, Trash2, FileText, List, ChevronDown } from "lucide-react";
+import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
+import { BottomSheet } from "../Mobile/BottomSheet";
+import { ListSelector } from "./ListSelector";
+import "./ListOverview.css";
 
-export const ListOverview = ({ setShowList }) => {
+// Header actions component
+const HeaderActions = ({ onCopyToClipboard }) => (
+  <div className="list-overview-header">
+    <button className="list-overview-header-button" onClick={onCopyToClipboard}>
+      <FileText size={18} />
+    </button>
+  </div>
+);
+
+// Single list item component
+const ListItem = ({ item, onNavigate, onDelete }) => {
+  const totalCost = Number(item.points?.cost) + (Number(item.enhancement?.cost) || 0);
+
+  return (
+    <div className="list-overview-item">
+      <div className="list-overview-item-main" onClick={() => onNavigate(item)}>
+        <div className="list-overview-item-name">
+          {item.warlord && <Crown size={14} fill="currentColor" />}
+          <span>{item.card.name}</span>
+        </div>
+        {item.enhancement && (
+          <div className="list-overview-item-enhancement">{capitalizeSentence(item.enhancement.name)}</div>
+        )}
+      </div>
+      <div className="list-overview-item-points">
+        {item.points?.models > 1 ? `${item.points.models}x ` : ""}
+        {totalCost} pts
+      </div>
+      <button className="list-overview-item-delete" onClick={() => onDelete(item.id)}>
+        <Trash2 size={18} />
+      </button>
+    </div>
+  );
+};
+
+export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, removeDatacard } = useMobileList();
-  const [fullscreen, setFullscreen] = useState(false);
   const { dataSource } = useDataSourceStorage();
   const navigate = useNavigate();
+  const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
 
   const sortedCards = lists[selectedList].datacards?.reduce(
     (exportCards, card) => {
-      console.log(card);
       if (card?.card?.keywords?.includes("Character")) {
         exportCards.characters.push(card);
         return exportCards;
@@ -36,415 +66,121 @@ export const ListOverview = ({ setShowList }) => {
     { characters: [], battleline: [], other: [], allied: [] }
   );
 
+  const handleClose = () => setIsVisible(false);
+
+  const handleNavigate = (item) => {
+    const cardFaction = dataSource.data.find((faction) => faction.id === item.card?.faction_id);
+    navigate(
+      `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${item.card.name
+        .replaceAll(" ", "-")
+        .toLowerCase()}`
+    );
+    handleClose();
+  };
+
+  const handleCopyToClipboard = () => {
+    let listText = "Warhammer 40K List";
+
+    const addSection = (sectionName, cards) => {
+      if (cards.length === 0) return;
+      listText += `\n\n${sectionName}`;
+      cards.forEach((val) => {
+        listText += `\n\n${val.card.name} ${val.points?.models > 1 ? val.points?.models + "x" : ""} (${
+          Number(val?.points?.cost) + (Number(val.enhancement?.cost) || 0) || "?"
+        } pts)`;
+        if (val.warlord) {
+          listText += `\n   • Warlord`;
+        }
+        if (val.enhancement) {
+          listText += `\n   • Enhancements: ${capitalizeSentence(val.enhancement?.name)} (+${
+            val.enhancement?.cost
+          } pts)`;
+        }
+      });
+    };
+
+    addSection("CHARACTERS", sortedCards.characters);
+    addSection("BATTLELINE", sortedCards.battleline);
+    addSection("OTHER", sortedCards.other);
+
+    listText += "\n\nCreated with https://game-datacards.eu";
+    navigator.clipboard.writeText(listText);
+    message.success("List copied to clipboard.");
+  };
+
+  const sortCards = (cards) =>
+    cards.toSorted((a, b) => {
+      if (a.warlord) return -1;
+      if (b.warlord) return 1;
+      return a.card.name.localeCompare(b.card.name);
+    });
+
+  const totalPoints = lists[selectedList].datacards.reduce((acc, val) => {
+    let cost = acc + Number(val.points.cost);
+    if (val.enhancement) {
+      cost = cost + Number(val.enhancement.cost);
+    }
+    return cost;
+  }, 0);
+
+  const isEmpty = lists[selectedList].datacards.length === 0;
+
+  const headerContent = (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+      <button className="list-overview-name-selector" onClick={() => setIsListSelectorVisible(true)} type="button">
+        <span className="list-overview-name-text">{lists[selectedList].name}</span>
+        <ChevronDown size={16} />
+      </button>
+      {!isEmpty && <HeaderActions onCopyToClipboard={handleCopyToClipboard} />}
+    </div>
+  );
+
   return (
-    <OutsideClickHandler
-      onOutsideClick={() => {
-        setShowList(false);
-      }}>
-      <div
-        onClick={() => setShowList(false)}
-        style={{
-          display: "block",
-          position: "absolute",
-          height: "100dvh",
-          width: "100vw",
-          top: "0px",
-          bottom: "0px",
-          zIndex: 888,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "64px",
-          left: "0px",
-          width: "100vw",
-          backgroundColor: "#FFFFFF",
-          height: fullscreen ? "calc(100dvh - 128px)" : "300px",
-          zIndex: "999",
-          paddingTop: "0px",
-          borderTop: "2px solid #001529",
-          overflowY: "auto",
-          overflowX: "hidden",
-          scrollbarGutter: "stable",
-        }}>
-        <Space
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            paddingLeft: "16px",
-            paddingRight: "16px",
-            borderBottom: "1px solid grey",
-            fontSize: "1.1rem",
-            fontWeight: "600",
-          }}>
-          {lists[selectedList].name}
-          <Space
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "end",
-            }}>
-            <Button
-              type="text"
-              shape="circle"
-              size="large"
-              icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-              className="mobile-icon-button"
-              onClick={() => {
-                setFullscreen((val) => !val);
-              }}></Button>
-            <Button
-              type="text"
-              shape="circle"
-              size="large"
-              icon={<FileTextOutlined />}
-              className="mobile-icon-button"
-              onClick={() => {
-                let listText = "Warhammer 40K List";
+    <>
+      <BottomSheet isOpen={isVisible} onClose={handleClose} title={headerContent} maxHeight="70vh">
+        {isEmpty ? (
+          <div className="list-overview-empty">
+            <List size={48} />
+            <span className="list-overview-empty-text">Your list is currently empty</span>
+          </div>
+        ) : (
+          <div className="list-overview-items">
+            {sortedCards.characters.length > 0 && (
+              <>
+                <div className="list-overview-section">Characters</div>
+                {sortCards(sortedCards.characters).map((item) => (
+                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
+                ))}
+              </>
+            )}
 
-                const sortedCards = lists[selectedList].datacards?.reduce(
-                  (exportCards, card) => {
-                    console.log(card);
-                    if (card?.card?.keywords?.includes("Character")) {
-                      exportCards.characters.push(card);
-                      return exportCards;
-                    }
-                    if (card?.card?.keywords?.includes("Battleline")) {
-                      exportCards.battleline.push(card);
-                      return exportCards;
-                    }
-                    exportCards.other.push(card);
-                    return exportCards;
-                  },
-                  { characters: [], battleline: [], other: [], allied: [] }
-                );
-                if (sortedCards.characters.length > 0) {
-                  listText += "\n\nCHARACTERS";
+            {sortedCards.battleline.length > 0 && (
+              <>
+                <div className="list-overview-section">Battleline</div>
+                {sortCards(sortedCards.battleline).map((item) => (
+                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
+                ))}
+              </>
+            )}
 
-                  sortedCards.characters.forEach((val) => {
-                    listText += `\n\n${val.card.name} ${val.points?.models > 1 ? val.points?.models + "x" : ""} (${
-                      Number(val?.points?.cost) + (Number(val.enhancement?.cost) || 0) || "?"
-                    } pts)`;
-                    if (val.warlord) {
-                      listText += `\n   ${val.warlord ? "• Warlord" : ""}`;
-                    }
-                    if (val.enhancement) {
-                      listText += `\n   • Enhancements: ${capitalizeSentence(val.enhancement?.name)} (+${
-                        val.enhancement?.cost
-                      } pts)`;
-                    }
-                  });
-                }
-                if (sortedCards.battleline.length > 0) {
-                  listText += "\n\nBATTLELINE";
+            {sortedCards.other.length > 0 && (
+              <>
+                <div className="list-overview-section">Other</div>
+                {sortCards(sortedCards.other).map((item) => (
+                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
+                ))}
+              </>
+            )}
 
-                  sortedCards.battleline.forEach((val) => {
-                    listText += `\n\n${val.card.name} ${val.points?.models > 1 ? val.points?.models + "x" : ""} (${
-                      Number(val?.points?.cost) + (Number(val.enhancement?.cost) || 0) || "?"
-                    } pts)`;
-                    if (val.warlord) {
-                      listText += `\n   ${val.warlord ? "• Warlord" : ""}`;
-                    }
-                    if (val.enhancement) {
-                      listText += `\n   • Enhancements: ${capitalizeSentence(val.enhancement?.name)} (+${
-                        val.enhancement?.cost
-                      } pts)`;
-                    }
-                  });
-                }
-                if (sortedCards.other.length > 0) {
-                  listText += "\n\nOTHER";
-
-                  sortedCards.other.forEach((val) => {
-                    listText += `\n\n${val.card.name} ${val.points?.models > 1 ? val.points?.models + "x" : ""} (${
-                      Number(val?.points?.cost) + (Number(val.enhancement?.cost) || 0) || "?"
-                    } pts)`;
-                    if (val.warlord) {
-                      listText += `\n   ${val.warlord ? "• Warlord" : ""}`;
-                    }
-                    if (val.enhancement) {
-                      listText += `\n   • Enhancements: ${capitalizeSentence(val.enhancement?.name)} (+${
-                        val.enhancement?.cost
-                      } pts)`;
-                    }
-                  });
-                }
-                listText += "\n\nCreated with https://game-datacards.eu";
-                navigator.clipboard.writeText(listText);
-                message.success("List copied to clipboard.");
-              }}></Button>
-          </Space>
-        </Space>
-        {lists[selectedList].datacards.length === 0 && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "16px",
-              width: "100vw",
-              height: "calc(100% - 48px)",
-              padding: "2px",
-              paddingTop: "4px",
-              paddingBottom: "4px",
-              borderBottom: "2px solid #f0f2f5",
-              paddingRight: "8px",
-            }}>
-            Your list is currently empty
+            <div className="list-overview-total">
+              <span className="list-overview-total-label">Total</span>
+              <span className="list-overview-total-value">{totalPoints} pts</span>
+            </div>
           </div>
         )}
-        {sortedCards.characters.length > 0 && (
-          <div
-            style={{
-              fontSize: "14px",
-              width: "100vw",
-              height: "24px",
-              padding: "2px",
-              paddingTop: "4px",
-              paddingBottom: "4px",
-              borderBottom: "2px solid #f0f2f5",
-              paddingRight: "8px",
-              lineHeight: "1rem",
-              fontWeight: "600",
-              textTransform: "uppercase",
-              color: "white",
-              backgroundColor: "#001529",
-            }}>
-            Characters
-          </div>
-        )}
-        {sortedCards.characters
-          ?.toSorted((a, b) => {
-            if (a.warlord) {
-              return -1;
-            }
-            if (b.warlord) {
-              return 1;
-            }
-            return a.card.name.localeCompare(b.card.name);
-          })
-          .map((line, index) => {
-            return (
-              <div className="mobile-list-overview-item" key={`line.card.name-${line.id}`}>
-                <Row style={{ width: "100%", alignItems: "center" }}>
-                  <Col
-                    span={14}
-                    style={{
-                      paddingLeft: "16px",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                    }}
-                    onClick={() => {
-                      const cardFaction = dataSource.data.find((faction) => faction.id === line.card?.faction_id);
-                      navigate(
-                        `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${line.card.name
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`
-                      );
-                    }}>
-                    {line.warlord && (
-                      <span style={{ paddingRight: "8px" }}>
-                        <CrownFilled />
-                      </span>
-                    )}
-                    {line.card.name}
-                  </Col>
-                  <Col span={4} style={{ fontSize: "0.8rem" }}></Col>
-                  <Col span={4} style={{ fontSize: "0.8rem", textAlign: "right" }}>
-                    {line.points.models > 1 ? `${line.points.models}x` : ""} {line.points.cost} pts
-                  </Col>
-                  <Col span={2} style={{ fontSize: "0.8rem" }}>
-                    <Button
-                      type="text"
-                      size="large"
-                      onClick={() => removeDatacard(line.id)}
-                      icon={<DeleteOutlined />}
-                    />
-                  </Col>
-                  {line.enhancement && (
-                    <>
-                      <Col span={20} style={{ paddingLeft: "16px", fontSize: "1rem", paddingLeft: "40px" }}>
-                        {capitalizeSentence(line.enhancement.name)}
-                      </Col>
-                      <Col span={4} style={{ fontSize: "0.8rem" }}>
-                        {line.enhancement.cost} pts
-                      </Col>
-                    </>
-                  )}
-                </Row>
-              </div>
-            );
-          })}
-        {sortedCards.battleline.length > 0 && (
-          <div
-            style={{
-              fontSize: "14px",
-              width: "100vw",
-              height: "24px",
-              padding: "2px",
-              paddingTop: "4px",
-              paddingBottom: "4px",
-              borderBottom: "2px solid #f0f2f5",
-              paddingRight: "8px",
-              lineHeight: "1rem",
-              fontWeight: "600",
-              textTransform: "uppercase",
-              color: "white",
-              backgroundColor: "#001529",
-            }}>
-            Battleline
-          </div>
-        )}
-        {sortedCards.battleline
-          ?.toSorted((a, b) => {
-            if (a.warlord) {
-              return -1;
-            }
-            if (b.warlord) {
-              return 1;
-            }
-            return a.card.name.localeCompare(b.card.name);
-          })
-          .map((line, index) => {
-            return (
-              <div className="mobile-list-overview-item" key={`line.card.name-${line.id}`}>
-                <Row style={{ width: "100%", alignItems: "center" }}>
-                  <Col
-                    span={14}
-                    style={{
-                      paddingLeft: "16px",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                    }}
-                    onClick={() => {
-                      const cardFaction = dataSource.data.find((faction) => faction.id === line.card?.faction_id);
-                      navigate(
-                        `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${line.card.name
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`
-                      );
-                    }}>
-                    {line.warlord && (
-                      <span style={{ paddingRight: "8px" }}>
-                        <CrownFilled />
-                      </span>
-                    )}
-                    {line.card.name}
-                  </Col>
-                  <Col span={4} style={{ fontSize: "0.8rem" }}></Col>
-                  <Col span={4} style={{ fontSize: "0.8rem", textAlign: "right" }}>
-                    {line.points.models > 1 ? `${line.points.models}x` : ""} {line.points.cost} pts
-                  </Col>
-                  <Col span={2} style={{ fontSize: "0.8rem" }}>
-                    <Button
-                      type="text"
-                      size="large"
-                      onClick={() => removeDatacard(line.id)}
-                      icon={<DeleteOutlined />}
-                    />
-                  </Col>
-                  {line.enhancement && (
-                    <>
-                      <Col span={20} style={{ paddingLeft: "16px", fontSize: "1rem", paddingLeft: "40px" }}>
-                        {capitalizeSentence(line.enhancement.name)}
-                      </Col>
-                      <Col span={4} style={{ fontSize: "0.8rem" }}>
-                        {line.enhancement.cost} pts
-                      </Col>
-                    </>
-                  )}
-                </Row>
-              </div>
-            );
-          })}
-        {sortedCards.other.length > 0 && (
-          <div
-            style={{
-              fontSize: "14px",
-              width: "100vw",
-              height: "24px",
-              padding: "2px",
-              paddingTop: "4px",
-              paddingBottom: "4px",
-              borderBottom: "2px solid #f0f2f5",
-              paddingRight: "8px",
-              lineHeight: "1rem",
-              fontWeight: "600",
-              textTransform: "uppercase",
-              color: "white",
-              backgroundColor: "#001529",
-            }}>
-            Other
-          </div>
-        )}
-        {sortedCards.other
-          ?.toSorted((a, b) => {
-            if (a.warlord) {
-              return -1;
-            }
-            if (b.warlord) {
-              return 1;
-            }
-            return a.card.name.localeCompare(b.card.name);
-          })
-          .map((line, index) => {
-            return (
-              <div className="mobile-list-overview-item" key={`line.card.name-${line.id}`}>
-                <Row style={{ width: "100%", alignItems: "center" }}>
-                  <Col
-                    span={14}
-                    style={{
-                      paddingLeft: "16px",
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                    }}
-                    onClick={() => {
-                      const cardFaction = dataSource.data.find((faction) => faction.id === line.card?.faction_id);
-                      navigate(
-                        `/viewer/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${line.card.name
-                          .replaceAll(" ", "-")
-                          .toLowerCase()}`
-                      );
-                    }}>
-                    {line.warlord && (
-                      <span style={{ paddingRight: "8px" }}>
-                        <CrownFilled />
-                      </span>
-                    )}
-                    {line.card.name}
-                  </Col>
-                  <Col span={4} style={{ fontSize: "0.8rem" }}></Col>
-                  <Col span={4} style={{ fontSize: "0.8rem", textAlign: "right" }}>
-                    {line.points.models > 1 ? `${line.points.models}x` : ""} {line.points.cost} pts
-                  </Col>
-                  <Col span={2} style={{ fontSize: "0.8rem" }}>
-                    <Button
-                      type="text"
-                      size="large"
-                      onClick={() => removeDatacard(line.id)}
-                      icon={<DeleteOutlined />}
-                    />
-                  </Col>
-                  {line.enhancement && (
-                    <>
-                      <Col span={20} style={{ paddingLeft: "16px", fontSize: "1rem", paddingLeft: "40px" }}>
-                        {capitalizeSentence(line.enhancement.name)}
-                      </Col>
-                      <Col span={4} style={{ fontSize: "0.8rem" }}>
-                        {line.enhancement.cost} pts
-                      </Col>
-                    </>
-                  )}
-                </Row>
-              </div>
-            );
-          })}
-      </div>
-    </OutsideClickHandler>
+      </BottomSheet>
+
+      <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
+    </>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { UnitExtra } from "./UnitCard/UnitExtra";
 import { UnitFactions } from "./UnitCard/UnitFactions";
+import { UnitFactionSymbol } from "./UnitCard/UnitFactionSymbol";
 import { UnitInvulTop } from "./UnitCard/UnitInvulTop";
 import { UnitKeywords } from "./UnitCard/UnitKeywords";
 import { UnitName } from "./UnitCard/UnitName";
@@ -69,12 +70,9 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
   }, [unit?.uuid, unit?.hasLocalImage, isReady]); // Removed getImageUrl from dependencies
   return (
     <div
-      className={className}
+      className={`unit-card-front-wrapper ${className || ""}`}
       style={{
         ...cardStyle,
-        justifyContent: "center",
-        justifyItems: "center",
-        display: "flex",
       }}>
       <div className={`unit front`} data-name={unit.name} data-fullname={`${unit.name} ${unit.subname}`}>
         <div className={"header"}>
@@ -89,6 +87,8 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
             imageZIndex={unit.imageZIndex}
             imagePositionX={unit.imagePositionX}
             imagePositionY={unit.imagePositionY}
+            showAllPoints={unit.showAllPoints}
+            showPointsModels={unit.showPointsModels}
           />
           <UnitStats stats={unit.stats} />
           <div className="stats_container" key={`stat-line-invul`}>
@@ -107,9 +107,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
           <UnitKeywords keywords={unit.keywords} />
           <UnitFactions factions={unit.factions} />
         </div>
-        <div className="faction">
-          <div className={unit.faction_id}></div>
-        </div>
+        <UnitFactionSymbol unit={unit} />
       </div>
     </div>
   );

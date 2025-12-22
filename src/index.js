@@ -3,12 +3,21 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
-import { BrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, ScrollRestoration, Outlet, Navigate } from "react-router-dom";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
-import { AppRoutes } from "./Routes/AppRoutes";
+import { UserProviderComponent } from "./Hooks/useUser";
+
+import App from "./App";
+import { ImageExport } from "./Pages/ImageExport";
+import { ImageGenerator } from "./Pages/ImageGenerator";
+import { LegacyPrint } from "./Pages/LegacyPrint";
+import { Print } from "./Pages/Print";
+import { Shared } from "./Pages/Shared";
+import { Viewer } from "./Pages/Viewer";
+import { ViewerMobile } from "./Pages/ViewerMobile";
 
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
@@ -63,28 +72,95 @@ function ErrorFallback({ error }) {
   );
 }
 
-const container = document.getElementById("root");
-const root = createRoot(container);
-
-root.render(
+// Layout component that wraps all routes with providers
+const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <SettingsStorageProviderComponent>
-      <FirebaseProviderComponent>
-        <DataSourceStorageProviderComponent>
-          <CardStorageProviderComponent>
-            <MobileListProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </MobileListProvider>
-          </CardStorageProviderComponent>
-        </DataSourceStorageProviderComponent>
-      </FirebaseProviderComponent>
+      <UserProviderComponent>
+        <FirebaseProviderComponent>
+          <DataSourceStorageProviderComponent>
+            <CardStorageProviderComponent>
+              <MobileListProvider>
+                <Outlet />
+                <ScrollRestoration />
+              </MobileListProvider>
+            </CardStorageProviderComponent>
+          </DataSourceStorageProviderComponent>
+        </FirebaseProviderComponent>
+      </UserProviderComponent>
     </SettingsStorageProviderComponent>
   </ErrorBoundary>
 );
+
+const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    children: [
+      // Root route - redirect based on device
+      { path: "/", element: isMobile ? <Navigate to="/mobile" replace /> : <App /> },
+      // Shared card view
+      { path: "shared/:Id", element: <Shared /> },
+      // Desktop viewer routes
+      { path: "viewer/:faction/manifestation-lores", element: <Viewer showManifestationLores /> },
+      { path: "viewer/:faction/manifestation-lore/:spell", element: <Viewer /> },
+      { path: "viewer/:faction/spell-lores", element: <Viewer showSpellLores /> },
+      { path: "viewer/:faction/spell-lore/:spell", element: <Viewer /> },
+      { path: "viewer/:faction?/:unit?", element: <Viewer /> },
+      { path: "viewer/:faction?/stratagem/:stratagem?", element: <Viewer /> },
+      { path: "viewer/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <Viewer /> },
+      // Mobile viewer routes
+      { path: "mobile", element: <ViewerMobile /> },
+      { path: "mobile/:faction/units", element: <ViewerMobile showUnits /> },
+      { path: "mobile/:faction/manifestation-lores", element: <ViewerMobile showManifestationLores /> },
+      { path: "mobile/:faction/manifestation-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction/spell-lores", element: <ViewerMobile showSpellLores /> },
+      { path: "mobile/:faction/spell-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction?/:unit?", element: <ViewerMobile /> },
+      { path: "mobile/:faction?/stratagem/:stratagem?", element: <ViewerMobile /> },
+      { path: "mobile/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <ViewerMobile /> },
+      // Print and export routes
+      { path: "print/:CategoryId", element: <Print /> },
+      { path: "legacy-print/:CategoryId", element: <LegacyPrint /> },
+      { path: "image-generator", element: <ImageGenerator /> },
+      { path: "image-export/:CategoryId", element: <ImageExport /> },
+    ],
+  },
+]);
+
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(<RouterProvider router={router} />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+// Register service worker for PWA functionality (mobile only)
+if ("serviceWorker" in navigator && isMobile) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("Service Worker registered with scope:", registration.scope);
+
+        // Check for updates
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          console.log("Service Worker update found");
+
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              console.log("New Service Worker installed, refresh to update");
+            }
+          });
+        });
+      })
+      .catch((error) => {
+        console.error("Service Worker registration failed:", error);
+      });
+  });
+}

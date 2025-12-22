@@ -1,4 +1,8 @@
-export const Page = ({ faction, size, customSize, orientation, children, style }) => {
+/**
+ * Page component - Represents a single printable page.
+ * Handles page size calculations and displays page number in preview.
+ */
+export const Page = ({ faction, size, customSize, orientation, children, style, pageNumber, totalPages }) => {
   let pageSize;
 
   switch (size) {
@@ -21,16 +25,26 @@ export const Page = ({ faction, size, customSize, orientation, children, style }
       pageSize = { height: "297mm", width: "210mm" };
       break;
   }
+
   if (orientation === "landscape") {
     pageSize = { height: pageSize.width, width: pageSize.height };
   }
+
+  // Build page label for preview
+  const pageLabel = pageNumber
+    ? totalPages
+      ? `Page ${pageNumber} of ${totalPages}`
+      : `Page ${pageNumber}`
+    : undefined;
+
   return (
     <div
       style={{
         ...style,
         ...pageSize,
       }}
-      className={`${faction || "data-basic"} print-page`}>
+      className={`${faction || "data-basic"} print-page`}
+      data-page-number={pageLabel}>
       {children}
     </div>
   );
