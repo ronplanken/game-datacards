@@ -422,6 +422,13 @@
   margin-bottom: 0;
 }
 
+.rule-accordion-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0 0 0.25rem 0;
+  color: rgba(0, 0, 0, 0.85);
+}
+
 /* ===========================================
    SECTIONS SPACING
    =========================================== */
