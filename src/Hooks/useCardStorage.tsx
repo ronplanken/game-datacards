@@ -3,9 +3,15 @@ import clone from "just-clone";
 import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { parseStorageJson } from "../Helpers/cardstorage.helpers";
+import { Card, CardStorageContextType, CardStorageState, Category, CategoryType } from "../types/types";
 
-const CardStorageContext = React.createContext(undefined);
+const CardStorageContext = React.createContext<CardStorageContextType>(undefined);
 
+/**
+ * Provides access to the current card storage
+ *
+ * @returns CardStorageContextType
+ */
 export function useCardStorage() {
   const context = React.useContext(CardStorageContext);
   if (context === undefined) {
@@ -15,7 +21,7 @@ export function useCardStorage() {
 }
 
 export const CardStorageProviderComponent = (props) => {
-  const [cardStorage, setCardStorage] = React.useState(() => {
+  const [cardStorage, setCardStorage] = React.useState<CardStorageState>(() => {
     try {
       const oldStorage = localStorage.getItem("cards");
       const newStorage = localStorage.getItem("storage");
@@ -138,7 +144,7 @@ export const CardStorageProviderComponent = (props) => {
       };
     });
   };
-  const addCategory = (categoryName, type = "category") => {
+  const addCategory = (categoryName, type: CategoryType = "category") => {
     if (!categoryName) {
       return;
     }
@@ -252,7 +258,7 @@ export const CardStorageProviderComponent = (props) => {
     });
   };
 
-  const context = {
+  const context: CardStorageContextType = {
     cardStorage,
     activeCard,
     updateActiveCard,

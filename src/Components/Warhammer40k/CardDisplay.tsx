@@ -6,8 +6,9 @@ import { PsychicCard } from "./PsychicCard";
 import { SecondaryCard } from "./SecondaryCard";
 import { StratagemCard } from "./StratagemCard";
 import { UnitCard } from "./UnitCard";
+import { Card, CardDisplayProps, CardDisplayType } from "../../types/types";
 
-export const Warhammer40KCardDisplay = ({ type, card, cardScaling = 100, printPadding = 0 }) => {
+export const Warhammer40KCardDisplay = ({ type, card, cardScaling = 100, printPadding = 0 }: CardDisplayProps) => {
   const { activeCard } = useCardStorage();
   const { settings } = useSettingsStorage();
 
@@ -15,7 +16,7 @@ export const Warhammer40KCardDisplay = ({ type, card, cardScaling = 100, printPa
     cardScaling = (window.innerWidth / sizes[card?.variant || "card"]?.widthInPixels) * 100;
   }
 
-  let resizedStyle = {
+  let resizedStyle: object = {
     height: `calc(${sizes[card?.variant || "card"]?.height || 1} * ${cardScaling / 100} )`,
     width: `calc(${sizes[card?.variant || "card"]?.width || 1} * ${cardScaling / 100} )`,
   };

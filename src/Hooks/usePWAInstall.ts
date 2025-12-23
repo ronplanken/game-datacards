@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+/**
+ * React hook to enable progressive web app installation
+ */
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -21,7 +24,7 @@ export function usePWAInstall() {
       }
 
       // Check for iOS Safari standalone
-      if (window.navigator.standalone === true) {
+      if (window.navigator.hasOwnProperty("standalone") && window.navigator["standalone"] === true) {
         setIsInstalled(true);
         return true;
       }

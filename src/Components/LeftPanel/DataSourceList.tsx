@@ -6,6 +6,7 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { confirmDialog } from "../ConfirmChangesModal";
+import { Card, DataSourceListItem } from "../../types/types";
 
 export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSelectedTreeIndex }) => {
   const { settings, updateSettings } = useSettingsStorage();
@@ -62,7 +63,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
     });
   };
 
-  const renderItem = (card, index) => {
+  const renderItem = (card: DataSourceListItem, index) => {
     if (card.type === "header") {
       return (
         <List.Item key={`list-header-${index}`} className={`list-header`} onClick={() => {}}>

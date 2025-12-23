@@ -5,16 +5,17 @@ import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { WarscrollCard } from "./WarscrollCard";
 import { SpellCard } from "./SpellCard";
+import { CardDisplayProps } from "../../types/types";
 
 export const AgeOfSigmarCardDisplay = ({
   type,
   card,
   cardScaling,
   printPadding,
+  onBack,
   side = "front",
   backgrounds = "standard",
-  onBack,
-}) => {
+}: CardDisplayProps & { side?: "front"; backgrounds?: "standard"; onBack?: () => void }) => {
   const { activeCard, setActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
   const { dataSource, selectedFaction } = useDataSourceStorage();

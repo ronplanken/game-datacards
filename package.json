@@ -72,6 +72,7 @@
     "build:beta": "env-cmd -f .env.beta craco build",
     "test": "craco test",
     "test:ci": "CI=true craco test",
+    "typecheck": "tsc  ",
     "lint": "eslint './src/**/*.{js,jsx}'",
     "prettier:fix": "prettier --config .prettierrc --write '**/*.{js,ts,tsx,css}'",
     "lint:fix": "yarn lint --fix",
@@ -97,6 +98,9 @@
   },
   "devDependencies": {
     "@craco/craco": "^6.4.5",
+    "@types/node": "^25.0.2",
+    "@types/react": "^19.2.7",
+    "@types/uuid": "^8.0.0",
     "craco-less": "^2.0.0",
     "env-cmd": "^11.0.0",
     "eslint": ">=5.16.0",
@@ -107,7 +111,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "gh-pages": "^6.0.0",
     "playwright": "^1.57.0",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "typescript": "^5.9.3"
   },
   "jest": {
     "moduleNameMapper": {

@@ -1,7 +1,8 @@
 import { message } from "antd";
 import React from "react";
+import { SettingsStorageContextType } from "../types/types";
 
-const SettingsStorageContext = React.createContext(undefined);
+const SettingsStorageContext = React.createContext<SettingsStorageContextType>(undefined);
 
 const defaultSettings = {
   version: process.env.REACT_APP_VERSION,
@@ -39,6 +40,12 @@ const defaultSettings = {
   aosStatDisplayMode: "wheel", // "wheel" | "badges"
 };
 
+/**
+ * react hook to read and write the settings storage
+ *
+ * @export
+ * @returns {*}
+ */
 export function useSettingsStorage() {
   const context = React.useContext(SettingsStorageContext);
   if (context === undefined) {
@@ -47,6 +54,12 @@ export function useSettingsStorage() {
   return context;
 }
 
+/**
+ * react hook context provider component
+ *
+ * @param {*} props
+ * @returns {*}
+ */
 export const SettingsStorageProviderComponent = (props) => {
   const [localSettings, setLocalSettings] = React.useState(() => {
     try {

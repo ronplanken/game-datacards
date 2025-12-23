@@ -11,6 +11,9 @@ const defaultSettings = {
   removeDatacard: () => {},
 };
 
+/**
+ * TODO removed unused hook
+ */
 export function useServiceMessages() {
   const context = React.useContext(ServiceMessagesContext);
   if (context === undefined) {
@@ -18,7 +21,9 @@ export function useServiceMessages() {
   }
   return context;
 }
-
+/**
+ * TODO remove unused Provider
+ */
 export const ServiceMessagesProvider = (props) => {
   const [messages, setMessages] = React.useState(() => {
     try {
@@ -28,10 +33,10 @@ export const ServiceMessagesProvider = (props) => {
       }
       return [];
     } catch (e) {
-      message.error("An error occored while trying to load the service messages.");
+      console.error("An error occored while trying to load the service messages.");
       return [];
     }
   });
 
-  return <ServiceMessagesContext.Provider value={context}>{props.children}</ServiceMessagesContext.Provider>;
+  return <ServiceMessagesContext.Provider value={messages}>{props.children}</ServiceMessagesContext.Provider>;
 };

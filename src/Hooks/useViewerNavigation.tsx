@@ -4,6 +4,10 @@ import { useDataSourceStorage } from "./useDataSourceStorage";
 import { useCardStorage } from "./useCardStorage";
 import { useSettingsStorage } from "./useSettingsStorage";
 
+/**
+ * hook to imperatively navigate the app
+ * @returns
+ */
 export function useViewerNavigation() {
   const { faction, unit, alliedFaction, alliedUnit, stratagem, spell } = useParams();
   const navigate = useNavigate();
