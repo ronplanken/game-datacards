@@ -117,9 +117,10 @@ export type CardStorageContextType = {
   setActiveCard: (card?: Card) => void;
   activeCategory: Category;
   cardUpdated;
+  saveCard: (card: Card, categoryId?: Category["uuid"]) => void;
   saveActiveCard: () => void;
   setActiveCategory: (cat: Category) => void;
-  addCardToCategory: (card: Card, category?: Category["uuid"]) => void;
+  addCardToCategory: (card: Card, categoryId?: Category["uuid"]) => void;
   removeCardFromCategory: (cardId: string, cat: string) => void;
   importCategory: (category: Category, categories?: Category[]) => void;
   renameCategory: (cateoryId: string, catroryName: string) => void;
