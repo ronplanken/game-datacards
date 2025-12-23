@@ -78,7 +78,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const isAoS = settings.selectedDataSource === "aos";
 
   // Scroll-reveal header for AoS only
-  const { showHeader, headerReady, transitionsEnabled, scrollContainerRef } = useScrollRevealHeader({
+  const { showHeader, headerReady, scrollContainerRef } = useScrollRevealHeader({
     enabled: !!activeCard && activeCard.source === "aos",
     targetSelector: ".warscroll-unit-name",
     topOffset: 64,
@@ -171,7 +171,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
       case "necromunda":
         return <NecromundaCardDisplay />;
       case "aos":
-        return <AgeOfSigmarCardDisplay type={type} />;
+        return <AgeOfSigmarCardDisplay type={type} onBack={type === "viewer" ? handleBackFromCard : undefined} />;
       default:
         return null;
     }
@@ -246,19 +246,12 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
           <Row>
             <Col ref={parent} span={24}>
-              {/* AoS: Floating back button (visible before scroll, only after ready) */}
-              {activeCard && isAoS && headerReady && !showHeader && (
-                <button className="mobile-card-back-floating" onClick={handleBackFromCard} type="button">
-                  <ArrowLeft size={20} />
-                </button>
-              )}
-
-              {/* AoS: Slide-in header (visible after scroll, only render after ready) */}
+              {/* AoS: Sticky header (visible after scroll, only render after ready) */}
               {activeCard && isAoS && headerReady && (
                 <div
                   className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
                     showHeader ? "visible" : "hidden"
-                  } ${!transitionsEnabled ? "no-transition" : ""}`}
+                  }`}
                   style={{
                     "--banner-colour": cardFaction?.colours?.banner,
                     "--header-colour": cardFaction?.colours?.header,

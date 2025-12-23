@@ -23,6 +23,7 @@ const defaultSettings = {
     gameSystemSelected: false,
   },
   wizardCompleted: "0.0.0",
+  lastMajorWizardVersion: "0.0.0",
   serviceMessage: 0,
   printSettings: {
     pageSize: "A4",
@@ -36,6 +37,7 @@ const defaultSettings = {
   zoom: 100,
   useFancyFonts: true,
   showGenericManifestations: false,
+  aosStatDisplayMode: "wheel", // "wheel" | "badges"
 };
 
 export function useSettingsStorage() {

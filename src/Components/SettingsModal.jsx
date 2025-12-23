@@ -222,6 +222,11 @@ export const SettingsModal = () => {
                         <h4 className="changelog-section-title">Added</h4>
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
+                            <strong>Age of Sigmar Support</strong>
+                            Full support for Age of Sigmar warscrolls with spell lores, manifestations, and
+                            faction-specific styling.
+                          </li>
+                          <li className="changelog-list-item">
                             <strong>Updated Styling</strong>
                             Refreshed modal designs and UI components for a more modern look and feel.
                           </li>

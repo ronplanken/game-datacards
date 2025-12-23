@@ -168,6 +168,11 @@
   background-color: #0070d624;
 }
 
+/* Add padding to bottom of datasource list so last item is visible */
+.ant-list-bordered .ant-list-items {
+  padding-bottom: 32px;
+}
+
 .button-bar {
   color: white;
 }

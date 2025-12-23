@@ -148,32 +148,20 @@
   background: rgba(15, 43, 56, 0.95);
 }
 
-// Scroll-reveal slide-in header (shared base)
+// Scroll-reveal header (shared base)
 .mobile-card-header-scroll {
   position: fixed;
   top: 64px; // Below search header
   left: 0;
   right: 0;
   z-index: 100;
-  transform: translateY(-100%);
-  opacity: 0;
-  // Transition enabled by default for smooth animations after initial render
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  // Disable transition on initial render to prevent flash
-  &.no-transition {
-    transition: none !important;
-  }
 
   &.visible {
-    transform: translateY(0);
-    opacity: 1;
+    display: flex;
   }
 
   &.hidden {
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
+    display: none;
   }
 }
 

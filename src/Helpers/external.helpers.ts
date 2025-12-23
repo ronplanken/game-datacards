@@ -431,6 +431,7 @@ export const get40k10eData = async () => {
     "unaligned",
     "emperors_children",
     "deathwatch",
+    "titan",
   ];
 
   const fetchData = async (faction) => {

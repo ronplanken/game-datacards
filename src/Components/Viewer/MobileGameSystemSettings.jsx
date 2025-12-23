@@ -19,6 +19,13 @@ export const MobileGameSystemSettings = ({ gameSystem, onContinue }) => {
     });
   };
 
+  const handleToggleStatDisplayMode = () => {
+    updateSettings({
+      ...settings,
+      aosStatDisplayMode: settings.aosStatDisplayMode === "badges" ? "wheel" : "badges",
+    });
+  };
+
   const getGameSystemName = () => {
     switch (gameSystem) {
       case "aos":
@@ -68,6 +75,21 @@ export const MobileGameSystemSettings = ({ gameSystem, onContinue }) => {
             <button
               className={`gss-settings-toggle ${settings.showGenericManifestations ? "active" : ""}`}
               onClick={handleToggleGenericManifestations}
+              type="button">
+              <span className="gss-settings-toggle-thumb" />
+            </button>
+          </div>
+
+          <div className="gss-settings-option">
+            <div className="gss-settings-option-info">
+              <span className="gss-settings-option-label">Show stats as badges</span>
+              <span className="gss-settings-option-description">
+                Display Move, Save, Control, and Health as compact badges instead of the stat wheel.
+              </span>
+            </div>
+            <button
+              className={`gss-settings-toggle ${settings.aosStatDisplayMode === "badges" ? "active" : ""}`}
+              onClick={handleToggleStatDisplayMode}
               type="button">
               <span className="gss-settings-toggle-thumb" />
             </button>

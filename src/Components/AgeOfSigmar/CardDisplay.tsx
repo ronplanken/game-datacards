@@ -12,9 +12,10 @@ export const AgeOfSigmarCardDisplay = ({
   card,
   cardScaling,
   printPadding,
+  onBack,
   side = "front",
   backgrounds = "standard",
-}: CardDisplayProps & { side?: "front"; backgrounds?: "standard" }) => {
+}: CardDisplayProps & { side?: "front"; backgrounds?: "standard"; onBack: () => void }) => {
   const { activeCard, setActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
   const { dataSource, selectedFaction } = useDataSourceStorage();
@@ -122,6 +123,7 @@ export const AgeOfSigmarCardDisplay = ({
             <div
               className={`data-aos ${grandAlliance} ${fontClass}`}
               style={{
+                "--card-scaling-factor": "inherit",
                 ...(displayCard?.useCustomColours && {
                   "--bg-header": headerColour,
                   "--banner-colour": bannerColour,
@@ -133,6 +135,7 @@ export const AgeOfSigmarCardDisplay = ({
                 grandAlliance={grandAlliance}
                 headerColour={headerColour}
                 bannerColour={bannerColour}
+                statDisplayMode={settings.aosStatDisplayMode}
                 onViewSpell={handleViewSpell}
               />
             </div>
@@ -141,6 +144,7 @@ export const AgeOfSigmarCardDisplay = ({
             <div
               className={`data-aos ${grandAlliance} ${fontClass}`}
               style={{
+                "--card-scaling-factor": "inherit",
                 ...(displayCard?.useCustomColours && {
                   "--bg-header": headerColour,
                   "--banner-colour": bannerColour,
@@ -172,6 +176,7 @@ export const AgeOfSigmarCardDisplay = ({
             grandAlliance={grandAlliance}
             headerColour={headerColour}
             bannerColour={bannerColour}
+            statDisplayMode={settings.aosStatDisplayMode}
           />
         </div>
       )}
@@ -196,6 +201,20 @@ export const AgeOfSigmarCardDisplay = ({
           />
         </div>
       )}
+      {type === "print" && card && card?.cardType === "spell" && (
+        <div
+          className={`data-aos ${grandAlliance} ${fontClass}`}
+          style={{
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
+            ...(displayCard?.useCustomColours && {
+              "--bg-header": headerColour,
+              "--banner-colour": bannerColour,
+            }),
+          }}>
+          <SpellCard spell={card} loreName={card.loreName} faction={cardFaction} grandAlliance={grandAlliance} />
+        </div>
+      )}
       {type === "viewer" && (
         <div
           className={`data-aos ${grandAlliance} aos-mobile-wrapper ${fontClass}`}
@@ -215,7 +234,9 @@ export const AgeOfSigmarCardDisplay = ({
               headerColour={headerColour}
               bannerColour={bannerColour}
               isMobile={true}
+              statDisplayMode={settings.aosStatDisplayMode}
               onViewSpell={handleViewSpell}
+              onBack={onBack}
             />
           )}
           {activeCard?.cardType === "spell" && (
@@ -226,6 +247,7 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               isMobile={true}
               onViewWarscroll={handleViewWarscroll}
+              onBack={onBack}
             />
           )}
           {card?.cardType === "warscroll" && (
@@ -236,7 +258,9 @@ export const AgeOfSigmarCardDisplay = ({
               headerColour={headerColour}
               bannerColour={bannerColour}
               isMobile={true}
+              statDisplayMode={settings.aosStatDisplayMode}
               onViewSpell={handleViewSpell}
+              onBack={onBack}
             />
           )}
           {card?.cardType === "spell" && (
@@ -247,6 +271,7 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               isMobile={true}
               onViewWarscroll={handleViewWarscroll}
+              onBack={onBack}
             />
           )}
         </div>
