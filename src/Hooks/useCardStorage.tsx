@@ -7,6 +7,11 @@ import { Card, CardStorageContextType, CardStorageState, Category, CategoryType 
 
 const CardStorageContext = React.createContext<CardStorageContextType>(undefined);
 
+/**
+ * Provides access to the current card storage
+ *
+ * @returns CardStorageContextType
+ */
 export function useCardStorage() {
   const context = React.useContext(CardStorageContext);
   if (context === undefined) {

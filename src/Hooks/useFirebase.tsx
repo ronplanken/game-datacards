@@ -15,6 +15,12 @@ const firebaseConfig = {
 
 const FirebaseContext = React.createContext(undefined);
 
+/**
+ * React hook to access firebase
+ *
+ * @export
+ * @returns {*}
+ */
 export function useFirebase() {
   const context = React.useContext(FirebaseContext);
   if (context === undefined) {
@@ -22,7 +28,10 @@ export function useFirebase() {
   }
   return context;
 }
-
+/**
+ * React component to provide context for the useFirebase hook
+ * @param props
+ */
 export const FirebaseProviderComponent = (props) => {
   const [currentDoc, setCurrentDoc] = useState();
 

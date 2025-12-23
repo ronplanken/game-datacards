@@ -15,7 +15,7 @@ export const AgeOfSigmarCardDisplay = ({
   onBack,
   side = "front",
   backgrounds = "standard",
-}: CardDisplayProps & { side?: "front"; backgrounds?: "standard"; onBack: () => void }) => {
+}: CardDisplayProps & { side?: "front"; backgrounds?: "standard"; onBack?: () => void }) => {
   const { activeCard, setActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
   const { dataSource, selectedFaction } = useDataSourceStorage();

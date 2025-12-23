@@ -4,6 +4,12 @@ const DB_NAME = "CardImagesDB";
 const DB_VERSION = 1;
 const STORE_NAME = "images";
 
+/**
+ * TODO remove unused hook
+ *
+ * @export
+ * @returns {{ saveImage: (cardId: any, file: any) => unknown; getImage: (cardId: any) => Promise<File>; getImageData: (cardId: any) => unknown; deleteImage: (cardId: any) => unknown; getImageUrl: (cardId: any) => unknown; saveFactionSymbol: (cardId: any, file: any) => unknown; ... 4 more ...; isReady: any; }}
+ */
 export function useIndexedDBImages() {
   const [db, setDb] = useState(null);
   const [isReady, setIsReady] = useState(false);

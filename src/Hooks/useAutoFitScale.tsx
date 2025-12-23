@@ -10,6 +10,15 @@ const CARD_DIMENSIONS = {
   spell: { width: 650, height: null },
 };
 
+/**
+ * if enabled, this react hook computes a zoom factor to fit the given card type on the screen.
+ *
+ * @export
+ * @param {*} containerRef
+ * @param {string} [cardType="unit"]
+ * @param {boolean} [isEnabled=true]
+ * @returns {{ autoScale: number; cardDimensions: Record<keyof CARD_DIMENSIONS, {width:number|null,height:number|null}>; }}
+ */
 export function useAutoFitScale(containerRef, cardType = "unit", isEnabled = true) {
   const [autoScale, setAutoScale] = useState(1);
   const resizeObserverRef = useRef(null);

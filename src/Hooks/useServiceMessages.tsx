@@ -11,6 +11,9 @@ const defaultSettings = {
   removeDatacard: () => {},
 };
 
+/**
+ * TODO removed unused hook
+ */
 export function useServiceMessages() {
   const context = React.useContext(ServiceMessagesContext);
   if (context === undefined) {
@@ -18,7 +21,9 @@ export function useServiceMessages() {
   }
   return context;
 }
-
+/**
+ * TODO remove unused Provider
+ */
 export const ServiceMessagesProvider = (props) => {
   const [messages, setMessages] = React.useState(() => {
     try {

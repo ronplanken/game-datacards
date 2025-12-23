@@ -40,6 +40,12 @@ const defaultSettings = {
   aosStatDisplayMode: "wheel", // "wheel" | "badges"
 };
 
+/**
+ * react hook to read and write the settings storage
+ *
+ * @export
+ * @returns {*}
+ */
 export function useSettingsStorage() {
   const context = React.useContext(SettingsStorageContext);
   if (context === undefined) {
@@ -48,6 +54,12 @@ export function useSettingsStorage() {
   return context;
 }
 
+/**
+ * react hook context provider component
+ *
+ * @param {*} props
+ * @returns {*}
+ */
 export const SettingsStorageProviderComponent = (props) => {
   const [localSettings, setLocalSettings] = React.useState(() => {
     try {

@@ -4,18 +4,27 @@ type NecromundaCardType = "ganger" | "vehicle" | "empty-ganger" | "empty-vehicle
 type DataSourceListItemType = "category" | "list" | "header" | "allied" | "role";
 
 export type CardDisplayType = "print" | "viewer";
+
+/**
+ * Basic props used for CardDisplay and subclasses
+ */
 export type CardDisplayProps = {
   type?: CardDisplayType;
   card?: Card;
   cardScaling?: number;
   printPadding?: number;
 };
-
+/**
+ *  Warhammer40K10e cards have additional props attached.
+ */
 export type Warhammer40K10eCardDisplayProps = CardDisplayProps & {
   side?;
   backgrounds?;
 };
 
+/**
+ * Basic Card type.
+ */
 export type Card = {
   /**
    * props used in CardDisplay and Viewer
@@ -37,10 +46,10 @@ export type Card = {
   name: string;
 };
 
+/**
+ * Elements that populate the DataSourceList
+ */
 export type DataSourceListItem = {
-  /**
-   * props used in DataSourceList
-   */
   type: DataSourceListItemType;
   name: string;
   id: string;
@@ -59,6 +68,9 @@ type PointCost = {
 
 export type CategoryType = "category" | "list";
 
+/**
+ * Categories are used to populate the
+ */
 export type Category = {
   uuid: string;
   cards: Card[];
@@ -67,10 +79,37 @@ export type Category = {
   type: CategoryType;
   parentId?: string;
 };
+
+/**
+ * useCardStorage hook provides data in this shape.
+ */
 export type CardStorageState = {
   categories: Category[];
 };
 
+/**
+ * CardStorageContextType describes the data and actions provided by useCardStorage hook
+ *
+ * @property {CardStorageState}  cardStorage    - main card storage contents
+ * @property {Card|undefined} activeCard        - currently displayed card (if any)
+ * @property {function} updateActiveCard        - change currently loaded card
+ * @property {function} setActiveCard           - setActiveCard
+ * @property {function} saveActiveCard          - saves currently active card
+ * @property {any} cardUpdated                  - TODO
+ * @property {function} saveCard                - saves a card
+ * @property {function} addCardToCategory       - adds a card to a category
+ * @property {function} activeCategory          - currently active category
+ * @property {function} setActiveCategory       - setActiveCategory
+ * @property {function} removeCardFromCategory  - removes a card from a category
+ * @property {function} importCategory          - importCategory
+ * @property {function} renameCategory          - renames a category
+ * @property {function} removeCategory          - removes a category from the storage
+ * @property {function} addCategory             - adds a category to the storage
+ * @property {function} addSubCategory          - adds a subcategory to an existing category
+ * @property {function} getSubCategories        - returns subcategories of an existing category
+ * @property {function} updateCategory          - updates a category
+ * @export
+ */
 export type CardStorageContextType = {
   cardStorage: CardStorageState;
   activeCard: Card;
@@ -89,9 +128,14 @@ export type CardStorageContextType = {
   addSubCategory: (categoryName: string, parentId: string) => void;
   getSubCategories: (parentId: string) => Category[];
   updateCategory: (category: Category, id: string) => void;
-  saveCard: (updatedCard: Card, category: Category) => void;
 };
 
+/**
+ * api surface for @see{@link useDataSourceStorage} hook
+ *
+ * @export
+ * @typedef {DataSourceStorageContextType}
+ */
 export type DataSourceStorageContextType = {
   dataSource;
   selectedFaction;

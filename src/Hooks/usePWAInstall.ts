@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 
+/**
+ * React hook to enable progressive web app installation
+ */
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);

@@ -14,6 +14,12 @@ import { BasicData, DataSourceStorageContextType } from "../types/types";
 
 const DataSourceStorageContext = React.createContext<DataSourceStorageContextType>(undefined);
 
+/**
+ * react hook to access data sources
+ *
+ * @export
+ * @returns {*}
+ */
 export function useDataSourceStorage() {
   const context = React.useContext(DataSourceStorageContext);
   if (context === undefined) {
