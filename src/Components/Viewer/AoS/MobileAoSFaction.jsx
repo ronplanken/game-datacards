@@ -1,21 +1,39 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, List, Sparkles, BookOpen } from "lucide-react";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import "./MobileAoS.css";
 
 export const MobileAoSFaction = () => {
   const navigate = useNavigate();
-  const { selectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   if (!selectedFaction) return null;
 
+  // Get generic data
+  const genericData = dataSource?.genericData;
+  const showGeneric = settings.showGenericManifestations;
+
   // Get grand alliance for theming
   const grandAlliance = selectedFaction.grandAlliance?.toLowerCase() || "order";
-  const warscrollCount = selectedFaction.warscrolls?.length || 0;
+  const fontClass = settings.useFancyFonts === false ? "aos-regular-fonts" : "";
 
-  // Count total spells across all manifestation lores
+  // Count warscrolls (include generic when enabled)
+  let warscrollCount = selectedFaction.warscrolls?.length || 0;
+  if (showGeneric && genericData?.warscrolls?.length) {
+    warscrollCount += genericData.warscrolls.length;
+  }
+
+  // Count total spells across all manifestation lores (include generic when enabled)
   const manifestationLores = selectedFaction.manifestationLores || [];
-  const manifestationSpellCount = manifestationLores.reduce((total, lore) => total + (lore.spells?.length || 0), 0);
+  let manifestationSpellCount = manifestationLores.reduce((total, lore) => total + (lore.spells?.length || 0), 0);
+  if (showGeneric && genericData?.manifestationLores?.length) {
+    manifestationSpellCount += genericData.manifestationLores.reduce(
+      (total, lore) => total + (lore.spells?.length || 0),
+      0
+    );
+  }
 
   // Count total spells across all spell lores
   const spellLores = selectedFaction.lores || [];
@@ -36,7 +54,7 @@ export const MobileAoSFaction = () => {
   };
 
   return (
-    <div className={`mobile-aos-faction ${grandAlliance}`}>
+    <div className={`mobile-aos-faction ${grandAlliance} ${fontClass}`}>
       {/* Header Banner */}
       <div className="aos-faction-header">
         <h1 className="aos-faction-title">{selectedFaction.name}</h1>

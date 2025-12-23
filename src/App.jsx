@@ -48,6 +48,8 @@ function App() {
     if (!activeCard) return "unit";
     if (activeCard.cardType === "stratagem") return "stratagem";
     if (activeCard.cardType === "enhancement") return "enhancement";
+    if (activeCard.cardType === "warscroll") return "warscroll";
+    if (activeCard.cardType === "spell") return "spell";
     if (settings.showCardsAsDoubleSided || activeCard.variant === "full") return "unitFull";
     return "unit";
   };

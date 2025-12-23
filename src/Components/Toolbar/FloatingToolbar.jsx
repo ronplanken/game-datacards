@@ -84,6 +84,7 @@ export const FloatingToolbar = ({
   };
 
   const is40k10e = activeCard?.source === "40k-10e";
+  const isAos = activeCard?.source === "aos";
   const showFrontBackToggle =
     is40k10e &&
     settings.showCardsAsDoubleSided !== true &&
@@ -91,7 +92,7 @@ export const FloatingToolbar = ({
     activeCard?.cardType === "DataCard";
 
   // Determine which button groups are visible
-  const showZoom = is40k10e;
+  const showZoom = is40k10e || isAos;
   const showAddToCategory = !activeCard.isCustom;
   const showSave = activeCard.isCustom && cardUpdated;
 

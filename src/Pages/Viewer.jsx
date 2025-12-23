@@ -19,11 +19,12 @@ import { useMobileSharing } from "../Hooks/useMobileSharing";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
+import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
 import "../Components/Viewer/ViewerFloatingToolbar.css";
 
 const { Content } = Layout;
 
-export const Viewer = () => {
+export const Viewer = ({ showManifestationLores = false, showSpellLores = false }) => {
   const location = useLocation();
 
   // Check if mobile and redirect to mobile viewer
@@ -51,12 +52,14 @@ export const Viewer = () => {
   const viewerCardRef = useRef(null);
   const overlayRef = useRef(null);
 
-  // Set data source to 40k-10e on mount
+  // Set default data source on mount if none selected
   useEffect(() => {
-    updateSettings({
-      ...settings,
-      selectedDataSource: "40k-10e",
-    });
+    if (!settings.selectedDataSource) {
+      updateSettings({
+        ...settings,
+        selectedDataSource: "40k-10e",
+      });
+    }
   }, []);
 
   // Determine card type for proper scaling
@@ -95,6 +98,8 @@ export const Viewer = () => {
         return <Warhammer40KCardDisplay />;
       case "necromunda":
         return <NecromundaCardDisplay />;
+      case "aos":
+        return <AgeOfSigmarCardDisplay />;
       default:
         return null;
     }
@@ -169,6 +174,7 @@ export const Viewer = () => {
             {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+            {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
           </Row>
         </div>
         <div
@@ -189,6 +195,7 @@ export const Viewer = () => {
             {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
+            {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay type="viewer" />}
           </Row>
         </div>
       </Content>

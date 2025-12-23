@@ -552,35 +552,6 @@
     font-size: 15px;
   }
 
-  .welcome-background {
-    border-radius: 4px;
-    width: 100%;
-    height: 100vh;
-    position: absolute;
-    background: white;
-    top: 0;
-    left: 0;
-    transform: initial;
-
-    z-index: 10000;
-
-    .welcome-cover {
-      // height: 100vh;
-    }
-
-    .whatsnew-container {
-      width: 100%;
-      height: 100vh;
-      top: 0;
-      left: 0;
-      transform: initial;
-
-      .whatsnew-content {
-        overflow-y: auto;
-        height: calc(100vh - 175px);
-      }
-    }
-  }
   .list-item {
     each(@factions, {
       .@{value}::before {

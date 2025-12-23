@@ -1,4 +1,5 @@
 import { Col } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -12,10 +13,11 @@ export const AgeOfSigmarCardDisplay = ({
   printPadding,
   side = "front",
   backgrounds = "standard",
+  onBack,
 }) => {
-  const { activeCard } = useCardStorage();
+  const { activeCard, setActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
-  const { dataSource } = useDataSourceStorage();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
 
   const displayCard = card || activeCard;
   const cardFaction = dataSource.data.find((faction) => faction.id === displayCard?.faction_id);
@@ -31,14 +33,96 @@ export const AgeOfSigmarCardDisplay = ({
     ? displayCard.customBannerColour || cardFaction?.colours?.banner
     : cardFaction?.colours?.banner;
 
+  // Determine font class based on settings
+  const fontClass = settings.useFancyFonts === false ? "aos-regular-fonts" : "";
+
+  // Navigation handlers for viewer mode
+  const navigate = useNavigate();
+  const location = useLocation();
+  const factionSlug = cardFaction?.name?.toLowerCase().replaceAll(" ", "-");
+
+  // Detect if we're in viewer mode based on URL path
+  const isViewer = location.pathname.startsWith("/viewer") || location.pathname.startsWith("/mobile");
+  const isDesktop = location.pathname.startsWith("/viewer");
+
+  // Editor mode: find and select the linked card
+  const handleEditorViewWarscroll = (warscrollName) => {
+    // Find the warscroll in the faction data
+    const faction = cardFaction || selectedFaction;
+    let warscroll = faction?.warscrolls?.find((w) => w.name.toLowerCase() === warscrollName.toLowerCase());
+
+    // If not found, search generic warscrolls
+    if (!warscroll && settings?.showGenericManifestations && dataSource?.genericData?.warscrolls) {
+      warscroll = dataSource.genericData.warscrolls.find((w) => w.name.toLowerCase() === warscrollName.toLowerCase());
+      if (warscroll) {
+        setActiveCard({
+          ...warscroll,
+          cardType: "warscroll",
+          source: "aos",
+          faction_id: "GENERIC",
+        });
+        return;
+      }
+    }
+
+    if (warscroll) {
+      setActiveCard({
+        ...warscroll,
+        cardType: "warscroll",
+        source: "aos",
+        faction_id: faction.id,
+      });
+    }
+  };
+
+  const handleEditorViewSpell = (spellName) => {
+    // Find the spell in manifestation lores
+    const faction = cardFaction || selectedFaction;
+    for (const lore of faction?.manifestationLores || []) {
+      const spell = lore.spells?.find((s) => s.name.toLowerCase() === spellName.toLowerCase());
+      if (spell) {
+        setActiveCard({
+          ...spell,
+          cardType: "spell",
+          loreName: lore.name,
+          source: "aos",
+          faction_id: faction.id,
+        });
+        return;
+      }
+    }
+  };
+
+  // Viewer mode: navigate to the card URL
+  const handleViewerViewWarscroll = (warscrollName) => {
+    const slug = warscrollName.toLowerCase().replaceAll(" ", "-");
+    const basePath = isDesktop ? "/viewer" : "/mobile";
+    // For generic spells, use the selected faction's slug since generic warscrolls are viewed in faction context
+    const navFactionSlug = factionSlug || selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
+    navigate(`${basePath}/${navFactionSlug}/${slug}`);
+  };
+
+  const handleViewerViewSpell = (spellName) => {
+    const slug = spellName.toLowerCase().replaceAll(" ", "-");
+    const basePath = isDesktop ? "/viewer" : "/mobile";
+    // For generic warscrolls, use the selected faction's slug since generic content is viewed in faction context
+    const navFactionSlug = factionSlug || selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
+    navigate(`${basePath}/${navFactionSlug}/manifestation-lore/${slug}`);
+  };
+
+  // Choose the appropriate handler based on context
+  const handleViewWarscroll = isViewer ? handleViewerViewWarscroll : handleEditorViewWarscroll;
+  const handleViewSpell = isViewer ? handleViewerViewSpell : handleEditorViewSpell;
+
   return (
     <>
       {!type && activeCard && (
         <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
           {activeCard?.cardType === "warscroll" && (
             <div
-              className={`data-aos ${grandAlliance}`}
+              className={`data-aos ${grandAlliance} ${fontClass}`}
               style={{
+                "--card-scaling-factor": "inherit",
                 ...(displayCard?.useCustomColours && {
                   "--bg-header": headerColour,
                   "--banner-colour": bannerColour,
@@ -50,6 +134,27 @@ export const AgeOfSigmarCardDisplay = ({
                 grandAlliance={grandAlliance}
                 headerColour={headerColour}
                 bannerColour={bannerColour}
+                statDisplayMode={settings.aosStatDisplayMode}
+                onViewSpell={handleViewSpell}
+              />
+            </div>
+          )}
+          {activeCard?.cardType === "spell" && (
+            <div
+              className={`data-aos ${grandAlliance} ${fontClass}`}
+              style={{
+                "--card-scaling-factor": "inherit",
+                ...(displayCard?.useCustomColours && {
+                  "--bg-header": headerColour,
+                  "--banner-colour": bannerColour,
+                }),
+              }}>
+              <SpellCard
+                spell={activeCard}
+                loreName={activeCard.loreName}
+                faction={cardFaction}
+                grandAlliance={grandAlliance}
+                onViewWarscroll={handleViewWarscroll}
               />
             </div>
           )}
@@ -57,7 +162,7 @@ export const AgeOfSigmarCardDisplay = ({
       )}
       {!type && card && card.cardType === "warscroll" && (
         <div
-          className={`data-aos ${grandAlliance}`}
+          className={`data-aos ${grandAlliance} ${fontClass}`}
           style={{
             ...(displayCard?.useCustomColours && {
               "--bg-header": headerColour,
@@ -70,12 +175,13 @@ export const AgeOfSigmarCardDisplay = ({
             grandAlliance={grandAlliance}
             headerColour={headerColour}
             bannerColour={bannerColour}
+            statDisplayMode={settings.aosStatDisplayMode}
           />
         </div>
       )}
       {type === "print" && card && card?.cardType === "warscroll" && (
         <div
-          className={`data-aos ${grandAlliance}`}
+          className={`data-aos ${grandAlliance} ${fontClass}`}
           style={{
             zoom: cardScaling / 100,
             "--card-scaling-factor": 1,
@@ -94,9 +200,23 @@ export const AgeOfSigmarCardDisplay = ({
           />
         </div>
       )}
+      {type === "print" && card && card?.cardType === "spell" && (
+        <div
+          className={`data-aos ${grandAlliance} ${fontClass}`}
+          style={{
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
+            ...(displayCard?.useCustomColours && {
+              "--bg-header": headerColour,
+              "--banner-colour": bannerColour,
+            }),
+          }}>
+          <SpellCard spell={card} loreName={card.loreName} faction={cardFaction} grandAlliance={grandAlliance} />
+        </div>
+      )}
       {type === "viewer" && (
         <div
-          className={`data-aos ${grandAlliance} aos-mobile-wrapper`}
+          className={`data-aos ${grandAlliance} aos-mobile-wrapper ${fontClass}`}
           style={{
             transformOrigin: "0% 0%",
             ...(cardScaling && { transform: `scale(${cardScaling / 100})` }),
@@ -113,6 +233,9 @@ export const AgeOfSigmarCardDisplay = ({
               headerColour={headerColour}
               bannerColour={bannerColour}
               isMobile={true}
+              statDisplayMode={settings.aosStatDisplayMode}
+              onViewSpell={handleViewSpell}
+              onBack={onBack}
             />
           )}
           {activeCard?.cardType === "spell" && (
@@ -122,6 +245,8 @@ export const AgeOfSigmarCardDisplay = ({
               faction={cardFaction}
               grandAlliance={grandAlliance}
               isMobile={true}
+              onViewWarscroll={handleViewWarscroll}
+              onBack={onBack}
             />
           )}
           {card?.cardType === "warscroll" && (
@@ -132,6 +257,9 @@ export const AgeOfSigmarCardDisplay = ({
               headerColour={headerColour}
               bannerColour={bannerColour}
               isMobile={true}
+              statDisplayMode={settings.aosStatDisplayMode}
+              onViewSpell={handleViewSpell}
+              onBack={onBack}
             />
           )}
           {card?.cardType === "spell" && (
@@ -141,6 +269,8 @@ export const AgeOfSigmarCardDisplay = ({
               faction={cardFaction}
               grandAlliance={grandAlliance}
               isMobile={true}
+              onViewWarscroll={handleViewWarscroll}
+              onBack={onBack}
             />
           )}
         </div>

@@ -1,0 +1,52 @@
+import { ChevronLeft, ChevronRight, Heart, List } from "lucide-react";
+import "./Shared.css";
+
+export const SharedMobileNav = ({
+  currentIndex,
+  totalCards,
+  canGoPrev,
+  canGoNext,
+  onPrev,
+  onNext,
+  onShowList,
+  onLike,
+  isLiked,
+  likes,
+}) => {
+  return (
+    <div className="shared-mobile-nav">
+      {/* Left: Prev button */}
+      <button className="shared-nav-btn" disabled={!canGoPrev} onClick={onPrev} aria-label="Previous card">
+        <ChevronLeft size={24} />
+      </button>
+
+      {/* Center: Card indicator + list button */}
+      <div className="shared-nav-center">
+        <button className="shared-nav-indicator" onClick={onShowList} aria-label="Show card list">
+          <List size={18} />
+          <span className="shared-nav-position">
+            {currentIndex + 1} / {totalCards}
+          </span>
+        </button>
+      </div>
+
+      {/* Right: Like + Next */}
+      <div className="shared-nav-actions">
+        <div className="shared-nav-like">
+          <button
+            className={`shared-nav-btn ${isLiked ? "active" : ""}`}
+            onClick={onLike}
+            disabled={isLiked}
+            aria-label={isLiked ? "Already liked" : "Like this set"}>
+            <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
+          </button>
+          {likes > 0 && <span className="shared-nav-like-count">{likes > 99 ? "99+" : likes}</span>}
+        </div>
+
+        <button className="shared-nav-btn" disabled={!canGoNext} onClick={onNext} aria-label="Next card">
+          <ChevronRight size={24} />
+        </button>
+      </div>
+    </div>
+  );
+};

@@ -1,39 +1,37 @@
-/* MobileSearchFactionFilter.css - Faction selector bottom sheet */
+/* MobileSearchFactionFilter.css - Modern Light Theme (Compact & High Contrast) */
 
 /* ===========================================
    CONTENT CONTAINER
    =========================================== */
-
 .faction-filter-content {
   display: flex;
   flex-direction: column;
+  padding-bottom: 20px;
 }
 
 /* ===========================================
    FACTION ITEMS
    =========================================== */
-
 .faction-filter-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
-  background: none;
+  padding: 12px 20px;
+  background: transparent;
   border: none;
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 1px solid var(--bs-border); /* High contrast border */
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  font-size: 15px;
-  color: rgba(0, 0, 0, 0.88);
-  transition: background 0.15s ease;
-  width: 100%;
-  margin: 0 -16px;
-  width: calc(100% + 32px);
+  font-size: 16px;
+  color: var(--bs-text);
+  transition: background 0.2s ease;
+  width: calc(100% + 40px);
+  margin: 0 -20px;
 }
 
 .faction-filter-item:first-child {
-  margin-top: -8px;
+  margin-top: -6px;
 }
 
 .faction-filter-item:last-child {
@@ -41,33 +39,34 @@
 }
 
 .faction-filter-item:active {
-  background: #f5f5f5;
+  background: var(--bs-surface-hover);
 }
 
 /* ===========================================
    COLOUR INDICATOR
    =========================================== */
-
 .faction-colour-indicator {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--faction-colour, #666);
+  background: var(--faction-colour, var(--bs-text-muted));
   flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.2); /* Higher contrast border */
 }
 
 /* ===========================================
    ITEM CONTENT
    =========================================== */
-
 .faction-filter-name {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .faction-filter-chevron {
-  color: rgba(0, 0, 0, 0.25);
+  color: var(--bs-text-muted);
   flex-shrink: 0;
+  opacity: 0.6; /* Increased opacity */
 }

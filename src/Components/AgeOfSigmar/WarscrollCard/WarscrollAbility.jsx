@@ -35,37 +35,44 @@ export const WarscrollAbility = ({ ability, grandAlliance }) => {
   const tagText = getTagText();
 
   return (
-    <div className={`ability-box ${grandAlliance}`}>
-      {/* Ability Strip Header */}
-      <div className={`ability-strip ${phaseClass}`}>
-        <span className="ability-tag">{tagText}</span>
-        <span className="ability-name">{ability.name}</span>
-        {ability.castingValue && <span className="ability-casting-badge">{ability.castingValue}+</span>}
-        {ability.chantValue && <span className="ability-chant-badge">{ability.chantValue}+</span>}
+    <div className={`ability-wrapper ${grandAlliance}`}>
+      {/* Phase Tag - above the card */}
+      <div className="ability-phase-tag">
+        <span>{tagText}</span>
       </div>
 
-      {/* Ability Text */}
-      <div className="ability-text">
-        {ability.declare && (
-          <p className="ability-declare">
-            <MarkdownDisplay content={`**Declare:** ${ability.declare}`} />
-          </p>
-        )}
-        {ability.effect && (
-          <p className="ability-effect">
-            <MarkdownDisplay content={`**Effect:** ${ability.effect}`} />
-          </p>
-        )}
-        {!ability.declare && !ability.effect && ability.lore && <MarkdownDisplay content={ability.lore} />}
-      </div>
-
-      {/* Keywords Bar */}
-      {ability.keywords && ability.keywords.length > 0 && (
-        <div className="ability-keywords-bar">
-          <span className="ability-keywords-label">Keywords</span>
-          <span className="ability-keywords-list">{ability.keywords.join(", ")}</span>
+      {/* Ability Card */}
+      <div className={`ability-box ${grandAlliance}`}>
+        {/* Ability Strip Header - keeps phase colour */}
+        <div className={`ability-strip ${phaseClass}`}>
+          <span className="ability-name">{ability.name}</span>
+          {ability.castingValue && <span className="ability-casting-badge">{ability.castingValue}+</span>}
+          {ability.chantValue && <span className="ability-chant-badge">{ability.chantValue}+</span>}
         </div>
-      )}
+
+        {/* Ability Text */}
+        <div className="ability-text">
+          {ability.declare && (
+            <p className="ability-declare">
+              <MarkdownDisplay content={`**Declare:** ${ability.declare}`} />
+            </p>
+          )}
+          {ability.effect && (
+            <p className="ability-effect">
+              <MarkdownDisplay content={`**Effect:** ${ability.effect}`} />
+            </p>
+          )}
+          {!ability.declare && !ability.effect && ability.lore && <MarkdownDisplay content={ability.lore} />}
+        </div>
+
+        {/* Keywords Bar */}
+        {ability.keywords && ability.keywords.length > 0 && (
+          <div className="ability-keywords-bar">
+            <span className="ability-keywords-label">Keywords</span>
+            <span className="ability-keywords-list">{ability.keywords.join(", ")}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

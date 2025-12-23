@@ -14,7 +14,6 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 export function useScrollRevealHeader({ enabled = false, targetSelector, topOffset = 64 } = {}) {
   const [showHeader, setShowHeader] = useState(false);
   const [headerReady, setHeaderReady] = useState(false);
-  const [transitionsEnabled, setTransitionsEnabled] = useState(false);
   const scrollContainerRef = useRef(null);
   const observerRef = useRef(null);
 
@@ -23,7 +22,6 @@ export function useScrollRevealHeader({ enabled = false, targetSelector, topOffs
     if (!enabled) {
       setShowHeader(false);
       setHeaderReady(false);
-      setTransitionsEnabled(false);
       return;
     }
 
@@ -35,8 +33,6 @@ export function useScrollRevealHeader({ enabled = false, targetSelector, topOffs
       if (!targetEl || !scrollContainer) {
         // Still mark as ready so floating button shows
         setHeaderReady(true);
-        // Enable transitions after a frame
-        requestAnimationFrame(() => setTransitionsEnabled(true));
         return;
       }
 
@@ -48,14 +44,6 @@ export function useScrollRevealHeader({ enabled = false, targetSelector, topOffs
       // Set the correct initial state
       setShowHeader(!isTargetVisible);
       setHeaderReady(true);
-
-      // Enable transitions after initial render is complete
-      // Use double rAF to ensure the initial state is painted first
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setTransitionsEnabled(true);
-        });
-      });
 
       // Set up observer for subsequent scroll events
       observerRef.current = new IntersectionObserver(
@@ -85,14 +73,12 @@ export function useScrollRevealHeader({ enabled = false, targetSelector, topOffs
     if (!enabled) {
       setShowHeader(false);
       setHeaderReady(false);
-      setTransitionsEnabled(false);
     }
   }, [enabled]);
 
   return {
     showHeader,
     headerReady,
-    transitionsEnabled,
     scrollContainerRef,
   };
 }

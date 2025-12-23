@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import "./MobileAoS.css";
 
 // Spell list item component
@@ -24,9 +25,11 @@ const SectionHeader = ({ title, count }) => (
 export const MobileAoSSpellLores = () => {
   const navigate = useNavigate();
   const { selectedFaction } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
   const grandAlliance = selectedFaction?.grandAlliance?.toLowerCase() || "order";
+  const fontClass = settings.useFancyFonts === false ? "aos-regular-fonts" : "";
 
   const handleBack = () => {
     navigate(`/mobile/${factionSlug}`);
@@ -48,7 +51,7 @@ export const MobileAoSSpellLores = () => {
   }
 
   return (
-    <div className={`aos-units-page ${grandAlliance}`}>
+    <div className={`aos-units-page ${grandAlliance} ${fontClass}`}>
       {/* Header */}
       <div className="aos-units-header">
         <button className="aos-units-back" onClick={handleBack}>

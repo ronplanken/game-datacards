@@ -12,7 +12,11 @@ const CONTENT_TYPES_40K = [
   { value: "rules", label: "Rules", key: "rules" },
 ];
 
-const CONTENT_TYPES_AOS = [{ value: "warscrolls", label: "Warscrolls", key: "warscrolls" }];
+const CONTENT_TYPES_AOS = [
+  { value: "warscrolls", label: "Warscrolls", key: "warscrolls" },
+  { value: "manifestationLores", label: "Manifestation Lores", key: "manifestationLores" },
+  { value: "spellLores", label: "Spell Lores", key: "lores" },
+];
 
 export const ContentTypeSelector = ({ selectedContentType, setSelectedContentType }) => {
   const [isOpen, setIsOpen] = useState(false);

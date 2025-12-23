@@ -9,7 +9,11 @@ const CONTENT_TYPES_40K = [
   { value: "rules", label: "Rules", key: "rules" },
 ];
 
-const CONTENT_TYPES_AOS = [{ value: "warscrolls", label: "Warscrolls", key: "warscrolls" }];
+const CONTENT_TYPES_AOS = [
+  { value: "warscrolls", label: "Warscrolls", key: "warscrolls" },
+  { value: "manifestationLores", label: "Manifestation Lores", key: "manifestationLores" },
+  { value: "spellLores", label: "Spell Lores", key: "lores" },
+];
 
 export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedContentType }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +43,14 @@ export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedCont
     if (type.key === "warscrolls") {
       const warscrolls = selectedFaction?.warscrolls;
       return warscrolls && warscrolls.length > 0;
+    }
+    if (type.key === "manifestationLores") {
+      const manifestationLores = selectedFaction?.manifestationLores;
+      return manifestationLores && manifestationLores.length > 0;
+    }
+    if (type.key === "lores") {
+      const lores = selectedFaction?.lores;
+      return lores && lores.length > 0;
     }
     const data = selectedFaction?.[type.key];
     return data && data.length > 0;

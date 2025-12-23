@@ -1,6 +1,60 @@
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 
+// Group warscrolls by keywords (same as mobile/viewer)
+const groupWarscrollsByRole = (warscrolls) => {
+  return (warscrolls || []).reduce(
+    (groups, unit) => {
+      const keywords = unit.keywords || [];
+      const hasKeyword = (kw) => keywords.some((k) => k.toLowerCase().includes(kw));
+
+      if (hasKeyword("hero")) {
+        groups.heroes.push(unit);
+      } else if (hasKeyword("battleline")) {
+        groups.battleline.push(unit);
+      } else if (hasKeyword("monster")) {
+        groups.monsters.push(unit);
+      } else if (hasKeyword("cavalry")) {
+        groups.cavalry.push(unit);
+      } else if (hasKeyword("infantry")) {
+        groups.infantry.push(unit);
+      } else if (hasKeyword("war machine")) {
+        groups.warMachines.push(unit);
+      } else if (hasKeyword("faction terrain")) {
+        groups.factionTerrain.push(unit);
+      } else if (hasKeyword("manifestation")) {
+        groups.manifestations.push(unit);
+      } else {
+        groups.other.push(unit);
+      }
+      return groups;
+    },
+    {
+      heroes: [],
+      battleline: [],
+      monsters: [],
+      cavalry: [],
+      infantry: [],
+      warMachines: [],
+      factionTerrain: [],
+      manifestations: [],
+      other: [],
+    }
+  );
+};
+
+const WARSCROLL_ROLE_ORDER = [
+  { key: "heroes", label: "Heroes" },
+  { key: "battleline", label: "Battleline" },
+  { key: "monsters", label: "Monsters" },
+  { key: "cavalry", label: "Cavalry" },
+  { key: "infantry", label: "Infantry" },
+  { key: "warMachines", label: "War Machines" },
+  { key: "factionTerrain", label: "Faction Terrain" },
+  { key: "manifestations", label: "Manifestations" },
+  { key: "other", label: "Other" },
+];
+
 export const useDataSourceItems = (selectedContentType, searchText) => {
   const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings } = useSettingsStorage();
@@ -243,24 +297,121 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "warscrolls") {
-      let filteredWarscrolls = selectedFaction?.warscrolls || [];
+      // Get generic data
+      const genericData = dataSource?.genericData;
+      const showGeneric = settings?.showGenericManifestations;
 
-      // Apply search filter
-      if (searchText) {
-        filteredWarscrolls = filteredWarscrolls.filter((warscroll) =>
-          warscroll.name.toLowerCase().includes(searchText.toLowerCase())
-        );
-      }
+      // Combine faction + generic warscrolls when enabled
+      const factionWarscrolls = selectedFaction?.warscrolls || [];
+      const genericWarscrolls = (showGeneric && genericData?.warscrolls) || [];
+      const allWarscrolls = [...factionWarscrolls, ...genericWarscrolls];
 
-      // Filter out legends if setting is disabled
-      if (!settings?.showLegends) {
-        filteredWarscrolls = filteredWarscrolls.filter((warscroll) => !warscroll.isLegends);
-      }
+      const grouped = groupWarscrollsByRole(allWarscrolls);
+      let result = [];
 
-      // Sort alphabetically
-      filteredWarscrolls = filteredWarscrolls.toSorted((a, b) => a.name.localeCompare(b.name));
+      WARSCROLL_ROLE_ORDER.forEach(({ key, label }) => {
+        let units = grouped[key] || [];
 
-      return filteredWarscrolls;
+        // Apply search filter
+        if (searchText) {
+          units = units.filter((w) => w.name.toLowerCase().includes(searchText.toLowerCase()));
+        }
+
+        // Filter out legends if setting is disabled
+        if (!settings?.showLegends) {
+          units = units.filter((w) => !w.isLegends);
+        }
+
+        // Sort alphabetically
+        units = units.toSorted((a, b) => a.name.localeCompare(b.name));
+
+        if (units.length > 0) {
+          result.push({ type: "header", name: label });
+          result.push(
+            ...units.map((w) => ({
+              ...w,
+              cardType: "warscroll",
+              source: "aos",
+              faction_id: w.faction_id || selectedFaction.id,
+            }))
+          );
+        }
+      });
+
+      return result;
+    }
+
+    if (selectedContentType === "manifestationLores") {
+      // Get generic data
+      const genericData = dataSource?.genericData;
+      const showGeneric = settings?.showGenericManifestations;
+
+      // Combine faction + generic manifestation lores when enabled
+      const factionManifestationLores = selectedFaction?.manifestationLores || [];
+      const genericManifestationLores = (showGeneric && genericData?.manifestationLores) || [];
+      const lores = [...factionManifestationLores, ...genericManifestationLores];
+      let result = [];
+
+      lores.forEach((lore) => {
+        let spells = lore.spells || [];
+
+        // Apply search filter
+        if (searchText) {
+          spells = spells.filter((s) => s.name.toLowerCase().includes(searchText.toLowerCase()));
+        }
+
+        // Sort alphabetically
+        spells = spells.toSorted((a, b) => a.name.localeCompare(b.name));
+
+        if (spells.length > 0) {
+          result.push({ type: "header", name: lore.name, isGeneric: lore.faction_id === "GENERIC" });
+          result.push(
+            ...spells.map((spell) => ({
+              ...spell,
+              cardType: "spell",
+              spellType: "manifestation",
+              loreName: lore.name,
+              source: "aos",
+              faction_id: lore.faction_id || selectedFaction.id,
+            }))
+          );
+        }
+      });
+
+      return result;
+    }
+
+    if (selectedContentType === "spellLores") {
+      const lores = selectedFaction?.lores || [];
+      let result = [];
+
+      lores.forEach((lore) => {
+        let spells = lore.spells || [];
+
+        // Apply search filter
+        if (searchText) {
+          spells = spells.filter((s) => s.name.toLowerCase().includes(searchText.toLowerCase()));
+        }
+
+        // Sort alphabetically
+        spells = spells.toSorted((a, b) => a.name.localeCompare(b.name));
+
+        if (spells.length > 0) {
+          result.push({ type: "header", name: lore.name });
+          result.push(
+            ...spells.map((spell) => ({
+              ...spell,
+              cardType: "spell",
+              spellType: "spell",
+              loreName: lore.name,
+              source: "aos",
+              faction_id: selectedFaction.id,
+            }))
+          );
+        }
+      });
+
+      return result;
     }
 
     return [];

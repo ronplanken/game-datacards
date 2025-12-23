@@ -18,6 +18,7 @@ import { MobileFactionUnits } from "../Components/Viewer/MobileFactionUnits";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemSelector";
+import { MobileGameSystemSettings } from "../Components/Viewer/MobileGameSystemSettings";
 import {
   MobileAoSFaction,
   MobileAoSFactionUnits,
@@ -77,7 +78,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const isAoS = settings.selectedDataSource === "aos";
 
   // Scroll-reveal header for AoS only
-  const { showHeader, headerReady, transitionsEnabled, scrollContainerRef } = useScrollRevealHeader({
+  const { showHeader, headerReady, scrollContainerRef } = useScrollRevealHeader({
     enabled: !!activeCard && activeCard.source === "aos",
     targetSelector: ".warscroll-unit-name",
     topOffset: 64,
@@ -103,11 +104,35 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const viewerCardRef = useRef(null);
   const overlayRef = useRef(null);
 
+  // State for pending game system (shows settings screen before finalizing)
+  const [pendingGameSystem, setPendingGameSystem] = useState(null);
+
   // Handle game system selection
   const handleGameSystemSelect = (system) => {
+    if (system === "aos") {
+      // Show settings screen for AoS before finalizing
+      setPendingGameSystem(system);
+    } else {
+      // For other systems, proceed directly
+      updateSettings({
+        ...settings,
+        selectedDataSource: system,
+        showCardsAsDoubleSided: true,
+        mobile: {
+          ...settings.mobile,
+          gameSystemSelected: true,
+        },
+      });
+    }
+  };
+
+  // Handle continuing from settings screen
+  const handleSettingsContinue = () => {
+    const systemToSet = pendingGameSystem;
+    setPendingGameSystem(null); // Clear first to prevent re-render loop
     updateSettings({
       ...settings,
-      selectedDataSource: system,
+      selectedDataSource: systemToSet,
       showCardsAsDoubleSided: true,
       mobile: {
         ...settings.mobile,
@@ -118,6 +143,11 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
   // Check if game system has been selected
   const gameSystemSelected = settings.mobile?.gameSystemSelected;
+
+  // If pending game system, show settings screen
+  if (pendingGameSystem) {
+    return <MobileGameSystemSettings gameSystem={pendingGameSystem} onContinue={handleSettingsContinue} />;
+  }
 
   // If no game system selected, show selector
   if (!gameSystemSelected) {
@@ -141,7 +171,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
       case "necromunda":
         return <NecromundaCardDisplay />;
       case "aos":
-        return <AgeOfSigmarCardDisplay type={type} />;
+        return <AgeOfSigmarCardDisplay type={type} onBack={type === "viewer" ? handleBackFromCard : undefined} />;
       default:
         return null;
     }
@@ -216,19 +246,12 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
           <Row>
             <Col ref={parent} span={24}>
-              {/* AoS: Floating back button (visible before scroll, only after ready) */}
-              {activeCard && isAoS && headerReady && !showHeader && (
-                <button className="mobile-card-back-floating" onClick={handleBackFromCard} type="button">
-                  <ArrowLeft size={20} />
-                </button>
-              )}
-
-              {/* AoS: Slide-in header (visible after scroll, only render after ready) */}
+              {/* AoS: Sticky header (visible after scroll, only render after ready) */}
               {activeCard && isAoS && headerReady && (
                 <div
                   className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
                     showHeader ? "visible" : "hidden"
-                  } ${!transitionsEnabled ? "no-transition" : ""}`}
+                  }`}
                   style={{
                     "--banner-colour": cardFaction?.colours?.banner,
                     "--header-colour": cardFaction?.colours?.header,

@@ -7,6 +7,7 @@ const CARD_DIMENSIONS = {
   enhancement: { width: 266, height: 460 },
   rule: { width: 460, height: 620 },
   warscroll: { width: 490, height: null },
+  spell: { width: 650, height: null },
 };
 
 export function useAutoFitScale(containerRef, cardType = "unit", isEnabled = true) {
