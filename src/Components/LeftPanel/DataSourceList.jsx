@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { List } from "antd";
+import { Dropdown, List } from "antd";
 import classNames from "classnames";
 import { ChevronDown, ChevronRight, CirclePlus, CopyPlus } from "lucide-react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
@@ -7,10 +7,17 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { ContextMenu } from "../TreeView/ContextMenu";
+import { buildCategoryMenuItems } from "../../util/menu-helper";
 
 export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSelectedTreeIndex, onAddToCategory }) => {
   const { settings, updateSettings } = useSettingsStorage();
-  const { cardUpdated, activeCard, setActiveCard, saveActiveCard } = useCardStorage();
+  const {
+    cardUpdated,
+    activeCard,
+    setActiveCard,
+    saveActiveCard,
+    cardStorage: { categories },
+  } = useCardStorage();
   const { dataSource: dsStorage } = useDataSourceStorage();
 
   const handleCardClick = (card) => {
@@ -94,10 +101,18 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
             disabled: true,
           },
           {
-            key: "add-item",
-            label: "Add category default category",
+            key: "add-single",
+            label: (
+              <Dropdown
+                getPopupContainer={(node) => node}
+                menu={{
+                  items: buildCategoryMenuItems(categories),
+                  onClick: (e) => handleAddCardToCategoryClick(card, e.key),
+                }}>
+                <div>Add this item to</div>
+              </Dropdown>
+            ),
             icon: <CirclePlus size={14} />,
-            onClick: () => handleAddCardToCategoryClick(card),
           },
         ],
       });
@@ -112,10 +127,18 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
             disabled: true,
           },
           {
-            key: "add-item",
-            label: "Add all children to default category",
+            key: "add-all",
+            label: (
+              <Dropdown
+                getPopupContainer={(node) => node}
+                menu={{
+                  items: buildCategoryMenuItems(categories),
+                  onClick: (e) => handleAddCardToCategoryClick(card, e.key),
+                }}>
+                <div>Add all items of this category to</div>
+              </Dropdown>
+            ),
             icon: <CopyPlus size={14} />,
-            onClick: () => handleAddCardToCategoryClick(card),
           },
         ],
       });

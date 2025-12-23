@@ -2,7 +2,7 @@ import { Check, ArrowLeftRight, Plus, Save } from "lucide-react";
 import { Button, Dropdown, Menu, message } from "antd";
 import { Tooltip } from "../Tooltip/Tooltip";
 import "./FloatingToolbar.css";
-
+import { buildCategoryMenuItems } from "../../util/menu-helper";
 export const FloatingToolbar = ({
   activeCard,
   settings,
@@ -18,33 +18,12 @@ export const FloatingToolbar = ({
 }) => {
   if (!activeCard) return null;
 
-  // Build category menu items with sub-categories shown under their parents
-  const buildCategoryMenuItems = () => {
-    const items = [];
-    const topLevelCategories = categories.filter((cat) => !cat.parentId);
-
-    topLevelCategories.forEach((cat) => {
-      items.push({
-        key: cat.uuid,
-        label: cat.name,
-      });
-
-      if (cat.type !== "list") {
-        const subCategories = categories.filter((sub) => sub.parentId === cat.uuid);
-        subCategories.forEach((sub) => {
-          items.push({
-            key: sub.uuid,
-            label: <span style={{ paddingLeft: 12, opacity: 0.7 }}>└ {sub.name}</span>,
-          });
-        });
-      }
-    });
-
-    return items;
-  };
-
   const categoryMenu = (
-    <Menu className="floating-toolbar-menu" onClick={(e) => onAddToCategory(e.key)} items={buildCategoryMenuItems()} />
+    <Menu
+      className="floating-toolbar-menu"
+      onClick={(e) => onAddToCategory(e.key)}
+      items={buildCategoryMenuItems(categories)}
+    />
   );
 
   // Build zoom menu
