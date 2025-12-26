@@ -11,7 +11,7 @@ const formatRuleText = (text) => {
 const RuleContentRenderer = ({ rules }) => (
   <div className="rule-parts">
     {[...rules]
-      .sort((a, b) => a.order - b.order)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       .map((part, index) => {
         // Skip examples (quote and textItalic types)
         if (part.type === "quote" || part.type === "textItalic") {
@@ -47,19 +47,23 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
   const ruleTypeLabel =
     rule.ruleType === "army" ? "Army Rule" : `Detachment Rule${rule.detachment ? ` - ${rule.detachment}` : ""}`;
 
+  // Determine if auto-height should be used (default to true for new cards)
+  const useAutoHeight = rule.styling?.autoHeight !== false;
+
   return (
     <div
       style={{
         "--width": `${rule.styling?.width ?? "460"}px`,
-        "--height": `${rule.styling?.height ?? "620"}px`,
+        "--height": useAutoHeight ? "auto" : `${rule.styling?.height ?? "620"}px`,
         justifyContent: "center",
         justifyItems: "center",
+        alignItems: useAutoHeight ? "flex-start" : "center",
         display: "flex",
         paddingTop: paddingTop,
         ...cardStyle,
       }}
       className={containerClass}>
-      <div className={classNames(`own ${className}`, rule.faction_id)}>
+      <div className={classNames(`own ${className}`, rule.faction_id, { "auto-height": useAutoHeight })}>
         <div className="border">
           <div className="background-side-bar"></div>
           <div className="background-header-bar"></div>
@@ -78,7 +82,7 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
           </div>
           <div className="containers">
             <div className="rule-type-indicator">
-              <div className={classNames("icon", rule.ruleType)}></div>
+              <div className={classNames("faction-icon", rule.faction_id)}></div>
             </div>
           </div>
         </div>

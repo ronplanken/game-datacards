@@ -10,34 +10,42 @@ const modalRoot = document.getElementById("modal-root");
 
 const features = [
   {
-    title: "Age of Sigmar Support",
+    title: "Custom Datasources",
     description:
-      "Full support for Age of Sigmar warscrolls with spell lores, manifestations, and faction-specific styling.",
+      "Import and manage custom datasources from URLs or files. Keep them synced with automatic update checks.",
     isNew: true,
   },
   {
-    title: "Updated Styling",
-    description: "Refreshed modal designs and UI components for a more modern look and feel.",
+    title: "Export as Datasource",
+    description: "Export your custom card categories as shareable datasource files that others can import.",
+    isNew: true,
   },
   {
-    title: "Custom Faction Icons",
-    description: "Upload your own faction symbol with positioning and scaling controls.",
+    title: "40K GW App Import",
+    description: "Import your 40K army lists from the GW app on both desktop and mobile with smart unit matching.",
+    isNew: true,
   },
   {
-    title: "Custom Colours",
-    description: "Override faction colours with custom banner and header colours per card.",
+    title: "List Categorization",
+    description: "Improved list overview with role-based categories for 40K and AoS armies.",
+    isNew: true,
   },
   {
-    title: "Linkable Leaders",
-    description: "Link Leader and Led By entries to your own custom cards.",
+    title: "Rule Card Editor",
+    description: "Create and edit custom rule cards for army and detachment rules with auto-height support.",
+    isNew: true,
   },
   {
-    title: "Updated Controls",
-    description: "Auto-fit card scaling and improved zoom controls in the editor.",
+    title: "Rule Card Print & Export",
+    description: "Rule cards now properly render in print and image export pages.",
   },
   {
-    title: "Sub-categories",
-    description: "Organise your cards with nested sub-categories in the tree view.",
+    title: "AoS Legends Fix",
+    description: "Fixed Legends units showing in mobile view when the 'Show Legends' setting is disabled.",
+  },
+  {
+    title: "UI Improvements",
+    description: "Refined share modal, tree view interactions, and overall styling polish.",
   },
 ];
 

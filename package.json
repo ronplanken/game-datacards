@@ -1,6 +1,6 @@
 {
   "name": "game-datacards",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "The only tool you will ever need for your custom datacards",
   "private": false,
   "homepage": "https://game-datacards.eu",
@@ -23,6 +23,7 @@
     "compare-versions": "^4.1.4",
     "firebase": "^10.9.0",
     "fitty": "^2.3.7",
+    "fuse.js": "^7.1.0",
     "ga-gtag": "^1.1.1",
     "html-to-image": "^1.11.11",
     "husky": "^8.0.2",

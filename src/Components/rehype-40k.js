@@ -49,8 +49,6 @@ export default function rehype40k(options) {
    */
   return function (tree) {
     visit(tree, "element", function (node, index, parent) {
-      console.log("test");
-      console.log(node, index, parent);
       return;
       // if (!parent || typeof index !== "number" || node.tagName !== "img" || !node.properties.src) {
       //   return;

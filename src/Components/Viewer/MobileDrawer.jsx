@@ -143,7 +143,6 @@ export const MobileDrawer = ({ open, setOpen }) => {
                   key={`list-category-${index}`}
                   className={`list-category`}
                   onClick={() => {
-                    console.log(card);
                     let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
                     if (newClosedFactions.includes(card.id)) {
                       newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);

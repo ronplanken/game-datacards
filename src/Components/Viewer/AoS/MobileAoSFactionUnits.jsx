@@ -100,7 +100,13 @@ export const MobileAoSFactionUnits = () => {
   // Get warscrolls data (faction + generic when enabled)
   const factionWarscrolls = selectedFaction?.warscrolls || [];
   const genericWarscrolls = (showGeneric && genericData?.warscrolls) || [];
-  const warscrolls = [...factionWarscrolls, ...genericWarscrolls];
+  let warscrolls = [...factionWarscrolls, ...genericWarscrolls];
+
+  // Filter out legends if setting is disabled
+  if (!settings?.showLegends) {
+    warscrolls = warscrolls.filter((w) => !w.isLegends);
+  }
+
   const groupedUnits = groupWarscrollsByRole(warscrolls);
   const alphabeticalUnits = [...warscrolls].sort((a, b) => a.name.localeCompare(b.name));
 

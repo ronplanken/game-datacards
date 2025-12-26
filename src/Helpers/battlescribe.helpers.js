@@ -137,7 +137,6 @@ const generateModelWargear = (model) => {
     });
   }
   if (!Array.isArray(model.selections.selection)) {
-    console.log(model);
     model.selections.selection.forEach((selection) => {
       if (smodel.selections.selection.type === "upgrade" && model.selections?.selection?.profiles?.profile) {
         if (Array.isArray(model.selections?.selection?.profiles?.profile)) {

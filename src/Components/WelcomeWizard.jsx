@@ -407,6 +407,7 @@ export const WelcomeWizard = () => {
       updateSettings({
         ...settings,
         wizardCompleted: process.env.REACT_APP_VERSION,
+        lastMajorWizardVersion: process.env.REACT_APP_VERSION,
       });
     }, 200);
   };

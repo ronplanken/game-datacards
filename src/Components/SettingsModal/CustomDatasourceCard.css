@@ -1,0 +1,96 @@
+/* CustomDatasourceCard.css - Extends DatasourceCard for custom datasources */
+
+.datasource-card.custom {
+  position: relative;
+}
+
+.datasource-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.datasource-card-source-icon {
+  color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.datasource-card.active .datasource-card-source-icon {
+  color: #1677ff;
+}
+
+.datasource-card-count-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 500;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.datasource-card.active .datasource-card-count-badge {
+  background: #bae0ff;
+  color: #0958d9;
+}
+
+button.datasource-delete-btn,
+.datasource-card .datasource-delete-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+button.datasource-delete-btn:hover,
+.datasource-card .datasource-delete-btn:hover {
+  background: #fff2f0;
+  border-color: #ffccc7;
+  color: #ff4d4f;
+}
+
+/* Ghost state - placeholder for active datasource */
+.datasource-card.ghost {
+  opacity: 0.5;
+  pointer-events: none;
+  border-style: dashed;
+}
+
+.datasource-card-ghost-label {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: #e6f4ff;
+  border-radius: 3px;
+  color: #1677ff;
+  font-weight: 500;
+  flex-shrink: 0;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .datasource-card-title-group {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .datasource-card-count-badge {
+    margin-left: 20px;
+  }
+}

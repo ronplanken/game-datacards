@@ -179,6 +179,38 @@ export const Warhammer40K10eCardDisplay = ({
           />
         </div>
       )}
+      {type === "print" && card && card?.cardType === "rule" && (
+        <div
+          className="data-40k-10e"
+          style={{
+            "--card-scaling-factor": cardScaling / 100,
+          }}>
+          <RuleCard
+            rule={card}
+            paddingTop="0px"
+            cardStyle={{
+              transform: `scale(${cardScaling / 100})`,
+              transformOrigin: "top left",
+              "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+              "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+              "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+              "--header-colour": COLOURS[backgrounds].headerColour,
+              "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+              "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+              "--stat-title-colour": COLOURS[backgrounds].statTitleColour,
+              "--banner-colour": COLOURS[backgrounds].bannerColour,
+              "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+              "--rows-colour": COLOURS[backgrounds].rowsColour,
+              "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+              "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+              "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+              "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+              "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+              "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
+            }}
+          />
+        </div>
+      )}
       {type === "viewer" && (
         <div
           style={{
