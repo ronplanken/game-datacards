@@ -192,7 +192,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
           ? selectedFaction.basicStratagems?.filter((stratagem) =>
               stratagem.name.toLowerCase().includes(searchText.toLowerCase())
             )
-          : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
+          : selectedFaction.basicStratagems ?? [];
 
         return [
           { type: "header", name: "Basic stratagems" },
@@ -227,7 +227,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
           ? selectedFaction.basicSecondaries?.filter((secondary) =>
               secondary.name.toLowerCase().includes(searchText.toLowerCase())
             )
-          : selectedFaction.basicSecondaries ?? [{ name: "Update your datasources" }];
+          : selectedFaction.basicSecondaries ?? [];
 
         return [
           { type: "header", name: "Basic secondaries" },

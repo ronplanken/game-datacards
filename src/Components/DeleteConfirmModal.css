@@ -1,0 +1,139 @@
+/* DeleteConfirmModal.css */
+
+/* ===========================================
+   MODAL OVERLAY & CONTAINER
+   =========================================== */
+
+.delete-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: deleteFadeIn 0.2s ease-out;
+}
+
+.delete-modal {
+  width: 420px;
+  max-width: 90vw;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: deleteSlideIn 0.2s ease-out;
+}
+
+/* ===========================================
+   MODAL HEADER
+   =========================================== */
+
+.delete-modal-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.delete-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0;
+}
+
+/* ===========================================
+   MODAL BODY
+   =========================================== */
+
+.delete-modal-body {
+  padding: 16px 24px;
+  background: #fff;
+}
+
+.delete-modal-content {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ===========================================
+   MODAL FOOTER
+   =========================================== */
+
+.delete-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 24px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.delete-modal-btn {
+  padding: 4px 15px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.delete-modal-btn-cancel {
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.delete-modal-btn-cancel:hover {
+  border-color: #4096ff;
+  color: #4096ff;
+}
+
+.delete-modal-btn-delete {
+  background-color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+  color: #fff;
+}
+
+.delete-modal-btn-delete:hover {
+  background-color: #ff7875;
+  border-color: #ff7875;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+@keyframes deleteSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes deleteFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

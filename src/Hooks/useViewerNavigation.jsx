@@ -37,20 +37,27 @@ export function useViewerNavigation() {
       }
 
       if (unit) {
-        // Support both datasheets (40K) and warscrolls (AoS)
-        const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
-        let foundUnit = units.find((u) => {
-          return u.name.replaceAll(" ", "-").toLowerCase() === unit;
-        });
-
-        // If not found and generic manifestations are enabled, search generic warscrolls
-        if (!foundUnit && settings?.showGenericManifestations && dataSource?.genericData?.warscrolls) {
-          foundUnit = dataSource.genericData.warscrolls.find((u) => {
+        // Check if we have a pre-filtered card from a mobile list (passed via router state)
+        const listCard = location.state?.listCard;
+        if (listCard && listCard.name?.replaceAll(" ", "-").toLowerCase() === unit) {
+          // Use the stored card with filtered weapons/wargear
+          setActiveCard(listCard);
+        } else {
+          // Support both datasheets (40K) and warscrolls (AoS)
+          const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
+          let foundUnit = units.find((u) => {
             return u.name.replaceAll(" ", "-").toLowerCase() === unit;
           });
-        }
 
-        setActiveCard(foundUnit);
+          // If not found and generic manifestations are enabled, search generic warscrolls
+          if (!foundUnit && settings?.showGenericManifestations && dataSource?.genericData?.warscrolls) {
+            foundUnit = dataSource.genericData.warscrolls.find((u) => {
+              return u.name.replaceAll(" ", "-").toLowerCase() === unit;
+            });
+          }
+
+          setActiveCard(foundUnit);
+        }
       } else {
         setActiveCard();
       }
@@ -200,6 +207,7 @@ export function useViewerNavigation() {
     spell,
     dataSource,
     location.pathname,
+    location.state,
     settings?.showGenericManifestations,
   ]);
 

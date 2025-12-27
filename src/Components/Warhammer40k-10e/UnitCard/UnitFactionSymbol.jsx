@@ -32,7 +32,7 @@ export const UnitFactionSymbol = ({ unit }) => {
             setCustomSymbolUrl(objectUrl);
           }
         } catch (error) {
-          console.error("[UnitFactionSymbol] Failed to load custom faction symbol:", error);
+          // Failed to load custom faction symbol
         }
       } else {
         if (isMounted) {

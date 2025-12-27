@@ -56,6 +56,7 @@ const RuleContent = ({ rules }) => (
           case "accordion":
             return (
               <div key={index} className="rule-accordion-item">
+                {part.title && <h5 className="rule-accordion-title">{part.title}</h5>}
                 <MarkdownDisplay content={formattedText} />
               </div>
             );

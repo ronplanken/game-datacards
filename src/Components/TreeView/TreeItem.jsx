@@ -19,6 +19,7 @@ import { Vehicle } from "../../Icons/Vehicle";
 import { Enhancement } from "../../Icons/Enhancement";
 import { Battlerule } from "../../Icons/Battlerule";
 import { confirmDialog } from "../ConfirmChangesModal";
+import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import { ContextMenu } from "./ContextMenu";
 import "./TreeView.css";
 
@@ -75,7 +76,10 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
   const [selectedDetachment, setSelectedDetachment] = useState();
 
   useEffect(() => {
-    if (settings?.selectedDetachment?.[card?.faction_id]) {
+    if (card?.detachment) {
+      // Use the card's saved detachment (from import)
+      setSelectedDetachment(card.detachment);
+    } else if (settings?.selectedDetachment?.[card?.faction_id]) {
       setSelectedDetachment(settings?.selectedDetachment?.[card?.faction_id]);
     } else {
       setSelectedDetachment(cardFaction?.detachments?.[0]);
@@ -116,20 +120,15 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
   };
 
   const handleDelete = () => {
-    confirmDialog({
+    deleteConfirmDialog({
       title: "Are you sure you want to delete this card?",
       content: "This action cannot be undone.",
-      handleSave: () => {
+      onConfirm: () => {
         removeCardFromCategory(card.uuid, category.uuid);
         setActiveCard(null);
         setSelectedTreeIndex(null);
         message.success("Card has been deleted.");
       },
-      handleDiscard: () => {},
-      handleCancel: () => {},
-      saveText: "Delete",
-      discardText: "Cancel",
-      hideDiscard: true,
     });
   };
 

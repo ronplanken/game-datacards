@@ -1,12 +1,20 @@
-import { Download } from "lucide-react";
-import { Button, message } from "antd";
+import { Download, Hash, Copy } from "lucide-react";
+import { Button, message, Input } from "antd";
 import { Tooltip } from "../Tooltip/Tooltip";
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useFirebase } from "../../Hooks/useFirebase";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
+import {
+  createDatasourceExport,
+  generateDatasourceFilename,
+  generateIdFromName,
+  countCardsByType,
+  formatCardBreakdown,
+} from "../../Helpers/customDatasource.helpers";
 import "./ImportExport.css";
 
 const modalRoot = document.getElementById("modal-root");
@@ -27,13 +35,99 @@ export const Exporter = () => {
   const [activeTab, setActiveTab] = useState("json");
   const { logScreenView } = useFirebase();
   const { activeCategory, cardStorage } = useCardStorage();
+  const { settings } = useSettingsStorage();
+
+  // Preview state
+  const [jsonPreview, setJsonPreview] = useState("");
+  const [gwAppPreview, setGwAppPreview] = useState("");
+
+  // Datasource export state
+  const [dsName, setDsName] = useState("");
+  const [dsId, setDsId] = useState("");
+  const [dsVersion, setDsVersion] = useState("1.0.0");
+  const [dsAuthor, setDsAuthor] = useState("");
+  const [dsHeaderColor, setDsHeaderColor] = useState("#1a1a1a");
+  const [dsBannerColor, setDsBannerColor] = useState("#4a4a4a");
+
+  // Initialize datasource form when modal opens or category changes
+  useEffect(() => {
+    if (isModalVisible && activeCategory) {
+      setDsName(activeCategory.name || "");
+      setDsId(generateIdFromName(activeCategory.name || ""));
+      setDsVersion("1.0.0");
+      setDsAuthor("");
+      setDsHeaderColor("#1a1a1a");
+      setDsBannerColor("#4a4a4a");
+    }
+  }, [isModalVisible, activeCategory]);
+
+  // Auto-generate ID when name changes
+  useEffect(() => {
+    if (dsName) {
+      setDsId(generateIdFromName(dsName));
+    }
+  }, [dsName]);
 
   const handleClose = () => {
     setIsModalVisible(false);
     setActiveTab("json");
   };
 
-  const handleExportJson = () => {
+  // Get all cards for datasource export
+  const allCategoryCards = useMemo(() => {
+    return getAllCategoryCards(activeCategory, cardStorage.categories);
+  }, [activeCategory, cardStorage.categories]);
+
+  const { counts: cardCounts, total: cardTotal } = useMemo(
+    () => countCardsByType(allCategoryCards),
+    [allCategoryCards]
+  );
+  const cardBreakdown = useMemo(() => formatCardBreakdown(cardCounts), [cardCounts]);
+
+  const isDatasourceValid = dsName.trim() && dsVersion.trim();
+
+  const handleExportDatasource = () => {
+    if (!isDatasourceValid) return;
+
+    try {
+      const datasource = createDatasourceExport({
+        name: dsName.trim(),
+        id: dsId.trim() || generateIdFromName(dsName),
+        version: dsVersion.trim(),
+        author: dsAuthor.trim() || undefined,
+        cards: allCategoryCards,
+        factionName: activeCategory.name,
+        colours: {
+          header: dsHeaderColor,
+          banner: dsBannerColor,
+        },
+      });
+
+      const json = JSON.stringify(datasource, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const filename = generateDatasourceFilename(dsName);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      message.success(`Datasource exported as ${filename}`);
+      handleClose();
+    } catch (error) {
+      message.error("Failed to export datasource");
+      console.error("Export error:", error);
+    }
+  };
+
+  // Generate JSON export string
+  const generateJsonExport = useCallback(() => {
+    if (!activeCategory) return "";
+
     // Get sub-categories for this category
     const subCategories = cardStorage.categories.filter((cat) => cat.parentId === activeCategory?.uuid);
 
@@ -71,96 +165,159 @@ export const Exporter = () => {
       version: process.env.REACT_APP_VERSION,
       website: "https://game-datacards.eu",
     };
-    const url = window.URL.createObjectURL(
-      new Blob([JSON.stringify(exportData, null, 2)], {
-        type: "application/json",
-      })
-    );
+
+    return JSON.stringify(exportData, null, 2);
+  }, [activeCategory, cardStorage.categories]);
+
+  const handleDownloadJson = () => {
+    if (!jsonPreview) return;
+
+    const url = window.URL.createObjectURL(new Blob([jsonPreview], { type: "application/json" }));
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute("download", `${activeCategory.name}-${new Date().toISOString()}.json`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    message.success("JSON file downloaded");
   };
 
-  const handleCopyGwApp = () => {
-    let listText = activeCategory.name;
+  const handleCopyJson = () => {
+    if (!jsonPreview) return;
+    navigator.clipboard.writeText(jsonPreview);
+    message.success("JSON copied to clipboard");
+  };
+
+  // Generate GW App text export string
+  const generateGwAppText = useCallback(() => {
+    if (!activeCategory) return "";
+
     // Get all cards including sub-category cards
     const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
+
+    // Calculate total points
+    const totalPoints = allCards?.reduce((sum, card) => {
+      const unitCost = Number(card?.unitSize?.cost) || 0;
+      const enhancementCost = Number(card?.selectedEnhancement?.cost) || 0;
+      return sum + unitCost + enhancementCost;
+    }, 0);
+
+    // Sort cards into sections
     const sortedCards = allCards?.reduce(
       (exportCards, card) => {
-        if (card.keywords.includes("Character")) {
+        const keywords = card.keywords || [];
+        if (keywords.includes("Character")) {
           exportCards.characters.push(card);
-          return exportCards;
-        }
-        if (card.keywords.includes("Battleline")) {
+        } else if (keywords.includes("Battleline")) {
           exportCards.battleline.push(card);
-          return exportCards;
+        } else if (keywords.includes("Transport") || keywords.includes("Dedicated Transport")) {
+          exportCards.transports.push(card);
+        } else if (card.faction_id && card.faction_id !== activeCategory.factionId) {
+          // Allied units have different faction
+          exportCards.allied.push(card);
+        } else {
+          exportCards.other.push(card);
         }
-        exportCards.other.push(card);
         return exportCards;
       },
-      { characters: [], battleline: [], other: [], allied: [] }
+      { characters: [], battleline: [], transports: [], other: [], allied: [] }
     );
 
+    // Helper to format a unit entry
+    const formatUnit = (val) => {
+      let unitText = `\n\n${val.name}`;
+      if (val.unitSize?.models > 1) {
+        unitText += ` ${val.unitSize.models}x`;
+      }
+      const unitCost = Number(val?.unitSize?.cost) || 0;
+      const enhancementCost = Number(val?.selectedEnhancement?.cost) || 0;
+      unitText += ` (${unitCost + enhancementCost || "?"} pts)`;
+
+      if (val.isWarlord) {
+        unitText += `\n   • Warlord`;
+      }
+      if (val.selectedEnhancement) {
+        unitText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
+          val.selectedEnhancement?.cost
+        } pts)`;
+      }
+      return unitText;
+    };
+
+    // Build the export text
+    // Header: List name with total points
+    let listText = `${activeCategory.name} (${totalPoints} points)`;
+
+    // Faction name (use stored faction or category name)
+    const factionName = activeCategory.factionName || activeCategory.name;
+    listText += `\n\n${factionName}`;
+
+    // CHARACTERS section
     if (sortedCards.characters.length > 0) {
       listText += "\n\nCHARACTERS";
       sortedCards.characters.forEach((val) => {
-        listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${
-          Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?"
-        } pts)`;
-        if (val.isWarlord) {
-          listText += `\n   ${val.isWarlord ? "• Warlord" : ""}`;
-        }
-        if (val.selectedEnhancement) {
-          listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
-            val.selectedEnhancement?.cost
-          } pts)`;
-        }
+        listText += formatUnit(val);
       });
     }
 
+    // BATTLELINE section
     if (sortedCards.battleline.length > 0) {
       listText += "\n\nBATTLELINE";
       sortedCards.battleline.forEach((val) => {
-        listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${
-          Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?"
-        } pts)`;
-        if (val.isWarlord) {
-          listText += `\n   ${val.isWarlord ? "• Warlord" : ""}`;
-        }
-        if (val.selectedEnhancement) {
-          listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
-            val.selectedEnhancement?.cost
-          } pts)`;
-        }
+        listText += formatUnit(val);
       });
     }
 
+    // DEDICATED TRANSPORTS section
+    if (sortedCards.transports.length > 0) {
+      listText += "\n\nDEDICATED TRANSPORTS";
+      sortedCards.transports.forEach((val) => {
+        listText += formatUnit(val);
+      });
+    }
+
+    // OTHER DATASHEETS section
     if (sortedCards.other.length > 0) {
-      listText += "\n\nOTHER";
+      listText += "\n\nOTHER DATASHEETS";
       sortedCards.other.forEach((val) => {
-        listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${
-          Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?"
-        } pts)`;
-        if (val.isWarlord) {
-          listText += `\n   ${val.isWarlord ? "• Warlord" : ""}`;
-        }
-        if (val.selectedEnhancement) {
-          listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
-            val.selectedEnhancement?.cost
-          } pts)`;
-        }
+        listText += formatUnit(val);
+      });
+    }
+
+    // ALLIED UNITS section
+    if (sortedCards.allied.length > 0) {
+      listText += "\n\nALLIED UNITS";
+      sortedCards.allied.forEach((val) => {
+        listText += formatUnit(val);
       });
     }
 
     listText += "\n\nCreated with https://game-datacards.eu";
-    navigator.clipboard.writeText(listText);
-    message.success("List copied to clipboard.");
+    return listText;
+  }, [activeCategory, cardStorage.categories]);
+
+  const handleCopyGwApp = () => {
+    if (!gwAppPreview) return;
+    navigator.clipboard.writeText(gwAppPreview);
+    message.success("List copied to clipboard");
   };
 
-  const isGwAppDisabled = activeCategory?.type !== "list";
+  // Check if GW 40k App export should be disabled
+  const isGwAppDisabled = settings.selectedDataSource !== "40k-10e" || activeCategory?.type !== "list";
+
+  // Generate previews when modal opens or category changes
+  useEffect(() => {
+    if (isModalVisible && activeCategory) {
+      setJsonPreview(generateJsonExport());
+    }
+  }, [isModalVisible, activeCategory, generateJsonExport]);
+
+  useEffect(() => {
+    if (isModalVisible && activeTab === "gwapp" && !isGwAppDisabled) {
+      setGwAppPreview(generateGwAppText());
+    }
+  }, [isModalVisible, activeTab, isGwAppDisabled, generateGwAppText]);
 
   return (
     <>
@@ -178,12 +335,21 @@ export const Exporter = () => {
                     onClick={() => setActiveTab("json")}>
                     GDC JSON
                   </div>
+                  <Tooltip
+                    content={isGwAppDisabled ? "Only available for 10th Edition 40k lists" : ""}
+                    placement="bottom">
+                    <div
+                      className={`import-export-tab ${activeTab === "gwapp" ? "active" : ""} ${
+                        isGwAppDisabled ? "disabled" : ""
+                      }`}
+                      onClick={() => !isGwAppDisabled && setActiveTab("gwapp")}>
+                      GW 40k App
+                    </div>
+                  </Tooltip>
                   <div
-                    className={`import-export-tab ${activeTab === "gwapp" ? "active" : ""} ${
-                      isGwAppDisabled ? "disabled" : ""
-                    }`}
-                    onClick={() => !isGwAppDisabled && setActiveTab("gwapp")}>
-                    GW 40k App
+                    className={`import-export-tab ${activeTab === "datasource" ? "active" : ""}`}
+                    onClick={() => setActiveTab("datasource")}>
+                    Datasource
                   </div>
                 </div>
                 <div className="import-export-content">
@@ -193,21 +359,125 @@ export const Exporter = () => {
                         Export your current selected category to the GameDatacards JSON format. This can only be used to
                         import it into GameDatacards itself.
                       </p>
-                      <button className="ie-action-btn" onClick={handleExportJson}>
-                        Export to JSON
-                      </button>
+                      <textarea className="export-preview" value={jsonPreview || "No cards to export"} readOnly />
+                      <div className="export-actions">
+                        <button className="ie-btn" onClick={handleCopyJson} disabled={!jsonPreview}>
+                          <Copy size={14} /> Copy to Clipboard
+                        </button>
+                        <button className="ie-btn-primary" onClick={handleDownloadJson} disabled={!jsonPreview}>
+                          <Download size={14} /> Download JSON
+                        </button>
+                      </div>
                     </>
                   )}
                   {activeTab === "gwapp" && (
                     <>
                       <p className="import-export-description">
-                        Export your current selected category to the GW Warhammer 40k app format. Please note this is
-                        currently missing some features such as wargear selection.
+                        Export your list in GW Warhammer 40k app format. Please note this is currently missing some
+                        features such as wargear selection.
                       </p>
-                      <button className="ie-action-btn" onClick={handleCopyGwApp}>
-                        Copy to clipboard
-                      </button>
+                      <textarea className="export-preview" value={gwAppPreview || "No cards to export"} readOnly />
+                      <div className="export-actions">
+                        <button className="ie-btn-primary" onClick={handleCopyGwApp} disabled={!gwAppPreview}>
+                          <Copy size={14} /> Copy to Clipboard
+                        </button>
+                      </div>
                     </>
+                  )}
+                  {activeTab === "datasource" && (
+                    <div className="ie-datasource-tab">
+                      <p className="import-export-description">
+                        Export this category as a standalone datasource that can be imported and shared with others.
+                      </p>
+                      <div className="ie-ds-summary">
+                        <span className="ie-ds-category">
+                          Category: <strong>{activeCategory?.name}</strong>
+                        </span>
+                        <span className="ie-ds-count">
+                          {cardTotal} card{cardTotal !== 1 ? "s" : ""}
+                          {cardBreakdown && ` (${cardBreakdown})`}
+                        </span>
+                      </div>
+                      <div className="ie-ds-form">
+                        <div className="ie-ds-field">
+                          <label className="ie-ds-label">
+                            Datasource Name <span className="ie-ds-required">*</span>
+                          </label>
+                          <Input
+                            value={dsName}
+                            onChange={(e) => setDsName(e.target.value)}
+                            placeholder="My Custom Army"
+                            size="small"
+                          />
+                        </div>
+                        <div className="ie-ds-row">
+                          <div className="ie-ds-field ie-ds-half">
+                            <label className="ie-ds-label">
+                              Version <span className="ie-ds-required">*</span>
+                            </label>
+                            <Input
+                              value={dsVersion}
+                              onChange={(e) => setDsVersion(e.target.value)}
+                              placeholder="1.0.0"
+                              size="small"
+                            />
+                          </div>
+                          <div className="ie-ds-field ie-ds-half">
+                            <label className="ie-ds-label">Author</label>
+                            <Input
+                              value={dsAuthor}
+                              onChange={(e) => setDsAuthor(e.target.value)}
+                              placeholder="Your name"
+                              size="small"
+                            />
+                          </div>
+                        </div>
+                        <div className="ie-ds-field">
+                          <label className="ie-ds-label">Datasource ID</label>
+                          <Input
+                            value={dsId}
+                            onChange={(e) => setDsId(e.target.value)}
+                            placeholder="my-custom-army"
+                            size="small"
+                            prefix={<Hash size={14} style={{ color: "rgba(0,0,0,0.45)" }} />}
+                          />
+                          <span className="ie-ds-help">Used for linking updates to this datasource</span>
+                        </div>
+                        <div className="ie-ds-field">
+                          <label className="ie-ds-label">Faction Colors</label>
+                          <div className="ie-ds-color-row">
+                            <div className="ie-ds-color-picker">
+                              <span className="ie-ds-color-label">Header</span>
+                              <div className="ie-ds-color-input-wrapper">
+                                <input
+                                  type="color"
+                                  value={dsHeaderColor}
+                                  onChange={(e) => setDsHeaderColor(e.target.value)}
+                                  className="ie-ds-color-input"
+                                />
+                                <span className="ie-ds-color-value">{dsHeaderColor}</span>
+                              </div>
+                            </div>
+                            <div className="ie-ds-color-picker">
+                              <span className="ie-ds-color-label">Banner</span>
+                              <div className="ie-ds-color-input-wrapper">
+                                <input
+                                  type="color"
+                                  value={dsBannerColor}
+                                  onChange={(e) => setDsBannerColor(e.target.value)}
+                                  className="ie-ds-color-input"
+                                />
+                                <span className="ie-ds-color-value">{dsBannerColor}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <button className="ie-action-btn" onClick={handleExportDatasource} disabled={!isDatasourceValid}>
+                        <Download size={14} />
+                        Export Datasource JSON
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

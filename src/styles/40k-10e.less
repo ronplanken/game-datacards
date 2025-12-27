@@ -1115,6 +1115,10 @@
       justify-content: center;
       align-items: center;
 
+      &.auto-height {
+        height: auto;
+      }
+
       @media print {
         transform-origin: 0 0;
       }
@@ -1279,6 +1283,13 @@
                 font-weight: bold;
               }
 
+              .rule-part-accordion-title {
+                font-weight: 600;
+                font-size: 0.95em;
+                margin: 0 0 4px 0;
+                color: #222;
+              }
+
               p {
                 margin: 0;
               }
@@ -1307,26 +1318,54 @@
             justify-content: center;
             align-items: center;
 
-            .icon {
+            .faction-icon {
               rotate: -45deg;
               width: 20px;
               height: 20px;
               background-color: var(--header-colour);
 
-              &.army {
-                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/any.svg");
-                mask-repeat: no-repeat;
-                mask-position: center;
-                mask-size: contain;
-              }
+              each(@factions, {
+                &.@{value} {
+                  mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+                  mask-repeat: no-repeat;
+                  mask-position: center;
+                  mask-size: contain;
+                }
+              });
 
-              &.detachment {
-                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/command.svg");
+              &.basic {
+                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
                 mask-repeat: no-repeat;
                 mask-position: center;
                 mask-size: contain;
               }
             }
+          }
+        }
+      }
+
+      // Auto-height mode: card expands to fit content
+      &.auto-height {
+        height: auto;
+        align-items: flex-start;
+
+        .border {
+          height: auto;
+          padding-bottom: 24px;
+          position: relative;
+
+          .background-side-bar {
+            height: calc(100% - 58px);
+          }
+
+          .content {
+            position: relative;
+            top: auto;
+            left: auto;
+            height: auto;
+            overflow-y: visible;
+            margin-top: 68px;
+            margin-left: 52.91px;
           }
         }
       }

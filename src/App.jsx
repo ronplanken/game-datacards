@@ -48,6 +48,7 @@ function App() {
     if (!activeCard) return "unit";
     if (activeCard.cardType === "stratagem") return "stratagem";
     if (activeCard.cardType === "enhancement") return "enhancement";
+    if (activeCard.cardType === "rule") return "rule";
     if (activeCard.cardType === "warscroll") return "warscroll";
     if (activeCard.cardType === "spell") return "spell";
     if (settings.showCardsAsDoubleSided || activeCard.variant === "full") return "unitFull";
@@ -99,9 +100,10 @@ function App() {
               ref={cardContainerRef}
               style={{
                 height: "calc(100vh - 64px)",
-                display: "block",
                 overflow: "auto",
                 position: "relative",
+                display: "flex",
+                flexDirection: "column",
                 "--card-scaling-factor": effectiveScale,
                 "--banner-colour": activeCard?.useCustomColours
                   ? activeCard.customBannerColour
@@ -111,7 +113,7 @@ function App() {
                   : cardFaction?.colours?.header,
               }}
               className={`data-${activeCard?.source}`}>
-              <Row style={{ overflow: "hidden", justifyContent: "center" }}>
+              <Row style={{ overflow: "hidden", justifyContent: "center", flex: "1 0 auto" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "40k-10e" && (
                   <Warhammer40K10eCardDisplay side={activeCard.print_side || "front"} />
