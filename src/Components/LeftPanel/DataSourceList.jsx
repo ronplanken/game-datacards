@@ -109,7 +109,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
                   items: buildCategoryMenuItems(categories),
                   onClick: (e) => handleAddCardToCategoryClick(card, e.key),
                 }}>
-                <div>Add this item to</div>
+                <div>Add item to...</div>
               </Dropdown>
             ),
             icon: <CirclePlus size={14} />,
