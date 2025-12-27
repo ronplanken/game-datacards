@@ -135,7 +135,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
                   items: buildCategoryMenuItems(categories),
                   onClick: (e) => handleAddCardToCategoryClick(card, e.key),
                 }}>
-                <div>Add all items of this category to</div>
+                <div>Add all items to..</div>
               </Dropdown>
             ),
             icon: <CopyPlus size={14} />,
