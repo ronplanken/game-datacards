@@ -36,6 +36,11 @@ const features = [
     isNew: true,
   },
   {
+    title: "Quick Add to Cards",
+    description: "Add units directly from the datasource list to your default category with a single click.",
+    isNew: true,
+  },
+  {
     title: "Rule Card Print & Export",
     description: "Rule cards now properly render in print and image export pages.",
   },
