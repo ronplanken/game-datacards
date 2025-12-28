@@ -1,4 +1,4 @@
-import { Layout, Row } from "antd";
+import { Layout, Row, message } from "antd";
 import "antd/dist/antd.min.css";
 import React, { useState, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -66,18 +66,32 @@ function App() {
   const isAutoFit = settings.autoFitEnabled !== false;
 
   // Handle add to category from toolbar
-  const handleAddToCategory = (categoryUuid, card = undefined) => {
-    const cardContent = card ?? activeCard;
-    const newCard = {
-      ...cardContent,
-      isCustom: true,
-      uuid: uuidv4(),
-    };
+  const handleAddToCategory = (categoryUuid, cardOrCards = undefined) => {
     const cat = { ...cardStorage.categories.find((c) => c.uuid === categoryUuid) };
-    addCardToCategory(newCard, cat.uuid);
-    setActiveCard(newCard);
-    setActiveCategory(cat);
-    setSelectedTreeIndex(`card-${newCard.uuid}`);
+    const cards = Array.isArray(cardOrCards) ? cardOrCards : [cardOrCards ?? activeCard];
+
+    let lastCard = null;
+    cards.forEach((cardContent) => {
+      const newCard = {
+        ...cardContent,
+        isCustom: true,
+        uuid: uuidv4(),
+      };
+      addCardToCategory(newCard, cat.uuid);
+      lastCard = newCard;
+    });
+
+    if (lastCard) {
+      setActiveCard(lastCard);
+      setActiveCategory(cat);
+      setSelectedTreeIndex(`card-${lastCard.uuid}`);
+    }
+
+    if (cards.length === 1) {
+      message.success(`Added "${cards[0].name}" to ${cat.name}`);
+    } else {
+      message.success(`Added ${cards.length} cards to ${cat.name}`);
+    }
   };
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);

@@ -72,16 +72,17 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
   const handleAddCardToCategoryClick = (card, category = undefined) => {
     switch (card.type) {
       case "role":
-        // add cards that belong to this role
-        dataSource.filter((c) => c.role === card.name).forEach((i) => onAddToCategory(category, i));
+        // add all cards that belong to this role as a single batch
+        const roleCards = dataSource.filter((c) => c.role === card.name);
+        onAddToCategory(category, roleCards);
         break;
       case undefined:
         onAddToCategory(category, card);
         break;
-      default:
       case "header":
       case "category":
       case "allied":
+      default:
         break;
     }
   };
@@ -102,9 +103,12 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           },
           {
             key: "add-single",
+            hasSubmenu: true,
             label: (
               <Dropdown
                 getPopupContainer={(node) => node}
+                placement="rightTop"
+                overlayStyle={{ minWidth: 200 }}
                 menu={{
                   items: buildCategoryMenuItems(categories),
                   onClick: (e) => handleAddCardToCategoryClick(card, e.key),
@@ -128,14 +132,17 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           },
           {
             key: "add-all",
+            hasSubmenu: true,
             label: (
               <Dropdown
                 getPopupContainer={(node) => node}
+                placement="rightTop"
+                overlayStyle={{ minWidth: 200 }}
                 menu={{
                   items: buildCategoryMenuItems(categories),
                   onClick: (e) => handleAddCardToCategoryClick(card, e.key),
                 }}>
-                <div>Add all items to..</div>
+                <div>Add all items to...</div>
               </Dropdown>
             ),
             icon: <CopyPlus size={14} />,
@@ -166,8 +173,8 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           <List.Item
             key={`list-category-${index}`}
             className={`list-category`}
-            onClick={() => handleCategoryClick(card)}>
-            onContextMenu={(e) => handleContextMenu(e, card)}
+            onClick={() => handleCategoryClick(card)}
+            onContextMenu={(e) => handleContextMenu(e, card)}>
             <span className="icon">
               {settings?.mobile?.closedFactions?.includes(card.id) ? (
                 <ChevronRight size={14} />
