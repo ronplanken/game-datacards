@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { MarkdownDisplay } from "../MarkdownDisplay";
+import { FactionIcon } from "../Icons/FactionIcon";
 
 // Helper to convert single newlines to markdown line breaks
 const formatRuleText = (text) => {
@@ -82,7 +83,9 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
           </div>
           <div className="containers">
             <div className="rule-type-indicator">
-              <div className={classNames("faction-icon", rule.faction_id)}></div>
+              <div className="faction-icon">
+                <FactionIcon factionId={rule.faction_id} />
+              </div>
             </div>
           </div>
         </div>

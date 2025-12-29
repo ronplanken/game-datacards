@@ -1,8 +1,12 @@
 import { UnitWeapon } from "./UnitWeapon";
+import { WeaponTypeIcon } from "../../Icons/WeaponTypeIcon";
 
 export const UnitWeaponsType = ({ weapons, weaponType }) => {
   return (
     <div className={weaponType.class}>
+      <div className="weapon-type-icon">
+        <WeaponTypeIcon type={weaponType.class} color="white" />
+      </div>
       <div className="heading">
         <div className="title">{weaponType.name}</div>
         <div className="title center">Range</div>

@@ -1580,3 +1580,34 @@
     }
   }
 }
+
+// ============================================
+// PRINT MEDIA QUERIES
+// Remove SVG filter backgrounds that don't render in PDF
+// ============================================
+@media print {
+  .data-aos {
+    // Remove noise texture SVG backgrounds that use feTurbulence filters
+    .warscroll {
+      background-image: none;
+    }
+
+    .warscroll-header {
+      background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
+    }
+
+    .spell {
+      background-image: none;
+    }
+
+    .spell-header {
+      background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
+    }
+
+    // Remove drop-shadow filters that may cause print issues
+    .stat-wheel-wrapper,
+    .stat-badges-wrapper {
+      filter: none;
+    }
+  }
+}

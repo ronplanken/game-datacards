@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
+import { FactionIcon } from "../../Icons/FactionIcon";
 
 const CustomSymbol = styled.div`
   width: 100%;
@@ -68,10 +69,12 @@ export const UnitFactionSymbol = ({ unit }) => {
     );
   }
 
-  // Otherwise render default faction symbol via CSS class
+  // Otherwise render default faction symbol using FactionIcon (print-friendly)
   return (
     <div className="faction">
-      <div className={unit.faction_id}></div>
+      <div className="faction-symbol-wrapper">
+        <FactionIcon factionId={unit.faction_id} />
+      </div>
     </div>
   );
 };

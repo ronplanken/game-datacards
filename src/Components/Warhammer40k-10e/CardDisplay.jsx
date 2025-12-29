@@ -107,19 +107,13 @@ export const Warhammer40K10eCardDisplay = ({
         <div
           className="data-40k-10e"
           style={{
-            position: "relative",
-            height: `${460 * (cardScaling / 100)}px`,
-            width: `${266 * (cardScaling / 100)}px`,
-            overflow: "hidden",
-            "--card-scaling-factor": cardScaling / 100,
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
           }}>
           <StratagemCard
             stratagem={card}
             paddingTop="0px"
             cardStyle={{
-              position: "absolute",
-              top: 0,
-              left: 0,
               gap: printPadding,
               "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
               "--title-text-colour": COLOURS[backgrounds].titleTextColour,
@@ -145,19 +139,13 @@ export const Warhammer40K10eCardDisplay = ({
         <div
           className="data-40k-10e"
           style={{
-            position: "relative",
-            height: `${460 * (cardScaling / 100)}px`,
-            width: `${266 * (cardScaling / 100)}px`,
-            overflow: "hidden",
-            "--card-scaling-factor": cardScaling / 100,
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
           }}>
           <EnhancementCard
             enhancement={card}
             paddingTop="0px"
             cardStyle={{
-              position: "absolute",
-              top: 0,
-              left: 0,
               gap: printPadding,
               "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
               "--title-text-colour": COLOURS[backgrounds].titleTextColour,
