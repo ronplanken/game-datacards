@@ -3,7 +3,6 @@ import { Dropdown, List } from "antd";
 import classNames from "classnames";
 import { ChevronDown, ChevronRight, CirclePlus, CopyPlus } from "lucide-react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { ContextMenu } from "../TreeView/ContextMenu";
@@ -18,7 +17,6 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
     saveActiveCard,
     cardStorage: { categories },
   } = useCardStorage();
-  const { dataSource: dsStorage } = useDataSourceStorage();
 
   const handleCardClick = (card) => {
     if (cardUpdated) {

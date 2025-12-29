@@ -34,8 +34,14 @@ const BULLET_PATTERN = /^[•\-\*◦]\s*/;
 // Points pattern - matches both "pts" and "Points"
 const POINTS_PATTERN = /\((\d+)\s*(?:pts?|points?)\)$/i;
 
+// Match score thresholds for fuzzy matching classification
+const MATCH_THRESHOLD_CONFIDENT = 0.2;
+const MATCH_THRESHOLD_AMBIGUOUS = 0.4;
+
 /**
  * Check if a line starts with a battle size keyword
+ * @param {string} line - The line to check
+ * @returns {boolean} True if the line starts with a battle size keyword
  */
 const isBattleSizeLine = (line) => {
   return BATTLE_SIZE_KEYWORDS.some((keyword) => line.startsWith(keyword));
@@ -43,6 +49,8 @@ const isBattleSizeLine = (line) => {
 
 /**
  * Parse enhancement name and cost from text like "Master-Crafted Weapon (+10 pts)"
+ * @param {string} text - The enhancement text to parse
+ * @returns {{name: string, cost: number}} Object with enhancement name and cost
  */
 const parseEnhancement = (text) => {
   const costMatch = text.match(/\(\+?(\d+)\s*(?:pts?|points?)\)$/i);
@@ -60,6 +68,8 @@ const parseEnhancement = (text) => {
  * - If bullets have nested structure (multiple indent levels): count first-level bullets only
  * - If bullets are all at same level (flat structure): it's a single-model unit, return 1
  * - Special case: if ALL bullets have quantity 1, treat as equipment list (handles inconsistent formatting)
+ * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines with indentation
+ * @returns {{modelCount: number, modelIndentLevel: number|null}} Object with model count and indent level
  */
 const analyzeModelCount = (bulletLines) => {
   if (bulletLines.length === 0) {
@@ -91,6 +101,8 @@ const analyzeModelCount = (bulletLines) => {
 /**
  * Remove invisible Unicode characters that can interfere with parsing
  * Includes: Word Joiner, Zero Width Space, BOM, etc.
+ * @param {string} text - The text to clean
+ * @returns {string} Text with invisible characters removed
  */
 const removeInvisibleChars = (text) => {
   return text.replace(/[\u2060\u200B\uFEFF\u200C\u200D]/g, "");
@@ -99,6 +111,8 @@ const removeInvisibleChars = (text) => {
 /**
  * Parse the full GW App text format into structured data
  * Based on 40k-ez implementation
+ * @param {string} text - The raw text copied from GW App
+ * @returns {{listName: string|null, totalPoints: number|null, factionName: string|null, battleSize: string|null, detachment: string|null, subfaction: string|null, units: Array, error: string|null}} Parsed list data
  */
 export const parseGwAppText = (text) => {
   if (!text || !text.trim()) {
@@ -371,16 +385,21 @@ export const parseGwAppText = (text) => {
 
 /**
  * Classify match score into status
+ * @param {number} score - The fuzzy match score (0 = exact match, higher = worse)
+ * @returns {"exact"|"confident"|"ambiguous"|"none"} Match status classification
  */
 export const classifyMatchScore = (score) => {
   if (score === 0) return "exact";
-  if (score < 0.2) return "confident";
-  if (score < 0.4) return "ambiguous";
+  if (score < MATCH_THRESHOLD_CONFIDENT) return "confident";
+  if (score < MATCH_THRESHOLD_AMBIGUOUS) return "ambiguous";
   return "none";
 };
 
 /**
  * Find the best matching faction from the datasource
+ * @param {string} factionName - The faction name to match
+ * @param {Array<{id: string, name: string}>} factions - Available factions to search
+ * @returns {{matchedFaction: Object|null, alternatives: Array, matchStatus: string}} Match result with alternatives
  */
 export const matchFaction = (factionName, factions) => {
   if (!factionName || !factions?.length) {
@@ -422,6 +441,9 @@ export const matchFaction = (factionName, factions) => {
  * Searches both:
  * 1. Factions listed in allied_factions array
  * 2. Factions where parent_id matches the main faction's id (subfactions)
+ * @param {Object} faction - The main faction object
+ * @param {Array} allFactions - All available factions
+ * @returns {Array} Array of datasheets from allied factions with metadata
  */
 const getAlliedDatasheets = (faction, allFactions) => {
   if (!allFactions?.length) return [];
@@ -467,6 +489,10 @@ const getAlliedDatasheets = (faction, allFactions) => {
 /**
  * Match parsed units to datasheets in the faction
  * For units in ALLIED UNITS section, also searches allied faction datasheets
+ * @param {Array} units - Parsed units from GW App text
+ * @param {Object} faction - The matched faction object with datasheets
+ * @param {Array} allFactions - All available factions (for allied unit matching)
+ * @returns {Array} Units with match status, matched cards, and alternatives
  */
 export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
   if (!units?.length || !faction?.datasheets?.length) {
@@ -534,6 +560,8 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
 
 /**
  * Count units by match status
+ * @param {Array} units - Units with matchStatus property
+ * @returns {{ready: number, needsReview: number, notMatched: number, skipped: number}} Counts by status
  */
 export const countMatchStatuses = (units) => {
   return units.reduce(
@@ -555,6 +583,8 @@ export const countMatchStatuses = (units) => {
 
 /**
  * Get importable units (matched and not skipped)
+ * @param {Array} units - Units with matchedCard and skipped properties
+ * @returns {Array} Filtered array of units ready for import
  */
 export const getImportableUnits = (units) => {
   return units.filter((unit) => !unit.skipped && unit.matchedCard);
@@ -565,6 +595,8 @@ export const getImportableUnits = (units) => {
  * - Remove quantity prefixes like "2x " or " x2"
  * - Convert to lowercase
  * - Trim whitespace
+ * @param {string} name - The weapon name to normalize
+ * @returns {string} Normalized weapon name
  */
 const normalizeWeaponName = (name) => {
   if (!name) return "";
@@ -578,6 +610,8 @@ const normalizeWeaponName = (name) => {
 
 /**
  * Normalize dashes in text (en-dash, em-dash -> hyphen)
+ * @param {string} text - Text containing various dash characters
+ * @returns {string} Text with all dashes normalized to hyphens
  */
 const normalizeDashes = (text) => {
   return text.replace(/[–—]/g, "-"); // en-dash and em-dash to hyphen
@@ -586,6 +620,9 @@ const normalizeDashes = (text) => {
 /**
  * Check if an imported weapon string matches a datasheet weapon profile name
  * Handles: case, quantities, weapon variants (e.g., "Bolt rifle - rapid fire", "Blastmaster – Single frequency")
+ * @param {string} importedWeapon - Weapon name from import
+ * @param {string} profileName - Weapon profile name from datasheet
+ * @returns {boolean} True if weapons match
  */
 const doesWeaponMatch = (importedWeapon, profileName) => {
   const normalizedImport = normalizeDashes(normalizeWeaponName(importedWeapon));

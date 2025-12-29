@@ -29,6 +29,12 @@ export const SECTIONS_AOS = [
 // ===========================================
 // 40K-10e Categorization
 // ===========================================
+
+/**
+ * Categorize 40K-10e datacards by unit type (Character, Battleline, Transport, etc.)
+ * @param {Array} datacards - Array of datacard objects with card.keywords
+ * @returns {{characters: Array, battleline: Array, transports: Array, other: Array, allied: Array}} Categorized datacards
+ */
 export const categorize40kUnits = (datacards) => {
   return datacards?.reduce(
     (cats, card) => {
@@ -53,6 +59,13 @@ export const categorize40kUnits = (datacards) => {
 // ===========================================
 // AoS Categorization (hierarchical - first match wins)
 // ===========================================
+
+/**
+ * Categorize Age of Sigmar datacards by unit type (Hero, Battleline, Monster, etc.)
+ * Uses hierarchical matching where first keyword match wins
+ * @param {Array} datacards - Array of datacard objects with card.keywords
+ * @returns {Object} Categorized datacards with keys: heroes, battleline, monsters, cavalry, infantry, warMachines, terrain, manifestations, other
+ */
 export const categorizeAoSUnits = (datacards) => {
   const hasKeyword = (card, keyword) => {
     return card?.card?.keywords?.some((k) => k.toLowerCase() === keyword.toLowerCase());
@@ -98,6 +111,12 @@ export const categorizeAoSUnits = (datacards) => {
 // ===========================================
 // Sort cards (warlord/general first, then alphabetical)
 // ===========================================
+
+/**
+ * Sort cards with warlord/general first, then alphabetically by name
+ * @param {Array} cards - Array of card objects with warlord property and card.name
+ * @returns {Array} Sorted array of cards
+ */
 export const sortCards = (cards) =>
   cards.toSorted((a, b) => {
     if (a.warlord) return -1;
@@ -108,6 +127,13 @@ export const sortCards = (cards) =>
 // ===========================================
 // 40K Clipboard Format
 // ===========================================
+
+/**
+ * Format 40K list as text for clipboard export
+ * @param {Object} sortedCards - Cards organized by section keys (characters, battleline, etc.)
+ * @param {Array<{key: string, clipboardLabel: string}>} sections - Section configuration
+ * @returns {string} Formatted list text for clipboard
+ */
 export const format40kListText = (sortedCards, sections) => {
   let listText = "Warhammer 40K List";
 
@@ -137,6 +163,13 @@ export const format40kListText = (sortedCards, sections) => {
 // ===========================================
 // AoS Clipboard Format
 // ===========================================
+
+/**
+ * Format Age of Sigmar list as text for clipboard export
+ * @param {Object} sortedCards - Cards organized by section keys (heroes, battleline, etc.)
+ * @param {Array<{key: string, clipboardLabel: string}>} sections - Section configuration
+ * @returns {string} Formatted list text for clipboard
+ */
 export const formatAoSListText = (sortedCards, sections) => {
   let listText = "Age of Sigmar List";
 

@@ -3,6 +3,13 @@ import { v4 as uuidv4 } from "uuid";
 // Valid display formats that map to existing card renderers
 export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos"];
 
+// Validation limits for security
+const MAX_NAME_LENGTH = 200;
+const MAX_VERSION_LENGTH = 50;
+const MAX_FACTION_COUNT = 10;
+const MAX_CARD_COUNT = 2000;
+const MAX_STRING_FIELD_LENGTH = 10000;
+
 // Map card types to faction array names
 const CARD_TYPE_TO_ARRAY = {
   DataCard: "datasheets",
@@ -34,10 +41,14 @@ export const validateCustomDatasource = (data) => {
 
   if (!data.name || typeof data.name !== "string" || data.name.trim() === "") {
     errors.push("Missing or invalid 'name' field");
+  } else if (data.name.length > MAX_NAME_LENGTH) {
+    errors.push(`Name exceeds maximum length of ${MAX_NAME_LENGTH} characters`);
   }
 
   if (!data.version || typeof data.version !== "string") {
     errors.push("Missing or invalid 'version' field");
+  } else if (data.version.length > MAX_VERSION_LENGTH) {
+    errors.push(`Version exceeds maximum length of ${MAX_VERSION_LENGTH} characters`);
   }
 
   // displayFormat is optional - cards have their own source property
@@ -46,6 +57,8 @@ export const validateCustomDatasource = (data) => {
     errors.push("Missing or invalid 'data' array");
   } else if (data.data.length === 0) {
     errors.push("'data' array must contain at least one faction");
+  } else if (data.data.length > MAX_FACTION_COUNT) {
+    errors.push(`Too many factions (maximum ${MAX_FACTION_COUNT})`);
   } else {
     // Validate faction structure
     const faction = data.data[0];
@@ -64,6 +77,31 @@ export const validateCustomDatasource = (data) => {
       if (!faction.colours.banner) {
         errors.push("Faction colours missing 'banner' field");
       }
+    }
+
+    // Count total cards across all factions and validate
+    let totalCards = 0;
+    const cardArrays = Object.values(CARD_TYPE_TO_ARRAY);
+    const uniqueArrays = [...new Set(cardArrays)];
+
+    for (const factionData of data.data) {
+      for (const arrayName of uniqueArrays) {
+        if (factionData[arrayName] && Array.isArray(factionData[arrayName])) {
+          totalCards += factionData[arrayName].length;
+
+          // Validate individual card fields aren't excessively long
+          for (const card of factionData[arrayName]) {
+            if (card.name && typeof card.name === "string" && card.name.length > MAX_STRING_FIELD_LENGTH) {
+              errors.push("Card name exceeds maximum allowed length");
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (totalCards > MAX_CARD_COUNT) {
+      errors.push(`Too many cards (${totalCards}). Maximum allowed is ${MAX_CARD_COUNT}`);
     }
   }
 

@@ -67,7 +67,12 @@ function App() {
 
   // Handle add to category from toolbar
   const handleAddToCategory = (categoryUuid, cardOrCards = undefined) => {
-    const cat = { ...cardStorage.categories.find((c) => c.uuid === categoryUuid) };
+    const cat = cardStorage.categories.find((c) => c.uuid === categoryUuid);
+    if (!cat) {
+      message.error("Category not found");
+      return;
+    }
+
     const cards = Array.isArray(cardOrCards) ? cardOrCards : [cardOrCards ?? activeCard];
 
     let lastCard = null;

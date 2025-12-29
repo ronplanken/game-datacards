@@ -1,4 +1,8 @@
-// Build category menu items with sub-categories shown under their parents
+/**
+ * Build category menu items with sub-categories shown indented under their parents
+ * @param {Array<{uuid: string, name: string, type: string, parentId?: string}>} categories - Array of category objects
+ * @returns {Array<{key: string, label: string|JSX.Element}>} Menu items for dropdown
+ */
 export const buildCategoryMenuItems = (categories) => {
   const items = [];
   categories

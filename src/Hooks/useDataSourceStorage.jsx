@@ -41,7 +41,12 @@ export const DataSourceStorageProviderComponent = (props) => {
   const [selectedSubFactions, setSelectedSubFactions] = React.useState([]);
   const [selectedFactionIndex, setSelectedFactionIndex] = React.useState(0);
 
-  // Helper to get faction index for current datasource
+  /**
+   * Get the saved faction index for a specific datasource
+   * Handles migration from old format (number) to new format (object)
+   * @param {string} ds - Datasource identifier
+   * @returns {number} Faction index for the datasource
+   */
   const getFactionIndexForDataSource = (ds) => {
     const index = settings.selectedFactionIndex?.[ds];
     // Handle migration from old format (number) to new format (object)
@@ -132,10 +137,11 @@ export const DataSourceStorageProviderComponent = (props) => {
     fetch();
   }, [settings.selectedDataSource]);
 
-  useEffect(() => {
-    setSelectedFactionIndex(dataSource?.data?.findIndex((faction) => faction?.id === selectedFaction?.id));
-  }, [dataSource, selectedFaction]);
-
+  /**
+   * Check for updates and refresh the currently selected datasource
+   * Fetches fresh data from the source and updates local storage
+   * @returns {Promise<void>}
+   */
   const checkForUpdate = async () => {
     if (!dataStore) {
       return;
@@ -181,6 +187,10 @@ export const DataSourceStorageProviderComponent = (props) => {
     setSelectedFactionIndex(dataSource?.data?.findIndex((faction) => faction?.id === selectedFaction?.id));
   }, [dataSource, selectedFaction]);
 
+  /**
+   * Update the selected faction and persist the selection in settings
+   * @param {Object} faction - The faction object to select
+   */
   const updateSelectedFaction = (faction) => {
     logLocalEvent("select_faction", { faction: faction?.name, dataSource: settings.selectedDataSource });
     setSelectedFaction(faction);
@@ -203,15 +213,26 @@ export const DataSourceStorageProviderComponent = (props) => {
     });
   };
 
-  // Clear faction state without updating settings (preserves last faction for "continue to" feature)
+  /**
+   * Clear the selected faction state without updating settings
+   * Preserves the last faction selection for "continue to" feature
+   */
   const clearSelectedFaction = () => {
     setSelectedFaction(null);
   };
 
+  /**
+   * Update the selected faction by index in the datasource data array
+   * @param {number} index - Index of the faction in dataSource.data
+   */
   const updateSelectedFactionWithIndex = (index) => {
     setSelectedFaction(dataSource.data[index]);
   };
 
+  /**
+   * Clear all cached data and reset to default datasource
+   * Removes all stored data from localForage and localStorage
+   */
   const clearData = () => {
     dataStore.clear();
     updateSettings({
@@ -222,7 +243,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         aos: 0,
       },
     });
-    localStorage.setItem("storage", undefined);
+    localStorage.removeItem("storage");
   };
 
   // ==========================================

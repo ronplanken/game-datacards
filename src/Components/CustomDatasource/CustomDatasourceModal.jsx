@@ -86,6 +86,18 @@ export const CustomDatasourceModal = ({ isOpen, onClose }) => {
       return;
     }
 
+    // Validate URL format and protocol
+    try {
+      const parsedUrl = new URL(url);
+      if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+        setUrlError("URL must use HTTP or HTTPS protocol");
+        return;
+      }
+    } catch {
+      setUrlError("Please enter a valid URL");
+      return;
+    }
+
     setIsFetching(true);
     setUrlError(null);
     setUrlPreview(null);
@@ -106,7 +118,12 @@ export const CustomDatasourceModal = ({ isOpen, onClose }) => {
 
       setUrlPreview(data);
     } catch (error) {
-      setUrlError(error.message || "Failed to fetch datasource");
+      // CORS errors appear as TypeError with "Failed to fetch" message
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        setUrlError("Could not download file. The external server may not allow cross-origin requests (CORS).");
+      } else {
+        setUrlError(error.message || "Failed to fetch datasource");
+      }
     } finally {
       setIsFetching(false);
     }
