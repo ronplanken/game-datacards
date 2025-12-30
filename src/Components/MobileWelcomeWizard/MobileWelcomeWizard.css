@@ -1,0 +1,1083 @@
+/* MobileWelcomeWizard.css
+   ============================================
+   Full-screen wizard experience for mobile
+   onboarding. Matches GSS design language.
+   ============================================ */
+
+/* Base container - fullscreen with portal */
+.mww-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #001529;
+  background-image: radial-gradient(circle at 20% 80%, rgba(0, 112, 214, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 112, 214, 0.05) 0%, transparent 40%);
+  animation: mwwFadeIn 0.3s ease-out;
+}
+
+.mww-overlay--exiting {
+  animation: mwwFadeOut 0.25s ease-out forwards;
+}
+
+/* Main layout */
+.mww-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* ============================================
+   HEADER - Step indicator
+   ============================================ */
+.mww-header {
+  padding: 16px 24px;
+  text-align: center;
+  background: rgba(0, 21, 41, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mww-header-step {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #1677ff;
+  margin-bottom: 4px;
+}
+
+.mww-header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+/* Content area - grows to fill space */
+.mww-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* Step wrapper for transitions */
+.mww-step {
+  width: 100%;
+  max-width: 340px;
+  animation: mwwSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mww-step--exiting-forward {
+  animation: mwwSlideOutLeft 0.2s ease-out forwards;
+}
+
+.mww-step--exiting-backward {
+  animation: mwwSlideOutRight 0.2s ease-out forwards;
+}
+
+/* ============================================
+   WELCOME STEP
+   ============================================ */
+.mww-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 32px;
+}
+
+.mww-welcome-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.mww-welcome-logo {
+  width: 72px;
+  height: 72px;
+  animation: mwwPulse 2s ease-in-out infinite;
+}
+
+.mww-welcome-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mww-welcome-subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.mww-welcome-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.mww-welcome-feature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  animation: mwwFadeSlideUp 0.4s ease-out backwards;
+}
+
+.mww-welcome-feature:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.mww-welcome-feature:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.mww-welcome-feature:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.mww-welcome-feature-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 119, 255, 0.15);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mww-welcome-feature-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #1677ff;
+}
+
+.mww-welcome-feature-text {
+  flex: 1;
+  text-align: left;
+}
+
+.mww-welcome-feature-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e5e5e5;
+  margin-bottom: 2px;
+}
+
+.mww-welcome-feature-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+
+/* ============================================
+   COMPLETE STEP
+   ============================================ */
+.mww-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 28px;
+}
+
+.mww-complete-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 119, 255, 0.12);
+  border-radius: 50%;
+  animation: mwwCheckBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
+}
+
+.mww-complete-icon svg {
+  width: 40px;
+  height: 40px;
+  color: #1677ff;
+}
+
+.mww-complete-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0;
+}
+
+.mww-complete-text {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.mww-complete-discord {
+  display: block;
+  margin-top: 8px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.mww-complete-discord:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.mww-complete-discord img {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+
+/* ============================================
+   INFO STEPS (Import List, Desktop Info)
+   ============================================ */
+.mww-info-step {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mww-info-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.mww-info-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 119, 255, 0.12);
+  border-radius: 14px;
+  margin-bottom: 4px;
+}
+
+.mww-info-icon svg {
+  width: 28px;
+  height: 28px;
+  color: #1677ff;
+}
+
+.mww-info-icon--desktop {
+  background: rgba(139, 32, 32, 0.15);
+}
+
+.mww-info-icon--desktop svg {
+  color: #dc2626;
+}
+
+.mww-info-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mww-info-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+/* Import list numbered steps */
+.mww-info-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mww-info-step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  animation: mwwFadeSlideUp 0.4s ease-out backwards;
+}
+
+.mww-info-step-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.mww-info-step-item:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.mww-info-step-item:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.mww-info-step-number {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 119, 255, 0.15);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1677ff;
+  flex-shrink: 0;
+}
+
+.mww-info-step-content {
+  flex: 1;
+}
+
+.mww-info-step-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e5e5e5;
+  margin-bottom: 2px;
+}
+
+.mww-info-step-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+
+.mww-info-step-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mww-info-step-icon svg {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.mww-info-note {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin: 0;
+  padding-top: 8px;
+}
+
+/* Desktop features list */
+.mww-desktop-features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mww-desktop-feature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  animation: mwwFadeSlideUp 0.4s ease-out backwards;
+}
+
+.mww-desktop-feature:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.mww-desktop-feature:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.mww-desktop-feature:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.mww-desktop-feature-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 32, 32, 0.12);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mww-desktop-feature-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #dc2626;
+}
+
+.mww-desktop-feature-text {
+  flex: 1;
+}
+
+.mww-desktop-feature-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e5e5e5;
+  margin-bottom: 2px;
+}
+
+.mww-desktop-feature-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+
+.mww-desktop-url {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+  background: rgba(139, 32, 32, 0.08);
+  border: 1px solid rgba(139, 32, 32, 0.2);
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.mww-desktop-url-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mww-desktop-url-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #dc2626;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================
+   GAME SYSTEM STEP
+   ============================================ */
+.mww-gamesystem {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mww-gamesystem-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.mww-gamesystem-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 119, 255, 0.12);
+  border-radius: 14px;
+  margin-bottom: 4px;
+}
+
+.mww-gamesystem-icon svg {
+  width: 28px;
+  height: 28px;
+  color: #1677ff;
+}
+
+.mww-gamesystem-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mww-gamesystem-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+/* Game System Cards */
+.mww-gamesystem-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mww-gamesystem-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 18px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: all 0.2s ease;
+  animation: mwwFadeSlideUp 0.4s ease-out backwards;
+}
+
+.mww-gamesystem-card:hover {
+  background: var(--system-color-light);
+  border-color: var(--system-color-border);
+}
+
+.mww-gamesystem-card:active {
+  transform: scale(0.98);
+}
+
+.mww-gamesystem-card--selected {
+  background: var(--system-color-light);
+  border-color: var(--system-color);
+  box-shadow: 0 0 20px var(--system-color-light);
+}
+
+/* Card marker - colored accent bar */
+.mww-gamesystem-card-marker {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  background: var(--system-color);
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.mww-gamesystem-card:hover .mww-gamesystem-card-marker,
+.mww-gamesystem-card--selected .mww-gamesystem-card-marker {
+  opacity: 1;
+}
+
+/* Card content */
+.mww-gamesystem-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mww-gamesystem-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e5e5e5;
+  transition: color 0.2s ease;
+}
+
+.mww-gamesystem-card--selected .mww-gamesystem-card-name {
+  color: #fff;
+}
+
+.mww-gamesystem-card-edition {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Check indicator */
+.mww-gamesystem-card-check {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mww-gamesystem-card-check svg {
+  width: 22px;
+  height: 22px;
+  color: rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+.mww-gamesystem-card--selected .mww-gamesystem-card-check svg {
+  color: var(--system-color);
+}
+
+/* Warning notice */
+.mww-gamesystem-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.mww-gamesystem-warning svg {
+  width: 18px;
+  height: 18px;
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.mww-gamesystem-warning p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(251, 191, 36, 0.9);
+  margin: 0;
+}
+
+/* ============================================
+   SETTINGS STEPS (40K & AoS)
+   ============================================ */
+.mww-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mww-settings-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.mww-settings-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  margin-bottom: 4px;
+}
+
+.mww-settings-icon--40k {
+  background: rgba(139, 32, 32, 0.15);
+}
+
+.mww-settings-icon--40k svg {
+  width: 28px;
+  height: 28px;
+  color: #dc2626;
+}
+
+.mww-settings-icon--aos {
+  background: rgba(201, 162, 39, 0.15);
+}
+
+.mww-settings-icon--aos svg {
+  width: 28px;
+  height: 28px;
+  color: #c9a227;
+}
+
+.mww-settings-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mww-settings-subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
+/* Settings Options */
+.mww-settings-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mww-settings-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  animation: mwwFadeSlideUp 0.4s ease-out backwards;
+}
+
+.mww-settings-option:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.mww-settings-option:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.mww-settings-option:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.mww-settings-option:nth-child(4) {
+  animation-delay: 0.25s;
+}
+
+.mww-settings-option-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 32, 32, 0.12);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mww-settings-option-icon svg {
+  width: 18px;
+  height: 18px;
+  color: #dc2626;
+}
+
+.mww-settings-option-icon--aos {
+  background: rgba(201, 162, 39, 0.12);
+}
+
+.mww-settings-option-icon--aos svg {
+  color: #c9a227;
+}
+
+.mww-settings-option-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mww-settings-option-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e5e5e5;
+}
+
+.mww-settings-option-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.4;
+}
+
+/* Toggle Switch */
+.mww-settings-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mww-settings-toggle.active {
+  background: #1677ff;
+}
+
+.mww-settings-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.mww-settings-toggle.active .mww-settings-toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* Font Preview (AoS) */
+.mww-settings-font-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 18px;
+  background: rgba(201, 162, 39, 0.06);
+  border: 1px solid rgba(201, 162, 39, 0.15);
+  border-radius: 6px;
+  animation: mwwFadeSlideUp 0.4s ease-out backwards;
+  animation-delay: 0.12s;
+}
+
+.mww-settings-font-preview-text {
+  font-size: 18px;
+  color: #c9a227;
+  transition: font-family 0.15s ease;
+}
+
+.mww-settings-font-preview.fancy .mww-settings-font-preview-text {
+  font-family: "Cinzel", serif;
+}
+
+.mww-settings-font-preview.regular .mww-settings-font-preview-text {
+  font-family: "Heebo", sans-serif;
+}
+
+/* Footer note */
+.mww-settings-note {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin: 0;
+  padding-top: 8px;
+}
+
+/* ============================================
+   FOOTER - Progress & Navigation
+   ============================================ */
+.mww-footer {
+  padding: 20px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: linear-gradient(to top, rgba(0, 21, 41, 0.95) 0%, transparent 100%);
+}
+
+/* Progress dots */
+.mww-progress {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mww-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.25s ease;
+}
+
+.mww-progress-dot--active {
+  background: #1677ff;
+  transform: scale(1.25);
+  box-shadow: 0 0 12px rgba(22, 119, 255, 0.5);
+}
+
+.mww-progress-dot--completed {
+  background: rgba(22, 119, 255, 0.6);
+}
+
+/* Navigation buttons */
+.mww-nav {
+  display: flex;
+  gap: 12px;
+}
+
+.mww-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mww-btn:active {
+  transform: scale(0.98);
+}
+
+.mww-btn--primary {
+  background: #1677ff;
+  color: #fff;
+}
+
+.mww-btn--primary:hover:not(:disabled) {
+  background: #4096ff;
+}
+
+.mww-btn--primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mww-btn--secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mww-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.mww-btn--finish {
+  background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+  color: #fff;
+}
+
+.mww-btn--finish:hover {
+  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
+}
+
+.mww-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Back-only navigation for steps with own nav */
+.mww-nav--back-only {
+  justify-content: flex-start;
+}
+
+.mww-btn--back {
+  flex: 0 0 auto;
+}
+
+/* Footer adjustments for step nav */
+.mww-footer--with-step-nav {
+  padding-top: 12px;
+}
+
+/* Hide footer nav on certain steps */
+.mww-footer--hide-nav .mww-nav {
+  display: none;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes mwwFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mwwFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mwwSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mwwSlideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+@keyframes mwwSlideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+@keyframes mwwFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mwwPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes mwwCheckBounce {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .mww-overlay,
+  .mww-step,
+  .mww-welcome-feature,
+  .mww-complete-icon,
+  .mww-progress-dot,
+  .mww-btn {
+    animation: none;
+    transition: none;
+  }
+}

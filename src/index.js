@@ -3,7 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
-import { createBrowserRouter, RouterProvider, ScrollRestoration, Outlet, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  ScrollRestoration,
+  Outlet,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
@@ -18,6 +25,10 @@ import { Print } from "./Pages/Print";
 import { Shared } from "./Pages/Shared";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
+import { WelcomeWizard } from "./Components/WelcomeWizard";
+import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
+import { WhatsNewWizard } from "./Components/WhatsNewWizard";
+import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
@@ -72,6 +83,22 @@ function ErrorFallback({ error }) {
   );
 }
 
+// Component to select wizard based on current route
+const WizardSelector = () => {
+  const location = useLocation();
+  const isMobileRoute = location.pathname.startsWith("/mobile");
+
+  return isMobileRoute ? <MobileWelcomeWizard /> : <WelcomeWizard />;
+};
+
+// Component to select What's New wizard based on current route
+const WhatsNewWizardSelector = () => {
+  const location = useLocation();
+  const isMobileRoute = location.pathname.startsWith("/mobile");
+
+  return isMobileRoute ? <MobileWhatsNewWizard /> : <WhatsNewWizard />;
+};
+
 // Layout component that wraps all routes with providers
 const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -83,6 +110,8 @@ const RootLayout = () => (
               <MobileListProvider>
                 <Outlet />
                 <ScrollRestoration />
+                <WizardSelector />
+                <WhatsNewWizardSelector />
               </MobileListProvider>
             </CardStorageProviderComponent>
           </DataSourceStorageProviderComponent>
