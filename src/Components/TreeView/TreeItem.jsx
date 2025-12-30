@@ -18,6 +18,9 @@ import { Stratagem } from "../../Icons/Stratagem";
 import { Vehicle } from "../../Icons/Vehicle";
 import { Enhancement } from "../../Icons/Enhancement";
 import { Battlerule } from "../../Icons/Battlerule";
+import { Warscroll } from "../../Icons/Warscroll";
+import { Spell } from "../../Icons/Spell";
+import { Rule } from "../../Icons/Rule";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import { ContextMenu } from "./ContextMenu";
@@ -207,6 +210,12 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
       case "vehicle":
       case "empty-vehicle":
         return <Vehicle />;
+      case "warscroll":
+        return <Warscroll />;
+      case "spell":
+        return <Spell />;
+      case "rule":
+        return <Rule />;
       default:
         return null;
     }

@@ -86,6 +86,11 @@ export const WhatsNew = () => {
     const currentVersion = process.env.REACT_APP_VERSION;
     const majorVersion = getMajorWizardVersion(currentVersion);
 
+    // Guard against undefined settings values
+    if (!settings.wizardCompleted || !settings.lastMajorWizardVersion) {
+      return;
+    }
+
     // Don't show regular WhatsNew if major wizard should be showing
     if (majorVersion && compare(settings.lastMajorWizardVersion, majorVersion, "<")) {
       return;
@@ -93,7 +98,7 @@ export const WhatsNew = () => {
 
     if (
       compare(settings.wizardCompleted, LAST_WIZARD_VERSION, ">=") &&
-      compare(settings.wizardCompleted, process.env.REACT_APP_VERSION, "<")
+      compare(settings.wizardCompleted, currentVersion, "<")
     ) {
       setIsWhatsNewVisible(true);
     }

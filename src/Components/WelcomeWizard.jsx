@@ -392,6 +392,10 @@ export const WelcomeWizard = () => {
 
   // Version check to show wizard
   useEffect(() => {
+    if (!settings.wizardCompleted) {
+      setIsWizardVisible(true);
+      return;
+    }
     if (compare(settings.wizardCompleted, LAST_WIZARD_VERSION, "<")) {
       setIsWizardVisible(true);
     }
