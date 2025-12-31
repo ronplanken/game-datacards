@@ -1,10 +1,10 @@
 import React from "react";
-import { Smartphone, FolderKanban } from "lucide-react";
+import { Smartphone, FolderKanban, Search } from "lucide-react";
 
 /**
  * StepMobileFeatures - Mobile features step for v3.1.0
  *
- * Highlights mobile-specific features: GW App Import and List Categorization.
+ * Highlights mobile-specific features: GW App Import, List Categorization, and Enhanced Search.
  *
  * @returns {JSX.Element} Mobile features step content
  */
@@ -18,6 +18,18 @@ export const StepMobileFeatures = () => (
     </header>
 
     <div className="mwnw-features-list">
+      <div className="mwnw-feature-item">
+        <div className="mwnw-feature-item-icon">
+          <Search size={20} />
+        </div>
+        <div className="mwnw-feature-item-content">
+          <span className="mwnw-feature-item-title">Enhanced Search</span>
+          <span className="mwnw-feature-item-desc">
+            Search for stratagems, enhancements, rules, and spells in addition to units
+          </span>
+        </div>
+      </div>
+
       <div className="mwnw-feature-item">
         <div className="mwnw-feature-item-icon">
           <Smartphone size={20} />

@@ -204,6 +204,7 @@ export const Warhammer40K10eCardDisplay = ({
           style={{
             transformOrigin: "0% 0%",
             transform: `scale(${cardScaling / 100})`,
+            width: "100%",
           }}>
           {activeCard?.cardType === "DataCard" && (
             <UnitCard
@@ -216,14 +217,29 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
-          {card?.cardType === "stratagem" && (
-            <div className="data-40k-10e" style={{}}>
-              <StratagemCard stratagem={card} className={"shared-stratagem"} cardStyle={{ width: "100%" }} />
+          {activeCard?.cardType === "stratagem" && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <StratagemCard
+                stratagem={activeCard}
+                className={"shared-stratagem"}
+                paddingTop="0px"
+                cardStyle={{ width: "100%" }}
+              />
             </div>
           )}
-          {card?.cardType === "enhancement" && (
-            <div className="data-40k-10e" style={{}}>
-              <EnhancementCard enhancement={card} className={"shared-enhancement"} cardStyle={{ width: "100%" }} />
+          {activeCard?.cardType === "enhancement" && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <EnhancementCard
+                enhancement={activeCard}
+                className={"shared-enhancement"}
+                paddingTop="0px"
+                cardStyle={{ width: "100%" }}
+              />
+            </div>
+          )}
+          {activeCard?.cardType === "rule" && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <RuleCard rule={activeCard} className={"shared-rule"} paddingTop="0px" cardStyle={{ width: "100%" }} />
             </div>
           )}
           {card?.cardType === "DataCard" && (

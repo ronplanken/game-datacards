@@ -13,7 +13,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   max-height: calc(60vh);
   overflow-y: auto;
-  z-index: 99;
+  z-index: 1000;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
 }
@@ -51,7 +51,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
+  padding: 8px 16px;
   background: none;
   border: none;
   border-bottom: 1px solid #f0f2f5;
@@ -77,22 +77,41 @@
 .result-name {
   font-size: 15px;
   color: rgba(0, 0, 0, 0.88);
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-right: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.result-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex-shrink: 0;
+  margin-left: 12px;
 }
 
 .result-faction {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.55);
   background: #f0f2f5;
-  padding: 4px 8px;
-  border-radius: 4px;
-  flex-shrink: 0;
-  max-width: 120px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-type-badge {
+  font-size: 9px;
+  padding: 1px 5px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: rgba(0, 0, 0, 0.45);
   white-space: nowrap;
 }

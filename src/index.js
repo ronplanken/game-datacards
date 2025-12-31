@@ -146,9 +146,11 @@ const router = createBrowserRouter([
       { path: "mobile/:faction/manifestation-lore/:spell", element: <ViewerMobile /> },
       { path: "mobile/:faction/spell-lores", element: <ViewerMobile showSpellLores /> },
       { path: "mobile/:faction/spell-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction/enhancement/:enhancement", element: <ViewerMobile /> },
+      { path: "mobile/:faction/rule/:rule", element: <ViewerMobile /> },
+      { path: "mobile/:faction/stratagem/:stratagem", element: <ViewerMobile /> },
+      { path: "mobile/:faction/allied/:alliedFaction/:alliedUnit?", element: <ViewerMobile /> },
       { path: "mobile/:faction?/:unit?", element: <ViewerMobile /> },
-      { path: "mobile/:faction?/stratagem/:stratagem?", element: <ViewerMobile /> },
-      { path: "mobile/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <ViewerMobile /> },
       // Print and export routes
       { path: "print/:CategoryId", element: <Print /> },
       { path: "legacy-print/:CategoryId", element: <LegacyPrint /> },
