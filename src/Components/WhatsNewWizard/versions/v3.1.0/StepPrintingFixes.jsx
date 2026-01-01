@@ -42,6 +42,13 @@ export const StepPrintingFixes = () => (
           <p>Resolved layout issues when printing AoS warscrolls</p>
         </div>
       </div>
+      <div className="wnw-highlight-item">
+        <div className="wnw-highlight-dot" />
+        <div>
+          <strong>List Categorization</strong>
+          <p>Improved list view with role-based categories for Age of Sigmar warscrolls</p>
+        </div>
+      </div>
     </div>
   </div>
 );

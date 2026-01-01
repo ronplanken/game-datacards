@@ -4,8 +4,8 @@ import { Zap, Heart, User } from "lucide-react";
 /**
  * StepQuickAdd - Quick Add feature step for v3.1.0
  *
- * Highlights the quick add functionality and related improvements
- * like the rule card editor and list categorization.
+ * Highlights the quick add functionality for adding units directly
+ * from the datasource list.
  *
  * @returns {JSX.Element} Quick Add feature step content
  */
@@ -39,13 +39,6 @@ export const StepQuickAdd = () => (
         <div>
           <strong>One-Click Add</strong>
           <p>Add units instantly without opening the full editor</p>
-        </div>
-      </div>
-      <div className="wnw-highlight-item">
-        <div className="wnw-highlight-dot" />
-        <div>
-          <strong>List Categorization</strong>
-          <p>Improved list view with role-based categories for Age of Sigmar warscrolls</p>
         </div>
       </div>
     </div>
