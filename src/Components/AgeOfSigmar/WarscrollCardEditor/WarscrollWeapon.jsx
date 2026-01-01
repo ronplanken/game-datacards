@@ -109,7 +109,7 @@ export function WarscrollWeapon({ weapon, index, type }) {
               value={keywords.join(", ")}
               onChange={(e) =>
                 handleChange(
-                  "keywords",
+                  "abilities",
                   e.target.value.split(",").map((k) => k.trim())
                 )
               }

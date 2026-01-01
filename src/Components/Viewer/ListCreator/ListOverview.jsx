@@ -1,26 +1,52 @@
 import { useState } from "react";
-import { Crown, Trash2, FileText, List, ChevronDown } from "lucide-react";
+import { Crown, Trash2, FileText, List, ChevronDown, Upload, ChevronRight } from "lucide-react";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
+import {
+  categorize40kUnits,
+  categorizeAoSUnits,
+  format40kListText,
+  formatAoSListText,
+  sortCards,
+  SECTIONS_40K,
+  SECTIONS_AOS,
+} from "../../../Helpers/listCategories.helpers";
 import { BottomSheet } from "../Mobile/BottomSheet";
 import { ListSelector } from "./ListSelector";
+import { MobileGwImporter } from "../MobileImporter";
 import "./ListOverview.css";
 
-// Header actions component
-const HeaderActions = ({ onCopyToClipboard }) => (
-  <div className="list-overview-header">
-    <button className="list-overview-header-button" onClick={onCopyToClipboard}>
+// Import action button (prominent, at top of content)
+const ImportActionButton = ({ onClick }) => (
+  <button className="list-overview-import-action" onClick={onClick} type="button">
+    <Upload size={18} />
+    <span>Import from GW App</span>
+    <ChevronRight size={18} />
+  </button>
+);
+
+// Header with list selector and copy button
+const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard }) => (
+  <div className="list-overview-list-header">
+    <button className="list-overview-name-selector" onClick={onListSelectorClick} type="button">
+      <span className="list-overview-name-text">{listName}</span>
+      <ChevronDown size={16} />
+    </button>
+    <button className="list-overview-copy-button" onClick={onCopyToClipboard} type="button">
       <FileText size={18} />
     </button>
   </div>
 );
 
 // Single list item component
-const ListItem = ({ item, onNavigate, onDelete }) => {
-  const totalCost = Number(item.points?.cost) + (Number(item.enhancement?.cost) || 0);
+const ListItem = ({ item, onNavigate, onDelete, isAoS }) => {
+  const totalCost = isAoS
+    ? Number(item.points?.cost) || 0
+    : Number(item.points?.cost) + (Number(item.enhancement?.cost) || 0);
 
   return (
     <div className="list-overview-item">
@@ -29,12 +55,12 @@ const ListItem = ({ item, onNavigate, onDelete }) => {
           {item.warlord && <Crown size={14} fill="currentColor" />}
           <span>{item.card.name}</span>
         </div>
-        {item.enhancement && (
+        {!isAoS && item.enhancement && (
           <div className="list-overview-item-enhancement">{capitalizeSentence(item.enhancement.name)}</div>
         )}
       </div>
       <div className="list-overview-item-points">
-        {item.points?.models > 1 ? `${item.points.models}x ` : ""}
+        {!isAoS && item.points?.models > 1 ? `${item.points.models}x ` : ""}
         {totalCost} pts
       </div>
       <button className="list-overview-item-delete" onClick={() => onDelete(item.id)}>
@@ -44,80 +70,62 @@ const ListItem = ({ item, onNavigate, onDelete }) => {
   );
 };
 
+// Section renderer component
+const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, isAoS }) => {
+  if (!cards || cards.length === 0) return null;
+
+  return (
+    <>
+      <div className="list-overview-section">{label}</div>
+      {sortCards(cards).map((item) => (
+        <ListItem key={item.id} item={item} onNavigate={onNavigate} onDelete={onDelete} isAoS={isAoS} />
+      ))}
+    </>
+  );
+};
+
 export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, removeDatacard } = useMobileList();
   const { dataSource } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
   const navigate = useNavigate();
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
+  const [isImporterVisible, setIsImporterVisible] = useState(false);
 
-  const sortedCards = lists[selectedList].datacards?.reduce(
-    (exportCards, card) => {
-      if (card?.card?.keywords?.includes("Character")) {
-        exportCards.characters.push(card);
-        return exportCards;
-      }
-      if (card?.card?.keywords?.includes("Battleline")) {
-        exportCards.battleline.push(card);
-        return exportCards;
-      }
-      exportCards.other.push(card);
-      return exportCards;
-    },
-    { characters: [], battleline: [], other: [], allied: [] }
-  );
+  // Detect game system
+  const isAoS = settings.selectedDataSource === "aos";
+  const is40k = settings.selectedDataSource === "40k-10e";
+
+  // Get appropriate sections and categorization
+  const sections = isAoS ? SECTIONS_AOS : SECTIONS_40K;
+  const sortedCards = isAoS
+    ? categorizeAoSUnits(lists[selectedList].datacards)
+    : categorize40kUnits(lists[selectedList].datacards);
 
   const handleClose = () => setIsVisible(false);
 
   const handleNavigate = (item) => {
     const cardFaction = dataSource.data.find((faction) => faction.id === item.card?.faction_id);
+    // Pass the stored card data through router state so we use the filtered version
     navigate(
       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${item.card.name
         .replaceAll(" ", "-")
-        .toLowerCase()}`
+        .toLowerCase()}`,
+      { state: { listCard: item.card } }
     );
     handleClose();
   };
 
   const handleCopyToClipboard = () => {
-    let listText = "Warhammer 40K List";
+    const listText = isAoS ? formatAoSListText(sortedCards, sections) : format40kListText(sortedCards, sections);
 
-    const addSection = (sectionName, cards) => {
-      if (cards.length === 0) return;
-      listText += `\n\n${sectionName}`;
-      cards.forEach((val) => {
-        listText += `\n\n${val.card.name} ${val.points?.models > 1 ? val.points?.models + "x" : ""} (${
-          Number(val?.points?.cost) + (Number(val.enhancement?.cost) || 0) || "?"
-        } pts)`;
-        if (val.warlord) {
-          listText += `\n   • Warlord`;
-        }
-        if (val.enhancement) {
-          listText += `\n   • Enhancements: ${capitalizeSentence(val.enhancement?.name)} (+${
-            val.enhancement?.cost
-          } pts)`;
-        }
-      });
-    };
-
-    addSection("CHARACTERS", sortedCards.characters);
-    addSection("BATTLELINE", sortedCards.battleline);
-    addSection("OTHER", sortedCards.other);
-
-    listText += "\n\nCreated with https://game-datacards.eu";
     navigator.clipboard.writeText(listText);
     message.success("List copied to clipboard.");
   };
 
-  const sortCards = (cards) =>
-    cards.toSorted((a, b) => {
-      if (a.warlord) return -1;
-      if (b.warlord) return 1;
-      return a.card.name.localeCompare(b.card.name);
-    });
-
   const totalPoints = lists[selectedList].datacards.reduce((acc, val) => {
     let cost = acc + Number(val.points.cost);
-    if (val.enhancement) {
+    if (!isAoS && val.enhancement) {
       cost = cost + Number(val.enhancement.cost);
     }
     return cost;
@@ -125,19 +133,24 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   const isEmpty = lists[selectedList].datacards.length === 0;
 
-  const headerContent = (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-      <button className="list-overview-name-selector" onClick={() => setIsListSelectorVisible(true)} type="button">
-        <span className="list-overview-name-text">{lists[selectedList].name}</span>
-        <ChevronDown size={16} />
-      </button>
-      {!isEmpty && <HeaderActions onCopyToClipboard={handleCopyToClipboard} />}
-    </div>
-  );
-
   return (
     <>
-      <BottomSheet isOpen={isVisible} onClose={handleClose} title={headerContent} maxHeight="70vh">
+      <BottomSheet isOpen={isVisible} onClose={handleClose} maxHeight="70vh">
+        <div className="list-overview-top-section">
+          {is40k && (
+            <>
+              <ImportActionButton onClick={() => setIsImporterVisible(true)} />
+              <div className="list-overview-divider" />
+            </>
+          )}
+          <h2 className="list-overview-title">Lists</h2>
+          <ListHeader
+            listName={lists[selectedList].name}
+            onListSelectorClick={() => setIsListSelectorVisible(true)}
+            onCopyToClipboard={handleCopyToClipboard}
+          />
+        </div>
+
         {isEmpty ? (
           <div className="list-overview-empty">
             <List size={48} />
@@ -145,32 +158,17 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
           </div>
         ) : (
           <div className="list-overview-items">
-            {sortedCards.characters.length > 0 && (
-              <>
-                <div className="list-overview-section">Characters</div>
-                {sortCards(sortedCards.characters).map((item) => (
-                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
-                ))}
-              </>
-            )}
-
-            {sortedCards.battleline.length > 0 && (
-              <>
-                <div className="list-overview-section">Battleline</div>
-                {sortCards(sortedCards.battleline).map((item) => (
-                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
-                ))}
-              </>
-            )}
-
-            {sortedCards.other.length > 0 && (
-              <>
-                <div className="list-overview-section">Other</div>
-                {sortCards(sortedCards.other).map((item) => (
-                  <ListItem key={item.id} item={item} onNavigate={handleNavigate} onDelete={removeDatacard} />
-                ))}
-              </>
-            )}
+            {sections.map((section) => (
+              <ListSection
+                key={section.key}
+                sectionKey={section.key}
+                label={section.label}
+                cards={sortedCards[section.key]}
+                onNavigate={handleNavigate}
+                onDelete={removeDatacard}
+                isAoS={isAoS}
+              />
+            ))}
 
             <div className="list-overview-total">
               <span className="list-overview-total-label">Total</span>
@@ -181,6 +179,8 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       </BottomSheet>
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
+
+      <MobileGwImporter isOpen={isImporterVisible} onClose={() => setIsImporterVisible(false)} />
     </>
   );
 };

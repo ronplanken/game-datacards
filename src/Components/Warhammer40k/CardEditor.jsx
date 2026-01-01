@@ -7,7 +7,6 @@ import { UnitCardEditor } from "./UnitCardEditor";
 
 export const Warhammer40KCardEditor = () => {
   const { activeCard } = useCardStorage();
-  console.log(activeCard);
   return (
     activeCard && (
       <Col span={24} className={`card-editor data-40k ${activeCard?.icons ? activeCard?.icons : "icons"}`}>

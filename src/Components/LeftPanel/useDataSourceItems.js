@@ -1,7 +1,11 @@
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 
-// Group warscrolls by keywords (same as mobile/viewer)
+/**
+ * Group warscrolls by their role keywords (Hero, Battleline, Monster, etc.)
+ * @param {Array} warscrolls - Array of warscroll objects with keywords
+ * @returns {Object} Warscrolls grouped by role
+ */
 const groupWarscrollsByRole = (warscrolls) => {
   return (warscrolls || []).reduce(
     (groups, unit) => {
@@ -55,6 +59,13 @@ const WARSCROLL_ROLE_ORDER = [
   { key: "other", label: "Other" },
 ];
 
+/**
+ * Hook to get filtered and organized items from the current datasource
+ * Handles datasheets, stratagems, enhancements, warscrolls, spells, and rules
+ * @param {string} selectedContentType - The type of content to retrieve (datasheets, stratagems, etc.)
+ * @param {string} searchText - Optional search filter text
+ * @returns {Array} Filtered and organized items for the selected content type
+ */
 export const useDataSourceItems = (selectedContentType, searchText) => {
   const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings } = useSettingsStorage();
@@ -192,7 +203,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
           ? selectedFaction.basicStratagems?.filter((stratagem) =>
               stratagem.name.toLowerCase().includes(searchText.toLowerCase())
             )
-          : selectedFaction.basicStratagems ?? [{ name: "Update your datasources" }];
+          : selectedFaction.basicStratagems ?? [];
 
         return [
           { type: "header", name: "Basic stratagems" },
@@ -227,7 +238,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
           ? selectedFaction.basicSecondaries?.filter((secondary) =>
               secondary.name.toLowerCase().includes(searchText.toLowerCase())
             )
-          : selectedFaction.basicSecondaries ?? [{ name: "Update your datasources" }];
+          : selectedFaction.basicSecondaries ?? [];
 
         return [
           { type: "header", name: "Basic secondaries" },

@@ -5,7 +5,7 @@ import { useCardStorage } from "./useCardStorage";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 export function useViewerNavigation() {
-  const { faction, unit, alliedFaction, alliedUnit, stratagem, spell } = useParams();
+  const { faction, unit, alliedFaction, alliedUnit, stratagem, spell, enhancement, rule } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { dataSource, selectedFaction, updateSelectedFaction, clearSelectedFaction } = useDataSourceStorage();
@@ -26,8 +26,8 @@ export function useViewerNavigation() {
       return;
     }
 
-    // Handle faction + unit route (but not spell route)
-    if (faction && !alliedFaction && !stratagem && !spell) {
+    // Handle faction + unit route (but not other specialized routes)
+    if (faction && !alliedFaction && !stratagem && !spell && !enhancement && !rule) {
       const foundFaction = dataSource.data.find((f) => {
         return f.name.toLowerCase().replaceAll(" ", "-") === faction;
       });
@@ -37,20 +37,27 @@ export function useViewerNavigation() {
       }
 
       if (unit) {
-        // Support both datasheets (40K) and warscrolls (AoS)
-        const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
-        let foundUnit = units.find((u) => {
-          return u.name.replaceAll(" ", "-").toLowerCase() === unit;
-        });
-
-        // If not found and generic manifestations are enabled, search generic warscrolls
-        if (!foundUnit && settings?.showGenericManifestations && dataSource?.genericData?.warscrolls) {
-          foundUnit = dataSource.genericData.warscrolls.find((u) => {
+        // Check if we have a pre-filtered card from a mobile list (passed via router state)
+        const listCard = location.state?.listCard;
+        if (listCard && listCard.name?.replaceAll(" ", "-").toLowerCase() === unit) {
+          // Use the stored card with filtered weapons/wargear
+          setActiveCard(listCard);
+        } else {
+          // Support both datasheets (40K) and warscrolls (AoS)
+          const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
+          let foundUnit = units.find((u) => {
             return u.name.replaceAll(" ", "-").toLowerCase() === unit;
           });
-        }
 
-        setActiveCard(foundUnit);
+          // If not found and generic manifestations are enabled, search generic warscrolls
+          if (!foundUnit && settings?.showGenericManifestations && dataSource?.genericData?.warscrolls) {
+            foundUnit = dataSource.genericData.warscrolls.find((u) => {
+              return u.name.replaceAll(" ", "-").toLowerCase() === unit;
+            });
+          }
+
+          setActiveCard(foundUnit);
+        }
       } else {
         setActiveCard();
       }
@@ -58,9 +65,27 @@ export function useViewerNavigation() {
 
     // Handle faction + stratagem route
     if (faction && !alliedFaction && stratagem) {
-      const foundFaction = dataSource.data.find((f) => {
-        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
-      });
+      let foundFaction;
+
+      // Special handling for "core" faction - search basicStratagems across all factions
+      if (faction === "core") {
+        // First check if the currently selected faction has this basic stratagem
+        const hasStratagem = selectedFaction?.basicStratagems?.some(
+          (s) => s.name.replaceAll(" ", "-").toLowerCase() === stratagem
+        );
+        if (hasStratagem) {
+          foundFaction = selectedFaction;
+        } else {
+          // Fall back to finding the first faction that has it
+          foundFaction = dataSource.data.find((f) => {
+            return f.basicStratagems?.some((s) => s.name.replaceAll(" ", "-").toLowerCase() === stratagem);
+          });
+        }
+      } else {
+        foundFaction = dataSource.data.find((f) => {
+          return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+        });
+      }
 
       if (selectedFaction?.id !== foundFaction?.id) {
         updateSelectedFaction(foundFaction);
@@ -81,6 +106,75 @@ export function useViewerNavigation() {
         }
 
         setActiveCard(foundStratagem);
+      } else {
+        setActiveCard();
+      }
+    }
+
+    // Handle faction + enhancement route
+    if (faction && !alliedFaction && enhancement) {
+      const foundFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+      });
+
+      if (selectedFaction?.id !== foundFaction?.id) {
+        updateSelectedFaction(foundFaction);
+      }
+
+      const foundEnhancement = foundFaction?.enhancements?.find((e) => {
+        return e.name.replaceAll(" ", "-").toLowerCase() === enhancement;
+      });
+
+      if (foundEnhancement) {
+        setActiveCard({
+          ...foundEnhancement,
+          id: `enhancement-${foundEnhancement.name}`, // Add unique id for changeActiveCard comparison
+          cardType: "enhancement",
+          faction_id: foundFaction?.id,
+          source: foundFaction?.datasheets ? "40k-10e" : "40k",
+        });
+      } else {
+        setActiveCard();
+      }
+    }
+
+    // Handle faction + rule route
+    if (faction && !alliedFaction && rule) {
+      const foundFaction = dataSource.data.find((f) => {
+        return f.name.toLowerCase().replaceAll(" ", "-") === faction;
+      });
+
+      if (selectedFaction?.id !== foundFaction?.id) {
+        updateSelectedFaction(foundFaction);
+      }
+
+      // Search in army rules
+      let foundRule = foundFaction?.rules?.army?.find((r) => {
+        return r.name.replaceAll(" ", "-").toLowerCase() === rule;
+      });
+
+      // If not found, search in detachment rules
+      if (!foundRule) {
+        const detachmentRules = foundFaction?.rules?.detachment || [];
+        for (const detachment of detachmentRules) {
+          foundRule = detachment.rules?.find((r) => {
+            return r.name.replaceAll(" ", "-").toLowerCase() === rule;
+          });
+          if (foundRule) {
+            foundRule = { ...foundRule, detachment: detachment.detachment };
+            break;
+          }
+        }
+      }
+
+      if (foundRule) {
+        setActiveCard({
+          ...foundRule,
+          id: `rule-${foundRule.name}`, // Add unique id for changeActiveCard comparison
+          cardType: "rule",
+          faction_id: foundFaction?.id,
+          source: foundFaction?.datasheets ? "40k-10e" : "40k",
+        });
       } else {
         setActiveCard();
       }
@@ -198,8 +292,11 @@ export function useViewerNavigation() {
     alliedUnit,
     stratagem,
     spell,
+    enhancement,
+    rule,
     dataSource,
     location.pathname,
+    location.state,
     settings?.showGenericManifestations,
   ]);
 
@@ -303,6 +400,26 @@ export function useViewerNavigation() {
     [navigate]
   );
 
+  const navigateToMobileEnhancement = useCallback(
+    (factionName, enhancementName) => {
+      navigate(
+        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/enhancement/${enhancementName
+          .replaceAll(" ", "-")
+          .toLowerCase()}`
+      );
+    },
+    [navigate]
+  );
+
+  const navigateToMobileRule = useCallback(
+    (factionName, ruleName) => {
+      navigate(
+        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/rule/${ruleName.replaceAll(" ", "-").toLowerCase()}`
+      );
+    },
+    [navigate]
+  );
+
   return {
     // URL params
     faction,
@@ -310,6 +427,8 @@ export function useViewerNavigation() {
     alliedFaction,
     alliedUnit,
     stratagem,
+    enhancement,
+    rule,
     // State
     activeCard,
     selectedFaction,
@@ -325,5 +444,7 @@ export function useViewerNavigation() {
     navigateToMobileUnit,
     navigateToMobileStratagem,
     navigateToMobileAlliedUnit,
+    navigateToMobileEnhancement,
+    navigateToMobileRule,
   };
 }

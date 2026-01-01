@@ -32,7 +32,6 @@ export function UnitStylingInfo() {
     const loadImageInfo = async () => {
       // Always use uuid for local images (unique per card instance)
       if (activeCard?.uuid && isReady) {
-        console.log("[UnitStylingInfo] Loading image info for UUID:", activeCard.uuid);
         const imageData = await getImageData(activeCard.uuid);
         if (imageData) {
           setLocalImageInfo({
@@ -70,36 +69,16 @@ export function UnitStylingInfo() {
   }, [activeCard?.uuid, isReady]);
 
   const handleImageUpload = async (file) => {
-    console.log("[Upload] Starting upload process");
-    console.log("[Upload] Received file argument:", file);
-    console.log("[Upload] File type:", typeof file);
-    console.log("[Upload] File constructor:", file?.constructor?.name);
-
     // Handle both direct file and wrapped file object from Ant Design
     const actualFile = file?.file || file;
 
-    console.log("[Upload] Actual file:", actualFile);
-    console.log("[Upload] Active card:", activeCard);
-    console.log("[Upload] Card UUID:", activeCard?.uuid);
-    console.log("[Upload] Card ID (template):", activeCard?.id);
-
     if (!actualFile) {
-      console.error("[Upload] No file provided");
       message.error("No file selected");
       return false;
     }
 
-    console.log("[Upload] File details:", {
-      name: actualFile.name,
-      size: actualFile.size,
-      type: actualFile.type,
-      isFile: actualFile instanceof File,
-      isBlob: actualFile instanceof Blob,
-    });
-
     // Always use uuid for local images (unique per card instance)
     if (!activeCard?.uuid) {
-      console.error("[Upload] No card UUID found - card needs to be added to a category first");
       message.error("Please add this card to a category first");
       return false;
     }
@@ -116,26 +95,17 @@ export function UnitStylingInfo() {
 
     setUploading(true);
     try {
-      console.log("[Upload] Saving image with UUID:", activeCard.uuid);
-      console.log("[Upload] File to save:", actualFile);
       await saveImage(activeCard.uuid, actualFile);
-      console.log("[Upload] Image saved to IndexedDB");
 
       const updatedCard = {
         ...activeCard,
         hasLocalImage: true,
         localImageFilename: actualFile.name,
       };
-      console.log("[Upload] Updating active card with:", {
-        hasLocalImage: true,
-        localImageFilename: actualFile.name,
-        uuid: activeCard.uuid,
-      });
       updateActiveCard(updatedCard);
 
       // Save the card to persist the changes
       setTimeout(() => {
-        console.log("[Upload] Saving card to localStorage");
         saveActiveCard();
       }, 100);
 
@@ -145,7 +115,6 @@ export function UnitStylingInfo() {
       });
       message.success("Image uploaded successfully");
     } catch (error) {
-      console.error("[Upload] Failed to upload image:", error);
       message.error("Failed to upload image");
     } finally {
       setUploading(false);
@@ -174,7 +143,6 @@ export function UnitStylingInfo() {
       setLocalImageInfo(null);
       message.success("Local image removed");
     } catch (error) {
-      console.error("Failed to delete image:", error);
       message.error("Failed to delete image");
     }
   };
@@ -228,7 +196,6 @@ export function UnitStylingInfo() {
       });
       message.success("Faction symbol uploaded successfully");
     } catch (error) {
-      console.error("[Upload] Failed to upload faction symbol:", error);
       message.error("Failed to upload faction symbol");
     } finally {
       setUploadingFactionSymbol(false);
@@ -255,7 +222,6 @@ export function UnitStylingInfo() {
       setFactionSymbolInfo(null);
       message.success("Faction symbol removed");
     } catch (error) {
-      console.error("Failed to delete faction symbol:", error);
       message.error("Failed to delete faction symbol");
     }
   };
@@ -280,7 +246,6 @@ export function UnitStylingInfo() {
                   accept="image/*"
                   showUploadList={false}
                   beforeUpload={(file) => {
-                    console.log("[Upload Component] beforeUpload called with:", file);
                     handleImageUpload(file);
                     return false; // Prevent default upload behavior
                   }}

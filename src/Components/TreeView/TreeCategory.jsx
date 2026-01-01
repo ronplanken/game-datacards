@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { ChevronRight, Trash2, FolderOpen, Folder, Plus } from "lucide-react";
+import { ChevronRight, Trash2, FolderOpen, Folder, Plus, Database } from "lucide-react";
 import { message } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
+import { ExportDatasourceModal } from "../CustomDatasource";
 import { confirmDialog } from "../ConfirmChangesModal";
+import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import "./TreeView.css";
 
 export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children, isSubCategory = false }) {
@@ -24,6 +26,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
 
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+  const [isExportDatasourceModalOpen, setIsExportDatasourceModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
 
   const handleRename = (newName) => {
@@ -61,18 +64,13 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       ? "This action cannot be undone and will delete all cards and sub-categories in this category."
       : "This action cannot be undone and will delete all cards in the category.";
 
-    confirmDialog({
+    deleteConfirmDialog({
       title: "Are you sure you want to delete this category?",
       content: deleteMessage,
-      handleSave: () => {
+      onConfirm: () => {
         message.success("Category has been removed.");
         removeCategory(category.uuid);
       },
-      handleDiscard: () => {},
-      handleCancel: () => {},
-      saveText: "Delete",
-      discardText: "Cancel",
-      hideDiscard: true,
     });
   };
 
@@ -101,6 +99,16 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       key: "rename",
       label: "Rename",
       onClick: () => setIsRenameModalOpen(true),
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "export-datasource",
+      label: "Export as Datasource",
+      icon: <Database size={14} />,
+      onClick: () => setIsExportDatasourceModalOpen(true),
+      disabled: !category.cards || category.cards.length === 0,
     },
     {
       type: "divider",
@@ -196,6 +204,12 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
         initialValue=""
         onConfirm={handleAddSubCategory}
         onCancel={() => setIsSubCategoryModalOpen(false)}
+      />
+
+      <ExportDatasourceModal
+        isOpen={isExportDatasourceModalOpen}
+        onClose={() => setIsExportDatasourceModalOpen(false)}
+        category={category}
       />
     </>
   );

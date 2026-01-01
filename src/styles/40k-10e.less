@@ -548,6 +548,265 @@
     }
   }
 
+  .shared-rule {
+    height: var(--height);
+    width: var(--width);
+    max-width: 100vw;
+    transform: scale3d(var(--card-scaling-factor), var(--card-scaling-factor), var(--card-scaling-factor));
+    transform-origin: top center;
+    border-radius: 8px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @media print {
+      transform-origin: 0 0;
+    }
+
+    each(@factions, {
+      &.@{value}::before {
+        content: " ";
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        transform: translateY(-75px);
+        height: 150px;
+        opacity: 0.1;
+        background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/@{value}.svg");
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-position: center;
+      }
+    });
+
+    &.AM::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 55%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 85px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/AM.svg");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
+    &.basic::before {
+      content: " ";
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      transform: translateY(-75px);
+      height: 150px;
+      opacity: 0.1;
+      background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/logo_large.png");
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
+    background-color: var(--header-colour);
+
+    &.auto-height {
+      height: auto;
+    }
+
+    .border {
+      background-color: white;
+      border-radius: 8px;
+      height: calc(var(--height) - 2px);
+      width: calc(var(--width) - 2px);
+      max-width: calc(100vw - 2px);
+      overflow: hidden;
+
+      .background-side-bar {
+        position: absolute;
+        top: 22.67px;
+        left: 22.67px;
+        height: calc(var(--height) - 81px);
+        width: 15.11px;
+        background-color: var(--header-colour);
+      }
+
+      .background-header-bar {
+        position: absolute;
+        top: 38px;
+        left: 41.57px;
+        height: 3.77px;
+        width: calc(var(--width) - 60px);
+        max-width: calc(100vw - 60px);
+        background-color: var(--header-colour);
+      }
+
+      .header {
+        padding-left: 4px;
+        position: absolute;
+        top: 12px;
+        left: 52.91px;
+        color: var(--header-colour);
+        width: calc(var(--width) - 75px);
+        max-width: calc(100vw - 75px);
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .type {
+        padding-left: 4px;
+        position: absolute;
+        top: 42px;
+        left: 52.91px;
+        width: calc(var(--width) - 70px);
+        max-width: calc(100vw - 70px);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: #666;
+        border-bottom: 1px dotted #aaadb0;
+        padding-bottom: 4px;
+      }
+
+      .content {
+        position: absolute;
+        top: 68px;
+        left: 52.91px;
+        width: calc(var(--width) - 75px);
+        max-width: calc(100vw - 75px);
+        height: calc(var(--height) - 100px);
+        padding-left: 4px;
+        overflow-y: auto;
+        padding-right: 8px;
+
+        .rule-parts {
+          .rule-part-header {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--header-colour);
+            margin: 12px 0 6px 0;
+            text-transform: uppercase;
+
+            &:first-child {
+              margin-top: 0;
+            }
+          }
+
+          .rule-part-text {
+            font-size: 0.85em;
+            line-height: 1.4;
+            color: #333;
+            margin-bottom: 8px;
+
+            p {
+              margin: 0 0 8px 0;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+          }
+
+          .rule-part-accordion {
+            font-size: 0.85em;
+            line-height: 1.4;
+            color: #333;
+            padding: 6px 8px 6px 20px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            position: relative;
+
+            &::before {
+              content: "•";
+              position: absolute;
+              left: 8px;
+              color: var(--header-colour);
+              font-weight: bold;
+            }
+
+            .rule-part-accordion-title {
+              font-weight: 600;
+              font-size: 0.95em;
+              margin: 0 0 4px 0;
+              color: #222;
+            }
+
+            p {
+              margin: 0;
+            }
+          }
+        }
+      }
+
+      .containers {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 35.9px;
+        height: auto;
+        top: 16.06px;
+        left: 12.28px;
+
+        .rule-type-indicator {
+          height: 35.9px;
+          width: 35.9px;
+          border: 3.4px solid var(--header-colour);
+          background-color: var(--rows-colour);
+          rotate: 45deg;
+          overflow: hidden;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          .faction-icon {
+            rotate: -45deg;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+      }
+    }
+
+    // Auto-height mode: card expands to fit content
+    &.auto-height {
+      height: auto;
+      align-items: flex-start;
+
+      .border {
+        height: auto;
+        padding-bottom: 24px;
+        position: relative;
+
+        .background-side-bar {
+          height: calc(100% - 58px);
+        }
+
+        .content {
+          position: relative;
+          top: auto;
+          left: auto;
+          height: auto;
+          overflow-y: visible;
+          margin-top: 68px;
+          margin-left: 52.91px;
+        }
+      }
+    }
+  }
+
   html {
     font-size: 15px;
   }
@@ -612,95 +871,15 @@
         rotate: 45deg;
         overflow: hidden;
 
-        .any {
-          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/any.svg");
-          mask-repeat: no-repeat;
-          mask-position: center;
-          mask-size: contain;
-
-          background-color: var(--stratagem-colour);
-
-          display: block;
-          width: 95%;
-          height: 95%;
-
-          margin-left: 1px;
-          margin-top: -1px;
-
-          rotate: -45deg;
-        }
-        .charge {
-          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/charge.svg");
-          mask-repeat: no-repeat;
-          mask-position: center;
-          mask-size: contain;
-
-          background-color: var(--stratagem-colour);
-
-          display: block;
+        // Inline SVG wrapper for phase icons (print-friendly)
+        .phase-icon-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
           width: 100%;
           height: 100%;
-
-          margin-top: -2px;
-          margin-left: -2px;
-
           rotate: -45deg;
-        }
-        .fight {
-          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/combat.svg");
-          mask-repeat: no-repeat;
-          mask-position: center;
-          mask-size: contain;
-
-          background-color: var(--stratagem-colour);
-
-          display: block;
-          width: 95%;
-          height: 95%;
-
-          rotate: -45deg;
-        }
-        .command {
-          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/command.svg");
-          mask-repeat: no-repeat;
-          mask-position: center;
-          mask-size: contain;
-
-          background-color: var(--stratagem-colour);
-
-          display: block;
-          width: 100%;
-          height: 100%;
-
-          rotate: -45deg;
-        }
-        .movement {
-          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/movement.svg");
-          mask-repeat: no-repeat;
-          mask-position: center;
-          mask-size: contain;
-
-          background-color: var(--stratagem-colour);
-
-          display: block;
-          width: 95%;
-          height: 95%;
-
-          rotate: -45deg;
-        }
-        .shooting {
-          mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/shooting.svg");
-          mask-repeat: no-repeat;
-          mask-position: center;
-          mask-size: contain;
-
-          background-color: var(--stratagem-colour);
-
-          display: block;
-          width: 100%;
-          height: 100%;
-
-          rotate: -45deg;
+          padding: 2px;
         }
       }
     }
@@ -1115,6 +1294,10 @@
       justify-content: center;
       align-items: center;
 
+      &.auto-height {
+        height: auto;
+      }
+
       @media print {
         transform-origin: 0 0;
       }
@@ -1314,26 +1497,40 @@
             justify-content: center;
             align-items: center;
 
-            .icon {
+            .faction-icon {
               rotate: -45deg;
               width: 20px;
               height: 20px;
-              background-color: var(--header-colour);
-
-              &.army {
-                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/any.svg");
-                mask-repeat: no-repeat;
-                mask-position: center;
-                mask-size: contain;
-              }
-
-              &.detachment {
-                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc/10th/command.svg");
-                mask-repeat: no-repeat;
-                mask-position: center;
-                mask-size: contain;
-              }
+              display: flex;
+              justify-content: center;
+              align-items: center;
             }
+          }
+        }
+      }
+
+      // Auto-height mode: card expands to fit content
+      &.auto-height {
+        height: auto;
+        align-items: flex-start;
+
+        .border {
+          height: auto;
+          padding-bottom: 24px;
+          position: relative;
+
+          .background-side-bar {
+            height: calc(100% - 58px);
+          }
+
+          .content {
+            position: relative;
+            top: auto;
+            left: auto;
+            height: auto;
+            overflow-y: visible;
+            margin-top: 68px;
+            margin-left: 52.91px;
           }
         }
       }
@@ -1637,40 +1834,52 @@
             flex-direction: row;
             justify-content: center;
             align-items: center;
+            position: relative;
 
             height: 44px;
             width: 44px;
             z-index: 1;
 
-            mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
-            mask-repeat: no-repeat;
-            mask-position: center;
-            mask-size: contain;
-
-            background-color: var(--banner-colour);
+            // Outer shield SVG (print-friendly inline SVG)
+            .invul-shield-outer {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              z-index: 1;
+            }
 
             .value {
+              position: relative;
               text-align: center;
 
               height: 38px;
               width: 39px;
 
-              text-transform: uppercase;
-              font-size: 1.1rem;
-              font-weight: 600;
-              color: var(--stat-text-colour);
               z-index: 2;
-
+              display: flex;
               justify-content: center;
               align-items: center;
-              display: flex;
 
-              background-color: white;
+              // Inner shield SVG (print-friendly inline SVG)
+              .invul-shield-inner {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+              }
 
-              mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
-              mask-repeat: no-repeat;
-              mask-position: center;
-              mask-size: contain;
+              .value-text {
+                position: relative;
+                z-index: 2;
+                text-transform: uppercase;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: var(--stat-text-colour);
+              }
             }
           }
         }
@@ -1828,19 +2037,10 @@
             left: 10px;
             border-radius: 32px;
             background-color: var(--header-colour);
-
-            &::after {
-              content: " ";
-              position: absolute;
-              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
-              background-repeat: no-repeat;
-              background-size: contain;
-              background-position: center;
-              height: 100%;
-              width: 100%;
-              scale: 0.75;
-            }
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
           }
           .value_container {
             display: flex;
@@ -2054,16 +2254,14 @@
           .ranged {
             position: relative;
 
-            &::before {
-              content: "";
+            // Inline SVG icon for print compatibility
+            .weapon-type-icon {
               position: absolute;
               left: 4px;
               top: 0;
-              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
-              background-repeat: none;
-              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
               width: 24px;
               height: 24px;
+              z-index: 1;
             }
 
             .heading {
@@ -2136,18 +2334,16 @@
           .melee {
             position: relative;
 
-            &::before {
-              content: "";
+            // Inline SVG icon for print compatibility
+            .weapon-type-icon {
               position: absolute;
               left: 4px;
-              top: 0;
-              background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
-              background-repeat: none;
-              filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
+              top: 2px;
               width: 20px;
               height: 20px;
-              margin-top: 2px;
+              z-index: 1;
             }
+
             .multi-line {
               position: relative;
             }
@@ -2360,40 +2556,52 @@
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
+                position: relative;
 
                 height: 50px;
                 width: 50px;
                 z-index: 1;
 
-                mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
-                mask-repeat: no-repeat;
-                mask-position: center;
-                mask-size: contain;
-
-                background-color: var(--header-colour);
+                // Outer shield SVG (print-friendly inline SVG)
+                .invul-shield-outer {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  z-index: 1;
+                }
 
                 .value {
+                  position: relative;
                   text-align: center;
 
                   height: 44px;
                   width: 45px;
 
-                  text-transform: uppercase;
-                  font-size: 1.3rem;
-                  font-weight: 600;
-                  color: var(--stat-text-colour);
                   z-index: 2;
-
+                  display: flex;
                   justify-content: center;
                   align-items: center;
-                  display: flex;
 
-                  background-color: white;
+                  // Inner shield SVG (print-friendly inline SVG)
+                  .invul-shield-inner {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 1;
+                  }
 
-                  mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
-                  mask-repeat: no-repeat;
-                  mask-position: center;
-                  mask-size: contain;
+                  .value-text {
+                    position: relative;
+                    z-index: 2;
+                    text-transform: uppercase;
+                    font-size: 1.3rem;
+                    font-weight: 600;
+                    color: var(--stat-text-colour);
+                  }
                 }
               }
             }
@@ -2593,6 +2801,14 @@
               background-color: var(--header-colour);
               padding-left: 8px;
               position: relative;
+              display: flex;
+              align-items: center;
+
+              .damaged-icon {
+                width: 16px;
+                height: 16px;
+                flex-shrink: 0;
+              }
 
               .title {
                 text-transform: uppercase;
@@ -2600,21 +2816,7 @@
                 font-size: 1rem;
                 font-weight: 600;
                 z-index: 2;
-                padding-left: 16px;
-
-                &::before {
-                  content: "";
-                  position: absolute;
-                  left: 6px;
-                  top: 0;
-                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
-                  background-repeat: no-repeat;
-                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                  width: 20px;
-                  height: 20px;
-                  margin-top: 2px;
-                  scale: 0.8;
-                }
+                padding-left: 4px;
               }
             }
           }
@@ -2850,6 +3052,23 @@
         filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
         rotate: -45deg;
       }
+
+      // Print-friendly faction symbol wrapper (uses inline SVG)
+      .faction-symbol-wrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        rotate: -45deg;
+        scale: 0.8;
+
+        svg {
+          width: 100%;
+          height: 100%;
+          fill: black;
+        }
+      }
     }
   }
 
@@ -3040,42 +3259,10 @@
               left: 10px;
               border-radius: 32px;
               background-color: var(--header-colour);
-
-              &::after {
-                content: " ";
-                position: absolute;
-                filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
-                background-repeat: no-repeat;
-                background-size: contain;
-                background-position: center;
-                height: 100%;
-                width: 100%;
-                scale: 0.75;
-              }
-            }
-
-            .damageTable {
-              position: absolute;
-              bottom: -14px;
-              height: 24px;
-              width: 24px;
-              left: 10px;
-              border-radius: 32px;
-              background-color: var(--header-colour);
-
-              &::after {
-                content: " ";
-                position: absolute;
-                filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
-                background-repeat: no-repeat;
-                background-size: contain;
-                background-position: center;
-                height: 100%;
-                width: 100%;
-                scale: 0.75;
-              }
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              padding: 3px;
             }
             @media only screen and (max-width: 600px) {
               .damageTable {
@@ -3486,40 +3673,52 @@
                   flex-direction: row;
                   justify-content: center;
                   align-items: center;
+                  position: relative;
 
                   height: 50px;
                   width: 50px;
                   z-index: 1;
 
-                  mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
-                  mask-repeat: no-repeat;
-                  mask-position: center;
-                  mask-size: contain;
-
-                  background-color: var(--header-colour);
+                  // Outer shield SVG (print-friendly inline SVG)
+                  .invul-shield-outer {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 1;
+                  }
 
                   .value {
+                    position: relative;
                     text-align: center;
 
                     height: 44px;
                     width: 45px;
 
-                    text-transform: uppercase;
-                    font-size: 1.3rem;
-                    font-weight: 600;
-                    color: var(--header-colour);
                     z-index: 2;
-
+                    display: flex;
                     justify-content: center;
                     align-items: center;
-                    display: flex;
 
-                    background-color: white;
+                    // Inner shield SVG (print-friendly inline SVG)
+                    .invul-shield-inner {
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 100%;
+                      z-index: 1;
+                    }
 
-                    mask: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/invul_shield.svg");
-                    mask-repeat: no-repeat;
-                    mask-position: center;
-                    mask-size: contain;
+                    .value-text {
+                      position: relative;
+                      z-index: 2;
+                      text-transform: uppercase;
+                      font-size: 1.3rem;
+                      font-weight: 600;
+                      color: var(--header-colour);
+                    }
                   }
                 }
               }
@@ -3598,6 +3797,14 @@
                 background-color: var(--header-colour);
                 padding-left: 8px;
                 position: relative;
+                display: flex;
+                align-items: center;
+
+                .damaged-icon {
+                  width: 16px;
+                  height: 16px;
+                  flex-shrink: 0;
+                }
 
                 .title {
                   text-transform: uppercase;
@@ -3605,21 +3812,7 @@
                   font-size: 1rem;
                   font-weight: 600;
                   z-index: 2;
-                  padding-left: 16px;
-
-                  &::before {
-                    content: "";
-                    position: absolute;
-                    left: 6px;
-                    top: 0;
-                    background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Toughness.svg");
-                    background-repeat: no-repeat;
-                    filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                    width: 20px;
-                    height: 20px;
-                    margin-top: 2px;
-                    scale: 0.8;
-                  }
+                  padding-left: 4px;
                 }
               }
             }
@@ -3854,6 +4047,23 @@
           background-position: center;
           filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
           rotate: -45deg;
+        }
+
+        // Print-friendly faction symbol wrapper (uses inline SVG)
+        .faction-symbol-wrapper {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          rotate: -45deg;
+          scale: 0.8;
+
+          svg {
+            width: 100%;
+            height: 100%;
+            fill: black;
+          }
         }
       }
     }

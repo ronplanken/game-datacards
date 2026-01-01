@@ -65,7 +65,7 @@ export const ShareModal = () => {
             <div className="share-modal-header">
               <span className="share-modal-title">
                 <Share2 size={18} />
-                Share your datacard set
+                Share {activeCategory?.type === "list" ? "List" : "Category"}
               </span>
               <button className="share-modal-close" onClick={handleClose}>
                 <X size={18} />
@@ -74,6 +74,15 @@ export const ShareModal = () => {
 
             {/* Content */}
             <div className="share-modal-content">
+              {/* Category Info */}
+              <div className="share-category-info">
+                <span className="share-category-name">{activeCategory?.name}</span>
+                <span className="share-category-meta">
+                  {activeCategory?.type === "list" ? "List" : "Category"} · {activeCategory?.cards?.length || 0}{" "}
+                  {activeCategory?.cards?.length === 1 ? "card" : "cards"}
+                </span>
+              </div>
+
               <p className="share-modal-description">
                 Share your datacard set with others by generating and sharing the following link. When sharing your
                 datacard set only active sections will be saved.

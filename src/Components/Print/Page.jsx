@@ -42,6 +42,7 @@ export const Page = ({ faction, size, customSize, orientation, children, style, 
       style={{
         ...style,
         ...pageSize,
+        maxHeight: pageSize.height, // Prevent flex container from expanding beyond page height
       }}
       className={`${faction || "data-basic"} print-page`}
       data-page-number={pageLabel}>

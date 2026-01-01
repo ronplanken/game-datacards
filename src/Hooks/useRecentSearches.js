@@ -48,7 +48,7 @@ export function useRecentSearches() {
 
   /**
    * Add a unit to recent searches for the current datasource
-   * @param {object} unit - The unit object with id, name
+   * @param {object} unit - The unit object with id, name, cardType
    * @param {string} factionName - The faction name
    * @param {string} factionId - The faction ID
    */
@@ -59,6 +59,7 @@ export function useRecentSearches() {
       const newEntry = {
         unitId: unit.id,
         unitName: unit.name,
+        cardType: unit.cardType || "unit",
         factionName,
         factionId,
         timestamp: Date.now(),

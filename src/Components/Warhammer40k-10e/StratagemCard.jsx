@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { Grid } from "antd";
 import { MarkdownSpanWrapDisplay } from "../MarkdownSpanWrapDisplay";
+import { PhaseIcon } from "../Icons/PhaseIcon";
 
 const { useBreakpoint } = Grid;
 
@@ -89,7 +90,9 @@ export const StratagemCard = ({
             {stratagem.phase?.map((phase) => {
               return (
                 <div className="type-container" key={phase}>
-                  <div className={phase}> </div>
+                  <div className="phase-icon-wrapper">
+                    <PhaseIcon phase={phase} color="var(--stratagem-colour)" />
+                  </div>
                 </div>
               );
             })}

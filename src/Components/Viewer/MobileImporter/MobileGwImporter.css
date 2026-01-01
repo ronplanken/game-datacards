@@ -1,0 +1,476 @@
+/* MobileGwImporter.css - Mobile GW 40K App Import Wizard */
+
+/* ===========================================
+   CONTAINER
+   =========================================== */
+.mgw-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.mgw-step {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mgw-description {
+  font-size: 14px;
+  color: var(--bs-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ===========================================
+   BACK BUTTON
+   =========================================== */
+.mgw-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  background: transparent;
+  border: none;
+  color: var(--bs-accent);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.mgw-back-btn:active {
+  opacity: 0.7;
+}
+
+/* ===========================================
+   STEP 1: PASTE - TEXTAREA
+   =========================================== */
+.mgw-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 14px;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.5;
+  border: 1px solid var(--bs-border);
+  border-radius: 10px;
+  background: var(--bs-surface);
+  color: var(--bs-text);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.mgw-textarea:focus {
+  outline: none;
+  border-color: var(--bs-accent);
+}
+
+.mgw-textarea::placeholder {
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   ERROR MESSAGE
+   =========================================== */
+.mgw-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bs-danger-bg);
+  border-radius: 8px;
+  color: var(--bs-danger);
+  font-size: 14px;
+}
+
+/* ===========================================
+   PRIMARY BUTTON
+   =========================================== */
+.mgw-primary-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--bs-accent);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.mgw-primary-btn:active {
+  opacity: 0.9;
+}
+
+.mgw-primary-btn:disabled {
+  background: var(--bs-surface-hover);
+  color: var(--bs-text-muted);
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   STEP 2: REVIEW - FACTION ROW
+   =========================================== */
+.mgw-faction-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bs-surface);
+  border-radius: 10px;
+}
+
+.mgw-faction-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bs-text-secondary);
+}
+
+.mgw-faction-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mgw-faction-select {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  background: var(--bs-bg);
+  color: var(--bs-text);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23475569' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.mgw-faction-select:focus {
+  outline: none;
+  border-color: var(--bs-accent);
+}
+
+/* ===========================================
+   STATUS ICON
+   =========================================== */
+.mgw-status-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mgw-status-icon.matched {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.mgw-status-icon.ambiguous {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mgw-status-icon.unmatched {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ===========================================
+   STEP 2: REVIEW - UNIT LIST
+   =========================================== */
+.mgw-unit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 40vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mgw-unit-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bs-surface);
+  border-radius: 10px;
+  transition: opacity 0.15s ease;
+}
+
+.mgw-unit-card.skipped {
+  opacity: 0.5;
+}
+
+.mgw-unit-main {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mgw-unit-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mgw-unit-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mgw-unit-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bs-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mgw-unit-points {
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+}
+
+.mgw-unit-size {
+  font-size: 12px;
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   UNIT BADGES
+   =========================================== */
+.mgw-unit-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mgw-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mgw-badge.warlord {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mgw-badge.enhancement {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* ===========================================
+   UNIT MATCH DISPLAY
+   =========================================== */
+.mgw-unit-match {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.mgw-match-arrow {
+  color: var(--bs-text-muted);
+  font-size: 12px;
+}
+
+.mgw-match-name {
+  font-size: 13px;
+  color: var(--bs-accent);
+}
+
+/* ===========================================
+   UNIT SELECT / CHANGE BUTTON
+   =========================================== */
+.mgw-unit-select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid var(--bs-accent);
+  border-radius: 6px;
+  background: var(--bs-bg);
+  color: var(--bs-text);
+}
+
+.mgw-change-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  color: var(--bs-text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.mgw-change-btn:active {
+  background: var(--bs-surface-hover);
+}
+
+/* ===========================================
+   SKIP BUTTON
+   =========================================== */
+.mgw-skip-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  color: var(--bs-text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.mgw-skip-btn:active {
+  background: var(--bs-surface-hover);
+}
+
+.mgw-skip-btn.skipped {
+  border-color: var(--bs-accent);
+  color: var(--bs-accent);
+}
+
+/* ===========================================
+   SUMMARY BAR
+   =========================================== */
+.mgw-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px;
+  background: var(--bs-surface);
+  border-radius: 8px;
+}
+
+.mgw-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mgw-summary-item.ready {
+  color: #059669;
+}
+
+.mgw-summary-item.review {
+  color: #d97706;
+}
+
+.mgw-summary-item.unmatched {
+  color: #dc2626;
+}
+
+.mgw-summary-item.skipped {
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   STEP 3: CONFIRM
+   =========================================== */
+.mgw-step-confirm {
+  align-items: center;
+  text-align: center;
+}
+
+.mgw-confirm-icon {
+  color: #059669;
+  margin: 16px 0;
+}
+
+.mgw-confirm-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--bs-text);
+  margin: 0;
+}
+
+.mgw-confirm-subtitle {
+  font-size: 15px;
+  color: var(--bs-text-secondary);
+  margin: 4px 0 24px;
+}
+
+/* ===========================================
+   NAME INPUT FIELD
+   =========================================== */
+.mgw-name-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.mgw-name-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bs-text-secondary);
+}
+
+.mgw-name-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  background: var(--bs-surface);
+  color: var(--bs-text);
+  box-sizing: border-box;
+}
+
+.mgw-name-input:focus {
+  outline: none;
+  border-color: var(--bs-accent);
+}
+
+.mgw-name-input::placeholder {
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .mgw-unit-card,
+  .mgw-primary-btn,
+  .mgw-back-btn {
+    transition: none;
+  }
+}

@@ -7,7 +7,6 @@ const { Option } = Select;
 
 export function StratagemStylingInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
-  console.log(activeCard);
   return (
     <Form>
       <Card style={{ width: "100%" }} title={"Card"} type="inner">
