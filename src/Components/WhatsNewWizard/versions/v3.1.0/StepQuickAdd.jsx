@@ -1,5 +1,5 @@
 import React from "react";
-import { Zap, Heart, User } from "lucide-react";
+import { Zap, Heart } from "lucide-react";
 
 /**
  * StepQuickAdd - Quick Add feature step for v3.1.0
@@ -21,10 +21,6 @@ export const StepQuickAdd = () => (
           <span className="wnw-community-badge">
             <Heart size={14} />
             Community Contribution
-          </span>
-          <span className="wnw-author-badge">
-            <User size={14} />
-            Author: consumer
           </span>
         </div>
       </div>
