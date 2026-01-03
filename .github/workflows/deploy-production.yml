@@ -1,6 +1,11 @@
-name: Deploy to Github Pages
+name: Deploy to Production (GitHub Pages)
+
 on:
-  workflow_call:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types:
+      - completed
   workflow_dispatch:
 
 permissions:
@@ -18,31 +23,28 @@ env:
 
 jobs:
   deploy:
-    name: Github Pages
+    name: GitHub Pages
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Check Yarn Cache
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v4
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-cache-v2-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: "20"
+          cache: "yarn"
 
       - name: Install packages
-        run: NODE_ENV=production yarn --production=false --immutable --immutable-cache --check-cache --prefer-offline
+        run: yarn install --immutable
 
       - name: Build
-        run: yarn predeploy
-      - name: Deploy
+        run: yarn build
+
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages

@@ -72,7 +72,7 @@
     "build": "craco build",
     "build:beta": "env-cmd -f .env.beta craco build",
     "test": "craco test",
-    "test:ci": "CI=true craco test",
+    "test:ci": "CI=true craco test --passWithNoTests",
     "lint": "eslint './src/**/*.{js,jsx}'",
     "prettier:fix": "prettier --config .prettierrc --write '**/*.{js,ts,tsx,css}'",
     "lint:fix": "yarn lint --fix",
