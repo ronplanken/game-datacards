@@ -3,7 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
-import { createBrowserRouter, RouterProvider, ScrollRestoration, Outlet, Navigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  ScrollRestoration,
+  Outlet,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
@@ -18,6 +25,10 @@ import { Print } from "./Pages/Print";
 import { Shared } from "./Pages/Shared";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
+import { WelcomeWizard } from "./Components/WelcomeWizard";
+import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
+import { WhatsNewWizard } from "./Components/WhatsNewWizard";
+import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
@@ -72,6 +83,22 @@ function ErrorFallback({ error }) {
   );
 }
 
+// Component to select wizard based on current route
+const WizardSelector = () => {
+  const location = useLocation();
+  const isMobileRoute = location.pathname.startsWith("/mobile");
+
+  return isMobileRoute ? <MobileWelcomeWizard /> : <WelcomeWizard />;
+};
+
+// Component to select What's New wizard based on current route
+const WhatsNewWizardSelector = () => {
+  const location = useLocation();
+  const isMobileRoute = location.pathname.startsWith("/mobile");
+
+  return isMobileRoute ? <MobileWhatsNewWizard /> : <WhatsNewWizard />;
+};
+
 // Layout component that wraps all routes with providers
 const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -83,6 +110,8 @@ const RootLayout = () => (
               <MobileListProvider>
                 <Outlet />
                 <ScrollRestoration />
+                <WizardSelector />
+                <WhatsNewWizardSelector />
               </MobileListProvider>
             </CardStorageProviderComponent>
           </DataSourceStorageProviderComponent>
@@ -117,9 +146,11 @@ const router = createBrowserRouter([
       { path: "mobile/:faction/manifestation-lore/:spell", element: <ViewerMobile /> },
       { path: "mobile/:faction/spell-lores", element: <ViewerMobile showSpellLores /> },
       { path: "mobile/:faction/spell-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction/enhancement/:enhancement", element: <ViewerMobile /> },
+      { path: "mobile/:faction/rule/:rule", element: <ViewerMobile /> },
+      { path: "mobile/:faction/stratagem/:stratagem", element: <ViewerMobile /> },
+      { path: "mobile/:faction/allied/:alliedFaction/:alliedUnit?", element: <ViewerMobile /> },
       { path: "mobile/:faction?/:unit?", element: <ViewerMobile /> },
-      { path: "mobile/:faction?/stratagem/:stratagem?", element: <ViewerMobile /> },
-      { path: "mobile/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <ViewerMobile /> },
       // Print and export routes
       { path: "print/:CategoryId", element: <Print /> },
       { path: "legacy-print/:CategoryId", element: <LegacyPrint /> },
@@ -142,25 +173,8 @@ reportWebVitals();
 // Register service worker for PWA functionality (mobile only)
 if ("serviceWorker" in navigator && isMobile) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("Service Worker registered with scope:", registration.scope);
-
-        // Check for updates
-        registration.addEventListener("updatefound", () => {
-          const newWorker = registration.installing;
-          console.log("Service Worker update found");
-
-          newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-              console.log("New Service Worker installed, refresh to update");
-            }
-          });
-        });
-      })
-      .catch((error) => {
-        console.error("Service Worker registration failed:", error);
-      });
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // Service Worker registration failed
+    });
   });
 }

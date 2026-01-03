@@ -392,6 +392,10 @@ export const WelcomeWizard = () => {
 
   // Version check to show wizard
   useEffect(() => {
+    if (!settings.wizardCompleted) {
+      setIsWizardVisible(true);
+      return;
+    }
     if (compare(settings.wizardCompleted, LAST_WIZARD_VERSION, "<")) {
       setIsWizardVisible(true);
     }
@@ -407,6 +411,7 @@ export const WelcomeWizard = () => {
       updateSettings({
         ...settings,
         wizardCompleted: process.env.REACT_APP_VERSION,
+        lastMajorWizardVersion: process.env.REACT_APP_VERSION,
       });
     }, 200);
   };

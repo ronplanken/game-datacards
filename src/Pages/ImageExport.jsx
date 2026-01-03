@@ -189,6 +189,7 @@ export const ImageExport = () => {
                                   type="print"
                                   side={"front"}
                                   backgrounds={backgrounds}
+                                  cardScaling={100}
                                 />
                               )}
                               {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
@@ -212,6 +213,7 @@ export const ImageExport = () => {
                                     type="print"
                                     side={"back"}
                                     backgrounds={backgrounds}
+                                    cardScaling={100}
                                   />
                                 </div>
                               )}

@@ -94,6 +94,34 @@
 }
 
 /* ===========================================
+   CATEGORY INFO
+   =========================================== */
+
+.share-category-info {
+  display: flex;
+  flex-direction: column;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.share-category-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.share-category-meta {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* ===========================================
    LINK DISPLAY
    =========================================== */
 

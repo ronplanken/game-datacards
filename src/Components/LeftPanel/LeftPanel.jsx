@@ -4,7 +4,7 @@ import { Toolbar } from "../Toolbar";
 import { CategoryTree } from "./CategoryTree";
 import { DataSourcePanel } from "./DataSourcePanel";
 
-export const LeftPanel = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
+export const LeftPanel = ({ selectedTreeIndex, setSelectedTreeIndex, onAddToCategory }) => {
   return (
     <>
       <Toolbar />
@@ -14,7 +14,7 @@ export const LeftPanel = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
         </Panel>
         <PanelResizeHandle className="horizontal-resizer" />
         <Panel defaultSize={50} minSize={20} maxSize={80}>
-          <DataSourcePanel setSelectedTreeIndex={setSelectedTreeIndex} />
+          <DataSourcePanel setSelectedTreeIndex={setSelectedTreeIndex} onAddToCategory={onAddToCategory} />
         </Panel>
       </PanelGroup>
     </>
