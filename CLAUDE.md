@@ -60,15 +60,33 @@ yarn start
 
 ## CI/CD Pipeline
 
-- **All branches**: Run lint, tests, and build. Deploy preview to Cloudflare Pages.
-- **Main branch**: After successful CI, automatically deploys to GitHub Pages (production).
+- **GitHub Actions**: Runs lint and tests on all branches
+- **Cloudflare Pages**: Automatically builds and deploys all branches
+  - Preview URLs generated for each branch
+  - Production deployment on `main` branch
 
-## Required Secrets for CI
+## Cloudflare Pages Configuration
 
-The following secrets must be configured in GitHub repository settings:
+When setting up Cloudflare Pages, use these build settings:
 
-- `CLOUDFLARE_API_TOKEN` - Cloudflare API token for Pages deployment
-- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID
+- **Build command**: `yarn build`
+- **Build output directory**: `build`
+- **Root directory**: `/`
+- **Node.js version**: `20`
+
+### Required Environment Variables
+
+Set these in Cloudflare Pages dashboard:
+
+```
+REACT_APP_URL=https://game-datacards.eu
+REACT_APP_DATASOURCE_10TH_URL=https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc
+REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL=https://raw.githubusercontent.com/game-datacards/datasources/main/10th/combatpatrol
+REACT_APP_DATASOURCE_9TH_URL=https://raw.githubusercontent.com/game-datacards/datasources/main/40k
+REACT_APP_MESSAGES_URL=https://raw.githubusercontent.com/game-datacards/messages/main/messages.json
+REACT_APP_ENVIRONMENT=production
+REACT_APP_IS_PRODUCTION=true
+```
 
 ## Code Quality
 

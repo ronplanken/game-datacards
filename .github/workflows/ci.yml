@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - "**"
-    tags-ignore:
-      - "**"
     paths-ignore:
       - "**/*.md"
   pull_request:
@@ -14,22 +12,9 @@ on:
     paths-ignore:
       - "**/*.md"
 
-permissions:
-  contents: read
-  deployments: write
-
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
-
-env:
-  REACT_APP_URL: https://game-datacards.eu
-  REACT_APP_DATASOURCE_10TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/main/10th/gdc
-  REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL: https://raw.githubusercontent.com/game-datacards/datasources/main/10th/combatpatrol
-  REACT_APP_DATASOURCE_9TH_URL: https://raw.githubusercontent.com/game-datacards/datasources/main/40k
-  REACT_APP_MESSAGES_URL: https://raw.githubusercontent.com/game-datacards/messages/main/messages.json
-  REACT_APP_ENVIRONMENT: preview
-  REACT_APP_IS_PRODUCTION: false
 
 jobs:
   lint:
@@ -69,48 +54,3 @@ jobs:
 
       - name: Run Tests
         run: yarn test:ci
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [lint, test]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "yarn"
-
-      - name: Install packages
-        run: yarn install --immutable
-
-      - name: Build
-        run: yarn build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          path: build/
-          retention-days: 1
-
-  deploy-preview:
-    name: Deploy to Cloudflare Pages
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: build/
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy build/ --project-name=game-datacards --branch=${{ github.ref_name }}
