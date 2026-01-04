@@ -20,7 +20,7 @@
     "antd": "^4.24.16",
     "antd-prompt": "^0.7.1",
     "classnames": "^2.5.0",
-    "compare-versions": "^6.1.0",
+    "compare-versions": "^4.1.4",
     "firebase": "^11.7.0",
     "fitty": "^2.4.0",
     "fuse.js": "^7.1.0",

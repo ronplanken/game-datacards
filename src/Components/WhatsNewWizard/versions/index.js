@@ -1,4 +1,4 @@
-import { compare } from "compare-versions";
+import compareVersions, { compare } from "compare-versions";
 import v300Config from "./v3.0.0";
 import v310Config from "./v3.1.0";
 
@@ -13,7 +13,7 @@ import v310Config from "./v3.1.0";
  */
 export const VERSION_REGISTRY = [v300Config, v310Config]
   .filter((config) => config && config.version)
-  .sort((a, b) => compare(a.version, b.version));
+  .sort((a, b) => compareVersions(a.version, b.version));
 
 /**
  * Get all version configs
@@ -44,7 +44,7 @@ export const getLatestWizardVersion = () => VERSION_REGISTRY[VERSION_REGISTRY.le
 export const getMajorWizardVersion = (currentVersion) => {
   if (!currentVersion) return undefined;
   return VERSION_REGISTRY.map((v) => v.version)
-    .sort((a, b) => compare(b, a))
+    .sort((a, b) => compareVersions(b, a))
     .find((v) => compare(currentVersion, v, ">="));
 };
 

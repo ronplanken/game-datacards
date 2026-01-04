@@ -27,8 +27,9 @@
   color: var(--bs-text);
   text-align: left;
   transition: all 0.15s ease;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8),
-              0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .list-overview-import-action:active {
@@ -52,7 +53,9 @@
   flex-shrink: 0;
   color: var(--bs-text-muted);
   opacity: 0.5;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .list-overview-import-action:active svg:last-child {
@@ -104,7 +107,9 @@
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .list-overview-name-selector:active {

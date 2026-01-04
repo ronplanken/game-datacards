@@ -1,4 +1,4 @@
-import { compare } from "compare-versions";
+import compareVersions, { compare } from "compare-versions";
 import v310Config from "./v3.1.0";
 
 /**
@@ -12,7 +12,7 @@ import v310Config from "./v3.1.0";
  */
 export const MOBILE_VERSION_REGISTRY = [v310Config]
   .filter((config) => config && config.version)
-  .sort((a, b) => compare(a.version, b.version));
+  .sort((a, b) => compareVersions(a.version, b.version));
 
 /**
  * Get all mobile version configs
