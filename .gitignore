@@ -26,3 +26,4 @@ yarn-error.log*
 /public/json
 /public/svg
 /.vscode
+.gemini-clipboard/
