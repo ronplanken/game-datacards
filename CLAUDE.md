@@ -130,3 +130,10 @@ This project uses **Yarn 1.22.22**. Do not use npm.
 yarn install    # Install dependencies
 yarn add <pkg>  # Add a dependency
 ```
+
+## Git Commit and PR Guidelines
+
+- Never sign commits or PRs with your own name or as co-author
+- No emojis in commit messages or PR descriptions
+- Keep commit messages and PR descriptions short and to the point
+- Use imperative mood for commit messages (e.g., "Fix bug" not "Fixed bug")
