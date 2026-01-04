@@ -40,7 +40,7 @@ import {
   getImportableUnits,
   filterCardWeapons,
 } from "../gwAppImport.helpers";
-import { Costs, Compare, CompareWeapon, Weapon } from "../battlescribe.40k.helpers";
+import { Costs, Compare, CompareWeapon, Weapon, Upgrade, Model, Unit, BaseNotes } from "../battlescribe.40k.helpers";
 
 // ============================================
 // generic.helpers
@@ -1572,6 +1572,278 @@ describe("battlescribe.40k.helpers - functions", () => {
       weapon2.type = "Heavy 2";
 
       expect(CompareWeapon(weapon1, weapon2)).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Costs.addFreeformValue", () => {
+    it("should add freeform value to costs", () => {
+      const costs = new Costs();
+      costs.addFreeformValue("Cabal", 3);
+      expect(costs.freeformValues.Cabal).toBe(3);
+    });
+
+    it("should accumulate multiple freeform values of same type", () => {
+      const costs = new Costs();
+      costs.addFreeformValue("Cabal", 2);
+      costs.addFreeformValue("Cabal", 3);
+      expect(costs.freeformValues.Cabal).toBe(5);
+    });
+
+    it("should handle multiple freeform value types", () => {
+      const costs = new Costs();
+      costs.addFreeformValue("Cabal", 2);
+      costs.addFreeformValue("Power", 5);
+      expect(costs.freeformValues.Cabal).toBe(2);
+      expect(costs.freeformValues.Power).toBe(5);
+    });
+  });
+
+  describe("Costs.add with freeform values", () => {
+    it("should add freeform values from other costs", () => {
+      const costs1 = new Costs();
+      costs1.points = 100;
+      costs1.addFreeformValue("Cabal", 2);
+
+      const costs2 = new Costs();
+      costs2.points = 50;
+      costs2.addFreeformValue("Cabal", 3);
+
+      costs1.add(costs2);
+      expect(costs1.points).toBe(150);
+      expect(costs1.freeformValues.Cabal).toBe(5);
+    });
+  });
+
+  describe("BaseNotes", () => {
+    it("should have default empty name", () => {
+      const notes = new BaseNotes();
+      expect(notes.name).toBe("");
+    });
+
+    it("should return false when comparing with null", () => {
+      const notes = new BaseNotes();
+      notes.name = "Test";
+      expect(notes.equal(null)).toBe(false);
+    });
+
+    it("should return true when names match", () => {
+      const notes1 = new BaseNotes();
+      notes1.name = "Test";
+      const notes2 = new BaseNotes();
+      notes2.name = "Test";
+      expect(notes1.equal(notes2)).toBe(true);
+    });
+
+    it("should return false when names differ", () => {
+      const notes1 = new BaseNotes();
+      notes1.name = "Test1";
+      const notes2 = new BaseNotes();
+      notes2.name = "Test2";
+      expect(notes1.equal(notes2)).toBe(false);
+    });
+  });
+
+  describe("Upgrade", () => {
+    it("should have default count of 1", () => {
+      const upgrade = new Upgrade();
+      expect(upgrade.count).toBe(1);
+    });
+
+    it("should have Costs instance", () => {
+      const upgrade = new Upgrade();
+      expect(upgrade.cost).toBeInstanceOf(Costs);
+    });
+
+    it("should return name from getSelectionName", () => {
+      const upgrade = new Upgrade();
+      upgrade.name = "Power Sword";
+      expect(upgrade.getSelectionName()).toBe("Power Sword");
+    });
+
+    it("should format toString with just name", () => {
+      const upgrade = new Upgrade();
+      upgrade.name = "Power Sword";
+      expect(upgrade.toString()).toBe("Power Sword");
+    });
+
+    it("should format toString with count", () => {
+      const upgrade = new Upgrade();
+      upgrade.name = "Power Sword";
+      upgrade.count = 2;
+      expect(upgrade.toString()).toBe("2x Power Sword");
+    });
+
+    it("should format toString with cost", () => {
+      const upgrade = new Upgrade();
+      upgrade.name = "Power Sword";
+      upgrade.cost.points = 10;
+      expect(upgrade.toString()).toBe("Power Sword [10 pts]");
+    });
+
+    it("should format toString with count and cost", () => {
+      const upgrade = new Upgrade();
+      upgrade.name = "Power Sword";
+      upgrade.count = 2;
+      upgrade.cost.points = 20;
+      expect(upgrade.toString()).toBe("2x Power Sword [20 pts]");
+    });
+  });
+
+  describe("Weapon", () => {
+    it("should have default melee type", () => {
+      const weapon = new Weapon();
+      expect(weapon.type).toBe("Melee");
+    });
+
+    it("should have default user strength", () => {
+      const weapon = new Weapon();
+      expect(weapon.str).toBe("user");
+    });
+
+    it("should return name from getSelectionName when no selectionName", () => {
+      const weapon = new Weapon();
+      weapon.name = "Bolt Pistol";
+      expect(weapon.getSelectionName()).toBe("Bolt Pistol");
+    });
+
+    it("should return selectionName from getSelectionName when set", () => {
+      const weapon = new Weapon();
+      weapon.name = "Bolt Pistol";
+      weapon.selectionName = "Sidearm";
+      expect(weapon.getSelectionName()).toBe("Sidearm");
+    });
+  });
+
+  describe("Model", () => {
+    it("should have default values", () => {
+      const model = new Model();
+      expect(model.count).toBe(0);
+      expect(model.toughness).toBe(4);
+      expect(model.wounds).toBe(1);
+      expect(model.weapons).toEqual([]);
+      expect(model.upgrades).toEqual([]);
+    });
+
+    it("should return false when comparing with null", () => {
+      const model = new Model();
+      expect(model.equal(null)).toBe(false);
+    });
+
+    it("should return true for equal models", () => {
+      const model1 = new Model();
+      model1.name = "Intercessor";
+      model1.count = 5;
+
+      const model2 = new Model();
+      model2.name = "Intercessor";
+      model2.count = 5;
+
+      expect(model1.equal(model2)).toBe(true);
+    });
+
+    it("should return false for different model counts", () => {
+      const model1 = new Model();
+      model1.name = "Intercessor";
+      model1.count = 5;
+
+      const model2 = new Model();
+      model2.name = "Intercessor";
+      model2.count = 10;
+
+      expect(model1.equal(model2)).toBe(false);
+    });
+
+    it("should return false for different weapon counts", () => {
+      const model1 = new Model();
+      model1.name = "Intercessor";
+      model1.count = 5;
+
+      const weapon = new Weapon();
+      weapon.name = "Bolt Rifle";
+      model1.weapons.push(weapon);
+
+      const model2 = new Model();
+      model2.name = "Intercessor";
+      model2.count = 5;
+
+      expect(model1.equal(model2)).toBe(false);
+    });
+
+    it("should format nameAndGear with just name", () => {
+      const model = new Model();
+      model.name = "Intercessor";
+      expect(model.nameAndGear()).toBe("Intercessor");
+    });
+
+    it("should format nameAndGear with weapons", () => {
+      const model = new Model();
+      model.name = "Intercessor";
+
+      const weapon = new Weapon();
+      weapon.name = "Bolt Rifle";
+      model.weapons.push(weapon);
+
+      expect(model.nameAndGear()).toBe("Intercessor (Bolt Rifle)");
+    });
+
+    it("should dedupe weapons and upgrades with same selection name", () => {
+      const model = new Model();
+
+      const weapon1 = new Weapon();
+      weapon1.name = "Bolt Rifle";
+      const weapon2 = new Weapon();
+      weapon2.name = "Bolt Rifle";
+
+      model.weapons.push(weapon1, weapon2);
+
+      const deduped = model.getDedupedWeaponsAndUpgrades();
+      expect(deduped).toHaveLength(1);
+    });
+  });
+
+  describe("Unit", () => {
+    it("should have default values", () => {
+      const unit = new Unit();
+      expect(unit.factions).toBeInstanceOf(Set);
+      expect(unit.keywords).toBeInstanceOf(Set);
+      expect(unit.models).toEqual([]);
+      expect(unit.cost).toBeInstanceOf(Costs);
+    });
+
+    it("should return false when comparing with null", () => {
+      const unit = new Unit();
+      expect(unit.equal(null)).toBe(false);
+    });
+
+    it("should format nameWithExtraCosts without extra costs", () => {
+      const unit = new Unit();
+      unit.name = "Intercessor Squad";
+      expect(unit.nameWithExtraCosts()).toBe("Intercessor Squad");
+    });
+
+    it("should format nameWithExtraCosts with freeform values", () => {
+      const unit = new Unit();
+      unit.name = "Rubric Marines";
+      unit.cost.addFreeformValue("Cabal", 2);
+      expect(unit.nameWithExtraCosts()).toBe("Rubric Marines [2Cabal]");
+    });
+
+    it("should format nameWithExtraCosts with multiple freeform values", () => {
+      const unit = new Unit();
+      unit.name = "Rubric Marines";
+      unit.cost.addFreeformValue("Cabal", 2);
+      unit.cost.addFreeformValue("Power", 3);
+      const result = unit.nameWithExtraCosts();
+      expect(result).toContain("Rubric Marines");
+      expect(result).toContain("2Cabal");
+      expect(result).toContain("3Power");
+    });
+
+    it("should ignore zero freeform values", () => {
+      const unit = new Unit();
+      unit.name = "Rubric Marines";
+      unit.cost.addFreeformValue("Cabal", 0);
+      expect(unit.nameWithExtraCosts()).toBe("Rubric Marines");
     });
   });
 });
