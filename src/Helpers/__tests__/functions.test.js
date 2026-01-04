@@ -26,6 +26,10 @@ import {
   compareVersions,
   countCardsByType,
   formatCardBreakdown,
+  mapCardsToFactionStructure,
+  createDatasourceExport,
+  prepareDatasourceForImport,
+  createRegistryEntry,
 } from "../customDatasource.helpers";
 import {
   parseGwAppText,
@@ -333,6 +337,70 @@ describe("listCategories.helpers", () => {
       expect(result).toContain("100 pts");
       expect(result).toContain("Warlord");
     });
+
+    it("should include enhancement name and cost", () => {
+      const sortedCards = {
+        characters: [
+          {
+            card: { name: "Captain" },
+            points: { cost: 100, models: 1 },
+            enhancement: { name: "iron resolve", cost: 20 },
+          },
+        ],
+        battleline: [],
+        transports: [],
+        other: [],
+        allied: [],
+      };
+      const result = format40kListText(sortedCards, SECTIONS_40K);
+      expect(result).toContain("Captain");
+      expect(result).toContain("(120 pts)");
+      expect(result).toContain("Enhancements: Iron Resolve (+20 pts)");
+    });
+
+    it("should show model count for units with multiple models", () => {
+      const sortedCards = {
+        characters: [],
+        battleline: [{ card: { name: "Intercessors" }, points: { cost: 160, models: 10 } }],
+        transports: [],
+        other: [],
+        allied: [],
+      };
+      const result = format40kListText(sortedCards, SECTIONS_40K);
+      expect(result).toContain("Intercessors 10x (160 pts)");
+    });
+
+    it("should show ? for units with missing points", () => {
+      const sortedCards = {
+        characters: [],
+        battleline: [{ card: { name: "Unknown Unit" }, points: {} }],
+        transports: [],
+        other: [],
+        allied: [],
+      };
+      const result = format40kListText(sortedCards, SECTIONS_40K);
+      expect(result).toContain("Unknown Unit");
+      expect(result).toContain("(? pts)");
+    });
+
+    it("should position warlord marker after unit name", () => {
+      const sortedCards = {
+        characters: [
+          { card: { name: "Captain" }, points: { cost: 100, models: 1 }, warlord: true },
+          { card: { name: "Librarian" }, points: { cost: 80, models: 1 } },
+        ],
+        battleline: [],
+        transports: [],
+        other: [],
+        allied: [],
+      };
+      const result = format40kListText(sortedCards, SECTIONS_40K);
+      // Warlord should come first and have marker
+      const captainIndex = result.indexOf("Captain");
+      const librarianIndex = result.indexOf("Librarian");
+      expect(captainIndex).toBeLessThan(librarianIndex);
+      expect(result).toMatch(/Captain.*\n.*Warlord/);
+    });
   });
 
   describe("formatAoSListText", () => {
@@ -350,6 +418,60 @@ describe("listCategories.helpers", () => {
       };
       const result = formatAoSListText(sortedCards, SECTIONS_AOS);
       expect(result).toContain("Age of Sigmar List");
+    });
+
+    it("should use General marker instead of Warlord", () => {
+      const sortedCards = {
+        heroes: [{ card: { name: "Lord-Celestant" }, points: { cost: 200 }, warlord: true }],
+        battleline: [],
+        monsters: [],
+        cavalry: [],
+        infantry: [],
+        warMachines: [],
+        terrain: [],
+        manifestations: [],
+        other: [],
+      };
+      const result = formatAoSListText(sortedCards, SECTIONS_AOS);
+      expect(result).toContain("General");
+      expect(result).not.toContain("Warlord");
+    });
+
+    it("should show ? for units with missing points", () => {
+      const sortedCards = {
+        heroes: [{ card: { name: "Unknown Hero" }, points: {} }],
+        battleline: [],
+        monsters: [],
+        cavalry: [],
+        infantry: [],
+        warMachines: [],
+        terrain: [],
+        manifestations: [],
+        other: [],
+      };
+      const result = formatAoSListText(sortedCards, SECTIONS_AOS);
+      expect(result).toContain("Unknown Hero (? pts)");
+    });
+
+    it("should position general first in heroes section", () => {
+      const sortedCards = {
+        heroes: [
+          { card: { name: "Battlemage" }, points: { cost: 100 } },
+          { card: { name: "Lord-Celestant" }, points: { cost: 200 }, warlord: true },
+        ],
+        battleline: [],
+        monsters: [],
+        cavalry: [],
+        infantry: [],
+        warMachines: [],
+        terrain: [],
+        manifestations: [],
+        other: [],
+      };
+      const result = formatAoSListText(sortedCards, SECTIONS_AOS);
+      const lordIndex = result.indexOf("Lord-Celestant");
+      const battlemageIndex = result.indexOf("Battlemage");
+      expect(lordIndex).toBeLessThan(battlemageIndex);
     });
   });
 });
@@ -521,6 +643,283 @@ describe("customDatasource.helpers", () => {
       expect(formatCardBreakdown({ datasheet: 1 })).toBe("1 datasheet");
     });
   });
+
+  describe("mapCardsToFactionStructure", () => {
+    it("should group cards by cardType into correct arrays", () => {
+      const cards = [
+        { id: "1", name: "Unit 1", cardType: "datasheet" },
+        { id: "2", name: "Strategy 1", cardType: "stratagem" },
+        { id: "3", name: "Unit 2", cardType: "datasheet" },
+      ];
+      const factionInfo = { id: "test-faction", name: "Test Faction", colours: { header: "#000", banner: "#fff" } };
+
+      const result = mapCardsToFactionStructure(cards, factionInfo);
+
+      expect(result.datasheets).toHaveLength(2);
+      expect(result.stratagems).toHaveLength(1);
+    });
+
+    it("should add faction_id to each card", () => {
+      const cards = [{ id: "1", name: "Unit 1", cardType: "datasheet" }];
+      const factionInfo = { id: "test-faction", name: "Test", colours: {} };
+
+      const result = mapCardsToFactionStructure(cards, factionInfo);
+
+      expect(result.datasheets[0].faction_id).toBe("test-faction");
+    });
+
+    it("should remove uuid and isCustom fields", () => {
+      const cards = [{ id: "1", uuid: "uuid-123", isCustom: true, cardType: "datasheet" }];
+      const factionInfo = { id: "test-faction", name: "Test", colours: {} };
+
+      const result = mapCardsToFactionStructure(cards, factionInfo);
+
+      expect(result.datasheets[0].uuid).toBeUndefined();
+      expect(result.datasheets[0].isCustom).toBeUndefined();
+    });
+
+    it("should preserve other card properties", () => {
+      const cards = [{ id: "1", name: "Test Unit", cardType: "datasheet", customProp: "value" }];
+      const factionInfo = { id: "test-faction", name: "Test", colours: {} };
+
+      const result = mapCardsToFactionStructure(cards, factionInfo);
+
+      expect(result.datasheets[0].customProp).toBe("value");
+      expect(result.datasheets[0].name).toBe("Test Unit");
+    });
+
+    it("should handle enhancement card type", () => {
+      const cards = [{ id: "1", name: "Enhancement 1", cardType: "enhancement" }];
+      const factionInfo = { id: "test-faction", name: "Test", colours: {} };
+
+      const result = mapCardsToFactionStructure(cards, factionInfo);
+
+      expect(result.enhancements).toHaveLength(1);
+    });
+  });
+
+  describe("createDatasourceExport", () => {
+    it("should create complete datasource with name and version", () => {
+      const options = {
+        name: "My Datasource",
+        version: "1.0.0",
+        cards: [],
+        factionName: "Test Faction",
+        colours: { header: "#000", banner: "#fff" },
+      };
+
+      const result = createDatasourceExport(options);
+
+      expect(result.name).toBe("My Datasource");
+      expect(result.version).toBe("1.0.0");
+    });
+
+    it("should generate faction ID from name if not provided", () => {
+      const options = {
+        name: "My Datasource",
+        version: "1.0.0",
+        cards: [],
+        factionName: "Test Faction",
+        colours: { header: "#000", banner: "#fff" },
+      };
+
+      const result = createDatasourceExport(options);
+
+      expect(result.id).toBe("test-faction");
+    });
+
+    it("should use provided ID over generated", () => {
+      const options = {
+        name: "My Datasource",
+        id: "custom-id",
+        version: "1.0.0",
+        cards: [],
+        factionName: "Test Faction",
+        colours: { header: "#000", banner: "#fff" },
+      };
+
+      const result = createDatasourceExport(options);
+
+      expect(result.id).toBe("custom-id");
+    });
+
+    it("should include lastUpdated timestamp", () => {
+      const options = {
+        name: "My Datasource",
+        version: "1.0.0",
+        cards: [],
+        factionName: "Test Faction",
+        colours: { header: "#000", banner: "#fff" },
+      };
+
+      const result = createDatasourceExport(options);
+
+      expect(result.lastUpdated).toBeDefined();
+      expect(new Date(result.lastUpdated)).toBeInstanceOf(Date);
+    });
+
+    it("should include author when provided", () => {
+      const options = {
+        name: "My Datasource",
+        version: "1.0.0",
+        author: "Test Author",
+        cards: [],
+        factionName: "Test Faction",
+        colours: { header: "#000", banner: "#fff" },
+      };
+
+      const result = createDatasourceExport(options);
+
+      expect(result.author).toBe("Test Author");
+    });
+
+    it("should not include author when not provided", () => {
+      const options = {
+        name: "My Datasource",
+        version: "1.0.0",
+        cards: [],
+        factionName: "Test Faction",
+        colours: { header: "#000", banner: "#fff" },
+      };
+
+      const result = createDatasourceExport(options);
+
+      expect(result.author).toBeUndefined();
+    });
+  });
+
+  describe("prepareDatasourceForImport", () => {
+    it("should generate unique storage ID with custom- prefix", () => {
+      const datasource = { name: "Test", version: "1.0.0", data: [] };
+
+      const result = prepareDatasourceForImport(datasource, "local");
+
+      expect(result.id).toMatch(/^custom-/);
+    });
+
+    it("should add sourceType field", () => {
+      const datasource = { name: "Test", version: "1.0.0", data: [] };
+
+      const result = prepareDatasourceForImport(datasource, "url", "https://example.com");
+
+      expect(result.sourceType).toBe("url");
+    });
+
+    it("should add sourceUrl field", () => {
+      const datasource = { name: "Test", version: "1.0.0", data: [] };
+
+      const result = prepareDatasourceForImport(datasource, "url", "https://example.com/data.json");
+
+      expect(result.sourceUrl).toBe("https://example.com/data.json");
+    });
+
+    it("should add lastCheckedForUpdate for URL sources", () => {
+      const datasource = { name: "Test", version: "1.0.0", data: [] };
+
+      const result = prepareDatasourceForImport(datasource, "url", "https://example.com");
+
+      expect(result.lastCheckedForUpdate).toBeDefined();
+      expect(new Date(result.lastCheckedForUpdate)).toBeInstanceOf(Date);
+    });
+
+    it("should not add lastCheckedForUpdate for local sources", () => {
+      const datasource = { name: "Test", version: "1.0.0", data: [] };
+
+      const result = prepareDatasourceForImport(datasource, "local");
+
+      expect(result.lastCheckedForUpdate).toBeUndefined();
+    });
+
+    it("should preserve existing datasource properties", () => {
+      const datasource = { name: "Test", version: "1.0.0", data: [{ id: "faction-1" }] };
+
+      const result = prepareDatasourceForImport(datasource, "local");
+
+      expect(result.name).toBe("Test");
+      expect(result.version).toBe("1.0.0");
+      expect(result.data).toHaveLength(1);
+    });
+  });
+
+  describe("createRegistryEntry", () => {
+    it("should create registry entry with all required fields", () => {
+      const datasource = {
+        id: "custom-123",
+        name: "Test Datasource",
+        version: "1.0.0",
+        sourceType: "local",
+        sourceUrl: null,
+        lastUpdated: "2024-01-01T00:00:00.000Z",
+        data: [{ datasheets: [{}, {}] }],
+      };
+
+      const result = createRegistryEntry(datasource);
+
+      expect(result.id).toBe("custom-123");
+      expect(result.name).toBe("Test Datasource");
+      expect(result.version).toBe("1.0.0");
+      expect(result.sourceType).toBe("local");
+      expect(result.lastUpdated).toBe("2024-01-01T00:00:00.000Z");
+    });
+
+    it("should count cards using countDatasourceCards", () => {
+      const datasource = {
+        id: "custom-123",
+        name: "Test",
+        version: "1.0.0",
+        sourceType: "local",
+        data: [{ datasheets: [{}, {}, {}], stratagems: [{}, {}] }],
+      };
+
+      const result = createRegistryEntry(datasource);
+
+      expect(result.cardCount).toBe(5);
+    });
+
+    it("should handle optional author field when present", () => {
+      const datasource = {
+        id: "custom-123",
+        name: "Test",
+        version: "1.0.0",
+        author: "Test Author",
+        sourceType: "local",
+        data: [],
+      };
+
+      const result = createRegistryEntry(datasource);
+
+      expect(result.author).toBe("Test Author");
+    });
+
+    it("should set author to null when not present", () => {
+      const datasource = {
+        id: "custom-123",
+        name: "Test",
+        version: "1.0.0",
+        sourceType: "local",
+        data: [],
+      };
+
+      const result = createRegistryEntry(datasource);
+
+      expect(result.author).toBeNull();
+    });
+
+    it("should handle lastCheckedForUpdate field", () => {
+      const datasource = {
+        id: "custom-123",
+        name: "Test",
+        version: "1.0.0",
+        sourceType: "url",
+        lastCheckedForUpdate: "2024-01-15T00:00:00.000Z",
+        data: [],
+      };
+
+      const result = createRegistryEntry(datasource);
+
+      expect(result.lastCheckedForUpdate).toBe("2024-01-15T00:00:00.000Z");
+    });
+  });
 });
 
 // ============================================
@@ -650,7 +1049,12 @@ describe("gwAppImport.helpers", () => {
     it("should filter ranged weapons", () => {
       const card = {
         rangedWeapons: [
-          { profiles: [{ name: "Bolter", active: true }, { name: "Plasma Gun", active: true }] },
+          {
+            profiles: [
+              { name: "Bolter", active: true },
+              { name: "Plasma Gun", active: true },
+            ],
+          },
         ],
         showWeapons: { rangedWeapons: true },
       };
