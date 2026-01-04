@@ -35,6 +35,7 @@ import {
   parseGwAppText,
   classifyMatchScore,
   matchFaction,
+  matchUnitsToDatasheets,
   countMatchStatuses,
   getImportableUnits,
   filterCardWeapons,
@@ -520,6 +521,130 @@ describe("customDatasource.helpers", () => {
       const result = validateCustomDatasource(validData);
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
+    });
+
+    it("should reject name exceeding max length", () => {
+      const longName = "a".repeat(201);
+      const result = validateCustomDatasource({
+        name: longName,
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.includes("Name exceeds maximum length"))).toBe(true);
+    });
+
+    it("should reject version exceeding max length", () => {
+      const longVersion = "1.0." + "0".repeat(50);
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: longVersion,
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.includes("Version exceeds maximum length"))).toBe(true);
+    });
+
+    it("should reject empty data array", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("'data' array must contain at least one faction");
+    });
+
+    it("should reject too many factions", () => {
+      const manyFactions = Array(11)
+        .fill(null)
+        .map((_, i) => ({
+          id: `faction-${i}`,
+          name: `Faction ${i}`,
+          colours: { header: "#000", banner: "#fff" },
+        }));
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: manyFactions,
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.includes("Too many factions"))).toBe(true);
+    });
+
+    it("should reject faction missing id", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ name: "Test", colours: { header: "#000", banner: "#fff" } }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Faction missing 'id' field");
+    });
+
+    it("should reject faction missing colours", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test" }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Faction missing 'colours' field");
+    });
+
+    it("should reject faction colours missing header", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { banner: "#fff" } }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Faction colours missing 'header' field");
+    });
+
+    it("should reject faction colours missing banner", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000" } }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Faction colours missing 'banner' field");
+    });
+
+    it("should reject too many cards", () => {
+      const manyCards = Array(2001)
+        .fill(null)
+        .map((_, i) => ({ id: `card-${i}`, name: `Card ${i}` }));
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" }, datasheets: manyCards }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.includes("Too many cards"))).toBe(true);
+    });
+
+    it("should reject empty or whitespace name", () => {
+      const result = validateCustomDatasource({
+        name: "   ",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("Missing or invalid 'name' field");
+    });
+
+    it("should accept datasource with multiple valid factions", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [
+          { id: "faction-1", name: "Faction 1", colours: { header: "#000", banner: "#fff" } },
+          { id: "faction-2", name: "Faction 2", colours: { header: "#111", banner: "#eee" } },
+        ],
+      });
+      expect(result.isValid).toBe(true);
     });
   });
 
@@ -1061,6 +1186,279 @@ describe("gwAppImport.helpers", () => {
       const result = filterCardWeapons(card, ["Bolter"]);
       expect(result.rangedWeapons[0].profiles[0].active).toBe(true);
       expect(result.rangedWeapons[0].profiles[1].active).toBe(false);
+    });
+
+    it("should filter melee weapons", () => {
+      const card = {
+        meleeWeapons: [
+          {
+            profiles: [
+              { name: "Chainsword", active: true },
+              { name: "Power Fist", active: true },
+            ],
+          },
+        ],
+        showWeapons: { meleeWeapons: true },
+      };
+      const result = filterCardWeapons(card, ["Chainsword"]);
+      expect(result.meleeWeapons[0].profiles[0].active).toBe(true);
+      expect(result.meleeWeapons[0].profiles[1].active).toBe(false);
+    });
+
+    it("should match weapon variants with dash notation", () => {
+      const card = {
+        rangedWeapons: [
+          {
+            profiles: [
+              { name: "Bolt rifle - rapid fire", active: true },
+              { name: "Bolt rifle - assault", active: true },
+            ],
+          },
+        ],
+        showWeapons: { rangedWeapons: true },
+      };
+      const result = filterCardWeapons(card, ["Bolt rifle"]);
+      expect(result.rangedWeapons[0].profiles[0].active).toBe(true);
+      expect(result.rangedWeapons[0].profiles[1].active).toBe(true);
+    });
+
+    it("should match weapons with quantity prefix", () => {
+      const card = {
+        rangedWeapons: [{ profiles: [{ name: "Storm bolter", active: true }] }],
+        showWeapons: { rangedWeapons: true },
+      };
+      const result = filterCardWeapons(card, ["2x Storm bolter"]);
+      expect(result.rangedWeapons[0].profiles[0].active).toBe(true);
+    });
+
+    it("should hide ranged weapons section when no matches", () => {
+      const card = {
+        rangedWeapons: [{ profiles: [{ name: "Bolter", active: true }] }],
+        showWeapons: { rangedWeapons: true },
+      };
+      const result = filterCardWeapons(card, ["Chainsword"]);
+      expect(result.showWeapons.rangedWeapons).toBe(false);
+    });
+
+    it("should hide melee weapons section when no matches", () => {
+      const card = {
+        meleeWeapons: [{ profiles: [{ name: "Chainsword", active: true }] }],
+        showWeapons: { meleeWeapons: true },
+      };
+      const result = filterCardWeapons(card, ["Bolter"]);
+      expect(result.showWeapons.meleeWeapons).toBe(false);
+    });
+  });
+
+  describe("parseGwAppText - extended", () => {
+    it("should parse Space Marines subfaction", () => {
+      const text = `My Army (2000 Points)
+
+Space Marines
+Blood Angels
+Strike Force
+Gladius Task Force`;
+      const result = parseGwAppText(text);
+      expect(result.factionName).toBe("Space Marines");
+      expect(result.subfaction).toBe("Blood Angels");
+      expect(result.battleSize).toBe("Strike Force");
+      expect(result.detachment).toBe("Gladius Task Force");
+    });
+
+    it("should parse unit with points", () => {
+      const text = `My Army (500 pts)
+
+Orks
+Strike Force
+
+CHARACTERS
+
+Warboss (90 pts)`;
+      const result = parseGwAppText(text);
+      expect(result.units).toHaveLength(1);
+      expect(result.units[0].originalName).toBe("Warboss");
+      expect(result.units[0].points).toBe(90);
+    });
+
+    it("should parse warlord marker", () => {
+      const text = `My Army (500 pts)
+
+Space Marines
+Strike Force
+
+CHARACTERS
+
+Captain (100 pts)
+• Warlord`;
+      const result = parseGwAppText(text);
+      expect(result.units[0].isWarlord).toBe(true);
+    });
+
+    it("should parse enhancement with cost", () => {
+      const text = `My Army (500 pts)
+
+Space Marines
+Strike Force
+
+CHARACTERS
+
+Captain (120 pts)
+• Enhancements: Iron Resolve (+20 pts)`;
+      const result = parseGwAppText(text);
+      expect(result.units[0].enhancement).toEqual({ name: "Iron Resolve", cost: 20 });
+    });
+
+    it("should parse model counts from indentation", () => {
+      const text = `My Army (500 pts)
+
+Space Marines
+Strike Force
+
+BATTLELINE
+
+Intercessors (160 pts)
+• 5x Intercessor
+  • Bolt rifle
+  • Bolt pistol
+• 5x Intercessor Sergeant
+  • Bolt rifle`;
+      const result = parseGwAppText(text);
+      expect(result.units[0].models).toBe(10);
+    });
+
+    it("should handle invisible Unicode characters", () => {
+      const text = `My Army\u2060 (500 pts)\n\nOrks\u200B\nStrike Force`;
+      const result = parseGwAppText(text);
+      expect(result.listName).toBe("My Army");
+      expect(result.factionName).toBe("Orks");
+    });
+
+    it("should categorize units by section", () => {
+      const text = `My Army (1000 pts)
+
+Space Marines
+Gladius Strike Force
+Strike Force
+
+CHARACTERS
+
+Captain (100 pts)
+
+BATTLELINE
+
+Intercessors (160 pts)
+
+DEDICATED TRANSPORTS
+
+Impulsor (80 pts)`;
+      const result = parseGwAppText(text);
+      expect(result.units[0].section).toBe("CHARACTERS");
+      expect(result.units[1].section).toBe("BATTLELINE");
+      expect(result.units[2].section).toBe("DEDICATED TRANSPORTS");
+    });
+
+    it("should return error when faction name is missing", () => {
+      const text = "My Army (500 pts)\n\n\n";
+      const result = parseGwAppText(text);
+      expect(result.error).toBe("Could not identify faction name");
+    });
+  });
+
+  describe("matchUnitsToDatasheets", () => {
+    const mockFaction = {
+      id: "sm",
+      name: "Space Marines",
+      datasheets: [
+        { name: "Captain", id: "captain" },
+        { name: "Intercessor Squad", id: "intercessors" },
+        { name: "Assault Intercessors", id: "assault-int" },
+      ],
+    };
+
+    it("should find exact match", () => {
+      const units = [{ originalName: "Captain", section: "CHARACTERS" }];
+      const result = matchUnitsToDatasheets(units, mockFaction);
+      expect(result[0].matchStatus).toBe("exact");
+      expect(result[0].matchedCard.name).toBe("Captain");
+    });
+
+    it("should be case insensitive for exact match", () => {
+      const units = [{ originalName: "CAPTAIN", section: "CHARACTERS" }];
+      const result = matchUnitsToDatasheets(units, mockFaction);
+      expect(result[0].matchStatus).toBe("exact");
+    });
+
+    it("should use fuzzy match for similar names", () => {
+      const units = [{ originalName: "Intercessors", section: "BATTLELINE" }];
+      const result = matchUnitsToDatasheets(units, mockFaction);
+      expect(["exact", "confident", "ambiguous"]).toContain(result[0].matchStatus);
+      expect(result[0].matchedCard).not.toBeNull();
+    });
+
+    it("should return none for unmatched units", () => {
+      const units = [{ originalName: "Totally Unknown Unit", section: "OTHER" }];
+      const result = matchUnitsToDatasheets(units, mockFaction);
+      expect(result[0].matchStatus).toBe("none");
+      expect(result[0].matchedCard).toBeNull();
+    });
+
+    it("should provide alternatives for unmatched units", () => {
+      const units = [{ originalName: "Unknown", section: "OTHER" }];
+      const result = matchUnitsToDatasheets(units, mockFaction);
+      expect(result[0].alternatives.length).toBeGreaterThan(0);
+    });
+
+    it("should handle empty units array", () => {
+      const result = matchUnitsToDatasheets([], mockFaction);
+      expect(result).toEqual([]);
+    });
+
+    it("should handle faction with no datasheets", () => {
+      const units = [{ originalName: "Captain", section: "CHARACTERS" }];
+      const result = matchUnitsToDatasheets(units, { datasheets: [] });
+      expect(result[0].matchStatus).toBe("none");
+    });
+
+    it("should search allied datasheets for ALLIED UNITS section", () => {
+      const alliedFaction = {
+        id: "ig",
+        name: "Imperial Guard",
+        datasheets: [{ name: "Commissar", id: "commissar" }],
+      };
+      const factionWithAllied = {
+        ...mockFaction,
+        allied_factions: ["ig"],
+      };
+      const units = [{ originalName: "Commissar", section: "ALLIED UNITS" }];
+      const result = matchUnitsToDatasheets(units, factionWithAllied, [alliedFaction]);
+      expect(result[0].matchStatus).toBe("exact");
+      expect(result[0].matchedCard.name).toBe("Commissar");
+    });
+  });
+
+  describe("matchFaction - extended", () => {
+    const factions = [
+      { id: "sm", name: "Space Marines" },
+      { id: "ba", name: "Blood Angels", parent_id: "sm" },
+      { id: "am", name: "Astra Militarum" },
+      { id: "ork", name: "Orks" },
+    ];
+
+    it("should fuzzy match similar faction names", () => {
+      // "Space Marine" (missing 's') should fuzzy match to "Space Marines"
+      const result = matchFaction("Space Marine", factions);
+      expect(["exact", "confident", "ambiguous"]).toContain(result.matchStatus);
+      expect(result.matchedFaction).not.toBeNull();
+    });
+
+    it("should provide alternatives for fuzzy matches", () => {
+      const result = matchFaction("Marines", factions);
+      expect(result.matchedFaction).not.toBeNull();
+    });
+
+    it("should handle null factions array", () => {
+      const result = matchFaction("Space Marines", null);
+      expect(result.matchStatus).toBe("none");
     });
   });
 });
