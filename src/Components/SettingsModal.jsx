@@ -78,7 +78,7 @@ export const SettingsModal = () => {
         setIsModalVisible(false);
       }
     },
-    [isModalVisible]
+    [isModalVisible],
   );
 
   useEffect(() => {
@@ -168,7 +168,7 @@ export const SettingsModal = () => {
                       {(() => {
                         // Check if a custom datasource is active
                         const activeCustomDs = settings.customDatasources?.find(
-                          (ds) => ds.id === settings.selectedDataSource
+                          (ds) => ds.id === settings.selectedDataSource,
                         );
 
                         if (activeCustomDs) {
@@ -231,10 +231,10 @@ export const SettingsModal = () => {
                       )}
                       {(() => {
                         const inactiveCustomDs = settings.customDatasources?.filter(
-                          (ds) => ds.id !== settings.selectedDataSource
+                          (ds) => ds.id !== settings.selectedDataSource,
                         );
                         const activeCustomDs = settings.customDatasources?.find(
-                          (ds) => ds.id === settings.selectedDataSource
+                          (ds) => ds.id === settings.selectedDataSource,
                         );
 
                         // Show ghost placeholder if there are custom datasources but all are active

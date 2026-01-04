@@ -24,6 +24,12 @@ export const UpdateReminder = () => {
       }
     }
 
+    // Guard against undefined dataSource.version
+    if (!dataSource.version) {
+      setIsUpdateReminderVisible(false);
+      return;
+    }
+
     if (
       (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 2) ||
       compare(dataSource.version, process.env.REACT_APP_VERSION, "<")

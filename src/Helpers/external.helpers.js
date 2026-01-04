@@ -44,49 +44,49 @@ const readCsv = async (file) => {
 
 export const get40KData = async () => {
   const lastUpdated = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`,
   );
   const dataDatasheetAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`,
   );
   const dataStratagems = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`,
   );
   const dataAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`,
   );
   const dataDatasheetWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`,
   );
   const dataWargearList = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`,
   );
   const dataWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`,
   );
   const dataModels = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`,
   );
   const dataKeywords = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`,
   );
   const dataDamage = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`,
   );
   const dataFactions = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`,
   );
   const sheets = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`,
   );
   const dataSecondaries = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`,
   );
   const dataPsychic = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`,
   );
   const dataTraits = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`,
   );
 
   const mappedPsychicPowers = dataPsychic.map((power) => {
@@ -147,7 +147,7 @@ export const get40KData = async () => {
           .map((model) => {
             return { ...model, active: true };
           })
-          .map((item) => [item["keyword"], item])
+          .map((item) => [item["keyword"], item]),
       ).values(),
     ];
     row["datasheet"] = dataModels
@@ -177,7 +177,7 @@ export const get40KData = async () => {
       ...new Map(
         dataDatasheetWargear
           .filter((wargear) => wargear.datasheet_id === row.id && wargear.is_index_wargear === "false")
-          .map((item) => [item["wargear_id"], item])
+          .map((item) => [item["wargear_id"], item]),
       ).values(),
     ];
 
@@ -187,7 +187,7 @@ export const get40KData = async () => {
       if (row["wargear"][index]) {
         row["wargear"][index]["active"] = index === 0 ? true : false;
         row["wargear"][index]["profiles"] = clone(
-          dataWargearList.filter((wargearList) => wargearList.wargear_id === wargear.wargear_id)
+          dataWargearList.filter((wargearList) => wargearList.wargear_id === wargear.wargear_id),
         );
       }
     });

@@ -306,7 +306,7 @@ export const FactionSettingsModal = () => {
               </div>
             </div>
           </div>,
-          modalRoot
+          modalRoot,
         )}
       <button
         className="faction-settings-trigger"

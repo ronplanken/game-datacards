@@ -97,6 +97,6 @@ export const mergeVersionSteps = (versions) => {
 export const getUnseenVersions = (lastSeenVersion, currentVersion) => {
   if (!lastSeenVersion || !currentVersion) return [];
   return VERSION_REGISTRY.filter(
-    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<=")
+    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<="),
   );
 };

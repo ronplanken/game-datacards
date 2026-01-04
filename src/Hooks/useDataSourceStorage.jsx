@@ -288,7 +288,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
       return { success: true, id: preparedDatasource.id };
     },
-    [settings, updateSettings, logLocalEvent]
+    [settings, updateSettings, logLocalEvent],
   );
 
   /**
@@ -323,7 +323,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
       logLocalEvent("remove_custom_datasource", { datasourceId });
     },
-    [settings, updateSettings, logLocalEvent]
+    [settings, updateSettings, logLocalEvent],
   );
 
   /**
@@ -362,7 +362,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
         // Update lastCheckedForUpdate in settings
         const updatedCustomDatasources = (settings.customDatasources || []).map((ds) =>
-          ds.id === datasourceId ? { ...ds, lastCheckedForUpdate: new Date().toISOString() } : ds
+          ds.id === datasourceId ? { ...ds, lastCheckedForUpdate: new Date().toISOString() } : ds,
         );
 
         updateSettings({
@@ -379,7 +379,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         return { hasUpdate: false, error: error.message };
       }
     },
-    [settings, updateSettings]
+    [settings, updateSettings],
   );
 
   /**
@@ -413,7 +413,7 @@ export const DataSourceStorageProviderComponent = (props) => {
               lastUpdated: newData.lastUpdated || new Date().toISOString(),
               lastCheckedForUpdate: new Date().toISOString(),
             }
-          : ds
+          : ds,
       );
 
       updateSettings({
@@ -434,7 +434,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
       return { success: true };
     },
-    [settings, updateSettings, logLocalEvent]
+    [settings, updateSettings, logLocalEvent],
   );
 
   /**
