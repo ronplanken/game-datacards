@@ -40,7 +40,22 @@ import {
   getImportableUnits,
   filterCardWeapons,
 } from "../gwAppImport.helpers";
-import { Costs, Compare, CompareWeapon, Weapon, Upgrade, Model, Unit, BaseNotes } from "../battlescribe.40k.helpers";
+import {
+  Costs,
+  Compare,
+  CompareWeapon,
+  Weapon,
+  Upgrade,
+  Model,
+  Unit,
+  BaseNotes,
+  WoundTracker,
+  Explosion,
+  Psyker,
+  PsychicPower,
+  Force,
+  Roster40k,
+} from "../battlescribe.40k.helpers";
 
 // ============================================
 // generic.helpers
@@ -127,6 +142,65 @@ describe("treeview.helpers", () => {
       expect(result.source).toEqual([{ id: 2 }]);
       expect(result.dest).toEqual([{ id: 1 }, { id: 3 }]);
     });
+
+    it("should move item to end of destination", () => {
+      const source = [{ id: 1 }, { id: 2 }];
+      const destination = [{ id: 3 }, { id: 4 }];
+      const droppableSource = { droppableId: "source", index: 0 };
+      const droppableDestination = { droppableId: "dest", index: 2 };
+
+      const result = move(source, destination, droppableSource, droppableDestination);
+
+      expect(result.source).toEqual([{ id: 2 }]);
+      expect(result.dest).toEqual([{ id: 3 }, { id: 4 }, { id: 1 }]);
+    });
+
+    it("should move item to empty destination", () => {
+      const source = [{ id: 1 }, { id: 2 }];
+      const destination = [];
+      const droppableSource = { droppableId: "source", index: 1 };
+      const droppableDestination = { droppableId: "dest", index: 0 };
+
+      const result = move(source, destination, droppableSource, droppableDestination);
+
+      expect(result.source).toEqual([{ id: 1 }]);
+      expect(result.dest).toEqual([{ id: 2 }]);
+    });
+
+    it("should not mutate original arrays", () => {
+      const source = [{ id: 1 }, { id: 2 }];
+      const destination = [{ id: 3 }];
+      const droppableSource = { droppableId: "source", index: 0 };
+      const droppableDestination = { droppableId: "dest", index: 0 };
+
+      move(source, destination, droppableSource, droppableDestination);
+
+      expect(source).toEqual([{ id: 1 }, { id: 2 }]);
+      expect(destination).toEqual([{ id: 3 }]);
+    });
+
+    it("should handle moving last item from source", () => {
+      const source = [{ id: 1 }];
+      const destination = [{ id: 2 }];
+      const droppableSource = { droppableId: "source", index: 0 };
+      const droppableDestination = { droppableId: "dest", index: 0 };
+
+      const result = move(source, destination, droppableSource, droppableDestination);
+
+      expect(result.source).toEqual([]);
+      expect(result.dest).toEqual([{ id: 1 }, { id: 2 }]);
+    });
+
+    it("should preserve object properties when moving", () => {
+      const source = [{ id: 1, name: "Card 1", type: "unit", nested: { a: 1 } }];
+      const destination = [];
+      const droppableSource = { droppableId: "source", index: 0 };
+      const droppableDestination = { droppableId: "dest", index: 0 };
+
+      const result = move(source, destination, droppableSource, droppableDestination);
+
+      expect(result.dest[0]).toEqual({ id: 1, name: "Card 1", type: "unit", nested: { a: 1 } });
+    });
   });
 
   describe("getListFactionId", () => {
@@ -164,6 +238,41 @@ describe("treeview.helpers", () => {
     it("should return faction_id for secondary with faction", () => {
       const card = { cardType: "secondary", faction_id: "SM" };
       expect(getListFactionId(card, {})).toBe("SM");
+    });
+
+    it("should return undefined for unknown card type", () => {
+      const card = { cardType: "unknown", faction_id: "SM" };
+      expect(getListFactionId(card, {})).toBeUndefined();
+    });
+
+    it("should return undefined for enhancement card type", () => {
+      const card = { cardType: "enhancement", faction_id: "SM" };
+      expect(getListFactionId(card, {})).toBeUndefined();
+    });
+
+    it("should handle undefined card", () => {
+      expect(getListFactionId(undefined, {})).toBe("");
+    });
+
+    it("should handle missing faction object", () => {
+      const card = { cardType: "datasheet", faction_id: "SM" };
+      expect(getListFactionId(card, {})).toBe("SM");
+    });
+
+    it("should handle null faction_id on datasheet", () => {
+      const card = { cardType: "datasheet", faction_id: null };
+      const faction = { id: "SM" };
+      expect(getListFactionId(card, faction)).toBe(null);
+    });
+
+    it("should handle undefined subfaction_id on stratagem", () => {
+      const card = { cardType: "stratagem", subfaction_id: undefined };
+      expect(getListFactionId(card, {})).toBe("");
+    });
+
+    it("should handle null faction_id on secondary", () => {
+      const card = { cardType: "secondary", faction_id: null };
+      expect(getListFactionId(card, {})).toBe(null);
     });
   });
 });
@@ -1844,6 +1953,209 @@ describe("battlescribe.40k.helpers - functions", () => {
       unit.name = "Rubric Marines";
       unit.cost.addFreeformValue("Cabal", 0);
       expect(unit.nameWithExtraCosts()).toBe("Rubric Marines");
+    });
+  });
+
+  describe("WoundTracker", () => {
+    it("should have default empty name", () => {
+      const tracker = new WoundTracker();
+      expect(tracker.name).toBe("");
+    });
+
+    it("should have Map instance for table", () => {
+      const tracker = new WoundTracker();
+      expect(tracker.table).toBeInstanceOf(Map);
+    });
+
+    it("should extend BaseNotes", () => {
+      const tracker = new WoundTracker();
+      expect(tracker.equal).toBeDefined();
+    });
+
+    it("should support adding entries to table", () => {
+      const tracker = new WoundTracker();
+      tracker.table.set("1-3", { m: 4, ws: 4 });
+      tracker.table.set("4-6", { m: 6, ws: 3 });
+      expect(tracker.table.size).toBe(2);
+      expect(tracker.table.get("1-3")).toEqual({ m: 4, ws: 4 });
+    });
+  });
+
+  describe("Explosion", () => {
+    it("should have default empty values", () => {
+      const explosion = new Explosion();
+      expect(explosion.name).toBe("");
+      expect(explosion.diceRoll).toBe("");
+      expect(explosion.distance).toBe("");
+      expect(explosion.mortalWounds).toBe("");
+    });
+
+    it("should extend BaseNotes", () => {
+      const explosion = new Explosion();
+      expect(explosion.equal).toBeDefined();
+    });
+
+    it("should compare equal when names match", () => {
+      const explosion1 = new Explosion();
+      explosion1.name = "Big Explosion";
+      explosion1.diceRoll = "6";
+      explosion1.distance = '6"';
+      explosion1.mortalWounds = "D6";
+
+      const explosion2 = new Explosion();
+      explosion2.name = "Big Explosion";
+
+      expect(explosion1.equal(explosion2)).toBe(true);
+    });
+
+    it("should compare not equal when names differ", () => {
+      const explosion1 = new Explosion();
+      explosion1.name = "Big Explosion";
+
+      const explosion2 = new Explosion();
+      explosion2.name = "Small Explosion";
+
+      expect(explosion1.equal(explosion2)).toBe(false);
+    });
+  });
+
+  describe("Psyker", () => {
+    it("should have default empty values", () => {
+      const psyker = new Psyker();
+      expect(psyker.cast).toBe("");
+      expect(psyker.deny).toBe("");
+      expect(psyker.powers).toBe("");
+      expect(psyker.other).toBe("");
+    });
+
+    it("should extend BaseNotes", () => {
+      const psyker = new Psyker();
+      expect(psyker.equal).toBeDefined();
+    });
+
+    it("should store psyker stats", () => {
+      const psyker = new Psyker();
+      psyker.cast = "2";
+      psyker.deny = "1";
+      psyker.powers = "Smite, Mind War";
+      psyker.other = "Can attempt to manifest one additional power";
+
+      expect(psyker.cast).toBe("2");
+      expect(psyker.deny).toBe("1");
+      expect(psyker.powers).toBe("Smite, Mind War");
+    });
+  });
+
+  describe("PsychicPower", () => {
+    it("should have default values", () => {
+      const power = new PsychicPower();
+      expect(power.name).toBe("");
+      expect(power.manifest).toBe(0);
+      expect(power.range).toBe("");
+      expect(power.details).toBe("");
+    });
+
+    it("should extend BaseNotes", () => {
+      const power = new PsychicPower();
+      expect(power.equal).toBeDefined();
+    });
+
+    it("should store psychic power data", () => {
+      const power = new PsychicPower();
+      power.name = "Smite";
+      power.manifest = 5;
+      power.range = '18"';
+      power.details = "Deals D3 mortal wounds";
+
+      expect(power.name).toBe("Smite");
+      expect(power.manifest).toBe(5);
+      expect(power.range).toBe('18"');
+      expect(power.details).toBe("Deals D3 mortal wounds");
+    });
+
+    it("should compare equal when names match", () => {
+      const power1 = new PsychicPower();
+      power1.name = "Smite";
+      power1.manifest = 5;
+
+      const power2 = new PsychicPower();
+      power2.name = "Smite";
+      power2.manifest = 6;
+
+      expect(power1.equal(power2)).toBe(true);
+    });
+  });
+
+  describe("Force", () => {
+    it("should have default values", () => {
+      const force = new Force();
+      expect(force.catalog).toBe("");
+      expect(force.faction).toBe("Unknown");
+      expect(force.units).toEqual([]);
+      expect(force.configurations).toEqual([]);
+    });
+
+    it("should have Map instances for rules", () => {
+      const force = new Force();
+      expect(force.factionRules).toBeInstanceOf(Map);
+      expect(force.rules).toBeInstanceOf(Map);
+    });
+
+    it("should extend BaseNotes", () => {
+      const force = new Force();
+      expect(force.equal).toBeDefined();
+    });
+
+    it("should support adding rules", () => {
+      const force = new Force();
+      force.rules.set("Army Rule", "Some description");
+      force.factionRules.set("Faction Rule", "Another description");
+
+      expect(force.rules.get("Army Rule")).toBe("Some description");
+      expect(force.factionRules.get("Faction Rule")).toBe("Another description");
+    });
+
+    it("should support adding units", () => {
+      const force = new Force();
+      const unit = new Unit();
+      unit.name = "Captain";
+      force.units.push(unit);
+
+      expect(force.units).toHaveLength(1);
+      expect(force.units[0].name).toBe("Captain");
+    });
+  });
+
+  describe("Roster40k", () => {
+    it("should have default values", () => {
+      const roster = new Roster40k();
+      expect(roster.cost).toBeInstanceOf(Costs);
+      expect(roster.forces).toEqual([]);
+    });
+
+    it("should extend BaseNotes", () => {
+      const roster = new Roster40k();
+      expect(roster.equal).toBeDefined();
+    });
+
+    it("should support adding forces", () => {
+      const roster = new Roster40k();
+      const force = new Force();
+      force.faction = "Space Marines";
+      roster.forces.push(force);
+
+      expect(roster.forces).toHaveLength(1);
+      expect(roster.forces[0].faction).toBe("Space Marines");
+    });
+
+    it("should accumulate costs from forces", () => {
+      const roster = new Roster40k();
+      roster.cost.points = 1000;
+      roster.cost.commandPoints = 3;
+
+      expect(roster.cost.points).toBe(1000);
+      expect(roster.cost.commandPoints).toBe(3);
+      expect(roster.cost.toString()).toBe("[1000 pts / 3 CP]");
     });
   });
 });
