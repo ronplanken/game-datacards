@@ -448,7 +448,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                         ?.filter(
                           (enhancement) =>
                             enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
-                            !enhancement.detachment
+                            !enhancement.detachment,
                         )
                         ?.filter((enhancement) => {
                           let isActiveEnhancement = false;

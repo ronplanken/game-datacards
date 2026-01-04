@@ -61,7 +61,7 @@ export const ImageExport = () => {
         `${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}${
           allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
         }`,
-        file
+        file,
       );
     });
     if (settings.showCardsAsDoubleSided !== true) {
