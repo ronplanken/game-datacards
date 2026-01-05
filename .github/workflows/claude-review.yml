@@ -64,6 +64,12 @@ jobs:
                ```
                Note: line is the line number in the new version of the file (shown with + in the diff).
 
+               When suggesting a code change, use the GitHub suggestion syntax in your comment body:
+               ```suggestion
+               your suggested code here
+               ```
+               This allows the author to apply the change with one click.
+
             4. After adding inline comments, submit a summary review using:
                ```
                gh pr review ${{ github.event.pull_request.number }} --comment --body "Your summary here"
