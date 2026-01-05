@@ -13,7 +13,12 @@
       "mcp__chrome-devtools__evaluate_script",
       "Bash(npm install:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(yarn lint:*)",
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(gh pr create:*)",
+      "Bash(yarn test:ci:*)"
     ]
   }
 }
