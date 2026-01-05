@@ -36,16 +36,18 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.claude_code_oauth_token }}
-          allowed_tools: "Bash(gh:*),Bash(git:*),Read,Glob,Grep"
+          claude_args: "--allowedTools 'Bash(gh *),Bash(git *),Read,Glob,Grep'"
           prompt: |
             Act as a senior full-stack developer helping a junior developer.
 
-            Review this pull request and provide feedback on:
+            Review PR #${{ github.event.pull_request.number }} and provide feedback on:
             - Code quality and best practices
             - Potential bugs or issues
             - React and JavaScript/TypeScript patterns
             - Any security concerns
             - Suggestions for improvement
+
+            Use `gh pr diff ${{ github.event.pull_request.number }}` to see the changes.
 
             Be constructive and specific in your feedback. Focus on the most important issues first.
             Be to the point and short in your explanations. Never use emojis.
