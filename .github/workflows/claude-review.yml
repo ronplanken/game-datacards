@@ -47,7 +47,32 @@ jobs:
             - Any security concerns
             - Suggestions for improvement
 
-            Use `gh pr diff ${{ github.event.pull_request.number }}` to see the changes.
+            ## Steps to follow:
+
+            1. Use `gh pr diff ${{ github.event.pull_request.number }}` to see the changes.
+
+            2. Use `gh pr view ${{ github.event.pull_request.number }} --json files` to get the list of changed files.
+
+            3. For inline comments on specific lines, use this command for each comment:
+               ```
+               gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments \
+                 -f body="Your comment here" \
+                 -f path="path/to/file.js" \
+                 -f commit_id="$(gh pr view ${{ github.event.pull_request.number }} --json headRefOid -q .headRefOid)" \
+                 -F line=<line_number> \
+                 -f side="RIGHT"
+               ```
+               Note: line is the line number in the new version of the file (shown with + in the diff).
+
+            4. After adding inline comments, submit a summary review using:
+               ```
+               gh pr review ${{ github.event.pull_request.number }} --comment --body "Your summary here"
+               ```
+               The summary should include:
+               - Brief overview of the changes
+               - Key findings (if any issues found)
+               - Overall assessment
 
             Be constructive and specific in your feedback. Focus on the most important issues first.
             Be to the point and short in your explanations. Never use emojis.
+            If the code looks good with no significant issues, say so briefly in the summary.
