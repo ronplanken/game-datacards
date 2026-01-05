@@ -71,6 +71,14 @@ export function UnitBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, legends: value })}
         />
       </Form.Item>
+      <Form.Item label={"Card Style"}>
+        <Select
+          value={activeCard.cardVisualStyle || "default"}
+          onChange={(value) => updateActiveCard({ ...activeCard, cardVisualStyle: value })}>
+          <Option value="default">Default (Detailed)</Option>
+          <Option value="basic">Basic (Simplified)</Option>
+        </Select>
+      </Form.Item>
     </Form>
   );
 }
