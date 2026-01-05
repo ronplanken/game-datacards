@@ -228,6 +228,20 @@ export function UnitStylingInfo() {
 
   return (
     <>
+      <Card type={"inner"} title="Card Style" size="small" bodyStyle={{ padding: 16 }} style={{ marginBottom: 16 }}>
+        <Form size="small">
+          <Form.Item label={"Visual Style"} style={{ marginBottom: 0 }}>
+            <Select
+              value={activeCard.cardVisualStyle || "default"}
+              onChange={(value) => updateActiveCard({ ...activeCard, cardVisualStyle: value })}
+              style={{ width: "100%" }}>
+              <Option value="default">Default (Detailed)</Option>
+              <Option value="basic">Basic (Simplified)</Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Card>
+
       <Card type={"inner"} title="Card Image" size="small" bodyStyle={{ padding: 16 }} style={{ marginBottom: 16 }}>
         <Form size="small">
           <Form.Item label={"External Image URL"}>

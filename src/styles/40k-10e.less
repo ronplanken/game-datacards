@@ -4472,11 +4472,395 @@
 .print-page .data-40k-10e {
   .unit-card-full-wrapper,
   .unit-card-front-wrapper,
-  .unit-card-back-wrapper {
+  .unit-card-back-wrapper,
+  .unit-card-basic-10e-wrapper {
     display: block;
   }
 
   .unit {
+    transform-origin: 0 0;
+  }
+}
+
+// Basic 10e card style - simplified layout with full 10e data support
+.basic_unit_10e {
+  .page {
+    width: 500px;
+    min-height: 350px;
+    display: block;
+    position: relative;
+    padding: 8px;
+    background-color: var(--banner-colour, #1a1a2e);
+    border-radius: 16px;
+    font-family: "Heebo", sans-serif;
+
+    .frame {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background: var(--text-background-colour, #f5f5f0);
+      border-radius: 12px;
+      overflow: hidden;
+
+      .content {
+        padding: 12px;
+        position: relative;
+      }
+
+      // Header with name and points
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        border-bottom: 3px solid var(--banner-colour, #1a1a2e);
+
+        .name-container {
+          flex: 1;
+          padding-right: 160px; // Space for image
+
+          .name {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+            color: var(--banner-colour, #1a1a2e);
+          }
+
+          .subname {
+            font-size: 12px;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+          }
+        }
+
+        .points {
+          font-size: 14px;
+          font-weight: 700;
+          color: var(--banner-colour, #1a1a2e);
+          white-space: nowrap;
+
+          .models {
+            font-weight: 400;
+            font-size: 12px;
+          }
+
+          .pts-label {
+            font-weight: 400;
+            font-size: 11px;
+            margin-left: 2px;
+          }
+        }
+      }
+
+      // Stats section
+      .stats-section {
+        margin-bottom: 10px;
+        border: 2px solid var(--header-colour, #2d4a3e);
+        border-radius: 6px;
+        overflow: hidden;
+
+        .stats-header {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          background: var(--banner-colour, #1a1a2e);
+          padding: 4px 0;
+
+          .stat-label {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+          }
+        }
+
+        .stats-row {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          background: var(--rows-colour, #e8e8e0);
+          padding: 4px 0;
+          position: relative;
+
+          &:nth-child(odd) {
+            background: var(--alt-rows-colour, #f5f5f0);
+          }
+
+          .stat-value {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+          }
+
+          .stat-name {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            font-weight: 500;
+            color: #666;
+          }
+        }
+      }
+
+      // Invulnerable save at top
+      .invul-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding: 6px 10px;
+        background: var(--header-colour, #2d4a3e);
+        border-radius: 4px;
+        color: white;
+
+        .invul-value {
+          font-size: 16px;
+          font-weight: 700;
+        }
+
+        .invul-label {
+          font-size: 11px;
+          text-transform: uppercase;
+        }
+
+        .invul-info {
+          font-size: 10px;
+          font-style: italic;
+          margin-left: auto;
+        }
+      }
+
+      // Weapons sections
+      .weapons-section {
+        margin-bottom: 10px;
+        border: 2px solid var(--header-colour, #2d4a3e);
+        border-radius: 6px;
+        overflow: hidden;
+
+        .weapons-header {
+          display: grid;
+          grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr;
+          background: var(--header-colour, #2d4a3e);
+          padding: 4px 8px;
+          gap: 4px;
+
+          .weapon-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+          }
+
+          .weapon-stat {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: white;
+          }
+        }
+
+        .weapon-row {
+          display: grid;
+          grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr;
+          padding: 3px 8px;
+          gap: 4px;
+          background: var(--rows-colour, #e8e8e0);
+
+          &.odd {
+            background: var(--alt-rows-colour, #f5f5f0);
+          }
+
+          .weapon-name {
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+
+            .weapon-keywords {
+              font-size: 9px;
+            }
+          }
+
+          .weapon-stat {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+          }
+        }
+
+        .weapon-ability {
+          padding: 2px 12px 4px;
+          font-size: 10px;
+          background: var(--alt-rows-colour, #f5f5f0);
+          border-top: 1px solid var(--header-colour, #2d4a3e);
+
+          .ability-name {
+            font-weight: 700;
+          }
+
+          .ability-desc {
+            margin-left: 4px;
+
+            .keyword {
+              font-weight: 700;
+              font-style: italic;
+            }
+          }
+        }
+      }
+
+      // Abilities section
+      .abilities-section {
+        margin-bottom: 10px;
+
+        .abilities-block,
+        .damaged-block,
+        .special-block,
+        .primarch-block,
+        .invul-block {
+          margin-bottom: 8px;
+          border: 1px solid var(--header-colour, #2d4a3e);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+
+        .abilities-header,
+        .damaged-header,
+        .special-header,
+        .primarch-header {
+          background: var(--header-colour, #2d4a3e);
+          color: white;
+          padding: 4px 8px;
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+        }
+
+        .ability-line {
+          padding: 3px 8px;
+          font-size: 11px;
+          background: var(--rows-colour, #e8e8e0);
+
+          &:nth-child(even) {
+            background: var(--alt-rows-colour, #f5f5f0);
+          }
+
+          .ability-type {
+            font-weight: 700;
+            margin-right: 4px;
+            text-transform: uppercase;
+          }
+
+          .ability-value {
+            font-style: italic;
+          }
+        }
+
+        .ability-detail {
+          padding: 3px 8px;
+          font-size: 11px;
+          background: var(--rows-colour, #e8e8e0);
+
+          &:nth-child(even) {
+            background: var(--alt-rows-colour, #f5f5f0);
+          }
+
+          .ability-name {
+            font-weight: 700;
+
+            &:after {
+              content: ":";
+              margin-right: 4px;
+            }
+          }
+
+          .ability-desc {
+            .keyword {
+              font-weight: 700;
+              font-style: italic;
+            }
+          }
+        }
+
+        .damaged-desc,
+        .special-desc {
+          padding: 4px 8px;
+          font-size: 11px;
+          background: var(--alt-rows-colour, #f5f5f0);
+
+          .keyword {
+            font-weight: 700;
+            font-style: italic;
+          }
+        }
+
+        .invul-block {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 10px;
+          background: var(--header-colour, #2d4a3e);
+          color: white;
+
+          .invul-value {
+            font-size: 16px;
+            font-weight: 700;
+          }
+
+          .invul-label {
+            font-size: 11px;
+            text-transform: uppercase;
+          }
+
+          .invul-info {
+            font-size: 10px;
+            font-style: italic;
+            margin-left: auto;
+          }
+        }
+      }
+
+      // Keywords footer
+      .keywords-footer {
+        padding-top: 8px;
+        border-top: 2px solid var(--banner-colour, #1a1a2e);
+        font-size: 10px;
+
+        .keywords-line,
+        .factions-line {
+          margin-bottom: 2px;
+        }
+
+        .keywords-title,
+        .factions-title {
+          font-weight: 700;
+          text-transform: uppercase;
+          margin-right: 4px;
+        }
+
+        .keywords-value,
+        .factions-value {
+          text-transform: uppercase;
+        }
+
+        .factions-value {
+          font-style: italic;
+        }
+      }
+    }
+  }
+}
+
+// Print support for basic 10e cards
+.print-page .data-40k-10e .basic_unit_10e {
+  .page {
     transform-origin: 0 0;
   }
 }
