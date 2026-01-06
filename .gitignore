@@ -25,4 +25,4 @@ yarn-error.log*
 /csv
 /public/json
 /public/svg
-/.vscode
+/.vscode.env
