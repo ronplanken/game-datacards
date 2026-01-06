@@ -11,6 +11,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { AuthProvider } from "./Hooks/useAuth";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
@@ -103,20 +104,22 @@ const WhatsNewWizardSelector = () => {
 const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <SettingsStorageProviderComponent>
-      <UserProviderComponent>
-        <FirebaseProviderComponent>
-          <DataSourceStorageProviderComponent>
-            <CardStorageProviderComponent>
-              <MobileListProvider>
-                <Outlet />
-                <ScrollRestoration />
-                <WizardSelector />
-                <WhatsNewWizardSelector />
-              </MobileListProvider>
-            </CardStorageProviderComponent>
-          </DataSourceStorageProviderComponent>
-        </FirebaseProviderComponent>
-      </UserProviderComponent>
+      <AuthProvider>
+        <UserProviderComponent>
+          <FirebaseProviderComponent>
+            <DataSourceStorageProviderComponent>
+              <CardStorageProviderComponent>
+                <MobileListProvider>
+                  <Outlet />
+                  <ScrollRestoration />
+                  <WizardSelector />
+                  <WhatsNewWizardSelector />
+                </MobileListProvider>
+              </CardStorageProviderComponent>
+            </DataSourceStorageProviderComponent>
+          </FirebaseProviderComponent>
+        </UserProviderComponent>
+      </AuthProvider>
     </SettingsStorageProviderComponent>
   </ErrorBoundary>
 );

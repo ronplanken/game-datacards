@@ -6,6 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
+import { AccountButton } from "./Auth/AccountButton";
 import { DatasourceSelector } from "./DatasourceSelector";
 import { NotificationBell } from "./NotificationBell";
 import { SettingsModal } from "./SettingsModal";
@@ -88,8 +89,7 @@ export const AppHeader = ({
 
             <SettingsModal />
 
-            {/* User menu - hidden for now, will be implemented with auth later */}
-            {/* <UserMenu onSettingsClick={() => {}} /> */}
+            <AccountButton />
           </div>
         </div>
       </Header>
