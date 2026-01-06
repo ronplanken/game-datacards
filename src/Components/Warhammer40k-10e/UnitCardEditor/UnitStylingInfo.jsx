@@ -428,28 +428,135 @@ export function UnitStylingInfo() {
 
       <Card
         type={"inner"}
-        title="Custom Colours"
+        title={activeCard.variant === "basic" ? "Faction Colours" : "Custom Colours"}
         size="small"
-        bodyStyle={{ padding: activeCard.useCustomColours ? 16 : 0 }}
+        bodyStyle={{
+          padding:
+            activeCard.variant === "basic"
+              ? activeCard.useFactionColours
+                ? 16
+                : 0
+              : activeCard.useCustomColours
+                ? 16
+                : 0,
+        }}
         style={{ marginTop: 16 }}
         extra={
-          <Switch
-            checked={activeCard.useCustomColours || false}
-            onChange={(value) => {
-              // When enabling, initialize with faction colors if not already set
-              const cardFaction = dataSource?.data?.find((f) => f.id === activeCard?.faction_id);
-              const updates = { useCustomColours: value };
-              if (value && !activeCard.customBannerColour) {
-                updates.customBannerColour = cardFaction?.colours?.banner || "#103344";
-              }
-              if (value && !activeCard.customHeaderColour) {
-                updates.customHeaderColour = cardFaction?.colours?.header || "#456664";
-              }
-              updateActiveCard({ ...activeCard, ...updates });
-            }}
-          />
+          activeCard.variant === "basic" ? (
+            <Switch
+              checked={activeCard.useFactionColours || false}
+              onChange={(value) => updateActiveCard({ ...activeCard, useFactionColours: value })}
+            />
+          ) : (
+            <Switch
+              checked={activeCard.useCustomColours || false}
+              onChange={(value) => {
+                // When enabling, initialize with faction colors if not already set
+                const cardFaction = dataSource?.data?.find((f) => f.id === activeCard?.faction_id);
+                const updates = { useCustomColours: value };
+                if (value && !activeCard.customBannerColour) {
+                  updates.customBannerColour = cardFaction?.colours?.banner || "#103344";
+                }
+                if (value && !activeCard.customHeaderColour) {
+                  updates.customHeaderColour = cardFaction?.colours?.header || "#456664";
+                }
+                updateActiveCard({ ...activeCard, ...updates });
+              }}
+            />
+          )
         }>
-        {activeCard.useCustomColours && (
+        {/* Basic cards: show custom colours toggle inside when faction colours enabled */}
+        {activeCard.variant === "basic" && activeCard.useFactionColours && (
+          <Form size="small">
+            <Form.Item label={"Custom Colours"}>
+              <Switch
+                checked={activeCard.useCustomColours || false}
+                onChange={(value) => {
+                  if (value) {
+                    const cardFaction = dataSource?.data?.find((f) => f.id === activeCard?.faction_id);
+                    const updates = { useCustomColours: value };
+                    if (!activeCard.customBannerColour) {
+                      updates.customBannerColour = cardFaction?.colours?.banner || "#d0d0d0";
+                    }
+                    if (!activeCard.customHeaderColour) {
+                      updates.customHeaderColour = cardFaction?.colours?.header || "#b8b8b0";
+                    }
+                    updateActiveCard({ ...activeCard, ...updates });
+                  } else {
+                    updateActiveCard({ ...activeCard, useCustomColours: value });
+                  }
+                }}
+              />
+            </Form.Item>
+            {activeCard.useCustomColours && (
+              <>
+                <Form.Item label={"Banner Colour"}>
+                  <Space>
+                    <input
+                      type="color"
+                      value={activeCard.customBannerColour || "#d0d0d0"}
+                      onChange={(e) => {
+                        updateActiveCard({ ...activeCard, customBannerColour: e.target.value });
+                      }}
+                      style={{
+                        width: 40,
+                        height: 28,
+                        padding: 0,
+                        border: "1px solid #d9d9d9",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
+                    />
+                    <Input
+                      size="small"
+                      value={activeCard.customBannerColour || "#d0d0d0"}
+                      onChange={(e) => {
+                        updateActiveCard({ ...activeCard, customBannerColour: e.target.value });
+                      }}
+                      style={{ width: 90, fontFamily: "monospace" }}
+                    />
+                  </Space>
+                  <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
+                    Card outer background
+                  </Text>
+                </Form.Item>
+                <Form.Item label={"Header Colour"} style={{ marginBottom: 0 }}>
+                  <Space>
+                    <input
+                      type="color"
+                      value={activeCard.customHeaderColour || "#b8b8b0"}
+                      onChange={(e) => {
+                        updateActiveCard({ ...activeCard, customHeaderColour: e.target.value });
+                      }}
+                      style={{
+                        width: 40,
+                        height: 28,
+                        padding: 0,
+                        border: "1px solid #d9d9d9",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
+                    />
+                    <Input
+                      size="small"
+                      value={activeCard.customHeaderColour || "#b8b8b0"}
+                      onChange={(e) => {
+                        updateActiveCard({ ...activeCard, customHeaderColour: e.target.value });
+                      }}
+                      style={{ width: 90, fontFamily: "monospace" }}
+                    />
+                  </Space>
+                  <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
+                    Stats, weapons, abilities headers
+                  </Text>
+                </Form.Item>
+              </>
+            )}
+          </Form>
+        )}
+
+        {/* Non-basic cards: existing custom colours behaviour */}
+        {activeCard.variant !== "basic" && activeCard.useCustomColours && (
           <Form size="small">
             <Form.Item label={"Banner Colour"}>
               <Space>
@@ -510,6 +617,98 @@ export function UnitStylingInfo() {
               </Space>
               <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
                 Used for weapon/ability headers and card borders
+              </Text>
+            </Form.Item>
+          </Form>
+        )}
+      </Card>
+
+      <Card
+        type={"inner"}
+        title="Text Colours"
+        size="small"
+        bodyStyle={{ padding: activeCard.useCustomTextColours ? 16 : 0 }}
+        style={{ marginTop: 16 }}
+        extra={
+          <Switch
+            checked={activeCard.useCustomTextColours || false}
+            onChange={(value) => {
+              const updates = { useCustomTextColours: value };
+              if (value) {
+                // Set defaults based on card type
+                if (activeCard.variant === "basic") {
+                  if (!activeCard.customTextColour) updates.customTextColour = "#000000";
+                  if (!activeCard.customKeywordColour) updates.customKeywordColour = "#666666";
+                } else {
+                  if (!activeCard.customTextColour) updates.customTextColour = "#000000";
+                  if (!activeCard.customKeywordColour) updates.customKeywordColour = "#456664";
+                }
+              }
+              updateActiveCard({ ...activeCard, ...updates });
+            }}
+          />
+        }>
+        {activeCard.useCustomTextColours && (
+          <Form size="small">
+            <Form.Item label={"Text Colour"}>
+              <Space>
+                <input
+                  type="color"
+                  value={activeCard.customTextColour || "#000000"}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customTextColour: e.target.value });
+                  }}
+                  style={{
+                    width: 40,
+                    height: 28,
+                    padding: 0,
+                    border: "1px solid #d9d9d9",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                  }}
+                />
+                <Input
+                  size="small"
+                  value={activeCard.customTextColour || "#000000"}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customTextColour: e.target.value });
+                  }}
+                  style={{ width: 90, fontFamily: "monospace" }}
+                />
+              </Space>
+              <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
+                Main text colour (names, descriptions, stats)
+              </Text>
+            </Form.Item>
+
+            <Form.Item label={"Keyword Colour"} style={{ marginBottom: 0 }}>
+              <Space>
+                <input
+                  type="color"
+                  value={activeCard.customKeywordColour || (activeCard.variant === "basic" ? "#666666" : "#456664")}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customKeywordColour: e.target.value });
+                  }}
+                  style={{
+                    width: 40,
+                    height: 28,
+                    padding: 0,
+                    border: "1px solid #d9d9d9",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                  }}
+                />
+                <Input
+                  size="small"
+                  value={activeCard.customKeywordColour || (activeCard.variant === "basic" ? "#666666" : "#456664")}
+                  onChange={(e) => {
+                    updateActiveCard({ ...activeCard, customKeywordColour: e.target.value });
+                  }}
+                  style={{ width: 90, fontFamily: "monospace" }}
+                />
+              </Space>
+              <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
+                Keyword and accent text colour
               </Text>
             </Form.Item>
           </Form>

@@ -2,14 +2,13 @@ import { Form, Input, Select, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
-import { settings } from "firebase/analytics";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 
 const { Option } = Select;
 
 export function UnitBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
-  const { settings, updateSettings } = useSettingsStorage();
+  const { settings } = useSettingsStorage();
 
   return (
     <Form>

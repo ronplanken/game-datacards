@@ -95,10 +95,15 @@ export const Warhammer40K10eCardDisplay = ({
               "--rows-colour": COLOURS[backgrounds].rowsColour,
               "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
               "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
-              "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+              "--weapon-keyword-colour": card.useCustomTextColours
+                ? card.customKeywordColour
+                : COLOURS[backgrounds].weaponKeywordColour,
               "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
               "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
               "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
+              ...(card.useCustomTextColours && {
+                "--custom-text-colour": card.customTextColour,
+              }),
             }}
           />
         </div>

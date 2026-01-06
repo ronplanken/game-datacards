@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useIndexedDBImages } from "../../Hooks/useIndexedDBImages";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { UnitWeaponKeywords } from "./UnitCard/UnitWeaponKeyword";
 import { replaceKeywords } from "./UnitCard/UnitAbilityDescription";
 import { FactionIcon } from "../Icons/FactionIcon";
@@ -24,6 +25,7 @@ const BasicCardContainer = styled.div`
 
 export const UnitCardBasic10e = ({ unit, cardStyle, paddingTop = "32px", className }) => {
   const { getImageUrl, isReady } = useIndexedDBImages();
+  const { dataSource } = useDataSourceStorage();
   const [localImageUrl, setLocalImageUrl] = useState(null);
 
   useEffect(() => {
@@ -63,9 +65,26 @@ export const UnitCardBasic10e = ({ unit, cardStyle, paddingTop = "32px", classNa
   const statHeaders = hasInvul ? ["M", "T", "SV", "INV", "W", "LD", "OC"] : ["M", "T", "SV", "W", "LD", "OC"];
   const statKeys = ["m", "t", "sv", "w", "ld", "oc"];
 
+  // Get faction colours when enabled
+  const cardFaction = dataSource?.data?.find((faction) => faction.id === unit.faction_id);
+  const colourStyles = {
+    ...(unit.useFactionColours && {
+      "--basic-banner-colour": unit.useCustomColours
+        ? unit.customBannerColour || cardFaction?.colours?.banner
+        : cardFaction?.colours?.banner,
+      "--basic-header-colour": unit.useCustomColours
+        ? unit.customHeaderColour || cardFaction?.colours?.header
+        : cardFaction?.colours?.header,
+    }),
+    ...(unit.useCustomTextColours && {
+      "--basic-text-colour": unit.customTextColour || "#000000",
+      "--basic-keyword-colour": unit.customKeywordColour || "#666666",
+    }),
+  };
+
   return (
     <div className={`unit-card-basic-10e-wrapper ${className || ""}`} style={{ paddingTop }}>
-      <div className="basic_unit_10e" style={cardStyle}>
+      <div className="basic_unit_10e" style={{ ...cardStyle, ...colourStyles }}>
         <BasicCardContainer
           className="page card"
           imageurl={imageUrl}
