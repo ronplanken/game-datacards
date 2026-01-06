@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
-import { Mail, Lock, X, Eye, EyeOff, AlertCircle, ChevronLeft } from "lucide-react";
+import { Mail, Lock, X, Eye, EyeOff, AlertCircle, ChevronLeft, ArrowRight } from "lucide-react";
 import { useAuth } from "../../Hooks/useAuth";
 import TwoFactorPrompt from "./TwoFactorPrompt";
 import "./AuthModals.css";
@@ -63,7 +63,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
         handleClose();
       }
     },
-    [visible],
+    [visible]
   );
 
   useEffect(() => {
@@ -324,7 +324,14 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
                 type="submit"
                 className={`auth-btn auth-btn--primary ${loading ? "auth-btn--loading" : ""}`}
                 disabled={loading}>
-                {loading ? <div className="auth-btn-spinner" /> : "Sign In"}
+                {loading ? (
+                  <div className="auth-btn-spinner" />
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <ArrowRight className="auth-btn-arrow" size={18} />
+                  </>
+                )}
               </button>
 
               <div className="auth-divider">
@@ -378,7 +385,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
         />
       )}
     </div>,
-    modalRoot,
+    modalRoot
   );
 };
 
