@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
-import { Mail, Lock, User, X, Eye, EyeOff, AlertCircle, Check } from "lucide-react";
+import { Mail, Lock, User, X, Eye, EyeOff, AlertCircle, Check, ArrowRight } from "lucide-react";
 import { useAuth } from "../../Hooks/useAuth";
 import "./AuthModals.css";
 
@@ -88,7 +88,7 @@ export const SignupModal = ({ visible, onCancel, onSwitchToLogin, onSuccess }) =
         handleClose();
       }
     },
-    [visible],
+    [visible]
   );
 
   useEffect(() => {
@@ -405,7 +405,14 @@ export const SignupModal = ({ visible, onCancel, onSwitchToLogin, onSuccess }) =
               className={`auth-btn auth-btn--primary ${loading ? "auth-btn--loading" : ""}`}
               disabled={loading}
               style={{ marginTop: "8px" }}>
-              {loading ? <div className="auth-btn-spinner" /> : "Create Account"}
+              {loading ? (
+                <div className="auth-btn-spinner" />
+              ) : (
+                <>
+                  <span>Create Account</span>
+                  <ArrowRight className="auth-btn-arrow" size={18} />
+                </>
+              )}
             </button>
 
             <div className="auth-divider">
@@ -444,7 +451,7 @@ export const SignupModal = ({ visible, onCancel, onSwitchToLogin, onSuccess }) =
         </div>
       </div>
     </div>,
-    modalRoot,
+    modalRoot
   );
 };
 
