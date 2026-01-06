@@ -11,13 +11,14 @@ import React, { useState } from "react";
 import { Button, Dropdown, Avatar, Space, Typography } from "antd";
 import {
   UserOutlined,
-  LoginOutlined,
   SettingOutlined,
   ShareAltOutlined,
   LogoutOutlined,
   CrownOutlined,
   SafetyOutlined,
 } from "@ant-design/icons";
+import { LogIn } from "lucide-react";
+import "./AccountButton.css";
 import { useAuth } from "../../Hooks/useAuth";
 import { useSubscription } from "../../Hooks/useSubscription";
 import LoginModal from "./LoginModal";
@@ -153,9 +154,11 @@ export const AccountButton = () => {
   if (!isAuthenticated) {
     return (
       <>
-        <Button type="primary" icon={<LoginOutlined />} onClick={() => setLoginVisible(true)}>
-          Sign In
-        </Button>
+        <button className="header-signin-btn" onClick={() => setLoginVisible(true)}>
+          <span className="header-signin-btn-bg" />
+          <LogIn className="header-signin-btn-icon" size={16} />
+          <span className="header-signin-btn-text">Sign In</span>
+        </button>
 
         <LoginModal
           visible={loginVisible}
