@@ -140,7 +140,7 @@ export const SubscriptionProvider = ({ children }) => {
    * Fetch current usage from database
    */
   const fetchUsage = useCallback(async () => {
-    if (!user?.id) {
+    if (!user?.id || !supabase) {
       setUsage({ categories: 0, datasources: 0 });
       return;
     }
@@ -211,6 +211,11 @@ export const SubscriptionProvider = ({ children }) => {
         return { success: false };
       }
 
+      if (!supabase) {
+        message.error("Service not configured");
+        return { success: false };
+      }
+
       if (!FEATURES.paidTierEnabled) {
         message.info("Paid tier is not yet available. Stay tuned!");
         return { success: false };
@@ -253,6 +258,11 @@ export const SubscriptionProvider = ({ children }) => {
       return { success: false };
     }
 
+    if (!supabase) {
+      message.error("Service not configured");
+      return { success: false };
+    }
+
     try {
       // Call Supabase Edge Function to get portal URL
       const { data, error } = await supabase.functions.invoke("get-portal-url", {
@@ -280,7 +290,7 @@ export const SubscriptionProvider = ({ children }) => {
    * Refresh subscription data from database
    */
   const refreshSubscription = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id || !supabase) return;
 
     try {
       const { data, error } = await supabase.from("user_profiles").select("*").eq("id", user.id).single();

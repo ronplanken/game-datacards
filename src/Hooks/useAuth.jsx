@@ -33,6 +33,12 @@ export const AuthProvider = ({ children }) => {
    * Initialize auth state from session
    */
   useEffect(() => {
+    // Skip auth initialization if Supabase is not configured
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -63,6 +69,8 @@ export const AuthProvider = ({ children }) => {
    * Fetch user profile from database
    */
   const fetchUserProfile = useCallback(async (userId) => {
+    if (!supabase) return;
+
     try {
       const { data, error } = await supabase.from("user_profiles").select("*").eq("id", userId).single();
 
@@ -77,6 +85,11 @@ export const AuthProvider = ({ children }) => {
    * Sign up with email and password
    */
   const signUp = useCallback(async (email, password, metadata = {}) => {
+    if (!supabase) {
+      message.error("Authentication is not configured. Please set up environment variables.");
+      return { success: false, error: "Supabase not configured" };
+    }
+
     try {
       setLoading(true);
       const { data, error } = await supabase.auth.signUp({
