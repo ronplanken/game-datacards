@@ -15,7 +15,7 @@ export const StratagemCard = ({
 }) => {
   const screens = useBreakpoint();
 
-  const lineHeight = screens.xs ? "default" : (`${stratagem?.styling?.lineHeight}rem` ?? "1rem");
+  const lineHeight = screens.xs ? "default" : `${stratagem?.styling?.lineHeight}rem` ?? "1rem";
   const typeSize = screens.xs ? 12 : 10;
   return (
     <div
@@ -37,7 +37,7 @@ export const StratagemCard = ({
             either: stratagem.turn === "either",
             own: stratagem.turn === "your",
           },
-          stratagem.faction_id,
+          stratagem.faction_id
         )}>
         <div className={`border`}>
           <div className="background-side-bar"></div>

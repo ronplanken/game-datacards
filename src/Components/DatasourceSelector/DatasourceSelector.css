@@ -112,9 +112,7 @@
   background: #ffffff;
   border: 1px solid var(--ds-border);
   border-radius: var(--ds-radius);
-  box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
   padding: 12px 0;
   pointer-events: auto;
   animation: dsFadeSlideIn 0.2s ease-out;

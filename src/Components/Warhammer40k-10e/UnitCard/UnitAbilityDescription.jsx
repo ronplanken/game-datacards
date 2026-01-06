@@ -28,7 +28,7 @@ export function replaceKeywords(inputString) {
         <span className="keyword">
           <KeywordTooltip keyword={keyword.toLowerCase()} />
         </span>
-      </React.Fragment>,
+      </React.Fragment>
     );
   });
 
@@ -43,7 +43,7 @@ export function replaceKeywords(inputString) {
         <span className="rule">
           <RuleTooltip keyword={match.toLowerCase()} />
         </span>
-      </React.Fragment>,
+      </React.Fragment>
     );
   });
 

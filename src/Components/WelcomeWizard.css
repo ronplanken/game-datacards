@@ -422,9 +422,7 @@
 
 .wz-discord-link {
   display: inline-block;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   border-radius: var(--wz-radius-sm);
   overflow: hidden;
   margin-top: 16px;

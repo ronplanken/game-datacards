@@ -181,7 +181,7 @@ export const DatasourceSelector = () => {
               </button>
             </div>
           </div>,
-          document.body,
+          document.body
         )}
 
       <CustomDatasourceModal isOpen={isCustomModalOpen} onClose={() => setIsCustomModalOpen(false)} />

@@ -382,7 +382,7 @@ export const WelcomeWizard = () => {
         handleClose();
       }
     },
-    [isWizardVisible, step],
+    [isWizardVisible, step]
   );
 
   useEffect(() => {
@@ -456,6 +456,6 @@ export const WelcomeWizard = () => {
         />
       </div>
     </div>,
-    modalRoot,
+    modalRoot
   );
 };

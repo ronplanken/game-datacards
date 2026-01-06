@@ -16,7 +16,6 @@
       "Bash(git fetch:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)",
       "Bash(gh pr create:*)",
       "Bash(git checkout:*)",
       "Bash(grep:*)",

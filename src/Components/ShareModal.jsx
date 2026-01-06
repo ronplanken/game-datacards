@@ -21,7 +21,7 @@ export const ShareModal = () => {
         handleClose();
       }
     },
-    [isModalVisible],
+    [isModalVisible]
   );
 
   useEffect(() => {

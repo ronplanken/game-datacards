@@ -80,7 +80,7 @@ export const Exporter = () => {
 
   const { counts: cardCounts, total: cardTotal } = useMemo(
     () => countCardsByType(allCategoryCards),
-    [allCategoryCards],
+    [allCategoryCards]
   );
   const cardBreakdown = useMemo(() => formatCardBreakdown(cardCounts), [cardCounts]);
 
@@ -221,7 +221,7 @@ export const Exporter = () => {
         }
         return exportCards;
       },
-      { characters: [], battleline: [], transports: [], other: [], allied: [] },
+      { characters: [], battleline: [], transports: [], other: [], allied: [] }
     );
 
     // Helper to format a unit entry
@@ -488,7 +488,7 @@ export const Exporter = () => {
               </div>
             </div>
           </div>,
-          modalRoot,
+          modalRoot
         )}
       <Tooltip content={activeCategory ? "Export category" : "Select a category first"} placement="bottom-start">
         <Button

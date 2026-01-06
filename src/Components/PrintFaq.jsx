@@ -79,7 +79,7 @@ export const PrintFaq = () => {
               </div>
             </div>
           </div>,
-          modalRoot,
+          modalRoot
         )}
       <Button
         style={{

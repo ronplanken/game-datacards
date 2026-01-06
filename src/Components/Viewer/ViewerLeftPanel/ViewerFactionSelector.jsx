@@ -16,7 +16,7 @@ export const ViewerFactionSelector = () => {
 
   // Filter factions based on search text
   const filteredFactions = dataSource.data.filter((faction) =>
-    faction.name.toLowerCase().includes(searchText.toLowerCase()),
+    faction.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Handle click outside to close dropdown

@@ -111,7 +111,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${item.card.name
         .replaceAll(" ", "-")
         .toLowerCase()}`,
-      { state: { listCard: item.card } },
+      { state: { listCard: item.card } }
     );
     handleClose();
   };

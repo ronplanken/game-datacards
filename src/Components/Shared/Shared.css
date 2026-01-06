@@ -62,12 +62,7 @@
 }
 
 .shared-header-title {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 18px;
   font-weight: 600;
   color: var(--shared-text);
@@ -76,12 +71,7 @@
 }
 
 .shared-header-category {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   color: var(--shared-text-secondary);
   margin: 0;
@@ -167,12 +157,7 @@
 }
 
 .shared-sidebar-title {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 13px;
   font-weight: 600;
   color: var(--shared-text-secondary);
