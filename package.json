@@ -101,7 +101,6 @@
   "devDependencies": {
     "@craco/craco": "^6.4.5",
     "@testing-library/react-hooks": "^8.0.1",
-    "codecov": "^3.8.3",
     "craco-less": "^2.0.0",
     "env-cmd": "^11.0.0",
     "eslint": ">=5.16.0",
