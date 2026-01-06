@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh run:*)",
+      "Bash(yarn prettier:fix:*)",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__list_pages",
+      "Bash(lsof:*)",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__click",
+      "mcp__chrome-devtools__take_screenshot",
+      "Bash(yarn lint:*)",
+      "Bash(yarn test:ci:*)",
+      "Skill(frontend-design)",
+      "mcp__chrome-devtools__list_console_messages",
+      "Bash(git fetch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git checkout:*)",
+      "Bash(grep:*)",
+      "Bash(yarn lint:fix:*)"
+    ]
+  }
+}

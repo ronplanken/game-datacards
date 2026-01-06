@@ -438,8 +438,12 @@
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(135deg, var(--wnw-gold) 0%, transparent 50%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
@@ -529,7 +533,9 @@
   border-radius: var(--wnw-radius-sm);
   border: 1px solid var(--wnw-border);
   animation: wnwSlideInLeft 0.35s ease-out backwards;
-  transition: border-color 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
 }
 
 .wnw-highlight-item:hover {
@@ -585,7 +591,9 @@
 
 .wnw-discord-link {
   display: inline-block;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   border-radius: var(--wnw-radius-sm);
   overflow: hidden;
   margin-top: 20px;

@@ -50,7 +50,7 @@ const ConfirmChangesModal = (props) => {
         </div>
       </div>
     </div>,
-    modalRoot
+    modalRoot,
   );
 };
 

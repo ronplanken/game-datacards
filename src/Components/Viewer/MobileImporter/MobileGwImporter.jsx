@@ -31,7 +31,7 @@ const matchEnhancementsToFaction = (units, faction, listDetachment) => {
       factionEnhancement = enhancements.find(
         (e) =>
           e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
-          e.detachment?.toLowerCase() === listDetachment.toLowerCase()
+          e.detachment?.toLowerCase() === listDetachment.toLowerCase(),
       );
     }
 
@@ -229,7 +229,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
           matchStatus: "none",
           matchedCard: null,
           alternatives: [],
-        }))
+        })),
       );
     }
 
@@ -254,8 +254,8 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
     if (datasheet) {
       setUnits((prev) =>
         prev.map((unit, idx) =>
-          idx === unitIndex ? { ...unit, matchedCard: datasheet, matchStatus: "confident", skipped: false } : unit
-        )
+          idx === unitIndex ? { ...unit, matchedCard: datasheet, matchStatus: "confident", skipped: false } : unit,
+        ),
       );
     }
   };

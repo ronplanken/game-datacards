@@ -199,7 +199,7 @@ export function UnitWeapon({ weapon, index, type }) {
                       updateActiveCard(() => {
                         const newWeapons = [...activeCard[type]];
                         newWeapons[index].profiles[pIndex].keywords.push(
-                          `keyword ${newWeapons[index].profiles[pIndex].keywords.length + 1}`
+                          `keyword ${newWeapons[index].profiles[pIndex].keywords.length + 1}`,
                         );
                         return { ...activeCard, [type]: newWeapons };
                       })

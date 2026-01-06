@@ -132,7 +132,7 @@ export const MobileWhatsNewWizard = () => {
         </footer>
       </div>
     </div>,
-    modalRoot
+    modalRoot,
   );
 };
 

@@ -73,7 +73,7 @@ export const WhatsNew = () => {
         closeWhatsNew();
       }
     },
-    [isWhatsNewVisible]
+    [isWhatsNewVisible],
   );
 
   useEffect(() => {
@@ -166,6 +166,6 @@ export const WhatsNew = () => {
         </footer>
       </div>
     </div>,
-    modalRoot
+    modalRoot,
   );
 };

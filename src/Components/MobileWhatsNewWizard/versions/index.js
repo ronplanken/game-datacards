@@ -82,6 +82,6 @@ export const mergeMobileVersionSteps = (versions) => {
 export const getMobileUnseenVersions = (lastSeenVersion, currentVersion) => {
   if (!lastSeenVersion || !currentVersion) return [];
   return MOBILE_VERSION_REGISTRY.filter(
-    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<=")
+    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<="),
   );
 };

@@ -461,7 +461,7 @@ const getAlliedDatasheets = (faction, allFactions) => {
             _isAllied: true,
             _alliedFactionId: alliedId,
             _alliedFactionName: alliedFaction.name,
-          }))
+          })),
         );
       }
     });
@@ -478,7 +478,7 @@ const getAlliedDatasheets = (faction, allFactions) => {
           _alliedFactionId: subfaction.id,
           _alliedFactionName: subfaction.name,
           _isSubfaction: true,
-        }))
+        })),
       );
     }
   });
@@ -577,7 +577,7 @@ export const countMatchStatuses = (units) => {
       }
       return counts;
     },
-    { ready: 0, needsReview: 0, notMatched: 0, skipped: 0 }
+    { ready: 0, needsReview: 0, notMatched: 0, skipped: 0 },
   );
 };
 
@@ -672,7 +672,7 @@ export const filterCardWeapons = (card, importedWeapons) => {
 
     // Hide section if no ranged weapons are active
     const hasActiveRanged = filteredCard.rangedWeapons.some((weapon) =>
-      weapon.profiles?.some((profile) => profile.active)
+      weapon.profiles?.some((profile) => profile.active),
     );
     if (!hasActiveRanged) {
       filteredCard.showWeapons.rangedWeapons = false;
@@ -691,7 +691,7 @@ export const filterCardWeapons = (card, importedWeapons) => {
 
     // Hide section if no melee weapons are active
     const hasActiveMelee = filteredCard.meleeWeapons.some((weapon) =>
-      weapon.profiles?.some((profile) => profile.active)
+      weapon.profiles?.some((profile) => profile.active),
     );
     if (!hasActiveMelee) {
       filteredCard.showWeapons.meleeWeapons = false;

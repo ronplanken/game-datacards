@@ -64,7 +64,7 @@ export const WhatsNewWizard = () => {
         }
       }
     },
-    [isWizardVisible, step, mergedSteps.length]
+    [isWizardVisible, step, mergedSteps.length],
   );
 
   useEffect(() => {
@@ -123,7 +123,7 @@ export const WhatsNewWizard = () => {
         />
       </div>
     </div>,
-    modalRoot
+    modalRoot,
   );
 };
 

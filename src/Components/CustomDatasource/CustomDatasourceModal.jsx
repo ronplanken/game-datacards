@@ -68,7 +68,7 @@ export const CustomDatasourceModal = ({ isOpen, onClose }) => {
         onClose();
       }
     },
-    [isOpen, onClose]
+    [isOpen, onClose],
   );
 
   useEffect(() => {

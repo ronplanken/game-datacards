@@ -144,7 +144,7 @@ export function WarscrollAbilitiesEditor() {
                   updateAbility(
                     index,
                     "keywords",
-                    e.target.value.split(",").map((k) => k.trim())
+                    e.target.value.split(",").map((k) => k.trim()),
                   )
                 }
               />

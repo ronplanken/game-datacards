@@ -29,7 +29,7 @@ export const UserMenu = ({ onSettingsClick }) => {
         setIsDropdownOpen(false);
       }
     },
-    [avatarRef]
+    [avatarRef],
   );
 
   // Handle escape key
@@ -116,7 +116,7 @@ export const UserMenu = ({ onSettingsClick }) => {
               <span>Sign Out</span>
             </div>
           </div>,
-          modalRoot
+          modalRoot,
         )}
     </>
   );

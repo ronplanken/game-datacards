@@ -112,7 +112,8 @@ export const MobileFaction = () => {
   // Filter stratagems by detachment
   const factionStratagems =
     selectedFaction?.stratagems?.filter(
-      (stratagem) => stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment
+      (stratagem) =>
+        stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment,
     ) || [];
 
   const coreStratagems = selectedFaction?.basicStratagems || [];
@@ -121,14 +122,14 @@ export const MobileFaction = () => {
   const enhancements = Array.isArray(selectedFaction?.enhancements)
     ? selectedFaction.enhancements.filter(
         (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
+          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
       )
     : [];
 
   // Filter detachment rules by selected detachment
   const detachmentRules =
     selectedFaction?.rules?.detachment?.find(
-      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase()
+      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase(),
     ) || [];
 
   return (
