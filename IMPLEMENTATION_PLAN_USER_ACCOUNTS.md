@@ -482,6 +482,49 @@ Each item shows:
 2. Show "View my shares" link
 3. After sharing, show in My Shares list
 
+### 5.5 Handling Expired Subscriptions
+**Datasource Behavior on Subscription Expiry:**
+
+When a paid subscription expires or is cancelled:
+- Existing uploaded datasources remain **public and accessible**
+- Datasources become **read-only** for the owner:
+  - Cannot edit datasource metadata
+  - Cannot delete datasources
+  - Cannot upload new datasources
+  - Cannot toggle public/private status
+- Other users can still view and import public datasources
+- Owner sees banner: "Your subscription has expired. Datasources are read-only. Upgrade to manage."
+
+**Implementation in `useSubscription.jsx`:**
+```javascript
+const canManageDatasources = () => {
+  return tier === 'paid' && subscription_status === 'active';
+};
+
+const canUploadDatasource = () => {
+  return canManageDatasources();
+};
+```
+
+**UI Changes in `MySharesView.jsx`:**
+```javascript
+// Show read-only state if subscription expired
+{!canManageDatasources() && (
+  <Alert type="warning">
+    Your subscription has expired. Your datasources are read-only.
+    <Button onClick={handleUpgrade}>Upgrade to manage</Button>
+  </Alert>
+)}
+
+// Disable edit/delete buttons when read-only
+<Button
+  disabled={!canManageDatasources()}
+  onClick={handleDelete}
+>
+  Delete
+</Button>
+```
+
 ---
 
 ## Phase 6: Migration & Polish
@@ -715,11 +758,15 @@ If critical issues are found after deployment:
 
 ## Questions for Review
 
+**Answered:**
+- **Timeline**: 7-8 weeks is acceptable ✓
+- **Datasource expiry**: When paid subscription expires, uploaded datasources become read-only (remain public but user cannot edit/delete/upload new ones) ✓
+
+**Open Questions:**
 1. Should we implement a "local-only mode" toggle for privacy-conscious users?
 2. Should we add 2FA/MFA support from day one?
-3. What should happen to datasources when a paid subscription expires?
-4. Should there be a grace period before enforcing category limits?
-5. Do we need GDPR-compliant data export/deletion flows?
+3. Should there be a grace period before enforcing category limits?
+4. Do we need GDPR-compliant data export/deletion flows?
 
 ---
 
