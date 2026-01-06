@@ -9,17 +9,32 @@
 
 import React, { useState } from "react";
 import { Button, Dropdown, Avatar, Space, Typography } from "antd";
-import { UserOutlined, LoginOutlined, SettingOutlined, ShareAltOutlined, LogoutOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LoginOutlined,
+  SettingOutlined,
+  ShareAltOutlined,
+  LogoutOutlined,
+  CrownOutlined,
+  SafetyOutlined,
+} from "@ant-design/icons";
 import { useAuth } from "../../Hooks/useAuth";
+import { useSubscription } from "../../Hooks/useSubscription";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
+import TwoFactorSetup from "./TwoFactorSetup";
+import SubscriptionBadge from "../Subscription/SubscriptionBadge";
+import UpgradeModal from "../Subscription/UpgradeModal";
 
 const { Text } = Typography;
 
 export const AccountButton = () => {
   const { user, isAuthenticated, signOut, loading } = useAuth();
+  const { getTier, openCustomerPortal } = useSubscription();
   const [loginVisible, setLoginVisible] = useState(false);
   const [signupVisible, setSignupVisible] = useState(false);
+  const [upgradeVisible, setUpgradeVisible] = useState(false);
+  const [twoFactorVisible, setTwoFactorVisible] = useState(false);
 
   /**
    * Handle logout
@@ -52,16 +67,23 @@ export const AccountButton = () => {
   /**
    * Authenticated user menu items
    */
+  const tier = getTier();
   const menuItems = [
     {
       key: "user-info",
       label: (
         <div style={{ padding: "4px 0" }}>
-          <Text strong>{getUserDisplayName()}</Text>
-          <br />
-          <Text type="secondary" style={{ fontSize: "12px" }}>
-            {user?.email}
-          </Text>
+          <Space direction="vertical" size={4}>
+            <div>
+              <Text strong>{getUserDisplayName()}</Text>
+              <span style={{ marginLeft: 8 }}>
+                <SubscriptionBadge size="small" />
+              </span>
+            </div>
+            <Text type="secondary" style={{ fontSize: "12px" }}>
+              {user?.email}
+            </Text>
+          </Space>
         </div>
       ),
       disabled: true,
@@ -87,6 +109,26 @@ export const AccountButton = () => {
         console.log("Open my shares");
       },
     },
+    {
+      key: "2fa",
+      icon: <SafetyOutlined />,
+      label: "Two-Factor Auth",
+      onClick: () => setTwoFactorVisible(true),
+    },
+    // Show upgrade for free users, manage subscription for paid users
+    tier === "free"
+      ? {
+          key: "upgrade",
+          icon: <CrownOutlined />,
+          label: "Upgrade to Premium",
+          onClick: () => setUpgradeVisible(true),
+        }
+      : {
+          key: "manage-subscription",
+          icon: <CrownOutlined />,
+          label: "Manage Subscription",
+          onClick: () => openCustomerPortal(),
+        },
     {
       type: "divider",
     },
@@ -140,21 +182,31 @@ export const AccountButton = () => {
 
   // Authenticated - show user menu
   return (
-    <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["click"]}>
-      <Space style={{ cursor: "pointer" }} data-testid="user-menu">
-        <Avatar
-          style={{
-            backgroundColor: "#1890ff",
-            verticalAlign: "middle",
-          }}
-          size="default">
-          {getUserInitials()}
-        </Avatar>
-        <Text strong style={{ display: "none", "@media (min-width: 768px)": { display: "inline" } }}>
-          {getUserDisplayName()}
-        </Text>
-      </Space>
-    </Dropdown>
+    <>
+      <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["click"]}>
+        <Space style={{ cursor: "pointer" }} data-testid="user-menu">
+          <Avatar
+            style={{
+              backgroundColor: "#1890ff",
+              verticalAlign: "middle",
+            }}
+            size="default">
+            {getUserInitials()}
+          </Avatar>
+          <Text strong style={{ display: "none", "@media (min-width: 768px)": { display: "inline" } }}>
+            {getUserDisplayName()}
+          </Text>
+        </Space>
+      </Dropdown>
+
+      <UpgradeModal visible={upgradeVisible} onCancel={() => setUpgradeVisible(false)} trigger="manual" />
+
+      <TwoFactorSetup
+        visible={twoFactorVisible}
+        onCancel={() => setTwoFactorVisible(false)}
+        onSuccess={() => setTwoFactorVisible(false)}
+      />
+    </>
   );
 };
 
