@@ -28,3 +28,4 @@ yarn-error.log*
 /.vscode
 .gemini-clipboard/
 .claude/
+.env
