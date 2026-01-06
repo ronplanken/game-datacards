@@ -7,12 +7,12 @@
  * - Handles modal state for login/signup
  */
 
-import React, { useState } from 'react';
-import { Button, Dropdown, Avatar, Space, Typography } from 'antd';
-import { UserOutlined, LoginOutlined, SettingOutlined, ShareAltOutlined, LogoutOutlined } from '@ant-design/icons';
-import { useAuth } from '../../Hooks/useAuth';
-import LoginModal from './LoginModal';
-import SignupModal from './SignupModal';
+import React, { useState } from "react";
+import { Button, Dropdown, Avatar, Space, Typography } from "antd";
+import { UserOutlined, LoginOutlined, SettingOutlined, ShareAltOutlined, LogoutOutlined } from "@ant-design/icons";
+import { useAuth } from "../../Hooks/useAuth";
+import LoginModal from "./LoginModal";
+import SignupModal from "./SignupModal";
 
 const { Text } = Typography;
 
@@ -32,8 +32,8 @@ export const AccountButton = () => {
    * Get user display name
    */
   const getUserDisplayName = () => {
-    if (!user) return '';
-    return user.user_metadata?.display_name || user.email?.split('@')[0] || 'User';
+    if (!user) return "";
+    return user.user_metadata?.display_name || user.email?.split("@")[0] || "User";
   };
 
   /**
@@ -42,9 +42,9 @@ export const AccountButton = () => {
   const getUserInitials = () => {
     const name = getUserDisplayName();
     return name
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
@@ -54,12 +54,12 @@ export const AccountButton = () => {
    */
   const menuItems = [
     {
-      key: 'user-info',
+      key: "user-info",
       label: (
-        <div style={{ padding: '4px 0' }}>
+        <div style={{ padding: "4px 0" }}>
           <Text strong>{getUserDisplayName()}</Text>
           <br />
-          <Text type="secondary" style={{ fontSize: '12px' }}>
+          <Text type="secondary" style={{ fontSize: "12px" }}>
             {user?.email}
           </Text>
         </div>
@@ -67,33 +67,33 @@ export const AccountButton = () => {
       disabled: true,
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      key: 'account',
+      key: "account",
       icon: <SettingOutlined />,
-      label: 'Account Settings',
+      label: "Account Settings",
       onClick: () => {
         // TODO: Open account settings modal
-        console.log('Open account settings');
+        console.log("Open account settings");
       },
     },
     {
-      key: 'shares',
+      key: "shares",
       icon: <ShareAltOutlined />,
-      label: 'My Shares',
+      label: "My Shares",
       onClick: () => {
         // TODO: Open my shares view
-        console.log('Open my shares');
+        console.log("Open my shares");
       },
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
-      label: 'Sign Out',
+      label: "Sign Out",
       onClick: handleLogout,
     },
   ];
@@ -140,18 +140,17 @@ export const AccountButton = () => {
 
   // Authenticated - show user menu
   return (
-    <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={['click']}>
-      <Space style={{ cursor: 'pointer' }} data-testid="user-menu">
+    <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["click"]}>
+      <Space style={{ cursor: "pointer" }} data-testid="user-menu">
         <Avatar
           style={{
-            backgroundColor: '#1890ff',
-            verticalAlign: 'middle',
+            backgroundColor: "#1890ff",
+            verticalAlign: "middle",
           }}
-          size="default"
-        >
+          size="default">
           {getUserInitials()}
         </Avatar>
-        <Text strong style={{ display: 'none', '@media (min-width: 768px)': { display: 'inline' } }}>
+        <Text strong style={{ display: "none", "@media (min-width: 768px)": { display: "inline" } }}>
           {getUserDisplayName()}
         </Text>
       </Space>

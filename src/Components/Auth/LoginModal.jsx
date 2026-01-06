@@ -9,10 +9,10 @@
  * - 2FA support (handled in parent)
  */
 
-import React, { useState } from 'react';
-import { Modal, Form, Input, Button, Divider, Space, Typography } from 'antd';
-import { GoogleOutlined, GithubOutlined, MailOutlined, LockOutlined } from '@ant-design/icons';
-import { useAuth } from '../../Hooks/useAuth';
+import React, { useState } from "react";
+import { Modal, Form, Input, Button, Divider, Space, Typography } from "antd";
+import { GoogleOutlined, GithubOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
+import { useAuth } from "../../Hooks/useAuth";
 
 const { Text, Link } = Typography;
 
@@ -35,7 +35,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
         if (onSuccess) onSuccess();
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
         // Modal will close when user returns
       }
     } catch (error) {
-      console.error('OAuth error:', error);
+      console.error("OAuth error:", error);
     } finally {
       setLoading(false);
     }
@@ -64,9 +64,9 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
    */
   const handleForgotPassword = async () => {
     try {
-      const email = form.getFieldValue('email');
+      const email = form.getFieldValue("email");
       if (!email) {
-        form.validateFields(['email']);
+        form.validateFields(["email"]);
         return;
       }
 
@@ -76,7 +76,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
         setShowForgotPassword(false);
       }
     } catch (error) {
-      console.error('Password reset error:', error);
+      console.error("Password reset error:", error);
     } finally {
       setLoading(false);
     }
@@ -93,28 +93,26 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
 
   return (
     <Modal
-      title={showForgotPassword ? 'Reset Password' : 'Sign In'}
+      title={showForgotPassword ? "Reset Password" : "Sign In"}
       open={visible}
       onCancel={handleCancel}
       footer={null}
       width={400}
-      destroyOnClose
-    >
+      destroyOnClose>
       {showForgotPassword ? (
         // Password Reset Mode
         <>
-          <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-            Enter your email address and we'll send you a link to reset your password.
+          <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+            Enter your email address and we&apos;ll send you a link to reset your password.
           </Text>
 
           <Form form={form} layout="vertical" onFinish={handleForgotPassword}>
             <Form.Item
               name="email"
               rules={[
-                { required: true, message: 'Please enter your email' },
-                { type: 'email', message: 'Please enter a valid email' },
-              ]}
-            >
+                { required: true, message: "Please enter your email" },
+                { type: "email", message: "Please enter a valid email" },
+              ]}>
               <Input prefix={<MailOutlined />} placeholder="Email address" size="large" />
             </Form.Item>
 
@@ -124,7 +122,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
               </Button>
             </Form.Item>
 
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: "center" }}>
               <Link onClick={() => setShowForgotPassword(false)}>Back to Sign In</Link>
             </div>
           </Form>
@@ -136,18 +134,16 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
             <Form.Item
               name="email"
               rules={[
-                { required: true, message: 'Please enter your email' },
-                { type: 'email', message: 'Please enter a valid email' },
-              ]}
-            >
+                { required: true, message: "Please enter your email" },
+                { type: "email", message: "Please enter a valid email" },
+              ]}>
               <Input prefix={<MailOutlined />} placeholder="Email address" size="large" autoComplete="email" />
             </Form.Item>
 
             <Form.Item
               name="password"
-              rules={[{ required: true, message: 'Please enter your password' }]}
-              style={{ marginBottom: 8 }}
-            >
+              rules={[{ required: true, message: "Please enter your password" }]}
+              style={{ marginBottom: 8 }}>
               <Input.Password
                 prefix={<LockOutlined />}
                 placeholder="Password"
@@ -156,7 +152,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
               />
             </Form.Item>
 
-            <div style={{ textAlign: 'right', marginBottom: 16 }}>
+            <div style={{ textAlign: "right", marginBottom: 16 }}>
               <Link onClick={() => setShowForgotPassword(true)}>Forgot password?</Link>
             </div>
 
@@ -169,32 +165,30 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
 
           <Divider plain>Or continue with</Divider>
 
-          <Space direction="vertical" style={{ width: '100%' }} size="middle">
+          <Space direction="vertical" style={{ width: "100%" }} size="middle">
             <Button
               icon={<GoogleOutlined />}
-              onClick={() => handleOAuthLogin('google')}
+              onClick={() => handleOAuthLogin("google")}
               loading={loading}
               block
-              size="large"
-            >
+              size="large">
               Sign in with Google
             </Button>
 
             <Button
               icon={<GithubOutlined />}
-              onClick={() => handleOAuthLogin('github')}
+              onClick={() => handleOAuthLogin("github")}
               loading={loading}
               block
-              size="large"
-            >
+              size="large">
               Sign in with GitHub
             </Button>
           </Space>
 
           <Divider />
 
-          <div style={{ textAlign: 'center' }}>
-            <Text type="secondary">Don't have an account? </Text>
+          <div style={{ textAlign: "center" }}>
+            <Text type="secondary">Don&apos;t have an account? </Text>
             <Link onClick={onSwitchToSignup}>Sign up</Link>
           </div>
         </>
