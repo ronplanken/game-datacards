@@ -139,9 +139,17 @@ CREATE POLICY "Users can manage own shares" ON public.category_shares FOR UPDATE
     "@supabase/supabase-js": "^2.39.0",
     "@polar-sh/sdk": "^latest", // Check if SDK exists, otherwise use REST API
     "react-query": "^3.39.3" // For data fetching/caching
+  },
+  "devDependencies": {
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/user-event": "^14.5.1",
+    "msw": "^2.0.0", // Mock Service Worker for API mocking
+    "codecov": "^3.8.3" // Code coverage reporting
   }
 }
 ```
+
+**Note:** Jest and @testing-library/react are already in the project.
 
 ---
 
@@ -238,6 +246,65 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 **File to modify:** `src/Components/AppHeader.jsx`
 - Add `<AccountButton />` to header
 - Show sync status indicator when authenticated
+
+### 2.5 Two-Factor Authentication (2FA)
+**Implementation using Supabase Auth TOTP**
+
+**New file:** `src/Components/Auth/TwoFactorSetup.jsx`
+- QR code display for authenticator app enrollment
+- Manual code entry option
+- Verify TOTP code during setup
+- Generate and display backup codes
+- Disable 2FA option (requires password confirmation)
+
+**New file:** `src/Components/Auth/TwoFactorPrompt.jsx`
+- Challenge user for TOTP code after password login
+- Backup code entry option
+- "Remember this device" checkbox (30-day cookie)
+
+**File to modify:** `src/Components/Auth/LoginModal.jsx`
+- After successful password auth, check if user has 2FA enabled
+- If enabled, show `<TwoFactorPrompt />` before completing login
+- Handle backup codes
+
+**File to modify:** `src/Components/Account/AccountSettings.jsx`
+- "Enable Two-Factor Authentication" section
+- Show 2FA status (enabled/disabled)
+- Setup wizard button
+- List of backup codes (regenerate option)
+
+**Supabase Implementation:**
+```javascript
+// Enable 2FA
+const { data, error } = await supabase.auth.mfa.enroll({
+  factorType: 'totp'
+});
+// Returns QR code URI and secret
+
+// Verify and activate
+await supabase.auth.mfa.challengeAndVerify({
+  factorId: data.id,
+  code: userEnteredCode
+});
+
+// Login with 2FA
+const { data, error } = await supabase.auth.mfa.challenge({
+  factorId: factorId
+});
+
+await supabase.auth.mfa.verify({
+  factorId: factorId,
+  challengeId: data.id,
+  code: userEnteredCode
+});
+```
+
+**User Flow:**
+1. User enables 2FA in account settings
+2. Scan QR code with authenticator app (Google Authenticator, Authy, etc.)
+3. Enter verification code to confirm setup
+4. Receive backup codes (download/print)
+5. On next login: password → 2FA code → access granted
 
 ---
 
@@ -564,7 +631,149 @@ Add new section: "Account & Sync"
 
 **Recommendation:** Keep Firebase for analytics (Option A) to minimize breaking changes.
 
-### 6.4 Testing Checklist
+### 6.4 GDPR Compliance (Required for EU)
+
+**New file:** `src/Components/Account/DataExport.jsx`
+**Purpose:** Allow users to download all their data
+
+**Features:**
+- Button: "Download My Data" in Account Settings
+- Generates comprehensive JSON export including:
+  - User profile information
+  - All categories (with full card data)
+  - All uploaded datasources
+  - Share history and statistics
+  - Account metadata (created date, subscription info)
+- Download as `game-datacards-export-[date].json`
+- Privacy notice explaining what data is included
+
+**Implementation:**
+```javascript
+const exportUserData = async () => {
+  const { data: profile } = await supabase
+    .from('user_profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  const { data: categories } = await supabase
+    .from('user_categories')
+    .select('*')
+    .eq('user_id', user.id);
+
+  const { data: datasources } = await supabase
+    .from('user_datasources')
+    .select('*')
+    .eq('user_id', user.id);
+
+  const { data: shares } = await supabase
+    .from('category_shares')
+    .select('*')
+    .eq('user_id', user.id);
+
+  const exportData = {
+    exportDate: new Date().toISOString(),
+    profile,
+    categories,
+    datasources,
+    shares,
+    version: process.env.REACT_APP_VERSION
+  };
+
+  // Download as JSON file
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+    type: 'application/json'
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `game-datacards-export-${Date.now()}.json`;
+  link.click();
+};
+```
+
+**New file:** `src/Components/Account/DeleteAccount.jsx`
+**Purpose:** Allow users to permanently delete their account and data
+
+**Features:**
+- Button: "Delete Account" in Account Settings (danger zone)
+- Multi-step confirmation process:
+  1. Warning modal explaining consequences
+  2. Type "DELETE" to confirm
+  3. Re-enter password for verification
+  4. Final confirmation
+- Deletion includes:
+  - User profile from `user_profiles`
+  - All categories from `user_categories` (CASCADE)
+  - All datasources from `user_datasources` (CASCADE)
+  - All shares from `category_shares` (SET NULL on user_id, keep shares public)
+  - Cancel polar.sh subscription (via API)
+  - Auth user from Supabase Auth
+- Optional: 30-day grace period (soft delete) before permanent deletion
+
+**Implementation:**
+```javascript
+const deleteAccount = async () => {
+  // 1. Cancel subscription via polar.sh API
+  if (subscription_tier === 'paid') {
+    await cancelPolarSubscription(polar_subscription_id);
+  }
+
+  // 2. Delete user data (CASCADE will handle related tables)
+  await supabase.from('user_profiles').delete().eq('id', user.id);
+
+  // 3. Delete auth user (requires admin API or edge function)
+  await supabase.functions.invoke('delete-user', {
+    body: { userId: user.id }
+  });
+
+  // 4. Sign out and redirect
+  await supabase.auth.signOut();
+  window.location.href = '/';
+};
+```
+
+**Supabase Edge Function:** `supabase/functions/delete-user/index.ts`
+```typescript
+// Admin function to delete auth user
+import { createClient } from '@supabase/supabase-js'
+
+serve(async (req) => {
+  const { userId } = await req.json()
+
+  // Use service role key (admin privileges)
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL'),
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  )
+
+  const { error } = await supabase.auth.admin.deleteUser(userId)
+
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 400
+    })
+  }
+
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200
+  })
+})
+```
+
+**Privacy Policy Updates:**
+- Document data retention policies
+- Explain user rights (access, export, deletion)
+- GDPR compliance statement
+- Contact email for data requests
+
+**File to modify:** `src/Components/Account/AccountSettings.jsx`
+Add new sections:
+- **Privacy & Data**
+  - Download my data button
+  - Delete account button (in danger zone at bottom)
+
+### 6.5 Testing Checklist
 - [ ] Anonymous user flow (no changes to existing behavior)
 - [ ] Free tier signup and category backup
 - [ ] Free tier limit enforcement (3rd category prompts upgrade)
@@ -576,6 +785,254 @@ Add new section: "Account & Sync"
 - [ ] Share tracking with user accounts
 - [ ] Offline mode (auto-sync when back online)
 - [ ] Session persistence across refreshes
+- [ ] 2FA enrollment and login flow
+- [ ] 2FA backup codes
+- [ ] GDPR data export functionality
+- [ ] GDPR account deletion (full cleanup)
+- [ ] Subscription expiry - datasources become read-only
+- [ ] Subscription expiry - categories soft limit (no new backups beyond free tier)
+
+---
+
+## Unit Testing Strategy (Medium Coverage ~60-70%)
+
+### Testing Tools
+- **Jest**: Test runner (already in project)
+- **React Testing Library**: Component testing
+- **MSW (Mock Service Worker)**: API mocking for Supabase
+- **@testing-library/user-event**: User interaction testing
+
+### Test Coverage Requirements
+
+#### Critical Path Testing (Must Have)
+**Authentication (`src/Hooks/useAuth.test.js`)**
+- Sign up with email/password
+- Login with email/password
+- OAuth login flow
+- Logout
+- Session persistence
+- Password reset
+- 2FA enrollment
+- 2FA login challenge
+- 2FA backup codes
+
+**Subscription Management (`src/Hooks/useSubscription.test.js`)**
+- Tier detection (free/paid)
+- Category limit checking (`canBackupCategory`)
+- Datasource upload permission (`canUploadDatasource`)
+- Webhook processing (subscription created/cancelled/expired)
+- Polar.sh API integration
+
+**Sync Engine (`src/Hooks/useSyncEngine.test.js`)**
+- Upload categories to cloud
+- Download categories from cloud
+- Merge local and cloud data
+- Conflict detection
+- Conflict resolution (keep local/keep cloud)
+- Version increment logic
+- Debounced sync
+- Offline queue
+
+**Category Storage (`src/Hooks/useCardStorage.test.js`)**
+- Add category (with tier limit check)
+- Update category (triggers sync)
+- Delete category (syncs deletion)
+- Category limit enforcement
+- Local-only mode (when not authenticated)
+
+#### Feature Testing (Should Have)
+**Datasource Management (`src/Hooks/useDataSourceStorage.test.js`)**
+- Import custom datasource
+- Upload restriction (free tier)
+- Cloud upload (paid tier)
+- Public datasource browsing
+- Read-only mode after subscription expires
+
+**GDPR Compliance (`src/Components/Account/DataExport.test.js`, `DeleteAccount.test.js`)**
+- Data export includes all user data
+- Export format is valid JSON
+- Account deletion removes all data
+- Deletion confirmation flow
+- Subscription cancellation on deletion
+
+**Share Management (`src/Components/ShareModal.test.js`, `MySharesView.test.js`)**
+- Share category (creates share link)
+- Link shares to authenticated user
+- View user's shares
+- Share visibility tracking
+
+#### Component Testing (Should Have)
+**UI Components**
+- `LoginModal.test.js`: Login/signup forms
+- `AccountButton.test.js`: Account dropdown menu
+- `TwoFactorSetup.test.js`: 2FA enrollment wizard
+- `TwoFactorPrompt.test.js`: 2FA login challenge
+- `UpgradeModal.test.js`: Tier comparison and upgrade CTA
+- `SyncIndicator.test.js`: Sync status display
+- `ConflictModal.test.js`: Conflict resolution UI
+
+### Test File Structure
+
+```javascript
+// Example: src/Hooks/useAuth.test.js
+import { renderHook, act } from '@testing-library/react-hooks';
+import { useAuth } from './useAuth';
+import { supabase } from '../config/supabase';
+
+jest.mock('../config/supabase');
+
+describe('useAuth', () => {
+  describe('signUp', () => {
+    it('creates a new user account', async () => {
+      supabase.auth.signUp.mockResolvedValue({
+        data: { user: { id: '123', email: 'test@example.com' } },
+        error: null
+      });
+
+      const { result } = renderHook(() => useAuth());
+
+      await act(async () => {
+        await result.current.signUp('test@example.com', 'password123');
+      });
+
+      expect(supabase.auth.signUp).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password123'
+      });
+    });
+
+    it('handles signup errors', async () => {
+      supabase.auth.signUp.mockResolvedValue({
+        data: null,
+        error: { message: 'Email already exists' }
+      });
+
+      const { result } = renderHook(() => useAuth());
+
+      await act(async () => {
+        const response = await result.current.signUp('test@example.com', 'password123');
+        expect(response.error).toBe('Email already exists');
+      });
+    });
+  });
+
+  describe('2FA', () => {
+    it('enrolls user in 2FA', async () => {
+      supabase.auth.mfa.enroll.mockResolvedValue({
+        data: { id: 'factor-123', qr_code: 'data:image/png...' },
+        error: null
+      });
+
+      const { result } = renderHook(() => useAuth());
+
+      await act(async () => {
+        const response = await result.current.enroll2FA();
+        expect(response.data.id).toBe('factor-123');
+      });
+    });
+  });
+});
+```
+
+### Integration Tests (Nice to Have)
+
+**End-to-End User Flows**
+Using Playwright (already in project):
+- Complete user journey: Signup → Add categories → Upgrade → Upload datasource
+- Multi-device sync: Login on device A → make changes → login on device B → verify sync
+- Subscription lifecycle: Subscribe → upload datasource → cancel → verify read-only
+
+```javascript
+// Example: tests/e2e/auth.spec.js
+import { test, expect } from '@playwright/test';
+
+test('complete authentication flow', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+
+  // Click login button
+  await page.click('[data-testid="account-button"]');
+
+  // Switch to signup
+  await page.click('[data-testid="signup-tab"]');
+
+  // Fill signup form
+  await page.fill('[name="email"]', 'test@example.com');
+  await page.fill('[name="password"]', 'SecurePassword123!');
+  await page.click('[data-testid="signup-submit"]');
+
+  // Verify redirect and authenticated state
+  await expect(page.locator('[data-testid="user-email"]')).toContainText('test@example.com');
+});
+```
+
+### Test Coverage Goals
+
+| Module | Target Coverage |
+|--------|----------------|
+| Auth hooks | 80%+ |
+| Subscription hooks | 80%+ |
+| Sync engine | 70%+ |
+| Storage hooks | 60%+ |
+| UI Components | 50%+ (critical paths only) |
+| Utilities | 70%+ |
+| **Overall** | **~60-70%** |
+
+### Continuous Integration
+
+**GitHub Actions Workflow** (`.github/workflows/test.yml`):
+```yaml
+name: Test Suite
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: yarn install
+      - run: yarn test:ci
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+```
+
+### Testing Checklist by Phase
+
+**Phase 1 (Foundation):**
+- [ ] useAuth unit tests
+- [ ] LoginModal component tests
+- [ ] SignupModal component tests
+- [ ] Session persistence tests
+
+**Phase 2 (Subscription):**
+- [ ] useSubscription unit tests
+- [ ] Tier limit tests
+- [ ] Webhook handler tests
+- [ ] 2FA enrollment tests
+- [ ] 2FA login tests
+
+**Phase 3 (Sync):**
+- [ ] useSyncEngine unit tests
+- [ ] Conflict detection tests
+- [ ] Merge logic tests
+- [ ] Debounce tests
+
+**Phase 4 (Tier Limits):**
+- [ ] Category limit enforcement tests
+- [ ] Upgrade prompt tests
+
+**Phase 5 (Datasources):**
+- [ ] Upload restriction tests
+- [ ] Read-only mode tests
+- [ ] Share visibility tests
+
+**Phase 6 (GDPR):**
+- [ ] Data export tests
+- [ ] Account deletion tests
+- [ ] Privacy compliance tests
 
 ---
 
@@ -590,43 +1047,59 @@ Add new section: "Account & Sync"
 6. Add account button to header
 7. Test authentication flow
 
-### Sprint 2: Subscription Integration (Week 2-3)
+### Sprint 2: Subscription & 2FA (Week 2-3)
 8. Implement `useSubscription` hook
 9. Set up polar.sh webhook (Supabase Edge Function)
 10. Create UpgradeModal component
 11. Implement tier checking logic
-12. Test subscription flow end-to-end
+12. **Implement 2FA enrollment (TwoFactorSetup component)**
+13. **Implement 2FA login challenge (TwoFactorPrompt component)**
+14. **Add 2FA settings to AccountSettings**
+15. Test subscription flow end-to-end
+16. **Test 2FA enrollment and login flows**
+17. Write unit tests for auth and subscription
 
 ### Sprint 3: Sync Engine (Week 3-5)
-13. Implement `useSyncEngine` hook
-14. Modify `useCardStorage` to integrate sync
-15. Create SyncIndicator component
-16. Create ConflictModal component
-17. Test sync across multiple devices
-18. Test conflict resolution
+18. Implement `useSyncEngine` hook
+19. Modify `useCardStorage` to integrate sync
+20. Create SyncIndicator component
+21. Create ConflictModal component
+22. Test sync across multiple devices
+23. Test conflict resolution
+24. Write unit tests for sync engine
 
 ### Sprint 4: Tier Limits (Week 5-6)
-19. Add category limit enforcement
-20. Show upgrade prompts at limits
-21. Test free tier limits
-22. Test paid tier limits
+25. Add category limit enforcement (free: 2, paid: 50)
+26. Implement soft limit on subscription expiry (categories stay read-only)
+27. Show upgrade prompts at limits
+28. Test free tier limits
+29. Test paid tier limits
+30. Test subscription expiry behavior
+31. Write unit tests for tier enforcement
 
 ### Sprint 5: Datasource Features (Week 6-7)
-23. Restrict datasource uploads to paid tier
-24. Implement cloud datasource storage
-25. Create MySharesView component
-26. Update ShareModal to link shares to accounts
-27. Test datasource upload/sharing flow
+32. Restrict datasource uploads to paid tier
+33. Implement cloud datasource storage
+34. Implement read-only mode for expired subscriptions
+35. Create MySharesView component
+36. Update ShareModal to link shares to accounts
+37. Test datasource upload/sharing flow
+38. Write unit tests for datasource management
 
-### Sprint 6: Polish & Migration (Week 7-8)
-28. Create BackupPrompt for existing users
-29. Update SettingsModal with account section
-30. Add comprehensive error handling
-31. Add loading states throughout
-32. Write user documentation
-33. End-to-end testing
-34. Beta testing with real users
-35. Production deployment
+### Sprint 6: GDPR, Polish & Migration (Week 7-8)
+39. **Implement data export (DataExport component)**
+40. **Implement account deletion (DeleteAccount component)**
+41. **Create delete-user Supabase Edge Function**
+42. **Test GDPR compliance (export, deletion)**
+43. Create BackupPrompt for existing users
+44. Update SettingsModal with account section
+45. Add comprehensive error handling
+46. Add loading states throughout
+47. Write user documentation (including GDPR/privacy policy)
+48. Complete all unit tests (target 60-70% coverage)
+49. End-to-end testing with Playwright
+50. Beta testing with real users
+51. Production deployment
 
 ---
 
@@ -708,13 +1181,13 @@ REACT_APP_ENVIRONMENT=production
 
 ## Potential Future Enhancements
 
+- **Local-only mode toggle**: Privacy mode to disable cloud sync while keeping account benefits
 - Real-time collaboration (multiple users editing same category)
-- Public datasource marketplace
-- Version history / backup snapshots
-- Export entire account data (GDPR compliance)
+- Public datasource marketplace with search/ratings
+- Version history / backup snapshots (time-travel recovery)
 - Team/organization accounts
 - Mobile app with same sync engine
-- Advanced conflict resolution (merge changes)
+- Advanced conflict resolution (merge changes intelligently)
 - Share categories with specific users (private sharing)
 
 ---
@@ -756,48 +1229,118 @@ If critical issues are found after deployment:
 
 ---
 
-## Questions for Review
+## Requirements Summary (Finalized)
 
 **Answered:**
 - **Timeline**: 7-8 weeks is acceptable ✓
 - **Datasource expiry**: When paid subscription expires, uploaded datasources become read-only (remain public but user cannot edit/delete/upload new ones) ✓
-
-**Open Questions:**
-1. Should we implement a "local-only mode" toggle for privacy-conscious users?
-2. Should we add 2FA/MFA support from day one?
-3. Should there be a grace period before enforcing category limits?
-4. Do we need GDPR-compliant data export/deletion flows?
+- **Local-only mode**: Not for MVP, add to future enhancements ✓
+- **2FA/MFA**: Implement from day one using Supabase Auth ✓
+- **Grace period**: Soft limit (Option C) - categories stay read-only in cloud when subscription expires, cannot add new ones beyond free tier limit ✓
+- **GDPR compliance**: Required - implement data export and account deletion ✓
+- **Unit testing**: Medium coverage (~60-70%) with Jest + React Testing Library ✓
 
 ---
 
 ## Files Manifest
 
-### New Files (23)
+### New Files (43)
+
+**Core Configuration:**
 ```
 src/config/supabase.js
+.env.example
+```
+
+**Hooks:**
+```
 src/Hooks/useAuth.jsx
 src/Hooks/useSubscription.jsx
 src/Hooks/useSyncEngine.jsx
+```
+
+**Authentication Components:**
+```
 src/Components/Auth/LoginModal.jsx
 src/Components/Auth/SignupModal.jsx
 src/Components/Auth/AccountButton.jsx
+src/Components/Auth/TwoFactorSetup.jsx
+src/Components/Auth/TwoFactorPrompt.jsx
+```
+
+**Account Management Components:**
+```
+src/Components/Account/AccountSettings.jsx
+src/Components/Account/MySharesView.jsx
+src/Components/Account/DataExport.jsx
+src/Components/Account/DeleteAccount.jsx
+```
+
+**Sync Components:**
+```
 src/Components/Sync/SyncIndicator.jsx
 src/Components/Sync/ConflictModal.jsx
+```
+
+**Subscription Components:**
+```
 src/Components/Subscription/UpgradeModal.jsx
-src/Components/Account/MySharesView.jsx
-src/Components/Account/AccountSettings.jsx
+```
+
+**Onboarding:**
+```
 src/Components/Onboarding/BackupPrompt.jsx
+```
+
+**Utilities:**
+```
 src/utils/syncHelpers.js
 src/utils/conflictResolution.js
+```
+
+**Database & Backend:**
+```
 supabase/migrations/001_initial_schema.sql
 supabase/migrations/002_rls_policies.sql
 supabase/migrations/003_indexes.sql
 supabase/functions/polar-webhook/index.ts
-.env.example
+supabase/functions/delete-user/index.ts
+```
+
+**Unit Tests:**
+```
+src/Hooks/useAuth.test.js
+src/Hooks/useSubscription.test.js
+src/Hooks/useSyncEngine.test.js
+src/Hooks/useCardStorage.test.js
+src/Hooks/useDataSourceStorage.test.js
+src/Components/Auth/LoginModal.test.js
+src/Components/Auth/TwoFactorSetup.test.js
+src/Components/Account/DataExport.test.js
+src/Components/Account/DeleteAccount.test.js
+src/Components/ShareModal.test.js
+src/Components/Account/MySharesView.test.js
+```
+
+**Integration Tests:**
+```
+tests/e2e/auth.spec.js
+tests/e2e/subscription.spec.js
+tests/e2e/sync.spec.js
+```
+
+**Documentation:**
+```
 docs/USER_GUIDE_ACCOUNTS.md
 docs/SYNC_ARCHITECTURE.md
-tests/sync.test.js
+docs/PRIVACY_POLICY.md
 ```
+
+**CI/CD:**
+```
+.github/workflows/test.yml
+```
+
 
 ### Modified Files (7)
 ```
