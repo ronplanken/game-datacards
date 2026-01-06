@@ -12,6 +12,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AuthProvider } from "./Hooks/useAuth";
+import { SubscriptionProvider } from "./Hooks/useSubscription";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
@@ -105,20 +106,22 @@ const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
     <SettingsStorageProviderComponent>
       <AuthProvider>
-        <UserProviderComponent>
-          <FirebaseProviderComponent>
-            <DataSourceStorageProviderComponent>
-              <CardStorageProviderComponent>
-                <MobileListProvider>
-                  <Outlet />
-                  <ScrollRestoration />
-                  <WizardSelector />
-                  <WhatsNewWizardSelector />
-                </MobileListProvider>
-              </CardStorageProviderComponent>
-            </DataSourceStorageProviderComponent>
-          </FirebaseProviderComponent>
-        </UserProviderComponent>
+        <SubscriptionProvider>
+          <UserProviderComponent>
+            <FirebaseProviderComponent>
+              <DataSourceStorageProviderComponent>
+                <CardStorageProviderComponent>
+                  <MobileListProvider>
+                    <Outlet />
+                    <ScrollRestoration />
+                    <WizardSelector />
+                    <WhatsNewWizardSelector />
+                  </MobileListProvider>
+                </CardStorageProviderComponent>
+              </DataSourceStorageProviderComponent>
+            </FirebaseProviderComponent>
+          </UserProviderComponent>
+        </SubscriptionProvider>
       </AuthProvider>
     </SettingsStorageProviderComponent>
   </ErrorBoundary>

@@ -13,6 +13,7 @@ import React, { useState } from "react";
 import { Modal, Form, Input, Button, Divider, Space, Typography } from "antd";
 import { GoogleOutlined, GithubOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
 import { useAuth } from "../../Hooks/useAuth";
+import TwoFactorPrompt from "./TwoFactorPrompt";
 
 const { Text, Link } = Typography;
 
@@ -20,7 +21,9 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const { signIn, signInWithOAuth, resetPassword } = useAuth();
+  const [show2FA, setShow2FA] = useState(false);
+  const [twoFactorData, setTwoFactorData] = useState(null);
+  const { signIn, signInWithOAuth, resetPassword, getFactors, challenge2FA } = useAuth();
 
   /**
    * Handle email/password login
@@ -31,8 +34,31 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
       const { success, error } = await signIn(values.email, values.password);
 
       if (success) {
-        form.resetFields();
-        if (onSuccess) onSuccess();
+        // Check if user has MFA enabled
+        const factorsResult = await getFactors();
+
+        if (factorsResult.success && factorsResult.totpFactors && factorsResult.totpFactors.length > 0) {
+          // User has 2FA enabled, need to verify
+          const factor = factorsResult.totpFactors[0];
+
+          // Create challenge
+          const challengeResult = await challenge2FA(factor.id);
+
+          if (challengeResult.success) {
+            // Show 2FA prompt
+            setTwoFactorData({
+              factorId: factor.id,
+              challengeId: challengeResult.challengeId,
+            });
+            setShow2FA(true);
+          } else {
+            console.error("Failed to create 2FA challenge:", challengeResult.error);
+          }
+        } else {
+          // No 2FA, login complete
+          form.resetFields();
+          if (onSuccess) onSuccess();
+        }
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -83,11 +109,31 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
   };
 
   /**
+   * Handle 2FA verification success
+   */
+  const handle2FASuccess = () => {
+    setShow2FA(false);
+    setTwoFactorData(null);
+    form.resetFields();
+    if (onSuccess) onSuccess();
+  };
+
+  /**
+   * Handle 2FA prompt cancel
+   */
+  const handle2FACancel = () => {
+    setShow2FA(false);
+    setTwoFactorData(null);
+  };
+
+  /**
    * Handle modal cancel
    */
   const handleCancel = () => {
     form.resetFields();
     setShowForgotPassword(false);
+    setShow2FA(false);
+    setTwoFactorData(null);
     if (onCancel) onCancel();
   };
 
@@ -192,6 +238,17 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
             <Link onClick={onSwitchToSignup}>Sign up</Link>
           </div>
         </>
+      )}
+
+      {/* 2FA Prompt */}
+      {show2FA && twoFactorData && (
+        <TwoFactorPrompt
+          visible={show2FA}
+          onCancel={handle2FACancel}
+          onSuccess={handle2FASuccess}
+          factorId={twoFactorData.factorId}
+          challengeId={twoFactorData.challengeId}
+        />
       )}
     </Modal>
   );
