@@ -418,20 +418,108 @@
   cursor: not-allowed;
 }
 
+/* ===========================================
+   PRIMARY BUTTON - PREMIUM SIGN IN
+   =========================================== */
 .auth-btn--primary {
-  background: linear-gradient(135deg, var(--auth-primary) 0%, var(--auth-primary-dark) 100%);
+  background: linear-gradient(135deg, #1a5fd4 0%, #0d47a1 50%, #1565c0 100%);
   color: white;
-  box-shadow: 0 2px 12px rgba(22, 119, 255, 0.3);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 13px;
+  padding: 16px 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(22, 119, 255, 0.35), 0 0 40px rgba(22, 119, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  animation: authBtnPulse 3s ease-in-out infinite;
+}
+
+/* Shimmer effect overlay */
+.auth-btn--primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.05) 75%,
+    transparent 100%
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+/* Glow ring effect */
+.auth-btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    135deg,
+    rgba(64, 150, 255, 0.6) 0%,
+    rgba(22, 119, 255, 0.3) 50%,
+    rgba(100, 180, 255, 0.6) 100%
+  );
+  border-radius: 10px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(8px);
 }
 
 .auth-btn--primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--auth-primary-light) 0%, var(--auth-primary) 100%);
-  box-shadow: 0 4px 20px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #1e6fe0 0%, #1565c0 50%, #1a7ae8 100%);
+  box-shadow: 0 6px 28px rgba(22, 119, 255, 0.5), 0 0 60px rgba(22, 119, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  animation: none;
+}
+
+.auth-btn--primary:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.auth-btn--primary:hover:not(:disabled)::after {
+  opacity: 1;
 }
 
 .auth-btn--primary:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 12px rgba(22, 119, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Subtle idle pulse animation */
+@keyframes authBtnPulse {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(22, 119, 255, 0.35), 0 0 40px rgba(22, 119, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(22, 119, 255, 0.45), 0 0 50px rgba(22, 119, 255, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Arrow icon animation */
+.auth-btn-arrow {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+
+.auth-btn--primary:hover:not(:disabled) .auth-btn-arrow {
+  transform: translateX(4px);
+}
+
+.auth-btn--primary:active:not(:disabled) .auth-btn-arrow {
+  transform: translateX(2px);
 }
 
 .auth-btn--secondary {
