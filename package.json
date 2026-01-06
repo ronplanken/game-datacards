@@ -12,6 +12,8 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@formkit/auto-animate": "^0.8.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "@tanstack/react-query": "^4.36.1",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.0.0",
@@ -99,6 +101,8 @@
   },
   "devDependencies": {
     "@craco/craco": "^7.1.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "codecov": "^3.8.3",
     "craco-less": "^3.0.1",
     "env-cmd": "^11.0.0",
     "eslint": "^8.57.0",
@@ -108,6 +112,7 @@
     "eslint-plugin-react": "^7.37.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "gh-pages": "^6.2.0",
+    "msw": "^2.0.0",
     "playwright": "^1.49.0",
     "prettier": "^3.4.0"
   },
