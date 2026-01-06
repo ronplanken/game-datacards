@@ -45,7 +45,7 @@ const groupWarscrollsByRole = (warscrolls) => {
       factionTerrain: [],
       manifestations: [],
       other: [],
-    },
+    }
   );
 };
 
@@ -92,7 +92,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
 
     const basicStratagems = searchText
       ? selectedFaction.basicStratagems?.filter((stratagem) =>
-          stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
+          stratagem.name.toLowerCase().includes(searchText.toLowerCase())
         )
       : selectedFaction.basicStratagems;
 

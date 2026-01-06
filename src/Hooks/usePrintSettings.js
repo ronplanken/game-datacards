@@ -34,7 +34,7 @@ export const usePrintSettings = (settings, updateSettings) => {
         printSettings: { ...settings.printSettings, [key]: value },
       });
     },
-    [settings, updateSettings],
+    [settings, updateSettings]
   );
 
   // Page settings handlers
@@ -43,7 +43,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setPageSizeState(val);
       updatePrintSetting("pageSize", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setPageOrientation = useCallback(
@@ -51,7 +51,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setPageOrientationState(val);
       updatePrintSetting("pageOrientation", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setPagePadding = useCallback(
@@ -59,7 +59,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setPagePaddingState(val);
       updatePrintSetting("pagePadding", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setCustomSize = useCallback(
@@ -70,7 +70,7 @@ export const usePrintSettings = (settings, updateSettings) => {
         printSettings: { ...settings.printSettings, customSize: val },
       });
     },
-    [settings, updateSettings],
+    [settings, updateSettings]
   );
 
   // Card settings handlers
@@ -79,7 +79,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setCardsPerPageState(val);
       updatePrintSetting("cardsPerPage", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setCardScaling = useCallback(
@@ -87,7 +87,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setCardScalingState(val);
       updatePrintSetting("cardScaling", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setCardAlignment = useCallback(
@@ -95,7 +95,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setCardAlignmentState(val);
       updatePrintSetting("cardAlignment", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setVerticalAlignment = useCallback(
@@ -103,7 +103,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setVerticalAlignmentState(val);
       updatePrintSetting("verticalAlignment", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setRowGap = useCallback(
@@ -111,7 +111,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setRowGapState(val);
       updatePrintSetting("rowGap", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setColumnGap = useCallback(
@@ -119,7 +119,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setColumnGapState(val);
       updatePrintSetting("columnGap", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   // Other settings handlers
@@ -128,7 +128,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setBackgroundsState(val);
       updatePrintSetting("backgrounds", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setPrintSide = useCallback(
@@ -136,7 +136,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setPrintSideState(val);
       updatePrintSetting("print_side", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   const setForcePrintSide = useCallback(
@@ -144,7 +144,7 @@ export const usePrintSettings = (settings, updateSettings) => {
       setForcePrintSideState(val);
       updatePrintSetting("force_print_side", val);
     },
-    [updatePrintSetting],
+    [updatePrintSetting]
   );
 
   return {

@@ -12,7 +12,7 @@ const getCardTypeLabel = (type) =>
     rule: "Rule",
     spell: "Spell",
     manifestation: "Manifestation",
-  })[type] || "Card";
+  }[type] || "Card");
 
 export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit }) => {
   const { results, isSearching } = useGlobalSearch(searchText);
