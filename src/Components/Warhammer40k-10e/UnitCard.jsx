@@ -9,7 +9,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px", className, side
   const { settings } = useSettingsStorage();
 
   // Check if basic visual style is requested (new 10e basic style)
-  if (unit.cardVisualStyle === "basic") {
+  if (unit.cardVisualStyle === "basic" || unit.variant === "basic") {
     return <UnitCardBasic10e unit={unit} cardStyle={cardStyle} paddingTop={paddingTop} className={className} />;
   }
 

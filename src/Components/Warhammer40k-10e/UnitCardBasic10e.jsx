@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useIndexedDBImages } from "../../Hooks/useIndexedDBImages";
 import { UnitWeaponKeywords } from "./UnitCard/UnitWeaponKeyword";
 import { replaceKeywords } from "./UnitCard/UnitAbilityDescription";
+import { FactionIcon } from "../Icons/FactionIcon";
 
 const BasicCardContainer = styled.div`
   &:before {
@@ -58,7 +59,8 @@ export const UnitCardBasic10e = ({ unit, cardStyle, paddingTop = "32px", classNa
   }, [unit?.uuid, unit?.hasLocalImage, isReady]);
 
   const imageUrl = localImageUrl || unit.externalImage;
-  const statHeaders = ["M", "T", "SV", "W", "LD", "OC"];
+  const hasInvul = unit.abilities?.invul?.showInvulnerableSave;
+  const statHeaders = hasInvul ? ["M", "T", "SV", "INV", "W", "LD", "OC"] : ["M", "T", "SV", "W", "LD", "OC"];
   const statKeys = ["m", "t", "sv", "w", "ld", "oc"];
 
   return (
@@ -74,6 +76,9 @@ export const UnitCardBasic10e = ({ unit, cardStyle, paddingTop = "32px", classNa
             <div className="content">
               {/* Header with name and points */}
               <div className="header">
+                <div className="faction-icon">
+                  <FactionIcon factionId={unit.faction_id} />
+                </div>
                 <div className="name-container">
                   <div className="name">{unit.name}</div>
                   {unit.subname && <div className="subname">{unit.subname}</div>}
@@ -97,7 +102,7 @@ export const UnitCardBasic10e = ({ unit, cardStyle, paddingTop = "32px", classNa
               {/* Stats */}
               {unit.stats && unit.stats.filter((s) => s.active).length > 0 && (
                 <div className="stats-section">
-                  <div className="stats-header">
+                  <div className={`stats-header ${hasInvul ? "with-invul" : ""}`}>
                     {statHeaders.map((h) => (
                       <div className="stat-label" key={h}>
                         {h}
@@ -107,24 +112,24 @@ export const UnitCardBasic10e = ({ unit, cardStyle, paddingTop = "32px", classNa
                   {unit.stats
                     .filter((s) => s.active)
                     .map((stat, idx) => (
-                      <div className="stats-row" key={idx}>
-                        {statKeys.map((key) => (
-                          <div className="stat-value" key={key}>
-                            {stat[key]}
-                          </div>
-                        ))}
+                      <div className={`stats-row ${hasInvul ? "with-invul" : ""}`} key={idx}>
+                        <div className="stat-value">{stat.m}</div>
+                        <div className="stat-value">{stat.t}</div>
+                        <div className="stat-value">{stat.sv}</div>
+                        {hasInvul && <div className="stat-value">{unit.abilities.invul.value}+</div>}
+                        <div className="stat-value">{stat.w}</div>
+                        <div className="stat-value">{stat.ld}</div>
+                        <div className="stat-value">{stat.oc}</div>
                         {stat.showName && <div className="stat-name">{stat.name}</div>}
                       </div>
                     ))}
                 </div>
               )}
 
-              {/* Invulnerable Save (if shown at top) */}
-              {unit.abilities?.invul?.showInvulnerableSave && unit.abilities?.invul?.showAtTop && (
-                <div className="invul-top">
-                  <span className="invul-value">{unit.abilities.invul.value}+</span>
-                  <span className="invul-label">invulnerable save</span>
-                  {unit.abilities.invul.info && <span className="invul-info">{unit.abilities.invul.info}</span>}
+              {/* Invulnerable Save info (only shown if there's special text) */}
+              {unit.abilities?.invul?.showInvulnerableSave && unit.abilities?.invul?.info && (
+                <div className="invul-info-box">
+                  <span className="invul-info-text">{unit.abilities.invul.info}</span>
                 </div>
               )}
 
@@ -320,15 +325,6 @@ export const UnitCardBasic10e = ({ unit, cardStyle, paddingTop = "32px", classNa
                           ))}
                       </div>
                     ))}
-
-                  {/* Invulnerable Save (if not shown at top) */}
-                  {unit.abilities?.invul?.showInvulnerableSave && !unit.abilities?.invul?.showAtTop && (
-                    <div className="invul-block">
-                      <span className="invul-value">{unit.abilities.invul.value}+</span>
-                      <span className="invul-label">invulnerable save</span>
-                      {unit.abilities.invul.info && <span className="invul-info">{unit.abilities.invul.info}</span>}
-                    </div>
-                  )}
                 </div>
               )}
 

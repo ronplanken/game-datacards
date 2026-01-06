@@ -4486,51 +4486,66 @@
 .basic_unit_10e {
   .page {
     width: 500px;
-    min-height: 350px;
+    min-height: 300px;
     display: block;
     position: relative;
-    padding: 8px;
-    background-color: var(--banner-colour, #1a1a2e);
-    border-radius: 16px;
+    padding: 6px;
+    background-color: #d0d0d0;
     font-family: "Heebo", sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 
     .frame {
       display: block;
       height: 100%;
       width: 100%;
-      background: var(--text-background-colour, #f5f5f0);
-      border-radius: 12px;
+      background: #e2e2dd;
+      border-radius: 10px;
       overflow: hidden;
 
       .content {
-        padding: 12px;
+        padding: 8px;
         position: relative;
       }
 
       // Header with name and points
       .header {
         display: flex;
-        justify-content: space-between;
         align-items: flex-start;
-        padding-bottom: 8px;
-        margin-bottom: 8px;
-        border-bottom: 3px solid var(--banner-colour, #1a1a2e);
+        padding-bottom: 5px;
+        margin-bottom: 5px;
+        border-bottom: 1px solid #000;
+
+        .faction-icon {
+          width: 26px;
+          height: 26px;
+          margin-right: 6px;
+          flex-shrink: 0;
+
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
 
         .name-container {
           flex: 1;
-          padding-right: 160px; // Space for image
+          min-width: 0; // Allow flex item to shrink below content size
+          max-width: calc(100% - 32px - 160px); // 32px for icon+margin, 160px for image
 
           .name {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
             line-height: 1.1;
-            color: var(--banner-colour, #1a1a2e);
+            color: #000;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
 
           .subname {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 500;
             color: #666;
             text-transform: uppercase;
@@ -4538,19 +4553,24 @@
         }
 
         .points {
-          font-size: 14px;
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          font-size: 12px;
           font-weight: 700;
-          color: var(--banner-colour, #1a1a2e);
+          color: #000;
           white-space: nowrap;
+          text-align: right;
 
           .models {
             font-weight: 400;
-            font-size: 12px;
+            font-size: 10px;
           }
 
           .pts-label {
             font-weight: 400;
-            font-size: 11px;
+            font-size: 8px;
+            color: #666;
             margin-left: 2px;
           }
         }
@@ -4558,22 +4578,27 @@
 
       // Stats section
       .stats-section {
-        margin-bottom: 10px;
-        border: 2px solid var(--header-colour, #2d4a3e);
-        border-radius: 6px;
+        margin-bottom: 6px;
+        border: 1px solid #000;
+        border-radius: 0;
         overflow: hidden;
 
         .stats-header {
           display: grid;
           grid-template-columns: repeat(6, 1fr);
-          background: var(--banner-colour, #1a1a2e);
-          padding: 4px 0;
+          background: #b8b8b0;
+          padding: 2px 0;
+          border-bottom: 1px solid #000;
+
+          &.with-invul {
+            grid-template-columns: repeat(7, 1fr);
+          }
 
           .stat-label {
             text-align: center;
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 700;
-            color: white;
+            color: #000;
             text-transform: uppercase;
           }
         }
@@ -4581,125 +4606,138 @@
         .stats-row {
           display: grid;
           grid-template-columns: repeat(6, 1fr);
-          background: var(--rows-colour, #e8e8e0);
-          padding: 4px 0;
+          background: #fff;
+          padding: 2px 0;
           position: relative;
+          border-bottom: 1px solid #000;
 
-          &:nth-child(odd) {
-            background: var(--alt-rows-colour, #f5f5f0);
+          &.with-invul {
+            grid-template-columns: repeat(7, 1fr);
+          }
+
+          &:last-child {
+            border-bottom: none;
           }
 
           .stat-value {
             text-align: center;
-            font-size: 14px;
+            font-size: 11px;
             font-weight: 600;
           }
 
           .stat-name {
             position: absolute;
-            right: 8px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 500;
             color: #666;
           }
         }
       }
 
-      // Invulnerable save at top
-      .invul-top {
+      // Invulnerable save info box (only shown when there's special text)
+      .invul-info-box {
+        margin-bottom: 4px;
+        padding: 2px 6px;
+        background: #e8e8e4;
+        border: none;
+        color: #666;
+        text-align: center;
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 10px;
-        padding: 6px 10px;
-        background: var(--header-colour, #2d4a3e);
-        border-radius: 4px;
-        color: white;
+        justify-content: center;
 
-        .invul-value {
-          font-size: 16px;
-          font-weight: 700;
-        }
-
-        .invul-label {
-          font-size: 11px;
-          text-transform: uppercase;
-        }
-
-        .invul-info {
-          font-size: 10px;
+        .invul-info-text {
+          font-size: 7px;
           font-style: italic;
-          margin-left: auto;
+          line-height: 1;
         }
       }
 
       // Weapons sections
       .weapons-section {
-        margin-bottom: 10px;
-        border: 2px solid var(--header-colour, #2d4a3e);
-        border-radius: 6px;
+        margin-bottom: 6px;
+        border: 1px solid #000;
+        border-radius: 0;
         overflow: hidden;
 
         .weapons-header {
           display: grid;
           grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr;
-          background: var(--header-colour, #2d4a3e);
-          padding: 4px 8px;
-          gap: 4px;
+          background: #b8b8b0;
+          padding: 2px 6px;
+          gap: 2px;
+          border-bottom: 1px solid #000;
 
           .weapon-title {
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 700;
-            color: white;
+            color: #000;
             text-transform: uppercase;
           }
 
           .weapon-stat {
             text-align: center;
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 700;
-            color: white;
+            color: #000;
           }
         }
 
         .weapon-row {
           display: grid;
           grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 1fr;
-          padding: 3px 8px;
-          gap: 4px;
-          background: var(--rows-colour, #e8e8e0);
+          padding: 2px 6px;
+          gap: 2px;
+          background: #fff;
+          border-bottom: 1px solid #ccc;
+
+          &:last-child {
+            border-bottom: none;
+          }
 
           &.odd {
-            background: var(--alt-rows-colour, #f5f5f0);
+            background: #f5f5f0;
           }
 
           .weapon-name {
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 600;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
 
             .weapon-keywords {
-              font-size: 9px;
+              .keyword {
+                font-size: 7px;
+                font-weight: 400;
+                color: #666;
+
+                .keyword-button {
+                  font-size: 7px;
+                  font-weight: 400;
+                  color: #666;
+                  height: auto;
+                }
+              }
             }
           }
 
           .weapon-stat {
             text-align: center;
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 500;
           }
         }
 
         .weapon-ability {
-          padding: 2px 12px 4px;
-          font-size: 10px;
-          background: var(--alt-rows-colour, #f5f5f0);
-          border-top: 1px solid var(--header-colour, #2d4a3e);
+          padding: 2px 8px;
+          font-size: 8px;
+          background: #f5f5f0;
+          border-top: 1px solid #ccc;
 
           .ability-name {
             font-weight: 700;
@@ -4718,16 +4756,16 @@
 
       // Abilities section
       .abilities-section {
-        margin-bottom: 10px;
+        margin-bottom: 6px;
 
         .abilities-block,
         .damaged-block,
         .special-block,
         .primarch-block,
         .invul-block {
-          margin-bottom: 8px;
-          border: 1px solid var(--header-colour, #2d4a3e);
-          border-radius: 4px;
+          margin-bottom: 5px;
+          border: 1px solid #000;
+          border-radius: 0;
           overflow: hidden;
         }
 
@@ -4735,21 +4773,23 @@
         .damaged-header,
         .special-header,
         .primarch-header {
-          background: var(--header-colour, #2d4a3e);
-          color: white;
-          padding: 4px 8px;
-          font-size: 11px;
+          background: #b8b8b0;
+          color: #000;
+          padding: 2px 6px;
+          font-size: 9px;
           font-weight: 700;
           text-transform: uppercase;
+          border-bottom: 1px solid #000;
         }
 
         .ability-line {
-          padding: 3px 8px;
-          font-size: 11px;
-          background: var(--rows-colour, #e8e8e0);
+          padding: 2px 6px;
+          font-size: 9px;
+          background: #fff;
+          border-bottom: 1px solid #ccc;
 
-          &:nth-child(even) {
-            background: var(--alt-rows-colour, #f5f5f0);
+          &:last-child {
+            border-bottom: none;
           }
 
           .ability-type {
@@ -4764,12 +4804,13 @@
         }
 
         .ability-detail {
-          padding: 3px 8px;
-          font-size: 11px;
-          background: var(--rows-colour, #e8e8e0);
+          padding: 2px 6px;
+          font-size: 9px;
+          background: #fff;
+          border-bottom: 1px solid #ccc;
 
-          &:nth-child(even) {
-            background: var(--alt-rows-colour, #f5f5f0);
+          &:last-child {
+            border-bottom: none;
           }
 
           .ability-name {
@@ -4791,9 +4832,9 @@
 
         .damaged-desc,
         .special-desc {
-          padding: 4px 8px;
-          font-size: 11px;
-          background: var(--alt-rows-colour, #f5f5f0);
+          padding: 2px 6px;
+          font-size: 9px;
+          background: #f5f5f0;
 
           .keyword {
             font-weight: 700;
@@ -4804,23 +4845,23 @@
         .invul-block {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 6px 10px;
-          background: var(--header-colour, #2d4a3e);
-          color: white;
+          gap: 6px;
+          padding: 4px 8px;
+          background: #b8b8b0;
+          color: #000;
 
           .invul-value {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 700;
           }
 
           .invul-label {
-            font-size: 11px;
+            font-size: 9px;
             text-transform: uppercase;
           }
 
           .invul-info {
-            font-size: 10px;
+            font-size: 8px;
             font-style: italic;
             margin-left: auto;
           }
@@ -4829,13 +4870,13 @@
 
       // Keywords footer
       .keywords-footer {
-        padding-top: 8px;
-        border-top: 2px solid var(--banner-colour, #1a1a2e);
-        font-size: 10px;
+        padding-top: 5px;
+        border-top: 1px solid #000;
+        font-size: 8px;
 
         .keywords-line,
         .factions-line {
-          margin-bottom: 2px;
+          margin-bottom: 1px;
         }
 
         .keywords-title,

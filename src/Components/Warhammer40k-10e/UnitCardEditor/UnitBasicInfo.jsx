@@ -38,13 +38,19 @@ export function UnitBasicInfo() {
           <Form.Item label={"Variant"}>
             <Select
               value={activeCard.variant || "double"}
-              onChange={(value) => updateActiveCard({ ...activeCard, variant: value })}>
+              onChange={(value) => {
+                if (value === "basic") {
+                  updateActiveCard({ ...activeCard, variant: value, cardVisualStyle: "basic" });
+                } else {
+                  updateActiveCard({ ...activeCard, variant: value, cardVisualStyle: "default" });
+                }
+              }}>
               <Option value="full">Full card</Option>
               <Option value="double">Double sided</Option>
-              {/* <Option value="basic">Basic card</Option> */}
+              <Option value="basic">Basic</Option>
             </Select>
           </Form.Item>
-          {activeCard.variant !== "full" && (
+          {activeCard.variant === "double" && (
             <Form.Item label={"Print side"}>
               <Select
                 value={activeCard.print_side || "front"}
@@ -70,14 +76,6 @@ export function UnitBasicInfo() {
           checked={activeCard.legends || false}
           onChange={(value) => updateActiveCard({ ...activeCard, legends: value })}
         />
-      </Form.Item>
-      <Form.Item label={"Card Style"}>
-        <Select
-          value={activeCard.cardVisualStyle || "default"}
-          onChange={(value) => updateActiveCard({ ...activeCard, cardVisualStyle: value })}>
-          <Option value="default">Default (Detailed)</Option>
-          <Option value="basic">Basic (Simplified)</Option>
-        </Select>
       </Form.Item>
     </Form>
   );
