@@ -5,7 +5,7 @@
  * The client is configured with environment variables for the project URL and anon key.
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Get Supabase configuration from environment variables
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
@@ -13,9 +13,9 @@ const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 // Validate that required environment variables are present
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables');
-  console.error('Required: REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY');
-  console.error('Please check your .env file and ensure these variables are set.');
+  console.error("Missing Supabase environment variables");
+  console.error("Required: REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY");
+  console.error("Please check your .env file and ensure these variables are set.");
 }
 
 /**
@@ -37,16 +37,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     // Detect session from URL parameters (for OAuth callbacks)
     detectSessionInUrl: true,
     // Storage key for session data
-    storageKey: 'game-datacards-auth',
+    storageKey: "game-datacards-auth",
   },
   db: {
     // Use the 'public' schema by default
-    schema: 'public',
+    schema: "public",
   },
   // Global headers for all requests
   global: {
     headers: {
-      'x-app-version': process.env.REACT_APP_VERSION || 'dev',
+      "x-app-version": process.env.REACT_APP_VERSION || "dev",
     },
   },
 });
@@ -71,7 +71,9 @@ export const getSession = async () => {
  * @returns {Promise<{data: {user: User | null}, error: Error | null}>}
  */
 export const getUser = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (!session) {
     return { data: { user: null }, error: null };
   }
