@@ -9,16 +9,16 @@
  * - User profile management
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { supabase } from '../config/supabase';
-import { message } from 'antd';
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { supabase } from "../config/supabase";
+import { message } from "antd";
 
 const AuthContext = createContext(undefined);
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('`useAuth` must be used within an `AuthProvider`');
+    throw new Error("`useAuth` must be used within an `AuthProvider`");
   }
   return context;
 }
@@ -64,16 +64,12 @@ export const AuthProvider = ({ children }) => {
    */
   const fetchUserProfile = useCallback(async (userId) => {
     try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      const { data, error } = await supabase.from("user_profiles").select("*").eq("id", userId).single();
 
       if (error) throw error;
       setProfile(data);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error("Error fetching user profile:", error);
     }
   }, []);
 
@@ -98,14 +94,14 @@ export const AuthProvider = ({ children }) => {
 
       // Check if email confirmation is required
       if (data.user && !data.session) {
-        message.info('Please check your email to confirm your account');
+        message.info("Please check your email to confirm your account");
       } else {
-        message.success('Account created successfully!');
+        message.success("Account created successfully!");
       }
 
       return { success: true, user: data.user };
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error("An unexpected error occurred");
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -128,10 +124,10 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: error.message };
       }
 
-      message.success('Signed in successfully!');
+      message.success("Signed in successfully!");
       return { success: true, user: data.user, session: data.session };
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error("An unexpected error occurred");
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -158,7 +154,7 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true, data };
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error("An unexpected error occurred");
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -178,10 +174,10 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: error.message };
       }
 
-      message.success('Signed out successfully');
+      message.success("Signed out successfully");
       return { success: true };
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error("An unexpected error occurred");
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -202,10 +198,10 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: error.message };
       }
 
-      message.success('Password reset email sent! Check your inbox.');
+      message.success("Password reset email sent! Check your inbox.");
       return { success: true };
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error("An unexpected error occurred");
       return { success: false, error: error.message };
     }
   }, []);
@@ -224,10 +220,10 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: error.message };
       }
 
-      message.success('Password updated successfully');
+      message.success("Password updated successfully");
       return { success: true };
     } catch (error) {
-      message.error('An unexpected error occurred');
+      message.error("An unexpected error occurred");
       return { success: false, error: error.message };
     }
   }, []);
@@ -263,7 +259,7 @@ export const AuthProvider = ({ children }) => {
   const enroll2FA = useCallback(async () => {
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
-        factorType: 'totp',
+        factorType: "totp",
       });
 
       if (error) {
@@ -280,7 +276,7 @@ export const AuthProvider = ({ children }) => {
         uri: data.totp.uri,
       };
     } catch (error) {
-      message.error('Failed to enroll in 2FA');
+      message.error("Failed to enroll in 2FA");
       return { success: false, error: error.message };
     }
   }, []);
@@ -300,14 +296,14 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (verify.error) {
-        message.error('Invalid verification code');
+        message.error("Invalid verification code");
         return { success: false, error: verify.error.message };
       }
 
-      message.success('2FA enabled successfully!');
+      message.success("2FA enabled successfully!");
       return { success: true };
     } catch (error) {
-      message.error('Failed to verify 2FA code');
+      message.error("Failed to verify 2FA code");
       return { success: false, error: error.message };
     }
   }, []);
@@ -341,14 +337,14 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (error) {
-        message.error('Invalid 2FA code');
+        message.error("Invalid 2FA code");
         return { success: false, error: error.message };
       }
 
-      message.success('2FA verification successful!');
+      message.success("2FA verification successful!");
       return { success: true, session: data };
     } catch (error) {
-      message.error('Failed to verify 2FA code');
+      message.error("Failed to verify 2FA code");
       return { success: false, error: error.message };
     }
   }, []);
@@ -365,10 +361,10 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: error.message };
       }
 
-      message.success('2FA disabled successfully');
+      message.success("2FA disabled successfully");
       return { success: true };
     } catch (error) {
-      message.error('Failed to disable 2FA');
+      message.error("Failed to disable 2FA");
       return { success: false, error: error.message };
     }
   }, []);
