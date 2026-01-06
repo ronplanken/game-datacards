@@ -10,8 +10,7 @@
   inset: 0;
   z-index: 10000;
   background: #001529;
-  background-image:
-    radial-gradient(circle at 20% 80%, rgba(0, 112, 214, 0.08) 0%, transparent 50%),
+  background-image: radial-gradient(circle at 20% 80%, rgba(0, 112, 214, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(0, 112, 214, 0.05) 0%, transparent 40%);
   animation: mwwFadeIn 0.3s ease-out;
   overflow: hidden;
@@ -241,9 +240,7 @@
 .mww-complete-discord {
   display: block;
   margin-top: 8px;
-  transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   border-radius: 4px;
   overflow: hidden;
 }

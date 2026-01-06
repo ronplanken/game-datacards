@@ -105,7 +105,7 @@ export const SubscriptionProvider = ({ children }) => {
           return false;
       }
     },
-    [getLimits, usage],
+    [getLimits, usage]
   );
 
   /**
@@ -123,7 +123,7 @@ export const SubscriptionProvider = ({ children }) => {
           return 0;
       }
     },
-    [getLimits, usage],
+    [getLimits, usage]
   );
 
   /**
@@ -133,7 +133,7 @@ export const SubscriptionProvider = ({ children }) => {
     (resource) => {
       return getRemainingQuota(resource) === 0;
     },
-    [getRemainingQuota],
+    [getRemainingQuota]
   );
 
   /**
@@ -246,7 +246,7 @@ export const SubscriptionProvider = ({ children }) => {
         return { success: false, error: error.message };
       }
     },
-    [isAuthenticated, user],
+    [isAuthenticated, user]
   );
 
   /**

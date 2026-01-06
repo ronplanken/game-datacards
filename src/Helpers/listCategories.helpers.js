@@ -52,7 +52,7 @@ export const categorize40kUnits = (datacards) => {
       }
       return cats;
     },
-    { characters: [], battleline: [], transports: [], other: [], allied: [] },
+    { characters: [], battleline: [], transports: [], other: [], allied: [] }
   );
 };
 
@@ -104,7 +104,7 @@ export const categorizeAoSUnits = (datacards) => {
       terrain: [],
       manifestations: [],
       other: [],
-    },
+    }
   );
 };
 

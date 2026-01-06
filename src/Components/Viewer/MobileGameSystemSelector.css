@@ -13,8 +13,7 @@
   justify-content: center;
   padding: 24px;
   background: #001529;
-  background-image:
-    radial-gradient(circle at 20% 80%, rgba(0, 112, 214, 0.08) 0%, transparent 50%),
+  background-image: radial-gradient(circle at 20% 80%, rgba(0, 112, 214, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(0, 112, 214, 0.05) 0%, transparent 40%);
 }
 
@@ -67,9 +66,7 @@
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .gss-option:active {
@@ -117,9 +114,7 @@
   height: 20px;
   color: rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
-  transition:
-    color 0.15s ease,
-    transform 0.15s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
 /* Hover states */

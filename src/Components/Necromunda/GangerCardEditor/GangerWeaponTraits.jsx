@@ -27,7 +27,7 @@ export function GangerWeaponTraits({ weaponIndex, profileIndex }) {
           const newTraits = reorder(
             activeCard.weapons[weaponIndex].profiles[profileIndex].traits,
             result.source.index,
-            result.destination.index,
+            result.destination.index
           );
           const newWeapons = [...activeCard.weapons];
           newWeapons[weaponIndex].profiles[profileIndex].traits = newTraits;

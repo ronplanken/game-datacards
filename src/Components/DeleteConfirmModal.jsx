@@ -38,7 +38,7 @@ const DeleteConfirmModal = (props) => {
         </div>
       </div>
     </div>,
-    modalRoot,
+    modalRoot
   );
 };
 
