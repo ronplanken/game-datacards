@@ -164,7 +164,7 @@ export const UpgradeModal = ({ visible, onCancel, trigger = "manual" }) => {
           {/* Pricing */}
           <div className="upgrade-pricing">
             <div className="upgrade-pricing-header">
-              <span className="upgrade-pricing-amount">$5.99</span>
+              <span className="upgrade-pricing-amount">€3.99</span>
               <span className="upgrade-pricing-period">/ month</span>
             </div>
             <div className="upgrade-pricing-note">Cancel anytime. Billed monthly.</div>
@@ -187,8 +187,8 @@ export const UpgradeModal = ({ visible, onCancel, trigger = "manual" }) => {
         <footer className="upgrade-footer">
           <p className="upgrade-footer-text">
             Secure payment powered by{" "}
-            <a href="https://polar.sh" target="_blank" rel="noopener noreferrer">
-              Polar.sh
+            <a href="https://creem.io" target="_blank" rel="noopener noreferrer">
+              Creem
             </a>
             <br />
             Your support helps keep Game Datacards free for everyone.
