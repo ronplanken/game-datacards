@@ -23,7 +23,7 @@
   --auth-bg: #0a1628;
   --auth-bg-card: #0f1f35;
   --auth-bg-elevated: #162a46;
-  --auth-bg-input: #0d1929;
+  --auth-bg-input: #132337;
   --auth-text-main: #f1f5f9;
   --auth-text-muted: #94a3b8;
   --auth-text-dim: #64748b;
@@ -72,7 +72,7 @@
 .auth-modal {
   position: relative;
   width: 100%;
-  max-width: 440px;
+  max-width: 380px;
   background: var(--auth-bg);
   border-radius: var(--auth-radius);
   box-shadow: var(--auth-shadow-lg), var(--auth-glow);
@@ -103,7 +103,7 @@
    =========================================== */
 .auth-header {
   background: linear-gradient(135deg, var(--auth-navy) 0%, var(--auth-navy-light) 50%, #0c2d4d 100%);
-  padding: 28px 32px 24px;
+  padding: 24px 28px 20px;
   color: #fff;
   position: relative;
   flex-shrink: 0;
@@ -147,7 +147,7 @@
 
 .auth-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #fff;
   line-height: 1.2;
@@ -202,7 +202,7 @@
    BODY
    =========================================== */
 .auth-body {
-  padding: 28px 32px;
+  padding: 24px 28px;
   flex: 1;
   overflow-y: auto;
   background: var(--auth-bg);
@@ -264,12 +264,13 @@
   width: 100%;
   padding: 14px 14px 14px 46px;
   background: var(--auth-bg-input);
-  border: 1px solid var(--auth-border);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--auth-radius-xs);
   color: var(--auth-text-main);
   font-size: 15px;
   transition: all 0.2s ease;
   outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .auth-input::placeholder {
@@ -537,6 +538,8 @@
   background: var(--auth-bg-card);
   color: var(--auth-text-main);
   border: 1px solid var(--auth-border);
+  padding: 12px 16px;
+  font-size: 13px;
 }
 
 .auth-btn--oauth:hover:not(:disabled) {
@@ -602,9 +605,9 @@
    OAUTH BUTTONS GRID
    =========================================== */
 .auth-oauth-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 /* ===========================================
@@ -628,6 +631,12 @@
   text-decoration: none;
   cursor: pointer;
   transition: color 0.2s;
+  /* Reset button defaults */
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
 }
 
 .auth-footer-link:hover {
@@ -640,11 +649,18 @@
   display: block;
   text-align: right;
   font-size: 13px;
+  font-weight: 500;
   color: var(--auth-primary-light);
   text-decoration: none;
   margin-bottom: 20px;
   cursor: pointer;
   transition: color 0.2s;
+  /* Reset button defaults */
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  font-family: inherit;
 }
 
 .auth-forgot-link:hover {
@@ -855,4 +871,27 @@
     animation: none;
     transition: none;
   }
+}
+
+/* ===========================================
+   SIGNUP MODAL COMPACT VARIANT
+   =========================================== */
+.auth-modal--signup .auth-form-group {
+  margin-bottom: 14px;
+}
+
+.auth-modal--signup .auth-label {
+  margin-bottom: 6px;
+}
+
+.auth-modal--signup .auth-input {
+  padding: 12px 12px 12px 42px;
+}
+
+.auth-modal--signup .auth-divider {
+  margin: 18px 0;
+}
+
+.auth-modal--signup .auth-btn--primary {
+  padding: 14px 24px;
 }

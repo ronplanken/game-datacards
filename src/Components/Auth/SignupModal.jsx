@@ -208,18 +208,15 @@ export const SignupModal = ({ visible, onCancel, onSwitchToLogin, onSuccess }) =
 
   return ReactDOM.createPortal(
     <div className={`auth-overlay ${isExiting ? "auth-overlay--exiting" : ""}`} onClick={handleOverlayClick}>
-      <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="auth-modal auth-modal--signup" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <header className="auth-header">
           <button className="auth-close" onClick={handleClose} aria-label="Close">
             <X size={18} />
           </button>
           <div className="auth-header-content">
-            <div className="auth-title-row">
-              <h1 className="auth-title">Create Account</h1>
-              <span className="auth-badge">Free</span>
-            </div>
-            <p className="auth-subtitle">Join thousands of players managing their datacards</p>
+            <h1 className="auth-title">Create Account</h1>
+            <p className="auth-subtitle">Create your free account</p>
           </div>
         </header>
 
@@ -426,7 +423,7 @@ export const SignupModal = ({ visible, onCancel, onSwitchToLogin, onSuccess }) =
                 onClick={() => handleOAuthSignup("google")}
                 disabled={loading}>
                 <GoogleIcon />
-                Sign up with Google
+                Google
               </button>
 
               <button
@@ -435,7 +432,7 @@ export const SignupModal = ({ visible, onCancel, onSwitchToLogin, onSuccess }) =
                 onClick={() => handleOAuthSignup("github")}
                 disabled={loading}>
                 <GitHubIcon />
-                Sign up with GitHub
+                GitHub
               </button>
             </div>
 

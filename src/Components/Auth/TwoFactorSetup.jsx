@@ -1,21 +1,39 @@
 /**
  * TwoFactorSetup Component
  *
- * Modal for setting up Two-Factor Authentication (2FA):
+ * Premium modal for setting up Two-Factor Authentication (2FA):
  * - Displays QR code for scanning with authenticator app
  * - Shows secret key as backup
  * - Verifies setup with test code
  * - Lists authenticator app recommendations
  * - Provides unenroll option for existing 2FA
+ *
+ * Dark navy theme with gold accents matching UpgradeModal aesthetic.
  */
 
-import React, { useState, useEffect } from "react";
-import { Modal, Button, Space, Typography, Input, Alert, Steps, Divider, List, message } from "antd";
-import { QrcodeOutlined, KeyOutlined, CheckCircleOutlined, SafetyOutlined } from "@ant-design/icons";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import * as ReactDOM from "react-dom";
+import { Shield, X, Key, CheckCircle, AlertTriangle, Copy, Info, Smartphone, Monitor, Globe } from "lucide-react";
 import { useAuth } from "../../Hooks/useAuth";
+import "./TwoFactorSetup.css";
 
-const { Title, Text, Paragraph } = Typography;
-const { Step } = Steps;
+const modalRoot = document.getElementById("modal-root");
+
+// Authenticator app recommendations with platform icons
+const authenticatorApps = [
+  { name: "Authy", platforms: ["mobile", "desktop"] },
+  { name: "Google Authenticator", platforms: ["mobile"] },
+  { name: "1Password", platforms: ["mobile", "desktop"] },
+];
+
+// Platform icon mapping
+const PlatformIcons = ({ platforms }) => (
+  <div className="tfa-app-platforms">
+    {platforms.includes("mobile") && <Smartphone size={12} />}
+    {platforms.includes("desktop") && <Monitor size={12} />}
+    {platforms.includes("all") && <Globe size={12} />}
+  </div>
+);
 
 export const TwoFactorSetup = ({ visible, onCancel, onSuccess }) => {
   const { enroll2FA, verify2FAEnrollment, getFactors, unenroll2FA } = useAuth();
@@ -25,6 +43,28 @@ export const TwoFactorSetup = ({ visible, onCancel, onSuccess }) => {
   const [enrollmentData, setEnrollmentData] = useState(null);
   const [verificationCode, setVerificationCode] = useState("");
   const [existingFactors, setExistingFactors] = useState([]);
+  const [isExiting, setIsExiting] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [error, setError] = useState(null);
+
+  const codeInputRef = useRef(null);
+
+  /**
+   * Handle ESC key
+   */
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Escape" && visible) {
+        handleClose();
+      }
+    },
+    [visible]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   /**
    * Load existing factors on mount
@@ -32,8 +72,21 @@ export const TwoFactorSetup = ({ visible, onCancel, onSuccess }) => {
   useEffect(() => {
     if (visible) {
       loadFactors();
+      setIsExiting(false);
+      setError(null);
+      setVerificationCode("");
+      setCopySuccess(false);
     }
   }, [visible]);
+
+  /**
+   * Focus code input when on step 1
+   */
+  useEffect(() => {
+    if (currentStep === 1 && codeInputRef.current) {
+      setTimeout(() => codeInputRef.current?.focus(), 100);
+    }
+  }, [currentStep]);
 
   /**
    * Load user's existing 2FA factors
@@ -42,7 +95,6 @@ export const TwoFactorSetup = ({ visible, onCancel, onSuccess }) => {
     const result = await getFactors();
     if (result.success) {
       setExistingFactors(result.totpFactors || []);
-      // If user already has 2FA, show step 3 (management)
       if (result.totpFactors && result.totpFactors.length > 0) {
         setCurrentStep(2);
       } else {
@@ -52,19 +104,46 @@ export const TwoFactorSetup = ({ visible, onCancel, onSuccess }) => {
   };
 
   /**
+   * Close with exit animation
+   */
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setIsExiting(false);
+      setCurrentStep(0);
+      setEnrollmentData(null);
+      setVerificationCode("");
+      setError(null);
+      if (onCancel) onCancel();
+    }, 200);
+  };
+
+  /**
+   * Handle overlay click
+   */
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
+  /**
    * Start 2FA enrollment process
    */
   const handleStartEnrollment = async () => {
     setLoading(true);
+    setError(null);
     try {
       const result = await enroll2FA();
-
       if (result.success) {
         setEnrollmentData(result);
         setCurrentStep(1);
+      } else {
+        setError(result.error || "Failed to start enrollment");
       }
-    } catch (error) {
-      console.error("Enrollment error:", error);
+    } catch (err) {
+      console.error("Enrollment error:", err);
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -75,23 +154,25 @@ export const TwoFactorSetup = ({ visible, onCancel, onSuccess }) => {
    */
   const handleVerifyCode = async () => {
     if (!verificationCode || verificationCode.length !== 6) {
-      message.error("Please enter a 6-digit code");
+      setError("Please enter a 6-digit code");
       return;
     }
 
     setLoading(true);
+    setError(null);
     try {
       const result = await verify2FAEnrollment(enrollmentData.factorId, verificationCode);
-
       if (result.success) {
         setCurrentStep(2);
         setVerificationCode("");
         if (onSuccess) onSuccess();
-        // Reload factors to show the newly enrolled one
         await loadFactors();
+      } else {
+        setError(result.error || "Invalid code. Please try again.");
       }
-    } catch (error) {
-      console.error("Verification error:", error);
+    } catch (err) {
+      console.error("Verification error:", err);
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -102,236 +183,264 @@ export const TwoFactorSetup = ({ visible, onCancel, onSuccess }) => {
    */
   const handleDisable2FA = async (factorId) => {
     setLoading(true);
+    setError(null);
     try {
       const result = await unenroll2FA(factorId);
       if (result.success) {
         await loadFactors();
         setCurrentStep(0);
         setEnrollmentData(null);
+      } else {
+        setError(result.error || "Failed to disable 2FA");
       }
-    } catch (error) {
-      console.error("Unenroll error:", error);
+    } catch (err) {
+      console.error("Unenroll error:", err);
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * Handle modal close
-   */
-  const handleClose = () => {
-    setCurrentStep(0);
-    setEnrollmentData(null);
-    setVerificationCode("");
-    if (onCancel) onCancel();
-  };
-
-  /**
    * Copy secret to clipboard
    */
-  const handleCopySecret = () => {
+  const handleCopySecret = async () => {
     if (enrollmentData?.secret) {
-      navigator.clipboard.writeText(enrollmentData.secret);
-      message.success("Secret copied to clipboard");
+      try {
+        await navigator.clipboard.writeText(enrollmentData.secret);
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+      } catch (err) {
+        console.error("Copy failed:", err);
+      }
     }
   };
 
-  // Authenticator app recommendations
-  const authenticatorApps = [
-    { name: "Google Authenticator", platforms: "iOS, Android" },
-    { name: "Authy", platforms: "iOS, Android, Desktop" },
-    { name: "Microsoft Authenticator", platforms: "iOS, Android" },
-    { name: "1Password", platforms: "iOS, Android, Desktop, Browser" },
-  ];
+  /**
+   * Handle verification code input
+   */
+  const handleCodeChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+    setVerificationCode(value);
+    setError(null);
+  };
 
-  return (
-    <Modal
-      title={
-        <Space>
-          <SafetyOutlined />
-          <span>Two-Factor Authentication</span>
-        </Space>
-      }
-      open={visible}
-      onCancel={handleClose}
-      footer={null}
-      width={600}
-      destroyOnClose>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        {/* Steps indicator */}
-        <Steps current={currentStep} size="small">
-          <Step title="Get Started" icon={<SafetyOutlined />} />
-          <Step title="Scan QR Code" icon={<QrcodeOutlined />} />
-          <Step title="Verified" icon={<CheckCircleOutlined />} />
-        </Steps>
+  /**
+   * Get step indicator state
+   */
+  const getStepState = (stepIndex) => {
+    if (stepIndex < currentStep) return "completed";
+    if (stepIndex === currentStep) return "active";
+    return "pending";
+  };
 
-        <Divider />
+  if (!visible) return null;
 
-        {/* Step 0: Introduction */}
-        {currentStep === 0 && (
-          <>
-            <Alert
-              message="Enhance Your Account Security"
-              description="Two-factor authentication adds an extra layer of security to your account by requiring a code from your phone in addition to your password."
-              type="info"
-              showIcon
-            />
+  return ReactDOM.createPortal(
+    <div className={`tfa-overlay ${isExiting ? "tfa-overlay--exiting" : ""}`} onClick={handleOverlayClick}>
+      <div className="tfa-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <header className="tfa-header">
+          <button className="tfa-close" onClick={handleClose} aria-label="Close">
+            <X size={18} />
+          </button>
 
-            <div>
-              <Title level={5}>How it works:</Title>
-              <Paragraph>
-                <ol>
-                  <li>Install an authenticator app on your phone</li>
-                  <li>Scan the QR code we provide</li>
-                  <li>Enter the 6-digit code to verify setup</li>
-                  <li>Use codes from your app when signing in</li>
-                </ol>
-              </Paragraph>
+          <div className={`tfa-shield ${currentStep === 2 ? "tfa-shield--success" : ""}`}>
+            {currentStep === 2 ? <CheckCircle size={26} /> : <Shield size={26} />}
+          </div>
+
+          <h1 className="tfa-title">
+            {currentStep === 0 && "Two-Factor Authentication"}
+            {currentStep === 1 && "Set Up Authenticator"}
+            {currentStep === 2 && "2FA Enabled"}
+          </h1>
+        </header>
+
+        {/* Step indicator */}
+        <div className="tfa-steps">
+          {[0, 1, 2].map((step) => (
+            <div key={step} className={`tfa-step-dot tfa-step-dot--${getStepState(step)}`} />
+          ))}
+        </div>
+
+        {/* Body */}
+        <div className="tfa-body">
+          {/* Error display */}
+          {error && (
+            <div className="tfa-alert tfa-alert--warning">
+              <AlertTriangle className="tfa-alert-icon" size={18} />
+              <div className="tfa-alert-content">
+                <p className="tfa-alert-text">{error}</p>
+              </div>
             </div>
+          )}
 
-            <div>
-              <Title level={5}>Recommended Authenticator Apps:</Title>
-              <List
-                size="small"
-                dataSource={authenticatorApps}
-                renderItem={(app) => (
-                  <List.Item>
-                    <Text strong>{app.name}</Text>
-                    <Text type="secondary"> - {app.platforms}</Text>
-                  </List.Item>
-                )}
-              />
-            </div>
-
-            <Button type="primary" size="large" block onClick={handleStartEnrollment} loading={loading}>
-              Set Up 2FA
-            </Button>
-          </>
-        )}
-
-        {/* Step 1: QR Code Display */}
-        {currentStep === 1 && enrollmentData && (
-          <>
-            <Alert
-              message="Step 1: Scan QR Code"
-              description="Open your authenticator app and scan this QR code"
-              type="info"
-              showIcon
-            />
-
-            {/* QR Code */}
-            <div style={{ textAlign: "center", padding: "20px" }}>
-              <img
-                src={enrollmentData.qrCode}
-                alt="2FA QR Code"
-                style={{
-                  maxWidth: "250px",
-                  border: "2px solid #d9d9d9",
-                  borderRadius: "8px",
-                  padding: "16px",
-                  backgroundColor: "white",
-                }}
-              />
-            </div>
-
-            {/* Manual entry option */}
-            <div>
-              <Title level={5}>
-                <KeyOutlined /> Can&apos;t scan the code?
-              </Title>
-              <Paragraph type="secondary">Enter this secret key manually in your authenticator app:</Paragraph>
-              <Input.Group compact>
-                <Input value={enrollmentData.secret} readOnly style={{ width: "calc(100% - 80px)" }} size="large" />
-                <Button type="primary" onClick={handleCopySecret} size="large">
-                  Copy
-                </Button>
-              </Input.Group>
-            </div>
-
-            <Divider />
-
-            {/* Verification */}
-            <div>
-              <Title level={5}>Step 2: Verify Setup</Title>
-              <Paragraph>Enter the 6-digit code from your authenticator app:</Paragraph>
-              <Space.Compact style={{ width: "100%" }}>
-                <Input
-                  placeholder="000000"
-                  value={verificationCode}
-                  onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  size="large"
-                  maxLength={6}
-                  style={{ textAlign: "center", fontSize: "24px", letterSpacing: "8px" }}
-                  onPressEnter={handleVerifyCode}
-                />
-                <Button type="primary" size="large" onClick={handleVerifyCode} loading={loading}>
-                  Verify
-                </Button>
-              </Space.Compact>
-            </div>
-          </>
-        )}
-
-        {/* Step 2: Success / Management */}
-        {currentStep === 2 && (
-          <>
-            <Alert
-              message="Two-Factor Authentication Enabled"
-              description={
-                existingFactors.length > 0
-                  ? "Your account is protected with 2FA. You&apos;ll need your authenticator app when signing in."
-                  : "2FA has been successfully enabled for your account!"
-              }
-              type="success"
-              showIcon
-              icon={<CheckCircleOutlined />}
-            />
-
-            {existingFactors.length > 0 && (
-              <>
-                <div>
-                  <Title level={5}>Active Authenticators:</Title>
-                  <List
-                    size="small"
-                    dataSource={existingFactors}
-                    renderItem={(factor) => (
-                      <List.Item
-                        actions={[
-                          <Button
-                            key="disable"
-                            danger
-                            size="small"
-                            onClick={() => handleDisable2FA(factor.id)}
-                            loading={loading}>
-                            Disable
-                          </Button>,
-                        ]}>
-                        <List.Item.Meta
-                          avatar={<SafetyOutlined style={{ fontSize: "20px" }} />}
-                          title="Authenticator App"
-                          description={`Status: ${factor.status}`}
-                        />
-                      </List.Item>
-                    )}
-                  />
+          {/* Step 0: Introduction */}
+          {currentStep === 0 && (
+            <div className="tfa-step-content">
+              <div className="tfa-alert tfa-alert--info">
+                <Info className="tfa-alert-icon" size={18} />
+                <div className="tfa-alert-content">
+                  <p className="tfa-alert-title">Enhance Your Security</p>
+                  <p className="tfa-alert-text">
+                    Two-factor authentication requires a code from your phone when signing in.
+                  </p>
                 </div>
+              </div>
 
-                <Alert
-                  message="Important"
-                  description="Make sure you have access to your authenticator app. If you lose it, you may not be able to sign in to your account."
-                  type="warning"
-                  showIcon
-                />
-              </>
-            )}
+              <h3 className="tfa-section-title">
+                <Smartphone size={16} />
+                How it works
+              </h3>
+              <ol className="tfa-steps-list">
+                <li>Install an authenticator app on your phone</li>
+                <li>Scan the QR code we provide</li>
+                <li>Enter the 6-digit code to verify</li>
+                <li>Use codes from your app when signing in</li>
+              </ol>
 
-            <Button type="primary" block size="large" onClick={handleClose}>
-              Done
-            </Button>
-          </>
-        )}
-      </Space>
-    </Modal>
+              <h3 className="tfa-section-title">Recommended Apps</h3>
+              <div className="tfa-apps-grid">
+                {authenticatorApps.map((app) => (
+                  <div key={app.name} className="tfa-app-item">
+                    <p className="tfa-app-name">{app.name}</p>
+                    <PlatformIcons platforms={app.platforms} />
+                  </div>
+                ))}
+              </div>
+
+              <button className="tfa-btn tfa-btn--primary" onClick={handleStartEnrollment} disabled={loading}>
+                {loading ? <div className="tfa-btn-spinner" /> : "Set Up 2FA"}
+              </button>
+            </div>
+          )}
+
+          {/* Step 1: QR Code & Verification */}
+          {currentStep === 1 && enrollmentData && (
+            <div className="tfa-step-content">
+              <div className="tfa-alert tfa-alert--info">
+                <Info className="tfa-alert-icon" size={18} />
+                <div className="tfa-alert-content">
+                  <p className="tfa-alert-text">Scan this QR code with your authenticator app</p>
+                </div>
+              </div>
+
+              {/* QR Code */}
+              <div className="tfa-qr-container">
+                <img src={enrollmentData.qrCode} alt="2FA QR Code" className="tfa-qr-code" />
+              </div>
+
+              {/* Manual entry */}
+              <div className="tfa-secret-wrapper">
+                <h3 className="tfa-section-title">
+                  <Key size={16} />
+                  Manual Entry
+                </h3>
+                <div className="tfa-secret-input-group">
+                  <input
+                    type="text"
+                    className="tfa-secret-input"
+                    value={enrollmentData.secret}
+                    readOnly
+                    onClick={(e) => e.target.select()}
+                  />
+                  <button className="tfa-btn tfa-btn--copy" onClick={handleCopySecret}>
+                    {copySuccess ? <CheckCircle size={16} /> : <Copy size={16} />}
+                    {copySuccess ? "Copied" : "Copy"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Verification */}
+              <div className="tfa-code-wrapper">
+                <h3 className="tfa-section-title">Enter Verification Code</h3>
+                <div className="tfa-code-input-group">
+                  <input
+                    ref={codeInputRef}
+                    type="text"
+                    className="tfa-code-input"
+                    placeholder="000000"
+                    value={verificationCode}
+                    onChange={handleCodeChange}
+                    onKeyDown={(e) => e.key === "Enter" && handleVerifyCode()}
+                    maxLength={6}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                  />
+                  <button
+                    className="tfa-btn tfa-btn--verify"
+                    onClick={handleVerifyCode}
+                    disabled={loading || verificationCode.length !== 6}>
+                    {loading ? <div className="tfa-btn-spinner" /> : "Verify"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Success / Management */}
+          {currentStep === 2 && (
+            <div className="tfa-step-content">
+              <div className="tfa-alert tfa-alert--success">
+                <CheckCircle className="tfa-alert-icon" size={18} />
+                <div className="tfa-alert-content">
+                  <p className="tfa-alert-title">2FA is Active</p>
+                  <p className="tfa-alert-text">You&apos;ll need your authenticator app when signing in.</p>
+                </div>
+              </div>
+
+              {existingFactors.length > 0 && (
+                <>
+                  <h3 className="tfa-section-title">Active Authenticators</h3>
+                  <div className="tfa-factor-list">
+                    {existingFactors.map((factor) => (
+                      <div key={factor.id} className="tfa-factor-item">
+                        <div className="tfa-factor-info">
+                          <div className="tfa-factor-icon">
+                            <Shield size={18} />
+                          </div>
+                          <div className="tfa-factor-details">
+                            <span className="tfa-factor-name">Authenticator App</span>
+                            <span className="tfa-factor-status">{factor.status || "Verified"}</span>
+                          </div>
+                        </div>
+                        <button
+                          className="tfa-btn tfa-btn--danger"
+                          onClick={() => handleDisable2FA(factor.id)}
+                          disabled={loading}>
+                          {loading ? <div className="tfa-btn-spinner" /> : "Disable"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="tfa-alert tfa-alert--warning">
+                    <AlertTriangle className="tfa-alert-icon" size={18} />
+                    <div className="tfa-alert-content">
+                      <p className="tfa-alert-text">
+                        Make sure you have access to your authenticator. If you lose it, you may not be able to sign in.
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <button className="tfa-btn tfa-btn--success" onClick={handleClose}>
+                Done
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <footer className="tfa-footer">
+          <p className="tfa-footer-text">
+            Lost access to your authenticator? <a href="mailto:support@game-datacards.eu">Contact support</a>
+          </p>
+        </footer>
+      </div>
+    </div>,
+    modalRoot
   );
 };
 

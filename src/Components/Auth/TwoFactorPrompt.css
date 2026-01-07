@@ -1,0 +1,420 @@
+/* TwoFactorPrompt.css - Compact 2FA Verification Modal */
+/* Precision industrial aesthetic - like a secure vault keypad */
+
+/* ===========================================
+   DESIGN TOKENS
+   =========================================== */
+.tfp-overlay {
+  /* Deep navy palette */
+  --tfp-bg-deep: #070d17;
+  --tfp-bg-surface: #0c1424;
+  --tfp-bg-elevated: #121e32;
+
+  /* Accent - cool cyan for security feel */
+  --tfp-accent: #38bdf8;
+  --tfp-accent-muted: rgba(56, 189, 248, 0.15);
+  --tfp-accent-glow: rgba(56, 189, 248, 0.25);
+
+  /* Text */
+  --tfp-text-primary: #f1f5f9;
+  --tfp-text-secondary: #94a3b8;
+  --tfp-text-muted: #64748b;
+
+  /* Status */
+  --tfp-error: #f87171;
+  --tfp-error-bg: rgba(248, 113, 113, 0.1);
+
+  /* Borders */
+  --tfp-border: rgba(148, 163, 184, 0.12);
+  --tfp-border-focus: rgba(56, 189, 248, 0.5);
+
+  /* Effects */
+  --tfp-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+  /* Layout */
+  --tfp-radius: 16px;
+  --tfp-radius-sm: 8px;
+}
+
+/* ===========================================
+   OVERLAY
+   =========================================== */
+.tfp-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10001;
+  padding: 20px;
+  animation: tfpOverlayIn 0.2s ease-out;
+}
+
+.tfp-overlay--exiting {
+  animation: tfpOverlayOut 0.15s ease-in forwards;
+}
+
+@keyframes tfpOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tfpOverlayOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ===========================================
+   MODAL
+   =========================================== */
+.tfp-modal {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  background: var(--tfp-bg-surface);
+  border: 1px solid var(--tfp-border);
+  border-radius: var(--tfp-radius);
+  box-shadow: var(--tfp-shadow);
+  overflow: hidden;
+  animation: tfpModalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tfp-overlay--exiting .tfp-modal {
+  animation: tfpModalOut 0.15s ease-in forwards;
+}
+
+@keyframes tfpModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes tfpModalOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+}
+
+/* Subtle top accent line */
+.tfp-modal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--tfp-accent), transparent);
+  opacity: 0.6;
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
+.tfp-header {
+  position: relative;
+  padding: 24px 24px 16px;
+  text-align: center;
+}
+
+.tfp-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--tfp-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tfp-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--tfp-text-primary);
+}
+
+.tfp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  background: var(--tfp-accent-muted);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  color: var(--tfp-accent);
+}
+
+.tfp-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.tfp-title {
+  margin: 0 0 4px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--tfp-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.tfp-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--tfp-text-secondary);
+  line-height: 1.4;
+}
+
+/* ===========================================
+   BODY
+   =========================================== */
+.tfp-body {
+  padding: 0 24px 24px;
+}
+
+/* ===========================================
+   CODE INPUT
+   =========================================== */
+.tfp-input-wrapper {
+  margin-bottom: 16px;
+}
+
+.tfp-input {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  background: var(--tfp-bg-deep);
+  border: 1px solid var(--tfp-border);
+  border-radius: var(--tfp-radius-sm);
+  font-family: "SF Mono", "Menlo", "Monaco", "Courier New", monospace;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 10px;
+  text-align: center;
+  color: var(--tfp-text-primary);
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.tfp-input::placeholder {
+  color: var(--tfp-text-muted);
+  letter-spacing: 10px;
+}
+
+.tfp-input:focus {
+  border-color: var(--tfp-border-focus);
+  box-shadow: 0 0 0 3px var(--tfp-accent-muted);
+}
+
+.tfp-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   ERROR
+   =========================================== */
+.tfp-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  background: var(--tfp-error-bg);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: var(--tfp-radius-sm);
+  font-size: 13px;
+  color: var(--tfp-error);
+  animation: tfpErrorShake 0.4s ease;
+}
+
+.tfp-error svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes tfpErrorShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* ===========================================
+   ACTIONS
+   =========================================== */
+.tfp-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tfp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--tfp-radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.tfp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Primary button */
+.tfp-btn--primary {
+  background: linear-gradient(135deg, var(--tfp-accent) 0%, #0ea5e9 100%);
+  border: none;
+  color: #0c1424;
+  box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+}
+
+.tfp-btn--primary:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.4);
+  transform: translateY(-1px);
+}
+
+.tfp-btn--primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Secondary button */
+.tfp-btn--secondary {
+  background: transparent;
+  border: 1px solid var(--tfp-border);
+  color: var(--tfp-text-secondary);
+}
+
+.tfp-btn--secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--tfp-text-primary);
+}
+
+/* Spinner */
+.tfp-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: tfpSpin 0.6s linear infinite;
+}
+
+@keyframes tfpSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================================
+   FOOTER
+   =========================================== */
+.tfp-footer {
+  padding: 12px 24px 16px;
+  text-align: center;
+  border-top: 1px solid var(--tfp-border);
+}
+
+.tfp-footer-text {
+  margin: 0;
+  font-size: 12px;
+  color: var(--tfp-text-muted);
+}
+
+.tfp-footer-text a {
+  color: var(--tfp-accent);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.tfp-footer-text a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+@media (max-width: 360px) {
+  .tfp-modal {
+    max-width: 100%;
+  }
+
+  .tfp-header {
+    padding: 20px 20px 12px;
+  }
+
+  .tfp-body {
+    padding: 0 20px 20px;
+  }
+
+  .tfp-input {
+    font-size: 22px;
+    letter-spacing: 8px;
+  }
+
+  .tfp-input::placeholder {
+    letter-spacing: 8px;
+  }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .tfp-overlay,
+  .tfp-modal,
+  .tfp-input,
+  .tfp-btn,
+  .tfp-error {
+    animation: none;
+    transition: none;
+  }
+}
