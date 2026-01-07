@@ -271,9 +271,55 @@ export const AuthProvider = ({ children }) => {
    */
   const enroll2FA = useCallback(async () => {
     try {
+      // First, clean up any existing unverified factors to prevent name conflicts
+      // Get user to access factors directly (more reliable than listFactors)
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+      if (currentUser?.factors) {
+        for (const factor of currentUser.factors) {
+          if (factor.factor_type === "totp" && factor.status === "unverified") {
+            await supabase.auth.mfa.unenroll({ factorId: factor.id });
+          }
+        }
+      }
+
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: "totp",
+        friendlyName: "Authenticator App",
       });
+
+      // Handle name conflict by removing conflicting factor and retrying
+      const isNameConflict = error?.code === "mfa_factor_name_conflict" || error?.message?.includes("friendly name");
+      if (isNameConflict) {
+        // Force cleanup - refetch user and remove all unverified factors
+        const {
+          data: { user: refreshedUser },
+        } = await supabase.auth.getUser();
+        if (refreshedUser?.factors) {
+          for (const factor of refreshedUser.factors) {
+            if (factor.factor_type === "totp" && factor.status === "unverified") {
+              await supabase.auth.mfa.unenroll({ factorId: factor.id });
+            }
+          }
+        }
+        // Retry enrollment
+        const retryResult = await supabase.auth.mfa.enroll({
+          factorType: "totp",
+          friendlyName: "Authenticator App",
+        });
+        if (retryResult.error) {
+          message.error(retryResult.error.message);
+          return { success: false, error: retryResult.error.message };
+        }
+        return {
+          success: true,
+          factorId: retryResult.data.id,
+          qrCode: retryResult.data.totp.qr_code,
+          secret: retryResult.data.totp.secret,
+          uri: retryResult.data.totp.uri,
+        };
+      }
 
       if (error) {
         message.error(error.message);
@@ -384,19 +430,33 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Get list of enrolled factors
+   * Uses getUser() for more reliable factor retrieval than mfa.listFactors()
    */
   const getFactors = useCallback(async () => {
+    if (!supabase) return { success: false, error: "Supabase not configured" };
+
     try {
-      const { data, error } = await supabase.auth.mfa.listFactors();
+      const {
+        data: { user: currentUser },
+        error,
+      } = await supabase.auth.getUser();
 
       if (error) {
         return { success: false, error: error.message };
       }
 
+      if (!currentUser?.factors) {
+        return { success: true, factors: [], totpFactors: [] };
+      }
+
+      const allFactors = currentUser.factors;
+      // Only return verified TOTP factors for 2FA prompts
+      const totpFactors = allFactors.filter((f) => f.factor_type === "totp" && f.status === "verified");
+
       return {
         success: true,
-        factors: data.all,
-        totpFactors: data.totp,
+        factors: allFactors,
+        totpFactors,
       };
     } catch (error) {
       return { success: false, error: error.message };

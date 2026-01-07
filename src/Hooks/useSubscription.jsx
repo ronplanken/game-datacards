@@ -4,7 +4,7 @@
  * Manages user subscription state and tier-based features:
  * - Fetches subscription data from user profile
  * - Provides tier checking utilities
- * - Handles Polar.sh checkout flow
+ * - Handles Creem checkout flow
  * - Enforces category and datasource limits
  * - Manages subscription status (active, expired, cancelled)
  */
@@ -185,8 +185,8 @@ export const SubscriptionProvider = ({ children }) => {
       tier: getTier(),
       status: profile.subscription_status,
       expiresAt: profile.subscription_expires_at,
-      polarCustomerId: profile.polar_customer_id,
-      polarSubscriptionId: profile.polar_subscription_id,
+      creemCustomerId: profile.creem_customer_id,
+      creemSubscriptionId: profile.creem_subscription_id,
     });
 
     setLoading(false);
@@ -202,10 +202,10 @@ export const SubscriptionProvider = ({ children }) => {
   }, [isAuthenticated, user, fetchUsage]);
 
   /**
-   * Start Polar.sh checkout flow
+   * Start Creem checkout flow
    */
   const startCheckout = useCallback(
-    async (priceId) => {
+    async (productId) => {
       if (!isAuthenticated) {
         message.error("Please sign in to upgrade");
         return { success: false };
@@ -222,18 +222,17 @@ export const SubscriptionProvider = ({ children }) => {
       }
 
       try {
-        // Call Supabase Edge Function to create Polar checkout
+        // Call Supabase Edge Function to create Creem checkout
         const { data, error } = await supabase.functions.invoke("create-checkout", {
           body: {
-            priceId,
-            userId: user.id,
-            email: user.email,
+            productId,
+            successUrl: `${window.location.origin}/`,
           },
         });
 
         if (error) throw error;
 
-        // Redirect to Polar checkout
+        // Redirect to Creem checkout
         if (data?.checkoutUrl) {
           window.location.href = data.checkoutUrl;
           return { success: true };
@@ -246,14 +245,14 @@ export const SubscriptionProvider = ({ children }) => {
         return { success: false, error: error.message };
       }
     },
-    [isAuthenticated, user]
+    [isAuthenticated]
   );
 
   /**
    * Open customer portal (for managing subscription)
    */
   const openCustomerPortal = useCallback(async () => {
-    if (!subscription?.polarCustomerId) {
+    if (!subscription?.creemCustomerId) {
       message.error("No subscription found");
       return { success: false };
     }
@@ -264,12 +263,8 @@ export const SubscriptionProvider = ({ children }) => {
     }
 
     try {
-      // Call Supabase Edge Function to get portal URL
-      const { data, error } = await supabase.functions.invoke("get-portal-url", {
-        body: {
-          customerId: subscription.polarCustomerId,
-        },
-      });
+      // Call Supabase Edge Function to get Creem portal URL
+      const { data, error } = await supabase.functions.invoke("get-portal-url");
 
       if (error) throw error;
 
@@ -301,8 +296,8 @@ export const SubscriptionProvider = ({ children }) => {
         tier: data.subscription_tier === "paid" ? "paid" : "free",
         status: data.subscription_status,
         expiresAt: data.subscription_expires_at,
-        polarCustomerId: data.polar_customer_id,
-        polarSubscriptionId: data.polar_subscription_id,
+        creemCustomerId: data.creem_customer_id,
+        creemSubscriptionId: data.creem_subscription_id,
       });
 
       // Also refresh usage

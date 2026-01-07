@@ -1,214 +1,202 @@
 /**
  * UpgradeModal Component
  *
- * Modal dialog promoting paid tier upgrade with:
- * - Feature comparison (Free vs Paid)
- * - Usage statistics
- * - Pricing information
- * - Call-to-action button
- * - Trigger contexts (quota reached, manual upgrade)
+ * Premium upgrade modal with dark navy theme and gold accents.
+ * Features comparison, pricing, and call-to-action.
  */
 
-import React from "react";
-import { Modal, Button, Row, Col, Card, Typography, Space, Divider, Tag, List } from "antd";
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  CloudUploadOutlined,
-  DatabaseOutlined,
-  ShareAltOutlined,
-  CrownOutlined,
-} from "@ant-design/icons";
+import React, { useState, useEffect, useCallback } from "react";
+import * as ReactDOM from "react-dom";
+import { Crown, X, Check, Database, Upload, Share2, Zap, Headphones, AlertTriangle } from "lucide-react";
 import { useSubscription } from "../../Hooks/useSubscription";
+import "./UpgradeModal.css";
 
-const { Title, Text, Paragraph } = Typography;
+const modalRoot = document.getElementById("modal-root");
 
 export const UpgradeModal = ({ visible, onCancel, trigger = "manual" }) => {
+  const [isExiting, setIsExiting] = useState(false);
   const { usage, getLimits, startCheckout, isPaidTierEnabled } = useSubscription();
 
   const freeLimits = getLimits("free");
   const paidLimits = getLimits("paid");
 
-  // Trigger-specific messaging
-  const getTriggerMessage = () => {
-    switch (trigger) {
-      case "category_limit":
-        return {
-          title: "Category Limit Reached",
-          description: `You've reached your limit of ${freeLimits.categories} backed-up categories. Upgrade to save up to ${paidLimits.categories} categories in the cloud!`,
-          icon: <DatabaseOutlined style={{ fontSize: "48px", color: "#faad14" }} />,
-        };
+  // Handle ESC key
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Escape" && visible) {
+        handleClose();
+      }
+    },
+    [visible]
+  );
 
-      case "datasource_limit":
-        return {
-          title: "Datasource Upload Unavailable",
-          description:
-            "Uploading custom datasources is a premium feature. Upgrade to share your own datasources with the community!",
-          icon: <CloudUploadOutlined style={{ fontSize: "48px", color: "#faad14" }} />,
-        };
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
-      default:
-        return {
-          title: "Upgrade to Premium",
-          description: "Get unlimited access to all features and support the development of Game Datacards.",
-          icon: <CrownOutlined style={{ fontSize: "48px", color: "#faad14" }} />,
-        };
+  // Reset state when modal opens
+  useEffect(() => {
+    if (visible) {
+      setIsExiting(false);
+    }
+  }, [visible]);
+
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setIsExiting(false);
+      if (onCancel) onCancel();
+    }, 200);
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
     }
   };
 
-  const triggerMessage = getTriggerMessage();
-
   const handleUpgrade = async () => {
-    // TODO: Get actual price ID from Polar.sh configuration
-    const priceId = process.env.REACT_APP_POLAR_PRICE_ID || "price_placeholder";
-
-    const result = await startCheckout(priceId);
+    const productId = process.env.REACT_APP_CREEM_PRODUCT_ID;
+    if (!productId) {
+      console.error("REACT_APP_CREEM_PRODUCT_ID not configured");
+      return;
+    }
+    const result = await startCheckout(productId);
     if (result.success) {
-      // Checkout redirect will happen automatically
       onCancel();
     }
   };
 
+  // Trigger-specific alert message
+  const getTriggerAlert = () => {
+    switch (trigger) {
+      case "category_limit":
+        return {
+          show: true,
+          message: `You've reached your limit of ${freeLimits.categories} backed-up categories.`,
+          icon: <Database size={18} />,
+        };
+      case "datasource_limit":
+        return {
+          show: true,
+          message: "Uploading custom datasources is a premium feature.",
+          icon: <Upload size={18} />,
+        };
+      default:
+        return { show: false };
+    }
+  };
+
+  const triggerAlert = getTriggerAlert();
+
   const features = [
     {
-      category: "Cloud Backup",
-      free: `${freeLimits.categories} categories`,
-      paid: `${paidLimits.categories} categories`,
-      icon: <DatabaseOutlined />,
+      icon: <Database size={18} />,
+      title: "Cloud Backup",
+      desc: `Save up to ${paidLimits.categories} categories`,
     },
     {
-      category: "Custom Datasources",
-      free: "View only",
-      paid: `Upload ${paidLimits.datasources}+ datasources`,
-      icon: <CloudUploadOutlined />,
+      icon: <Upload size={18} />,
+      title: "Custom Datasources",
+      desc: `Upload ${paidLimits.datasources}+ datasources`,
     },
     {
-      category: "Share with Community",
-      free: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
-      paid: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
-      icon: <ShareAltOutlined />,
+      icon: <Share2 size={18} />,
+      title: "Community Sharing",
+      desc: "Share with other players",
     },
     {
-      category: "Auto-Sync",
-      free: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
-      paid: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
-      icon: <CheckCircleOutlined />,
+      icon: <Zap size={18} />,
+      title: "Auto-Sync",
+      desc: "Seamless sync across devices",
     },
     {
-      category: "Priority Support",
-      free: <CloseCircleOutlined style={{ color: "#ff4d4f" }} />,
-      paid: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
-      icon: <CheckCircleOutlined />,
+      icon: <Headphones size={18} />,
+      title: "Priority Support",
+      desc: "Get help when you need it",
     },
   ];
 
-  return (
-    <Modal title={null} open={visible} onCancel={onCancel} footer={null} width={700} destroyOnClose centered>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        {/* Header with icon and message */}
-        <div style={{ textAlign: "center", padding: "20px 0" }}>
-          {triggerMessage.icon}
-          <Title level={2} style={{ marginTop: 16, marginBottom: 8 }}>
-            {triggerMessage.title}
-          </Title>
-          <Paragraph type="secondary" style={{ fontSize: "16px" }}>
-            {triggerMessage.description}
-          </Paragraph>
+  if (!visible) return null;
+
+  return ReactDOM.createPortal(
+    <div className={`upgrade-overlay ${isExiting ? "upgrade-overlay--exiting" : ""}`} onClick={handleOverlayClick}>
+      <div className="upgrade-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <header className="upgrade-header">
+          <button className="upgrade-close" onClick={handleClose} aria-label="Close">
+            <X size={18} />
+          </button>
+
+          <div className="upgrade-crown">
+            <Crown size={24} />
+          </div>
+
+          <h1 className="upgrade-title">Upgrade to Premium</h1>
+          <p className="upgrade-subtitle">Unlock the full potential of Game Datacards</p>
+        </header>
+
+        {/* Body */}
+        <div className="upgrade-body">
+          {/* Trigger alert */}
+          {triggerAlert.show && (
+            <div className="upgrade-trigger-alert">
+              <AlertTriangle className="upgrade-trigger-alert-icon" size={20} />
+              <span className="upgrade-trigger-alert-text">{triggerAlert.message}</span>
+            </div>
+          )}
+
+          {/* Features */}
+          <div className="upgrade-features">
+            {features.map((feature, index) => (
+              <div className="upgrade-feature" key={index}>
+                <div className="upgrade-feature-icon">{feature.icon}</div>
+                <div className="upgrade-feature-content">
+                  <div className="upgrade-feature-title">{feature.title}</div>
+                  <div className="upgrade-feature-desc">{feature.desc}</div>
+                </div>
+                <Check className="upgrade-feature-check" size={18} />
+              </div>
+            ))}
+          </div>
+
+          {/* Pricing */}
+          <div className="upgrade-pricing">
+            <div className="upgrade-pricing-header">
+              <span className="upgrade-pricing-amount">$5.99</span>
+              <span className="upgrade-pricing-period">/ month</span>
+            </div>
+            <div className="upgrade-pricing-note">Cancel anytime. Billed monthly.</div>
+          </div>
+
+          {/* CTA */}
+          {isPaidTierEnabled ? (
+            <button className="upgrade-cta" onClick={handleUpgrade}>
+              <Crown size={18} />
+              <span>Upgrade Now</span>
+            </button>
+          ) : (
+            <button className="upgrade-cta upgrade-cta--soon" disabled>
+              Coming Soon
+            </button>
+          )}
         </div>
 
-        {/* Current usage stats */}
-        <Card size="small" style={{ backgroundColor: "#f5f5f5" }}>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Text type="secondary">Categories backed up:</Text>
-              <div>
-                <Text strong style={{ fontSize: "20px" }}>
-                  {usage.categories}
-                </Text>
-                <Text type="secondary"> / {freeLimits.categories}</Text>
-              </div>
-            </Col>
-            <Col span={12}>
-              <Text type="secondary">Datasources uploaded:</Text>
-              <div>
-                <Text strong style={{ fontSize: "20px" }}>
-                  {usage.datasources}
-                </Text>
-                <Text type="secondary"> / {freeLimits.datasources}</Text>
-              </div>
-            </Col>
-          </Row>
-        </Card>
-
-        <Divider>Compare Plans</Divider>
-
-        {/* Feature comparison table */}
-        <List
-          dataSource={features}
-          renderItem={(feature) => (
-            <List.Item>
-              <List.Item.Meta
-                avatar={feature.icon}
-                title={feature.category}
-                description={
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Tag color="default">Free: {feature.free}</Tag>
-                    </Col>
-                    <Col span={12}>
-                      <Tag color="gold">Paid: {feature.paid}</Tag>
-                    </Col>
-                  </Row>
-                }
-              />
-            </List.Item>
-          )}
-        />
-
-        {/* Pricing */}
-        <Card>
-          <Row align="middle" justify="space-between">
-            <Col>
-              <Title level={3} style={{ margin: 0 }}>
-                Premium Plan
-              </Title>
-              <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                <Text strong style={{ fontSize: "24px" }}>
-                  €5.99
-                </Text>
-                <Text type="secondary"> / month</Text>
-              </Paragraph>
-              <Text type="secondary" style={{ fontSize: "12px" }}>
-                Cancel anytime. Managed by Polar.sh
-              </Text>
-            </Col>
-            <Col>
-              {isPaidTierEnabled ? (
-                <Button type="primary" size="large" icon={<CrownOutlined />} onClick={handleUpgrade}>
-                  Upgrade Now
-                </Button>
-              ) : (
-                <Button size="large" disabled>
-                  Coming Soon
-                </Button>
-              )}
-            </Col>
-          </Row>
-        </Card>
-
-        {/* Footer note */}
-        <div style={{ textAlign: "center" }}>
-          <Text type="secondary" style={{ fontSize: "12px" }}>
+        {/* Footer */}
+        <footer className="upgrade-footer">
+          <p className="upgrade-footer-text">
             Secure payment powered by{" "}
             <a href="https://polar.sh" target="_blank" rel="noopener noreferrer">
               Polar.sh
             </a>
             <br />
-            By upgrading, you agree to our Terms of Service and support the ongoing development of Game Datacards.
-          </Text>
-        </div>
-      </Space>
-    </Modal>
+            Your support helps keep Game Datacards free for everyone.
+          </p>
+        </footer>
+      </div>
+    </div>,
+    modalRoot
   );
 };
 

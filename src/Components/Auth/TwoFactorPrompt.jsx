@@ -1,26 +1,42 @@
 /**
  * TwoFactorPrompt Component
  *
- * Modal that appears during login when 2FA is required:
- * - Prompts user to enter 6-digit code from authenticator
- * - Handles verification with Supabase
- * - Shows error states
- * - Allows cancellation to return to login
+ * Compact modal for 2FA verification during login.
+ * Designed as a quick "security checkpoint" - focused and minimal.
  */
 
-import React, { useState, useEffect, useRef } from "react";
-import { Modal, Input, Button, Space, Typography, Alert } from "antd";
-import { SafetyOutlined, LockOutlined } from "@ant-design/icons";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import * as ReactDOM from "react-dom";
+import { Shield, X, AlertCircle } from "lucide-react";
 import { useAuth } from "../../Hooks/useAuth";
+import "./TwoFactorPrompt.css";
 
-const { Title, Paragraph, Text } = Typography;
+const modalRoot = document.getElementById("modal-root");
 
 export const TwoFactorPrompt = ({ visible, onCancel, onSuccess, factorId, challengeId }) => {
   const { verify2FA } = useAuth();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isExiting, setIsExiting] = useState(false);
   const inputRef = useRef(null);
+
+  /**
+   * Handle ESC key
+   */
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Escape" && visible) {
+        handleClose();
+      }
+    },
+    [visible]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   /**
    * Focus input when modal opens
@@ -34,21 +50,47 @@ export const TwoFactorPrompt = ({ visible, onCancel, onSuccess, factorId, challe
   }, [visible]);
 
   /**
-   * Clear state when modal closes
+   * Clear state when modal opens/closes
    */
   useEffect(() => {
-    if (!visible) {
+    if (visible) {
       setCode("");
       setError(null);
       setLoading(false);
+      setIsExiting(false);
     }
   }, [visible]);
 
   /**
-   * Handle code verification
+   * Close with animation
    */
-  const handleVerify = async () => {
-    if (!code || code.length !== 6) {
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setIsExiting(false);
+      setCode("");
+      setError(null);
+      if (onCancel) onCancel();
+    }, 150);
+  };
+
+  /**
+   * Handle overlay click
+   */
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
+  /**
+   * Handle code verification
+   * @param {string} codeToVerify - Optional code to verify (used for auto-submit to avoid stale state)
+   */
+  const handleVerify = async (codeToVerify) => {
+    const verifyCode = codeToVerify || code;
+
+    if (!verifyCode || verifyCode.length !== 6) {
       setError("Please enter a 6-digit code");
       return;
     }
@@ -62,7 +104,7 @@ export const TwoFactorPrompt = ({ visible, onCancel, onSuccess, factorId, challe
     setError(null);
 
     try {
-      const result = await verify2FA(factorId, challengeId, code);
+      const result = await verify2FA(factorId, challengeId, verifyCode);
 
       if (result.success) {
         if (onSuccess) onSuccess();
@@ -85,96 +127,81 @@ export const TwoFactorPrompt = ({ visible, onCancel, onSuccess, factorId, challe
     setCode(value);
     setError(null);
 
-    // Auto-submit when 6 digits entered
+    // Auto-submit when 6 digits entered - pass value directly to avoid stale state
     if (value.length === 6) {
       setTimeout(() => {
-        handleVerify();
+        handleVerify(value);
       }, 100);
     }
   };
 
-  return (
-    <Modal
-      title={
-        <Space>
-          <SafetyOutlined />
-          <span>Two-Factor Authentication</span>
-        </Space>
-      }
-      open={visible}
-      onCancel={onCancel}
-      footer={null}
-      width={450}
-      destroyOnClose
-      maskClosable={false}>
-      <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <Alert
-          message="Verification Required"
-          description="Enter the 6-digit code from your authenticator app to complete sign in"
-          type="info"
-          showIcon
-          icon={<LockOutlined />}
-        />
+  if (!visible) return null;
 
-        {/* Code input */}
-        <div>
-          <Title level={5}>Authentication Code</Title>
-          <Input
-            ref={inputRef}
-            placeholder="000000"
-            value={code}
-            onChange={handleCodeChange}
-            onPressEnter={handleVerify}
-            size="large"
-            maxLength={6}
-            status={error ? "error" : ""}
-            style={{
-              textAlign: "center",
-              fontSize: "32px",
-              letterSpacing: "12px",
-              fontWeight: "bold",
-            }}
-            disabled={loading}
-          />
+  return ReactDOM.createPortal(
+    <div className={`tfp-overlay ${isExiting ? "tfp-overlay--exiting" : ""}`} onClick={handleOverlayClick}>
+      <div className="tfp-modal" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <header className="tfp-header">
+          <button className="tfp-close" onClick={handleClose} aria-label="Close">
+            <X size={16} />
+          </button>
+
+          <div className="tfp-icon">
+            <Shield />
+          </div>
+
+          <h2 className="tfp-title">Verification Required</h2>
+          <p className="tfp-subtitle">Enter the code from your authenticator app</p>
+        </header>
+
+        {/* Body */}
+        <div className="tfp-body">
+          {/* Code input */}
+          <div className="tfp-input-wrapper">
+            <input
+              ref={inputRef}
+              type="text"
+              className="tfp-input"
+              placeholder="000000"
+              value={code}
+              onChange={handleCodeChange}
+              onKeyDown={(e) => e.key === "Enter" && handleVerify()}
+              maxLength={6}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              disabled={loading}
+            />
+          </div>
+
+          {/* Error display */}
           {error && (
-            <Text type="danger" style={{ display: "block", marginTop: "8px", textAlign: "center" }}>
-              {error}
-            </Text>
+            <div className="tfp-error">
+              <AlertCircle />
+              <span>{error}</span>
+            </div>
           )}
+
+          {/* Action buttons */}
+          <div className="tfp-actions">
+            <button className="tfp-btn tfp-btn--primary" onClick={handleVerify} disabled={loading || code.length !== 6}>
+              {loading ? <div className="tfp-spinner" /> : "Verify"}
+            </button>
+
+            <button className="tfp-btn tfp-btn--secondary" onClick={handleClose} disabled={loading}>
+              Cancel
+            </button>
+          </div>
         </div>
 
-        {/* Instructions */}
-        <div>
-          <Paragraph type="secondary" style={{ margin: 0, textAlign: "center" }}>
-            Open your authenticator app and enter the current 6-digit code.
-          </Paragraph>
-        </div>
-
-        {/* Action buttons */}
-        <Space direction="vertical" style={{ width: "100%" }}>
-          <Button
-            type="primary"
-            size="large"
-            block
-            onClick={handleVerify}
-            loading={loading}
-            disabled={code.length !== 6}>
-            Verify Code
-          </Button>
-
-          <Button size="large" block onClick={onCancel} disabled={loading}>
-            Cancel
-          </Button>
-        </Space>
-
-        {/* Troubleshooting help */}
-        <div style={{ textAlign: "center" }}>
-          <Paragraph type="secondary" style={{ fontSize: "12px", margin: 0 }}>
-            Lost access to your authenticator? <a href="mailto:support@game-datacards.com">Contact support</a>
-          </Paragraph>
-        </div>
-      </Space>
-    </Modal>
+        {/* Footer */}
+        <footer className="tfp-footer">
+          <p className="tfp-footer-text">
+            Lost access? <a href="mailto:support@game-datacards.eu">Contact support</a>
+          </p>
+        </footer>
+      </div>
+    </div>,
+    modalRoot
   );
 };
 

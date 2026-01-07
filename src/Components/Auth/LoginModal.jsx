@@ -9,7 +9,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { Mail, Lock, X, Eye, EyeOff, AlertCircle, ChevronLeft, ArrowRight } from "lucide-react";
 import { useAuth } from "../../Hooks/useAuth";
-import TwoFactorPrompt from "./TwoFactorPrompt";
 import "./AuthModals.css";
 
 // Google icon component
@@ -43,7 +42,7 @@ const GitHubIcon = () => (
 
 const modalRoot = document.getElementById("modal-root");
 
-export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) => {
+export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess, onMFARequired }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -51,8 +50,6 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
   const [errors, setErrors] = useState({});
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
-  const [show2FA, setShow2FA] = useState(false);
-  const [twoFactorData, setTwoFactorData] = useState(null);
 
   const { signIn, signInWithOAuth, resetPassword, getFactors, challenge2FA } = useAuth();
 
@@ -148,12 +145,11 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
           const factor = factorsResult.totpFactors[0];
           const challengeResult = await challenge2FA(factor.id);
 
-          if (challengeResult.success) {
-            setTwoFactorData({
-              factorId: factor.id,
-              challengeId: challengeResult.challengeId,
-            });
-            setShow2FA(true);
+          if (challengeResult.success && onMFARequired) {
+            // Delegate 2FA handling to parent (AccountButton)
+            // This ensures the prompt persists even if LoginModal unmounts
+            onMFARequired(factor.id, challengeResult.challengeId);
+            return;
           }
         } else {
           handleClose();
@@ -182,16 +178,6 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
   };
 
   /**
-   * Handle 2FA success
-   */
-  const handle2FASuccess = () => {
-    setShow2FA(false);
-    setTwoFactorData(null);
-    handleClose();
-    if (onSuccess) onSuccess();
-  };
-
-  /**
    * Handle overlay click
    */
   const handleOverlayClick = (e) => {
@@ -211,10 +197,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
             <X size={18} />
           </button>
           <div className="auth-header-content">
-            <div className="auth-title-row">
-              <h1 className="auth-title">{showForgotPassword ? "Reset Password" : "Welcome Back"}</h1>
-              <span className="auth-badge">Secure</span>
-            </div>
+            <h1 className="auth-title">{showForgotPassword ? "Reset Password" : "Welcome Back"}</h1>
             <p className="auth-subtitle">
               {showForgotPassword
                 ? "Enter your email to receive a reset link"
@@ -345,7 +328,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
                   onClick={() => handleOAuthLogin("google")}
                   disabled={loading}>
                   <GoogleIcon />
-                  Sign in with Google
+                  Google
                 </button>
 
                 <button
@@ -354,7 +337,7 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
                   onClick={() => handleOAuthLogin("github")}
                   disabled={loading}>
                   <GitHubIcon />
-                  Sign in with GitHub
+                  GitHub
                 </button>
               </div>
 
@@ -370,20 +353,6 @@ export const LoginModal = ({ visible, onCancel, onSwitchToSignup, onSuccess }) =
           )}
         </div>
       </div>
-
-      {/* 2FA Prompt */}
-      {show2FA && twoFactorData && (
-        <TwoFactorPrompt
-          visible={show2FA}
-          onCancel={() => {
-            setShow2FA(false);
-            setTwoFactorData(null);
-          }}
-          onSuccess={handle2FASuccess}
-          factorId={twoFactorData.factorId}
-          challengeId={twoFactorData.challengeId}
-        />
-      )}
     </div>,
     modalRoot
   );
