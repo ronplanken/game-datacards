@@ -29,3 +29,4 @@ yarn-error.log*
 .gemini-clipboard/
 .claude/
 .env
+supabase/.temp/
