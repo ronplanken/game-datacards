@@ -7,27 +7,18 @@
  * - Handles modal state for login/signup
  */
 
-import React, { useState } from "react";
-import { Button, Dropdown, Avatar, Space, Typography } from "antd";
-import {
-  UserOutlined,
-  SettingOutlined,
-  ShareAltOutlined,
-  LogoutOutlined,
-  CrownOutlined,
-  SafetyOutlined,
-} from "@ant-design/icons";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Settings, Share2, LogOut, Crown, Shield } from "lucide-react";
 import { LogIn } from "lucide-react";
 import "./AccountButton.css";
+import "./UserMenu.css";
 import { useAuth } from "../../Hooks/useAuth";
 import { useSubscription } from "../../Hooks/useSubscription";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
 import TwoFactorSetup from "./TwoFactorSetup";
-import SubscriptionBadge from "../Subscription/SubscriptionBadge";
+import TwoFactorPrompt from "./TwoFactorPrompt";
 import UpgradeModal from "../Subscription/UpgradeModal";
-
-const { Text } = Typography;
 
 export const AccountButton = () => {
   const { user, isAuthenticated, signOut, loading } = useAuth();
@@ -36,12 +27,82 @@ export const AccountButton = () => {
   const [signupVisible, setSignupVisible] = useState(false);
   const [upgradeVisible, setUpgradeVisible] = useState(false);
   const [twoFactorVisible, setTwoFactorVisible] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // 2FA login prompt state - lifted from LoginModal so it persists during auth state changes
+  const [twoFactorLoginVisible, setTwoFactorLoginVisible] = useState(false);
+  const [twoFactorLoginData, setTwoFactorLoginData] = useState(null);
+
+  const menuRef = useRef(null);
+  const triggerRef = useRef(null);
+
+  /**
+   * Handle click outside to close menu
+   */
+  const handleClickOutside = useCallback((e) => {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(e.target) &&
+      triggerRef.current &&
+      !triggerRef.current.contains(e.target)
+    ) {
+      setMenuOpen(false);
+    }
+  }, []);
+
+  /**
+   * Handle ESC key to close menu
+   */
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === "Escape") {
+      setMenuOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen, handleClickOutside, handleKeyDown]);
 
   /**
    * Handle logout
    */
   const handleLogout = async () => {
+    setMenuOpen(false);
     await signOut();
+  };
+
+  /**
+   * Handle MFA required during login
+   * Called by LoginModal when user has 2FA enabled
+   * Note: We don't close the login modal - the 2FA prompt overlays on top (higher z-index)
+   */
+  const handleMFARequired = (factorId, challengeId) => {
+    setTwoFactorLoginData({ factorId, challengeId });
+    setTwoFactorLoginVisible(true);
+  };
+
+  /**
+   * Handle MFA verification success
+   */
+  const handleMFASuccess = () => {
+    setTwoFactorLoginVisible(false);
+    setTwoFactorLoginData(null);
+    setLoginVisible(false); // Also close the login modal behind
+  };
+
+  /**
+   * Handle MFA verification cancelled
+   */
+  const handleMFACancel = () => {
+    setTwoFactorLoginVisible(false);
+    setTwoFactorLoginData(null);
   };
 
   /**
@@ -65,149 +126,197 @@ export const AccountButton = () => {
       .slice(0, 2);
   };
 
-  /**
-   * Authenticated user menu items
-   */
   const tier = getTier();
-  const menuItems = [
-    {
-      key: "user-info",
-      label: (
-        <div style={{ padding: "4px 0" }}>
-          <Space direction="vertical" size={4}>
-            <div>
-              <Text strong>{getUserDisplayName()}</Text>
-              <span style={{ marginLeft: 8 }}>
-                <SubscriptionBadge size="small" />
-              </span>
+  const isPremium = tier !== "free";
+
+  /**
+   * Menu item click handler
+   */
+  const handleMenuItemClick = (action) => {
+    setMenuOpen(false);
+    action();
+  };
+
+  // Render main content based on auth state
+  const renderContent = () => {
+    // Show loading state
+    if (loading && !user) {
+      return (
+        <div className="user-menu-container">
+          <button className="user-avatar-trigger" disabled>
+            <div className="user-avatar user-avatar--free" style={{ opacity: 0.5 }}>
+              ...
             </div>
-            <Text type="secondary" style={{ fontSize: "12px" }}>
-              {user?.email}
-            </Text>
-          </Space>
+          </button>
         </div>
-      ),
-      disabled: true,
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "account",
-      icon: <SettingOutlined />,
-      label: "Account Settings",
-      onClick: () => {
-        // TODO: Open account settings modal
-        console.log("Open account settings");
-      },
-    },
-    {
-      key: "shares",
-      icon: <ShareAltOutlined />,
-      label: "My Shares",
-      onClick: () => {
-        // TODO: Open my shares view
-        console.log("Open my shares");
-      },
-    },
-    {
-      key: "2fa",
-      icon: <SafetyOutlined />,
-      label: "Two-Factor Auth",
-      onClick: () => setTwoFactorVisible(true),
-    },
-    // Show upgrade for free users, manage subscription for paid users
-    tier === "free"
-      ? {
-          key: "upgrade",
-          icon: <CrownOutlined />,
-          label: "Upgrade to Premium",
-          onClick: () => setUpgradeVisible(true),
-        }
-      : {
-          key: "manage-subscription",
-          icon: <CrownOutlined />,
-          label: "Manage Subscription",
-          onClick: () => openCustomerPortal(),
-        },
-    {
-      type: "divider",
-    },
-    {
-      key: "logout",
-      icon: <LogoutOutlined />,
-      label: "Sign Out",
-      onClick: handleLogout,
-    },
-  ];
+      );
+    }
 
-  // Show loading state
-  if (loading && !user) {
-    return (
-      <Button type="text" loading icon={<UserOutlined />}>
-        Loading...
-      </Button>
-    );
-  }
+    // Not authenticated - show login button
+    if (!isAuthenticated) {
+      return (
+        <>
+          <button className="header-signin-btn" onClick={() => setLoginVisible(true)}>
+            <span className="header-signin-btn-bg" />
+            <LogIn className="header-signin-btn-icon" size={16} />
+            <span className="header-signin-btn-text">Sign In</span>
+          </button>
 
-  // Not authenticated - show login button
-  if (!isAuthenticated) {
+          <LoginModal
+            visible={loginVisible}
+            onCancel={() => setLoginVisible(false)}
+            onSwitchToSignup={() => {
+              setLoginVisible(false);
+              setSignupVisible(true);
+            }}
+            onSuccess={() => setLoginVisible(false)}
+            onMFARequired={handleMFARequired}
+          />
+
+          <SignupModal
+            visible={signupVisible}
+            onCancel={() => setSignupVisible(false)}
+            onSwitchToLogin={() => {
+              setSignupVisible(false);
+              setLoginVisible(true);
+            }}
+            onSuccess={() => setSignupVisible(false)}
+          />
+        </>
+      );
+    }
+
+    // Authenticated - show user menu
     return (
       <>
-        <button className="header-signin-btn" onClick={() => setLoginVisible(true)}>
-          <span className="header-signin-btn-bg" />
-          <LogIn className="header-signin-btn-icon" size={16} />
-          <span className="header-signin-btn-text">Sign In</span>
-        </button>
+        <div className="user-menu-container">
+          {/* Avatar trigger */}
+          <button
+            ref={triggerRef}
+            className="user-avatar-trigger"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
+            aria-haspopup="true"
+            data-testid="user-menu">
+            <div className={`user-avatar ${isPremium ? "" : "user-avatar--free"}`}>{getUserInitials()}</div>
+          </button>
 
-        <LoginModal
-          visible={loginVisible}
-          onCancel={() => setLoginVisible(false)}
-          onSwitchToSignup={() => {
-            setLoginVisible(false);
-            setSignupVisible(true);
-          }}
-          onSuccess={() => setLoginVisible(false)}
-        />
+          {/* Dropdown menu */}
+          <div ref={menuRef} className={`user-menu ${menuOpen ? "user-menu--open" : ""}`} role="menu">
+            {/* User info header */}
+            <div className="user-menu-header">
+              <div className="user-menu-header-content">
+                <div className={`user-menu-header-avatar ${isPremium ? "" : "user-menu-header-avatar--free"}`}>
+                  {getUserInitials()}
+                </div>
+                <div className="user-menu-header-info">
+                  <div className="user-menu-header-name">
+                    <span className="user-menu-header-name-text">{getUserDisplayName()}</span>
+                    <span
+                      className={`user-menu-tier-badge ${
+                        isPremium ? "user-menu-tier-badge--premium" : "user-menu-tier-badge--free"
+                      }`}>
+                      {isPremium && <Crown size={10} />}
+                      {isPremium ? "Premium" : "Free"}
+                    </span>
+                  </div>
+                  <div className="user-menu-header-email">{user?.email}</div>
+                </div>
+              </div>
+            </div>
 
-        <SignupModal
-          visible={signupVisible}
-          onCancel={() => setSignupVisible(false)}
-          onSwitchToLogin={() => {
-            setSignupVisible(false);
-            setLoginVisible(true);
-          }}
-          onSuccess={() => setSignupVisible(false)}
+            {/* Menu items */}
+            <div className="user-menu-items">
+              <button
+                className="user-menu-item"
+                onClick={() => handleMenuItemClick(() => console.log("Open account settings"))}
+                role="menuitem">
+                <span className="user-menu-item-icon">
+                  <Settings size={14} />
+                </span>
+                <span className="user-menu-item-text">Account Settings</span>
+              </button>
+
+              <button
+                className="user-menu-item"
+                onClick={() => handleMenuItemClick(() => console.log("Open my shares"))}
+                role="menuitem">
+                <span className="user-menu-item-icon">
+                  <Share2 size={14} />
+                </span>
+                <span className="user-menu-item-text">My Shares</span>
+              </button>
+
+              <button
+                className="user-menu-item"
+                onClick={() => handleMenuItemClick(() => setTwoFactorVisible(true))}
+                role="menuitem">
+                <span className="user-menu-item-icon">
+                  <Shield size={14} />
+                </span>
+                <span className="user-menu-item-text">Two-Factor Auth</span>
+              </button>
+
+              <div className="user-menu-divider" />
+
+              {/* Upgrade or Manage Subscription */}
+              {tier === "free" ? (
+                <button
+                  className="user-menu-item user-menu-item--upgrade"
+                  onClick={() => handleMenuItemClick(() => setUpgradeVisible(true))}
+                  role="menuitem">
+                  <span className="user-menu-item-icon">
+                    <Crown size={14} />
+                  </span>
+                  <span className="user-menu-item-text">Upgrade to Premium</span>
+                </button>
+              ) : (
+                <button
+                  className="user-menu-item"
+                  onClick={() => handleMenuItemClick(() => openCustomerPortal())}
+                  role="menuitem">
+                  <span className="user-menu-item-icon">
+                    <Crown size={14} />
+                  </span>
+                  <span className="user-menu-item-text">Manage Subscription</span>
+                </button>
+              )}
+
+              <div className="user-menu-divider" />
+
+              <button className="user-menu-item user-menu-item--signout" onClick={handleLogout} role="menuitem">
+                <span className="user-menu-item-icon">
+                  <LogOut size={14} />
+                </span>
+                <span className="user-menu-item-text">Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <UpgradeModal visible={upgradeVisible} onCancel={() => setUpgradeVisible(false)} trigger="manual" />
+
+        <TwoFactorSetup
+          visible={twoFactorVisible}
+          onCancel={() => setTwoFactorVisible(false)}
+          onSuccess={() => setTwoFactorVisible(false)}
         />
       </>
     );
-  }
+  };
 
-  // Authenticated - show user menu
+  // Main render - includes TwoFactorPrompt at root level so it persists during auth state changes
   return (
     <>
-      <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["click"]}>
-        <Space style={{ cursor: "pointer" }} data-testid="user-menu">
-          <Avatar
-            style={{
-              backgroundColor: "#1890ff",
-              verticalAlign: "middle",
-            }}
-            size="default">
-            {getUserInitials()}
-          </Avatar>
-          <Text strong style={{ display: "none", "@media (min-width: 768px)": { display: "inline" } }}>
-            {getUserDisplayName()}
-          </Text>
-        </Space>
-      </Dropdown>
+      {renderContent()}
 
-      <UpgradeModal visible={upgradeVisible} onCancel={() => setUpgradeVisible(false)} trigger="manual" />
-
-      <TwoFactorSetup
-        visible={twoFactorVisible}
-        onCancel={() => setTwoFactorVisible(false)}
-        onSuccess={() => setTwoFactorVisible(false)}
+      {/* 2FA login prompt - rendered at root level to persist during auth state changes */}
+      <TwoFactorPrompt
+        visible={twoFactorLoginVisible}
+        factorId={twoFactorLoginData?.factorId}
+        challengeId={twoFactorLoginData?.challengeId}
+        onCancel={handleMFACancel}
+        onSuccess={handleMFASuccess}
       />
     </>
   );
