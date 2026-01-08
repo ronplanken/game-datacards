@@ -1,5 +1,6 @@
 import { Database, Loader2 } from "lucide-react";
-import { Popover, message } from "antd";
+import { Popover } from "antd";
+import { message } from "./Toast/message";
 import { compare } from "compare-versions";
 import moment from "moment";
 import React, { useEffect } from "react";

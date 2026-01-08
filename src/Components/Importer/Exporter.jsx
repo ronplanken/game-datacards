@@ -1,5 +1,6 @@
-import { Download, Hash, Copy } from "lucide-react";
-import { Button, message, Input } from "antd";
+import { Download, Hash, Copy, FileJson, Gamepad2, Database, X } from "lucide-react";
+import { Button, Input } from "antd";
+import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
@@ -326,32 +327,44 @@ export const Exporter = () => {
           <div className="import-export-modal-overlay" onClick={handleClose}>
             <div className="import-export-modal" onClick={(e) => e.stopPropagation()}>
               <div className="import-export-modal-header">
-                <h2 className="import-export-modal-title">Export</h2>
+                <span className="import-export-modal-title">
+                  <Download size={18} />
+                  Export
+                </span>
+                <button className="import-export-modal-close" onClick={handleClose}>
+                  <X size={18} />
+                </button>
               </div>
               <div className="import-export-modal-body">
-                <div className="import-export-tabs">
+                {/* Sidebar */}
+                <nav className="import-export-sidebar">
                   <div
-                    className={`import-export-tab ${activeTab === "json" ? "active" : ""}`}
+                    className={`import-export-nav-item ${activeTab === "json" ? "active" : ""}`}
                     onClick={() => setActiveTab("json")}>
-                    GDC JSON
+                    <FileJson size={16} className="import-export-nav-icon" />
+                    <span>GDC JSON</span>
                   </div>
                   <Tooltip
                     content={isGwAppDisabled ? "Only available for 10th Edition 40k lists" : ""}
-                    placement="bottom">
+                    placement="right">
                     <div
-                      className={`import-export-tab ${activeTab === "gwapp" ? "active" : ""} ${
+                      className={`import-export-nav-item ${activeTab === "gwapp" ? "active" : ""} ${
                         isGwAppDisabled ? "disabled" : ""
                       }`}
                       onClick={() => !isGwAppDisabled && setActiveTab("gwapp")}>
-                      GW 40k App
+                      <Gamepad2 size={16} className="import-export-nav-icon" />
+                      <span>GW 40k App</span>
                     </div>
                   </Tooltip>
                   <div
-                    className={`import-export-tab ${activeTab === "datasource" ? "active" : ""}`}
+                    className={`import-export-nav-item ${activeTab === "datasource" ? "active" : ""}`}
                     onClick={() => setActiveTab("datasource")}>
-                    Datasource
+                    <Database size={16} className="import-export-nav-icon" />
+                    <span>Datasource</span>
                   </div>
-                </div>
+                </nav>
+
+                {/* Content */}
                 <div className="import-export-content">
                   {activeTab === "json" && (
                     <>

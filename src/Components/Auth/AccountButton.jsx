@@ -8,7 +8,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Settings, Share2, LogOut, Crown, Shield } from "lucide-react";
+import { Settings, Share2, LogOut, Crown, Shield, Star } from "lucide-react";
 import { LogIn } from "lucide-react";
 import "./AccountButton.css";
 import "./UserMenu.css";
@@ -22,7 +22,7 @@ import UpgradeModal from "../Subscription/UpgradeModal";
 
 export const AccountButton = () => {
   const { user, isAuthenticated, signOut, loading } = useAuth();
-  const { getTier, openCustomerPortal } = useSubscription();
+  const { getTier, getLimits, usage, openCustomerPortal } = useSubscription();
   const [loginVisible, setLoginVisible] = useState(false);
   const [signupVisible, setSignupVisible] = useState(false);
   const [upgradeVisible, setUpgradeVisible] = useState(false);
@@ -127,7 +127,23 @@ export const AccountButton = () => {
   };
 
   const tier = getTier();
-  const isPremium = tier !== "free";
+
+  /**
+   * Get tier display info
+   */
+  const getTierInfo = () => {
+    switch (tier) {
+      case "creator":
+        return { label: "Creator", icon: Star, className: "creator" };
+      case "premium":
+        return { label: "Premium", icon: Crown, className: "premium" };
+      default:
+        return { label: "Free", icon: null, className: "free" };
+    }
+  };
+
+  const tierInfo = getTierInfo();
+  const limits = getLimits();
 
   /**
    * Menu item click handler
@@ -198,7 +214,7 @@ export const AccountButton = () => {
             aria-expanded={menuOpen}
             aria-haspopup="true"
             data-testid="user-menu">
-            <div className={`user-avatar ${isPremium ? "" : "user-avatar--free"}`}>{getUserInitials()}</div>
+            <div className={`user-avatar user-avatar--${tierInfo.className}`}>{getUserInitials()}</div>
           </button>
 
           {/* Dropdown menu */}
@@ -206,21 +222,58 @@ export const AccountButton = () => {
             {/* User info header */}
             <div className="user-menu-header">
               <div className="user-menu-header-content">
-                <div className={`user-menu-header-avatar ${isPremium ? "" : "user-menu-header-avatar--free"}`}>
+                <div className={`user-menu-header-avatar user-menu-header-avatar--${tierInfo.className}`}>
                   {getUserInitials()}
                 </div>
                 <div className="user-menu-header-info">
                   <div className="user-menu-header-name">
                     <span className="user-menu-header-name-text">{getUserDisplayName()}</span>
-                    <span
-                      className={`user-menu-tier-badge ${
-                        isPremium ? "user-menu-tier-badge--premium" : "user-menu-tier-badge--free"
-                      }`}>
-                      {isPremium && <Crown size={10} />}
-                      {isPremium ? "Premium" : "Free"}
+                    <span className={`user-menu-tier-badge user-menu-tier-badge--${tierInfo.className}`}>
+                      {tierInfo.icon && <tierInfo.icon size={10} />}
+                      {tierInfo.label}
                     </span>
                   </div>
                   <div className="user-menu-header-email">{user?.email}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Usage stats section */}
+            <div className={`user-menu-usage user-menu-usage--${tierInfo.className}`}>
+              <div className="user-menu-usage-item">
+                <div className="user-menu-usage-header">
+                  <span className="user-menu-usage-label">Synced Categories</span>
+                  <span className="user-menu-usage-count">
+                    <span className="user-menu-usage-current">{usage.categories}</span>
+                    <span className="user-menu-usage-separator">/</span>
+                    <span className="user-menu-usage-max">{limits.categories}</span>
+                  </span>
+                </div>
+                <div className="user-menu-usage-bar">
+                  <div
+                    className="user-menu-usage-bar-fill"
+                    style={{ width: `${Math.min(100, (usage.categories / limits.categories) * 100)}%` }}
+                  />
+                </div>
+              </div>
+              <div className="user-menu-usage-item">
+                <div className="user-menu-usage-header">
+                  <span className="user-menu-usage-label">Synced Datasources</span>
+                  <span className="user-menu-usage-count">
+                    <span className="user-menu-usage-current">{usage.datasources}</span>
+                    <span className="user-menu-usage-separator">/</span>
+                    <span className="user-menu-usage-max">{limits.datasources}</span>
+                  </span>
+                </div>
+                <div className="user-menu-usage-bar">
+                  <div
+                    className="user-menu-usage-bar-fill"
+                    style={{
+                      width: `${
+                        limits.datasources > 0 ? Math.min(100, (usage.datasources / limits.datasources) * 100) : 0
+                      }%`,
+                    }}
+                  />
                 </div>
               </div>
             </div>

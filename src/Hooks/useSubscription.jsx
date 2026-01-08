@@ -12,7 +12,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "../config/supabase";
 import { useAuth } from "./useAuth";
-import { message } from "antd";
+import { message } from "../Components/Toast/message";
 
 const SubscriptionContext = createContext(undefined);
 
@@ -32,9 +32,15 @@ export const SUBSCRIPTION_LIMITS = {
     canUploadDatasources: false,
     canAccessShares: true,
   },
-  paid: {
+  premium: {
     categories: 50,
-    datasources: 100, // Reasonable limit to prevent abuse
+    datasources: 2,
+    canUploadDatasources: true,
+    canAccessShares: true,
+  },
+  creator: {
+    categories: 250,
+    datasources: 10,
     canUploadDatasources: true,
     canAccessShares: true,
   },
@@ -56,13 +62,16 @@ export const SubscriptionProvider = ({ children }) => {
 
   /**
    * Get current subscription tier
+   * Returns: 'free' | 'premium' | 'creator'
    */
   const getTier = useCallback(() => {
     if (!isAuthenticated) return "free";
     if (!profile) return "free";
 
-    // Check if subscription is active
-    if (profile.subscription_tier === "paid") {
+    const tier = profile.subscription_tier;
+
+    // Check if subscription is active (premium or creator)
+    if (tier === "premium" || tier === "creator") {
       // Check expiry
       if (profile.subscription_expires_at) {
         const expiryDate = new Date(profile.subscription_expires_at);
@@ -70,7 +79,7 @@ export const SubscriptionProvider = ({ children }) => {
           return "free"; // Expired, downgrade to free
         }
       }
-      return "paid";
+      return tier;
     }
 
     return "free";
@@ -137,7 +146,8 @@ export const SubscriptionProvider = ({ children }) => {
   );
 
   /**
-   * Fetch current usage from database
+   * Fetch current usage from database using server-side RPC
+   * Falls back to direct queries if RPC is not available
    */
   const fetchUsage = useCallback(async () => {
     if (!user?.id || !supabase) {
@@ -146,7 +156,18 @@ export const SubscriptionProvider = ({ children }) => {
     }
 
     try {
-      // Fetch category count
+      // Try using the server-side RPC for accurate usage counts
+      const { data: rpcData, error: rpcError } = await supabase.rpc("get_subscription_usage");
+
+      if (!rpcError && rpcData) {
+        setUsage({
+          categories: rpcData.categories?.current || 0,
+          datasources: rpcData.datasources?.current || 0,
+        });
+        return;
+      }
+
+      // Fallback to direct queries if RPC not available
       const { count: categoryCount, error: categoryError } = await supabase
         .from("user_categories")
         .select("*", { count: "exact", head: true })
@@ -154,7 +175,6 @@ export const SubscriptionProvider = ({ children }) => {
 
       if (categoryError) throw categoryError;
 
-      // Fetch datasource count
       const { count: datasourceCount, error: datasourceError } = await supabase
         .from("user_datasources")
         .select("*", { count: "exact", head: true })
@@ -187,6 +207,7 @@ export const SubscriptionProvider = ({ children }) => {
       expiresAt: profile.subscription_expires_at,
       creemCustomerId: profile.creem_customer_id,
       creemSubscriptionId: profile.creem_subscription_id,
+      creemProductId: profile.creem_product_id,
     });
 
     setLoading(false);
@@ -223,6 +244,7 @@ export const SubscriptionProvider = ({ children }) => {
 
       try {
         // Call Supabase Edge Function to create Creem checkout
+        // Creem appends checkout_id, product_id, etc. to success URL
         const { data, error } = await supabase.functions.invoke("create-checkout", {
           body: {
             productId,
@@ -292,12 +314,16 @@ export const SubscriptionProvider = ({ children }) => {
 
       if (error) throw error;
 
+      // Determine effective tier (free if not premium/creator)
+      const effectiveTier = ["premium", "creator"].includes(data.subscription_tier) ? data.subscription_tier : "free";
+
       setSubscription({
-        tier: data.subscription_tier === "paid" ? "paid" : "free",
+        tier: effectiveTier,
         status: data.subscription_status,
         expiresAt: data.subscription_expires_at,
         creemCustomerId: data.creem_customer_id,
         creemSubscriptionId: data.creem_subscription_id,
+        creemProductId: data.creem_product_id,
       });
 
       // Also refresh usage

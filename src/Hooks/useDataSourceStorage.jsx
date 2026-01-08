@@ -133,6 +133,15 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
         }
       }
+
+      // Handle subscribed datasources (prefixed with "subscribed-")
+      if (settings.selectedDataSource?.startsWith("subscribed-")) {
+        const storedData = await dataStore.getItem(settings.selectedDataSource);
+        if (storedData) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
+        }
+      }
     };
     fetch();
   }, [settings.selectedDataSource]);

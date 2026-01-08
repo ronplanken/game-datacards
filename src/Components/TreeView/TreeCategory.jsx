@@ -1,13 +1,17 @@
 import React, { useState } from "react";
-import { ChevronRight, Trash2, FolderOpen, Folder, Plus, Database } from "lucide-react";
-import { message } from "antd";
+import { ChevronRight, Trash2, FolderOpen, Folder, Plus, Package, Cloud } from "lucide-react";
+import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useAuth } from "../../Hooks/useAuth";
+import { useSync } from "../../Hooks/useSync";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
-import { ExportDatasourceModal } from "../CustomDatasource";
+import { ConvertToDatasourceModal } from "../CustomDatasource";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
+import { CategorySyncIcon } from "../Sync/CategorySyncIcon";
+import { SyncClaimModal } from "../Sync/SyncClaimModal";
 import "./TreeView.css";
 
 export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children, isSubCategory = false }) {
@@ -23,11 +27,15 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     addSubCategory,
     getSubCategories,
   } = useCardStorage();
+  const { user } = useAuth();
+  const { enableSync, disableSync, deleteFromCloud } = useSync();
 
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
-  const [isExportDatasourceModalOpen, setIsExportDatasourceModalOpen] = useState(false);
+  const [isConvertDatasourceModalOpen, setIsConvertDatasourceModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
+  const [claimCategoryName, setClaimCategoryName] = useState("");
 
   const handleRename = (newName) => {
     renameCategory(category.uuid, newName);
@@ -67,11 +75,47 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     deleteConfirmDialog({
       title: "Are you sure you want to delete this category?",
       content: deleteMessage,
-      onConfirm: () => {
+      onConfirm: async () => {
+        // If synced, also delete from cloud
+        if (category.syncEnabled) {
+          await deleteFromCloud(category.uuid);
+        }
         message.success("Category has been removed.");
         removeCategory(category.uuid);
       },
     });
+  };
+
+  const handleToggleSync = async () => {
+    if (category.syncEnabled) {
+      // Ask if they want to delete from cloud too
+      deleteConfirmDialog({
+        title: "Disable cloud sync?",
+        content:
+          "Do you want to also delete this category from the cloud? Choose 'Keep in cloud' to stop syncing but keep the cloud backup.",
+        confirmText: "Delete from cloud",
+        cancelText: "Keep in cloud",
+        onConfirm: () => disableSync(category.uuid, true),
+        onCancel: () => disableSync(category.uuid, false),
+      });
+    } else {
+      const result = await enableSync(category.uuid);
+
+      // Check if this category was previously synced to a different user
+      if (result.requiresConfirmation) {
+        setClaimCategoryName(result.categoryName);
+        setClaimModalOpen(true);
+      }
+    }
+  };
+
+  const handleClaimConfirm = async () => {
+    setClaimModalOpen(false);
+    await enableSync(category.uuid, true);
+  };
+
+  const handleClaimCancel = () => {
+    setClaimModalOpen(false);
   };
 
   // Can add sub-category if: type is "category" AND not already a sub-category
@@ -81,6 +125,20 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
   const topLevelCategoryCount = cardStorage.categories.filter((cat) => !cat.parentId).length;
 
   const contextMenuItems = [
+    // Cloud sync option (only show when user is logged in)
+    ...(user
+      ? [
+          {
+            key: "toggle-sync",
+            label: category.syncEnabled ? "Disable Cloud Sync" : "Enable Cloud Sync",
+            icon: <Cloud size={14} />,
+            onClick: handleToggleSync,
+          },
+          {
+            type: "divider",
+          },
+        ]
+      : []),
     // Add sub-category option (only for regular categories, not sub-categories)
     ...(canAddSubCategory
       ? [
@@ -104,10 +162,10 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       type: "divider",
     },
     {
-      key: "export-datasource",
-      label: "Export as Datasource",
-      icon: <Database size={14} />,
-      onClick: () => setIsExportDatasourceModalOpen(true),
+      key: "convert-datasource",
+      label: "Convert to Datasource",
+      icon: <Package size={14} />,
+      onClick: () => setIsConvertDatasourceModalOpen(true),
       disabled: !category.cards || category.cards.length === 0,
     },
     {
@@ -176,6 +234,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
           {category.type === "list" ? <List /> : isSubCategory ? <FolderOpen size={14} /> : <Folder size={14} />}
         </div>
         <span className="tree-category-name">{category.name}</span>
+        <CategorySyncIcon category={category} />
         {category.type === "list" && <span className="tree-category-badge">{pointsTotal}</span>}
       </div>
 
@@ -206,10 +265,17 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
         onCancel={() => setIsSubCategoryModalOpen(false)}
       />
 
-      <ExportDatasourceModal
-        isOpen={isExportDatasourceModalOpen}
-        onClose={() => setIsExportDatasourceModalOpen(false)}
+      <ConvertToDatasourceModal
+        isOpen={isConvertDatasourceModalOpen}
+        onClose={() => setIsConvertDatasourceModalOpen(false)}
         category={category}
+      />
+
+      <SyncClaimModal
+        isOpen={claimModalOpen}
+        categoryName={claimCategoryName}
+        onConfirm={handleClaimConfirm}
+        onCancel={handleClaimCancel}
       />
     </>
   );

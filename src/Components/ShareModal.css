@@ -1,161 +1,198 @@
-/* ShareModal.css - Matching Settings Modal Design System */
+/* ShareModal.css - Matching SettingsModal Glassmorphism Design */
 
 /* ===========================================
-   MODAL OVERLAY & CONTAINER
+   TRIGGER BUTTON (Header Button)
    =========================================== */
-
-.share-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
+.share-btn-trigger {
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: shareModalFadeIn 0.2s ease-out;
+  gap: 8px;
+  padding: 0 14px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #f1f5f9;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.share-modal {
-  width: 480px;
-  max-width: 95vw;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
+.share-btn-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.share-btn-trigger.active {
+  background: rgba(22, 119, 255, 0.15);
+  border-color: rgba(22, 119, 255, 0.3);
+  box-shadow: 0 0 20px rgba(22, 119, 255, 0.15);
+}
+
+.share-btn-trigger svg {
+  flex-shrink: 0;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+.share-btn-trigger:hover svg,
+.share-btn-trigger.active svg {
+  color: #4096ff;
+}
+
+.share-btn-text {
+  max-width: 140px;
   overflow: hidden;
-  animation: shareModalSlideIn 0.2s ease-out;
+  text-overflow: ellipsis;
 }
 
 /* ===========================================
-   MODAL HEADER
+   DROPDOWN OVERLAY
    =========================================== */
-
-.share-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fff;
+.share-dropdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
 }
 
-.share-modal-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.88);
+/* ===========================================
+   DROPDOWN MENU - Glassmorphism Style
+   =========================================== */
+.share-dropdown {
+  /* Design tokens matching SettingsModal */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-border-subtle: rgba(148, 163, 184, 0.2);
+  --accent-primary: #1677ff;
+  --accent-secondary: #4096ff;
+  --accent-gradient: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  --accent-gradient-soft: linear-gradient(135deg, rgba(22, 119, 255, 0.12) 0%, rgba(64, 150, 255, 0.08) 100%);
+  --text-primary: #1e1b4b;
+  --text-secondary: #4c4a7d;
+  --text-muted: #8b8aa8;
+  --shadow-md: 0 4px 12px rgba(22, 119, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 8px 32px rgba(22, 119, 255, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+
+  position: fixed;
+  width: 340px;
+  max-width: calc(100vw - 32px);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  padding: 16px 0;
+  pointer-events: auto;
+  animation: shareFadeSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay */
+.share-dropdown::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%, rgba(64, 150, 255, 0.03) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ===========================================
+   DROPDOWN HEADER
+   =========================================== */
+.share-dropdown-header {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 4px 20px 12px;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
 }
 
-.share-modal-title svg {
-  color: #1677ff;
-}
-
-.share-modal-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  color: rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.share-modal-close:hover {
-  background: #f5f5f5;
-  color: rgba(0, 0, 0, 0.88);
+.share-dropdown-header svg {
+  color: var(--accent-primary);
 }
 
 /* ===========================================
-   MODAL CONTENT
+   DROPDOWN SECTIONS
    =========================================== */
-
-.share-modal-content {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.share-dropdown-section {
+  position: relative;
+  padding: 12px 20px;
 }
 
-.share-modal-description {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.65);
-  line-height: 1.6;
-  margin: 0;
+.share-dropdown-divider {
+  height: 1px;
+  background: var(--glass-border-subtle);
+  margin: 8px 20px;
 }
 
 /* ===========================================
-   CATEGORY INFO
+   CATEGORY INFO - Glass Card Style
    =========================================== */
-
 .share-category-info {
   display: flex;
   flex-direction: column;
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
-  border-radius: 4px;
-  padding: 8px 12px;
+  gap: 4px;
+  background: var(--accent-gradient-soft);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 12px;
+  padding: 14px 16px;
 }
 
 .share-category-name {
   font-size: 15px;
   font-weight: 600;
-  color: rgba(0, 0, 0, 0.88);
-  line-height: 1.2;
-  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .share-category-meta {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.45);
-  line-height: 1.2;
-  margin: 0;
+  color: var(--text-muted);
 }
 
 /* ===========================================
-   LINK DISPLAY
+   LINK FIELD - Glass Input Style
    =========================================== */
-
-.share-link-container {
-  display: flex;
-  gap: 8px;
-  align-items: stretch;
-}
-
 .share-link-field {
-  flex: 1;
-  background: #fafafa;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  padding: 0 12px;
-  height: 40px;
   display: flex;
   align-items: center;
-  overflow: hidden;
-  transition: border-color 0.2s ease;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
 }
 
 .share-link-field:hover {
-  border-color: #1677ff;
+  border-color: var(--glass-border);
+  box-shadow: var(--shadow-md);
 }
 
 .share-link-field.has-link {
-  background: #e6f4ff;
-  border-color: #91caff;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08) 0%, rgba(64, 150, 255, 0.04) 100%);
+  border-color: rgba(22, 119, 255, 0.2);
 }
 
 .share-link-text {
-  font-size: 14px;
-  color: #1677ff;
+  flex: 1;
+  font-size: 13px;
+  color: var(--accent-primary);
   text-decoration: none;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -164,64 +201,89 @@
 }
 
 .share-link-text:hover {
-  color: #4096ff;
+  color: var(--accent-secondary);
   text-decoration: underline;
 }
 
 .share-link-placeholder {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.45);
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-muted);
   font-style: italic;
 }
 
-/* ===========================================
-   BUTTONS
-   =========================================== */
-
-.share-btn {
-  display: inline-flex;
+/* Copy button inside link field */
+.share-link-copy-btn {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 16px;
-  height: 40px;
-  min-width: 100px;
-  background: #1677ff;
-  border: 1px solid #1677ff;
-  color: #fff;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 8px;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
-  white-space: nowrap;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.share-btn:hover {
-  background: #4096ff;
-  border-color: #4096ff;
-}
-
-.share-btn:active {
-  background: #0958d9;
-  border-color: #0958d9;
-}
-
-.share-btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.share-btn svg {
   flex-shrink: 0;
 }
 
-/* Loading spinner for button */
+.share-link-copy-btn:hover {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.share-link-copy-btn:active {
+  transform: translateY(0);
+}
+
+/* ===========================================
+   ACTION BUTTON - Gradient Style
+   =========================================== */
+.share-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  background: var(--accent-gradient);
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 12px rgba(22, 119, 255, 0.3);
+}
+
+.share-action-btn:hover {
+  box-shadow: 0 4px 20px rgba(22, 119, 255, 0.45), 0 0 24px rgba(22, 119, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.share-action-btn:active {
+  transform: translateY(0);
+}
+
+.share-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.share-action-btn svg {
+  flex-shrink: 0;
+}
+
+/* Loading spinner */
 .share-btn-spinner {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
@@ -229,111 +291,36 @@
 }
 
 /* ===========================================
-   INFO NOTE
+   NOTE SECTION
    =========================================== */
-
-.share-modal-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 12px;
-  background: #fafafa;
-  border: 1px solid #f0f0f0;
-  border-radius: 6px;
-}
-
-.share-modal-note svg {
-  color: rgba(0, 0, 0, 0.45);
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.share-modal-note-text {
-  font-size: 13px;
-  color: rgba(0, 0, 0, 0.65);
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* ===========================================
-   SUCCESS MESSAGE
-   =========================================== */
-
-.share-copy-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: #222;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+.share-dropdown-note {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1100;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
 }
 
-.share-copy-toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-  pointer-events: auto;
-}
-
-.share-copy-toast svg {
-  color: #52c41a;
-}
-
-/* ===========================================
-   MODAL FOOTER
-   =========================================== */
-
-.share-modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 12px 20px;
-  border-top: 1px solid #f0f0f0;
-  background: #fff;
-}
-
-.share-modal-footer .share-btn-secondary {
-  background: #fff;
-  border: 1px solid #d9d9d9;
-  color: rgba(0, 0, 0, 0.88);
-}
-
-.share-modal-footer .share-btn-secondary:hover {
-  border-color: #1677ff;
-  color: #1677ff;
+.share-dropdown-note svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 /* ===========================================
    ANIMATIONS
    =========================================== */
-
-@keyframes shareModalSlideIn {
+@keyframes shareFadeSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-10px) scale(0.98);
+    transform: translateY(-12px) scale(0.97);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes shareModalFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
@@ -344,24 +331,31 @@
 }
 
 /* ===========================================
-   RESPONSIVE ADJUSTMENTS
+   RESPONSIVE
    =========================================== */
-
-@media (max-width: 520px) {
-  .share-modal {
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    max-height: 90vh;
-    margin: 20px;
-    border-radius: 12px;
+@media (max-width: 768px) {
+  .share-btn-text {
+    display: none;
   }
 
-  .share-link-container {
-    flex-direction: column;
+  .share-btn-trigger {
+    padding: 0 10px;
   }
 
-  .share-btn {
-    width: 100%;
+  .share-dropdown {
+    width: calc(100vw - 32px);
+    right: 16px !important;
+  }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .share-dropdown,
+  .share-action-btn,
+  .share-link-copy-btn {
+    animation: none;
+    transition: none;
   }
 }

@@ -1,5 +1,5 @@
 /* UpgradeModal.css - Premium Upgrade Experience */
-/* Luxury dark theme with gold accents */
+/* Luxury dark theme with gold/rose gold tier accents */
 
 /* ===========================================
    DESIGN TOKENS
@@ -10,6 +10,12 @@
   --upgrade-gold-light: #e3c65c;
   --upgrade-gold-dark: #a68419;
   --upgrade-gold-glow: rgba(201, 162, 39, 0.2);
+
+  /* Rose gold palette (Creator tier) */
+  --upgrade-rose: #d4a5a5;
+  --upgrade-rose-light: #e8c4c4;
+  --upgrade-rose-dark: #b77c7c;
+  --upgrade-rose-glow: rgba(212, 165, 165, 0.25);
 
   /* Navy base (matching auth) */
   --upgrade-navy: #001529;
@@ -26,13 +32,23 @@
   /* Borders & effects */
   --upgrade-border: rgba(255, 255, 255, 0.08);
   --upgrade-border-gold: rgba(201, 162, 39, 0.3);
+  --upgrade-border-rose: rgba(212, 165, 165, 0.3);
   --upgrade-shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
   --upgrade-glow-gold: 0 0 80px rgba(201, 162, 39, 0.15);
+  --upgrade-glow-rose: 0 0 80px rgba(212, 165, 165, 0.15);
 
   /* Radius */
   --upgrade-radius: 16px;
   --upgrade-radius-sm: 10px;
   --upgrade-radius-xs: 6px;
+
+  /* Active accent (default gold, changes per tier) */
+  --upgrade-accent: var(--upgrade-gold);
+  --upgrade-accent-light: var(--upgrade-gold-light);
+  --upgrade-accent-dark: var(--upgrade-gold-dark);
+  --upgrade-accent-glow: var(--upgrade-gold-glow);
+  --upgrade-border-accent: var(--upgrade-border-gold);
+  --upgrade-glow-accent: var(--upgrade-glow-gold);
 }
 
 /* ===========================================
@@ -62,15 +78,15 @@
 .upgrade-modal {
   position: relative;
   width: 100%;
-  max-width: 580px;
+  max-width: 640px;
   background: var(--upgrade-bg);
   border-radius: var(--upgrade-radius);
-  box-shadow: var(--upgrade-shadow-lg), var(--upgrade-glow-gold);
+  box-shadow: var(--upgrade-shadow-lg), var(--upgrade-glow-accent);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   animation: upgradeScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid var(--upgrade-border-gold);
+  border: 1px solid var(--upgrade-border-accent);
 }
 
 /* Noise texture */
@@ -89,6 +105,76 @@
 }
 
 /* ===========================================
+   ROSE GOLD VARIANT (Creator Tier)
+   =========================================== */
+.upgrade-modal--rose {
+  --upgrade-accent: var(--upgrade-rose);
+  --upgrade-accent-light: var(--upgrade-rose-light);
+  --upgrade-accent-dark: var(--upgrade-rose-dark);
+  --upgrade-accent-glow: var(--upgrade-rose-glow);
+  --upgrade-border-accent: var(--upgrade-border-rose);
+  --upgrade-glow-accent: var(--upgrade-glow-rose);
+
+  /* Warmer navy tones for rose gold */
+  --upgrade-navy: #1a1520;
+  --upgrade-navy-light: #251d28;
+  --upgrade-bg: #140f18;
+  --upgrade-bg-card: #1a1320;
+  --upgrade-bg-elevated: #241a2a;
+
+  box-shadow: var(--upgrade-shadow-lg), var(--upgrade-glow-rose);
+  border-color: var(--upgrade-border-rose);
+}
+
+/* ===========================================
+   STEP CONTAINERS
+   =========================================== */
+.upgrade-step {
+  display: flex;
+  flex-direction: column;
+  animation: upgradeStepIn 0.35s ease-out;
+}
+
+.upgrade-step--enter-forward {
+  animation: upgradeStepForward 0.35s ease-out;
+}
+
+.upgrade-step--enter-back {
+  animation: upgradeStepBack 0.35s ease-out;
+}
+
+@keyframes upgradeStepIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes upgradeStepForward {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes upgradeStepBack {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===========================================
    HEADER
    =========================================== */
 .upgrade-header {
@@ -98,6 +184,10 @@
   text-align: center;
   border-bottom: 1px solid var(--upgrade-border);
   overflow: hidden;
+}
+
+.upgrade-header--select {
+  padding: 24px 28px 20px;
 }
 
 /* Gold accent glow in header */
@@ -113,6 +203,14 @@
   pointer-events: none;
 }
 
+.upgrade-modal--rose .upgrade-header::before {
+  background: radial-gradient(ellipse at center, rgba(212, 165, 165, 0.15) 0%, transparent 70%);
+}
+
+.upgrade-modal--rose .upgrade-header {
+  background: linear-gradient(135deg, #1a1520 0%, #251d28 50%, #2a1f30 100%);
+}
+
 /* Bottom gold line */
 .upgrade-header::after {
   content: "";
@@ -121,7 +219,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--upgrade-gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--upgrade-accent), transparent);
   opacity: 0.5;
 }
 
@@ -150,7 +248,32 @@
   transform: rotate(90deg);
 }
 
-/* Crown icon */
+/* Back button */
+.upgrade-back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--upgrade-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.upgrade-back:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--upgrade-text-main);
+  transform: translateX(-2px);
+}
+
+/* Crown/Star icon */
 .upgrade-crown {
   position: relative;
   z-index: 1;
@@ -160,14 +283,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--upgrade-gold) 0%, var(--upgrade-gold-dark) 100%);
+  background: linear-gradient(135deg, var(--upgrade-accent) 0%, var(--upgrade-accent-dark) 100%);
   border-radius: 50%;
-  box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4), 0 0 40px rgba(201, 162, 39, 0.2);
+  box-shadow: 0 4px 20px var(--upgrade-accent-glow), 0 0 40px var(--upgrade-accent-glow);
   animation: upgradeCrownPulse 3s ease-in-out infinite;
 }
 
 .upgrade-crown svg {
   color: #0a1628;
+}
+
+.upgrade-modal--rose .upgrade-crown svg {
+  color: #140f18;
 }
 
 .upgrade-title {
@@ -199,7 +326,281 @@
 }
 
 /* ===========================================
-   FEATURES LIST
+   TIER SELECTION CARDS
+   =========================================== */
+.upgrade-tiers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.upgrade-tier-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  background: var(--upgrade-bg-card);
+  border: 2px solid var(--upgrade-border);
+  border-radius: var(--upgrade-radius-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  overflow: hidden;
+}
+
+.upgrade-tier-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top, transparent 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Gold tier card */
+.upgrade-tier-card--gold:hover,
+.upgrade-tier-card--gold.upgrade-tier-card--selected {
+  border-color: var(--upgrade-gold);
+  box-shadow: 0 0 30px rgba(201, 162, 39, 0.15), inset 0 0 30px rgba(201, 162, 39, 0.03);
+}
+
+.upgrade-tier-card--gold::before {
+  background: radial-gradient(ellipse at top, rgba(201, 162, 39, 0.08) 0%, transparent 70%);
+}
+
+.upgrade-tier-card--gold:hover::before,
+.upgrade-tier-card--gold.upgrade-tier-card--selected::before {
+  opacity: 1;
+}
+
+/* Rose tier card */
+.upgrade-tier-card--rose:hover,
+.upgrade-tier-card--rose.upgrade-tier-card--selected {
+  border-color: var(--upgrade-rose);
+  box-shadow: 0 0 30px rgba(212, 165, 165, 0.15), inset 0 0 30px rgba(212, 165, 165, 0.03);
+}
+
+.upgrade-tier-card--rose::before {
+  background: radial-gradient(ellipse at top, rgba(212, 165, 165, 0.08) 0%, transparent 70%);
+}
+
+.upgrade-tier-card--rose:hover::before,
+.upgrade-tier-card--rose.upgrade-tier-card--selected::before {
+  opacity: 1;
+}
+
+/* Selection check indicator */
+.upgrade-tier-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--upgrade-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  transition: all 0.2s ease;
+}
+
+.upgrade-tier-check svg {
+  color: var(--upgrade-bg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.upgrade-tier-card--gold.upgrade-tier-card--selected .upgrade-tier-check {
+  background: var(--upgrade-gold);
+  opacity: 1;
+}
+
+.upgrade-tier-card--rose.upgrade-tier-card--selected .upgrade-tier-check {
+  background: var(--upgrade-rose);
+  opacity: 1;
+}
+
+.upgrade-tier-card--selected .upgrade-tier-check svg {
+  opacity: 1;
+}
+
+/* Tier badge */
+.upgrade-tier-badge {
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #140f18;
+  background: linear-gradient(135deg, var(--upgrade-rose-light) 0%, var(--upgrade-rose) 100%);
+  border-radius: 0 0 8px 8px;
+}
+
+/* Tier icon */
+.upgrade-tier-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.upgrade-tier-card--gold .upgrade-tier-icon {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.15) 0%, rgba(201, 162, 39, 0.05) 100%);
+  color: var(--upgrade-gold);
+}
+
+.upgrade-tier-card--gold.upgrade-tier-card--selected .upgrade-tier-icon {
+  background: linear-gradient(135deg, var(--upgrade-gold) 0%, var(--upgrade-gold-dark) 100%);
+  color: #0a1628;
+  box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4);
+}
+
+.upgrade-tier-card--rose .upgrade-tier-icon {
+  background: linear-gradient(135deg, rgba(212, 165, 165, 0.15) 0%, rgba(212, 165, 165, 0.05) 100%);
+  color: var(--upgrade-rose);
+}
+
+.upgrade-tier-card--rose.upgrade-tier-card--selected .upgrade-tier-icon {
+  background: linear-gradient(135deg, var(--upgrade-rose) 0%, var(--upgrade-rose-dark) 100%);
+  color: #140f18;
+  box-shadow: 0 4px 20px rgba(212, 165, 165, 0.4);
+}
+
+/* Tier name */
+.upgrade-tier-name {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--upgrade-text-main);
+  letter-spacing: -0.01em;
+}
+
+/* Tier tagline */
+.upgrade-tier-tagline {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  color: var(--upgrade-text-muted);
+}
+
+/* Tier price */
+.upgrade-tier-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.upgrade-tier-amount {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.upgrade-tier-card--gold .upgrade-tier-amount {
+  color: var(--upgrade-gold);
+}
+
+.upgrade-tier-card--rose .upgrade-tier-amount {
+  color: var(--upgrade-rose);
+}
+
+.upgrade-tier-period {
+  font-size: 13px;
+  color: var(--upgrade-text-muted);
+}
+
+/* Tier highlights */
+.upgrade-tier-highlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.upgrade-tier-highlight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 12px;
+  color: var(--upgrade-text-muted);
+  border-top: 1px solid var(--upgrade-border);
+}
+
+.upgrade-tier-highlight:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.upgrade-tier-highlight-check {
+  flex-shrink: 0;
+}
+
+.upgrade-tier-card--gold .upgrade-tier-highlight-check {
+  color: var(--upgrade-gold);
+}
+
+.upgrade-tier-card--rose .upgrade-tier-highlight-check {
+  color: var(--upgrade-rose);
+}
+
+/* ===========================================
+   CONTINUE BUTTON
+   =========================================== */
+.upgrade-continue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--upgrade-text-main);
+  background: var(--upgrade-bg-elevated);
+  border: 1px solid var(--upgrade-border);
+  border-radius: var(--upgrade-radius-xs);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upgrade-continue:hover:not(:disabled) {
+  background: var(--upgrade-bg-card);
+  border-color: var(--upgrade-gold);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.15);
+}
+
+.upgrade-continue:hover:not(:disabled) svg {
+  transform: translateX(4px);
+}
+
+.upgrade-continue svg {
+  transition: transform 0.2s ease;
+}
+
+.upgrade-continue:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   FEATURES LIST (Step 2)
    =========================================== */
 .upgrade-features {
   display: grid;
@@ -220,7 +621,7 @@
 }
 
 .upgrade-feature:hover {
-  border-color: var(--upgrade-border-gold);
+  border-color: var(--upgrade-border-accent);
   background: var(--upgrade-bg-elevated);
 }
 
@@ -232,8 +633,12 @@
   justify-content: center;
   background: rgba(201, 162, 39, 0.1);
   border-radius: 6px;
-  color: var(--upgrade-gold);
+  color: var(--upgrade-accent);
   flex-shrink: 0;
+}
+
+.upgrade-modal--rose .upgrade-feature-icon {
+  background: rgba(212, 165, 165, 0.1);
 }
 
 .upgrade-feature-content {
@@ -255,7 +660,7 @@
 }
 
 .upgrade-feature-check {
-  color: var(--upgrade-gold);
+  color: var(--upgrade-accent);
   flex-shrink: 0;
   display: none;
 }
@@ -267,10 +672,14 @@
   position: relative;
   padding: 16px 20px;
   background: linear-gradient(135deg, rgba(201, 162, 39, 0.08) 0%, rgba(201, 162, 39, 0.03) 100%);
-  border: 1px solid var(--upgrade-border-gold);
+  border: 1px solid var(--upgrade-border-accent);
   border-radius: var(--upgrade-radius-sm);
   margin-bottom: 16px;
   overflow: hidden;
+}
+
+.upgrade-modal--rose .upgrade-pricing {
+  background: linear-gradient(135deg, rgba(212, 165, 165, 0.08) 0%, rgba(212, 165, 165, 0.03) 100%);
 }
 
 /* Decorative corner */
@@ -281,7 +690,7 @@
   right: 0;
   width: 80px;
   height: 80px;
-  background: radial-gradient(circle at top right, rgba(201, 162, 39, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle at top right, var(--upgrade-accent-glow) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -295,7 +704,7 @@
 .upgrade-pricing-amount {
   font-size: 36px;
   font-weight: 700;
-  color: var(--upgrade-gold);
+  color: var(--upgrade-accent);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -328,16 +737,20 @@
   color: #0a1628;
   background: linear-gradient(
     135deg,
-    var(--upgrade-gold-light) 0%,
-    var(--upgrade-gold) 50%,
-    var(--upgrade-gold-dark) 100%
+    var(--upgrade-accent-light) 0%,
+    var(--upgrade-accent) 50%,
+    var(--upgrade-accent-dark) 100%
   );
   border: none;
   border-radius: var(--upgrade-radius-xs);
   cursor: pointer;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(201, 162, 39, 0.35), 0 0 40px rgba(201, 162, 39, 0.15);
+  box-shadow: 0 4px 20px var(--upgrade-accent-glow), 0 0 40px var(--upgrade-accent-glow);
+}
+
+.upgrade-modal--rose .upgrade-cta {
+  color: #140f18;
 }
 
 /* Shimmer effect */
@@ -361,7 +774,7 @@
 
 .upgrade-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(201, 162, 39, 0.5), 0 0 60px rgba(201, 162, 39, 0.25);
+  box-shadow: 0 6px 28px var(--upgrade-accent-glow), 0 0 60px var(--upgrade-accent-glow);
 }
 
 .upgrade-cta:hover::before {
@@ -411,13 +824,13 @@
 }
 
 .upgrade-footer-text a {
-  color: var(--upgrade-gold);
+  color: var(--upgrade-accent);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .upgrade-footer-text a:hover {
-  color: var(--upgrade-gold-light);
+  color: var(--upgrade-accent-light);
   text-decoration: underline;
 }
 
@@ -444,6 +857,27 @@
   font-size: 13px;
   color: var(--upgrade-text-main);
   line-height: 1.4;
+}
+
+/* ===========================================
+   ERROR MESSAGE
+   =========================================== */
+.upgrade-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--upgrade-radius-xs);
+  margin-bottom: 16px;
+  color: #f87171;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.upgrade-error svg {
+  flex-shrink: 0;
 }
 
 /* ===========================================
@@ -492,16 +926,31 @@
 @keyframes upgradeCrownPulse {
   0%,
   100% {
-    box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4), 0 0 40px rgba(201, 162, 39, 0.2);
+    box-shadow: 0 4px 20px var(--upgrade-accent-glow), 0 0 40px var(--upgrade-accent-glow);
   }
   50% {
-    box-shadow: 0 4px 28px rgba(201, 162, 39, 0.6), 0 0 60px rgba(201, 162, 39, 0.3);
+    box-shadow: 0 4px 28px var(--upgrade-accent-glow), 0 0 60px var(--upgrade-accent-glow);
   }
 }
 
 /* ===========================================
    RESPONSIVE
    =========================================== */
+@media (max-width: 600px) {
+  .upgrade-tiers {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .upgrade-tier-card {
+    padding: 16px;
+  }
+
+  .upgrade-features {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 520px) {
   .upgrade-overlay {
     padding: 0;
@@ -530,6 +979,10 @@
   .upgrade-footer {
     padding: 16px 20px 24px;
   }
+
+  .upgrade-tiers {
+    grid-template-columns: 1fr;
+  }
 }
 
 @keyframes upgradeSlideUp {
@@ -557,7 +1010,8 @@
   .upgrade-overlay,
   .upgrade-modal,
   .upgrade-cta,
-  .upgrade-crown {
+  .upgrade-crown,
+  .upgrade-step {
     animation: none;
     transition: none;
   }
