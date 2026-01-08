@@ -1,15 +1,18 @@
 import React from "react";
 import clone from "just-clone";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { TreeCategory, TreeItem } from "../TreeView";
+import { TreeCategory, TreeItem, TreeDatasource } from "../TreeView";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { getBackgroundColor, getMinHeight, move, reorder } from "../../Helpers/treeview.helpers";
 
 export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
-  const { cardStorage, updateCategory, getSubCategories } = useCardStorage();
+  const { cardStorage, updateCategory, getSubCategories, getLocalDatasources } = useCardStorage();
 
-  // Get only top-level categories (no parentId)
-  const topLevelCategories = cardStorage.categories.filter((cat) => !cat.parentId);
+  // Get local datasources (type === "local-datasource")
+  const localDatasources = getLocalDatasources();
+
+  // Get only top-level categories (no parentId and not local-datasource)
+  const topLevelCategories = cardStorage.categories.filter((cat) => !cat.parentId && cat.type !== "local-datasource");
 
   const handleDragEnd = (result) => {
     const { source, destination } = result;
@@ -88,6 +91,42 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
         background: "white",
       }}>
       <DragDropContext onDragEnd={handleDragEnd}>
+        {/* Render local datasources first */}
+        {localDatasources.map((datasource, dsIndex) => (
+          <div key={`datasource-${datasource.uuid}-${dsIndex}`}>
+            <Droppable key={`${datasource.uuid}-droppable`} droppableId={datasource.uuid}>
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  style={{
+                    minHeight: getMinHeight(snapshot),
+                    backgroundColor: getBackgroundColor(snapshot),
+                  }}>
+                  <TreeDatasource
+                    datasource={datasource}
+                    selectedTreeIndex={selectedTreeIndex}
+                    setSelectedTreeIndex={setSelectedTreeIndex}>
+                    {datasource.cards?.map((card, cardIndex) => (
+                      <TreeItem
+                        card={card}
+                        category={datasource}
+                        selectedTreeIndex={selectedTreeIndex}
+                        setSelectedTreeIndex={setSelectedTreeIndex}
+                        index={cardIndex}
+                        key={`${datasource.uuid}-item-${cardIndex}`}
+                        isInDatasource
+                      />
+                    ))}
+                  </TreeDatasource>
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </div>
+        ))}
+
+        {/* Render regular categories */}
         {topLevelCategories.map((category, categoryIndex) => (
           <div key={`category-${category.name}-${categoryIndex}`}>
             <Droppable key={`${category.uuid}-droppable`} droppableId={category.uuid}>

@@ -1,5 +1,6 @@
 import { Settings, Share2 } from "lucide-react";
-import { Button, Col, Row, Space, message } from "antd";
+import { Button, Col, Row, Space } from "antd";
+import { message } from "../Toast/message";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { AddCard } from "../../Icons/AddCard";

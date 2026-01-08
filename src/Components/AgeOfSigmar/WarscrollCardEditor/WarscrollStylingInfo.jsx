@@ -1,4 +1,5 @@
-import { Form, Switch, Input, Card, Space, Typography, Upload, Button, Slider, message } from "antd";
+import { Form, Switch, Input, Card, Space, Typography, Upload, Button, Slider } from "antd";
+import { message } from "../../Toast/message";
 import { Upload as UploadIcon, Trash2 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";

@@ -1,5 +1,6 @@
 import { Check, ArrowLeftRight, Plus, Save } from "lucide-react";
-import { Button, Dropdown, Menu, message } from "antd";
+import { Button, Dropdown, Menu } from "antd";
+import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
 import "./FloatingToolbar.css";
 import { buildCategoryMenuItems } from "../../util/menu-helper";

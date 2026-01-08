@@ -10,11 +10,14 @@ import {
   Outlet,
   Navigate,
   useLocation,
+  useSearchParams,
 } from "react-router-dom";
 import { AuthProvider } from "./Hooks/useAuth";
 import { SubscriptionProvider } from "./Hooks/useSubscription";
+import { SyncProvider } from "./Hooks/useSync";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
+import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
 import { FirebaseProviderComponent } from "./Hooks/useFirebase";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
 import { UserProviderComponent } from "./Hooks/useUser";
@@ -31,6 +34,8 @@ import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
+import { CheckoutSuccessModal } from "./Components/Subscription/CheckoutSuccessModal";
+import { SyncConflictHandler } from "./Components/Sync/SyncConflictModal";
 
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
@@ -101,6 +106,41 @@ const WhatsNewWizardSelector = () => {
   return isMobileRoute ? <MobileWhatsNewWizard /> : <WhatsNewWizard />;
 };
 
+// Component to handle checkout success redirect
+// Creem redirects with: checkout_id, order_id, customer_id, subscription_id, product_id, signature
+const CheckoutSuccessHandler = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showSuccess, setShowSuccess] = React.useState(false);
+  const [tier, setTier] = React.useState("premium");
+
+  React.useEffect(() => {
+    const checkoutId = searchParams.get("checkout_id");
+    const productId = searchParams.get("product_id");
+
+    if (checkoutId) {
+      // Determine tier from product_id
+      const creatorProductId = process.env.REACT_APP_CREEM_PRODUCT_ID_CREATOR;
+      const detectedTier = productId === creatorProductId ? "creator" : "premium";
+      setTier(detectedTier);
+      setShowSuccess(true);
+
+      // Remove Creem query parameters from URL without refresh
+      searchParams.delete("checkout_id");
+      searchParams.delete("order_id");
+      searchParams.delete("customer_id");
+      searchParams.delete("subscription_id");
+      searchParams.delete("product_id");
+      searchParams.delete("signature");
+      // Also clean up legacy params if present
+      searchParams.delete("checkout");
+      searchParams.delete("tier");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  return <CheckoutSuccessModal visible={showSuccess} onClose={() => setShowSuccess(false)} tier={tier} />;
+};
+
 // Layout component that wraps all routes with providers
 const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -110,14 +150,20 @@ const RootLayout = () => (
           <UserProviderComponent>
             <FirebaseProviderComponent>
               <DataSourceStorageProviderComponent>
-                <CardStorageProviderComponent>
-                  <MobileListProvider>
-                    <Outlet />
-                    <ScrollRestoration />
-                    <WizardSelector />
-                    <WhatsNewWizardSelector />
-                  </MobileListProvider>
-                </CardStorageProviderComponent>
+                <DatasourceSharingProvider>
+                  <CardStorageProviderComponent>
+                    <SyncProvider>
+                      <MobileListProvider>
+                        <Outlet />
+                        <ScrollRestoration />
+                        <WizardSelector />
+                        <WhatsNewWizardSelector />
+                        <CheckoutSuccessHandler />
+                        <SyncConflictHandler />
+                      </MobileListProvider>
+                    </SyncProvider>
+                  </CardStorageProviderComponent>
+                </DatasourceSharingProvider>
               </DataSourceStorageProviderComponent>
             </FirebaseProviderComponent>
           </UserProviderComponent>

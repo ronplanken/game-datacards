@@ -1,21 +1,31 @@
+/* ChangelogEntry.css - Modern Glassmorphism Timeline */
+
 .changelog-container {
   max-height: 450px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 .changelog-timeline {
   position: relative;
-  padding-left: 20px;
+  padding-left: 24px;
 }
 
+/* Timeline vertical line */
 .changelog-timeline::before {
   content: "";
   position: absolute;
-  left: 6px;
-  top: 0;
-  bottom: 0;
+  left: 7px;
+  top: 8px;
+  bottom: 8px;
   width: 2px;
-  background: #f0f0f0;
+  background: linear-gradient(
+    180deg,
+    rgba(22, 119, 255, 0.3) 0%,
+    rgba(64, 150, 255, 0.15) 50%,
+    rgba(148, 163, 184, 0.1) 100%
+  );
+  border-radius: 1px;
 }
 
 .changelog-entry {
@@ -23,22 +33,24 @@
   margin-bottom: 16px;
 }
 
+/* Timeline dot */
 .changelog-entry::before {
   content: "";
   position: absolute;
-  left: -18px;
-  top: 8px;
-  width: 8px;
-  height: 8px;
-  background: #1677ff;
+  left: -20px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px #1677ff;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.15), 0 2px 4px rgba(22, 119, 255, 0.2);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .changelog-entry.collapsed::before {
-  background: #d9d9d9;
-  box-shadow: 0 0 0 1px #d9d9d9;
+  background: rgba(148, 163, 184, 0.4);
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .changelog-entry-header {
@@ -46,51 +58,91 @@
   align-items: center;
   gap: 12px;
   cursor: pointer;
-  padding: 4px 0;
+  padding: 6px 12px 6px 0;
+  border-radius: 10px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: -8px;
+  padding-left: 8px;
+  line-height: 1;
+}
+
+.changelog-entry-header:hover {
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .changelog-version {
-  display: inline-block;
-  background: #e6f4ff;
-  color: #1677ff;
-  padding: 2px 8px;
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.12) 0%, rgba(64, 150, 255, 0.08) 100%);
+  color: #0958d9;
+  padding: 4px 12px;
+  border-radius: 8px;
   font-size: 13px;
-  font-weight: 500;
-  line-height: 1.2;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  border: 1px solid rgba(22, 119, 255, 0.15);
 }
 
 .changelog-entry.collapsed .changelog-version {
-  background: #f5f5f5;
-  color: rgba(0, 0, 0, 0.45);
+  background: rgba(148, 163, 184, 0.1);
+  color: #8b8aa8;
+  border-color: rgba(148, 163, 184, 0.15);
 }
 
 .changelog-date {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
+  color: #8b8aa8;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .changelog-expand-icon {
   margin-left: auto;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 12px;
-  transition: transform 0.2s ease;
+  color: #8b8aa8;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.7;
+}
+
+.changelog-entry-header:hover .changelog-expand-icon {
+  opacity: 1;
+  color: #1677ff;
 }
 
 .changelog-entry:not(.collapsed) .changelog-expand-icon {
   transform: rotate(180deg);
+  color: #1677ff;
 }
 
 .changelog-entry-content {
-  padding: 8px 0 0 0;
+  padding: 12px 0 0 0;
+  animation: contentFadeIn 0.3s ease-out;
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .changelog-section-title {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 16px;
-  color: rgba(0, 0, 0, 0.88);
-  margin: 10px 0 2px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: #1677ff;
+  margin: 14px 0 8px;
+  padding: 6px 10px;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08) 0%, rgba(64, 150, 255, 0.04) 100%);
+  border-radius: 6px;
+  display: inline-block;
 }
 
 .changelog-section-title:first-child {
@@ -104,21 +156,33 @@
 }
 
 .changelog-list-item {
-  padding: 6px 0;
-  border-bottom: 1px solid #f5f5f5;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 10px;
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.65);
+  color: #4c4a7d;
   line-height: 1.5;
+  margin-bottom: 6px;
+  transition: all 0.2s ease;
+}
+
+.changelog-list-item:hover {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(22, 119, 255, 0.15);
 }
 
 .changelog-list-item:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .changelog-list-item strong {
-  color: rgba(0, 0, 0, 0.88);
+  color: #1e1b4b;
   display: block;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  font-weight: 600;
 }
 
 button.changelog-older-toggle,
@@ -127,15 +191,18 @@ button.changelog-older-toggle,
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
-  background-color: #fafafa;
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  color: rgba(0, 0, 0, 0.65) !important;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px dashed rgba(22, 119, 255, 0.25);
+  border-radius: 10px;
+  color: #1677ff !important;
   font-size: 13px;
+  font-weight: 550;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 16px;
   width: 100%;
   -webkit-appearance: none;
   appearance: none;
@@ -143,21 +210,27 @@ button.changelog-older-toggle,
 
 button.changelog-older-toggle:hover,
 .changelog-timeline .changelog-older-toggle:hover {
-  border-color: #1677ff;
-  color: #1677ff !important;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08) 0%, rgba(64, 150, 255, 0.04) 100%);
+  border-color: rgba(22, 119, 255, 0.4);
+  border-style: solid;
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
 }
 
 .changelog-discord {
   display: flex;
   justify-content: center;
-  margin-top: 16px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
 }
 
 .changelog-discord img {
-  border-radius: 8px;
-  transition: transform 0.2s ease;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .changelog-discord img:hover {
-  transform: scale(1.02);
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(22, 119, 255, 0.15);
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Bell, Database, Loader2, Repeat } from "lucide-react";
-import { message } from "antd";
+import { message } from "../Toast/message";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { getMessages } from "../../Helpers/external.helpers";

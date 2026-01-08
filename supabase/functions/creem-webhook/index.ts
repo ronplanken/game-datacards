@@ -11,8 +11,21 @@ import { crypto } from "https://deno.land/std@0.168.0/crypto/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, creem-signature",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-app-version, creem-signature",
 };
+
+// Product IDs for tier detection
+const PRODUCT_ID_PREMIUM = Deno.env.get("CREEM_PRODUCT_ID_PREMIUM");
+const PRODUCT_ID_CREATOR = Deno.env.get("CREEM_PRODUCT_ID_CREATOR");
+
+/**
+ * Determine subscription tier from Creem product ID
+ */
+function getTierFromProduct(productId: string | undefined): "premium" | "creator" {
+  if (!productId) return "premium"; // Default to premium
+  if (productId === PRODUCT_ID_CREATOR) return "creator";
+  return "premium";
+}
 
 /**
  * Verify Creem webhook signature using HMAC-SHA256
@@ -20,13 +33,9 @@ const corsHeaders = {
 async function verifySignature(payload: string, signature: string, secret: string): Promise<boolean> {
   try {
     const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      "raw",
-      encoder.encode(secret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["sign"]
-    );
+    const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, [
+      "sign",
+    ]);
 
     const signatureBytes = await crypto.subtle.sign("HMAC", key, encoder.encode(payload));
     const expectedSignature = Array.from(new Uint8Array(signatureBytes))
@@ -50,10 +59,10 @@ serve(async (req: Request) => {
     const webhookSecret = Deno.env.get("CREEM_WEBHOOK_SECRET");
     if (!webhookSecret) {
       console.error("CREEM_WEBHOOK_SECRET not configured");
-      return new Response(
-        JSON.stringify({ error: "Webhook secret not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Get raw body for signature verification
@@ -62,20 +71,20 @@ serve(async (req: Request) => {
 
     if (!signature) {
       console.error("Missing creem-signature header");
-      return new Response(
-        JSON.stringify({ error: "Missing signature" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Missing signature" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Verify signature
     const isValid = await verifySignature(rawBody, signature, webhookSecret);
     if (!isValid) {
       console.error("Invalid webhook signature");
-      return new Response(
-        JSON.stringify({ error: "Invalid signature" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Invalid signature" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Parse webhook payload
@@ -83,36 +92,38 @@ serve(async (req: Request) => {
     console.log("Creem webhook event:", event.eventType);
 
     // Create Supabase admin client for database updates
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
 
     // Extract common fields
     const { eventType, object } = event;
-    const userId = object?.metadata?.userId;
+    const userId = object?.metadata?.user_id;
     const customerId = object?.customer?.id;
     const subscriptionId = object?.subscription?.id || object?.id;
+    const productId = object?.product?.id || object?.order?.product_id;
+    const tier = getTierFromProduct(productId);
+
+    console.log(`Product ID: ${productId}, Tier: ${tier}`);
 
     if (!userId) {
-      console.log("No userId in metadata, skipping");
-      return new Response(
-        JSON.stringify({ received: true, skipped: "no userId" }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.log("No user_id in metadata, skipping");
+      return new Response(JSON.stringify({ received: true, skipped: "no userId" }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Handle different event types
     switch (eventType) {
       case "checkout.completed": {
-        // Store customer and subscription IDs
-        console.log(`Checkout completed for user ${userId}`);
+        // Store customer and subscription IDs with tier
+        console.log(`Checkout completed for user ${userId}, tier: ${tier}`);
         const { error } = await supabase
           .from("user_profiles")
           .update({
             creem_customer_id: customerId,
             creem_subscription_id: subscriptionId,
-            subscription_tier: "paid",
+            creem_product_id: productId,
+            subscription_tier: tier,
             subscription_status: "active",
             updated_at: new Date().toISOString(),
           })
@@ -126,13 +137,14 @@ serve(async (req: Request) => {
       }
 
       case "subscription.active": {
-        // Subscription is now active
-        console.log(`Subscription active for user ${userId}`);
+        // Subscription is now active - update tier based on product
+        console.log(`Subscription active for user ${userId}, tier: ${tier}`);
         const { error } = await supabase
           .from("user_profiles")
           .update({
-            subscription_tier: "paid",
+            subscription_tier: tier,
             subscription_status: "active",
+            creem_product_id: productId,
             updated_at: new Date().toISOString(),
           })
           .eq("id", userId);
@@ -146,16 +158,17 @@ serve(async (req: Request) => {
 
       case "subscription.paid": {
         // Payment received, extend subscription
-        console.log(`Subscription paid for user ${userId}`);
-        const expiresAt = object?.currentPeriodEnd
-          ? new Date(object.currentPeriodEnd).toISOString()
-          : null;
+        // Also handles tier swaps (upgrade/downgrade) - update tier based on product
+        console.log(`Subscription paid for user ${userId}, tier: ${tier}`);
+        const expiresAt = object?.currentPeriodEnd ? new Date(object.currentPeriodEnd).toISOString() : null;
 
         const { error } = await supabase
           .from("user_profiles")
           .update({
+            subscription_tier: tier,
             subscription_status: "active",
             subscription_expires_at: expiresAt,
+            creem_product_id: productId,
             updated_at: new Date().toISOString(),
           })
           .eq("id", userId);
@@ -205,13 +218,14 @@ serve(async (req: Request) => {
       }
 
       case "subscription.trialing": {
-        // Subscription in trial
-        console.log(`Subscription trialing for user ${userId}`);
+        // Subscription in trial - apply tier based on product
+        console.log(`Subscription trialing for user ${userId}, tier: ${tier}`);
         const { error } = await supabase
           .from("user_profiles")
           .update({
-            subscription_tier: "paid",
+            subscription_tier: tier,
             subscription_status: "trialing",
+            creem_product_id: productId,
             updated_at: new Date().toISOString(),
           })
           .eq("id", userId);
@@ -227,15 +241,15 @@ serve(async (req: Request) => {
         console.log(`Unhandled event type: ${eventType}`);
     }
 
-    return new Response(
-      JSON.stringify({ received: true, eventType }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ received: true, eventType }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("creem-webhook error:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

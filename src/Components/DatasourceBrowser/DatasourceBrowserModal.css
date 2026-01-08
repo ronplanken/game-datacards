@@ -1,0 +1,476 @@
+/* DatasourceBrowserModal.css - Light Glassmorphism */
+
+/* ===========================================
+   DESIGN TOKENS
+   =========================================== */
+
+.db-modal-overlay {
+  /* Glass tokens */
+  --db-glass-bg: rgba(255, 255, 255, 0.72);
+  --db-glass-bg-subtle: rgba(255, 255, 255, 0.45);
+  --db-glass-border: rgba(255, 255, 255, 0.6);
+  --db-glass-border-subtle: rgba(148, 163, 184, 0.2);
+  --db-blur-strength: 20px;
+
+  /* Accent - blue */
+  --db-accent-primary: #1677ff;
+  --db-accent-secondary: #4096ff;
+  --db-accent-light: #e6f4ff;
+  --db-accent-ultra-light: #f0f5ff;
+  --db-accent-gradient: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+
+  /* Text colors */
+  --db-text-primary: #1e1b4b;
+  --db-text-secondary: #4c4a7d;
+  --db-text-muted: #8b8aa8;
+
+  /* Status colors */
+  --db-success: #52c41a;
+  --db-success-bg: rgba(82, 196, 26, 0.1);
+
+  /* Shadows */
+  --db-shadow-sm: 0 1px 2px rgba(22, 119, 255, 0.04);
+  --db-shadow-md: 0 4px 12px rgba(22, 119, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --db-shadow-lg: 0 8px 32px rgba(22, 119, 255, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ===========================================
+   MODAL OVERLAY & CONTAINER
+   =========================================== */
+
+.db-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: dbOverlayFadeIn 0.3s ease-out;
+}
+
+.db-modal {
+  width: 900px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: var(--db-glass-bg);
+  backdrop-filter: blur(var(--db-blur-strength));
+  -webkit-backdrop-filter: blur(var(--db-blur-strength));
+  border-radius: 20px;
+  border: 1px solid var(--db-glass-border);
+  box-shadow: var(--db-shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dbModalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+/* Subtle gradient overlay */
+.db-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%, rgba(64, 150, 255, 0.03) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* ===========================================
+   MODAL HEADER
+   =========================================== */
+
+.db-modal-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+  border-bottom: 1px solid var(--db-glass-border-subtle);
+}
+
+.db-modal-title {
+  font-size: 16px;
+  font-weight: 650;
+  color: var(--db-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.02em;
+}
+
+.db-modal-title svg {
+  color: var(--db-accent-primary);
+}
+
+.db-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--db-glass-bg-subtle);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--db-glass-border-subtle);
+  border-radius: 8px;
+  color: var(--db-text-muted);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.db-modal-close:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--db-accent-primary);
+  color: var(--db-accent-primary);
+  transform: scale(1.05);
+}
+
+/* ===========================================
+   FILTERS BAR
+   =========================================== */
+
+.db-filters-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  background: linear-gradient(180deg, rgba(230, 244, 255, 0.4) 0%, rgba(240, 245, 255, 0.2) 100%);
+  border-bottom: 1px solid var(--db-glass-border-subtle);
+}
+
+.db-search-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 400px;
+}
+
+.db-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--db-text-muted);
+  pointer-events: none;
+}
+
+.db-search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 80px 0 40px;
+  background: var(--db-glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--db-glass-border-subtle);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--db-text-primary);
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.db-search-input::placeholder {
+  color: var(--db-text-muted);
+}
+
+.db-search-input:focus {
+  border-color: var(--db-accent-primary);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+.db-search-btn {
+  position: absolute;
+  right: 4px;
+  height: 32px;
+  padding: 0 14px;
+  background: var(--db-accent-gradient);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.db-search-btn:hover {
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+}
+
+.db-filter-group {
+  display: flex;
+  gap: 10px;
+}
+
+.db-filter-select {
+  height: 40px;
+  padding: 0 32px 0 14px;
+  background: var(--db-glass-bg);
+  border: 1px solid var(--db-glass-border-subtle);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--db-text-primary);
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b8aa8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.db-filter-select:hover {
+  border-color: rgba(22, 119, 255, 0.3);
+}
+
+.db-filter-select:focus {
+  border-color: var(--db-accent-primary);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+/* ===========================================
+   MODAL CONTENT
+   =========================================== */
+
+.db-modal-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  min-height: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
+}
+
+/* ===========================================
+   SECTION HEADER
+   =========================================== */
+
+.db-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--db-text-primary);
+}
+
+.db-section-icon {
+  color: var(--db-accent-primary);
+}
+
+/* ===========================================
+   FEATURED SECTION
+   =========================================== */
+
+.db-featured-section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--db-glass-border-subtle);
+}
+
+.db-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+/* ===========================================
+   BROWSE SECTION
+   =========================================== */
+
+.db-datasource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+/* ===========================================
+   LOADING & EMPTY STATES
+   =========================================== */
+
+.db-loading-state,
+.db-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.db-loading-spinner {
+  color: var(--db-accent-primary);
+  animation: dbSpin 1s linear infinite;
+}
+
+.db-loading-state span,
+.db-empty-state p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--db-text-secondary);
+  margin-top: 12px;
+}
+
+.db-empty-icon {
+  color: var(--db-text-muted);
+  opacity: 0.5;
+}
+
+.db-empty-state span {
+  font-size: 13px;
+  color: var(--db-text-muted);
+  margin-top: 4px;
+}
+
+/* ===========================================
+   LOAD MORE
+   =========================================== */
+
+.db-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.db-load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  background: var(--db-glass-bg);
+  border: 1px solid var(--db-glass-border-subtle);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 550;
+  color: var(--db-text-secondary);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.db-load-more-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--db-accent-primary);
+  color: var(--db-accent-primary);
+}
+
+.db-load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+@keyframes dbModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dbOverlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes dbSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================================
+   SCROLLBAR
+   =========================================== */
+
+.db-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.db-modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.db-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(22, 119, 255, 0.2);
+  border-radius: 3px;
+}
+
+.db-modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(22, 119, 255, 0.35);
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+@media (max-width: 768px) {
+  .db-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .db-filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .db-search-wrapper {
+    max-width: none;
+  }
+
+  .db-filter-group {
+    flex-wrap: wrap;
+  }
+
+  .db-filter-select {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .db-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .db-datasource-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .db-modal,
+  .db-modal-overlay,
+  .db-loading-spinner {
+    animation: none;
+    transition: none;
+  }
+}

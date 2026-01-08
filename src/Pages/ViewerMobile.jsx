@@ -295,7 +295,12 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                   />
                 )}
                 {/* eslint-disable-next-line prettier/prettier */}
-                {!activeCard && selectedFaction && !showUnits && !showManifestationLores && !showSpellLores && (isAoS ? <MobileAoSFaction /> : <MobileFaction />)}
+                {!activeCard &&
+                  selectedFaction &&
+                  !showUnits &&
+                  !showManifestationLores &&
+                  !showSpellLores &&
+                  (isAoS ? <MobileAoSFaction /> : <MobileFaction />)}
                 {showUnits && (isAoS ? <MobileAoSFactionUnits /> : <MobileFactionUnits />)}
                 {showManifestationLores && isAoS && <MobileAoSManifestationLores />}
                 {showSpellLores && isAoS && <MobileAoSSpellLores />}

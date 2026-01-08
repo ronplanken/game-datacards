@@ -1,0 +1,459 @@
+/* EditDatasourceMetadataModal.css - Light Glassmorphism */
+
+/* ===========================================
+   DESIGN TOKENS
+   =========================================== */
+
+.edit-ds-modal-overlay {
+  /* Glass tokens */
+  --eds-glass-bg: rgba(255, 255, 255, 0.72);
+  --eds-glass-bg-subtle: rgba(255, 255, 255, 0.45);
+  --eds-glass-border: rgba(255, 255, 255, 0.6);
+  --eds-glass-border-subtle: rgba(148, 163, 184, 0.2);
+  --eds-blur-strength: 20px;
+
+  /* Accent - purple for datasource */
+  --eds-accent-primary: #722ed1;
+  --eds-accent-secondary: #9254de;
+  --eds-accent-light: #f9f0ff;
+  --eds-accent-gradient: linear-gradient(135deg, #722ed1 0%, #9254de 100%);
+
+  /* Text colors */
+  --eds-text-primary: #1e1b4b;
+  --eds-text-secondary: #4c4a7d;
+  --eds-text-muted: #8b8aa8;
+
+  /* Status colors */
+  --eds-error: #ff4d4f;
+
+  /* Shadows */
+  --eds-shadow-lg: 0 8px 32px rgba(114, 46, 209, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ===========================================
+   MODAL OVERLAY & CONTAINER
+   =========================================== */
+
+.edit-ds-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: edsOverlayFadeIn 0.3s ease-out;
+}
+
+.edit-ds-modal {
+  width: 480px;
+  min-width: 380px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: var(--eds-glass-bg);
+  backdrop-filter: blur(var(--eds-blur-strength));
+  -webkit-backdrop-filter: blur(var(--eds-blur-strength));
+  border-radius: 20px;
+  border: 1px solid var(--eds-glass-border);
+  box-shadow: var(--eds-shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: edsModalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+/* Subtle gradient overlay */
+.edit-ds-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%, rgba(114, 46, 209, 0.03) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Noise texture */
+.edit-ds-modal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.015;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ===========================================
+   MODAL HEADER
+   =========================================== */
+
+.edit-ds-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+  border-bottom: 1px solid var(--eds-glass-border-subtle);
+}
+
+.edit-ds-title {
+  font-size: 16px;
+  font-weight: 650;
+  color: var(--eds-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.edit-ds-title svg {
+  color: var(--eds-accent-primary);
+}
+
+.edit-ds-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--eds-glass-bg-subtle);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--eds-glass-border-subtle);
+  border-radius: 8px;
+  color: var(--eds-text-muted);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.edit-ds-close:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--eds-accent-primary);
+  color: var(--eds-accent-primary);
+  transform: scale(1.05);
+}
+
+/* ===========================================
+   MODAL CONTENT
+   =========================================== */
+
+.edit-ds-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
+}
+
+/* ===========================================
+   SUMMARY
+   =========================================== */
+
+.edit-ds-summary {
+  padding: 12px 16px;
+  background: var(--eds-glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--eds-glass-border-subtle);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.edit-ds-card-count {
+  font-size: 13px;
+  color: var(--eds-text-muted);
+  margin: 0;
+}
+
+/* ===========================================
+   FORM
+   =========================================== */
+
+.edit-ds-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-ds-label {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--eds-text-primary);
+}
+
+.edit-ds-required {
+  color: var(--eds-error);
+}
+
+.edit-ds-help {
+  font-size: 12px;
+  color: var(--eds-text-muted);
+  margin: 2px 0 0 0;
+}
+
+.edit-ds-row {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-ds-half {
+  flex: 1;
+}
+
+.edit-ds-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--eds-glass-bg);
+  border: 1px solid var(--eds-glass-border-subtle);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--eds-text-primary);
+  outline: none;
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.edit-ds-input:hover {
+  border-color: rgba(114, 46, 209, 0.3);
+}
+
+.edit-ds-input:focus {
+  border-color: var(--eds-accent-primary);
+  box-shadow: 0 0 0 3px rgba(114, 46, 209, 0.1);
+}
+
+.edit-ds-input::placeholder {
+  color: var(--eds-text-muted);
+}
+
+/* ===========================================
+   COLOR PICKER
+   =========================================== */
+
+.edit-ds-color-row {
+  display: flex;
+  gap: 16px;
+}
+
+.edit-ds-color-picker {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-ds-color-label {
+  font-size: 13px;
+  color: var(--eds-text-secondary);
+}
+
+.edit-ds-color-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--eds-glass-bg);
+  border: 1px solid var(--eds-glass-border-subtle);
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.edit-ds-color-input-wrapper:hover {
+  border-color: rgba(114, 46, 209, 0.3);
+}
+
+.edit-ds-color-input {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.edit-ds-color-input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.edit-ds-color-input::-webkit-color-swatch {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.edit-ds-color-value {
+  font-size: 12px;
+  color: var(--eds-text-muted);
+  font-family: monospace;
+  text-transform: uppercase;
+}
+
+/* ===========================================
+   BUTTONS
+   =========================================== */
+
+.edit-ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 18px;
+  height: 36px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.edit-ds-btn.secondary {
+  background: var(--eds-glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--eds-glass-border-subtle);
+  color: var(--eds-text-secondary);
+}
+
+.edit-ds-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: var(--eds-accent-primary);
+  color: var(--eds-accent-primary);
+}
+
+.edit-ds-btn.primary {
+  background: var(--eds-accent-gradient);
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(114, 46, 209, 0.25);
+}
+
+.edit-ds-btn.primary:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(114, 46, 209, 0.4);
+  transform: translateY(-1px);
+}
+
+.edit-ds-btn.primary:disabled {
+  background: rgba(148, 163, 184, 0.3);
+  color: var(--eds-text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ===========================================
+   MODAL FOOTER
+   =========================================== */
+
+.edit-ds-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.6) 100%);
+  border-top: 1px solid var(--eds-glass-border-subtle);
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+@keyframes edsModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes edsOverlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* ===========================================
+   SCROLLBAR
+   =========================================== */
+
+.edit-ds-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.edit-ds-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.edit-ds-content::-webkit-scrollbar-thumb {
+  background: rgba(114, 46, 209, 0.2);
+  border-radius: 3px;
+}
+
+.edit-ds-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(114, 46, 209, 0.35);
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+@media (max-width: 520px) {
+  .edit-ds-modal {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 90vh;
+    margin: 20px;
+    border-radius: 16px;
+  }
+
+  .edit-ds-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .edit-ds-color-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .edit-ds-modal,
+  .edit-ds-modal-overlay,
+  .edit-ds-btn {
+    animation: none;
+    transition: none;
+  }
+}

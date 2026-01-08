@@ -11,7 +11,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "../config/supabase";
-import { message } from "antd";
+import { message } from "../Components/Toast/message";
 
 const AuthContext = createContext(undefined);
 

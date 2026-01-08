@@ -1,9 +1,11 @@
 import { Badge, Grid, Image, Layout } from "antd";
 import { Tooltip } from "./Tooltip/Tooltip";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Globe } from "lucide-react";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
+import { useAuth } from "../Hooks/useAuth";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
 import { AccountButton } from "./Auth/AccountButton";
@@ -11,7 +13,9 @@ import { DatasourceSelector } from "./DatasourceSelector";
 import { NotificationBell } from "./NotificationBell";
 import { SettingsModal } from "./SettingsModal";
 import { ShareModal } from "./ShareModal";
-import { UpdateReminder } from "./UpdateReminder";
+import { SyncStatusIndicator } from "./Sync/SyncStatusIndicator";
+import { DatasourceUpdateBadge } from "./Subscription/DatasourceUpdateBadge";
+import { DatasourceBrowserModal } from "./DatasourceBrowser";
 import { WhatsNew } from "./WhatsNew";
 import "./AppHeader.css";
 
@@ -28,20 +32,17 @@ export const AppHeader = ({
   const screens = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
   const { activeCategory } = useCardStorage();
+  const [showBrowseModal, setShowBrowseModal] = useState(false);
 
   const isEditorPage = location.pathname === "/" || location.pathname === "";
   const isViewerPage = location.pathname.startsWith("/viewer");
 
   return (
     <>
-      {showModals && (
-        <>
-          <WhatsNew />
-          <UpdateReminder />
-        </>
-      )}
+      {showModals && <WhatsNew />}
       <Header className={`app-header ${className}`}>
         <div className="app-header-content">
           {/* Left section - Logo and Navigation */}
@@ -77,6 +78,18 @@ export const AppHeader = ({
 
             {showActions && <NotificationBell />}
 
+            {showActions && <SyncStatusIndicator />}
+
+            {showActions && user && <DatasourceUpdateBadge />}
+
+            {showActions && (
+              <Tooltip content="Browse Community Datasources" placement="bottom-end">
+                <button className="app-header-icon-btn" onClick={() => setShowBrowseModal(true)}>
+                  <Globe size={18} />
+                </button>
+              </Tooltip>
+            )}
+
             {showActions && (
               <Tooltip content="Join us on discord!" placement="bottom-end">
                 <button
@@ -93,6 +106,9 @@ export const AppHeader = ({
           </div>
         </div>
       </Header>
+
+      {/* Browse Datasources Modal */}
+      <DatasourceBrowserModal isOpen={showBrowseModal} onClose={() => setShowBrowseModal(false)} />
     </>
   );
 };
