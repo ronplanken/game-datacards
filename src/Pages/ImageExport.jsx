@@ -57,7 +57,8 @@ export const ImageExport = () => {
     });
 
     files?.forEach(async (file, index) => {
-      const cardName = allCards[index]?.name || `card-${index}`;
+      const card = allCards[index];
+      const cardName = card?.name || `card-${index}`;
       zip.file(
         `${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}${
           allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
