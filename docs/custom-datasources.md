@@ -6,14 +6,15 @@ This document explains how the custom datasources feature works in the game-data
 
 Custom datasources allow users to import their own JSON data files containing faction/game data that can be used alongside or instead of the built-in game system datasources (Warhammer 40k, Age of Sigmar, Necromunda, etc.).
 
-## Key Differences: Custom vs Built-in Datasources
+## Key Differences: Custom vs Built-in vs Subscribed Datasources
 
-| Aspect | Built-in Datasources | Custom Datasources |
-|--------|---------------------|-------------------|
-| Source | Pre-configured, fetched from hardcoded URLs | User-imported via URL or file upload |
-| Storage Key | `40k`, `40k-10e`, `aos`, `necromunda`, `basic` | `custom-{uuid}` |
-| Management | Fixed, cannot be removed | Can be added, removed, updated by user |
-| Updates | Manual app updates | Version checking for URL sources |
+| Aspect | Built-in Datasources | Custom Datasources | Subscribed Datasources |
+|--------|---------------------|-------------------|------------------------|
+| Source | Pre-configured, fetched from hardcoded URLs | User-imported via URL or file upload | Community shared via cloud |
+| Storage Key | `40k`, `40k-10e`, `aos`, `necromunda`, `basic` | `custom-{uuid}` | `subscribed-{cloudId}` |
+| Management | Fixed, cannot be removed | Can be added, removed, updated by user | Subscribe/unsubscribe |
+| Updates | Manual app updates | Version checking for URL sources | Auto-check from cloud |
+| Editable | No | Yes | No (read-only) |
 
 ## Architecture
 
@@ -25,30 +26,42 @@ The feature uses a three-tier storage system:
 Browser Storage:
 ├── localStorage
 │   └── settings (JSON object)
-│       ├── customDatasources: Array<RegistryEntry>  // Metadata only
+│       ├── customDatasources: Array<RegistryEntry>  // Metadata only (includes custom + subscribed)
 │       ├── selectedDataSource: string               // Current selection
 │       └── selectedFactionIndex: Record<string, number>
 │
 └── IndexedDB (via localForage, instance name: "data")
     ├── 40k, 40k-10e, aos, necromunda, basic  // Built-in data
-    └── custom-{uuid}                          // Full custom datasource data
+    ├── custom-{uuid}                          // User-imported custom datasource data
+    └── subscribed-{cloudId}                   // Subscribed community datasource data
 ```
 
 ### Registry Entry Structure
 
-Each custom datasource has a lightweight registry entry stored in `settings.customDatasources`:
+Each custom or subscribed datasource has a lightweight registry entry stored in `settings.customDatasources`:
 
 ```typescript
 interface RegistryEntry {
-  id: string;              // "custom-{uuid}"
+  id: string;              // "custom-{uuid}" or "subscribed-{cloudId}"
   name: string;            // Display name
   version: string;         // Semantic version
   cardCount: number;       // Total cards across all factions
-  sourceType: "url" | "local";
+  sourceType: "url" | "local" | "subscription";
   sourceUrl?: string;      // Only for URL-sourced datasources
   author?: string;
   lastUpdated: string;     // ISO timestamp
   lastCheckedForUpdate?: string;  // ISO timestamp
+
+  // Subscription-specific fields (sourceType === "subscription")
+  cloudId?: string;        // Cloud database ID
+  isSubscribed?: boolean;  // True for subscribed datasources
+  authorId?: string;       // Publisher's user ID
+  authorName?: string;     // Publisher's display name
+  lastCloudVersion?: number; // Cloud version number for sync
+  isReadOnly?: boolean;    // True for subscribed (can't edit)
+
+  // Upload-specific fields (for owned datasources uploaded to cloud)
+  isUploaded?: boolean;    // True if uploaded to cloud
 }
 ```
 
@@ -60,9 +73,17 @@ interface RegistryEntry {
 |-----------|---------|
 | `src/Hooks/useDataSourceStorage.jsx` | Main hook for datasource operations |
 | `src/Hooks/useSettingsStorage.jsx` | Settings persistence including registry |
+| `src/Hooks/useDatasourceSharing.jsx` | Cloud sharing, subscribing, publishing |
+| `src/Hooks/useSync.jsx` | Category syncing to cloud |
 | `src/Helpers/customDatasource.helpers.js` | Validation, transformation, utilities |
-| `src/Components/CustomDatasource/CustomDatasourceModal.jsx` | Import UI modal |
-| `src/Components/CustomDatasource/ExportDatasourceModal.jsx` | Export categories as datasource |
+| `src/Components/CustomDatasource/CustomDatasourceModal.jsx` | Import URL/file modal |
+| `src/Components/CustomDatasource/ExportDatasourceModal.jsx` | Export cards as datasource |
+| `src/Components/CustomDatasource/ConvertToDatasourceModal.jsx` | Convert category to datasource |
+| `src/Components/CustomDatasource/EditDatasourceMetadataModal.jsx` | Edit datasource metadata |
+| `src/Components/DatasourceBrowser/DatasourceBrowserModal.jsx` | Browse community datasources |
+| `src/Components/DatasourceBrowser/DatasourceCard.jsx` | Datasource card in browser |
+| `src/Components/DatasourceBrowser/DatasourceDetailModal.jsx` | Datasource detail view |
+| `src/Components/DatasourcePublish/PublishDatasourceModal.jsx` | Publish datasource modal |
 | `src/Components/SettingsModal/CustomDatasourceCard.jsx` | Datasource management card |
 | `src/Components/DatasourceSelector/DatasourceSelector.jsx` | Header dropdown selector |
 
@@ -71,9 +92,14 @@ interface RegistryEntry {
 ```
 SettingsStorageProviderComponent
   └── AuthProvider
-      └── DataSourceStorageProviderComponent
-          └── CardStorageProviderComponent
-              └── App
+      └── SubscriptionProvider
+          └── UserProviderComponent
+              └── FirebaseProviderComponent
+                  └── DataSourceStorageProviderComponent
+                      └── DatasourceSharingProvider
+                          └── CardStorageProviderComponent
+                              └── SyncProvider
+                                  └── App
 ```
 
 ## Data Format
@@ -166,6 +192,53 @@ Location: `src/Hooks/useDataSourceStorage.jsx`
 | `formatCardBreakdown(counts)` | Human-readable card count string |
 | `mapCardsToFactionStructure(cards, factionInfo)` | Groups cards into faction arrays |
 | `countDatasourceCards(datasource)` | Total card count across all factions |
+| `extractCardsFromFaction(faction)` | Extracts cards from faction arrays to flat array |
+
+### useDatasourceSharing Hook
+
+Location: `src/Hooks/useDatasourceSharing.jsx`
+
+This hook manages cloud-based datasource sharing, including browsing, subscribing, publishing, and syncing.
+
+#### Browsing Functions
+
+| Function | Description |
+|----------|-------------|
+| `browsePublicDatasources(filters, reset)` | Browse community datasources with search/filter/pagination |
+| `getFeaturedDatasources()` | Get featured/popular datasources |
+| `getDatasourceByShareCode(code)` | Fetch datasource details by share code |
+
+#### Subscription Functions
+
+| Function | Description |
+|----------|-------------|
+| `fetchMySubscriptions()` | Fetch user's current subscriptions |
+| `subscribeToDatasource(id)` | Subscribe to a community datasource |
+| `unsubscribeFromDatasource(id, removeLocal)` | Unsubscribe and optionally remove local data |
+| `checkForUpdates()` | Check all subscriptions for available updates |
+| `syncSubscription(subId, dsId)` | Download latest version of a subscription |
+| `syncAllSubscriptions()` | Sync all subscriptions with available updates |
+| `getSubscribedDatasources()` | Get all subscribed datasources from registry |
+
+#### Publishing Functions
+
+| Function | Description |
+|----------|-------------|
+| `fetchMyDatasources()` | Fetch user's uploaded/published datasources |
+| `uploadDatasource(data, metadata)` | Upload local datasource to cloud (private) |
+| `publishDatasource(dbId, options)` | Make uploaded datasource public |
+| `unpublishDatasource(dbId)` | Make datasource private again |
+| `updatePublishedDatasource(dbId, newData)` | Push update to subscribers |
+| `publishLocalDatasource(cloudId, options)` | Publish a local/synced datasource |
+| `pushDatasourceUpdate(cloudId)` | Push changes to subscribers |
+
+#### Local Storage Functions
+
+| Function | Description |
+|----------|-------------|
+| `importFromSubscription(subscriptionData)` | Import subscribed datasource as read-only |
+| `updateSubscribedDatasource(subscriptionData)` | Update local subscription with new version |
+| `removeSubscribedDatasource(cloudId)` | Remove subscribed datasource from local storage |
 
 ## User Flows
 
@@ -225,6 +298,74 @@ Location: `src/Hooks/useDataSourceStorage.jsx`
    - Removes from `settings.customDatasources` array
    - If was selected, switches to default datasource
 
+### Browse Community Datasources
+
+1. User opens DatasourceBrowser via selector dropdown or settings
+2. `DatasourceBrowserModal` opens showing public datasources
+3. User can filter by game system, search by name, or sort by popularity
+4. Views datasource cards showing name, author, subscriber count
+5. Clicks datasource for detail modal with preview
+6. Clicks "Subscribe" to add to local datasources
+
+### Subscribe to Datasource
+
+1. User finds datasource in browser or via share code
+2. Clicks "Subscribe" (requires authentication)
+3. `subscribeToDatasource()` creates server subscription record
+4. Full datasource data downloaded from cloud
+5. `importFromSubscription()` stores locally with `isReadOnly: true`
+6. Registry entry added with `sourceType: "subscription"`
+7. Datasource appears in DatasourceSelector under "Subscribed"
+
+### Check for Subscription Updates
+
+1. App periodically calls `checkForUpdates()` on subscriptions
+2. Server compares local version with cloud version
+3. If newer version available:
+   - Update indicator shown on DatasourceSelector
+   - Update badge shown on subscription card
+4. User clicks "Update" on subscription card
+5. `syncSubscription()` downloads new version from cloud
+6. Local data replaced in IndexedDB
+7. Registry entry updated with new version info
+
+### Unsubscribe from Datasource
+
+1. User clicks unsubscribe on subscription card
+2. Confirmation dialog shown
+3. `unsubscribeFromDatasource(id)` called:
+   - Removes subscription record from server
+   - Removes from local IndexedDB
+   - Removes from `settings.customDatasources` registry
+   - If was selected, switches to default datasource
+
+### Upload Datasource to Cloud
+
+1. User clicks "Upload to cloud" on custom datasource card
+2. Requires premium/creator subscription tier
+3. `uploadDatasource()` validates and uploads data to Supabase
+4. Creates cloud record with `is_public: false`
+5. Local registry updated with `cloudId` and `isUploaded: true`
+6. Datasource can now be published
+
+### Publish Datasource
+
+1. User uploads datasource first (see above)
+2. Clicks "Publish" on uploaded datasource
+3. `PublishDatasourceModal` opens for description/game system
+4. `publishDatasource()` makes datasource public
+5. Share code generated for direct linking
+6. Datasource appears in community browser
+7. Other users can now subscribe
+
+### Push Update to Subscribers
+
+1. User makes changes to published datasource locally
+2. Clicks "Push update" on datasource card
+3. `pushDatasourceUpdate()` copies changes to published version
+4. Version number incremented automatically
+5. Subscribers notified of available update
+
 ## UI Components
 
 ### CustomDatasourceModal
@@ -249,8 +390,47 @@ Location: `src/Hooks/useDataSourceStorage.jsx`
 - **Displays**: Name, card count, version, author, updated date, source type icon
 - **Actions**:
   - Toggle to activate/deactivate
-  - "Check for updates" (URL sources only)
-  - Delete button (when not active)
+  - "Check for updates" (URL sources only, when active)
+  - Delete button (when not active and not subscribed)
+  - "Upload to cloud" (with subscription permission check)
+  - "Publish" (when uploaded but not published)
+  - "Push update" (when published)
+
+### DatasourceBrowserModal
+
+- **Location**: `src/Components/DatasourceBrowser/DatasourceBrowserModal.jsx`
+- **Trigger**: "Browse community" button in DatasourceSelector
+- **Features**:
+  - Game system filter dropdown
+  - Search input for name/author
+  - Sort by: Most Popular | Newest | Most Subscribers
+  - Paginated grid of DatasourceCards
+  - Featured datasources section
+
+### DatasourceCard (Browser)
+
+- **Location**: `src/Components/DatasourceBrowser/DatasourceCard.jsx`
+- **Displays**: Name, author, game system, subscriber count, description preview
+- **Actions**:
+  - Click to open DatasourceDetailModal
+
+### DatasourceDetailModal
+
+- **Location**: `src/Components/DatasourceBrowser/DatasourceDetailModal.jsx`
+- **Displays**: Full description, faction preview, version info, author
+- **Actions**:
+  - Subscribe button (or "Already subscribed" indicator)
+  - Share code copy
+
+### PublishDatasourceModal
+
+- **Location**: `src/Components/DatasourcePublish/PublishDatasourceModal.jsx`
+- **Trigger**: "Publish" button on uploaded datasource
+- **Fields**:
+  - Description (optional)
+  - Game system dropdown
+- **Actions**:
+  - Publish and generate share code
 
 ### DatasourceSelector
 
@@ -258,7 +438,7 @@ Location: `src/Hooks/useDataSourceStorage.jsx`
 - **Features**:
   - Dropdown showing current datasource
   - Update available indicator dot
-  - Sections: Check Updates | Built-in | Custom | Add New
+  - Sections: Check Updates | Built-in | Subscribed | Custom | Add New | Browse Community
   - Portal-rendered for proper z-index
 
 ### Settings Modal Integration
@@ -266,8 +446,9 @@ Location: `src/Hooks/useDataSourceStorage.jsx`
 - **Tab**: "Datasources" (`activeTab === "datasources"`)
 - **Sections**:
   1. Active Datasource - current selection card
-  2. Custom Datasources - list with Add button
-  3. Other Datasources - built-in options
+  2. Subscribed Datasources - list of subscriptions with update indicators
+  3. Custom Datasources - list with Add/Upload/Publish buttons
+  4. Other Datasources - built-in options
 
 ## Error Handling
 
@@ -301,3 +482,63 @@ When fetching URL datasources, CORS errors are detected and shown with user-frie
 
 - Custom datasource registry is part of settings that can sync
 - Full datasource data remains local (too large for sync)
+
+## Cloud Integration
+
+### Cloud Storage (Supabase)
+
+The cloud sharing feature uses Supabase for backend storage and real-time subscriptions:
+
+- **`user_datasources` table**: Stores uploaded datasource data, metadata, and publication status
+- **`datasource_subscriptions` table**: Tracks user subscriptions with version info
+- **RPC functions**: Handle complex operations (publish, subscribe, sync, version checking)
+- **Real-time subscriptions**: Notify users of available updates
+
+### Authentication Requirements
+
+| Action | Auth Required | Subscription Tier |
+|--------|---------------|-------------------|
+| Browse public datasources | No | Free |
+| Subscribe to datasource | Yes | Free |
+| Upload datasource to cloud | Yes | Premium or Creator |
+| Publish datasource publicly | Yes | Premium or Creator |
+| Push updates to subscribers | Yes | Premium or Creator |
+
+### Game System Options
+
+Available game systems for categorizing published datasources:
+
+```javascript
+GAME_SYSTEMS = [
+  "40k-10e",      // Warhammer 40k (10th Edition)
+  "40k",          // Warhammer 40k (Legacy)
+  "aos",          // Age of Sigmar
+  "necromunda",   // Necromunda
+  "horus-heresy", // Horus Heresy
+  "basic",        // Basic/Generic
+  "other"         // Other
+]
+```
+
+### Version Management
+
+- Subscribed datasources track `lastCloudVersion` (integer version number from server)
+- `checkForUpdates()` compares local version with server version
+- Updates increment version number automatically when pushed
+- Semantic version string (`version`) is for display; integer `version_number` is for comparison
+
+### Data Flow
+
+```
+Upload Flow:
+Local Datasource → validateCustomDatasource() → uploadDatasource() → Supabase
+
+Publish Flow:
+Uploaded Datasource → publishDatasource() → Generate share code → Public listing
+
+Subscribe Flow:
+Browse/Share Code → subscribeToDatasource() → Download data → importFromSubscription() → Local storage
+
+Update Flow:
+Publisher pushes → Version incremented → checkForUpdates() detects → syncSubscription() downloads
+```
