@@ -57,8 +57,9 @@ export const ImageExport = () => {
     });
 
     files?.forEach(async (file, index) => {
+      const cardName = allCards[index]?.name || `card-${index}`;
       zip.file(
-        `${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}${
+        `${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}${
           allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
         }`,
         file,
@@ -71,14 +72,16 @@ export const ImageExport = () => {
       });
 
       backFiles?.forEach(async (file, index) => {
-        zip.file(`${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
+        const cardName = allCards[index]?.name || `card-${index}`;
+        zip.file(`${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
       });
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
-      link.download = `datacards_${category.name.toLowerCase()}.zip`;
+      const categoryName = category?.name || "untitled";
+      link.download = `datacards_${categoryName.toLowerCase()}.zip`;
       link.click();
       overlayRef.current.style.display = "none";
     });
