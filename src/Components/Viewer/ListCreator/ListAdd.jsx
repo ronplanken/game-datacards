@@ -101,7 +101,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     return cardFaction.enhancements
       .filter(
         (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
+          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
       )
       .filter((enhancement) => {
         let isActiveEnhancement = false;

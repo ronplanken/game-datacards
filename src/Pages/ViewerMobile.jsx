@@ -65,7 +65,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   // Check if user has explicitly selected a faction for current datasource
   const hasFactionSelected =
     typeof settings.hasFactionSelected === "object"
-      ? (settings.hasFactionSelected?.[settings.selectedDataSource] ?? false)
+      ? settings.hasFactionSelected?.[settings.selectedDataSource] ?? false
       : false;
   const { activeCard } = useCardStorage();
   const { shareLink, htmlToImageConvert } = useMobileSharing();

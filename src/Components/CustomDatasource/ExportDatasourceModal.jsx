@@ -49,7 +49,7 @@ export const ExportDatasourceModal = ({ isOpen, onClose, category }) => {
         onClose();
       }
     },
-    [isOpen, onClose],
+    [isOpen, onClose]
   );
 
   useEffect(() => {
