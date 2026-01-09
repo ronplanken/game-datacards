@@ -54,7 +54,7 @@ export function useScrollRevealHeader({ enabled = false, targetSelector, topOffs
           root: scrollContainer,
           threshold: 0,
           rootMargin: `-${topOffset}px 0px 0px 0px`,
-        }
+        },
       );
 
       observerRef.current.observe(targetEl);

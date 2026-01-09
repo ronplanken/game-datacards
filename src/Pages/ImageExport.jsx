@@ -66,7 +66,7 @@ export const ImageExport = () => {
         `${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}${
           allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
         }`,
-        file
+        file,
       );
     });
     if (settings.showCardsAsDoubleSided !== true) {

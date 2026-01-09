@@ -228,6 +228,6 @@ export const MobileWelcomeWizard = () => {
         </footer>
       </div>
     </div>,
-    modalRoot
+    modalRoot,
   );
 };

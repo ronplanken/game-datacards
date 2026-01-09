@@ -21,7 +21,7 @@ self.addEventListener("install", (event) => {
       })
       .catch((error) => {
         console.error("Failed to cache assets during install:", error);
-      }),
+      })
   );
 });
 
@@ -38,12 +38,12 @@ self.addEventListener("activate", (event) => {
               console.log("Deleting old cache:", cacheName);
               return caches.delete(cacheName);
             }
-          }),
+          })
         );
       }),
       // Take control of all clients
       self.clients.claim(),
-    ]),
+    ])
   );
 });
 
@@ -196,6 +196,6 @@ async function getOfflineFallback() {
   `,
     {
       headers: { "Content-Type": "text/html" },
-    },
+    }
   );
 }

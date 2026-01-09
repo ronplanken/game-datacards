@@ -209,14 +209,14 @@ export const MobileDrawer = ({ open, setOpen }) => {
                     navigate(
                       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
                         .replaceAll(" ", "-")
-                        .toLowerCase()}`
+                        .toLowerCase()}`,
                     );
                   }
                   if (card.nonBase) {
                     navigate(
                       `/mobile/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
                         .toLowerCase()
-                        .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
+                        .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`,
                     );
                   }
 
