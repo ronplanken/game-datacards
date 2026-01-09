@@ -52,7 +52,7 @@ export const ImageExport = () => {
     await sleep(100);
 
     const files = cardsFrontRef?.current?.map(async (card, index) => {
-      const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
+      const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
       return data;
     });
 
@@ -67,7 +67,7 @@ export const ImageExport = () => {
     });
     if (settings.showCardsAsDoubleSided !== true) {
       const backFiles = cardsBackRef?.current?.map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
+        const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
         return data;
       });
 
