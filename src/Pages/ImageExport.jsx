@@ -51,6 +51,9 @@ export const ImageExport = () => {
     overlayRef.current.style.display = "inline-flex";
     await sleep(100);
 
+    // skipFonts: true works around a bug in html-to-image where the font embedding code
+    // calls .trim() on undefined font-family values, causing "can't access property 'trim'" errors.
+    // Fonts still render correctly since they're already loaded in the browser when the DOM is captured.
     const files = cardsFrontRef?.current?.map(async (card, index) => {
       const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
       return data;
@@ -63,7 +66,7 @@ export const ImageExport = () => {
         `${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}${
           allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
         }`,
-        file,
+        file
       );
     });
     if (settings.showCardsAsDoubleSided !== true) {
