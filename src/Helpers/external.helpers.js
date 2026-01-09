@@ -6,7 +6,11 @@ function onlyUnique(value, index, self) {
 }
 
 export function capitalizeSentence(sentence) {
-  if (!sentence) return "";
+export function capitalizeSentence(sentence) {
+  if (!sentence || typeof sentence !== "string") return "";
+  const trimmed = sentence.trim();
+  if (!trimmed) return "";
+  let words = trimmed.toLowerCase().split(" ");
   let words = sentence.toLowerCase().split(" ");
   for (let i = 0; i < words.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
