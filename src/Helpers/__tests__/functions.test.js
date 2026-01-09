@@ -325,6 +325,18 @@ describe("external.helpers", () => {
     it("should handle mixed case", () => {
       expect(capitalizeSentence("hElLo WoRlD")).toBe("Hello World");
     });
+
+    it("should return empty string for undefined input", () => {
+      expect(capitalizeSentence(undefined)).toBe("");
+    });
+
+    it("should return empty string for null input", () => {
+      expect(capitalizeSentence(null)).toBe("");
+    });
+
+    it("should return empty string for empty string input", () => {
+      expect(capitalizeSentence("")).toBe("");
+    });
   });
 
   describe("extractWarpChargeValue", () => {
