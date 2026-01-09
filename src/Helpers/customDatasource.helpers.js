@@ -114,6 +114,7 @@ export const validateCustomDatasource = (data) => {
  * @returns {string} - A safe filename
  */
 export const generateDatasourceFilename = (name) => {
+  if (!name) return "untitled-datasource.json";
   const safeName = name
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
@@ -130,6 +131,7 @@ export const generateDatasourceFilename = (name) => {
  * @returns {string} - A slug ID
  */
 export const generateIdFromName = (name) => {
+  if (!name) return "untitled";
   return name
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
