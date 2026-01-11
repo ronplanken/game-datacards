@@ -479,55 +479,24 @@ export const get40k10eData = async () => {
 };
 
 export const get40k10eCombatPatrolData = async () => {
-  const factions = [
-    "amonhotekhs_guard",
-    "aurellios_banishers",
-    "butchers_of_hyporia",
-    "claw_of_ascension",
-    "dark_zealots",
-    "gordrangs_gitstompas",
-    "guardians_of_the_throne",
-    "hand_of_the_magus",
-    "inquisitors_hand",
-    "insidious_infiltrators",
-    "insidious_invaders",
-    "karagars_rampagers",
-    "karsks_gunners",
-    "maniple_verask-alpha",
-    "mordekais_judgement",
-    "morgrims_butchas",
-    "protectors_of_aunshar",
-    "purge_corps_deltic-9",
-    "sanctuary_guardians",
-    "siguards_crusaders",
-    "strike_force_marcellos",
-    "strike_force_octavius",
-    "strike_team_solarien",
-    "sudden_dawn_cadre",
-    "the_blades_of_torment",
-    "the_coven_temporus",
-    "the_fatebreakers",
-    "the_penitent_host",
-    "the_shambling_horde",
-    "the_vardenghast_swarm",
-    "the_vengeful_brethren",
-    "thoryks_void_hunters",
-    "tristraens_gilded_blades",
-    "vantarrions_voidsmen",
-    "vigil_force_alphion",
-    "warspekes_prospect",
-    "zarkans_daemonkin",
-  ];
+  const baseUrl = process.env.REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL;
+  const cacheBuster = new Date().getTime();
 
-  const fetchData = async (faction) => {
-    const url = `${process.env.REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL}/${faction}.json?${new Date().getTime()}`;
+  // Fetch the index.json to get the list of combat patrols dynamically
+  const indexUrl = `${baseUrl}/index.json?${cacheBuster}`;
+  const index = await readCsv(indexUrl);
+
+  const fetchData = async (combatPatrol) => {
+    // The file path in index.json is like "combatpatrol/filename.json", extract just the filename
+    const filename = combatPatrol.file.split("/").pop();
+    const url = `${baseUrl}/${filename}?${cacheBuster}`;
     const data = await readCsv(url);
     return data;
   };
 
   const fetchAllData = async () => {
-    const sortedFactions = factions.sort();
-    const promises = sortedFactions.map((faction) => fetchData(faction));
+    const sortedPatrols = [...index.combatPatrols].sort((a, b) => a.name.localeCompare(b.name));
+    const promises = sortedPatrols.map((patrol) => fetchData(patrol));
     const allData = await Promise.all(promises);
     return allData;
   };
@@ -536,7 +505,7 @@ export const get40k10eCombatPatrolData = async () => {
 
   return {
     version: process.env.REACT_APP_VERSION,
-    lastUpdated: allFactionsData[0].updated,
+    lastUpdated: index.updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
     noDatasheetByRole: true,
