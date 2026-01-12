@@ -69,7 +69,7 @@ export const CardStorageProviderComponent = (props) => {
   const [activeCategory, setActiveCategory] = React.useState(null);
 
   useEffect(() => {
-    const version = process.env.REACT_APP_VERSION;
+    const version = import.meta.env.VITE_VERSION;
     localStorage.setItem("storage", JSON.stringify({ ...cardStorage, version }));
   }, [cardStorage]);
 

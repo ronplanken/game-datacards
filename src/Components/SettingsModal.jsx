@@ -228,7 +228,7 @@ export const SettingsModal = () => {
             {/* Header */}
             <div className="settings-modal-header">
               <span className="settings-modal-title">Configuration</span>
-              <span className="settings-version-badge">Version {process.env.REACT_APP_VERSION}</span>
+              <span className="settings-version-badge">Version {import.meta.env.VITE_VERSION}</span>
             </div>
 
             {/* Body */}

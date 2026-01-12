@@ -70,17 +70,19 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "echo 'game-datacards.eu' > ./build/CNAME && gh-pages -d build",
-    "start": "craco start",
-    "build": "craco build",
-    "build:beta": "env-cmd -f .env.beta craco build",
-    "test": "craco test",
-    "test:ci": "CI=true craco test --passWithNoTests",
-    "test:coverage": "CI=true craco test --passWithNoTests --coverage --coverageReporters=text --coverageReporters=lcov --coverageReporters=json-summary --coverageReporters=json",
+    "start": "vite",
+    "start:premium": "VITE_USE_PREMIUM_PACKAGE=true vite",
+    "build": "vite build",
+    "build:premium": "VITE_USE_PREMIUM_PACKAGE=true vite build",
+    "build:beta": "vite build --mode beta",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ci": "CI=true vitest run --passWithNoTests",
+    "test:coverage": "CI=true vitest run --passWithNoTests --coverage",
     "lint": "eslint './src/**/*.{js,jsx}'",
     "prettier:fix": "prettier --config .prettierrc --write '**/*.{js,ts,tsx,css}'",
     "lint:fix": "yarn lint --fix",
-    "pre-commit": "lint-staged",
-    "start:watch": "nodemon --watch src --ext js,jsx,ts,tsx,css,less --exec \"craco start\""
+    "pre-commit": "lint-staged"
   },
   "eslintConfig": {
     "extends": [
@@ -101,10 +103,9 @@
     ]
   },
   "devDependencies": {
-    "@craco/craco": "^7.1.0",
     "@testing-library/react-hooks": "^8.0.1",
+    "@vitejs/plugin-react": "^5.1.2",
     "codecov": "^3.8.3",
-    "craco-less": "^3.0.1",
     "env-cmd": "^11.0.0",
     "eslint": "^8.57.0",
     "eslint-config-google": "^0.14.0",
@@ -115,7 +116,10 @@
     "gh-pages": "^6.2.0",
     "msw": "^2.0.0",
     "playwright": "^1.49.0",
-    "prettier": "^3.4.0"
+    "prettier": "^3.4.0",
+    "vite": "^7.3.1",
+    "vitest": "^3.1.4",
+    "vite-plugin-node-polyfills": "^0.24.0"
   },
   "jest": {
     "moduleNameMapper": {

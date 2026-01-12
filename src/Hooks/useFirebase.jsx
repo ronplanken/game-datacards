@@ -28,7 +28,7 @@ export const FirebaseProviderComponent = (props) => {
 
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-  setUserProperties(analytics, { app_version: process.env.REACT_APP_VERSION });
+  setUserProperties(analytics, { app_version: import.meta.env.VITE_VERSION });
 
   const db = getFirestore(app);
 
@@ -61,7 +61,7 @@ export const FirebaseProviderComponent = (props) => {
       description: "",
       likes: 0,
       views: 0,
-      version: process.env.REACT_APP_VERSION || "dev",
+      version: import.meta.env.VITE_VERSION || "dev",
       createdAt: new Date().toISOString(),
       website: "https://game-datacards.eu",
     };

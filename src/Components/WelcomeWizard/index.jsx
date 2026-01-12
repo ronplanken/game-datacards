@@ -81,8 +81,8 @@ export const WelcomeWizard = () => {
       setIsExiting(false);
       updateSettings({
         ...settings,
-        wizardCompleted: process.env.REACT_APP_VERSION,
-        lastMajorWizardVersion: process.env.REACT_APP_VERSION,
+        wizardCompleted: import.meta.env.VITE_VERSION,
+        lastMajorWizardVersion: import.meta.env.VITE_VERSION,
       });
     }, 200);
   }, [settings, updateSettings]);

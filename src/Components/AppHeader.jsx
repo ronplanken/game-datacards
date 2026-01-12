@@ -45,8 +45,8 @@ export const AppHeader = ({
           {/* Left section - Logo and Navigation */}
           <div className="app-header-left">
             <div className="app-header-brand" onClick={() => navigate("/")}>
-              {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
-                <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
+              {import.meta.env.VITE_IS_PRODUCTION === "false" ? (
+                <Badge.Ribbon color="red" text={import.meta.env.VITE_ENVIRONMENT}>
                   <Image preview={false} src={logo} width={50} />
                 </Badge.Ribbon>
               ) : (

@@ -47,49 +47,49 @@ const readCsv = async (file) => {
 
 export const get40KData = async () => {
   const lastUpdated = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`
   );
   const dataDatasheetAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`
   );
   const dataStratagems = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`
   );
   const dataAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`
   );
   const dataDatasheetWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`
   );
   const dataWargearList = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`
   );
   const dataWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`
   );
   const dataModels = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`
   );
   const dataKeywords = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`
   );
   const dataDamage = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`
   );
   const dataFactions = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`
   );
   const sheets = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`
   );
   const dataSecondaries = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`
   );
   const dataPsychic = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`
   );
   const dataTraits = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`
   );
 
   const mappedPsychicPowers = dataPsychic.map((power) => {
@@ -254,7 +254,7 @@ export const get40KData = async () => {
 
   return {
     data: mainFactions,
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: lastUpdated[0].last_update,
     lastCheckedForUpdate: new Date().toISOString(),
   };
@@ -262,7 +262,7 @@ export const get40KData = async () => {
 
 export const getBasicData = () => {
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
@@ -437,12 +437,12 @@ export const get40k10eData = async () => {
   ];
 
   const fetchData = async (faction) => {
-    const url = `${process.env.REACT_APP_DATASOURCE_10TH_URL}/${faction}.json?${new Date().getTime()}`;
+    const url = `${import.meta.env.VITE_DATASOURCE_10TH_URL}/${faction}.json?${new Date().getTime()}`;
     const data = await readCsv(url);
     return data;
   };
 
-  const core = await readCsv(`${process.env.REACT_APP_DATASOURCE_10TH_URL}/core.json?${new Date().getTime()}`);
+  const core = await readCsv(`${import.meta.env.VITE_DATASOURCE_10TH_URL}/core.json?${new Date().getTime()}`);
 
   const fetchAllData = async () => {
     const sortedFactions = factions.sort();
@@ -454,7 +454,7 @@ export const get40k10eData = async () => {
   const allFactionsData = await fetchAllData();
 
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: allFactionsData[0].updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
@@ -479,7 +479,7 @@ export const get40k10eData = async () => {
 };
 
 export const get40k10eCombatPatrolData = async () => {
-  const baseUrl = process.env.REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL;
+  const baseUrl = import.meta.env.VITE_DATASOURCE_10TH_COMBATPATROL_URL;
   const cacheBuster = new Date().getTime();
 
   // Fetch the index.json to get the list of combat patrols dynamically
@@ -504,7 +504,7 @@ export const get40k10eCombatPatrolData = async () => {
   const allFactionsData = await fetchAllData();
 
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: index.updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
@@ -527,7 +527,7 @@ export const get40k10eCombatPatrolData = async () => {
 };
 
 export const getMessages = async () => {
-  const url = `${process.env.REACT_APP_MESSAGES_URL}?${new Date().getTime()}`;
+  const url = `${import.meta.env.VITE_MESSAGES_URL}?${new Date().getTime()}`;
   const data = await readCsv(url);
   return data;
 };
@@ -564,7 +564,7 @@ export const getAoSData = async () => {
   ];
 
   const fetchData = async (faction) => {
-    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/${faction}.json?${new Date().getTime()}`;
+    const url = `${import.meta.env.VITE_DATASOURCE_AOS_URL}/${faction}.json?${new Date().getTime()}`;
     const data = await readCsv(url);
     return data;
   };
@@ -577,7 +577,7 @@ export const getAoSData = async () => {
   };
 
   const fetchGenericData = async () => {
-    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/generic.json?${new Date().getTime()}`;
+    const url = `${import.meta.env.VITE_DATASOURCE_AOS_URL}/generic.json?${new Date().getTime()}`;
     try {
       const data = await readCsv(url);
       return data;
@@ -590,7 +590,7 @@ export const getAoSData = async () => {
   const [allFactionsData, genericData] = await Promise.all([fetchAllData(), fetchGenericData()]);
 
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: allFactionsData[0]?.updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: true,
@@ -618,7 +618,7 @@ export const getAoSData = async () => {
 
 export const getNecromundaBasicData = () => {
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: true,

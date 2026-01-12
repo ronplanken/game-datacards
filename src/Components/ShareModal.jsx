@@ -54,7 +54,7 @@ export const ShareModal = () => {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`${process.env.REACT_APP_URL}/shared/${shareId}`);
+    navigator.clipboard.writeText(`${import.meta.env.VITE_URL}/shared/${shareId}`);
     message.success("Link copied to clipboard");
   };
 
@@ -73,7 +73,7 @@ export const ShareModal = () => {
     };
   };
 
-  const shareUrl = shareId ? `${process.env.REACT_APP_URL}/shared/${shareId}` : null;
+  const shareUrl = shareId ? `${import.meta.env.VITE_URL}/shared/${shareId}` : null;
   const position = getDropdownPosition();
 
   return (
