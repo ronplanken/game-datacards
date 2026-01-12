@@ -91,19 +91,14 @@ export default defineConfig({
     ...(usePremiumPackage ? [premiumPackageResolver()] : []),
   ],
   resolve: {
-    alias: {
+    alias: [
       // Force all react imports to use the same instance
-      react: path.resolve("./node_modules/react"),
-      "react-dom": path.resolve("./node_modules/react-dom"),
-      // Premium package aliases (when enabled)
-      ...(usePremiumPackage
-        ? {
-            "./Premium": "@gdc/premium",
-            "../Premium": "@gdc/premium",
-            "../../Premium": "@gdc/premium",
-          }
-        : {}),
-    },
+      { find: "react", replacement: path.resolve("./node_modules/react") },
+      { find: "react-dom", replacement: path.resolve("./node_modules/react-dom") },
+      // Premium package alias - matches any relative path ending in /Premium
+      // e.g., ./Premium, ../Premium, ../../Premium, etc.
+      ...(usePremiumPackage ? [{ find: /^(\.\.?\/)+Premium$/, replacement: "@gdc/premium" }] : []),
+    ],
     dedupe: ["react", "react-dom"],
   },
   css: {
