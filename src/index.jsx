@@ -119,24 +119,17 @@ const CheckoutSuccessHandler = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showSuccess, setShowSuccess] = React.useState(false);
   const [tier, setTier] = React.useState("premium");
-  const { getTierByProductId } = useProducts();
+  const [pendingProductId, setPendingProductId] = React.useState(null);
+  const { products, loading, getTierByProductId } = useProducts();
 
+  // Step 1: Detect checkout params and store product_id, then clean URL
   React.useEffect(() => {
     const checkoutId = searchParams.get("checkout_id");
     const productId = searchParams.get("product_id");
 
     if (checkoutId) {
-      // Try dynamic lookup first (supports multiple product IDs per tier)
-      let detectedTier = getTierByProductId(productId);
-
-      // Fallback to static env vars if products not loaded yet
-      if (!detectedTier && productId) {
-        const creatorProductId = import.meta.env.VITE_CREEM_PRODUCT_ID_CREATOR;
-        detectedTier = productId === creatorProductId ? "creator" : "premium";
-      }
-
-      setTier(detectedTier || "premium");
-      setShowSuccess(true);
+      // Store product_id for tier lookup once products load
+      setPendingProductId(productId);
 
       // Remove Creem query parameters from URL without refresh
       searchParams.delete("checkout_id");
@@ -150,7 +143,25 @@ const CheckoutSuccessHandler = () => {
       searchParams.delete("tier");
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchParams, setSearchParams, getTierByProductId]);
+  }, [searchParams, setSearchParams]);
+
+  // Step 2: Once products are loaded, determine tier and show modal
+  React.useEffect(() => {
+    if (pendingProductId && !loading) {
+      // Try dynamic lookup first (supports multiple product IDs per tier)
+      let detectedTier = getTierByProductId(pendingProductId);
+
+      // Fallback to static env vars if products failed to load
+      if (!detectedTier && !products) {
+        const creatorProductId = import.meta.env.VITE_CREEM_PRODUCT_ID_CREATOR;
+        detectedTier = pendingProductId === creatorProductId ? "creator" : "premium";
+      }
+
+      setTier(detectedTier || "premium");
+      setShowSuccess(true);
+      setPendingProductId(null); // Clear pending state
+    }
+  }, [pendingProductId, loading, products, getTierByProductId]);
 
   return <CheckoutSuccessModal visible={showSuccess} onClose={() => setShowSuccess(false)} tier={tier} />;
 };
