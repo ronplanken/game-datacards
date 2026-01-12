@@ -54,6 +54,11 @@ function premiumPackageResolver() {
         return null;
       }
 
+      // Debug: log ALL imports from premium package
+      if (source.startsWith("..") || source.startsWith("./")) {
+        console.log("[premium-resolver] Processing:", source, "from:", importer?.substring(importer.indexOf("@gdc")));
+      }
+
       // Handle relative imports
       if (source.startsWith("..") || source.startsWith("./")) {
         const importerDir = path.dirname(importer);
@@ -61,6 +66,8 @@ function premiumPackageResolver() {
 
         // Check if file exists in gdc-premium
         const existsInPremium = fileExists(resolvedPath);
+        console.log("[premium-resolver]   existsInPremium:", existsInPremium ? "YES" : "NO", resolvedPath?.substring(resolvedPath.indexOf("@gdc")));
+
         if (existsInPremium) {
           return null; // Let Vite handle it normally
         }
@@ -72,11 +79,9 @@ function premiumPackageResolver() {
         const existsInMainApp = fileExists(mainAppPath);
 
         // Debug: log resolution attempt for files not found in premium
-        console.log("[premium-resolver] Resolving:", source, "from:", importer);
-        console.log("[premium-resolver]   resolvedPath:", resolvedPath);
         console.log("[premium-resolver]   relativeToPremium:", relativeToPremium);
         console.log("[premium-resolver]   mainAppPath:", mainAppPath);
-        console.log("[premium-resolver]   existsInMainApp:", existsInMainApp);
+        console.log("[premium-resolver]   existsInMainApp:", existsInMainApp ? "YES -> " + existsInMainApp : "NO");
 
         if (existsInMainApp) {
           return existsInMainApp;
