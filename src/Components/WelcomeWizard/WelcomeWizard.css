@@ -534,7 +534,9 @@
 .wz-game-card--selected {
   border-color: var(--wz-primary);
   background: rgba(22, 119, 255, 0.08);
-  box-shadow: 0 0 0 1px var(--wz-primary), 0 4px 20px rgba(22, 119, 255, 0.2);
+  box-shadow:
+    0 0 0 1px var(--wz-primary),
+    0 4px 20px rgba(22, 119, 255, 0.2);
 }
 
 /* Color accent bar */
@@ -1206,6 +1208,30 @@
   color: var(--wz-text-muted);
 }
 
+.wz-sub-tier-price-skeleton {
+  margin-left: auto;
+  width: 70px;
+  height: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: wz-skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes wz-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .wz-sub-tier-features {
   list-style: none;
   margin: 0;
@@ -1428,7 +1454,9 @@
 
 .wz-discord-link {
   display: inline-block;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   border-radius: var(--wz-radius-sm);
   overflow: hidden;
 }
