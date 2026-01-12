@@ -28,13 +28,6 @@ const premiumPackagePath = getPremiumPackagePath();
 // Plugin to resolve imports from gdc-premium to main app's src and node_modules
 function premiumPackageResolver() {
   const extensions = ["", ".js", ".jsx", ".ts", ".tsx", ".png", ".jpg", ".svg", "/index.js", "/index.jsx"];
-  const mainNodeModules = path.resolve(__dirname, "node_modules");
-
-  // Debug: log paths at plugin init
-  console.log("[premium-resolver] Plugin initialized");
-  console.log("[premium-resolver] premiumPackagePath:", premiumPackagePath);
-  console.log("[premium-resolver] mainAppSrc:", mainAppSrc);
-  console.log("[premium-resolver] __dirname:", __dirname);
 
   function fileExists(basePath) {
     for (const ext of extensions) {
@@ -56,11 +49,6 @@ function premiumPackageResolver() {
         return null;
       }
 
-      // Debug: log ALL imports from premium package
-      if (source.startsWith("..") || source.startsWith("./")) {
-        console.log("[premium-resolver] Processing:", source, "from:", importer?.substring(importer.indexOf("@gdc")));
-      }
-
       // Handle relative imports
       if (source.startsWith("..") || source.startsWith("./")) {
         const importerDir = path.dirname(importer);
@@ -68,8 +56,6 @@ function premiumPackageResolver() {
 
         // Check if file exists in gdc-premium
         const existsInPremium = fileExists(resolvedPath);
-        console.log("[premium-resolver]   existsInPremium:", existsInPremium ? "YES" : "NO", resolvedPath?.substring(resolvedPath.indexOf("@gdc")));
-
         if (existsInPremium) {
           return null; // Let Vite handle it normally
         }
@@ -77,13 +63,7 @@ function premiumPackageResolver() {
         // File doesn't exist in gdc-premium, try to find it in main app
         const relativeToPremium = path.relative(premiumPackagePath, resolvedPath);
         const mainAppPath = path.resolve(mainAppSrc, relativeToPremium);
-
         const existsInMainApp = fileExists(mainAppPath);
-
-        // Debug: log resolution attempt for files not found in premium
-        console.log("[premium-resolver]   relativeToPremium:", relativeToPremium);
-        console.log("[premium-resolver]   mainAppPath:", mainAppPath);
-        console.log("[premium-resolver]   existsInMainApp:", existsInMainApp ? "YES -> " + existsInMainApp : "NO");
 
         if (existsInMainApp) {
           return existsInMainApp;
