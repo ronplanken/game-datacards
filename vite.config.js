@@ -6,7 +6,24 @@ import fs from "fs";
 
 const usePremiumPackage = process.env.VITE_USE_PREMIUM_PACKAGE === "true";
 const mainAppSrc = path.resolve(__dirname, "src");
-const premiumPackagePath = path.resolve(__dirname, "../gdc-premium/src");
+
+// Detect premium package location and resolve symlinks for consistent path matching
+function getPremiumPackagePath() {
+  const nodeModulesPath = path.resolve(__dirname, "node_modules/@gdc/premium/src");
+  const linkedPath = path.resolve(__dirname, "../gdc-premium/src");
+
+  if (fs.existsSync(nodeModulesPath)) {
+    // Resolve symlinks to get the actual path (important for yarn link scenarios)
+    try {
+      return fs.realpathSync(nodeModulesPath);
+    } catch {
+      return nodeModulesPath;
+    }
+  }
+  return linkedPath;
+}
+
+const premiumPackagePath = getPremiumPackagePath();
 
 // Plugin to resolve imports from gdc-premium to main app's src and node_modules
 function premiumPackageResolver() {

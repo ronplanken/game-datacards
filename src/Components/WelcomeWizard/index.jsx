@@ -169,13 +169,18 @@ export const WelcomeWizard = () => {
       <div className="wz-modal" onClick={(e) => e.stopPropagation()}>
         <WizardHeader currentStep={wizard.currentStep} progress={wizard.progress} />
 
-        <MobileProgress currentStep={wizard.currentStep} completedSteps={wizard.completedSteps} />
+        <MobileProgress
+          currentStep={wizard.currentStep}
+          completedSteps={wizard.completedSteps}
+          steps={wizard.visibleSteps}
+        />
 
         <div className="wz-body">
           <WizardSidebar
             currentStep={wizard.currentStep}
             completedSteps={wizard.completedSteps}
             onStepClick={wizard.goToStep}
+            steps={wizard.visibleSteps}
           />
 
           <div className="wz-content">

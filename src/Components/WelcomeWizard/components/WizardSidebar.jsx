@@ -1,14 +1,13 @@
 import React from "react";
 import { Check } from "lucide-react";
-import { WIZARD_STEPS } from "../constants";
 
 /**
  * Desktop sidebar with step navigation
  */
-export const WizardSidebar = ({ currentStep, completedSteps, onStepClick }) => {
+export const WizardSidebar = ({ currentStep, completedSteps, onStepClick, steps }) => {
   return (
     <nav className="wz-sidebar">
-      {WIZARD_STEPS.map((stepItem, index) => {
+      {steps.map((stepItem, index) => {
         const isActive = currentStep === index;
         const isCompleted = completedSteps.has(index);
         const canClick = isCompleted || index < currentStep;

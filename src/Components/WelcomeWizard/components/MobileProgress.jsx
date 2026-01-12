@@ -1,13 +1,12 @@
 import React from "react";
-import { WIZARD_STEPS } from "../constants";
 
 /**
  * Mobile progress dots indicator
  */
-export const MobileProgress = ({ currentStep, completedSteps }) => {
+export const MobileProgress = ({ currentStep, completedSteps, steps }) => {
   return (
     <div className="wz-mobile-progress">
-      {WIZARD_STEPS.map((_, index) => {
+      {steps.map((_, index) => {
         const isActive = currentStep === index;
         const isCompleted = completedSteps.has(index);
 

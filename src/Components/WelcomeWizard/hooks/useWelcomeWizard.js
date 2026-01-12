@@ -1,10 +1,20 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { WIZARD_STEPS, DEMO_TREE_DATA, DEMO_CARD_DATA } from "../constants";
+import { usePremiumFeatures } from "../../../Premium";
 
 /**
  * Custom hook for managing Welcome Wizard state
  */
 export const useWelcomeWizard = (settings, updateSettings) => {
+  const { hasSubscription } = usePremiumFeatures();
+
+  // Filter out subscription step when not in premium mode
+  const visibleSteps = useMemo(() => {
+    if (hasSubscription) {
+      return WIZARD_STEPS;
+    }
+    return WIZARD_STEPS.filter((step) => step.id !== "subscription");
+  }, [hasSubscription]);
   // Core navigation state
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(new Set());
@@ -27,15 +37,15 @@ export const useWelcomeWizard = (settings, updateSettings) => {
 
   // Check if current step allows proceeding
   const canProceed = useMemo(() => {
-    const currentStepConfig = WIZARD_STEPS[currentStep];
+    const currentStepConfig = visibleSteps[currentStep];
 
     // Game system step requires selection
-    if (currentStepConfig.id === "game-system") {
+    if (currentStepConfig?.id === "game-system") {
       return !!selectedGameSystem;
     }
 
     return true;
-  }, [currentStep, selectedGameSystem]);
+  }, [currentStep, selectedGameSystem, visibleSteps]);
 
   // Navigate to a specific step
   const goToStep = useCallback(
@@ -55,10 +65,10 @@ export const useWelcomeWizard = (settings, updateSettings) => {
 
   // Navigate to next step
   const goNext = useCallback(() => {
-    if (currentStep < WIZARD_STEPS.length - 1 && canProceed) {
+    if (currentStep < visibleSteps.length - 1 && canProceed) {
       goToStep(currentStep + 1, "forward");
     }
-  }, [currentStep, canProceed, goToStep]);
+  }, [currentStep, canProceed, goToStep, visibleSteps]);
 
   // Navigate to previous step
   const goPrevious = useCallback(() => {
@@ -113,8 +123,8 @@ export const useWelcomeWizard = (settings, updateSettings) => {
   }, []);
 
   // Get current step info
-  const currentStepConfig = WIZARD_STEPS[currentStep];
-  const totalSteps = WIZARD_STEPS.length;
+  const currentStepConfig = visibleSteps[currentStep];
+  const totalSteps = visibleSteps.length;
   const progress = ((currentStep + 1) / totalSteps) * 100;
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
@@ -130,6 +140,7 @@ export const useWelcomeWizard = (settings, updateSettings) => {
     completedSteps,
     transitionDirection,
     canProceed,
+    visibleSteps,
 
     // Navigation actions
     goToStep,
