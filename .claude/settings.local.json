@@ -38,7 +38,8 @@
       "mcp__chrome-devtools__get_console_message",
       "Bash(yarn list:*)",
       "Bash(VITE_USE_PREMIUM_PACKAGE=true yarn start:*)",
-      "Bash(VITE_USE_PREMIUM_PACKAGE=true node_modules/.bin/vite:*)"
+      "Bash(VITE_USE_PREMIUM_PACKAGE=true node_modules/.bin/vite:*)",
+      "Bash(yarn build:premium:*)"
     ]
   }
 }
