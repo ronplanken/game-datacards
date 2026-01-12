@@ -30,6 +30,12 @@ function premiumPackageResolver() {
   const extensions = ["", ".js", ".jsx", ".ts", ".tsx", ".png", ".jpg", ".svg", "/index.js", "/index.jsx"];
   const mainNodeModules = path.resolve(__dirname, "node_modules");
 
+  // Debug: log paths at plugin init
+  console.log("[premium-resolver] Plugin initialized");
+  console.log("[premium-resolver] premiumPackagePath:", premiumPackagePath);
+  console.log("[premium-resolver] mainAppSrc:", mainAppSrc);
+  console.log("[premium-resolver] __dirname:", __dirname);
+
   function fileExists(basePath) {
     for (const ext of extensions) {
       if (fs.existsSync(basePath + ext)) {
@@ -64,6 +70,14 @@ function premiumPackageResolver() {
         const mainAppPath = path.resolve(mainAppSrc, relativeToPremium);
 
         const existsInMainApp = fileExists(mainAppPath);
+
+        // Debug: log resolution attempt for files not found in premium
+        console.log("[premium-resolver] Resolving:", source, "from:", importer);
+        console.log("[premium-resolver]   resolvedPath:", resolvedPath);
+        console.log("[premium-resolver]   relativeToPremium:", relativeToPremium);
+        console.log("[premium-resolver]   mainAppPath:", mainAppPath);
+        console.log("[premium-resolver]   existsInMainApp:", existsInMainApp);
+
         if (existsInMainApp) {
           return existsInMainApp;
         }
