@@ -8,9 +8,10 @@ const usePremiumPackage = process.env.VITE_USE_PREMIUM_PACKAGE === "true";
 const mainAppSrc = path.resolve(__dirname, "src");
 const premiumPackagePath = path.resolve(__dirname, "../gdc-premium/src");
 
-// Plugin to resolve imports from gdc-premium to main app's src
+// Plugin to resolve imports from gdc-premium to main app's src and node_modules
 function premiumPackageResolver() {
   const extensions = ["", ".js", ".jsx", ".ts", ".tsx", ".png", ".jpg", ".svg", "/index.js", "/index.jsx"];
+  const mainNodeModules = path.resolve(__dirname, "node_modules");
 
   function fileExists(basePath) {
     for (const ext of extensions) {
@@ -50,6 +51,13 @@ function premiumPackageResolver() {
           return existsInMainApp;
         }
       }
+
+      // Handle bare module imports (npm packages) - resolve from main app's context
+      if (!source.startsWith(".") && !source.startsWith("/")) {
+        // Use Vite's resolver with main app as the importer context
+        return this.resolve(source, mainAppSrc + "/index.jsx", { skipSelf: true });
+      }
+
       return null;
     },
   };
@@ -93,8 +101,11 @@ export default defineConfig({
   },
   build: {
     outDir: "build",
+    commonjsOptions: {
+      include: [/node_modules/, /gdc-premium/],
+    },
   },
   optimizeDeps: {
-    include: ["react", "react-dom", "react-router-dom"],
+    include: ["react", "react-dom", "react-router-dom", "lucide-react", "uuid"],
   },
 });
