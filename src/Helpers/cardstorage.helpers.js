@@ -4,7 +4,7 @@ import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
 const defaultCategories = {
-  version: process.env.REACT_APP_VERSION,
+  version: import.meta.env.VITE_VERSION,
   categories: [
     {
       uuid: uuidv4(),

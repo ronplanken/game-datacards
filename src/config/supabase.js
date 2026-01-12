@@ -8,8 +8,8 @@
 import { createClient } from "@supabase/supabase-js";
 
 // Get Supabase configuration from environment variables
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 /**
  * Supabase client instance
@@ -41,7 +41,7 @@ export const supabase =
         // Global headers for all requests
         global: {
           headers: {
-            "x-app-version": process.env.REACT_APP_VERSION || "dev",
+            "x-app-version": import.meta.env.VITE_VERSION || "dev",
           },
         },
       })

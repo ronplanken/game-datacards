@@ -163,7 +163,7 @@ export const Exporter = () => {
       category: exportCategory,
       subCategories: exportSubCategories.length > 0 ? exportSubCategories : undefined,
       createdAt: new Date().toISOString(),
-      version: process.env.REACT_APP_VERSION,
+      version: import.meta.env.VITE_VERSION,
       website: "https://game-datacards.eu",
     };
 

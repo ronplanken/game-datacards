@@ -125,7 +125,7 @@ const CheckoutSuccessHandler = () => {
 
     if (checkoutId) {
       // Determine tier from product_id
-      const creatorProductId = process.env.REACT_APP_CREEM_PRODUCT_ID_CREATOR;
+      const creatorProductId = import.meta.env.VITE_CREEM_PRODUCT_ID_CREATOR;
       const detectedTier = productId === creatorProductId ? "creator" : "premium";
       setTier(detectedTier);
       setShowSuccess(true);

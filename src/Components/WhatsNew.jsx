@@ -49,7 +49,7 @@ export const WhatsNew = () => {
     setIsWhatsNewVisible(false);
     updateSettings({
       ...settings,
-      wizardCompleted: process.env.REACT_APP_VERSION,
+      wizardCompleted: import.meta.env.VITE_VERSION,
     });
   };
 
@@ -69,7 +69,7 @@ export const WhatsNew = () => {
 
   useEffect(() => {
     // Check if major wizard should show instead
-    const currentVersion = process.env.REACT_APP_VERSION;
+    const currentVersion = import.meta.env.VITE_VERSION;
     const majorVersion = getMajorWizardVersion(currentVersion);
 
     // Guard against undefined settings values
@@ -105,7 +105,7 @@ export const WhatsNew = () => {
           <div className="wn-header-content">
             <div className="wn-title-row">
               <h1 className="wn-title">What&apos;s New</h1>
-              <span className="wn-version-badge">v{process.env.REACT_APP_VERSION}</span>
+              <span className="wn-version-badge">v{import.meta.env.VITE_VERSION}</span>
             </div>
             <p className="wn-subtitle">Check out the latest updates and improvements.</p>
           </div>

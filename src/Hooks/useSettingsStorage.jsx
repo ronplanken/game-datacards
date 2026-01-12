@@ -4,7 +4,7 @@ import React from "react";
 const SettingsStorageContext = React.createContext(undefined);
 
 const defaultSettings = {
-  version: process.env.REACT_APP_VERSION,
+  version: import.meta.env.VITE_VERSION,
   selectedDataSource: undefined,
   // Per-datasource selected faction index
   selectedFactionIndex: {

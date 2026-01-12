@@ -29,7 +29,14 @@
       "mcp__chrome-devtools__evaluate_script",
       "Bash(yarn build:*)",
       "Bash(npx prettier --write \"src/Components/Viewer/Mobile/Auth/*.jsx\" \"src/Components/Viewer/MobileMenu.jsx\")",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(yarn add:*)",
+      "Bash(if [ -f .env ])",
+      "Bash(then sed -i '' 's/REACT_APP_/VITE_/g' .env)",
+      "Bash(else echo \"No .env file found\")",
+      "Bash(fi)",
+      "mcp__chrome-devtools__get_console_message",
+      "Bash(yarn list:*)"
     ]
   }
 }

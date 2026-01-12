@@ -53,7 +53,7 @@ export const DatasourceSelector = () => {
     }
 
     // Check if we have valid versions to compare
-    const appVersion = process.env.REACT_APP_VERSION;
+    const appVersion = import.meta.env.VITE_VERSION;
     const hasVersionInfo = dataSource.version && appVersion;
 
     if (
