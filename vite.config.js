@@ -49,13 +49,10 @@ function premiumPackageResolver() {
     name: "premium-package-resolver",
     enforce: "pre",
     resolveId(source, importer) {
-      // Debug: log first few calls to see what importer looks like
-      if (importer && importer.includes("premium")) {
-        console.log("[premium-resolver] CALL - source:", source, "importer:", importer);
-      }
-
       // Only process imports from the premium package
-      if (!importer || !importer.includes("gdc-premium")) {
+      // Check for both local path (gdc-premium) and npm path (@gdc/premium)
+      const isFromPremium = importer && (importer.includes("gdc-premium") || importer.includes("@gdc/premium"));
+      if (!isFromPremium) {
         return null;
       }
 
