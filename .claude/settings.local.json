@@ -40,7 +40,10 @@
       "Bash(VITE_USE_PREMIUM_PACKAGE=true yarn start:*)",
       "Bash(VITE_USE_PREMIUM_PACKAGE=true node_modules/.bin/vite:*)",
       "Bash(yarn build:premium:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git push:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.creem.io)"
     ]
   }
 }
