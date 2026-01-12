@@ -23,6 +23,7 @@ import {
   MobileSignupPage,
   MobilePasswordResetPage,
   MobileTwoFactorPage,
+  useProducts,
 } from "./Premium";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
@@ -118,16 +119,23 @@ const CheckoutSuccessHandler = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showSuccess, setShowSuccess] = React.useState(false);
   const [tier, setTier] = React.useState("premium");
+  const { getTierByProductId } = useProducts();
 
   React.useEffect(() => {
     const checkoutId = searchParams.get("checkout_id");
     const productId = searchParams.get("product_id");
 
     if (checkoutId) {
-      // Determine tier from product_id
-      const creatorProductId = import.meta.env.VITE_CREEM_PRODUCT_ID_CREATOR;
-      const detectedTier = productId === creatorProductId ? "creator" : "premium";
-      setTier(detectedTier);
+      // Try dynamic lookup first (supports multiple product IDs per tier)
+      let detectedTier = getTierByProductId(productId);
+
+      // Fallback to static env vars if products not loaded yet
+      if (!detectedTier && productId) {
+        const creatorProductId = import.meta.env.VITE_CREEM_PRODUCT_ID_CREATOR;
+        detectedTier = productId === creatorProductId ? "creator" : "premium";
+      }
+
+      setTier(detectedTier || "premium");
       setShowSuccess(true);
 
       // Remove Creem query parameters from URL without refresh
@@ -142,7 +150,7 @@ const CheckoutSuccessHandler = () => {
       searchParams.delete("tier");
       setSearchParams(searchParams, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, getTierByProductId]);
 
   return <CheckoutSuccessModal visible={showSuccess} onClose={() => setShowSuccess(false)} tier={tier} />;
 };
