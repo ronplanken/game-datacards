@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { ChevronRight, Trash2, FolderOpen, Folder, Plus, Package, Cloud } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useAuth, useSync, CategorySyncIcon, SyncClaimModal, ConvertToDatasourceModal } from "../../Premium";
+import {
+  useAuth,
+  useSync,
+  usePremiumFeatures,
+  CategorySyncIcon,
+  SyncClaimModal,
+  ConvertToDatasourceModal,
+} from "../../Premium";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
@@ -25,6 +32,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
   } = useCardStorage();
   const { user } = useAuth();
   const { enableSync, disableSync, deleteFromCloud } = useSync();
+  const { hasCustomDatasources } = usePremiumFeatures();
 
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
@@ -154,16 +162,21 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       label: "Rename",
       onClick: () => setIsRenameModalOpen(true),
     },
-    {
-      type: "divider",
-    },
-    {
-      key: "convert-datasource",
-      label: "Convert to Datasource",
-      icon: <Package size={14} />,
-      onClick: () => setIsConvertDatasourceModalOpen(true),
-      disabled: !category.cards || category.cards.length === 0,
-    },
+    // Convert to Datasource option (premium only)
+    ...(hasCustomDatasources
+      ? [
+          {
+            type: "divider",
+          },
+          {
+            key: "convert-datasource",
+            label: "Convert to Datasource",
+            icon: <Package size={14} />,
+            onClick: () => setIsConvertDatasourceModalOpen(true),
+            disabled: !category.cards || category.cards.length === 0,
+          },
+        ]
+      : []),
     {
       type: "divider",
     },
@@ -261,11 +274,13 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
         onCancel={() => setIsSubCategoryModalOpen(false)}
       />
 
-      <ConvertToDatasourceModal
-        isOpen={isConvertDatasourceModalOpen}
-        onClose={() => setIsConvertDatasourceModalOpen(false)}
-        category={category}
-      />
+      {hasCustomDatasources && (
+        <ConvertToDatasourceModal
+          isOpen={isConvertDatasourceModalOpen}
+          onClose={() => setIsConvertDatasourceModalOpen(false)}
+          category={category}
+        />
+      )}
 
       <SyncClaimModal
         isOpen={claimModalOpen}
