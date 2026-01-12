@@ -4,14 +4,10 @@ import { Button, Col, Row, Space } from "antd";
 import { message } from "../Toast/message";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useAuth } from "../../Hooks/useAuth";
-import { useSubscription } from "../../Hooks/useSubscription";
-import { useSync } from "../../Hooks/useSync";
-import { useCloudCategories } from "../../Hooks/useCloudCategories";
+import { useAuth, useSubscription, useSync, useCloudCategories } from "../../Premium";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
-import "./Mobile/Account/MobileAccount.css";
 
 // Get initials from user
 const getInitials = (user, profile) => {

@@ -2,15 +2,17 @@ import React, { useState } from "react";
 import { ChevronRight, Trash2, Package, Share2, RefreshCw, Settings2, Cloud } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useAuth } from "../../Hooks/useAuth";
-import { useSync } from "../../Hooks/useSync";
+import {
+  useAuth,
+  useSync,
+  DatasourceSyncIcon,
+  DatasourcePublishIcon,
+  EditDatasourceMetadataModal,
+} from "../../Premium";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
-import { DatasourceSyncIcon } from "../Sync/DatasourceSyncIcon";
-import { DatasourcePublishIcon } from "../Sync/DatasourcePublishIcon";
-import { EditDatasourceMetadataModal } from "../CustomDatasource";
 import { PublishDatasourceModal } from "../DatasourcePublish/PublishDatasourceModal";
 import "./TreeView.css";
 

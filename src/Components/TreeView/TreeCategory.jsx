@@ -2,16 +2,12 @@ import React, { useState } from "react";
 import { ChevronRight, Trash2, FolderOpen, Folder, Plus, Package, Cloud } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useAuth } from "../../Hooks/useAuth";
-import { useSync } from "../../Hooks/useSync";
+import { useAuth, useSync, CategorySyncIcon, SyncClaimModal, ConvertToDatasourceModal } from "../../Premium";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
-import { ConvertToDatasourceModal } from "../CustomDatasource";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
-import { CategorySyncIcon } from "../Sync/CategorySyncIcon";
-import { SyncClaimModal } from "../Sync/SyncClaimModal";
 import "./TreeView.css";
 
 export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children, isSubCategory = false }) {

@@ -2,9 +2,8 @@ import React, { useState, useEffect, useCallback, useRef, useContext, createCont
 import { message } from "../Components/Toast/message";
 import localForage from "localforage";
 import { supabase } from "../config/supabase";
-import { useAuth } from "./useAuth";
+import { useAuth, useSubscription } from "../Premium";
 import { useSettingsStorage } from "./useSettingsStorage";
-import { useSubscription } from "./useSubscription";
 import { validateCustomDatasource, createRegistryEntry } from "../Helpers/customDatasource.helpers";
 
 // Debounce delay for update checks (ms)

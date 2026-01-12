@@ -4,6 +4,6 @@ export { StepGameSystem } from "./StepGameSystem";
 export { StepWorkspace } from "./StepWorkspace";
 export { StepAddingCards } from "./StepAddingCards";
 export { StepDataPortability } from "./StepDataPortability";
-export { StepSubscription } from "./StepSubscription";
+export { StepSubscription } from "../../../Premium"; // Premium feature
 export { StepExploreMore } from "./StepExploreMore";
 export { StepComplete } from "./StepComplete";
