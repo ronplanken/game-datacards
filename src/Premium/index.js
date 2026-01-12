@@ -130,6 +130,7 @@ export const usePremiumFeatures = () => ({
   hasAuth: false,
   hasSubscription: false,
   hasCustomDatasources: false,
+  hasDatasourceBrowser: false,
 });
 
 // =====================================================

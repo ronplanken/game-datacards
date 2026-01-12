@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, Pencil, Trash2, Plus, X, Cloud, Loader2 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
-import { useCloudCategories, useAuth } from "../../../Premium";
+import { useCloudCategories, useAuth, usePremiumFeatures } from "../../../Premium";
 import { BottomSheet } from "../Mobile/BottomSheet";
 import "./ListSelector.css";
 
@@ -180,6 +180,7 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
   } = useMobileList();
   const { user } = useAuth();
   const { categories: cloudCategories, isLoading: categoriesLoading } = useCloudCategories();
+  const { hasSync } = usePremiumFeatures();
 
   const handleClose = () => setIsVisible(false);
 
@@ -235,8 +236,8 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
         </div>
         <CreateListRow onCreate={createList} />
 
-        {/* Cloud Categories Section */}
-        {user && (
+        {/* Cloud Categories Section - Premium only */}
+        {hasSync && user && (
           <div className="cloud-categories-section">
             <div className="cloud-categories-divider">
               <span>Cloud Categories</span>
@@ -267,8 +268,8 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
           </div>
         )}
 
-        {/* Sign in prompt for guests */}
-        {!user && (
+        {/* Sign in prompt for guests - Premium only */}
+        {hasSync && !user && (
           <div className="cloud-categories-section">
             <div className="cloud-categories-divider">
               <span>Cloud Categories</span>

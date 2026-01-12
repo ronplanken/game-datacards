@@ -4,7 +4,7 @@ import { Button, Col, Row, Space } from "antd";
 import { message } from "../Toast/message";
 import { useState } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useAuth, useSubscription, useSync, useCloudCategories } from "../../Premium";
+import { useAuth, useSubscription, useSync, useCloudCategories, usePremiumFeatures } from "../../Premium";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
@@ -33,6 +33,7 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
   const { user, profile } = useAuth();
   const { subscription } = useSubscription();
   const { globalSyncStatus, syncedCategoryCount } = useSync();
+  const { hasAuth } = usePremiumFeatures();
 
   // Get selected cloud category if one is selected
   const selectedCloudCategory = selectedCloudCategoryId
@@ -142,25 +143,26 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
               onClick={() => setMenuVisible(true)}
               icon={<Settings size={14} />}
             />
-            {user ? (
-              <button
-                className={`mobile-account-avatar-btn mobile-account-avatar-btn--${tier} ${syncStatusClass}`}
-                onClick={() => setAccountVisible(true)}
-                type="button"
-                aria-label="Account"
-                style={{ marginRight: "8px" }}>
-                <span className="mobile-account-avatar-initials">{getInitials(user, profile)}</span>
-              </button>
-            ) : (
-              <button
-                className="mobile-account-avatar-btn mobile-account-avatar-btn--guest"
-                onClick={() => navigate("/mobile/login")}
-                type="button"
-                aria-label="Sign In"
-                style={{ marginRight: "8px" }}>
-                <User size={16} strokeWidth={2.5} />
-              </button>
-            )}
+            {hasAuth &&
+              (user ? (
+                <button
+                  className={`mobile-account-avatar-btn mobile-account-avatar-btn--${tier} ${syncStatusClass}`}
+                  onClick={() => setAccountVisible(true)}
+                  type="button"
+                  aria-label="Account"
+                  style={{ marginRight: "8px" }}>
+                  <span className="mobile-account-avatar-initials">{getInitials(user, profile)}</span>
+                </button>
+              ) : (
+                <button
+                  className="mobile-account-avatar-btn mobile-account-avatar-btn--guest"
+                  onClick={() => navigate("/mobile/login")}
+                  type="button"
+                  aria-label="Sign In"
+                  style={{ marginRight: "8px" }}>
+                  <User size={16} strokeWidth={2.5} />
+                </button>
+              ))}
           </Space>
         </Col>
       </Row>
