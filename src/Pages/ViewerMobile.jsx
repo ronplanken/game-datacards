@@ -28,8 +28,7 @@ import {
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
-import { MobileAccountSheet } from "../Components/Viewer/Mobile/Account";
-import { MobileSyncSheet } from "../Components/Viewer/Mobile/Sync";
+import { MobileAccountSheet, MobileSyncSheet } from "../Premium";
 
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";

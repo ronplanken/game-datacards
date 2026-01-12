@@ -12,9 +12,18 @@ import {
   useLocation,
   useSearchParams,
 } from "react-router-dom";
-import { AuthProvider } from "./Hooks/useAuth";
-import { SubscriptionProvider } from "./Hooks/useSubscription";
-import { SyncProvider } from "./Hooks/useSync";
+import {
+  AuthProvider,
+  SubscriptionProvider,
+  SyncProvider,
+  CloudCategoriesProvider,
+  CheckoutSuccessModal,
+  SyncConflictHandler,
+  MobileLoginPage,
+  MobileSignupPage,
+  MobilePasswordResetPage,
+  MobileTwoFactorPage,
+} from "./Premium";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
@@ -34,19 +43,9 @@ import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
-import { CheckoutSuccessModal } from "./Components/Subscription/CheckoutSuccessModal";
-import { SyncConflictHandler } from "./Components/Sync/SyncConflictModal";
-import {
-  MobileLoginPage,
-  MobileSignupPage,
-  MobilePasswordResetPage,
-  MobileTwoFactorPage,
-} from "./Components/Viewer/Mobile/Auth";
-
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
 import { MobileListProvider } from "./Components/Viewer/useMobileList";
-import { CloudCategoriesProvider } from "./Hooks/useCloudCategories";
 
 const { Paragraph, Text } = Typography;
 const { useBreakpoint } = Grid;

@@ -6,7 +6,7 @@ import moment from "moment";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { CustomDatasourceModal } from "../CustomDatasource";
+import { CustomDatasourceModal } from "../../Premium";
 import { DatasourceBrowserModal } from "../DatasourceBrowser";
 import "./DatasourceSelector.css";
 

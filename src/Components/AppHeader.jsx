@@ -5,16 +5,13 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Globe } from "lucide-react";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
-import { useAuth } from "../Hooks/useAuth";
+import { useAuth, AccountButton, SyncStatusIndicator, DatasourceUpdateBadge } from "../Premium";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
-import { AccountButton } from "./Auth/AccountButton";
 import { DatasourceSelector } from "./DatasourceSelector";
 import { NotificationBell } from "./NotificationBell";
 import { SettingsModal } from "./SettingsModal";
 import { ShareModal } from "./ShareModal";
-import { SyncStatusIndicator } from "./Sync/SyncStatusIndicator";
-import { DatasourceUpdateBadge } from "./Subscription/DatasourceUpdateBadge";
 import { DatasourceBrowserModal } from "./DatasourceBrowser";
 import { WhatsNew } from "./WhatsNew";
 import "./AppHeader.css";

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ArrowLeft, X, Download, Users, Database, Check, Share2, Copy, Loader2 } from "lucide-react";
 import { message } from "../Toast/message";
 import { useDatasourceSharing, GAME_SYSTEMS } from "../../Hooks/useDatasourceSharing";
-import { useAuth } from "../../Hooks/useAuth";
+import { useAuth } from "../../Premium";
 import "./DatasourceDetailModal.css";
 
 export const DatasourceDetailModal = ({ datasource, isOpen, onClose }) => {

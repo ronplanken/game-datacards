@@ -19,7 +19,17 @@
       "Bash(gh pr create:*)",
       "Bash(git checkout:*)",
       "Bash(grep:*)",
-      "Bash(yarn lint:fix:*)"
+      "Bash(yarn lint:fix:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx eslint:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__evaluate_script",
+      "Bash(yarn build:*)",
+      "Bash(npx prettier --write \"src/Components/Viewer/Mobile/Auth/*.jsx\" \"src/Components/Viewer/MobileMenu.jsx\")",
+      "Bash(ls:*)"
     ]
   }
 }

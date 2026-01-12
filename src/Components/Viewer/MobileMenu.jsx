@@ -4,7 +4,7 @@ import { Bell, Database, Loader2, Repeat, User } from "lucide-react";
 import { message } from "../Toast/message";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { useAuth } from "../../Hooks/useAuth";
+import { useAuth } from "../../Premium";
 import { getMessages } from "../../Helpers/external.helpers";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import { MobileNotifications } from "./MobileNotifications";
