@@ -11,7 +11,8 @@ This document outlines the implementation plan for splitting Game-Datacards into
 5. [Package Hosting](#private-package-hosting)
 6. [CI/CD Pipelines](#cicd-pipelines)
 7. [Migration Checklist](#migration-checklist)
-8. [Action Items](#action-items)
+8. [Implementation Progress](#implementation-progress)
+9. [Action Items](#action-items)
 
 ---
 
@@ -98,11 +99,13 @@ Split the codebase into:
 | Datacard rendering | Yes | Yes |
 | Local storage | Yes | Yes |
 | Printing | Yes | Yes |
-| Basic auth | Yes | Yes |
+| User accounts/auth | No | Yes |
 | Cloud sync | No | Yes |
 | Subscription/payments | No | Yes |
 | Custom datasources | No | Yes |
 | 2FA | No | Yes |
+
+> **Note:** The public version has **NO cloud features** - it's purely local storage. All authentication, sync, and subscription features are premium-only.
 
 ---
 
@@ -111,9 +114,9 @@ Split the codebase into:
 ### Repository Structure
 
 ```
-PUBLIC REPOSITORY (game-datacards)
+PUBLIC REPOSITORY (game-datacards) - LOCAL ONLY
 License: GPL-3.0
-─────────────────────────────────────
+───────────────────────────────────────────────
 src/
 ├── Components/
 │   ├── Datacard/           # Card rendering
@@ -121,12 +124,13 @@ src/
 │   ├── Printing/           # Print layouts
 │   ├── Importer/           # Basic import/export
 │   ├── Settings/           # App settings
-│   └── Auth/               # Basic auth UI
+│   ├── WelcomeWizard/      # Welcome wizard (public steps only)
+│   └── Viewer/Mobile/
+│       └── BottomSheet.jsx # Bottom sheet UI component
 │
 ├── Hooks/
 │   ├── useCardStorage.jsx  # Local storage only
-│   ├── useDataSources.jsx  # Datasource loading
-│   └── useAuth.jsx         # Basic auth
+│   └── useDataSources.jsx  # Datasource loading
 │
 ├── Premium/
 │   └── index.js            # Stub exports (no-ops)
@@ -140,11 +144,29 @@ supabase/
     └── 003_basic_sharing.sql
 
 
-PRIVATE REPOSITORY (@gdc/premium)
+PRIVATE REPOSITORY (@gdc/premium) - ALL CLOUD FEATURES
 License: Proprietary
-─────────────────────────────────────
+───────────────────────────────────────────────────────
 src/
 ├── Components/
+│   ├── Viewer/Mobile/
+│   │   ├── Auth/           # ✅ Implemented
+│   │   │   ├── MobileLoginPage.jsx
+│   │   │   ├── MobileSignupPage.jsx
+│   │   │   ├── MobilePasswordResetPage.jsx
+│   │   │   └── MobileTwoFactorPage.jsx
+│   │   │
+│   │   ├── Account/        # ✅ Implemented
+│   │   │   └── MobileAccountSheet.jsx
+│   │   │
+│   │   └── Sync/           # ✅ Implemented
+│   │       ├── MobileSyncSheet.jsx
+│   │       └── CloudCategorySheet.jsx
+│   │
+│   ├── WelcomeWizard/
+│   │   └── steps/
+│   │       └── StepSubscription.jsx  # ✅ Implemented
+│   │
 │   ├── Sync/
 │   │   ├── CategorySyncIcon.jsx
 │   │   ├── SyncStatusIndicator.jsx
@@ -161,14 +183,18 @@ src/
 │       └── CustomDatasourceModal.jsx
 │
 ├── Hooks/
-│   ├── useSync.jsx
-│   ├── useSubscription.jsx
+│   ├── useAuth.jsx              # ✅ Implemented
+│   ├── useSync.jsx              # ✅ Implemented (1312 lines)
+│   ├── useSubscription.jsx      # ✅ Implemented
+│   ├── useCloudCategories.jsx   # ✅ Implemented
 │   └── usePremiumFeatures.jsx
 │
 ├── Providers/
+│   ├── AuthProvider.jsx
 │   ├── PremiumProvider.jsx
 │   ├── SyncProvider.jsx
-│   └── SubscriptionProvider.jsx
+│   ├── SubscriptionProvider.jsx
+│   └── CloudCategoriesProvider.jsx
 │
 └── index.js
 
@@ -191,36 +217,80 @@ supabase/
 
 ### 1. Premium Stub System
 
-Create stub exports in the public repo that do nothing when premium isn't available:
+Create stub exports in the public repo that do nothing when premium isn't available.
+**All cloud features return no-ops/disabled state:**
 
 **`src/Premium/index.js`** (Public repo - stubs)
 ```javascript
 // Premium feature stubs - replaced by @gdc/premium in official build
 
-// No-op providers that just render children
+// =====================================================
+// PROVIDERS - No-op providers that just render children
+// =====================================================
+export const AuthProvider = ({ children }) => children;
 export const PremiumProvider = ({ children }) => children;
 export const SyncProvider = ({ children }) => children;
 export const SubscriptionProvider = ({ children }) => children;
+export const CloudCategoriesProvider = ({ children }) => children;
 
-// No-op hooks that return safe defaults
-export const useSync = () => ({
-  syncEnabled: false,
-  enableSync: () => Promise.resolve(),
-  disableSync: () => Promise.resolve(),
-  syncStatus: 'disabled',
-  isOnline: true,
+// =====================================================
+// HOOKS - Return safe defaults / disabled state
+// =====================================================
+
+// Stub for useAuth - no authentication in public version
+export const useAuth = () => ({
+  user: null,
+  session: null,
+  isAuthenticated: false,
+  isLoading: false,
+  signIn: () => Promise.resolve({ error: { message: 'Not available' } }),
+  signUp: () => Promise.resolve({ error: { message: 'Not available' } }),
+  signOut: () => Promise.resolve(),
+  resetPassword: () => Promise.resolve({ error: { message: 'Not available' } }),
 });
 
+// Stub for useSync - sync disabled in public version
+export const useSync = () => ({
+  syncStatus: 'disabled',
+  isOnline: true,
+  lastSyncTime: null,
+  syncedCategories: [],
+  pendingCategories: [],
+  enableCategorySync: () => Promise.resolve(),
+  disableCategorySync: () => Promise.resolve(),
+  uploadCategory: () => Promise.resolve(),
+  downloadCategory: () => Promise.resolve(),
+  syncedDatasources: [],
+  uploadDatasource: () => Promise.resolve(),
+  deleteDatasource: () => Promise.resolve(),
+  conflicts: [],
+  resolveConflict: () => Promise.resolve(),
+  getSyncStats: () => ({ categories: 0, datasources: 0, pending: 0 }),
+});
+
+// Stub for useSubscription - always "free" with unlimited local
 export const useSubscription = () => ({
   tier: 'free',
   isAuthenticated: false,
-  limits: { categories: Infinity, datasources: 0 },
-  usage: { categories: 0, datasources: 0 },
-  canPerformAction: () => true,
-  getRemainingQuota: () => Infinity,
+  limits: {
+    syncedCategories: 0,  // No cloud sync
+    datasources: 0,
+    canUploadDatasource: false
+  },
+  usage: { syncedCategories: 0, datasources: 0 },
+  canPerformAction: () => true,  // Local actions always allowed
+  getRemainingQuota: () => Infinity,  // Unlimited local categories
   isOverQuota: () => false,
   startCheckout: () => {},
   openCustomerPortal: () => {},
+});
+
+// Stub for useCloudCategories - empty in public version
+export const useCloudCategories = () => ({
+  cloudCategories: [],
+  isLoading: false,
+  error: null,
+  refetch: () => Promise.resolve(),
 });
 
 export const usePremiumFeatures = () => ({
@@ -229,14 +299,34 @@ export const usePremiumFeatures = () => ({
   hasCustomDatasources: false,
 });
 
-// No-op components that render nothing
+// =====================================================
+// COMPONENTS - All render null in public version
+// =====================================================
+
+// Auth components
+export const MobileLoginPage = () => null;
+export const MobileSignupPage = () => null;
+export const MobilePasswordResetPage = () => null;
+export const MobileTwoFactorPage = () => null;
+
+// Account components
+export const MobileAccountSheet = () => null;
+
+// Sync components
+export const MobileSyncSheet = () => null;
+export const CloudCategorySheet = () => null;
 export const CategorySyncIcon = () => null;
 export const SyncStatusIndicator = () => null;
 export const SyncConflictModal = () => null;
+
+// Subscription components
 export const UpgradeModal = () => null;
 export const SubscriptionBadge = () => null;
 export const UsageIndicator = () => null;
 export const CheckoutSuccessModal = () => null;
+export const StepSubscription = () => null;
+
+// Custom datasource components
 export const ExportDatasourceModal = () => null;
 export const CustomDatasourceModal = () => null;
 ```
@@ -248,14 +338,16 @@ export const CustomDatasourceModal = () => null;
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { AuthProvider } from './Hooks/useAuth';
 import { CardStorageProvider } from './Hooks/useCardStorage';
 
 // Import from Premium - will be stubs or real implementation
+// All cloud features (auth, sync, subscription) come from Premium
 import {
+  AuthProvider,
   PremiumProvider,
   SyncProvider,
-  SubscriptionProvider
+  SubscriptionProvider,
+  CloudCategoriesProvider
 } from './Premium';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -264,9 +356,11 @@ root.render(
     <AuthProvider>
       <SubscriptionProvider>
         <SyncProvider>
-          <CardStorageProvider>
-            <App />
-          </CardStorageProvider>
+          <CloudCategoriesProvider>
+            <CardStorageProvider>
+              <App />
+            </CardStorageProvider>
+          </CloudCategoriesProvider>
         </SyncProvider>
       </SubscriptionProvider>
     </AuthProvider>
@@ -494,6 +588,25 @@ jobs:
 
 ## Migration Checklist
 
+> **Status:** Premium features are fully implemented. The open-core split (moving to separate repos) is pending.
+
+### Pre-Migration: Implement Premium Features ✅ COMPLETE
+
+**Authentication:**
+- [x] `src/Hooks/useAuth.jsx` - Authentication hook
+- [x] `src/Components/Viewer/Mobile/Auth/*` - Mobile auth pages
+
+**Subscription:**
+- [x] `src/Hooks/useSubscription.jsx` - Tier management
+- [x] Three-tier model with database enforcement
+- [x] Creem payment integration
+
+**Cloud Sync:**
+- [x] `src/Hooks/useSync.jsx` - Full sync implementation (1312 lines)
+- [x] `src/Hooks/useCloudCategories.jsx` - Real-time cloud categories
+- [x] `src/Components/Viewer/Mobile/Sync/*` - Sync UI
+- [x] `src/Components/Viewer/Mobile/Account/*` - Account management
+
 ### Phase 1: Create Stub Interface
 
 - [ ] Create `src/Premium/index.js` with all stub exports
@@ -512,10 +625,16 @@ jobs:
 ### Phase 3: Move Premium Code
 
 **Hooks to move:**
+- [ ] `src/Hooks/useAuth.jsx` → premium
 - [ ] `src/Hooks/useSync.jsx` → premium
 - [ ] `src/Hooks/useSubscription.jsx` → premium
+- [ ] `src/Hooks/useCloudCategories.jsx` → premium
 
 **Components to move:**
+- [ ] `src/Components/Viewer/Mobile/Auth/*` → premium
+- [ ] `src/Components/Viewer/Mobile/Account/*` → premium
+- [ ] `src/Components/Viewer/Mobile/Sync/*` → premium
+- [ ] `src/Components/WelcomeWizard/steps/StepSubscription.jsx` → premium
 - [ ] `src/Components/Sync/*` → premium
 - [ ] `src/Components/Subscription/*` → premium
 - [ ] `src/Components/CustomDatasource/*` → premium
@@ -563,19 +682,25 @@ jobs:
 | `src/Components/Printing/*` | Print functionality |
 | `src/Components/Importer/*` | Basic import/export |
 | `src/Components/Settings/*` | Basic settings |
-| `src/Components/Auth/LoginModal.jsx` | Basic auth UI |
+| `src/Components/WelcomeWizard/*` | Welcome wizard (except StepSubscription) |
+| `src/Components/Viewer/Mobile/BottomSheet.jsx` | Bottom sheet UI component |
 | `src/Hooks/useCardStorage.jsx` | Local storage |
-| `src/Hooks/useAuth.jsx` | Basic auth |
 | `src/Hooks/useDataSources.jsx` | Datasource loading |
-| `supabase/migrations/001-003` | Core schema |
+| `src/Premium/index.js` | Stub exports (no-ops) |
 
 ### Files to MOVE to Private Repo
 
 | File | Purpose |
 |------|---------|
-| `src/Hooks/useSync.jsx` | Cloud sync logic |
+| `src/Hooks/useAuth.jsx` | Authentication hook |
+| `src/Hooks/useSync.jsx` | Cloud sync logic (1312 lines) |
 | `src/Hooks/useSubscription.jsx` | Tier management |
-| `src/Components/Sync/*` | Sync UI |
+| `src/Hooks/useCloudCategories.jsx` | Real-time cloud categories |
+| `src/Components/Viewer/Mobile/Auth/*` | Mobile auth UI (Login, Signup, 2FA, Password Reset) |
+| `src/Components/Viewer/Mobile/Account/*` | Account management UI |
+| `src/Components/Viewer/Mobile/Sync/*` | Sync status UI |
+| `src/Components/WelcomeWizard/steps/StepSubscription.jsx` | Premium upsell step |
+| `src/Components/Sync/*` | Sync UI components |
 | `src/Components/Subscription/*` | Payment UI |
 | `src/Components/CustomDatasource/*` | Datasource management |
 | `supabase/functions/*` | Edge functions |
@@ -604,6 +729,63 @@ This implementation creates a sustainable open-core model:
 5. **Forks** get a fully functional app, just without premium features
 
 The key insight: premium features render as `null` or return safe defaults when not available, so the app gracefully degrades without errors.
+
+---
+
+## Implementation Progress
+
+### Phase 1: Core Features ✅ COMPLETE
+
+- [x] Supabase Auth integration
+- [x] Session management
+- [x] Mobile auth UI (Login, Signup, Password Reset, 2FA)
+- [x] OAuth support (Google, GitHub)
+
+### Phase 2: Subscription System ✅ COMPLETE
+
+- [x] Three-tier model (Free/Premium/Creator)
+- [x] useSubscription hook
+- [x] Database trigger enforcement
+- [x] Creem payment integration
+- [x] Customer portal
+
+**Implemented Tiers:**
+```
+Free:    2 synced categories, 0 custom datasources, €0/mo
+Premium: 50 synced categories, 2 custom datasources, €3.99/mo
+Creator: 250 synced categories, 10 custom datasources, €7.99/mo
+```
+
+### Phase 3: Cloud Sync ✅ COMPLETE
+
+- [x] useSync hook (1312 lines - full implementation)
+- [x] Category upload/download to `user_categories` table
+- [x] Local datasource sync to `user_datasources` table
+- [x] Real-time Supabase subscriptions for multi-device sync
+- [x] Conflict detection with 3 resolution strategies (local/cloud/both)
+- [x] Version tracking with device ID
+- [x] Offline queue with auto-retry on reconnection
+- [x] 2-second debounce for pending changes
+
+### Phase 4: Mobile UI ✅ COMPLETE
+
+- [x] Mobile auth pages (MobileLoginPage, MobileSignupPage, etc.)
+- [x] Account sheet with tier display (MobileAccountSheet)
+- [x] Sync status sheet (MobileSyncSheet, CloudCategorySheet)
+- [x] Bottom sheet component (reusable UI)
+- [x] Welcome wizard subscription step (StepSubscription)
+- [x] useCloudCategories hook
+
+### Phase 5: Open-Core Split ⏳ PENDING
+
+- [ ] Create `src/Premium/index.js` with all stub exports
+- [ ] Create private repository `@gdc/premium`
+- [ ] Move premium files to private repo
+- [ ] Configure webpack alias for premium package
+- [ ] Set up CI/CD for both repos
+- [ ] Test public build with stubs
+- [ ] Test official build with premium
+- [ ] Deploy and verify both versions
 
 ---
 

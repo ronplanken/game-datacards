@@ -191,6 +191,14 @@
   line-height: 1.2;
 }
 
+.mwnw-features-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 300px;
+}
+
 /* Feature list */
 .mwnw-features-list {
   display: flex;

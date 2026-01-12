@@ -313,3 +313,89 @@
   font-weight: 700;
   letter-spacing: -0.01em;
 }
+
+/* ===========================================
+   CLOUD CATEGORY STYLES
+   =========================================== */
+
+/* Cloud icon in header */
+.list-overview-cloud-icon {
+  color: var(--bs-accent);
+  flex-shrink: 0;
+}
+
+/* Game system badge in header */
+.list-overview-cloud-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-left: 4px;
+}
+
+.list-overview-cloud-badge--40k {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.list-overview-cloud-badge--aos {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+}
+
+.list-overview-cloud-badge--necro {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.list-overview-cloud-badge--custom {
+  background: rgba(100, 116, 139, 0.15);
+  color: #64748b;
+}
+
+/* Cloud category items container */
+.list-overview-items--cloud {
+  padding-bottom: 56px;
+}
+
+/* Cloud item styling (read-only, no delete) */
+.list-overview-item--cloud {
+  cursor: pointer;
+}
+
+.list-overview-item--cloud .list-overview-item-main {
+  flex: 1;
+}
+
+.list-overview-item-arrow {
+  color: var(--bs-text-muted);
+  flex-shrink: 0;
+  margin-right: -4px;
+}
+
+/* Cloud footer (card count instead of points total) */
+.list-overview-cloud-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  margin: 0;
+  background: var(--bs-surface);
+  border-top: 1px solid var(--bs-border);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.list-overview-cloud-count {
+  font-size: 14px;
+  color: var(--bs-text-secondary);
+  font-weight: 500;
+}

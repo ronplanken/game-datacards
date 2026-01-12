@@ -1,0 +1,755 @@
+/* Mobile Auth - Tactical Command Aesthetic */
+
+/* ========================================
+   Design Tokens
+   ======================================== */
+.mobile-auth {
+  --ma-bg: #001529;
+  --ma-bg-elevated: #0a1f35;
+  --ma-bg-input: #0d2240;
+  --ma-bg-input-focus: #112a4d;
+  --ma-border: #1a3a5c;
+  --ma-border-focus: #1677ff;
+  --ma-text: #f1f5f9;
+  --ma-text-muted: #64748b;
+  --ma-text-dim: #475569;
+  --ma-accent: #1677ff;
+  --ma-accent-hover: #4096ff;
+  --ma-accent-glow: rgba(22, 119, 255, 0.25);
+  --ma-error: #ef4444;
+  --ma-error-bg: rgba(239, 68, 68, 0.1);
+  --ma-success: #22c55e;
+  --ma-success-bg: rgba(34, 197, 94, 0.1);
+  --ma-warning: #f59e0b;
+
+  /* Touch targets */
+  --ma-input-height: 52px;
+  --ma-button-height: 48px;
+  --ma-touch-min: 44px;
+
+  /* Spacing */
+  --ma-spacing-xs: 4px;
+  --ma-spacing-sm: 8px;
+  --ma-spacing-md: 16px;
+  --ma-spacing-lg: 24px;
+  --ma-spacing-xl: 32px;
+  --ma-spacing-2xl: 48px;
+
+  /* Radius */
+  --ma-radius-sm: 6px;
+  --ma-radius-md: 10px;
+  --ma-radius-lg: 14px;
+
+  /* Shadows */
+  --ma-shadow-input: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --ma-shadow-button: 0 4px 14px rgba(22, 119, 255, 0.3);
+  --ma-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ========================================
+   Page Container
+   ======================================== */
+.mobile-auth {
+  position: fixed;
+  inset: 0;
+  background: var(--ma-bg);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  z-index: 1000;
+}
+
+/* Subtle grid pattern overlay */
+.mobile-auth::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(rgba(22, 119, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 119, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mobile-auth-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ma-spacing-lg);
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: calc(var(--ma-spacing-2xl) + env(safe-area-inset-bottom, 0));
+}
+
+/* ========================================
+   Header
+   ======================================== */
+.mobile-auth-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--ma-spacing-xl);
+}
+
+.mobile-auth-back {
+  width: var(--ma-touch-min);
+  height: var(--ma-touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--ma-text-muted);
+  cursor: pointer;
+  margin-left: -12px;
+  border-radius: var(--ma-radius-md);
+  transition: color 0.2s, background 0.2s;
+}
+
+.mobile-auth-back:active {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ma-text);
+}
+
+/* ========================================
+   Logo & Branding
+   ======================================== */
+.mobile-auth-branding {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--ma-spacing-xl);
+}
+
+.mobile-auth-logo {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--ma-spacing-md);
+  filter: drop-shadow(0 4px 12px rgba(22, 119, 255, 0.2));
+}
+
+.mobile-auth-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ma-text);
+  margin: 0 0 var(--ma-spacing-xs) 0;
+  letter-spacing: -0.5px;
+  text-align: center;
+}
+
+.mobile-auth-subtitle {
+  font-size: 15px;
+  color: var(--ma-text-muted);
+  margin: 0;
+  text-align: center;
+}
+
+/* ========================================
+   Form Elements
+   ======================================== */
+.mobile-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ma-spacing-md);
+  flex: 1;
+}
+
+.mobile-auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ma-spacing-xs);
+}
+
+.mobile-auth-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ma-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mobile-auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-auth-input-icon {
+  position: absolute;
+  left: var(--ma-spacing-md);
+  color: var(--ma-text-dim);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.mobile-auth-input {
+  width: 100%;
+  height: var(--ma-input-height);
+  padding: 0 var(--ma-spacing-md);
+  padding-left: 48px;
+  background: var(--ma-bg-input);
+  border: 1.5px solid var(--ma-border);
+  border-radius: var(--ma-radius-md);
+  color: var(--ma-text);
+  font-size: 16px;
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mobile-auth-input::placeholder {
+  color: var(--ma-text-dim);
+}
+
+.mobile-auth-input:focus {
+  outline: none;
+  border-color: var(--ma-border-focus);
+  background: var(--ma-bg-input-focus);
+  box-shadow: 0 0 0 3px var(--ma-accent-glow);
+}
+
+.mobile-auth-input:focus + .mobile-auth-input-icon,
+.mobile-auth-input-wrapper:focus-within .mobile-auth-input-icon {
+  color: var(--ma-accent);
+}
+
+/* Input with toggle button (password) */
+.mobile-auth-input--has-toggle {
+  padding-right: 52px;
+}
+
+.mobile-auth-toggle {
+  position: absolute;
+  right: var(--ma-spacing-sm);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--ma-text-dim);
+  cursor: pointer;
+  border-radius: var(--ma-radius-sm);
+  transition: color 0.2s;
+}
+
+.mobile-auth-toggle:active {
+  color: var(--ma-text);
+}
+
+/* Error state */
+.mobile-auth-input--error {
+  border-color: var(--ma-error);
+  background: var(--ma-error-bg);
+}
+
+.mobile-auth-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.mobile-auth-error {
+  display: flex;
+  align-items: center;
+  gap: var(--ma-spacing-xs);
+  font-size: 13px;
+  color: var(--ma-error);
+  margin-top: var(--ma-spacing-xs);
+}
+
+.mobile-auth-error svg {
+  flex-shrink: 0;
+}
+
+/* Field hint */
+.mobile-auth-hint {
+  font-size: 12px;
+  color: var(--ma-text-dim);
+  margin-top: 2px;
+}
+
+/* ========================================
+   Password Strength Meter
+   ======================================== */
+.mobile-auth-strength {
+  margin-top: var(--ma-spacing-sm);
+}
+
+.mobile-auth-strength-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: var(--ma-spacing-xs);
+}
+
+.mobile-auth-strength-bar {
+  height: 4px;
+  flex: 1;
+  background: var(--ma-border);
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+
+.mobile-auth-strength-bar--active {
+  background: var(--ma-error);
+}
+
+.mobile-auth-strength[data-strength="2"] .mobile-auth-strength-bar--active {
+  background: var(--ma-warning);
+}
+
+.mobile-auth-strength[data-strength="3"] .mobile-auth-strength-bar--active {
+  background: #84cc16;
+}
+
+.mobile-auth-strength[data-strength="4"] .mobile-auth-strength-bar--active,
+.mobile-auth-strength[data-strength="5"] .mobile-auth-strength-bar--active {
+  background: var(--ma-success);
+}
+
+.mobile-auth-strength-text {
+  font-size: 12px;
+  color: var(--ma-text-dim);
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+.mobile-auth-button {
+  height: var(--ma-button-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ma-spacing-sm);
+  padding: 0 var(--ma-spacing-lg);
+  background: var(--ma-accent);
+  border: none;
+  border-radius: var(--ma-radius-md);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-auth-button:active {
+  transform: scale(0.98);
+}
+
+.mobile-auth-button:not(:disabled):hover {
+  background: var(--ma-accent-hover);
+  box-shadow: var(--ma-shadow-button);
+}
+
+.mobile-auth-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mobile-auth-button--secondary {
+  background: var(--ma-bg-elevated);
+  border: 1.5px solid var(--ma-border);
+  color: var(--ma-text);
+}
+
+.mobile-auth-button--secondary:not(:disabled):hover {
+  background: var(--ma-bg-input);
+  box-shadow: none;
+}
+
+.mobile-auth-button--ghost {
+  background: transparent;
+  color: var(--ma-accent);
+  height: auto;
+  padding: var(--ma-spacing-sm) var(--ma-spacing-md);
+}
+
+.mobile-auth-button--ghost:not(:disabled):hover {
+  background: rgba(22, 119, 255, 0.1);
+  box-shadow: none;
+}
+
+/* Loading spinner */
+.mobile-auth-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: ma-spin 0.8s linear infinite;
+}
+
+@keyframes ma-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   Divider
+   ======================================== */
+.mobile-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--ma-spacing-md);
+  margin: var(--ma-spacing-lg) 0;
+}
+
+.mobile-auth-divider::before,
+.mobile-auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--ma-border);
+}
+
+.mobile-auth-divider-text {
+  font-size: 13px;
+  color: var(--ma-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================
+   OAuth Buttons
+   ======================================== */
+.mobile-auth-oauth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ma-spacing-sm);
+}
+
+.mobile-auth-oauth-button {
+  height: var(--ma-button-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ma-spacing-sm);
+  padding: 0 var(--ma-spacing-lg);
+  background: var(--ma-bg-elevated);
+  border: 1.5px solid var(--ma-border);
+  border-radius: var(--ma-radius-md);
+  color: var(--ma-text);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-auth-oauth-button:active {
+  transform: scale(0.98);
+}
+
+.mobile-auth-oauth-button:hover {
+  background: var(--ma-bg-input);
+  border-color: var(--ma-text-dim);
+}
+
+.mobile-auth-oauth-button svg {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Links & Text
+   ======================================== */
+.mobile-auth-link {
+  color: var(--ma-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.mobile-auth-link:active {
+  color: var(--ma-accent-hover);
+}
+
+.mobile-auth-text-link {
+  display: inline;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ma-accent);
+  font-size: inherit;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.mobile-auth-forgot {
+  align-self: flex-end;
+  margin-top: -var(--ma-spacing-sm);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+.mobile-auth-footer {
+  margin-top: auto;
+  padding-top: var(--ma-spacing-xl);
+  text-align: center;
+}
+
+.mobile-auth-footer-text {
+  font-size: 14px;
+  color: var(--ma-text-muted);
+  margin: 0;
+}
+
+/* ========================================
+   Checkbox
+   ======================================== */
+.mobile-auth-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ma-spacing-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-auth-checkbox input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mobile-auth-checkbox-box {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ma-bg-input);
+  border: 1.5px solid var(--ma-border);
+  border-radius: var(--ma-radius-sm);
+  transition: background 0.2s, border-color 0.2s;
+  margin-top: 1px;
+}
+
+.mobile-auth-checkbox input:checked + .mobile-auth-checkbox-box {
+  background: var(--ma-accent);
+  border-color: var(--ma-accent);
+}
+
+.mobile-auth-checkbox-box svg {
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.2s, transform 0.2s;
+  color: white;
+}
+
+.mobile-auth-checkbox input:checked + .mobile-auth-checkbox-box svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.mobile-auth-checkbox-label {
+  font-size: 14px;
+  color: var(--ma-text-muted);
+  line-height: 1.5;
+}
+
+/* ========================================
+   Alert/Message Box
+   ======================================== */
+.mobile-auth-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ma-spacing-sm);
+  padding: var(--ma-spacing-md);
+  background: var(--ma-bg-elevated);
+  border: 1px solid var(--ma-border);
+  border-radius: var(--ma-radius-md);
+  margin-bottom: var(--ma-spacing-md);
+}
+
+.mobile-auth-alert--error {
+  background: var(--ma-error-bg);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.mobile-auth-alert--success {
+  background: var(--ma-success-bg);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.mobile-auth-alert-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mobile-auth-alert--error .mobile-auth-alert-icon {
+  color: var(--ma-error);
+}
+
+.mobile-auth-alert--success .mobile-auth-alert-icon {
+  color: var(--ma-success);
+}
+
+.mobile-auth-alert-text {
+  font-size: 14px;
+  color: var(--ma-text);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ========================================
+   2FA Code Input
+   ======================================== */
+.mobile-auth-code-input {
+  display: flex;
+  justify-content: center;
+  gap: var(--ma-spacing-sm);
+  margin: var(--ma-spacing-lg) 0;
+}
+
+.mobile-auth-code-digit {
+  width: 48px;
+  height: 60px;
+  background: var(--ma-bg-input);
+  border: 2px solid var(--ma-border);
+  border-radius: var(--ma-radius-md);
+  color: var(--ma-text);
+  font-size: 24px;
+  font-weight: 600;
+  font-family: inherit;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mobile-auth-code-digit:focus {
+  outline: none;
+  border-color: var(--ma-border-focus);
+  background: var(--ma-bg-input-focus);
+  box-shadow: 0 0 0 3px var(--ma-accent-glow);
+}
+
+.mobile-auth-code-digit--filled {
+  border-color: var(--ma-accent);
+}
+
+/* ========================================
+   Success State
+   ======================================== */
+.mobile-auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--ma-spacing-2xl) var(--ma-spacing-lg);
+}
+
+.mobile-auth-success-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ma-success-bg);
+  border-radius: 50%;
+  color: var(--ma-success);
+  margin-bottom: var(--ma-spacing-lg);
+  animation: ma-success-pop 0.4s ease;
+}
+
+@keyframes ma-success-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.mobile-auth-success-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ma-text);
+  margin: 0 0 var(--ma-spacing-sm) 0;
+}
+
+.mobile-auth-success-text {
+  font-size: 15px;
+  color: var(--ma-text-muted);
+  margin: 0;
+  max-width: 280px;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+.mobile-auth-fade-in {
+  animation: ma-fade-in 0.3s ease;
+}
+
+@keyframes ma-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered entrance */
+.mobile-auth-stagger > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.mobile-auth-stagger > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.mobile-auth-stagger > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.mobile-auth-stagger > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.mobile-auth-stagger > *:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.mobile-auth-stagger > *:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.mobile-auth-stagger > *:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.mobile-auth-stagger > *:nth-child(8) {
+  animation-delay: 0.4s;
+}
+
+/* ========================================
+   Responsive adjustments
+   ======================================== */
+@media (min-width: 400px) {
+  .mobile-auth-code-digit {
+    width: 52px;
+    height: 64px;
+    font-size: 28px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-auth *,
+  .mobile-auth *::before,
+  .mobile-auth *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

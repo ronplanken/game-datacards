@@ -287,7 +287,11 @@ export function SyncProvider({ children }) {
         const editData = cloudDs.edit_data || {};
         const publishedData = cloudDs.data || [];
         // Try edit_data first (for synced datasources), then published data
-        const dataArray = Array.isArray(editData.data) ? editData.data : Array.isArray(publishedData) ? publishedData : [];
+        const dataArray = Array.isArray(editData.data)
+          ? editData.data
+          : Array.isArray(publishedData)
+          ? publishedData
+          : [];
         // Extract cards from all typed arrays back into a flat array for local editing
         const faction = dataArray[0] || {};
         const cards = extractCardsFromFaction(faction);

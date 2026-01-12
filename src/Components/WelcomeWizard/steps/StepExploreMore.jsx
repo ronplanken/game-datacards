@@ -15,7 +15,7 @@ export const StepExploreMore = () => {
   return (
     <div className="wz-step-explore-more">
       <h2 className="wz-step-title">Explore More Features</h2>
-      <p className="wz-step-description">Game Datacards has even more to offer. Here's what you can unlock.</p>
+      <p className="wz-step-description">Game Datacards has even more to offer. Here&apos;s what you can unlock.</p>
 
       <div className="wz-explore-grid">
         {ADVANCED_FEATURES.map((feature) => {

@@ -4,7 +4,7 @@ This document describes how subscription tiers and their limits are implemented 
 
 ## Overview
 
-The application uses a three-tier subscription model with different limits for each tier. Limits are enforced at both client-side and server-side (database level) to ensure they cannot be bypassed.
+The application uses a five-tier subscription model with different limits for each tier. Limits are enforced at both client-side and server-side (database level) to ensure they cannot be bypassed.
 
 ## Subscription Tiers
 
@@ -13,12 +13,16 @@ The application uses a three-tier subscription model with different limits for e
 | **Free** | 2 | 0 | No | Yes | - |
 | **Premium** | 50 | 2 | Yes | Yes | €3.99/month |
 | **Creator** | 250 | 10 | Yes | Yes | €7.99/month |
+| **Lifetime** | 999 | 99 | Yes | Yes | Non-purchasable |
+| **Admin** | 999 | 99 | Yes | Yes | Non-purchasable |
 
 ### Tier Descriptions
 
 - **Free**: Default tier for all users. Limited cloud sync for categories, no custom datasource uploads.
 - **Premium**: Standard paid tier. Expanded cloud sync and ability to upload custom datasources.
 - **Creator**: Power user tier. Highest limits for users creating and managing extensive content.
+- **Lifetime**: Special tier for gifted users. Cannot be purchased through Creem, only assigned via database. Never expires.
+- **Admin**: Administrator tier. Cannot be purchased through Creem, only assigned via database. Never expires.
 
 ## Implementation Details
 
@@ -46,6 +50,18 @@ export const SUBSCRIPTION_LIMITS = {
     canUploadDatasources: true,
     canAccessShares: true,
   },
+  lifetime: {
+    categories: 999,
+    datasources: 99,
+    canUploadDatasources: true,
+    canAccessShares: true,
+  },
+  admin: {
+    categories: 999,
+    datasources: 99,
+    canUploadDatasources: true,
+    canAccessShares: true,
+  },
 };
 ```
 
@@ -55,7 +71,7 @@ The `useSubscription` hook provides the following functions for limit enforcemen
 
 | Function | Purpose |
 |----------|---------|
-| `getTier()` | Returns current tier ('free', 'premium', or 'creator') |
+| `getTier()` | Returns current tier ('free', 'premium', 'creator', 'lifetime', or 'admin') |
 | `getLimits()` | Returns limit object for current tier |
 | `canPerformAction(action)` | Checks if an action is allowed based on limits |
 | `getRemainingQuota(resource)` | Returns remaining quota for a resource |
@@ -211,7 +227,7 @@ CREATE TABLE public.user_profiles (
 ```sql
 ALTER TABLE public.user_profiles
   ADD CONSTRAINT user_profiles_subscription_tier_check
-  CHECK (subscription_tier IN ('free', 'premium', 'creator'));
+  CHECK (subscription_tier IN ('free', 'premium', 'creator', 'lifetime', 'admin'));
 ```
 
 ### Subscription Status Values
@@ -294,6 +310,11 @@ const getTier = useCallback(() => {
 
   const tier = profile.subscription_tier;
 
+  // Lifetime and admin tiers never expire
+  if (tier === "lifetime" || tier === "admin") {
+    return tier;
+  }
+
   if (tier === "premium" || tier === "creator") {
     // Check expiry
     if (profile.subscription_expires_at) {
@@ -334,6 +355,7 @@ When disabled, upgrade functionality is hidden but existing subscriptions remain
 | `supabase/migrations/001_initial_schema.sql` | Base database schema |
 | `supabase/migrations/005_tier_support.sql` | Tier constraint update |
 | `supabase/migrations/008_subscription_limit_enforcement.sql` | Server-side limit triggers |
+| `supabase/migrations/013_lifetime_admin_tiers.sql` | Lifetime and admin tier support |
 
 ## Adding New Limits
 
@@ -345,6 +367,27 @@ To add a new limit type:
 4. Update `getRemainingQuota()` and `isOverQuota()` if needed
 5. Update UI components to display the new limit
 6. Update `UpgradeModal` with the new feature comparison
+
+## Assigning Non-Purchasable Tiers
+
+The `lifetime` and `admin` tiers cannot be purchased through Creem. They must be assigned directly via database:
+
+```sql
+-- Assign lifetime tier to a user
+UPDATE public.user_profiles
+SET subscription_tier = 'lifetime'
+WHERE id = '<user-uuid>';
+
+-- Assign admin tier to a user
+UPDATE public.user_profiles
+SET subscription_tier = 'admin'
+WHERE id = '<user-uuid>';
+```
+
+These tiers:
+- Never expire (no expiry check is performed)
+- Have limits of 999 categories and 99 datasources
+- Are not affected by `subscription_expires_at` or `subscription_status`
 
 ## Changing Limits
 

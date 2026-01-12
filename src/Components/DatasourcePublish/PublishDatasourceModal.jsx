@@ -87,7 +87,9 @@ export const PublishDatasourceModal = ({ datasource, isOpen, onClose, onSuccess 
         <div className="pdm-modal-content">
           {mode === "push" ? (
             <>
-              <p className="pdm-description">Push your latest changes to "{datasource.name}" to all subscribers.</p>
+              <p className="pdm-description">
+                Push your latest changes to &quot;{datasource.name}&quot; to all subscribers.
+              </p>
 
               {datasource.publishedVersion && (
                 <div className="pdm-version-info">
@@ -105,7 +107,8 @@ export const PublishDatasourceModal = ({ datasource, isOpen, onClose, onSuccess 
           ) : (
             <>
               <p className="pdm-description">
-                Publishing "{datasource.name}" will make it available for other users to discover and subscribe to.
+                Publishing &quot;{datasource.name}&quot; will make it available for other users to discover and
+                subscribe to.
               </p>
 
               <div className="pdm-form-group">

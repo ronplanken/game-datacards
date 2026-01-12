@@ -1,7 +1,9 @@
 import { compare } from "compare-versions";
 import React, { useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
+import { message } from "../Toast/message";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useWelcomeWizard } from "./hooks/useWelcomeWizard";
 import { WIZARD_VERSION, WIZARD_STEPS } from "./constants";
 import { WizardHeader, WizardSidebar, WizardFooter, StepTransition, MobileProgress } from "./components";
@@ -9,7 +11,9 @@ import {
   StepWelcome,
   StepGameSystem,
   StepWorkspace,
+  StepAddingCards,
   StepDataPortability,
+  StepSubscription,
   StepExploreMore,
   StepComplete,
 } from "./steps";
@@ -28,6 +32,7 @@ export const WelcomeWizard = () => {
   const [isExiting, setIsExiting] = React.useState(false);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { addCategory, setActiveCategory } = useCardStorage();
 
   const wizard = useWelcomeWizard(settings, updateSettings);
 
@@ -96,12 +101,33 @@ export const WelcomeWizard = () => {
 
   // Quick actions from complete step
   const handleQuickAction = (action) => {
-    // Close wizard first
-    handleClose();
+    switch (action) {
+      case "browse":
+        // Close wizard - the left panel shows the datasource list for browsing units
+        handleClose();
+        message.info("Browse units in the left panel");
+        break;
 
-    // Actions could trigger navigation or modals
-    // For now, we just close - the app will handle the rest
-    console.log("Quick action:", action);
+      case "create":
+        // Create a new category
+        const newCategory = addCategory("New Category");
+        if (newCategory) {
+          setActiveCategory(newCategory);
+          message.success("Category created! Right-click to rename it.");
+        }
+        handleClose();
+        break;
+
+      case "settings":
+        // Close wizard and guide user to settings
+        handleClose();
+        message.info("Click the gear icon in the top right to open Settings");
+        break;
+
+      default:
+        handleClose();
+        break;
+    }
   };
 
   // Render current step content
@@ -114,17 +140,16 @@ export const WelcomeWizard = () => {
         return <StepGameSystem selectedGameSystem={wizard.selectedGameSystem} onSelect={wizard.selectGameSystem} />;
 
       case "workspace":
-        return (
-          <StepWorkspace
-            treeData={wizard.demoTreeData}
-            cardData={wizard.demoCardData}
-            onToggleTree={wizard.toggleTreeItem}
-            onUpdateCard={wizard.updateDemoCard}
-          />
-        );
+        return <StepWorkspace treeData={wizard.demoTreeData} onToggleTree={wizard.toggleTreeItem} />;
+
+      case "adding-cards":
+        return <StepAddingCards />;
 
       case "data-portability":
         return <StepDataPortability activeTab={wizard.activeDataTab} onTabChange={wizard.setActiveDataTab} />;
+
+      case "subscription":
+        return <StepSubscription />;
 
       case "explore-more":
         return <StepExploreMore />;
