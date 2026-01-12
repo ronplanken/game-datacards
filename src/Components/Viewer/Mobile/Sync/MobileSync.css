@@ -1,0 +1,629 @@
+/* Mobile Sync Styles - Dark Theme */
+/* Matching the dark account sheet aesthetic */
+
+/* ========================================
+   DESIGN TOKENS
+   ======================================== */
+.sync-sheet {
+  /* Sync Colors */
+  --sync-blue: #3b82f6;
+  --sync-blue-light: #60a5fa;
+  --sync-yellow: #f59e0b;
+  --sync-yellow-light: #fbbf24;
+  --sync-red: #ef4444;
+  --sync-green: #22c55e;
+  --sync-gray: #64748b;
+}
+
+/* ========================================
+   Sync Sheet Content
+   ======================================== */
+.sync-sheet-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ========================================
+   Sync Status Card
+   ======================================== */
+.sync-status-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(15, 31, 53, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.sync-status-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sync-status-icon--synced {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.sync-status-icon--syncing {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.sync-status-icon--pending {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.sync-status-icon--conflict {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+.sync-status-icon--error {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.sync-status-icon--offline {
+  background: rgba(100, 116, 139, 0.15);
+  color: #94a3b8;
+}
+
+/* Spinning animation for syncing state */
+.sync-status-icon--syncing svg {
+  animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sync-status-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sync-status-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 4px 0;
+}
+
+.sync-status-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ========================================
+   Sync Stats Row
+   ======================================== */
+.sync-stats-row {
+  display: flex;
+  gap: 12px;
+}
+
+.sync-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 12px;
+  background: rgba(15, 31, 53, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.sync-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1;
+}
+
+.sync-stat-value--text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sync-stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 6px;
+}
+
+/* ========================================
+   Conflict Alert
+   ======================================== */
+.sync-conflict-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 12px;
+}
+
+.sync-conflict-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sync-conflict-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.sync-conflict-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fbbf24;
+  margin: 0 0 2px 0;
+}
+
+.sync-conflict-subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sync-conflict-action {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #fbbf24;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sync-conflict-action:active {
+  background: rgba(245, 158, 11, 0.3);
+}
+
+/* ========================================
+   Error Alert
+   ======================================== */
+.sync-error-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 12px;
+}
+
+.sync-error-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sync-error-content {
+  flex: 1;
+}
+
+.sync-error-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f87171;
+  margin: 0 0 2px 0;
+}
+
+.sync-error-subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.sync-error-action {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: #f87171;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sync-error-action:active {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+/* ========================================
+   Sync Now Button
+   ======================================== */
+.sync-now-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sync-now-button:active {
+  transform: scale(0.98);
+}
+
+.sync-now-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sync-now-button--syncing {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+/* ========================================
+   Offline Banner
+   ======================================== */
+.sync-offline-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(100, 116, 139, 0.15);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+  border-radius: 10px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.sync-offline-banner svg {
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Empty State
+   ======================================== */
+.sync-empty-state {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.sync-empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sync-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0 0 8px 0;
+}
+
+.sync-empty-description {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+.sync-fade-in {
+  animation: syncFadeIn 0.3s ease backwards;
+}
+
+@keyframes syncFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger */
+.sync-sheet-content > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.sync-sheet-content > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.sync-sheet-content > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.sync-sheet-content > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+/* ========================================
+   Reduced Motion
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .sync-fade-in,
+  .sync-sheet-content > * {
+    animation: none;
+  }
+
+  .sync-status-icon--syncing svg {
+    animation: none;
+  }
+}
+
+/* ========================================
+   Cloud Categories Section
+   ======================================== */
+.cloud-categories-section {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cloud-categories-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px 0;
+}
+
+.cloud-categories-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.cloud-categories-empty {
+  text-align: center;
+  padding: 20px 16px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.cloud-categories-empty p {
+  margin: 0;
+}
+
+.cloud-categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ========================================
+   Category Row
+   ======================================== */
+.cloud-category-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(15, 31, 53, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.cloud-category-row:active {
+  background: rgba(15, 31, 53, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.cloud-category-row-info {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.cloud-category-row-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cloud-category-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cloud-category-row-count {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.cloud-category-row-arrow {
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+/* ========================================
+   Game System Badge
+   ======================================== */
+.cloud-category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cloud-category-badge--40k {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.cloud-category-badge--aos {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+}
+
+.cloud-category-badge--necro {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.cloud-category-badge--custom {
+  background: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+}
+
+/* ========================================
+   Cloud Category Sheet (Detail View)
+   ======================================== */
+.cloud-category-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cloud-category-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.cloud-category-count {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.cloud-category-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.cloud-category-empty p {
+  margin: 0;
+}
+
+.cloud-category-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ========================================
+   Cloud Category Card Row
+   ======================================== */
+.cloud-category-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(15, 31, 53, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.cloud-category-card:active {
+  background: rgba(15, 31, 53, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.cloud-category-card-info {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.cloud-category-card-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cloud-category-card-type {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.cloud-category-card-arrow {
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+/* Spinning animation for loading */
+.spinning {
+  animation: spin 1s linear infinite;
+}

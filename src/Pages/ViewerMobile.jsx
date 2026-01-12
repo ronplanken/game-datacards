@@ -28,6 +28,8 @@ import {
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
+import { MobileAccountSheet } from "../Components/Viewer/Mobile/Account";
+import { MobileSyncSheet } from "../Components/Viewer/Mobile/Sync";
 
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
@@ -93,6 +95,8 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
   const [isListAddVisible, setIsListAddVisible] = useState(false);
   const [isMobileSharingMenuVisible, setIsMobileSharingMenuVisible] = useState(false);
+  const [isAccountSheetVisible, setIsAccountSheetVisible] = useState(false);
+  const [isSyncSheetVisible, setIsSyncSheetVisible] = useState(false);
 
   // Search State
   const [searchText, setSearchText] = useState("");
@@ -310,11 +314,21 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                 setMenuVisible={setIsMobileMenuVisible}
                 setSharingVisible={setIsMobileSharingMenuVisible}
                 setAddListvisible={setIsListAddVisible}
+                setAccountVisible={setIsAccountSheetVisible}
               />
 
               <PWAInstallPrompt />
               <ListAdd isVisible={isListAddVisible} setIsVisible={setIsListAddVisible} />
               <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
+              <MobileAccountSheet
+                isVisible={isAccountSheetVisible}
+                setIsVisible={setIsAccountSheetVisible}
+                onOpenSync={() => {
+                  setIsAccountSheetVisible(false);
+                  setIsSyncSheetVisible(true);
+                }}
+              />
+              <MobileSyncSheet isVisible={isSyncSheetVisible} setIsVisible={setIsSyncSheetVisible} />
               <MobileSharingMenu
                 isVisible={isMobileSharingMenuVisible}
                 setIsVisible={setIsMobileSharingMenuVisible}

@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Folder, FolderOpen, FileText, ChevronRight, GripVertical } from "lucide-react";
+import { Folder, FolderOpen, ChevronRight, GripVertical } from "lucide-react";
+import { Datacard10e } from "../../../Icons/Datacard10e";
 
 /**
  * Interactive tree view demo for the workspace step
+ * Styled to match the actual app's CategoryTree component
  *
  * @param {Object} props
  * @param {Array} props.treeData - Hierarchical tree data
  * @param {Function} props.onToggle - Callback when category is expanded/collapsed
- * @param {"dark" | "light"} props.theme - Color theme variant (default: "dark")
  */
-export const TreeViewDemo = ({ treeData: initialTreeData, onToggle, theme = "dark" }) => {
+export const TreeViewDemo = ({ treeData: initialTreeData, onToggle }) => {
   const [treeData, setTreeData] = useState(initialTreeData);
   const [draggedItem, setDraggedItem] = useState(null);
   const [draggedItemParent, setDraggedItemParent] = useState(null);
   const [dragOverItem, setDragOverItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   // Sync with external data changes
   useEffect(() => {
@@ -141,7 +143,8 @@ export const TreeViewDemo = ({ treeData: initialTreeData, onToggle, theme = "dar
     setDragOverItem(null);
   };
 
-  const handleToggle = (itemId) => {
+  const handleToggle = (e, itemId) => {
+    e.stopPropagation();
     setTreeData((prev) =>
       prev.map((item) => {
         if (item.id === itemId) {
@@ -161,64 +164,77 @@ export const TreeViewDemo = ({ treeData: initialTreeData, onToggle, theme = "dar
     onToggle?.(itemId);
   };
 
-  const renderItem = (item, parentId = null, isChild = false) => {
-    const isCategory = item.type === "category";
+  const handleSelect = (itemId) => {
+    setSelectedItem(selectedItem === itemId ? null : itemId);
+  };
+
+  const renderCategory = (item) => {
     const isDragging = draggedItem?.id === item.id;
     const isDragOver = dragOverItem === item.id;
+    const isSelected = selectedItem === item.id;
 
     return (
       <div key={item.id}>
         <div
-          className={`wz-tree-item ${isCategory ? "wz-tree-item--category" : ""} ${
-            isChild ? "wz-tree-item--child" : ""
-          } ${isDragging ? "wz-tree-item--dragging" : ""} ${isDragOver ? "wz-tree-item--drag-over" : ""}`}
+          className={`wz-tree-category ${isSelected ? "wz-tree-category--selected" : ""} ${
+            isDragOver ? "wz-tree-category--drag-over" : ""
+          }`}
           draggable
-          onDragStart={(e) => handleDragStart(e, item, parentId)}
+          onDragStart={(e) => handleDragStart(e, item, null)}
           onDragOver={(e) => handleDragOver(e, item)}
           onDragLeave={handleDragLeave}
           onDrop={(e) => handleDrop(e, item)}
           onDragEnd={handleDragEnd}
-          style={{
-            opacity: isDragging ? 0.5 : 1,
-            borderColor: isDragOver ? "var(--wz-primary)" : undefined,
-            boxShadow: isDragOver ? "0 0 0 2px rgba(22, 119, 255, 0.3)" : undefined,
-          }}>
-          <GripVertical className="wz-tree-grip" size={14} style={{ color: "var(--wz-text-dim)", opacity: 0.5 }} />
-
-          {isCategory ? (
-            item.expanded ? (
-              <FolderOpen className="wz-tree-icon" size={18} />
-            ) : (
-              <Folder className="wz-tree-icon" size={18} />
-            )
-          ) : (
-            <FileText className="wz-tree-icon" size={18} />
-          )}
-
+          onClick={() => handleSelect(item.id)}
+          style={{ opacity: isDragging ? 0.5 : 1 }}>
+          <div
+            className={`wz-tree-toggle ${item.expanded ? "wz-tree-toggle--expanded" : ""}`}
+            onClick={(e) => handleToggle(e, item.id)}>
+            <ChevronRight size={10} />
+          </div>
+          <div className="wz-tree-icon">{item.expanded ? <FolderOpen size={14} /> : <Folder size={14} />}</div>
           <span className="wz-tree-name">{item.name}</span>
-
-          {isCategory && (
-            <ChevronRight
-              className={`wz-tree-expand ${item.expanded ? "wz-tree-expand--expanded" : ""}`}
-              size={18}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleToggle(item.id);
-              }}
-              style={{ cursor: "pointer" }}
-            />
-          )}
         </div>
 
         {/* Render children if category is expanded */}
-        {isCategory && item.expanded && item.children && (
-          <div className="wz-tree-children">{item.children.map((child) => renderItem(child, item.id, true))}</div>
+        {item.expanded && item.children && (
+          <div className="wz-tree-children">{item.children.map((child) => renderCard(child, item.id))}</div>
         )}
       </div>
     );
   };
 
-  const themeClass = theme === "light" ? "wz-tree--light" : "";
+  const renderCard = (item, parentId) => {
+    const isDragging = draggedItem?.id === item.id;
+    const isDragOver = dragOverItem === item.id;
+    const isSelected = selectedItem === item.id;
 
-  return <div className={`wz-tree ${themeClass}`}>{treeData.map((item) => renderItem(item, null, false))}</div>;
+    return (
+      <div
+        key={item.id}
+        className={`wz-tree-card ${isSelected ? "wz-tree-card--selected" : ""} ${
+          isDragOver ? "wz-tree-card--drag-over" : ""
+        }`}
+        draggable
+        onDragStart={(e) => handleDragStart(e, item, parentId)}
+        onDragOver={(e) => handleDragOver(e, item)}
+        onDragLeave={handleDragLeave}
+        onDrop={(e) => handleDrop(e, item)}
+        onDragEnd={handleDragEnd}
+        onClick={() => handleSelect(item.id)}
+        style={{ opacity: isDragging ? 0.5 : 1 }}>
+        <GripVertical className="wz-tree-grip" size={12} />
+        <div className="wz-tree-icon">
+          <Datacard10e />
+        </div>
+        <span className="wz-tree-name">{item.name}</span>
+      </div>
+    );
+  };
+
+  return (
+    <div className="wz-tree">
+      {treeData.map((item) => (item.type === "category" ? renderCategory(item) : renderCard(item, null)))}
+    </div>
+  );
 };

@@ -196,6 +196,26 @@
   background: #cbd5e1; /* Slate 300 */
 }
 
+/* Primary button style - for Sign In */
+.settings-action-button.primary {
+  background: var(--bs-accent);
+  color: white;
+  border: none;
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
+}
+
+.settings-action-button.primary:active:not(:disabled) {
+  background: #4096ff;
+}
+
+/* Hint text */
+.settings-hint {
+  font-size: 13px;
+  color: var(--bs-text-muted);
+  margin: 4px 4px 0;
+  line-height: 1.5;
+}
+
 /* ===========================================
    HEADER ICON BUTTON
    =========================================== */

@@ -7,9 +7,11 @@ export const WIZARD_STEPS = [
   { key: 0, id: "welcome", title: "Welcome", required: false },
   { key: 1, id: "game-system", title: "Choose Your Game", required: true },
   { key: 2, id: "workspace", title: "Your Workspace", required: false },
-  { key: 3, id: "data-portability", title: "Import, Export & Print", required: false },
-  { key: 4, id: "explore-more", title: "Explore More", required: false },
-  { key: 5, id: "complete", title: "Get Started", required: false },
+  { key: 3, id: "adding-cards", title: "Adding Cards", required: false },
+  { key: 4, id: "data-portability", title: "Import, Export & Print", required: false },
+  { key: 5, id: "subscription", title: "Premium Options", required: false },
+  { key: 6, id: "explore-more", title: "Explore More", required: false },
+  { key: 7, id: "complete", title: "Get Started", required: false },
 ];
 
 // Game system/datasource configuration
@@ -69,7 +71,7 @@ export const FEATURE_HIGHLIGHTS = [
   {
     id: "systems",
     title: "6 Game Systems",
-    description: "40K, Age of Sigmar, Combat Patrol, and more",
+    description: "Grimdark, Fantasy, Skirmish, and more",
     icon: "Gamepad2",
   },
   {

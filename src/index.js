@@ -36,10 +36,17 @@ import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 import { CheckoutSuccessModal } from "./Components/Subscription/CheckoutSuccessModal";
 import { SyncConflictHandler } from "./Components/Sync/SyncConflictModal";
+import {
+  MobileLoginPage,
+  MobileSignupPage,
+  MobilePasswordResetPage,
+  MobileTwoFactorPage,
+} from "./Components/Viewer/Mobile/Auth";
 
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
 import { MobileListProvider } from "./Components/Viewer/useMobileList";
+import { CloudCategoriesProvider } from "./Hooks/useCloudCategories";
 
 const { Paragraph, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -153,14 +160,16 @@ const RootLayout = () => (
                 <DatasourceSharingProvider>
                   <CardStorageProviderComponent>
                     <SyncProvider>
-                      <MobileListProvider>
-                        <Outlet />
-                        <ScrollRestoration />
-                        <WizardSelector />
-                        <WhatsNewWizardSelector />
-                        <CheckoutSuccessHandler />
-                        <SyncConflictHandler />
-                      </MobileListProvider>
+                      <CloudCategoriesProvider>
+                        <MobileListProvider>
+                          <Outlet />
+                          <ScrollRestoration />
+                          <WizardSelector />
+                          <WhatsNewWizardSelector />
+                          <CheckoutSuccessHandler />
+                          <SyncConflictHandler />
+                        </MobileListProvider>
+                      </CloudCategoriesProvider>
                     </SyncProvider>
                   </CardStorageProviderComponent>
                 </DatasourceSharingProvider>
@@ -191,6 +200,11 @@ const router = createBrowserRouter([
       { path: "viewer/:faction?/:unit?", element: <Viewer /> },
       { path: "viewer/:faction?/stratagem/:stratagem?", element: <Viewer /> },
       { path: "viewer/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <Viewer /> },
+      // Mobile auth routes
+      { path: "mobile/login", element: <MobileLoginPage /> },
+      { path: "mobile/signup", element: <MobileSignupPage /> },
+      { path: "mobile/forgot-password", element: <MobilePasswordResetPage /> },
+      { path: "mobile/verify-2fa", element: <MobileTwoFactorPage /> },
       // Mobile viewer routes
       { path: "mobile", element: <ViewerMobile /> },
       { path: "mobile/:faction/units", element: <ViewerMobile showUnits /> },

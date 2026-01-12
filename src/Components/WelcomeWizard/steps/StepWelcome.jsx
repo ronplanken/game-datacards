@@ -22,7 +22,7 @@ export const StepWelcome = () => {
       <h2 className="wz-welcome-title">Welcome to Game Datacards</h2>
 
       <p className="wz-welcome-subtitle">
-        Create, customize, and share datacards for your favorite tabletop games. Let's get you set up in just a few
+        Create, customize, and share datacards for your favorite tabletop games. Let&apos;s get you set up in just a few
         steps.
       </p>
 

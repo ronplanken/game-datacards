@@ -1,6 +1,6 @@
 {
   "name": "game-datacards",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "description": "The only tool you will ever need for your custom datacards",
   "private": false,
   "homepage": "https://game-datacards.eu",
@@ -79,7 +79,8 @@
     "lint": "eslint './src/**/*.{js,jsx}'",
     "prettier:fix": "prettier --config .prettierrc --write '**/*.{js,ts,tsx,css}'",
     "lint:fix": "yarn lint --fix",
-    "pre-commit": "lint-staged"
+    "pre-commit": "lint-staged",
+    "start:watch": "nodemon --watch src --ext js,jsx,ts,tsx,css,less --exec \"craco start\""
   },
   "eslintConfig": {
     "extends": [

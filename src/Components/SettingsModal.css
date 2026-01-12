@@ -132,6 +132,7 @@
   font-weight: 650;
   color: var(--text-primary);
   letter-spacing: -0.02em;
+  line-height: 1;
 }
 
 .settings-version-badge {

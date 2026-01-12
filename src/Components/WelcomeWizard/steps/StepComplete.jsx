@@ -14,7 +14,7 @@ export const StepComplete = ({ selectedGameSystem, onAction }) => {
         <CheckCircle />
       </div>
 
-      <h2 className="wz-complete-title">You're All Set!</h2>
+      <h2 className="wz-complete-title">You&apos;re All Set!</h2>
 
       <p className="wz-complete-subtitle">
         Your workspace is ready. Start browsing units, create your first category, or dive into settings to customize

@@ -1,6 +1,6 @@
 -- =====================================================
 -- Game Datacards - Combined Database Schema
--- Fresh Install Migration (Consolidates migrations 001-012)
+-- Fresh Install Migration (Consolidates migrations 001-013)
 -- =====================================================
 
 -- =====================================================
@@ -20,7 +20,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS public.user_profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT,
-  subscription_tier TEXT DEFAULT 'free' CHECK (subscription_tier IN ('free', 'premium', 'creator')),
+  subscription_tier TEXT DEFAULT 'free' CHECK (subscription_tier IN ('free', 'premium', 'creator', 'lifetime', 'admin')),
   creem_customer_id TEXT,
   creem_subscription_id TEXT,
   creem_product_id TEXT,
@@ -534,6 +534,11 @@ BEGIN
     RETURN 'free';
   END IF;
 
+  -- Lifetime and admin tiers never expire
+  IF v_tier IN ('lifetime', 'admin') THEN
+    RETURN v_tier;
+  END IF;
+
   IF v_tier IN ('premium', 'creator') THEN
     IF v_expires_at IS NOT NULL AND v_expires_at < NOW() THEN
       RETURN 'free';
@@ -552,6 +557,16 @@ CREATE OR REPLACE FUNCTION get_tier_limits(p_tier TEXT)
 RETURNS JSONB AS $$
 BEGIN
   CASE p_tier
+    WHEN 'lifetime' THEN
+      RETURN jsonb_build_object(
+        'categories', 999,
+        'datasources', 99
+      );
+    WHEN 'admin' THEN
+      RETURN jsonb_build_object(
+        'categories', 999,
+        'datasources', 99
+      );
     WHEN 'creator' THEN
       RETURN jsonb_build_object(
         'categories', 250,
@@ -1529,7 +1544,7 @@ COMMENT ON TABLE public.sync_metadata IS 'Sync state tracking for conflict resol
 COMMENT ON TABLE public.datasource_subscriptions IS 'Tracks user subscriptions to public datasources';
 
 -- Column comments
-COMMENT ON COLUMN public.user_profiles.subscription_tier IS 'Subscription tier: free (2 categories), premium (50 categories, 2 datasources), creator (250 categories, 10 datasources)';
+COMMENT ON COLUMN public.user_profiles.subscription_tier IS 'Subscription tier: free (2 categories), premium (50 categories, 2 datasources), creator (250 categories, 10 datasources), lifetime (999 categories, 99 datasources - non-purchasable), admin (999 categories, 99 datasources - non-purchasable)';
 COMMENT ON COLUMN public.user_profiles.creem_customer_id IS 'Creem customer ID for payment management';
 COMMENT ON COLUMN public.user_profiles.creem_subscription_id IS 'Creem subscription ID for active subscription';
 COMMENT ON COLUMN public.user_profiles.creem_product_id IS 'Creem product ID for the current subscription';

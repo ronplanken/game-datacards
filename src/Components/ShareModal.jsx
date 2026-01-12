@@ -136,7 +136,7 @@ export const ShareModal = () => {
               {/* Note */}
               <div className="share-dropdown-note">
                 <Info size={14} />
-                <span>Links are snapshots and won't auto-update</span>
+                <span>Links are snapshots and won&apos;t auto-update</span>
               </div>
             </div>
           </div>,

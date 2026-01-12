@@ -44,6 +44,18 @@ export const SUBSCRIPTION_LIMITS = {
     canUploadDatasources: true,
     canAccessShares: true,
   },
+  lifetime: {
+    categories: 999,
+    datasources: 99,
+    canUploadDatasources: true,
+    canAccessShares: true,
+  },
+  admin: {
+    categories: 999,
+    datasources: 99,
+    canUploadDatasources: true,
+    canAccessShares: true,
+  },
 };
 
 // Feature flags from environment
@@ -62,13 +74,18 @@ export const SubscriptionProvider = ({ children }) => {
 
   /**
    * Get current subscription tier
-   * Returns: 'free' | 'premium' | 'creator'
+   * Returns: 'free' | 'premium' | 'creator' | 'lifetime' | 'admin'
    */
   const getTier = useCallback(() => {
     if (!isAuthenticated) return "free";
     if (!profile) return "free";
 
     const tier = profile.subscription_tier;
+
+    // Lifetime and admin tiers never expire
+    if (tier === "lifetime" || tier === "admin") {
+      return tier;
+    }
 
     // Check if subscription is active (premium or creator)
     if (tier === "premium" || tier === "creator") {
@@ -314,8 +331,8 @@ export const SubscriptionProvider = ({ children }) => {
 
       if (error) throw error;
 
-      // Determine effective tier (free if not premium/creator)
-      const effectiveTier = ["premium", "creator"].includes(data.subscription_tier) ? data.subscription_tier : "free";
+      // Determine effective tier (free if not a paid/special tier)
+      const effectiveTier = ["premium", "creator", "lifetime", "admin"].includes(data.subscription_tier) ? data.subscription_tier : "free";
 
       setSubscription({
         tier: effectiveTier,

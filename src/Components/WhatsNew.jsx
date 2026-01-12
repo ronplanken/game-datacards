@@ -10,47 +10,33 @@ const modalRoot = document.getElementById("modal-root");
 
 const features = [
   {
-    title: "Custom Datasources",
+    title: "Premium Subscriptions",
     description:
-      "Import and manage custom datasources from URLs or files. Keep them synced with automatic update checks.",
+      "Introducing optional Premium and Creator tiers with expanded storage. All core features remain free forever.",
     isNew: true,
   },
   {
-    title: "Export as Datasource",
-    description: "Export your custom card categories as shareable datasource files that others can import.",
+    title: "Premium: 50 Categories & 2 Datasources",
+    description: "Upgrade to Premium for more card storage and the ability to import custom datasources.",
     isNew: true,
   },
   {
-    title: "40K GW App Import",
-    description: "Import your 40K army lists from the GW app on both desktop and mobile with smart unit matching.",
+    title: "Creator: 250 Categories & 10 Datasources",
+    description: "For power users and content creators who need maximum storage capacity.",
     isNew: true,
   },
   {
-    title: "List Categorization",
-    description: "Improved list overview with role-based categories for 40K and AoS armies.",
+    title: "Redesigned Onboarding",
+    description: "A fresh welcome wizard that better introduces Game Datacards features to new users.",
     isNew: true,
   },
   {
-    title: "Rule Card Editor",
-    description: "Create and edit custom rule cards for army and detachment rules with auto-height support.",
-    isNew: true,
+    title: "Floating Toolbar Guide",
+    description: "New onboarding step explaining how to add and save cards using the floating toolbar.",
   },
   {
-    title: "Quick Add to Cards",
-    description: "Add units directly from the datasource list to your default category with a single click.",
-    isNew: true,
-  },
-  {
-    title: "Rule Card Print & Export",
-    description: "Rule cards now properly render in print and image export pages.",
-  },
-  {
-    title: "AoS Legends Fix",
-    description: "Fixed Legends units showing in mobile view when the 'Show Legends' setting is disabled.",
-  },
-  {
-    title: "UI Improvements",
-    description: "Refined share modal, tree view interactions, and overall styling polish.",
+    title: "Improved Workspace Demo",
+    description: "Interactive tree view demo in the wizard that matches the actual app styling.",
   },
 ];
 

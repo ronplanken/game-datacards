@@ -1,0 +1,698 @@
+/* Mobile Account Styles - Dark Theme */
+/* Matching desktop UserMenu aesthetic */
+
+/* ========================================
+   DESIGN TOKENS
+   ======================================== */
+.account-stagger {
+  /* Tier Colors - Gold (Premium) */
+  --tier-gold: #c9a227;
+  --tier-gold-light: #e3c65c;
+  --tier-gold-dark: #a68419;
+  --tier-gold-glow: rgba(201, 162, 39, 0.4);
+
+  /* Tier Colors - Rose Gold (Creator) */
+  --tier-rose: #d4a5a5;
+  --tier-rose-light: #e8c4c4;
+  --tier-rose-dark: #b77c7c;
+  --tier-rose-glow: rgba(212, 165, 165, 0.4);
+
+  /* Tier Colors - Blue (Free) */
+  --tier-blue: #3b82f6;
+  --tier-blue-light: #60a5fa;
+  --tier-blue-glow: rgba(59, 130, 246, 0.4);
+
+  /* Tier Colors - Purple (Lifetime) */
+  --tier-purple: #8b5cf6;
+  --tier-purple-light: #a78bfa;
+  --tier-purple-glow: rgba(139, 92, 246, 0.4);
+
+  /* Tier Colors - Red (Admin) */
+  --tier-red: #ef4444;
+  --tier-red-light: #f87171;
+  --tier-red-glow: rgba(239, 68, 68, 0.4);
+
+  /* Semantic */
+  --account-danger: #ef4444;
+  --account-danger-bg: rgba(239, 68, 68, 0.12);
+  --account-success: #22c55e;
+  --account-warning: #f59e0b;
+}
+
+/* ========================================
+   Avatar Button (in bottom nav)
+   ======================================== */
+.mobile-account-avatar-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-account-avatar-btn:active {
+  transform: scale(0.92);
+}
+
+/* Free tier - Blue gradient */
+.mobile-account-avatar-btn--free {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+/* Premium tier - Gold gradient with glow */
+.mobile-account-avatar-btn--premium {
+  background: linear-gradient(135deg, #c9a227 0%, #e3c65c 100%);
+  box-shadow: 0 0 12px rgba(201, 162, 39, 0.5);
+}
+
+/* Creator tier - Rose gold gradient with glow */
+.mobile-account-avatar-btn--creator {
+  background: linear-gradient(135deg, #d4a5a5 0%, #e8c4c4 100%);
+  box-shadow: 0 0 12px rgba(212, 165, 165, 0.5);
+}
+
+/* Lifetime tier - Purple gradient with glow */
+.mobile-account-avatar-btn--lifetime {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+}
+
+/* Admin tier - Red gradient with glow */
+.mobile-account-avatar-btn--admin {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+/* Guest (not logged in) - Subtle outline style */
+.mobile-account-avatar-btn--guest {
+  background: transparent;
+  border: 2px dashed rgba(148, 163, 184, 0.5);
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.mobile-account-avatar-btn--guest:active {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.7);
+}
+
+/* ========================================
+   Sync Status Badge on Avatar
+   ======================================== */
+
+/* Base badge style (::after pseudo-element) */
+.mobile-account-avatar-btn--synced::after,
+.mobile-account-avatar-btn--syncing::after,
+.mobile-account-avatar-btn--pending::after,
+.mobile-account-avatar-btn--conflict::after,
+.mobile-account-avatar-btn--error::after,
+.mobile-account-avatar-btn--offline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #001529;
+  box-sizing: content-box;
+}
+
+/* Synced - subtle blue (only shows briefly, then hides) */
+.mobile-account-avatar-btn--synced::after {
+  display: none; /* Hide when fully synced - clean look */
+}
+
+/* Syncing - animated blue pulse */
+.mobile-account-avatar-btn--syncing::after {
+  background: #3b82f6;
+  animation: syncPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes syncPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+}
+
+/* Pending - static blue dot */
+.mobile-account-avatar-btn--pending::after {
+  background: #3b82f6;
+}
+
+/* Conflict - yellow/amber dot */
+.mobile-account-avatar-btn--conflict::after {
+  background: #f59e0b;
+  animation: conflictPulse 2s ease-in-out infinite;
+}
+
+@keyframes conflictPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0);
+  }
+}
+
+/* Error - red dot */
+.mobile-account-avatar-btn--error::after {
+  background: #ef4444;
+}
+
+/* Offline - gray dot */
+.mobile-account-avatar-btn--offline::after {
+  background: #64748b;
+}
+
+/* Idle - no badge (default, no ::after) */
+.mobile-account-avatar-btn--idle::after {
+  display: none;
+}
+
+.mobile-account-avatar-initials {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   Account Sheet Header
+   ======================================== */
+.account-sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 0 18px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 18px;
+}
+
+.account-sheet-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Avatar tier variants */
+.account-sheet-avatar--free {
+  background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+.account-sheet-avatar--premium {
+  background: linear-gradient(135deg, #c9a227 0%, #e3c65c 100%);
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+}
+
+.account-sheet-avatar--creator {
+  background: linear-gradient(135deg, #d4a5a5 0%, #e8c4c4 100%);
+  box-shadow: 0 0 20px rgba(212, 165, 165, 0.4);
+}
+
+.account-sheet-avatar--lifetime {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.account-sheet-avatar--admin {
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+.account-sheet-avatar-initials {
+  font-size: 22px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.account-sheet-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.account-sheet-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--bs-text, #f1f5f9);
+  margin: 0 0 4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-sheet-email {
+  font-size: 14px;
+  color: var(--bs-text-muted, #64748b);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ========================================
+   Tier Badge
+   ======================================== */
+.account-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  flex-shrink: 0;
+}
+
+/* Free tier badge */
+.account-tier-badge--free {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+/* Premium tier badge - Gold with shimmer */
+.account-tier-badge--premium {
+  background: linear-gradient(
+    90deg,
+    rgba(201, 162, 39, 0.15) 0%,
+    rgba(227, 198, 92, 0.25) 50%,
+    rgba(201, 162, 39, 0.15) 100%
+  );
+  background-size: 200% 100%;
+  color: #e3c65c;
+  border: 1px solid rgba(201, 162, 39, 0.35);
+  animation: badgeShimmer 3s ease-in-out infinite;
+}
+
+/* Creator tier badge - Rose gold with shimmer */
+.account-tier-badge--creator {
+  background: linear-gradient(
+    90deg,
+    rgba(212, 165, 165, 0.15) 0%,
+    rgba(232, 196, 196, 0.25) 50%,
+    rgba(212, 165, 165, 0.15) 100%
+  );
+  background-size: 200% 100%;
+  color: #e8c4c4;
+  border: 1px solid rgba(212, 165, 165, 0.35);
+  animation: badgeShimmer 3s ease-in-out infinite;
+}
+
+/* Lifetime tier badge - Purple with shimmer */
+.account-tier-badge--lifetime {
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.15) 0%,
+    rgba(167, 139, 250, 0.25) 50%,
+    rgba(139, 92, 246, 0.15) 100%
+  );
+  background-size: 200% 100%;
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  animation: badgeShimmer 3s ease-in-out infinite;
+}
+
+/* Admin tier badge - Red with shimmer */
+.account-tier-badge--admin {
+  background: linear-gradient(
+    90deg,
+    rgba(239, 68, 68, 0.15) 0%,
+    rgba(248, 113, 113, 0.25) 50%,
+    rgba(239, 68, 68, 0.15) 100%
+  );
+  background-size: 200% 100%;
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  animation: badgeShimmer 3s ease-in-out infinite;
+}
+
+@keyframes badgeShimmer {
+  0%,
+  100% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -100% 0;
+  }
+}
+
+/* ========================================
+   Usage Section
+   ======================================== */
+.account-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(15, 31, 53, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.account-usage-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bs-text-muted, #64748b);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.account-usage-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-usage-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-usage-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--bs-text, #f1f5f9);
+}
+
+.account-usage-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bs-text-secondary, #94a3b8);
+}
+
+.account-usage-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.account-usage-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tier-based usage bar fills */
+.account-usage--free .account-usage-bar-fill {
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+}
+
+.account-usage--premium .account-usage-bar-fill {
+  background: linear-gradient(90deg, #c9a227 0%, #e3c65c 100%);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.3);
+}
+
+.account-usage--creator .account-usage-bar-fill {
+  background: linear-gradient(90deg, #d4a5a5 0%, #e8c4c4 100%);
+  box-shadow: 0 0 8px rgba(212, 165, 165, 0.3);
+}
+
+.account-usage--lifetime .account-usage-bar-fill {
+  background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 100%);
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+}
+
+.account-usage--admin .account-usage-bar-fill {
+  background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Warning state (80-99%) */
+.account-usage-bar-fill--warning {
+  background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%) !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Full state (100%) */
+.account-usage-bar-fill--full {
+  background: linear-gradient(90deg, #ef4444 0%, #f87171 100%) !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* ========================================
+   Menu Items
+   ======================================== */
+.account-menu {
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 31, 53, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.account-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-family: inherit;
+  text-align: left;
+}
+
+.account-menu-item:active {
+  background: rgba(22, 42, 70, 0.8);
+}
+
+.account-menu-item:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.account-menu-item-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.account-menu-item:active .account-menu-item-icon {
+  transform: scale(0.95);
+}
+
+/* Icon color variants */
+.account-menu-item-icon--accent {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.account-menu-item-icon--warning {
+  background: rgba(201, 162, 39, 0.15);
+  color: #e3c65c;
+}
+
+.account-menu-item-icon--danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.account-menu-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.account-menu-item-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-text, #f1f5f9);
+  margin: 0;
+}
+
+.account-menu-item-label--danger {
+  color: #f87171;
+}
+
+.account-menu-item-description {
+  font-size: 13px;
+  color: var(--bs-text-muted, #64748b);
+  margin: 3px 0 0 0;
+}
+
+.account-menu-item-arrow {
+  color: var(--bs-text-muted, #64748b);
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* ========================================
+   Upgrade Banner
+   ======================================== */
+.account-upgrade-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  background: linear-gradient(135deg, #a68419 0%, #c9a227 50%, #e3c65c 100%);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(201, 162, 39, 0.3);
+}
+
+/* Shimmer overlay */
+.account-upgrade-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: upgradeShimmer 3s ease-in-out infinite;
+}
+
+@keyframes upgradeShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  50%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.account-upgrade-banner:active {
+  transform: scale(0.98);
+  box-shadow: 0 2px 12px rgba(201, 162, 39, 0.4);
+}
+
+.account-upgrade-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.account-upgrade-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.account-upgrade-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 3px 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.account-upgrade-description {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.account-upgrade-arrow {
+  color: rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+.account-fade-in {
+  animation: accountFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+@keyframes accountFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger delays */
+.account-stagger > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.account-stagger > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.account-stagger > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.account-stagger > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.account-stagger > *:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+/* ========================================
+   Reduced Motion
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  .account-fade-in,
+  .account-stagger > * {
+    animation: none;
+  }
+
+  .account-tier-badge--premium,
+  .account-tier-badge--creator {
+    animation: none;
+  }
+
+  .account-upgrade-banner::before {
+    animation: none;
+  }
+
+  .mobile-account-avatar-btn,
+  .account-menu-item-icon {
+    transition: none;
+  }
+}
