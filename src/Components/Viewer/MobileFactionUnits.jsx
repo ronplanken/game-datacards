@@ -59,6 +59,7 @@ const FactionSectionHeader = ({ name, count, isParent, isAllied }) => (
 );
 
 // Render grouped units for a single faction section
+// Note: datasheets are already sorted alphabetically by the useCombinedDatasheets hook
 const GroupedFactionUnits = ({ datasheets, onUnitClick }) => {
   const groupedUnits = groupUnitsByRole(datasheets);
 
@@ -67,33 +68,27 @@ const GroupedFactionUnits = ({ datasheets, onUnitClick }) => {
       {groupedUnits.characters.length > 0 && (
         <div className="faction-units-section">
           <SectionHeader title="Characters" count={groupedUnits.characters.length} />
-          {groupedUnits.characters
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((unit) => (
-              <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
-            ))}
+          {groupedUnits.characters.map((unit) => (
+            <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
+          ))}
         </div>
       )}
 
       {groupedUnits.battleline.length > 0 && (
         <div className="faction-units-section">
           <SectionHeader title="Battleline" count={groupedUnits.battleline.length} />
-          {groupedUnits.battleline
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((unit) => (
-              <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
-            ))}
+          {groupedUnits.battleline.map((unit) => (
+            <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
+          ))}
         </div>
       )}
 
       {groupedUnits.other.length > 0 && (
         <div className="faction-units-section">
           <SectionHeader title="Other" count={groupedUnits.other.length} />
-          {groupedUnits.other
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((unit) => (
-              <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
-            ))}
+          {groupedUnits.other.map((unit) => (
+            <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
+          ))}
         </div>
       )}
     </>

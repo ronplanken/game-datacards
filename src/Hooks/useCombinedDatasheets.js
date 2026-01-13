@@ -18,11 +18,11 @@ export const useCombinedDatasheets = () => {
     }
 
     // Start with base faction datasheets
-    let baseDatesheets = [...(selectedFaction?.datasheets || [])];
+    let baseDatasheets = [...(selectedFaction?.datasheets || [])];
 
     // Filter legends if setting is disabled
     if (!settings?.showLegends) {
-      baseDatesheets = baseDatesheets.filter((sheet) => !sheet.legends);
+      baseDatasheets = baseDatasheets.filter((sheet) => !sheet.legends);
     }
 
     // Build sections for grouped display
@@ -30,14 +30,14 @@ export const useCombinedDatasheets = () => {
       {
         id: selectedFaction.id,
         name: selectedFaction.name,
-        datasheets: baseDatesheets.sort((a, b) => a.name.localeCompare(b.name)),
+        datasheets: baseDatasheets.sort((a, b) => a.name.localeCompare(b.name)),
         isBase: true,
       },
     ];
 
     // Add parent faction datasheets if subfaction and setting enabled
     if (selectedFaction.is_subfaction && settings.combineParentFactions) {
-      const parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
+      const parentFaction = dataSource?.data?.find((faction) => faction.id === selectedFaction.parent_id);
 
       if (parentFaction?.datasheets) {
         let parentDatasheets = parentFaction.datasheets
@@ -67,7 +67,7 @@ export const useCombinedDatasheets = () => {
       settings.combineAlliedFactions
     ) {
       selectedFaction.allied_factions.forEach((alliedFactionId) => {
-        const alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
+        const alliedFaction = dataSource?.data?.find((faction) => faction.id === alliedFactionId);
 
         if (alliedFaction?.datasheets) {
           let alliedDatasheets = alliedFaction.datasheets.map((val) => ({
