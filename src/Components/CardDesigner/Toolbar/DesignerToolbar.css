@@ -1,0 +1,127 @@
+.designer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background-color: #ffffff;
+  border-bottom: 2px solid #d0d0d0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-height: 60px;
+}
+
+.designer-toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.designer-toolbar-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2d4059;
+}
+
+.designer-toolbar-controls {
+  flex: 1;
+  justify-content: center;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.toolbar-group:last-child {
+  border-right: none;
+}
+
+.toolbar-button {
+  padding: 8px 16px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toolbar-button:hover:not(:disabled) {
+  background-color: #f5f5f5;
+  border-color: #b0b0b0;
+}
+
+.toolbar-button:active:not(:disabled) {
+  background-color: #e5e5e5;
+  transform: translateY(1px);
+}
+
+.toolbar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar-button-primary {
+  background-color: #0066ff;
+  color: #ffffff;
+  border-color: #0066ff;
+}
+
+.toolbar-button-primary:hover:not(:disabled) {
+  background-color: #0052cc;
+  border-color: #0052cc;
+}
+
+.toolbar-back {
+  font-weight: 600;
+}
+
+.toolbar-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555555;
+  white-space: nowrap;
+}
+
+.toolbar-select {
+  padding: 6px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.toolbar-select:hover {
+  border-color: #b0b0b0;
+}
+
+.toolbar-select:focus {
+  outline: none;
+  border-color: #0066ff;
+  box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.2);
+}
+
+.toolbar-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555555;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toolbar-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}

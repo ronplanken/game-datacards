@@ -1,0 +1,29 @@
+.designer-canvas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.designer-canvas {
+  position: relative;
+  border: 1px solid #333;
+  user-select: none;
+}
+
+.canvas-element {
+  transition: box-shadow 0.1s;
+}
+
+.canvas-element:hover {
+  box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.3);
+}
+
+.canvas-element-text {
+  word-wrap: break-word;
+}
+
+.canvas-grid-overlay {
+  z-index: 0;
+}

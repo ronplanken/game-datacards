@@ -1,0 +1,80 @@
+.card-designer-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f0f0f0;
+  overflow: hidden;
+}
+
+.card-designer-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.card-designer-sidebar {
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.card-designer-sidebar-left {
+  width: 280px;
+  border-right: 2px solid #d0d0d0;
+}
+
+.card-designer-sidebar-right {
+  width: 320px;
+  border-left: 2px solid #d0d0d0;
+}
+
+.card-designer-canvas-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e5e5e5;
+  overflow: auto;
+  padding: 20px;
+  position: relative;
+}
+
+/* Scrollbar styling */
+.card-designer-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.card-designer-sidebar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.card-designer-sidebar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.card-designer-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1280px) {
+  .card-designer-sidebar-left {
+    width: 240px;
+  }
+
+  .card-designer-sidebar-right {
+    width: 280px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .card-designer-sidebar-left {
+    width: 200px;
+  }
+
+  .card-designer-sidebar-right {
+    width: 240px;
+  }
+}
