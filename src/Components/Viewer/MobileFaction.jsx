@@ -1,15 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import {
-  filterDetachments,
-  getDetachmentName,
-  filterStratagemsByFaction,
-  filterEnhancementsByFaction,
-  filterDetachmentRulesByFaction,
-} from "../../Helpers/faction.helpers";
+import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
 import { BottomSheet } from "./Mobile/BottomSheet";
@@ -99,28 +93,21 @@ export const MobileFaction = () => {
     navigate(`/mobile/${factionSlug}/units`);
   };
 
-  // Get filtered detachments based on settings - memoized to prevent infinite re-renders
-  const visibleDetachments = useMemo(
-    () => filterDetachments(selectedFaction?.detachments, settings?.showNonDefaultFactions),
-    [selectedFaction?.detachments, settings?.showNonDefaultFactions],
-  );
+  const detachments = selectedFaction?.detachments || [];
 
   useEffect(() => {
     if (settings?.selectedDetachment?.[selectedFaction?.id]) {
-      // Check if the saved detachment is still visible
       const savedDetachment = settings?.selectedDetachment?.[selectedFaction?.id];
-      // savedDetachment is always a string (the detachment name stored in settings)
-      const isStillVisible = visibleDetachments?.some((d) => getDetachmentName(d) === savedDetachment);
-      if (isStillVisible) {
+      const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+      if (isStillValid) {
         setSelectedDetachment(savedDetachment);
       } else {
-        // Fall back to first visible detachment
-        setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
+        setSelectedDetachment(getDetachmentName(detachments?.[0]));
       }
     } else {
-      setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
+      setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [selectedFaction, settings, visibleDetachments]);
+  }, [selectedFaction, settings, detachments]);
 
   const handleSelectDetachment = (detachment) => {
     setSelectedDetachment(detachment);
@@ -131,39 +118,28 @@ export const MobileFaction = () => {
     setShowDetachmentPicker(false);
   };
 
-  // Filter stratagems by detachment and faction visibility
-  const factionFilteredStratagems = filterStratagemsByFaction(
-    selectedFaction?.stratagems,
-    settings?.showNonDefaultFactions,
-  );
+  // Filter stratagems by selected detachment
   const factionStratagems =
-    factionFilteredStratagems?.filter(
+    selectedFaction?.stratagems?.filter(
       (stratagem) =>
         stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment,
     ) || [];
 
   const coreStratagems = selectedFaction?.basicStratagems || [];
 
-  // Filter enhancements by detachment and faction visibility
-  const factionFilteredEnhancements = filterEnhancementsByFaction(
-    selectedFaction?.enhancements,
-    settings?.showNonDefaultFactions,
-  );
-  const enhancements = Array.isArray(factionFilteredEnhancements)
-    ? factionFilteredEnhancements.filter(
+  // Filter enhancements by selected detachment
+  const enhancements = Array.isArray(selectedFaction?.enhancements)
+    ? selectedFaction.enhancements.filter(
         (enhancement) =>
           enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
       )
     : [];
 
-  // Filter detachment rules by faction visibility first
-  const visibleDetachmentRules = filterDetachmentRulesByFaction(
-    selectedFaction?.rules?.detachment,
-    settings?.showNonDefaultFactions,
-  );
-  // Then filter by selected detachment
+  // Get detachment rules for selected detachment
   const detachmentRules =
-    visibleDetachmentRules?.find((rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase()) || [];
+    selectedFaction?.rules?.detachment?.find(
+      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase(),
+    ) || [];
 
   return (
     <div
@@ -186,7 +162,7 @@ export const MobileFaction = () => {
       </button>
 
       {/* Detachment Picker */}
-      {visibleDetachments?.length > 1 && (
+      {detachments?.length > 1 && (
         <div className="mobile-faction-detachment">
           <SectionHeader title="Detachment" />
           <button className="detachment-selector" onClick={() => setShowDetachmentPicker(true)}>
@@ -309,7 +285,7 @@ export const MobileFaction = () => {
         onClose={() => setShowDetachmentPicker(false)}
         title="Select Detachment">
         <div className="detachment-picker-list">
-          {visibleDetachments?.map((detachment) => {
+          {detachments?.map((detachment) => {
             const detachmentName = getDetachmentName(detachment);
             return (
               <button

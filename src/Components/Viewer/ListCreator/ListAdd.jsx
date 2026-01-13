@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, Crown } from "lucide-react";
 import { message } from "antd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
-import { filterDetachments, getDetachmentName, filterEnhancementsByFaction } from "../../../Helpers/faction.helpers";
+import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { useMobileList } from "../useMobileList";
 import { BottomSheet } from "../Mobile/BottomSheet";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
@@ -37,34 +37,28 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   });
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+  const detachments = cardFaction?.detachments || [];
   const warlordAlreadyAdded = lists[selectedList]?.datacards?.find((card) => card.warlord);
   const epicHeroAlreadyAdded = lists[selectedList]?.datacards?.find((card) => {
     return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.card.id;
   });
 
-  // Get filtered detachments based on settings - memoized to prevent infinite re-renders
-  const visibleDetachments = useMemo(
-    () => filterDetachments(cardFaction?.detachments, settings?.showNonDefaultFactions),
-    [cardFaction?.detachments, settings?.showNonDefaultFactions],
-  );
-
   const [selectedDetachment, setSelectedDetachment] = useState();
 
   useEffect(() => {
     if (settings?.selectedDetachment?.[activeCard?.faction_id]) {
-      // Check if saved detachment is still visible
+      // Check if saved detachment is still valid
       const savedDetachment = settings?.selectedDetachment?.[activeCard?.faction_id];
-      // savedDetachment is always a string (the detachment name stored in settings)
-      const isStillVisible = visibleDetachments?.some((d) => getDetachmentName(d) === savedDetachment);
-      if (isStillVisible) {
+      const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+      if (isStillValid) {
         setSelectedDetachment(savedDetachment);
       } else {
-        setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
+        setSelectedDetachment(getDetachmentName(detachments?.[0]));
       }
     } else {
-      setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
+      setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [settings, activeCard?.faction_id, visibleDetachments]);
+  }, [settings, activeCard?.faction_id, detachments]);
 
   // Reset state when panel opens with new card
   useEffect(() => {
@@ -113,10 +107,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const getAvailableEnhancements = () => {
     if (!cardFaction?.enhancements) return [];
 
-    // Filter by faction visibility first
-    const factionFiltered = filterEnhancementsByFaction(cardFaction.enhancements, settings?.showNonDefaultFactions);
-
-    return factionFiltered
+    return cardFaction.enhancements
       .filter(
         (enhancement) =>
           enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
@@ -187,7 +178,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
           )}
 
           {/* Detachment Section */}
-          {showEnhancements && visibleDetachments?.length > 1 && (
+          {showEnhancements && detachments?.length > 1 && (
             <div className="list-add-section">
               <h4 className="list-add-section-title">Detachment</h4>
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
@@ -238,7 +229,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
       <DetachmentPicker
         isOpen={detachmentPickerOpen}
         onClose={() => setDetachmentPickerOpen(false)}
-        detachments={visibleDetachments}
+        detachments={detachments}
         selected={selectedDetachment}
         onSelect={handleDetachmentSelect}
       />

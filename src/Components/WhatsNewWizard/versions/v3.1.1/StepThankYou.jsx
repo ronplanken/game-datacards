@@ -18,7 +18,7 @@ export const StepThankYou = () => (
       Thank you for using Game Datacards! Your support helps us continue improving the application.
     </p>
     <p className="wnw-thankyou-cta">
-      Try out the new detachment filtering in your Space Marines faction settings and let us know what you think.
+      Check out the reorganized chapter structure and explore all the available detachments for your army.
     </p>
   </div>
 );

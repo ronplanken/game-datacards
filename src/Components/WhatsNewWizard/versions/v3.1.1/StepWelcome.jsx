@@ -13,12 +13,12 @@ export const StepWelcome = () => (
   <div className="wnw-welcome-content">
     <div className="wnw-welcome-badge">
       <Sparkles size={24} />
-      <span>New Features</span>
+      <span>Data Update</span>
     </div>
     <h2 className="wnw-welcome-title">Welcome to Version 3.1.1</h2>
     <p className="wnw-welcome-subtitle">
-      This update brings improved detachment handling for Space Marines, including support for chapter-specific
-      detachments and a new filtering option.
+      This update brings a reorganized datasource structure for Space Marines and other chapters, making it easier to
+      find the detachments you need.
     </p>
   </div>
 );

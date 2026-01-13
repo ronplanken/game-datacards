@@ -5,11 +5,11 @@ import { StepThankYou } from "./StepThankYou";
 
 /**
  * Version 3.1.1 wizard configuration
- * Features chapter-specific detachment filtering for Space Marines
+ * Reorganized chapter structure with separate faction entries
  */
 export const VERSION_CONFIG = {
   version: "3.1.1",
-  releaseName: "Chapter Detachments",
+  releaseName: "Chapter Reorganization",
   steps: [
     {
       key: "3.1.1-welcome",
