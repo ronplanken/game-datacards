@@ -81,6 +81,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
   }
 
   if (selectedContentType === "stratagems" && selectedFaction) {
+    // Filter by subfaction
     const filteredStratagems = selectedFaction?.stratagems?.filter((stratagem) => {
       return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
     });

@@ -189,7 +189,8 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "stratagems") {
-      const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
+      // Filter by subfaction
+      const filteredStratagems = selectedFaction?.stratagems?.filter((stratagem) => {
         return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
       });
       const mainStratagems = searchText
@@ -215,7 +216,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "enhancements") {
-      const filteredEnhancements = selectedFaction?.enhancements.map((enhancement) => {
+      const filteredEnhancements = selectedFaction?.enhancements?.map((enhancement) => {
         return { ...enhancement, cardType: "enhancement", source: "40k-10e" };
       });
 

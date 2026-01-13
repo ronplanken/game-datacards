@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Crown } from "lucide-react";
 import { message } from "antd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { useMobileList } from "../useMobileList";
 import { BottomSheet } from "../Mobile/BottomSheet";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
@@ -36,6 +37,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   });
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+  const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   const warlordAlreadyAdded = lists[selectedList]?.datacards?.find((card) => card.warlord);
   const epicHeroAlreadyAdded = lists[selectedList]?.datacards?.find((card) => {
     return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.card.id;
@@ -45,11 +47,18 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   useEffect(() => {
     if (settings?.selectedDetachment?.[activeCard?.faction_id]) {
-      setSelectedDetachment(settings?.selectedDetachment?.[activeCard?.faction_id]);
+      // Check if saved detachment is still valid
+      const savedDetachment = settings?.selectedDetachment?.[activeCard?.faction_id];
+      const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+      if (isStillValid) {
+        setSelectedDetachment(savedDetachment);
+      } else {
+        setSelectedDetachment(getDetachmentName(detachments?.[0]));
+      }
     } else {
-      setSelectedDetachment(cardFaction?.detachments?.[0]);
+      setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [cardFaction, settings, activeCard?.faction_id]);
+  }, [settings, activeCard?.faction_id, detachments]);
 
   // Reset state when panel opens with new card
   useEffect(() => {
@@ -169,7 +178,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
           )}
 
           {/* Detachment Section */}
-          {showEnhancements && cardFaction?.detachments?.length > 1 && (
+          {showEnhancements && detachments?.length > 1 && (
             <div className="list-add-section">
               <h4 className="list-add-section-title">Detachment</h4>
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
@@ -220,7 +229,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
       <DetachmentPicker
         isOpen={detachmentPickerOpen}
         onClose={() => setDetachmentPickerOpen(false)}
-        detachments={cardFaction?.detachments}
+        detachments={detachments}
         selected={selectedDetachment}
         onSelect={handleDetachmentSelect}
       />
