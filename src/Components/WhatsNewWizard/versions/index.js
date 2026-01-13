@@ -1,6 +1,7 @@
 import compareVersions, { compare } from "compare-versions";
 import v300Config from "./v3.0.0";
 import v310Config from "./v3.1.0";
+import v311Config from "./v3.1.1";
 
 /**
  * Registry of all version wizard configurations
@@ -11,7 +12,7 @@ import v310Config from "./v3.1.0";
  * 2. Create step components and index.js with VERSION_CONFIG
  * 3. Import and add to VERSION_REGISTRY array below
  */
-export const VERSION_REGISTRY = [v300Config, v310Config]
+export const VERSION_REGISTRY = [v300Config, v310Config, v311Config]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));
 

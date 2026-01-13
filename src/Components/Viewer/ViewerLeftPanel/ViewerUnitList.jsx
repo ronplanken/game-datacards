@@ -2,6 +2,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { List } from "antd";
 import classNames from "classnames";
 import { useDataSourceType } from "../../../Helpers/cardstorage.helpers";
+import { filterStratagemsByFaction, filterDetachmentRulesByFaction } from "../../../Helpers/faction.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
@@ -81,9 +82,13 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
   }
 
   if (selectedContentType === "stratagems" && selectedFaction) {
-    const filteredStratagems = selectedFaction?.stratagems?.filter((stratagem) => {
+    // Filter by subfaction first
+    const subfactionFiltered = selectedFaction?.stratagems?.filter((stratagem) => {
       return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
     });
+
+    // Then filter by detachment faction visibility
+    const filteredStratagems = filterStratagemsByFaction(subfactionFiltered, settings?.showNonDefaultFactions);
 
     const mainStratagems = searchText
       ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
@@ -107,6 +112,12 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
     const armyRules = selectedFaction?.rules?.army || [];
     const detachmentRules = selectedFaction?.rules?.detachment || [];
 
+    // Filter detachment rules by faction visibility first
+    const factionFilteredDetachmentRules = filterDetachmentRulesByFaction(
+      detachmentRules,
+      settings?.showNonDefaultFactions,
+    );
+
     // Filter army rules by search
     const filteredArmyRules = searchText
       ? armyRules.filter((rule) => rule.name.toLowerCase().includes(searchText.toLowerCase()))
@@ -114,8 +125,8 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
 
     // Filter detachment rules by search
     const filteredDetachmentRules = searchText
-      ? detachmentRules.filter((rule) => rule.name?.toLowerCase().includes(searchText.toLowerCase()))
-      : detachmentRules;
+      ? factionFilteredDetachmentRules.filter((rule) => rule.name?.toLowerCase().includes(searchText.toLowerCase()))
+      : factionFilteredDetachmentRules;
 
     // Transform rules into card-compatible objects
     const armyRuleCards = filteredArmyRules.map((rule) => ({

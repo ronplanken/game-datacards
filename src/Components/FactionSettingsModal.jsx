@@ -139,6 +139,12 @@ export const FactionSettingsModal = () => {
             checked={settings.combineAlliedFactions}
             onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
           />
+          <p className="faction-subsection-title">Detachments</p>
+          <SettingCard
+            title="Show non-default factions"
+            checked={settings.showNonDefaultFactions}
+            onChange={(value) => updateSettings({ ...settings, showNonDefaultFactions: value })}
+          />
           <p className="faction-subsection-title">Display</p>
           <SettingCard
             title="Show points in listview"

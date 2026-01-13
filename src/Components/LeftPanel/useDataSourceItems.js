@@ -1,5 +1,10 @@
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import {
+  filterStratagemsByFaction,
+  filterEnhancementsByFaction,
+  filterDetachmentRulesByFaction,
+} from "../../Helpers/faction.helpers";
 
 /**
  * Group warscrolls by their role keywords (Hero, Battleline, Monster, etc.)
@@ -189,9 +194,12 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "stratagems") {
-      const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
+      // Filter by subfaction first
+      const subfactionFiltered = selectedFaction?.stratagems.filter((stratagem) => {
         return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
       });
+      // Then filter by detachment faction visibility
+      const filteredStratagems = filterStratagemsByFaction(subfactionFiltered, settings?.showNonDefaultFactions);
       const mainStratagems = searchText
         ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
         : filteredStratagems;
@@ -215,7 +223,12 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "enhancements") {
-      const filteredEnhancements = selectedFaction?.enhancements.map((enhancement) => {
+      // Filter by detachment faction visibility first
+      const factionFiltered = filterEnhancementsByFaction(
+        selectedFaction?.enhancements,
+        settings?.showNonDefaultFactions,
+      );
+      const filteredEnhancements = factionFiltered?.map((enhancement) => {
         return { ...enhancement, cardType: "enhancement", source: "40k-10e" };
       });
 
@@ -263,6 +276,12 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       const armyRules = selectedFaction?.rules?.army || [];
       const detachmentRules = selectedFaction?.rules?.detachment || [];
 
+      // Filter detachment rules by faction visibility first
+      const factionFilteredDetachmentRules = filterDetachmentRulesByFaction(
+        detachmentRules,
+        settings?.showNonDefaultFactions,
+      );
+
       // Filter army rules by search
       const filteredArmyRules = searchText
         ? armyRules.filter((rule) => rule.name.toLowerCase().includes(searchText.toLowerCase()))
@@ -270,8 +289,8 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
 
       // Filter detachment rules by search
       const filteredDetachmentRules = searchText
-        ? detachmentRules.filter((rule) => rule.name?.toLowerCase().includes(searchText.toLowerCase()))
-        : detachmentRules;
+        ? factionFilteredDetachmentRules.filter((rule) => rule.name?.toLowerCase().includes(searchText.toLowerCase()))
+        : factionFilteredDetachmentRules;
 
       // Transform rules into card-compatible objects
       const armyRuleCards = filteredArmyRules.map((rule) => ({

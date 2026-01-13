@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
+import { filterDetachments, getDetachmentName, filterEnhancementsByFaction } from "../../Helpers/faction.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -78,16 +79,28 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
 
   const [selectedDetachment, setSelectedDetachment] = useState();
 
+  // Get filtered detachments based on settings
+  const visibleDetachments = filterDetachments(cardFaction?.detachments, settings?.showNonDefaultFactions);
+
   useEffect(() => {
     if (card?.detachment) {
       // Use the card's saved detachment (from import)
       setSelectedDetachment(card.detachment);
     } else if (settings?.selectedDetachment?.[card?.faction_id]) {
-      setSelectedDetachment(settings?.selectedDetachment?.[card?.faction_id]);
+      // Check if saved detachment is still visible
+      const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
+      const isStillVisible = visibleDetachments?.some(
+        (d) => getDetachmentName(d) === savedDetachment || getDetachmentName(d) === getDetachmentName(savedDetachment),
+      );
+      if (isStillVisible) {
+        setSelectedDetachment(savedDetachment);
+      } else {
+        setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
+      }
     } else {
-      setSelectedDetachment(cardFaction?.detachments?.[0]);
+      setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
     }
-  }, [card, cardFaction, settings]);
+  }, [card, cardFaction, settings, visibleDetachments]);
 
   const warlordAlreadyAdded = category?.cards?.find((card) => card.warlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
@@ -413,7 +426,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               )}
               {card?.keywords?.includes("Character") && !card?.keywords?.includes("Epic Hero") && (
                 <>
-                  {cardFaction?.detachments?.length > 1 && (
+                  {visibleDetachments?.length > 1 && (
                     <>
                       <div style={{ paddingTop: "16px" }}>
                         <Typography.Text>Detachment</Typography.Text>
@@ -428,10 +441,11 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                           });
                         }}
                         value={selectedDetachment}>
-                        {cardFaction?.detachments?.map((d) => {
+                        {visibleDetachments?.map((d) => {
+                          const detachmentName = getDetachmentName(d);
                           return (
-                            <Option value={d} key={d}>
-                              {d}
+                            <Option value={detachmentName} key={detachmentName}>
+                              {detachmentName}
                             </Option>
                           );
                         })}
@@ -444,7 +458,10 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                   <Space direction="vertical" style={{ width: "100%" }}>
                     <List
                       bordered
-                      dataSource={cardFaction?.enhancements
+                      dataSource={filterEnhancementsByFaction(
+                        cardFaction?.enhancements,
+                        settings?.showNonDefaultFactions,
+                      )
                         ?.filter(
                           (enhancement) =>
                             enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
