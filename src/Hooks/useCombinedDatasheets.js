@@ -39,17 +39,17 @@ export const useCombinedDatasheets = () => {
     if (selectedFaction.is_subfaction && settings.combineParentFactions) {
       const parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
 
-      if (parentFaction) {
-        let parentDatasheets = parentFaction?.datasheets
-          ?.filter((val) => val.factions.length === 1 && val.factions.includes(selectedFaction.parent_keyword))
+      if (parentFaction?.datasheets) {
+        let parentDatasheets = parentFaction.datasheets
+          .filter((val) => val.factions?.length === 1 && val.factions?.includes(selectedFaction.parent_keyword))
           .map((val) => ({ ...val, nonBase: true, parentFaction: true }));
 
         // Filter legends from parent
         if (!settings?.showLegends) {
-          parentDatasheets = parentDatasheets?.filter((sheet) => !sheet.legends);
+          parentDatasheets = parentDatasheets.filter((sheet) => !sheet.legends);
         }
 
-        if (parentDatasheets?.length > 0) {
+        if (parentDatasheets.length > 0) {
           sections.push({
             id: parentFaction.id,
             name: parentFaction.name,
@@ -69,8 +69,8 @@ export const useCombinedDatasheets = () => {
       selectedFaction.allied_factions.forEach((alliedFactionId) => {
         const alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
 
-        if (alliedFaction) {
-          let alliedDatasheets = alliedFaction?.datasheets?.map((val) => ({
+        if (alliedFaction?.datasheets) {
+          let alliedDatasheets = alliedFaction.datasheets.map((val) => ({
             ...val,
             nonBase: true,
             allied: true,
@@ -78,10 +78,10 @@ export const useCombinedDatasheets = () => {
 
           // Filter legends from allied
           if (!settings?.showLegends) {
-            alliedDatasheets = alliedDatasheets?.filter((sheet) => !sheet.legends);
+            alliedDatasheets = alliedDatasheets.filter((sheet) => !sheet.legends);
           }
 
-          if (alliedDatasheets?.length > 0) {
+          if (alliedDatasheets.length > 0) {
             sections.push({
               id: alliedFaction.id,
               name: alliedFaction.name,
