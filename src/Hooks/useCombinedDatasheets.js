@@ -18,7 +18,7 @@ export const useCombinedDatasheets = () => {
     }
 
     // Start with base faction datasheets
-    let baseDatasheets = [...(selectedFaction?.datasheets || [])];
+    let baseDatasheets = [...(selectedFaction.datasheets || [])];
 
     // Filter legends if setting is disabled
     if (!settings?.showLegends) {

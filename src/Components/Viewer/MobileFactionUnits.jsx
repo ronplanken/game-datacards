@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowLeft, LayoutGrid, SortAsc } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -120,8 +120,8 @@ export const MobileFactionUnits = () => {
     navigate(`/mobile/${factionSlug}/${unitSlug}`);
   };
 
-  // Get alphabetically sorted units
-  const alphabeticalUnits = [...datasheets].sort((a, b) => a.name.localeCompare(b.name));
+  // Get alphabetically sorted units - memoized to avoid re-sorting on every render
+  const alphabeticalUnits = useMemo(() => [...datasheets].sort((a, b) => a.name.localeCompare(b.name)), [datasheets]);
 
   if (!selectedFaction) {
     return null;
