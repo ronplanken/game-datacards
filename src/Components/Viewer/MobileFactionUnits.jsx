@@ -3,6 +3,7 @@ import { ArrowLeft, LayoutGrid, SortAsc } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
 import "./MobileFactionUnits.css";
 
 // Group units by role
@@ -30,7 +31,7 @@ const getLowestPoints = (unit) => {
 };
 
 // Unit list item component
-const UnitItem = ({ unit, factionSlug, onClick }) => {
+const UnitItem = ({ unit, onClick }) => {
   const points = getLowestPoints(unit);
 
   return (
@@ -49,10 +50,61 @@ const SectionHeader = ({ title, count }) => (
   </div>
 );
 
+// Faction section header (for parent/allied factions)
+const FactionSectionHeader = ({ name, count, isParent, isAllied }) => (
+  <div className={`faction-units-faction-header ${isParent ? "parent" : ""} ${isAllied ? "allied" : ""}`}>
+    <span className="faction-units-faction-name">{name}</span>
+    <span className="faction-units-faction-count">{count} units</span>
+  </div>
+);
+
+// Render grouped units for a single faction section
+const GroupedFactionUnits = ({ datasheets, onUnitClick }) => {
+  const groupedUnits = groupUnitsByRole(datasheets);
+
+  return (
+    <>
+      {groupedUnits.characters.length > 0 && (
+        <div className="faction-units-section">
+          <SectionHeader title="Characters" count={groupedUnits.characters.length} />
+          {groupedUnits.characters
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((unit) => (
+              <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
+            ))}
+        </div>
+      )}
+
+      {groupedUnits.battleline.length > 0 && (
+        <div className="faction-units-section">
+          <SectionHeader title="Battleline" count={groupedUnits.battleline.length} />
+          {groupedUnits.battleline
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((unit) => (
+              <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
+            ))}
+        </div>
+      )}
+
+      {groupedUnits.other.length > 0 && (
+        <div className="faction-units-section">
+          <SectionHeader title="Other" count={groupedUnits.other.length} />
+          {groupedUnits.other
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((unit) => (
+              <UnitItem key={unit.id} unit={unit} onClick={() => onUnitClick(unit)} />
+            ))}
+        </div>
+      )}
+    </>
+  );
+};
+
 export const MobileFactionUnits = () => {
   const navigate = useNavigate();
   const { selectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
+  const { datasheets, sections } = useCombinedDatasheets();
 
   // View mode: "grouped" or "alphabetical"
   const [viewMode, setViewMode] = useState(settings.mobileUnitsViewMode || "grouped");
@@ -73,9 +125,7 @@ export const MobileFactionUnits = () => {
     navigate(`/mobile/${factionSlug}/${unitSlug}`);
   };
 
-  // Get units data
-  const datasheets = selectedFaction?.datasheets || [];
-  const groupedUnits = groupUnitsByRole(datasheets);
+  // Get alphabetically sorted units
   const alphabeticalUnits = [...datasheets].sort((a, b) => a.name.localeCompare(b.name));
 
   if (!selectedFaction) {
@@ -118,58 +168,25 @@ export const MobileFactionUnits = () => {
       <div className="faction-units-list">
         {viewMode === "grouped" ? (
           <>
-            {groupedUnits.characters.length > 0 && (
-              <div className="faction-units-section">
-                <SectionHeader title="Characters" count={groupedUnits.characters.length} />
-                {groupedUnits.characters
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((unit) => (
-                    <UnitItem
-                      key={unit.id}
-                      unit={unit}
-                      factionSlug={factionSlug}
-                      onClick={() => handleUnitClick(unit)}
-                    />
-                  ))}
+            {sections.map((section) => (
+              <div key={section.id} className="faction-units-faction-section">
+                {/* Show faction header for parent/allied sections */}
+                {(section.isParent || section.isAllied) && (
+                  <FactionSectionHeader
+                    name={section.name}
+                    count={section.datasheets.length}
+                    isParent={section.isParent}
+                    isAllied={section.isAllied}
+                  />
+                )}
+                <GroupedFactionUnits datasheets={section.datasheets} onUnitClick={handleUnitClick} />
               </div>
-            )}
-
-            {groupedUnits.battleline.length > 0 && (
-              <div className="faction-units-section">
-                <SectionHeader title="Battleline" count={groupedUnits.battleline.length} />
-                {groupedUnits.battleline
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((unit) => (
-                    <UnitItem
-                      key={unit.id}
-                      unit={unit}
-                      factionSlug={factionSlug}
-                      onClick={() => handleUnitClick(unit)}
-                    />
-                  ))}
-              </div>
-            )}
-
-            {groupedUnits.other.length > 0 && (
-              <div className="faction-units-section">
-                <SectionHeader title="Other" count={groupedUnits.other.length} />
-                {groupedUnits.other
-                  .sort((a, b) => a.name.localeCompare(b.name))
-                  .map((unit) => (
-                    <UnitItem
-                      key={unit.id}
-                      unit={unit}
-                      factionSlug={factionSlug}
-                      onClick={() => handleUnitClick(unit)}
-                    />
-                  ))}
-              </div>
-            )}
+            ))}
           </>
         ) : (
           <div className="faction-units-section">
             {alphabeticalUnits.map((unit) => (
-              <UnitItem key={unit.id} unit={unit} factionSlug={factionSlug} onClick={() => handleUnitClick(unit)} />
+              <UnitItem key={unit.id} unit={unit} onClick={() => handleUnitClick(unit)} />
             ))}
           </div>
         )}
