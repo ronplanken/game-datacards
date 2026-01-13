@@ -44,6 +44,7 @@ import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
+import CardDesignerPage from "./Components/CardDesigner/CardDesignerPage";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
 import { MobileListProvider } from "./Components/Viewer/useMobileList";
@@ -235,6 +236,8 @@ const router = createBrowserRouter([
       { path: "mobile/:faction/stratagem/:stratagem", element: <ViewerMobile /> },
       { path: "mobile/:faction/allied/:alliedFaction/:alliedUnit?", element: <ViewerMobile /> },
       { path: "mobile/:faction?/:unit?", element: <ViewerMobile /> },
+      // Card Designer
+      { path: "card-designer", element: <CardDesignerPage /> },
       // Print and export routes
       { path: "print/:CategoryId", element: <Print /> },
       { path: "legacy-print/:CategoryId", element: <LegacyPrint /> },
