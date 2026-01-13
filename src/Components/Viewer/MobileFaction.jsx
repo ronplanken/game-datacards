@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -93,7 +93,7 @@ export const MobileFaction = () => {
     navigate(`/mobile/${factionSlug}/units`);
   };
 
-  const detachments = selectedFaction?.detachments || [];
+  const detachments = useMemo(() => selectedFaction?.detachments || [], [selectedFaction?.detachments]);
 
   useEffect(() => {
     if (settings?.selectedDetachment?.[selectedFaction?.id]) {

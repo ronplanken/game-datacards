@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Crown } from "lucide-react";
 import { message } from "antd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -37,7 +37,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   });
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
-  const detachments = cardFaction?.detachments || [];
+  const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   const warlordAlreadyAdded = lists[selectedList]?.datacards?.find((card) => card.warlord);
   const epicHeroAlreadyAdded = lists[selectedList]?.datacards?.find((card) => {
     return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.card.id;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { X, Copy, Crown, Trash2, Flame } from "lucide-react";
 import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
 import classNames from "classnames";
@@ -8,6 +8,7 @@ import { capitalizeSentence } from "../../Helpers/external.helpers";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { AddCard } from "../../Icons/AddCard";
 import { Datacard } from "../../Icons/Datacard";
 import { Datacard10e } from "../../Icons/Datacard10e";
@@ -73,32 +74,20 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     }
   }, [card, index]);
 
+  const { settings, updateSettings } = useSettingsStorage();
+
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
-  const detachments = cardFaction?.detachments || [];
+  const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
 
   const [selectedDetachment, setSelectedDetachment] = useState();
-  const [detachmentSettings, setDetachmentSettings] = useState({});
-
-  useEffect(() => {
-    // Load detachment settings from localStorage
-    const savedSettings = localStorage.getItem("settings");
-    if (savedSettings) {
-      try {
-        const parsed = JSON.parse(savedSettings);
-        setDetachmentSettings(parsed?.selectedDetachment || {});
-      } catch {
-        setDetachmentSettings({});
-      }
-    }
-  }, []);
 
   useEffect(() => {
     if (card?.detachment) {
       // Use the card's saved detachment (from import)
       setSelectedDetachment(card.detachment);
-    } else if (detachmentSettings?.[card?.faction_id]) {
+    } else if (settings?.selectedDetachment?.[card?.faction_id]) {
       // Check if saved detachment is still valid
-      const savedDetachment = detachmentSettings?.[card?.faction_id];
+      const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
       const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
       if (isStillValid) {
         setSelectedDetachment(savedDetachment);
@@ -108,7 +97,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     } else {
       setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [card, detachmentSettings, detachments]);
+  }, [card, settings?.selectedDetachment, detachments]);
 
   const warlordAlreadyAdded = category?.cards?.find((card) => card.warlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
@@ -443,15 +432,10 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                         style={{ width: "100%" }}
                         onChange={(value) => {
                           setSelectedDetachment(value);
-                          // Save to localStorage
-                          const savedSettings = localStorage.getItem("settings");
-                          const parsed = savedSettings ? JSON.parse(savedSettings) : {};
-                          const updatedSettings = {
-                            ...parsed,
-                            selectedDetachment: { ...parsed.selectedDetachment, [card.faction_id]: value },
-                          };
-                          localStorage.setItem("settings", JSON.stringify(updatedSettings));
-                          setDetachmentSettings(updatedSettings.selectedDetachment);
+                          updateSettings({
+                            ...settings,
+                            selectedDetachment: { ...settings?.selectedDetachment, [card.faction_id]: value },
+                          });
                         }}
                         value={selectedDetachment}>
                         {detachments?.map((d) => {
