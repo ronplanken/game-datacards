@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
@@ -86,6 +87,7 @@ export const MobileFaction = () => {
   const [showDetachmentPicker, setShowDetachmentPicker] = useState(false);
   const [stratagemTab, setStratagemTab] = useState("faction");
   const { settings, updateSettings } = useSettingsStorage();
+  const { datasheets: combinedDatasheets } = useCombinedDatasheets();
 
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
 
@@ -157,7 +159,7 @@ export const MobileFaction = () => {
       <button className="mobile-faction-units-button" onClick={handleBrowseUnits}>
         <List size={18} />
         <span>Browse All Units</span>
-        <span className="units-count">{selectedFaction?.datasheets?.length || 0}</span>
+        <span className="units-count">{combinedDatasheets?.length || 0}</span>
         <ChevronRight size={18} />
       </button>
 
