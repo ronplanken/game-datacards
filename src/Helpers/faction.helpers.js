@@ -80,10 +80,9 @@ export const filterDetachments = (detachments, showNonDefaultFactions) => {
  * Check if an item (stratagem, enhancement, rule) should be visible based on its detachment_faction
  * @param {object} item - Item with detachment_faction field
  * @param {boolean} showNonDefaultFactions - Whether to show all factions
- * @param {Array<string|object>} visibleDetachments - List of visible detachments
  * @returns {boolean} Whether the item should be shown
  */
-export const isItemVisibleByDetachmentFaction = (item, showNonDefaultFactions, visibleDetachments) => {
+export const isItemVisibleByDetachmentFaction = (item, showNonDefaultFactions) => {
   // If showing all factions, always visible
   if (showNonDefaultFactions) {
     return true;

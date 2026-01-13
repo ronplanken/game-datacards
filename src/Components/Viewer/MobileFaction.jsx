@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -99,24 +99,26 @@ export const MobileFaction = () => {
     navigate(`/mobile/${factionSlug}/units`);
   };
 
-  // Get filtered detachments based on settings
-  const visibleDetachments = filterDetachments(selectedFaction?.detachments, settings?.showNonDefaultFactions);
+  // Get filtered detachments based on settings - memoized to prevent infinite re-renders
+  const visibleDetachments = useMemo(
+    () => filterDetachments(selectedFaction?.detachments, settings?.showNonDefaultFactions),
+    [selectedFaction?.detachments, settings?.showNonDefaultFactions],
+  );
 
   useEffect(() => {
     if (settings?.selectedDetachment?.[selectedFaction?.id]) {
       // Check if the saved detachment is still visible
       const savedDetachment = settings?.selectedDetachment?.[selectedFaction?.id];
-      const isStillVisible = visibleDetachments.some(
-        (d) => getDetachmentName(d) === savedDetachment || getDetachmentName(d) === getDetachmentName(savedDetachment),
-      );
+      // savedDetachment is always a string (the detachment name stored in settings)
+      const isStillVisible = visibleDetachments?.some((d) => getDetachmentName(d) === savedDetachment);
       if (isStillVisible) {
         setSelectedDetachment(savedDetachment);
       } else {
         // Fall back to first visible detachment
-        setSelectedDetachment(getDetachmentName(visibleDetachments[0]));
+        setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
       }
     } else {
-      setSelectedDetachment(getDetachmentName(visibleDetachments[0]));
+      setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
     }
   }, [selectedFaction, settings, visibleDetachments]);
 

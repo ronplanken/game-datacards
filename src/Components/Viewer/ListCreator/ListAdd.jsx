@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Crown } from "lucide-react";
 import { message } from "antd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
@@ -42,8 +42,11 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.card.id;
   });
 
-  // Get filtered detachments based on settings
-  const visibleDetachments = filterDetachments(cardFaction?.detachments, settings?.showNonDefaultFactions);
+  // Get filtered detachments based on settings - memoized to prevent infinite re-renders
+  const visibleDetachments = useMemo(
+    () => filterDetachments(cardFaction?.detachments, settings?.showNonDefaultFactions),
+    [cardFaction?.detachments, settings?.showNonDefaultFactions],
+  );
 
   const [selectedDetachment, setSelectedDetachment] = useState();
 
@@ -51,9 +54,8 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     if (settings?.selectedDetachment?.[activeCard?.faction_id]) {
       // Check if saved detachment is still visible
       const savedDetachment = settings?.selectedDetachment?.[activeCard?.faction_id];
-      const isStillVisible = visibleDetachments?.some(
-        (d) => getDetachmentName(d) === savedDetachment || getDetachmentName(d) === getDetachmentName(savedDetachment),
-      );
+      // savedDetachment is always a string (the detachment name stored in settings)
+      const isStillVisible = visibleDetachments?.some((d) => getDetachmentName(d) === savedDetachment);
       if (isStillVisible) {
         setSelectedDetachment(savedDetachment);
       } else {
@@ -62,7 +64,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     } else {
       setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
     }
-  }, [cardFaction, settings, activeCard?.faction_id, visibleDetachments]);
+  }, [settings, activeCard?.faction_id, visibleDetachments]);
 
   // Reset state when panel opens with new card
   useEffect(() => {

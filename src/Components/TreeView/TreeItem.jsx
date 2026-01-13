@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { X, Copy, Crown, Trash2, Flame } from "lucide-react";
 import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
 import classNames from "classnames";
@@ -79,8 +79,11 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
 
   const [selectedDetachment, setSelectedDetachment] = useState();
 
-  // Get filtered detachments based on settings
-  const visibleDetachments = filterDetachments(cardFaction?.detachments, settings?.showNonDefaultFactions);
+  // Get filtered detachments based on settings - memoized to prevent infinite re-renders
+  const visibleDetachments = useMemo(
+    () => filterDetachments(cardFaction?.detachments, settings?.showNonDefaultFactions),
+    [cardFaction?.detachments, settings?.showNonDefaultFactions],
+  );
 
   useEffect(() => {
     if (card?.detachment) {
@@ -89,9 +92,8 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     } else if (settings?.selectedDetachment?.[card?.faction_id]) {
       // Check if saved detachment is still visible
       const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
-      const isStillVisible = visibleDetachments?.some(
-        (d) => getDetachmentName(d) === savedDetachment || getDetachmentName(d) === getDetachmentName(savedDetachment),
-      );
+      // savedDetachment is always a string (the detachment name stored in settings)
+      const isStillVisible = visibleDetachments?.some((d) => getDetachmentName(d) === savedDetachment);
       if (isStillVisible) {
         setSelectedDetachment(savedDetachment);
       } else {
@@ -100,7 +102,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     } else {
       setSelectedDetachment(getDetachmentName(visibleDetachments?.[0]));
     }
-  }, [card, cardFaction, settings, visibleDetachments]);
+  }, [card, settings, visibleDetachments]);
 
   const warlordAlreadyAdded = category?.cards?.find((card) => card.warlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
