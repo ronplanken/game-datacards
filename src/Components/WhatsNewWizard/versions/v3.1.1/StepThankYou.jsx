@@ -1,25 +1,22 @@
 import React from "react";
-import { Heart } from "lucide-react";
 
 /**
  * StepThankYou - Final step for v3.1.1
  *
- * Thanks users and invites them to try the new features.
+ * Thanks users and provides a link to the Discord community.
  *
  * @returns {JSX.Element} Thank you step content
  */
 export const StepThankYou = () => (
   <div className="wnw-thankyou-content">
-    <div className="wnw-thankyou-icon">
-      <Heart size={48} />
-    </div>
-    <h3 className="wnw-thankyou-title">Thank You!</h3>
-    <p className="wnw-thankyou-description">
-      Thank you for using Game Datacards! Your support helps us continue improving the application.
+    <h2 className="wnw-feature-title">You&apos;re All Set!</h2>
+    <p className="wnw-feature-description">
+      Thank you for using Game Datacards. We hope these updates help you create even better cards for your games.
     </p>
-    <p className="wnw-thankyou-cta">
-      Check out the reorganized chapter structure and explore all the available detachments for your army.
-    </p>
+    <p className="wnw-feature-description">Have feedback or want to discuss features? Join our Discord community!</p>
+    <a href="https://discord.gg/anfn4qTYC4" target="_blank" rel="noreferrer" className="wnw-discord-link">
+      <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2" alt="Join our Discord" />
+    </a>
   </div>
 );
 
