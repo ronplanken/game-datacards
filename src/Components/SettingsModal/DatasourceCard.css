@@ -23,7 +23,9 @@
 
 .datasource-card:hover {
   border-color: rgba(22, 119, 255, 0.3);
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 4px 16px rgba(22, 119, 255, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.04);
   transform: translateY(-1px);
 }
 
@@ -31,7 +33,9 @@
   border-color: rgba(22, 119, 255, 0.35);
   background: linear-gradient(135deg, rgba(230, 244, 255, 0.8) 0%, rgba(240, 245, 255, 0.6) 100%);
   padding: 10px 16px;
-  box-shadow: 0 4px 20px rgba(22, 119, 255, 0.12), 0 0 0 1px rgba(22, 119, 255, 0.1);
+  box-shadow:
+    0 4px 20px rgba(22, 119, 255, 0.12),
+    0 0 0 1px rgba(22, 119, 255, 0.1);
 }
 
 .datasource-card.active::after {

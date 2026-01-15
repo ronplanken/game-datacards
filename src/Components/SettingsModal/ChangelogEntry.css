@@ -44,13 +44,17 @@
   background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.15), 0 2px 4px rgba(22, 119, 255, 0.2);
+  box-shadow:
+    0 0 0 3px rgba(22, 119, 255, 0.15),
+    0 2px 4px rgba(22, 119, 255, 0.2);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .changelog-entry.collapsed::before {
   background: rgba(148, 163, 184, 0.4);
-  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 0 0 3px rgba(148, 163, 184, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .changelog-entry-header {
