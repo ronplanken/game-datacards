@@ -131,6 +131,17 @@ export const usePremiumFeatures = () => ({
   hasSubscription: false,
   hasCustomDatasources: false,
   hasDatasourceBrowser: false,
+  hasCardDesigner: false,
+});
+
+/**
+ * Stub for useProducts - product catalog for checkout
+ */
+export const useProducts = () => ({
+  products: null,
+  loading: false,
+  error: null,
+  getTierByProductId: () => null,
 });
 
 // =====================================================
@@ -233,3 +244,99 @@ export const ExportDatasourceModal = () => null;
 // =====================================================
 
 export const StepSubscription = () => null;
+
+// =====================================================
+// DESIGNER COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for DesignerPage - returns null (route hidden in community version)
+ */
+export const DesignerPage = () => null;
+
+/**
+ * Stub for TemplateStorageProvider - renders children only
+ */
+export const TemplateStorageProvider = ({ children }) => children;
+
+/**
+ * Stub for useTemplateStorage - no templates in public version
+ */
+export const useTemplateStorage = () => ({
+  // State
+  templateStorage: { version: "1.0.0", templates: [] },
+  activeTemplate: null,
+  templateModified: false,
+  saveStatus: "saved",
+  // Template operations - all no-ops
+  setActiveTemplate: () => {},
+  createTemplate: () => null,
+  saveTemplate: () => {},
+  updateActiveTemplate: () => {},
+  deleteTemplate: () => {},
+  duplicateTemplate: () => {},
+  renameTemplate: () => {},
+  exportTemplate: () => null,
+  importTemplate: () => null,
+  // Element operations - all no-ops
+  addElement: () => {},
+  updateElement: () => {},
+  removeElement: () => {},
+  reorderElements: () => {},
+  syncElementsFromCanvas: () => {},
+  // Canvas settings - no-op
+  updateCanvasSettings: () => {},
+  // Frame operations - all no-ops
+  moveElementToFrame: () => {},
+  moveElementToRoot: () => {},
+  getElementChildren: () => [],
+  buildElementTree: () => [],
+});
+
+/**
+ * Stub for useDataBinding - minimal implementation
+ */
+export const useDataBinding = () => ({
+  getAvailableBindings: () => null,
+  resolveBinding: (template) => template,
+  hasBindings: () => false,
+  extractBindings: () => [],
+  validateBinding: () => false,
+  createBindingString: (path) => `{{${path}}}`,
+  availableFormats: [],
+});
+
+/**
+ * Template presets constant (for compatibility)
+ */
+export const TEMPLATE_PRESETS = {
+  "40k-datacard": { name: "40K Datacard", width: 500, height: 700, targetFormat: "40k-10e" },
+  "40k-stratagem": { name: "40K Stratagem", width: 500, height: 350, targetFormat: "40k-10e" },
+  "aos-warscroll": { name: "AoS Warscroll", width: 500, height: 700, targetFormat: "aos" },
+  custom: { name: "Custom", width: 500, height: 700, targetFormat: "40k-10e" },
+};
+
+// =====================================================
+// TEMPLATE RENDERING COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for useTemplateRenderer - no-op in public version
+ */
+export const useTemplateRenderer = () => ({
+  renderTemplate: () => Promise.resolve(null),
+  isRendering: false,
+  error: null,
+  clearCache: () => {},
+  getTemplate: () => null,
+});
+
+/**
+ * Stub for TemplateRenderer - returns null (templates not available in community version)
+ */
+export const TemplateRenderer = () => null;
+
+/**
+ * Stub for TemplateSelector - returns null (templates not available in community version)
+ */
+export const TemplateSelector = () => null;
