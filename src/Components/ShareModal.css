@@ -84,7 +84,9 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
-  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   padding: 16px 0;
   pointer-events: auto;
   animation: shareFadeSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -262,7 +264,9 @@
 }
 
 .share-action-btn:hover {
-  box-shadow: 0 4px 20px rgba(22, 119, 255, 0.45), 0 0 24px rgba(22, 119, 255, 0.15);
+  box-shadow:
+    0 4px 20px rgba(22, 119, 255, 0.45),
+    0 0 24px rgba(22, 119, 255, 0.15);
   transform: translateY(-1px);
 }
 
