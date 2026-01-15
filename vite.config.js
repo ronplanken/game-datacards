@@ -4,6 +4,8 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 import path from "path";
 import fs from "fs";
 
+const packageJson = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
+
 const usePremiumPackage = process.env.VITE_USE_PREMIUM_PACKAGE === "true";
 const mainAppSrc = path.resolve(__dirname, "src");
 
@@ -120,5 +122,8 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ["react", "react-dom", "react-router-dom", "lucide-react", "uuid"],
+  },
+  define: {
+    "import.meta.env.VITE_VERSION": JSON.stringify(packageJson.version),
   },
 });
