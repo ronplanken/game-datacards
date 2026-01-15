@@ -54,7 +54,7 @@ export const WelcomeWizard = () => {
         wizard.goPrevious();
       }
     },
-    [isWizardVisible, wizard]
+    [isWizardVisible, wizard],
   );
 
   useEffect(() => {
@@ -201,6 +201,6 @@ export const WelcomeWizard = () => {
         />
       </div>
     </div>,
-    modalRoot
+    modalRoot,
   );
 };

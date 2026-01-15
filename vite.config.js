@@ -99,7 +99,7 @@ export default defineConfig({
       // e.g., ./Premium, ../Premium, ../../Premium, etc.
       ...(usePremiumPackage ? [{ find: /^(\.\.?\/)+Premium$/, replacement: "@gdc/premium" }] : []),
     ],
-    dedupe: ["react", "react-dom"],
+    dedupe: ["react", "react-dom", "@gdc/premium"],
   },
   css: {
     preprocessorOptions: {

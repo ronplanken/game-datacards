@@ -13,6 +13,7 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.8.0",
     "@supabase/supabase-js": "^2.39.0",
+    "@tabler/icons-react": "^3.36.1",
     "@tanstack/react-query": "^4.36.1",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
@@ -23,6 +24,7 @@
     "antd-prompt": "^0.7.1",
     "classnames": "^2.5.0",
     "compare-versions": "^4.1.4",
+    "fabric": "^7.1.0",
     "firebase": "^11.7.0",
     "fitty": "^2.4.0",
     "fuse.js": "^7.1.0",

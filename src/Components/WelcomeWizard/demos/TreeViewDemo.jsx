@@ -154,12 +154,12 @@ export const TreeViewDemo = ({ treeData: initialTreeData, onToggle }) => {
           return {
             ...item,
             children: item.children.map((child) =>
-              child.id === itemId ? { ...child, expanded: !child.expanded } : child
+              child.id === itemId ? { ...child, expanded: !child.expanded } : child,
             ),
           };
         }
         return item;
-      })
+      }),
     );
     onToggle?.(itemId);
   };

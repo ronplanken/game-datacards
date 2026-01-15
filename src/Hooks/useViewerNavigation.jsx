@@ -77,7 +77,7 @@ export function useViewerNavigation() {
       if (faction === "core") {
         // First check if the currently selected faction has this basic stratagem
         const hasStratagem = selectedFaction?.basicStratagems?.some(
-          (s) => s.name.replaceAll(" ", "-").toLowerCase() === stratagem
+          (s) => s.name.replaceAll(" ", "-").toLowerCase() === stratagem,
         );
         if (hasStratagem) {
           foundFaction = selectedFaction;
@@ -311,16 +311,16 @@ export function useViewerNavigation() {
     (factionName) => {
       navigate(`/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}`);
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToUnit = useCallback(
     (factionName, unitName) => {
       navigate(
-        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToStratagem = useCallback(
@@ -328,10 +328,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/stratagem/${stratagemName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToAlliedUnit = useCallback(
@@ -339,10 +339,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${mainFactionName.toLowerCase().replaceAll(" ", "-")}/allied/${alliedFactionName
           .toLowerCase()
-          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToManifestationLore = useCallback(
@@ -350,10 +350,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/manifestation-lore/${spellName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToSpellLore = useCallback(
@@ -361,10 +361,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/spell-lore/${spellName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   // Mobile navigation helpers
@@ -372,16 +372,16 @@ export function useViewerNavigation() {
     (factionName) => {
       navigate(`/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}`);
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileUnit = useCallback(
     (factionName, unitName) => {
       navigate(
-        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileStratagem = useCallback(
@@ -389,10 +389,10 @@ export function useViewerNavigation() {
       navigate(
         `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/stratagem/${stratagemName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileAlliedUnit = useCallback(
@@ -400,10 +400,10 @@ export function useViewerNavigation() {
       navigate(
         `/mobile/${mainFactionName.toLowerCase().replaceAll(" ", "-")}/allied/${alliedFactionName
           .toLowerCase()
-          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileEnhancement = useCallback(
@@ -411,19 +411,19 @@ export function useViewerNavigation() {
       navigate(
         `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/enhancement/${enhancementName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileRule = useCallback(
     (factionName, ruleName) => {
       navigate(
-        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/rule/${ruleName.replaceAll(" ", "-").toLowerCase()}`
+        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/rule/${ruleName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   return {

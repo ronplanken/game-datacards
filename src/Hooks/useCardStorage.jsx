@@ -349,7 +349,7 @@ export const CardStorageProviderComponent = (props) => {
       const newStorage = clone(prevStorage);
       // Also remove any sub-categories that have this category as parent
       const newCategories = newStorage.categories.filter(
-        (cat) => cat.uuid !== categoryId && cat.parentId !== categoryId
+        (cat) => cat.uuid !== categoryId && cat.parentId !== categoryId,
       );
       return {
         ...newStorage,
@@ -540,7 +540,7 @@ export const CardStorageProviderComponent = (props) => {
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
       const dsIndex = newStorage.categories.findIndex(
-        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource"
+        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource",
       );
       if (dsIndex === -1) return prevStorage;
 
@@ -583,7 +583,7 @@ export const CardStorageProviderComponent = (props) => {
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
       const dsIndex = newStorage.categories.findIndex(
-        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource"
+        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource",
       );
       if (dsIndex === -1) return prevStorage;
 
