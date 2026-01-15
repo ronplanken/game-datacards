@@ -7,9 +7,7 @@ function PropertiesPanel({ element, onUpdate }) {
     return (
       <div className="properties-panel">
         <div className="properties-panel-empty">
-          <p className="properties-panel-empty-text">
-            Select an element to edit its properties
-          </p>
+          <p className="properties-panel-empty-text">Select an element to edit its properties</p>
         </div>
       </div>
     );
@@ -106,8 +104,7 @@ function PropertiesPanel({ element, onUpdate }) {
           <select
             className="properties-select"
             value={element.properties.fontWeight || "normal"}
-            onChange={(e) => handleChange("properties.fontWeight", e.target.value)}
-          >
+            onChange={(e) => handleChange("properties.fontWeight", e.target.value)}>
             {Object.entries(FONT_WEIGHTS).map(([key, value]) => (
               <option key={key} value={value}>
                 {key}
@@ -129,8 +126,7 @@ function PropertiesPanel({ element, onUpdate }) {
           <select
             className="properties-select"
             value={element.properties.textAlign || "left"}
-            onChange={(e) => handleChange("properties.textAlign", e.target.value)}
-          >
+            onChange={(e) => handleChange("properties.textAlign", e.target.value)}>
             {Object.entries(TEXT_ALIGN).map(([key, value]) => (
               <option key={key} value={value}>
                 {key}
@@ -150,8 +146,7 @@ function PropertiesPanel({ element, onUpdate }) {
         <select
           className="properties-select"
           value={element.properties.shape || "rectangle"}
-          onChange={(e) => handleChange("properties.shape", e.target.value)}
-        >
+          onChange={(e) => handleChange("properties.shape", e.target.value)}>
           {Object.entries(SHAPE_TYPES).map(([key, value]) => (
             <option key={key} value={value}>
               {key}
@@ -207,9 +202,7 @@ function PropertiesPanel({ element, onUpdate }) {
             min={0}
             max={100}
           />
-          <span className="properties-range-value">
-            {Math.round((element.style?.opacity || 1) * 100)}%
-          </span>
+          <span className="properties-range-value">{Math.round((element.style?.opacity || 1) * 100)}%</span>
         </div>
         <div className="properties-field">
           <label className="properties-label">Rotation (deg)</label>

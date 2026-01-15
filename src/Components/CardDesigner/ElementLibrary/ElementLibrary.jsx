@@ -77,15 +77,12 @@ function ElementLibrary({ onAddElement }) {
             className={`element-library-item ${element.disabled ? "disabled" : ""}`}
             onClick={() => !element.disabled && handleAddElement(element.type)}
             disabled={element.disabled}
-            title={element.description}
-          >
+            title={element.description}>
             <div className="element-library-item-icon">{element.icon}</div>
             <div className="element-library-item-content">
               <div className="element-library-item-label">{element.label}</div>
               <div className="element-library-item-description">{element.description}</div>
-              {element.disabled && (
-                <div className="element-library-item-badge">Coming Soon</div>
-              )}
+              {element.disabled && <div className="element-library-item-badge">Coming Soon</div>}
             </div>
           </button>
         ))}
@@ -93,8 +90,7 @@ function ElementLibrary({ onAddElement }) {
 
       <div className="element-library-footer">
         <p className="element-library-help-text">
-          💡 Tip: Click an element to add it to the center of the canvas. Drag elements to
-          reposition them.
+          💡 Tip: Click an element to add it to the center of the canvas. Drag elements to reposition them.
         </p>
       </div>
     </div>

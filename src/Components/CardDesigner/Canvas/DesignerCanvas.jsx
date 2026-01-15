@@ -155,14 +155,13 @@ function DesignerCanvas({
                 element.properties.verticalAlign === "top"
                   ? "flex-start"
                   : element.properties.verticalAlign === "bottom"
-                  ? "flex-end"
-                  : "center",
+                    ? "flex-end"
+                    : "center",
               whiteSpace: "pre-wrap",
               overflow: "hidden",
             }}
             onClick={(e) => handleElementClick(e, element.id)}
-            onMouseDown={(e) => handleMouseDown(e, element)}
-          >
+            onMouseDown={(e) => handleMouseDown(e, element)}>
             {element.properties.content}
           </div>
         );
@@ -171,9 +170,7 @@ function DesignerCanvas({
         const shapeStyle = {
           ...commonStyle,
           backgroundColor: element.properties.fill || "#cccccc",
-          border: `${element.properties.strokeWidth || 1}px solid ${
-            element.properties.stroke || "#000000"
-          }`,
+          border: `${element.properties.strokeWidth || 1}px solid ${element.properties.stroke || "#000000"}`,
           borderRadius: element.properties.shape === "circle" ? "50%" : "0",
         };
 
@@ -203,8 +200,7 @@ function DesignerCanvas({
               color: "#999",
             }}
             onClick={(e) => handleElementClick(e, element.id)}
-            onMouseDown={(e) => handleMouseDown(e, element)}
-          >
+            onMouseDown={(e) => handleMouseDown(e, element)}>
             {element.type}
           </div>
         );
@@ -223,8 +219,7 @@ function DesignerCanvas({
           position: "relative",
           boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
         }}
-        onClick={handleCanvasClick}
-      >
+        onClick={handleCanvasClick}>
         {/* Grid overlay */}
         {showGrid && (
           <svg
@@ -236,8 +231,7 @@ function DesignerCanvas({
               width: "100%",
               height: "100%",
               pointerEvents: "none",
-            }}
-          >
+            }}>
             {/* Vertical lines */}
             {gridLines.vertical.map((x, i) => (
               <line
@@ -247,14 +241,10 @@ function DesignerCanvas({
                 x2={x * zoom}
                 y2={canvasHeight}
                 stroke={
-                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0
-                    ? GRID_DISPLAY.MAJOR_LINE_COLOR
-                    : GRID_DISPLAY.LINE_COLOR
+                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0 ? GRID_DISPLAY.MAJOR_LINE_COLOR : GRID_DISPLAY.LINE_COLOR
                 }
                 strokeWidth={
-                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0
-                    ? GRID_DISPLAY.MAJOR_LINE_WIDTH
-                    : GRID_DISPLAY.LINE_WIDTH
+                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0 ? GRID_DISPLAY.MAJOR_LINE_WIDTH : GRID_DISPLAY.LINE_WIDTH
                 }
               />
             ))}
@@ -268,14 +258,10 @@ function DesignerCanvas({
                 x2={canvasWidth}
                 y2={y * zoom}
                 stroke={
-                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0
-                    ? GRID_DISPLAY.MAJOR_LINE_COLOR
-                    : GRID_DISPLAY.LINE_COLOR
+                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0 ? GRID_DISPLAY.MAJOR_LINE_COLOR : GRID_DISPLAY.LINE_COLOR
                 }
                 strokeWidth={
-                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0
-                    ? GRID_DISPLAY.MAJOR_LINE_WIDTH
-                    : GRID_DISPLAY.LINE_WIDTH
+                  i % GRID_DISPLAY.MAJOR_LINE_INTERVAL === 0 ? GRID_DISPLAY.MAJOR_LINE_WIDTH : GRID_DISPLAY.LINE_WIDTH
                 }
               />
             ))}

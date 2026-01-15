@@ -50,9 +50,7 @@ function designerReducer(state, action) {
         ...state,
         template: {
           ...state.template,
-          elements: state.template.elements.map((el) =>
-            el.id === action.id ? { ...el, ...action.updates } : el
-          ),
+          elements: state.template.elements.map((el) => (el.id === action.id ? { ...el, ...action.updates } : el)),
         },
         history: [...state.history.slice(0, state.historyIndex + 1), state.template],
         historyIndex: state.historyIndex + 1,
@@ -73,9 +71,7 @@ function designerReducer(state, action) {
     case "SELECT_ELEMENT":
       return {
         ...state,
-        selectedElements: action.multi
-          ? [...state.selectedElements, action.id]
-          : [action.id],
+        selectedElements: action.multi ? [...state.selectedElements, action.id] : [action.id],
       };
 
     case "DESELECT_ALL":
