@@ -134,7 +134,7 @@ export const SettingsModal = () => {
       if (result.success) {
         // Update the local datasource with cloudId
         const updatedDatasources = settings.customDatasources.map((ds) =>
-          ds.id === datasourceId ? { ...ds, cloudId: result.cloudId } : ds
+          ds.id === datasourceId ? { ...ds, cloudId: result.cloudId } : ds,
         );
         updateSettings({ ...settings, customDatasources: updatedDatasources });
         message.success("Datasource uploaded to cloud successfully");
@@ -157,7 +157,7 @@ export const SettingsModal = () => {
     if (publishingDatasourceId && shareCode) {
       // Update the local datasource with published state
       const updatedDatasources = settings.customDatasources.map((ds) =>
-        ds.id === publishingDatasourceId ? { ...ds, isPublished: true, shareCode } : ds
+        ds.id === publishingDatasourceId ? { ...ds, isPublished: true, shareCode } : ds,
       );
       updateSettings({ ...settings, customDatasources: updatedDatasources });
     }
@@ -172,7 +172,7 @@ export const SettingsModal = () => {
         setIsModalVisible(false);
       }
     },
-    [isModalVisible]
+    [isModalVisible],
   );
 
   useEffect(() => {
@@ -262,7 +262,7 @@ export const SettingsModal = () => {
                       {(() => {
                         // Check if a custom datasource is active
                         const activeCustomDs = settings.customDatasources?.find(
-                          (ds) => ds.id === settings.selectedDataSource
+                          (ds) => ds.id === settings.selectedDataSource,
                         );
 
                         if (activeCustomDs) {
@@ -469,7 +469,7 @@ export const SettingsModal = () => {
                           { id: "aos", title: "Age of Sigmar", hasUpdate: true },
                         ];
                         const isCustomDatasourceActive = settings.customDatasources?.some(
-                          (ds) => ds.id === settings.selectedDataSource
+                          (ds) => ds.id === settings.selectedDataSource,
                         );
                         return datasources.map((ds) => {
                           const isActive = !isCustomDatasourceActive && ds.id === settings.selectedDataSource;

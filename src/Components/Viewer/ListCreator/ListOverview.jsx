@@ -165,7 +165,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
           `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`,
           {
             state: { cloudCard: card },
-          }
+          },
         );
         handleClose();
       }
@@ -177,7 +177,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`,
       {
         state: isCloudCategory ? { cloudCard: card } : { listCard: card },
-      }
+      },
     );
     handleClose();
   };

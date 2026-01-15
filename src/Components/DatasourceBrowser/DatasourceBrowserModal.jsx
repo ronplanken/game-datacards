@@ -52,7 +52,7 @@ export const DatasourceBrowserModal = ({ isOpen, onClose }) => {
         onClose();
       }
     },
-    [isOpen, onClose, showDetailModal]
+    [isOpen, onClose, showDetailModal],
   );
 
   useEffect(() => {
@@ -167,8 +167,8 @@ export const DatasourceBrowserModal = ({ isOpen, onClose }) => {
                 {browseFilters.search
                   ? `Search Results for "${browseFilters.search}"`
                   : browseFilters.gameSystem
-                  ? GAME_SYSTEMS.find((g) => g.value === browseFilters.gameSystem)?.label
-                  : "All Datasources"}
+                    ? GAME_SYSTEMS.find((g) => g.value === browseFilters.gameSystem)?.label
+                    : "All Datasources"}
               </span>
             </div>
 
@@ -219,6 +219,6 @@ export const DatasourceBrowserModal = ({ isOpen, onClose }) => {
         <DatasourceDetailModal datasource={selectedDatasource} isOpen={showDetailModal} onClose={handleDetailClose} />
       )}
     </div>,
-    document.body
+    document.body,
   );
 };

@@ -7,6 +7,7 @@ import { useSettingsStorage } from "../../Hooks/useSettingsStorage.jsx";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage.jsx";
 import { EnhancementCard } from "./EnhancementCard.jsx";
 import { RuleCard } from "./RuleCard.jsx";
+import { TemplateRenderer } from "../../Premium";
 
 export const Warhammer40K10eCardDisplay = ({
   type,
@@ -44,18 +45,30 @@ export const Warhammer40K10eCardDisplay = ({
       {!type && activeCard && (
         <>
           <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
-            {activeCard?.cardType === "stratagem" && <StratagemCard stratagem={activeCard} />}
-            {activeCard?.cardType === "enhancement" && <EnhancementCard enhancement={activeCard} />}
-            {activeCard?.cardType === "DataCard" && <UnitCard unit={activeCard} side={side} />}
-            {activeCard?.cardType === "rule" && <RuleCard rule={activeCard} />}
+            {activeCard?.cardType === "stratagem" && !activeCard?.templateId && (
+              <StratagemCard stratagem={activeCard} />
+            )}
+            {activeCard?.cardType === "enhancement" && !activeCard?.templateId && (
+              <EnhancementCard enhancement={activeCard} />
+            )}
+            {activeCard?.cardType === "DataCard" && !activeCard?.templateId && (
+              <UnitCard unit={activeCard} side={side} />
+            )}
+            {activeCard?.cardType === "rule" && !activeCard?.templateId && <RuleCard rule={activeCard} />}
+            {activeCard?.templateId && (
+              <TemplateRenderer templateId={activeCard.templateId} card={activeCard} faction={cardFaction} />
+            )}
           </Col>
         </>
       )}
-      {!type && card && card.cardType === "DataCard" && <UnitCard side={side} unit={card} />}
-      {!type && card && card.cardType === "enhancement" && <EnhancementCard enhancement={card} />}
-      {!type && card && card.cardType === "stratagem" && <StratagemCard stratagem={card} />}
-      {!type && card && card.cardType === "rule" && <RuleCard rule={card} />}
-      {type === "print" && card && card?.cardType === "DataCard" && (
+      {!type && card && card.cardType === "DataCard" && !card.templateId && <UnitCard side={side} unit={card} />}
+      {!type && card && card.cardType === "enhancement" && !card.templateId && <EnhancementCard enhancement={card} />}
+      {!type && card && card.cardType === "stratagem" && !card.templateId && <StratagemCard stratagem={card} />}
+      {!type && card && card.cardType === "rule" && !card.templateId && <RuleCard rule={card} />}
+      {!type && card && card.templateId && (
+        <TemplateRenderer templateId={card.templateId} card={card} faction={cardFaction} />
+      )}
+      {type === "print" && card && card?.cardType === "DataCard" && !card?.templateId && (
         <div
           className="data-40k-10e"
           style={
@@ -100,6 +113,22 @@ export const Warhammer40K10eCardDisplay = ({
               "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
               "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
             }}
+          />
+        </div>
+      )}
+      {type === "print" && card && card?.templateId && (
+        <div
+          className="data-40k-10e"
+          style={{
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
+          }}>
+          <TemplateRenderer
+            templateId={card.templateId}
+            card={card}
+            faction={cardFaction}
+            mode="print"
+            pixelRatio={2}
           />
         </div>
       )}
@@ -206,7 +235,7 @@ export const Warhammer40K10eCardDisplay = ({
             transform: `scale(${cardScaling / 100})`,
             width: "100%",
           }}>
-          {activeCard?.cardType === "DataCard" && (
+          {activeCard?.cardType === "DataCard" && !activeCard?.templateId && (
             <UnitCard
               side={side}
               unit={activeCard}
@@ -217,7 +246,7 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
-          {activeCard?.cardType === "stratagem" && (
+          {activeCard?.cardType === "stratagem" && !activeCard?.templateId && (
             <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <StratagemCard
                 stratagem={activeCard}
@@ -227,7 +256,7 @@ export const Warhammer40K10eCardDisplay = ({
               />
             </div>
           )}
-          {activeCard?.cardType === "enhancement" && (
+          {activeCard?.cardType === "enhancement" && !activeCard?.templateId && (
             <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <EnhancementCard
                 enhancement={activeCard}
@@ -237,12 +266,17 @@ export const Warhammer40K10eCardDisplay = ({
               />
             </div>
           )}
-          {activeCard?.cardType === "rule" && (
+          {activeCard?.cardType === "rule" && !activeCard?.templateId && (
             <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <RuleCard rule={activeCard} className={"shared-rule"} paddingTop="0px" cardStyle={{ width: "100%" }} />
             </div>
           )}
-          {card?.cardType === "DataCard" && (
+          {activeCard?.templateId && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <TemplateRenderer templateId={activeCard.templateId} card={activeCard} faction={cardFaction} />
+            </div>
+          )}
+          {card?.cardType === "DataCard" && !card?.templateId && (
             <UnitCard
               side={side}
               unit={card}
@@ -252,6 +286,11 @@ export const Warhammer40K10eCardDisplay = ({
                 gap: printPadding,
               }}
             />
+          )}
+          {card?.templateId && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <TemplateRenderer templateId={card.templateId} card={card} faction={cardFaction} />
+            </div>
           )}
         </div>
       )}

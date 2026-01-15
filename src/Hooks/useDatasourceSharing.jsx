@@ -119,7 +119,7 @@ export function DatasourceSharingProvider({ children }) {
         setIsLoadingPublic(false);
       }
     },
-    [browseFilters, pagination.offset]
+    [browseFilters, pagination.offset],
   );
 
   /**
@@ -241,7 +241,7 @@ export function DatasourceSharingProvider({ children }) {
 
         // Update browse list to show subscribed state
         setPublicDatasources((prev) =>
-          prev.map((ds) => (ds.id === datasourceId ? { ...ds, is_subscribed: true } : ds))
+          prev.map((ds) => (ds.id === datasourceId ? { ...ds, is_subscribed: true } : ds)),
         );
 
         message.success(`Subscribed to "${datasource.name}"`);
@@ -252,7 +252,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMySubscriptions]
+    [user, fetchMySubscriptions],
   );
 
   /**
@@ -285,7 +285,7 @@ export function DatasourceSharingProvider({ children }) {
 
         // Update browse list
         setPublicDatasources((prev) =>
-          prev.map((ds) => (ds.id === datasourceId ? { ...ds, is_subscribed: false } : ds))
+          prev.map((ds) => (ds.id === datasourceId ? { ...ds, is_subscribed: false } : ds)),
         );
 
         // Remove from available updates
@@ -299,7 +299,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMySubscriptions]
+    [user, fetchMySubscriptions],
   );
 
   /**
@@ -371,7 +371,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMySubscriptions]
+    [user, fetchMySubscriptions],
   );
 
   /**
@@ -451,7 +451,7 @@ export function DatasourceSharingProvider({ children }) {
         customDatasources: updatedDatasources,
       });
     },
-    [settings, updateSettings]
+    [settings, updateSettings],
   );
 
   /**
@@ -473,12 +473,12 @@ export function DatasourceSharingProvider({ children }) {
               lastCloudVersion: subscriptionData.version_number,
               lastUpdated: new Date().toISOString(),
             }
-          : ds
+          : ds,
       );
 
       updateSettings({ ...settings, customDatasources: updated });
     },
-    [settings, updateSettings]
+    [settings, updateSettings],
   );
 
   /**
@@ -500,7 +500,7 @@ export function DatasourceSharingProvider({ children }) {
         selectedDataSource: settings.selectedDataSource === entry.id ? "basic" : settings.selectedDataSource,
       });
     },
-    [settings, updateSettings]
+    [settings, updateSettings],
   );
 
   /**
@@ -595,7 +595,7 @@ export function DatasourceSharingProvider({ children }) {
                 cloudId: data.id,
                 isUploaded: true,
               }
-            : ds
+            : ds,
         );
 
         updateSettings({ ...settings, customDatasources: updatedDatasources });
@@ -613,7 +613,7 @@ export function DatasourceSharingProvider({ children }) {
         setIsUploading(false);
       }
     },
-    [user, canPerformAction, settings, updateSettings, fetchMyDatasources]
+    [user, canPerformAction, settings, updateSettings, fetchMyDatasources],
   );
 
   /**
@@ -656,7 +656,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMyDatasources]
+    [user, fetchMyDatasources],
   );
 
   /**
@@ -690,7 +690,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMyDatasources]
+    [user, fetchMyDatasources],
   );
 
   /**
@@ -731,7 +731,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMyDatasources]
+    [user, fetchMyDatasources],
   );
 
   /**
@@ -780,7 +780,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMyDatasources]
+    [user, fetchMyDatasources],
   );
 
   /**
@@ -824,7 +824,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMyDatasources]
+    [user, fetchMyDatasources],
   );
 
   /**
@@ -851,7 +851,7 @@ export function DatasourceSharingProvider({ children }) {
 
         // Remove cloudId from local registry
         const updatedDatasources = (settings.customDatasources || []).map((ds) =>
-          ds.cloudId === datasourceDbId ? { ...ds, cloudId: null, isUploaded: false } : ds
+          ds.cloudId === datasourceDbId ? { ...ds, cloudId: null, isUploaded: false } : ds,
         );
 
         updateSettings({ ...settings, customDatasources: updatedDatasources });
@@ -867,7 +867,7 @@ export function DatasourceSharingProvider({ children }) {
         return { success: false, error: err.message };
       }
     },
-    [user, settings, updateSettings, fetchMyDatasources]
+    [user, settings, updateSettings, fetchMyDatasources],
   );
 
   // ============================================
@@ -906,7 +906,7 @@ export function DatasourceSharingProvider({ children }) {
         });
       }
     },
-    [subscriptions]
+    [subscriptions],
   );
 
   // Subscribe to realtime changes for subscribed datasources
@@ -931,7 +931,7 @@ export function DatasourceSharingProvider({ children }) {
           if (subscribedIds.includes(payload.new?.id)) {
             handleRealtimeUpdate(payload);
           }
-        }
+        },
       )
       .subscribe();
 

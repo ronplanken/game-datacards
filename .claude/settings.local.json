@@ -43,7 +43,21 @@
       "Bash(git push)",
       "Bash(git push:*)",
       "WebSearch",
-      "WebFetch(domain:docs.creem.io)"
+      "WebFetch(domain:docs.creem.io)",
+      "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && head -30 {}')",
+      "Bash(curl:*)",
+      "Bash(yarn start:premium)",
+      "mcp__chrome-devtools__press_key",
+      "WebFetch(domain:lucide.dev)",
+      "Bash(node -e:*)",
+      "WebFetch(domain:fabricjs.com)",
+      "WebFetch(domain:phosphoricons.com)",
+      "mcp__chrome-devtools__list_network_requests",
+      "Bash(readlink:*)",
+      "mcp__chrome-devtools__hover",
+      "mcp__chrome-devtools__fill",
+      "mcp__chrome-devtools__resize_page",
+      "Bash(git diff:*)"
     ]
   }
 }

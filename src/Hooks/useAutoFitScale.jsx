@@ -22,7 +22,7 @@ export function useAutoFitScale(containerRef, cardType = "unit", isEnabled = tru
       const calculatedScale = Math.min(1, availableWidth / cardWidth);
       return Math.max(0.25, calculatedScale);
     },
-    [cardType, isEnabled]
+    [cardType, isEnabled],
   );
 
   useEffect(() => {

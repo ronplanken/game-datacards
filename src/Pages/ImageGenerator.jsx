@@ -139,7 +139,7 @@ export const ImageGenerator = () => {
               .filter((f) => f.id === faction)[0]
               ?.datasheets[index].name.replaceAll(" ", "_")
               .toLowerCase()}-front.png`,
-            file
+            file,
           );
         });
         if (settings.showCardsAsDoubleSided !== true) {
@@ -154,7 +154,7 @@ export const ImageGenerator = () => {
                 .filter((f) => f.id === faction)[0]
                 ?.datasheets[index].name.replaceAll(" ", "_")
                 .toLowerCase()}-back.png`,
-              file
+              file,
             );
           });
         }
@@ -174,7 +174,7 @@ export const ImageGenerator = () => {
               ?.stratagems[index].name.replaceAll(" ", "_")
               .replaceAll("&", "and")
               .toLowerCase()}.png`,
-            file
+            file,
           );
         });
       }
@@ -189,7 +189,7 @@ export const ImageGenerator = () => {
       basicStrats?.forEach(async (file, index) => {
         zip.file(
           `basic/${dataSource.data[0]?.basicStratagems[index].name.replaceAll(" ", "_").toLowerCase()}.png`,
-          file
+          file,
         );
       });
     }

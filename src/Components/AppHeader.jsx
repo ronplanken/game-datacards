@@ -37,6 +37,7 @@ export const AppHeader = ({
 
   const isEditorPage = location.pathname === "/" || location.pathname === "";
   const isViewerPage = location.pathname.startsWith("/viewer");
+  const isDesignerPage = location.pathname.startsWith("/designer");
 
   return (
     <>
@@ -64,6 +65,9 @@ export const AppHeader = ({
                 </Link>
                 <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
                   Viewer
+                </Link>
+                <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
+                  Designer
                 </Link>
               </nav>
             )}

@@ -328,7 +328,7 @@ export const Importer = () => {
     const result = await importCustomDatasource(
       dsPreview.data,
       dsPreview.sourceType,
-      dsPreview.sourceType === "url" ? dsPreview.sourceUrl : undefined
+      dsPreview.sourceType === "url" ? dsPreview.sourceUrl : undefined,
     );
 
     if (result.success) {
@@ -378,7 +378,7 @@ export const Importer = () => {
         factionEnhancement = enhancements.find(
           (e) =>
             e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
-            e.detachment?.toLowerCase() === listDetachment.toLowerCase()
+            e.detachment?.toLowerCase() === listDetachment.toLowerCase(),
         );
       }
 
@@ -475,8 +475,8 @@ export const Importer = () => {
     if (datasheet) {
       setGwAppUnits((prev) =>
         prev.map((unit, idx) =>
-          idx === unitIndex ? { ...unit, matchedCard: datasheet, matchStatus: "confident", skipped: false } : unit
-        )
+          idx === unitIndex ? { ...unit, matchedCard: datasheet, matchStatus: "confident", skipped: false } : unit,
+        ),
       );
     }
   };
@@ -1006,7 +1006,7 @@ export const Importer = () => {
               </div>
             </div>
           </div>,
-          modalRoot
+          modalRoot,
         )}
       <Tooltip content="Import category or datasource" placement="bottom-start">
         <Button

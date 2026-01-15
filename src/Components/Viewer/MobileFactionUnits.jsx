@@ -19,7 +19,7 @@ const groupUnitsByRole = (datasheets) => {
       }
       return groups;
     },
-    { characters: [], battleline: [], other: [] }
+    { characters: [], battleline: [], other: [] },
   );
 };
 

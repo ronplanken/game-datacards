@@ -24,6 +24,9 @@ import {
   MobilePasswordResetPage,
   MobileTwoFactorPage,
   useProducts,
+  DesignerPage,
+  usePremiumFeatures,
+  TemplateStorageProvider,
 } from "./Premium";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
@@ -114,6 +117,12 @@ const WhatsNewWizardSelector = () => {
   return isMobileRoute ? <MobileWhatsNewWizard /> : <WhatsNewWizard />;
 };
 
+// Conditional Designer route - only renders if premium feature is available
+const DesignerRoute = () => {
+  const { hasCardDesigner } = usePremiumFeatures();
+  return hasCardDesigner ? <DesignerPage /> : null;
+};
+
 // Component to handle checkout success redirect
 // Creem redirects with: checkout_id, order_id, customer_id, subscription_id, product_id, signature
 const CheckoutSuccessHandler = () => {
@@ -180,14 +189,16 @@ const RootLayout = () => (
                   <CardStorageProviderComponent>
                     <SyncProvider>
                       <CloudCategoriesProvider>
-                        <MobileListProvider>
-                          <Outlet />
-                          <ScrollRestoration />
-                          <WizardSelector />
-                          <WhatsNewWizardSelector />
-                          <CheckoutSuccessHandler />
-                          <SyncConflictHandler />
-                        </MobileListProvider>
+                        <TemplateStorageProvider>
+                          <MobileListProvider>
+                            <Outlet />
+                            <ScrollRestoration />
+                            <WizardSelector />
+                            <WhatsNewWizardSelector />
+                            <CheckoutSuccessHandler />
+                            <SyncConflictHandler />
+                          </MobileListProvider>
+                        </TemplateStorageProvider>
                       </CloudCategoriesProvider>
                     </SyncProvider>
                   </CardStorageProviderComponent>
@@ -209,6 +220,8 @@ const router = createBrowserRouter([
     children: [
       // Root route - redirect based on device
       { path: "/", element: isMobile ? <Navigate to="/mobile" replace /> : <App /> },
+      // Designer route (premium only)
+      { path: "designer", element: <DesignerRoute /> },
       // Shared card view
       { path: "shared/:Id", element: <Shared /> },
       // Desktop viewer routes
