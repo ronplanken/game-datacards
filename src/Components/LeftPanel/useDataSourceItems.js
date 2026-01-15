@@ -43,7 +43,7 @@ const groupWarscrollsByRole = (warscrolls) => {
       factionTerrain: [],
       manifestations: [],
       other: [],
-    }
+    },
   );
 };
 
@@ -202,9 +202,9 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       } else {
         const basicStratagems = searchText
           ? selectedFaction.basicStratagems?.filter((stratagem) =>
-              stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+              stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
             )
-          : selectedFaction.basicStratagems ?? [];
+          : (selectedFaction.basicStratagems ?? []);
 
         return [
           { type: "header", name: "Basic stratagems" },
@@ -222,7 +222,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
 
       const mainEnhancements = searchText
         ? filteredEnhancements?.filter((enhancement) =>
-            enhancement.name.toLowerCase().includes(searchText.toLowerCase())
+            enhancement.name.toLowerCase().includes(searchText.toLowerCase()),
           )
         : filteredEnhancements;
       return mainEnhancements;
@@ -237,9 +237,9 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       } else {
         const basicSecondaries = searchText
           ? selectedFaction.basicSecondaries?.filter((secondary) =>
-              secondary.name.toLowerCase().includes(searchText.toLowerCase())
+              secondary.name.toLowerCase().includes(searchText.toLowerCase()),
             )
-          : selectedFaction.basicSecondaries ?? [];
+          : (selectedFaction.basicSecondaries ?? []);
 
         return [
           { type: "header", name: "Basic secondaries" },
@@ -345,7 +345,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               cardType: "warscroll",
               source: "aos",
               faction_id: w.faction_id || selectedFaction.id,
-            }))
+            })),
           );
         }
       });
@@ -385,7 +385,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               loreName: lore.name,
               source: "aos",
               faction_id: lore.faction_id || selectedFaction.id,
-            }))
+            })),
           );
         }
       });
@@ -418,7 +418,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               loreName: lore.name,
               source: "aos",
               faction_id: selectedFaction.id,
-            }))
+            })),
           );
         }
       });

@@ -60,7 +60,7 @@ export const useWelcomeWizard = (settings, updateSettings) => {
 
       setCurrentStep(stepIndex);
     },
-    [currentStep]
+    [currentStep],
   );
 
   // Navigate to next step
@@ -86,7 +86,7 @@ export const useWelcomeWizard = (settings, updateSettings) => {
         updateSettings({ ...settings, selectedDataSource: systemId });
       }
     },
-    [settings, updateSettings]
+    [settings, updateSettings],
   );
 
   // Demo tree interactions
