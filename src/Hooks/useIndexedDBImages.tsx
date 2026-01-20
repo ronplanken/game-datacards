@@ -28,15 +28,14 @@ export function useIndexedDBImages() {
         };
 
         request.onsuccess = (event) => {
-          const database = event.target.result;
+          const database = request.result;
           setDb(database);
           setIsReady(true);
         };
 
         request.onupgradeneeded = (event) => {
           // TODO check which is correct
-          const database = event.target.result;
-          // const database = request.result;
+          const database = request.result;
 
           if (!database.objectStoreNames.contains(STORE_NAME)) {
             const objectStore = database.createObjectStore(STORE_NAME, { keyPath: "id" });
@@ -62,7 +61,7 @@ export function useIndexedDBImages() {
       throw new Error("IndexedDB is not ready");
     }
 
-    if (!(file instanceof Blob)) {
+    if (!(file instanceof File)) {
       throw new Error("File must be a Blob or File object");
     }
 
@@ -83,7 +82,7 @@ export function useIndexedDBImages() {
       const request = store.put(imageData);
 
       request.onsuccess = () => {
-        resolve();
+        resolve(undefined);
       };
 
       request.onerror = () => {

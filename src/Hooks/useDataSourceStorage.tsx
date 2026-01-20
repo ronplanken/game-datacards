@@ -134,7 +134,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
       // Handle custom datasources (prefixed with "custom-")
       if (settings.selectedDataSource?.startsWith("custom-")) {
-        const storedData = await dataStore.getItem(settings.selectedDataSource);
+        const storedData = await dataStore.getItem<BasicData>(settings.selectedDataSource);
         if (storedData) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);

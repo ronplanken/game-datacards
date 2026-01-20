@@ -106,7 +106,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
             label: (
               <Dropdown
                 getPopupContainer={(node) => node}
-                placement="rightTop"
+                placement="topRight"
                 overlayStyle={{ minWidth: 200 }}
                 menu={{
                   items: buildCategoryMenuItems(categories),
@@ -135,7 +135,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
             label: (
               <Dropdown
                 getPopupContainer={(node) => node}
-                placement="rightTop"
+                placement="topRight"
                 overlayStyle={{ minWidth: 200 }}
                 menu={{
                   items: buildCategoryMenuItems(categories),
