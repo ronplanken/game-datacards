@@ -51,34 +51,41 @@ export const ImageExport = () => {
     overlayRef.current.style.display = "inline-flex";
     await sleep(100);
 
+    // skipFonts: true works around a bug in html-to-image where the font embedding code
+    // calls .trim() on undefined font-family values, causing "can't access property 'trim'" errors.
+    // Fonts still render correctly since they're already loaded in the browser when the DOM is captured.
     const files = cardsFrontRef?.current?.map(async (card, index) => {
-      const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
+      const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
       return data;
     });
 
     files?.forEach(async (file, index) => {
+      const card = allCards[index];
+      const cardName = card?.name || `card-${index}`;
       zip.file(
-        `${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}${
+        `${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}${
           allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
         }`,
-        file
+        file,
       );
     });
     if (settings.showCardsAsDoubleSided !== true) {
       const backFiles = cardsBackRef?.current?.map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
+        const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
         return data;
       });
 
       backFiles?.forEach(async (file, index) => {
-        zip.file(`${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
+        const cardName = allCards[index]?.name || `card-${index}`;
+        zip.file(`${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
       });
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
-      link.download = `datacards_${category.name.toLowerCase()}.zip`;
+      const categoryName = category?.name || "untitled";
+      link.download = `datacards_${categoryName.toLowerCase()}.zip`;
       link.click();
       overlayRef.current.style.display = "none";
     });
@@ -189,6 +196,7 @@ export const ImageExport = () => {
                                   type="print"
                                   side={"front"}
                                   backgrounds={backgrounds}
+                                  cardScaling={100}
                                 />
                               )}
                               {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
@@ -212,6 +220,7 @@ export const ImageExport = () => {
                                     type="print"
                                     side={"back"}
                                     backgrounds={backgrounds}
+                                    cardScaling={100}
                                   />
                                 </div>
                               )}

@@ -6,7 +6,7 @@ import { ContentTypeSelector } from "./ContentTypeSelector";
 import { DataSourceList } from "./DataSourceList";
 import { useDataSourceItems } from "./useDataSourceItems";
 
-export const DataSourcePanel = ({ setSelectedTreeIndex }) => {
+export const DataSourcePanel = ({ setSelectedTreeIndex, onAddToCategory }) => {
   const [isLoading] = useState(false);
   const [searchText, setSearchText] = useState<string>(undefined);
   const [selectedContentType, setSelectedContentType] = useState("datasheets");
@@ -36,6 +36,7 @@ export const DataSourcePanel = ({ setSelectedTreeIndex }) => {
         dataSource={dataSourceItems}
         selectedFaction={selectedFaction}
         setSelectedTreeIndex={setSelectedTreeIndex}
+        onAddToCategory={onAddToCategory}
       />
     </div>
   );

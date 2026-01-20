@@ -469,8 +469,6 @@ function ParseSelections(root, force) {
           ExtractRuleFromSelection(prop, force.factionRules);
         }
       }
-    } else {
-      console.log("** UNEXPECTED SELECTION **", selectionName, selection);
     }
   }
 

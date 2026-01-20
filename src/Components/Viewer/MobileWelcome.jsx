@@ -12,9 +12,25 @@ export const MobileWelcome = ({
   const navigate = useNavigate();
 
   const handleRecentClick = (item) => {
-    const factionSlug = item.factionName?.toLowerCase().replaceAll(" ", "-");
-    const unitSlug = item.unitName?.toLowerCase().replaceAll(" ", "-");
-    navigate(`/mobile/${factionSlug}/${unitSlug}`);
+    // For "Core" faction (basic stratagems), use lastFaction if available
+    const factionSlug =
+      item.factionName === "Core" && lastFaction
+        ? lastFaction.name.toLowerCase().replaceAll(" ", "-")
+        : item.factionName?.toLowerCase().replaceAll(" ", "-");
+    const cardSlug = item.unitName?.toLowerCase().replaceAll(" ", "-");
+
+    // Build route based on card type (matching MobileSearchDropdown logic)
+    const routeMap = {
+      unit: `/${cardSlug}`,
+      stratagem: `/stratagem/${cardSlug}`,
+      enhancement: `/enhancement/${cardSlug}`,
+      rule: `/rule/${cardSlug}`,
+      spell: `/spell-lore/${cardSlug}`,
+      manifestation: `/manifestation-lore/${cardSlug}`,
+    };
+
+    const path = `/mobile/${factionSlug}${routeMap[item.cardType] || `/${cardSlug}`}`;
+    navigate(path);
   };
 
   const handleContinueToFaction = () => {

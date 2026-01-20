@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
+import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
 import { BottomSheet } from "./Mobile/BottomSheet";
@@ -56,6 +58,7 @@ const RuleContent = ({ rules }) => (
           case "accordion":
             return (
               <div key={index} className="rule-accordion-item">
+                {part.title && <h5 className="rule-accordion-title">{part.title}</h5>}
                 <MarkdownDisplay content={formattedText} />
               </div>
             );
@@ -84,6 +87,7 @@ export const MobileFaction = () => {
   const [showDetachmentPicker, setShowDetachmentPicker] = useState(false);
   const [stratagemTab, setStratagemTab] = useState("faction");
   const { settings, updateSettings } = useSettingsStorage();
+  const { datasheets: combinedDatasheets } = useCombinedDatasheets();
 
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
 
@@ -91,13 +95,21 @@ export const MobileFaction = () => {
     navigate(`/mobile/${factionSlug}/units`);
   };
 
+  const detachments = useMemo(() => selectedFaction?.detachments || [], [selectedFaction?.detachments]);
+
   useEffect(() => {
     if (settings?.selectedDetachment?.[selectedFaction?.id]) {
-      setSelectedDetachment(settings?.selectedDetachment?.[selectedFaction?.id]);
+      const savedDetachment = settings?.selectedDetachment?.[selectedFaction?.id];
+      const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+      if (isStillValid) {
+        setSelectedDetachment(savedDetachment);
+      } else {
+        setSelectedDetachment(getDetachmentName(detachments?.[0]));
+      }
     } else {
-      setSelectedDetachment(selectedFaction?.detachments?.[0]);
+      setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [selectedFaction, settings]);
+  }, [selectedFaction, settings, detachments]);
 
   const handleSelectDetachment = (detachment) => {
     setSelectedDetachment(detachment);
@@ -108,26 +120,27 @@ export const MobileFaction = () => {
     setShowDetachmentPicker(false);
   };
 
-  // Filter stratagems by detachment
+  // Filter stratagems by selected detachment
   const factionStratagems =
     selectedFaction?.stratagems?.filter(
-      (stratagem) => stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment
+      (stratagem) =>
+        stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment,
     ) || [];
 
   const coreStratagems = selectedFaction?.basicStratagems || [];
 
-  // Filter enhancements by detachment
+  // Filter enhancements by selected detachment
   const enhancements = Array.isArray(selectedFaction?.enhancements)
     ? selectedFaction.enhancements.filter(
         (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
+          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
       )
     : [];
 
-  // Filter detachment rules by selected detachment
+  // Get detachment rules for selected detachment
   const detachmentRules =
     selectedFaction?.rules?.detachment?.find(
-      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase()
+      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase(),
     ) || [];
 
   return (
@@ -146,12 +159,12 @@ export const MobileFaction = () => {
       <button className="mobile-faction-units-button" onClick={handleBrowseUnits}>
         <List size={18} />
         <span>Browse All Units</span>
-        <span className="units-count">{selectedFaction?.datasheets?.length || 0}</span>
+        <span className="units-count">{combinedDatasheets?.length || 0}</span>
         <ChevronRight size={18} />
       </button>
 
       {/* Detachment Picker */}
-      {selectedFaction?.detachments?.length > 1 && (
+      {detachments?.length > 1 && (
         <div className="mobile-faction-detachment">
           <SectionHeader title="Detachment" />
           <button className="detachment-selector" onClick={() => setShowDetachmentPicker(true)}>
@@ -274,15 +287,18 @@ export const MobileFaction = () => {
         onClose={() => setShowDetachmentPicker(false)}
         title="Select Detachment">
         <div className="detachment-picker-list">
-          {selectedFaction?.detachments?.map((detachment) => (
-            <button
-              key={detachment}
-              className={`detachment-picker-item ${selectedDetachment === detachment ? "selected" : ""}`}
-              onClick={() => handleSelectDetachment(detachment)}>
-              <span>{detachment}</span>
-              {selectedDetachment === detachment && <span className="detachment-check">✓</span>}
-            </button>
-          ))}
+          {detachments?.map((detachment) => {
+            const detachmentName = getDetachmentName(detachment);
+            return (
+              <button
+                key={detachmentName}
+                className={`detachment-picker-item ${selectedDetachment === detachmentName ? "selected" : ""}`}
+                onClick={() => handleSelectDetachment(detachmentName)}>
+                <span>{detachmentName}</span>
+                {selectedDetachment === detachmentName && <span className="detachment-check">✓</span>}
+              </button>
+            );
+          })}
         </div>
       </BottomSheet>
     </div>

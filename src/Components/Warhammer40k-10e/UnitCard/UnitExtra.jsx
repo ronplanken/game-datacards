@@ -1,6 +1,7 @@
 import { UnitAbility } from "./UnitAbility";
 import { UnitAbilityDescription, replaceKeywords } from "./UnitAbilityDescription";
 import { UnitInvul } from "./UnitInvul";
+import { DamagedIcon } from "../../Icons/WeaponTypeIcon";
 
 export const UnitExtra = ({ unit }) => {
   return (
@@ -56,6 +57,9 @@ export const UnitExtra = ({ unit }) => {
       {unit.abilities?.damaged && unit.abilities?.damaged.showDamagedAbility && (
         <div className="damaged">
           <div className="heading">
+            <div className="damaged-icon">
+              <DamagedIcon color="white" />
+            </div>
             <div className="title">Damaged: {unit.abilities?.damaged?.range}</div>
           </div>
           {unit.abilities?.damaged.showDescription && (

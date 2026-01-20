@@ -232,7 +232,7 @@ export const CardStorageProviderComponent = (props) => {
       const newStorage = clone(prevStorage);
       // Also remove any sub-categories that have this category as parent
       const newCategories = newStorage.categories.filter(
-        (cat) => cat.uuid !== categoryId && cat.parentId !== categoryId
+        (cat) => cat.uuid !== categoryId && cat.parentId !== categoryId,
       );
       return {
         ...newStorage,

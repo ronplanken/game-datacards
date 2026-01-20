@@ -200,7 +200,10 @@
   background: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
   z-index: 1050;
   min-width: 160px;
   padding: 4px 0;
@@ -293,7 +296,10 @@
 .tree-rename-modal {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
   width: 400px;
   max-width: calc(100vw - 32px);
   animation: modalSlideIn 0.2s ease-out;

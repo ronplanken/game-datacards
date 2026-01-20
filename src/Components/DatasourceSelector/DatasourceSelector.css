@@ -1,0 +1,272 @@
+/* DatasourceSelector.css - Matching WelcomeWizard aesthetic */
+
+/* ===========================================
+   DESIGN TOKENS
+   =========================================== */
+.ds-selector-btn {
+  --ds-primary: #1677ff;
+  --ds-primary-light: #4096ff;
+  --ds-primary-dark: #0958d9;
+  --ds-gold: #f59e0b;
+  --ds-gold-light: #fbbf24;
+  --ds-navy: #001529;
+  --ds-navy-light: #002140;
+  --ds-bg: #0a1628;
+  --ds-bg-card: #0f1f35;
+  --ds-bg-elevated: #162a46;
+  --ds-text-main: #f1f5f9;
+  --ds-text-muted: #94a3b8;
+  --ds-text-dim: #64748b;
+  --ds-border: rgba(255, 255, 255, 0.08);
+  --ds-border-blue: rgba(22, 119, 255, 0.3);
+  --ds-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --ds-shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --ds-glow: 0 0 20px rgba(22, 119, 255, 0.15);
+  --ds-radius: 10px;
+  --ds-radius-sm: 6px;
+}
+
+/* ===========================================
+   SELECTOR BUTTON
+   =========================================== */
+.ds-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--ds-radius-sm);
+  color: var(--ds-text-main);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.ds-selector-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.ds-selector-btn.active {
+  background: rgba(22, 119, 255, 0.15);
+  border-color: var(--ds-border-blue);
+  box-shadow: var(--ds-glow);
+}
+
+.ds-selector-btn svg {
+  flex-shrink: 0;
+  color: var(--ds-text-muted);
+  transition: color 0.2s;
+}
+
+.ds-selector-btn:hover svg,
+.ds-selector-btn.active svg {
+  color: var(--ds-primary-light);
+}
+
+.ds-selector-text {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ds-selector-chevron {
+  margin-left: 2px;
+  transition: transform 0.2s ease;
+}
+
+.ds-selector-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+/* ===========================================
+   DROPDOWN OVERLAY
+   =========================================== */
+.ds-dropdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* ===========================================
+   DROPDOWN MENU
+   =========================================== */
+.ds-dropdown {
+  /* Re-define variables for portal-rendered dropdown */
+  --ds-primary: #1677ff;
+  --ds-primary-light: #4096ff;
+  --ds-text-main: #1f2937;
+  --ds-text-muted: #6b7280;
+  --ds-text-dim: #9ca3af;
+  --ds-border: #e5e7eb;
+  --ds-radius: 10px;
+
+  position: fixed;
+  min-width: 240px;
+  max-width: 320px;
+  background: #ffffff;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 12px 0;
+  pointer-events: auto;
+  animation: dsFadeSlideIn 0.2s ease-out;
+  overflow: hidden;
+}
+
+/* ===========================================
+   DROPDOWN ITEMS
+   =========================================== */
+.ds-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  color: var(--ds-text-main);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.ds-dropdown-item:hover {
+  background: #f3f4f6;
+}
+
+.ds-dropdown-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ds-dropdown-item.selected {
+  background: #e0edff;
+  color: var(--ds-text-main);
+}
+
+.ds-dropdown-item svg {
+  flex-shrink: 0;
+  color: var(--ds-text-dim);
+}
+
+.ds-dropdown-item:hover svg {
+  color: var(--ds-text-muted);
+}
+
+.ds-dropdown-item.selected svg {
+  color: var(--ds-primary);
+}
+
+.ds-dropdown-item-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-dropdown-item-icon {
+  flex-shrink: 0;
+}
+
+.ds-dropdown-check {
+  flex-shrink: 0;
+  color: var(--ds-primary);
+}
+
+/* ===========================================
+   SPECIAL ITEMS
+   =========================================== */
+.ds-dropdown-update {
+  color: var(--ds-text-muted);
+}
+
+.ds-dropdown-update:hover {
+  color: var(--ds-text-main);
+}
+
+.ds-dropdown-update svg.spinning {
+  animation: dsSpin 1s linear infinite;
+}
+
+.ds-dropdown-add {
+  color: var(--ds-text-muted);
+}
+
+.ds-dropdown-add svg {
+  color: var(--ds-text-dim);
+}
+
+.ds-dropdown-add:hover {
+  background: #f3f4f6;
+  color: var(--ds-text-main);
+}
+
+.ds-dropdown-add:hover svg {
+  color: var(--ds-text-muted);
+}
+
+/* ===========================================
+   SECTION & DIVIDER
+   =========================================== */
+.ds-dropdown-section {
+  padding: 4px 0;
+}
+
+.ds-dropdown-section-title {
+  display: block;
+  padding: 12px 16px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ds-text-dim);
+}
+
+.ds-dropdown-divider {
+  height: 1px;
+  background: var(--ds-border);
+  margin: 8px 16px;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+@keyframes dsFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dsSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+@media (max-width: 768px) {
+  .ds-selector-btn {
+    display: none;
+  }
+}

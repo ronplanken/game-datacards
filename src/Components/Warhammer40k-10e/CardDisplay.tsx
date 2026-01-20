@@ -108,19 +108,13 @@ export const Warhammer40K10eCardDisplay = ({
         <div
           className="data-40k-10e"
           style={{
-            position: "relative",
-            height: `${460 * (cardScaling / 100)}px`,
-            width: `${266 * (cardScaling / 100)}px`,
-            overflow: "hidden",
-            "--card-scaling-factor": cardScaling / 100,
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
           }}>
           <StratagemCard
             stratagem={card}
             paddingTop="0px"
             cardStyle={{
-              position: "absolute",
-              top: 0,
-              left: 0,
               gap: printPadding,
               "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
               "--title-text-colour": COLOURS[backgrounds].titleTextColour,
@@ -146,20 +140,46 @@ export const Warhammer40K10eCardDisplay = ({
         <div
           className="data-40k-10e"
           style={{
-            position: "relative",
-            height: `${460 * (cardScaling / 100)}px`,
-            width: `${266 * (cardScaling / 100)}px`,
-            overflow: "hidden",
-            "--card-scaling-factor": cardScaling / 100,
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
           }}>
           <EnhancementCard
             enhancement={card}
             paddingTop="0px"
             cardStyle={{
-              position: "absolute",
-              top: 0,
-              left: 0,
               gap: printPadding,
+              "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
+              "--title-text-colour": COLOURS[backgrounds].titleTextColour,
+              "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
+              "--header-colour": COLOURS[backgrounds].headerColour,
+              "--header-text-colour": COLOURS[backgrounds].headerTextColour,
+              "--stat-text-colour": COLOURS[backgrounds].statTextColour,
+              "--stat-title-colour": COLOURS[backgrounds].statTitleColour,
+              "--banner-colour": COLOURS[backgrounds].bannerColour,
+              "--text-background-colour": COLOURS[backgrounds].textBackgroundColour,
+              "--rows-colour": COLOURS[backgrounds].rowsColour,
+              "--alt-rows-colour": COLOURS[backgrounds].altRowsColour,
+              "--keywords-background-colour": COLOURS[backgrounds].keywordsBackgroundColour,
+              "--weapon-keyword-colour": COLOURS[backgrounds].weaponKeywordColour,
+              "--green-stratagem-colour": COLOURS[backgrounds].greenStratagemColour,
+              "--blue-stratagem-colour": COLOURS[backgrounds].blueStratagemColour,
+              "--red-stratagem-colour": COLOURS[backgrounds].redStratagemColour,
+            }}
+          />
+        </div>
+      )}
+      {type === "print" && card && card?.cardType === "rule" && (
+        <div
+          className="data-40k-10e"
+          style={{
+            "--card-scaling-factor": cardScaling / 100,
+          }}>
+          <RuleCard
+            rule={card}
+            paddingTop="0px"
+            cardStyle={{
+              transform: `scale(${cardScaling / 100})`,
+              transformOrigin: "top left",
               "--background-colour": COLOURS[backgrounds].titleBackgroundColour,
               "--title-text-colour": COLOURS[backgrounds].titleTextColour,
               "--faction-text-colour": COLOURS[backgrounds].factionTextColour,
@@ -185,6 +205,7 @@ export const Warhammer40K10eCardDisplay = ({
           style={{
             transformOrigin: "0% 0%",
             transform: `scale(${cardScaling / 100})`,
+            width: "100%",
           }}>
           {activeCard?.cardType === "DataCard" && (
             <UnitCard
@@ -197,14 +218,29 @@ export const Warhammer40K10eCardDisplay = ({
               }}
             />
           )}
-          {card?.cardType === "stratagem" && (
-            <div className="data-40k-10e" style={{}}>
-              <StratagemCard stratagem={card} className={"shared-stratagem"} cardStyle={{ width: "100%" }} />
+          {activeCard?.cardType === "stratagem" && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <StratagemCard
+                stratagem={activeCard}
+                className={"shared-stratagem"}
+                paddingTop="0px"
+                cardStyle={{ width: "100%" }}
+              />
             </div>
           )}
-          {card?.cardType === "enhancement" && (
-            <div className="data-40k-10e" style={{}}>
-              <EnhancementCard enhancement={card} className={"shared-enhancement"} cardStyle={{ width: "100%" }} />
+          {activeCard?.cardType === "enhancement" && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <EnhancementCard
+                enhancement={activeCard}
+                className={"shared-enhancement"}
+                paddingTop="0px"
+                cardStyle={{ width: "100%" }}
+              />
+            </div>
+          )}
+          {activeCard?.cardType === "rule" && (
+            <div className="data-40k-10e" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <RuleCard rule={activeCard} className={"shared-rule"} paddingTop="0px" cardStyle={{ width: "100%" }} />
             </div>
           )}
           {card?.cardType === "DataCard" && (

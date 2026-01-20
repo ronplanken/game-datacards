@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { X, Copy, Crown, Trash2, Flame } from "lucide-react";
 import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
 import classNames from "classnames";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
+import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -18,7 +19,11 @@ import { Stratagem } from "../../Icons/Stratagem";
 import { Vehicle } from "../../Icons/Vehicle";
 import { Enhancement } from "../../Icons/Enhancement";
 import { Battlerule } from "../../Icons/Battlerule";
+import { Warscroll } from "../../Icons/Warscroll";
+import { Spell } from "../../Icons/Spell";
+import { Rule } from "../../Icons/Rule";
 import { confirmDialog } from "../ConfirmChangesModal";
+import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import { ContextMenu } from "./ContextMenu";
 import "./TreeView.css";
 
@@ -37,7 +42,6 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
   } = useCardStorage();
   const cardIndex = `card-${card.uuid}`;
   const { dataSource } = useDataSourceStorage();
-  const { settings, updateSettings } = useSettingsStorage();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
@@ -70,17 +74,30 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
     }
   }, [card, index]);
 
+  const { settings, updateSettings } = useSettingsStorage();
+
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+  const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
 
   const [selectedDetachment, setSelectedDetachment] = useState();
 
   useEffect(() => {
-    if (settings?.selectedDetachment?.[card?.faction_id]) {
-      setSelectedDetachment(settings?.selectedDetachment?.[card?.faction_id]);
+    if (card?.detachment) {
+      // Use the card's saved detachment (from import)
+      setSelectedDetachment(card.detachment);
+    } else if (settings?.selectedDetachment?.[card?.faction_id]) {
+      // Check if saved detachment is still valid
+      const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
+      const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+      if (isStillValid) {
+        setSelectedDetachment(savedDetachment);
+      } else {
+        setSelectedDetachment(getDetachmentName(detachments?.[0]));
+      }
     } else {
-      setSelectedDetachment(cardFaction?.detachments?.[0]);
+      setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [card, cardFaction, settings]);
+  }, [card, settings?.selectedDetachment, detachments]);
 
   const warlordAlreadyAdded = category?.cards?.find((card) => card.warlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
@@ -116,20 +133,15 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
   };
 
   const handleDelete = () => {
-    confirmDialog({
+    deleteConfirmDialog({
       title: "Are you sure you want to delete this card?",
       content: "This action cannot be undone.",
-      handleSave: () => {
+      onConfirm: () => {
         removeCardFromCategory(card.uuid, category.uuid);
         setActiveCard(null);
         setSelectedTreeIndex(null);
         message.success("Card has been deleted.");
       },
-      handleDiscard: () => {},
-      handleCancel: () => {},
-      saveText: "Delete",
-      discardText: "Cancel",
-      hideDiscard: true,
     });
   };
 
@@ -208,6 +220,12 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
       case "vehicle":
       case "empty-vehicle":
         return <Vehicle />;
+      case "warscroll":
+        return <Warscroll />;
+      case "spell":
+        return <Spell />;
+      case "rule":
+        return <Rule />;
       default:
         return null;
     }
@@ -405,7 +423,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               )}
               {card?.keywords?.includes("Character") && !card?.keywords?.includes("Epic Hero") && (
                 <>
-                  {cardFaction?.detachments?.length > 1 && (
+                  {detachments?.length > 1 && (
                     <>
                       <div style={{ paddingTop: "16px" }}>
                         <Typography.Text>Detachment</Typography.Text>
@@ -416,14 +434,15 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                           setSelectedDetachment(value);
                           updateSettings({
                             ...settings,
-                            selectedDetachment: { ...settings.selectedDetachment, [card.faction_id]: value },
+                            selectedDetachment: { ...settings?.selectedDetachment, [card.faction_id]: value },
                           });
                         }}
                         value={selectedDetachment}>
-                        {cardFaction?.detachments?.map((d) => {
+                        {detachments?.map((d) => {
+                          const detachmentName = getDetachmentName(d);
                           return (
-                            <Option value={d} key={d}>
-                              {d}
+                            <Option value={detachmentName} key={detachmentName}>
+                              {detachmentName}
                             </Option>
                           );
                         })}
@@ -440,7 +459,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
                         ?.filter(
                           (enhancement) =>
                             enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() ||
-                            !enhancement.detachment
+                            !enhancement.detachment,
                         )
                         ?.filter((enhancement) => {
                           let isActiveEnhancement = false;

@@ -11,7 +11,6 @@ export function UnitBasicAbility({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
   const typeTitle = type.charAt(0).toUpperCase() + type.slice(1);
 
-  console.log("UnitBasicAbility", type, activeCard.showAbilities);
   return (
     <>
       <Card

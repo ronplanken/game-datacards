@@ -1,0 +1,348 @@
+/* ExportDatasourceModal.css */
+
+/* ===========================================
+   MODAL OVERLAY & CONTAINER
+   =========================================== */
+
+.export-ds-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: exportDsFadeIn 0.2s ease-out;
+}
+
+.export-ds-modal {
+  width: 480px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow:
+    0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: exportDsSlideIn 0.2s ease-out;
+}
+
+/* ===========================================
+   MODAL HEADER
+   =========================================== */
+
+.export-ds-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.export-ds-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.export-ds-title svg {
+  color: #1677ff;
+}
+
+.export-ds-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.export-ds-close:hover {
+  background: #f5f5f5;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+/* ===========================================
+   MODAL CONTENT
+   =========================================== */
+
+.export-ds-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+/* ===========================================
+   SUMMARY
+   =========================================== */
+
+.export-ds-summary {
+  padding: 12px 16px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.export-ds-category-name {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0 0 4px 0;
+}
+
+.export-ds-card-count {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  margin: 0;
+}
+
+/* ===========================================
+   FORM
+   =========================================== */
+
+.export-ds-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.export-ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.export-ds-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.export-ds-required {
+  color: #ff4d4f;
+}
+
+.export-ds-help {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.export-ds-row {
+  display: flex;
+  gap: 12px;
+}
+
+.export-ds-half {
+  flex: 1;
+}
+
+/* ===========================================
+   COLOR PICKER
+   =========================================== */
+
+.export-ds-color-row {
+  display: flex;
+  gap: 16px;
+}
+
+.export-ds-color-picker {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.export-ds-color-label {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.export-ds-color-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: #fafafa;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.export-ds-color-input-wrapper:hover {
+  border-color: #1677ff;
+}
+
+.export-ds-color-input {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.export-ds-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.export-ds-color-input::-webkit-color-swatch {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.export-ds-color-value {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  font-family: monospace;
+  text-transform: uppercase;
+}
+
+/* ===========================================
+   BUTTONS
+   =========================================== */
+
+.export-ds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.export-ds-btn.secondary {
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.export-ds-btn.secondary:hover {
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+.export-ds-btn.primary {
+  background: #1677ff;
+  border: 1px solid #1677ff;
+  color: #fff;
+}
+
+.export-ds-btn.primary:hover:not(:disabled) {
+  background: #4096ff;
+  border-color: #4096ff;
+}
+
+.export-ds-btn.primary:disabled {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   MODAL FOOTER
+   =========================================== */
+
+.export-ds-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+@keyframes exportDsSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes exportDsFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================================
+   SCROLLBAR
+   =========================================== */
+
+.export-ds-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.export-ds-content::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.export-ds-content::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.export-ds-content::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+@media (max-width: 520px) {
+  .export-ds-modal {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 90vh;
+    margin: 20px;
+    border-radius: 12px;
+  }
+
+  .export-ds-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .export-ds-color-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

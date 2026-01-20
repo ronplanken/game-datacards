@@ -16,10 +16,7 @@ export function useIndexedDBImages() {
 
   useEffect(() => {
     const initDB = async () => {
-      console.log("[IndexedDB] Initializing database...");
-
       if (!window.indexedDB) {
-        console.error("[IndexedDB] IndexedDB is not supported in this browser");
         return;
       }
 
@@ -27,30 +24,27 @@ export function useIndexedDBImages() {
         const request = window.indexedDB.open(DB_NAME, DB_VERSION);
 
         request.onerror = () => {
-          console.error("[IndexedDB] Failed to open database:", request.error);
+          // Failed to open database
         };
 
-        request.onsuccess = function (event) {
-          console.log(event.target, request.result);
-
-          const database = request.result;
-          console.log("[IndexedDB] Database opened successfully");
+        request.onsuccess = (event) => {
+          const database = event.target.result;
           setDb(database);
           setIsReady(true);
         };
 
         request.onupgradeneeded = (event) => {
-          const database = request.result;
-          console.log("[IndexedDB] Database upgrade needed");
+          // TODO check which is correct
+          const database = event.target.result;
+          // const database = request.result;
 
           if (!database.objectStoreNames.contains(STORE_NAME)) {
             const objectStore = database.createObjectStore(STORE_NAME, { keyPath: "id" });
             objectStore.createIndex("uploadedAt", "uploadedAt", { unique: false });
-            console.log("[IndexedDB] Created object store:", STORE_NAME);
           }
         };
       } catch (error) {
-        console.error("[IndexedDB] Error initializing database:", error);
+        // Error initializing database
       }
     };
 
@@ -64,23 +58,11 @@ export function useIndexedDBImages() {
   }, []);
 
   const saveImage = async (cardId, file) => {
-    console.log("[IndexedDB] saveImage called with:", {
-      cardId,
-      fileName: file?.name,
-      fileSize: file?.size,
-      fileType: file?.type,
-      isFile: file instanceof File,
-      isBlob: file instanceof Blob,
-      isReady,
-    });
-
     if (!db || !isReady) {
-      console.error("[IndexedDB] Database not ready. db:", !!db, "isReady:", isReady);
       throw new Error("IndexedDB is not ready");
     }
 
-    if (!(file instanceof File)) {
-      console.error("[IndexedDB] File is not a Blob or File object:", file);
+    if (!(file instanceof Blob)) {
       throw new Error("File must be a Blob or File object");
     }
 
@@ -98,26 +80,17 @@ export function useIndexedDBImages() {
         uploadedAt: new Date().toISOString(),
       };
 
-      console.log("[IndexedDB] Storing image data:", {
-        id: imageData.id,
-        filename: imageData.filename,
-        imageIsBlob: imageData.image instanceof Blob,
-      });
-
       const request = store.put(imageData);
 
       request.onsuccess = () => {
-        console.log("[IndexedDB] Image saved successfully for card:", cardId);
-        resolve(undefined);
+        resolve();
       };
 
       request.onerror = () => {
-        console.error("[IndexedDB] Failed to save image:", request.error);
         reject(new Error(`Failed to save image: ${request.error}`));
       };
 
       transaction.onerror = () => {
-        console.error("[IndexedDB] Transaction failed:", transaction.error);
         reject(new Error(`Transaction failed: ${transaction.error}`));
       };
     });
@@ -185,18 +158,14 @@ export function useIndexedDBImages() {
   };
 
   const getImageUrl = async (cardId) => {
-    console.log("[IndexedDB] getImageUrl called for card:", cardId);
     try {
       const imageBlob = await getImage(cardId);
       if (imageBlob) {
         const url = URL.createObjectURL(imageBlob);
-        console.log("[IndexedDB] Created object URL for card:", cardId, "URL:", url);
         return url;
       }
-      console.log("[IndexedDB] No image found for card:", cardId);
       return null;
     } catch (error) {
-      console.error("[IndexedDB] Error creating image URL:", error);
       return null;
     }
   };

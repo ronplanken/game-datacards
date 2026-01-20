@@ -7,7 +7,10 @@ function onlyUnique(value, index, self) {
 }
 
 export function capitalizeSentence(sentence) {
-  let words = sentence.toLowerCase().split(" ");
+  if (!sentence || typeof sentence !== "string") return "";
+  const trimmed = sentence.trim();
+  if (!trimmed) return "";
+  let words = trimmed.toLowerCase().split(" ");
   for (let i = 0; i < words.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
   }
@@ -45,49 +48,49 @@ const readCsv = async (file) => {
 
 export const get40KData = async (): Promise<BasicData> => {
   const lastUpdated = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`,
   );
   const dataDatasheetAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`,
   );
   const dataStratagems = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`,
   );
   const dataAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`,
   );
   const dataDatasheetWargear: DatasheetWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`,
   );
   const dataWargearList = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`,
   );
   const dataWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`,
   );
   const dataModels = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`,
   );
   const dataKeywords = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`,
   );
   const dataDamage = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`,
   );
   const dataFactions = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`,
   );
   const sheets = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`,
   );
   const dataSecondaries = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`,
   );
   const dataPsychic = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`,
   );
   const dataTraits = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`
+    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`,
   );
 
   const mappedPsychicPowers = dataPsychic.map((power) => {
@@ -148,7 +151,7 @@ export const get40KData = async (): Promise<BasicData> => {
           .map((model) => {
             return { ...model, active: true };
           })
-          .map((item) => [item["keyword"], item])
+          .map((item) => [item["keyword"], item]),
       ).values(),
     ];
     row["datasheet"] = dataModels
@@ -178,7 +181,7 @@ export const get40KData = async (): Promise<BasicData> => {
       ...new Map(
         dataDatasheetWargear
           .filter((wargear) => wargear.datasheet_id === row.id && wargear.is_index_wargear === "false")
-          .map((item) => [item["wargear_id"], item])
+          .map((item) => [item["wargear_id"], item]),
       ).values(),
     ];
 
@@ -188,7 +191,7 @@ export const get40KData = async (): Promise<BasicData> => {
       if (row["wargear"][index]) {
         row["wargear"][index]["active"] = index === 0 ? true : false;
         row["wargear"][index]["profiles"] = clone(
-          dataWargearList.filter((wargearList) => wargearList.wargear_id === wargear.wargear_id)
+          dataWargearList.filter((wargearList) => wargearList.wargear_id === wargear.wargear_id),
         );
       }
     });
@@ -477,55 +480,24 @@ export const get40k10eData = async () => {
 };
 
 export const get40k10eCombatPatrolData = async () => {
-  const factions = [
-    "amonhotekhs_guard",
-    "aurellios_banishers",
-    "butchers_of_hyporia",
-    "claw_of_ascension",
-    "dark_zealots",
-    "gordrangs_gitstompas",
-    "guardians_of_the_throne",
-    "hand_of_the_magus",
-    "inquisitors_hand",
-    "insidious_infiltrators",
-    "insidious_invaders",
-    "karagars_rampagers",
-    "karsks_gunners",
-    "maniple_verask-alpha",
-    "mordekais_judgement",
-    "morgrims_butchas",
-    "protectors_of_aunshar",
-    "purge_corps_deltic-9",
-    "sanctuary_guardians",
-    "siguards_crusaders",
-    "strike_force_marcellos",
-    "strike_force_octavius",
-    "strike_team_solarien",
-    "sudden_dawn_cadre",
-    "the_blades_of_torment",
-    "the_coven_temporus",
-    "the_fatebreakers",
-    "the_penitent_host",
-    "the_shambling_horde",
-    "the_vardenghast_swarm",
-    "the_vengeful_brethren",
-    "thoryks_void_hunters",
-    "tristraens_gilded_blades",
-    "vantarrions_voidsmen",
-    "vigil_force_alphion",
-    "warspekes_prospect",
-    "zarkans_daemonkin",
-  ];
+  const baseUrl = process.env.REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL;
+  const cacheBuster = new Date().getTime();
 
-  const fetchData = async (faction) => {
-    const url = `${process.env.REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL}/${faction}.json?${new Date().getTime()}`;
+  // Fetch the index.json to get the list of combat patrols dynamically
+  const indexUrl = `${baseUrl}/index.json?${cacheBuster}`;
+  const index = await readCsv(indexUrl);
+
+  const fetchData = async (combatPatrol) => {
+    // The file path in index.json is like "combatpatrol/filename.json", extract just the filename
+    const filename = combatPatrol.file.split("/").pop();
+    const url = `${baseUrl}/${filename}?${cacheBuster}`;
     const data = await readCsv(url);
     return data;
   };
 
   const fetchAllData = async () => {
-    const sortedFactions = factions.sort();
-    const promises = sortedFactions.map((faction) => fetchData(faction));
+    const sortedPatrols = [...index.combatPatrols].sort((a, b) => a.name.localeCompare(b.name));
+    const promises = sortedPatrols.map((patrol) => fetchData(patrol));
     const allData = await Promise.all(promises);
     return allData;
   };
@@ -534,7 +506,7 @@ export const get40k10eCombatPatrolData = async () => {
 
   return {
     version: process.env.REACT_APP_VERSION,
-    lastUpdated: allFactionsData[0].updated,
+    lastUpdated: index.updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
     noDatasheetByRole: true,

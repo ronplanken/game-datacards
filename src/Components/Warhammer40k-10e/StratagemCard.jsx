@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { Grid } from "antd";
 import { MarkdownSpanWrapDisplay } from "../MarkdownSpanWrapDisplay";
+import { PhaseIcon } from "../Icons/PhaseIcon";
 
 const { useBreakpoint } = Grid;
 
@@ -14,7 +15,7 @@ export const StratagemCard = ({
 }) => {
   const screens = useBreakpoint();
 
-  const lineHeight = screens.xs ? "default" : `${stratagem?.styling?.lineHeight}rem` ?? "1rem";
+  const lineHeight = screens.xs ? "default" : (`${stratagem?.styling?.lineHeight}rem` ?? "1rem");
   const typeSize = screens.xs ? 12 : 10;
   return (
     <div
@@ -36,7 +37,7 @@ export const StratagemCard = ({
             either: stratagem.turn === "either",
             own: stratagem.turn === "your",
           },
-          stratagem.faction_id
+          stratagem.faction_id,
         )}>
         <div className={`border`}>
           <div className="background-side-bar"></div>
@@ -89,7 +90,9 @@ export const StratagemCard = ({
             {stratagem.phase?.map((phase) => {
               return (
                 <div className="type-container" key={phase}>
-                  <div className={phase}> </div>
+                  <div className="phase-icon-wrapper">
+                    <PhaseIcon phase={phase} color="var(--stratagem-colour)" />
+                  </div>
                 </div>
               );
             })}

@@ -195,6 +195,10 @@ export const parseStorageJson = (savedJson) => {
 
   try {
     const parsedJson = JSON.parse(savedJson);
+    // Guard against undefined version
+    if (!parsedJson.version) {
+      return defaultCategories;
+    }
     if (compare(parsedJson.version, "1.5.0", ">=")) {
       return parsedJson;
     }

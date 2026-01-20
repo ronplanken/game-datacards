@@ -299,6 +299,18 @@
   color: var(--wnw-text-main);
 }
 
+/* Version Header (for multi-version wizards) */
+.wnw-sidebar-version-header {
+  padding: 16px 20px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wnw-gold);
+  border-top: 1px solid var(--wnw-border);
+  margin-top: 8px;
+}
+
 /* ===========================================
    CONTENT AREA
    =========================================== */
@@ -362,8 +374,15 @@
 }
 
 @keyframes wnwSparkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
 }
 
 .wnw-welcome-title {
@@ -419,8 +438,12 @@
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(135deg, var(--wnw-gold) 0%, transparent 50%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
@@ -437,6 +460,54 @@
   color: var(--wnw-text-main);
   margin: 0;
   letter-spacing: -0.02em;
+}
+
+/* Feature Badges Container */
+.wnw-feature-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Community Contribution Badge */
+.wnw-community-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%);
+  color: #a78bfa;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  letter-spacing: 0.03em;
+}
+
+.wnw-community-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Author Badge */
+.wnw-author-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
+  color: #4ade80;
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  letter-spacing: 0.03em;
+}
+
+.wnw-author-badge svg {
+  width: 14px;
+  height: 14px;
 }
 
 .wnw-feature-description {
@@ -462,7 +533,9 @@
   border-radius: var(--wnw-radius-sm);
   border: 1px solid var(--wnw-border);
   animation: wnwSlideInLeft 0.35s ease-out backwards;
-  transition: border-color 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
 }
 
 .wnw-highlight-item:hover {
@@ -470,10 +543,18 @@
   background: var(--wnw-bg-elevated);
 }
 
-.wnw-highlight-item:nth-child(1) { animation-delay: 0.1s; }
-.wnw-highlight-item:nth-child(2) { animation-delay: 0.15s; }
-.wnw-highlight-item:nth-child(3) { animation-delay: 0.2s; }
-.wnw-highlight-item:nth-child(4) { animation-delay: 0.25s; }
+.wnw-highlight-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.wnw-highlight-item:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.wnw-highlight-item:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.wnw-highlight-item:nth-child(4) {
+  animation-delay: 0.25s;
+}
 
 .wnw-highlight-dot {
   width: 8px;
@@ -510,7 +591,9 @@
 
 .wnw-discord-link {
   display: inline-block;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   border-radius: var(--wnw-radius-sm);
   overflow: hidden;
   margin-top: 20px;
@@ -641,13 +724,21 @@
    ANIMATIONS
    =========================================== */
 @keyframes wnwFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes wnwFadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes wnwScaleIn {
@@ -695,13 +786,21 @@
 }
 
 @keyframes wnwSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 @keyframes wnwSlideDown {
-  from { transform: translateY(0); }
-  to { transform: translateY(100%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
 }
 
 /* ===========================================

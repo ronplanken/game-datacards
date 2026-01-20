@@ -143,7 +143,6 @@ export const MobileDrawer = ({ open, setOpen }) => {
                   key={`list-category-${index}`}
                   className={`list-category`}
                   onClick={() => {
-                    console.log(card);
                     let newClosedFactions = [...(settings?.mobile?.closedFactions || [])];
                     if (newClosedFactions.includes(card.id)) {
                       newClosedFactions.splice(newClosedFactions.indexOf(card.id), 1);
@@ -210,14 +209,14 @@ export const MobileDrawer = ({ open, setOpen }) => {
                     navigate(
                       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
                         .replaceAll(" ", "-")
-                        .toLowerCase()}`
+                        .toLowerCase()}`,
                     );
                   }
                   if (card.nonBase) {
                     navigate(
                       `/mobile/${selectedFaction.name.toLowerCase().replaceAll(" ", "-")}/allied/${cardFaction.name
                         .toLowerCase()
-                        .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`
+                        .replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`,
                     );
                   }
 

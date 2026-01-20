@@ -22,23 +22,60 @@ export function useGlobalSearch(searchText, factionFilter = null) {
     const factions = factionFilter ? [factionFilter] : dataSource?.data || [];
     const matches = [];
 
+    // Track seen basic/core cards to avoid duplicates across factions
+    const seenBasicCards = new Set();
+
     for (const faction of factions) {
-      // Support both datasheets (40K) and warscrolls (AoS)
-      const units = faction.datasheets || faction.warscrolls || [];
+      // Helper to safely get array from potentially non-array value
+      const toArray = (val) => (Array.isArray(val) ? val : []);
 
-      for (const unit of units) {
-        // Skip non-active units if they have an active flag
-        if (unit.active === false) continue;
+      // Build list of all searchable card collections
+      // isBasic flag indicates core/basic items that are duplicated across factions
+      const cardCollections = [
+        { items: toArray(faction.datasheets || faction.warscrolls), type: "unit", isBasic: false },
+        { items: toArray(faction.stratagems), type: "stratagem", isBasic: false },
+        { items: toArray(faction.basicStratagems), type: "stratagem", isBasic: true },
+        { items: toArray(faction.enhancements), type: "enhancement", isBasic: false },
+        { items: toArray(faction.rules?.army), type: "rule", isBasic: false },
+        { items: toArray(faction.rules?.detachment).flatMap((d) => toArray(d.rules)), type: "rule", isBasic: false },
+        // AoS lores
+        { items: toArray(faction.lores).flatMap((l) => toArray(l.spells)), type: "spell", isBasic: false },
+        {
+          items: toArray(faction.manifestationLores).flatMap((l) => toArray(l.spells)),
+          type: "manifestation",
+          isBasic: false,
+        },
+      ];
 
-        // Match against unit name
-        const nameMatch = unit.name?.toLowerCase().includes(searchLower);
+      for (const { items, type, isBasic } of cardCollections) {
+        for (const card of items) {
+          // Skip non-active cards if they have an active flag
+          if (card.active === false) continue;
 
-        if (nameMatch) {
-          matches.push({
-            ...unit,
-            factionName: faction.name,
-            factionId: faction.id,
-          });
+          // Match against card name
+          const nameMatch = card.name?.toLowerCase().includes(searchLower);
+          if (!nameMatch) continue;
+
+          // Deduplicate basic/core cards - only add once with "Core" label
+          if (isBasic) {
+            const dedupeKey = `${type}-${card.name}`;
+            if (seenBasicCards.has(dedupeKey)) continue;
+            seenBasicCards.add(dedupeKey);
+
+            matches.push({
+              ...card,
+              cardType: type,
+              factionName: "Core",
+              factionId: faction.id, // Use first faction found for navigation
+            });
+          } else {
+            matches.push({
+              ...card,
+              cardType: type,
+              factionName: faction.name,
+              factionId: faction.id,
+            });
+          }
         }
       }
     }
