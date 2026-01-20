@@ -4,6 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useGlobalSearch } from "../../Hooks/useGlobalSearch";
 import "./MobileSearchDropdown.css";
 
+const getCardTypeLabel = (type) =>
+  ({
+    unit: "Unit",
+    stratagem: "Stratagem",
+    enhancement: "Enhancement",
+    rule: "Rule",
+    spell: "Spell",
+    manifestation: "Manifestation",
+  })[type] || "Card";
+
 export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit }) => {
   const { results, isSearching } = useGlobalSearch(searchText);
   const navigate = useNavigate();
@@ -35,16 +45,26 @@ export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit
     };
   }, [isOpen, onClose]);
 
-  const handleSelectResult = (unit) => {
-    // Normalize faction and unit names for URL
-    const factionSlug = unit.factionName?.toLowerCase().replaceAll(" ", "-");
-    const unitSlug = unit.name?.toLowerCase().replaceAll(" ", "-");
+  const handleSelectResult = (card) => {
+    // Normalize faction and card names for URL
+    const factionSlug = card.factionName?.toLowerCase().replaceAll(" ", "-");
+    const cardSlug = card.name?.toLowerCase().replaceAll(" ", "-");
 
     // Call the onSelectUnit callback (for adding to recent searches)
-    onSelectUnit?.(unit);
+    onSelectUnit?.(card);
 
-    // Navigate to the unit
-    navigate(`/mobile/${factionSlug}/${unitSlug}`);
+    // Build route based on card type
+    const routeMap = {
+      unit: `/${cardSlug}`,
+      stratagem: `/stratagem/${cardSlug}`,
+      enhancement: `/enhancement/${cardSlug}`,
+      rule: `/rule/${cardSlug}`,
+      spell: `/spell-lore/${cardSlug}`,
+      manifestation: `/manifestation-lore/${cardSlug}`,
+    };
+
+    const path = `/mobile/${factionSlug}${routeMap[card.cardType] || `/${cardSlug}`}`;
+    navigate(path);
     onClose();
   };
 
@@ -76,14 +96,17 @@ export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit
 
       {showResults && !isSearching && hasResults && (
         <div className="search-dropdown-results">
-          {results.map((unit, index) => (
+          {results.map((card, index) => (
             <button
-              key={`${unit.factionId}-${unit.id}-${index}`}
+              key={`${card.factionId}-${card.cardType}-${card.id || card.name}-${index}`}
               className="search-result-item"
-              onClick={() => handleSelectResult(unit)}
+              onClick={() => handleSelectResult(card)}
               type="button">
-              <span className="result-name">{unit.name}</span>
-              <span className="result-faction">{unit.factionName}</span>
+              <span className="result-name">{card.name}</span>
+              <div className="result-meta">
+                <span className="result-faction">{card.factionName}</span>
+                <span className="result-type-badge">{getCardTypeLabel(card.cardType)}</span>
+              </div>
             </button>
           ))}
         </div>

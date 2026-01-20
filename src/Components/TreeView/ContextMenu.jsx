@@ -53,7 +53,7 @@ export const ContextMenu = ({ x, y, items, onClose }) => {
 
   const handleItemClick = (item, e) => {
     e.stopPropagation();
-    if (item.disabled) return;
+    if (item.disabled || item.hasSubmenu) return;
     item.onClick?.();
     onClose();
   };
@@ -72,6 +72,7 @@ export const ContextMenu = ({ x, y, items, onClose }) => {
             onClick={(e) => handleItemClick(item, e)}>
             {item.icon && <span className="tree-context-menu-item-icon">{item.icon}</span>}
             <span>{item.label}</span>
+            {item.hasSubmenu && <span style={{ marginLeft: "auto", opacity: 0.5 }}>›</span>}
           </div>
         );
       })}

@@ -806,11 +806,14 @@
     // Stat badges alternative to stat wheel
     .stat-badges-wrapper {
       position: relative;
+      top: auto;
+      left: auto;
       width: 100%;
       display: flex;
       justify-content: center;
       padding: 16px;
       background-color: var(--bg-header);
+      filter: none;
     }
 
     .stat-badges-row {
@@ -866,6 +869,7 @@
     // Stat display area with back button
     .stat-display-area {
       position: relative;
+      background-color: var(--bg-header);
     }
 
     .warscroll-back-button,
@@ -1577,6 +1581,37 @@
     .summoned-by-casting-value .casting-value-number,
     .summoned-by-casting-value .casting-value-plus {
       font-family: "Heebo", sans-serif;
+    }
+  }
+}
+
+// ============================================
+// PRINT MEDIA QUERIES
+// Remove SVG filter backgrounds that don't render in PDF
+// ============================================
+@media print {
+  .data-aos {
+    // Remove noise texture SVG backgrounds that use feTurbulence filters
+    .warscroll {
+      background-image: none;
+    }
+
+    .warscroll-header {
+      background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
+    }
+
+    .spell {
+      background-image: none;
+    }
+
+    .spell-header {
+      background-image: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 60%);
+    }
+
+    // Remove drop-shadow filters that may cause print issues
+    .stat-wheel-wrapper,
+    .stat-badges-wrapper {
+      filter: none;
     }
   }
 }

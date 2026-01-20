@@ -198,3 +198,47 @@
   border-radius: 6px;
   flex-shrink: 0;
 }
+
+/* ===========================================
+   FACTION SECTION (Parent/Allied)
+   =========================================== */
+
+.faction-units-faction-section {
+  margin-bottom: 24px;
+}
+
+.faction-units-faction-section:last-child {
+  margin-bottom: 0;
+}
+
+.faction-units-faction-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border-radius: 10px;
+  color: #fff;
+}
+
+.faction-units-faction-header.parent {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+}
+
+.faction-units-faction-header.allied {
+  background: linear-gradient(135deg, #faad14 0%, #d48806 100%);
+}
+
+.faction-units-faction-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.faction-units-faction-count {
+  font-size: 12px;
+  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 10px;
+}

@@ -1,25 +1,74 @@
-import { Settings, Database, Trash2, Printer, History } from "lucide-react";
-import { Popconfirm } from "antd";
+import { Settings, Database, Trash2, Printer, History, Plus } from "lucide-react";
+import { Popconfirm, message } from "antd";
 import { Tooltip } from "./Tooltip/Tooltip";
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-import { Toggle, DatasourceCard, ChangelogEntry } from "./SettingsModal/index";
+import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
+import { CustomDatasourceModal } from "./CustomDatasource";
+import { confirmDialog } from "./ConfirmChangesModal";
 import "./SettingsModal.css";
 
 export const SettingsModal = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("datasources");
   const [showOlderVersions, setShowOlderVersions] = React.useState(false);
+  const [isCustomDatasourceModalOpen, setIsCustomDatasourceModalOpen] = useState(false);
+  const [checkingCustomUpdateId, setCheckingCustomUpdateId] = useState(null);
 
   const { settings, updateSettings } = useSettingsStorage();
-  const { dataSource, checkForUpdate, clearData } = useDataSourceStorage();
+  const {
+    dataSource,
+    checkForUpdate,
+    clearData,
+    removeCustomDatasource,
+    checkCustomDatasourceUpdate,
+    applyCustomDatasourceUpdate,
+  } = useDataSourceStorage();
 
   const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
 
   const refreshData = () => {
     setCheckingForUpdate(true);
     checkForUpdate().then(() => setCheckingForUpdate(false));
+  };
+
+  const handleCheckCustomUpdate = async (datasourceId) => {
+    setCheckingCustomUpdateId(datasourceId);
+    const result = await checkCustomDatasourceUpdate(datasourceId);
+    setCheckingCustomUpdateId(null);
+
+    if (result.hasUpdate) {
+      // Show confirmation dialog before applying update
+      const datasource = settings.customDatasources?.find((ds) => ds.id === datasourceId);
+      const currentVersion = datasource?.version || "unknown";
+      const newVersion = result.newData?.version || "unknown";
+      const datasourceName = datasource?.name || "datasource";
+      const updateMessage =
+        'A new version of "' +
+        datasourceName +
+        '" is available.\n\nCurrent version: ' +
+        currentVersion +
+        "\nNew version: " +
+        newVersion +
+        "\n\nDo you want to apply this update?";
+
+      confirmDialog({
+        title: "Update Available",
+        content: updateMessage,
+        handleSave: async () => {
+          await applyCustomDatasourceUpdate(datasourceId, result.newData);
+          message.success("Datasource updated successfully");
+        },
+        handleDiscard: () => {},
+        handleCancel: () => {},
+        saveText: "Apply Update",
+        discardText: "Skip",
+        hideDiscard: true,
+      });
+    } else {
+      message.info("No updates available");
+    }
   };
 
   // Handle escape key
@@ -29,7 +78,7 @@ export const SettingsModal = () => {
         setIsModalVisible(false);
       }
     },
-    [isModalVisible]
+    [isModalVisible],
   );
 
   useEffect(() => {
@@ -117,6 +166,30 @@ export const SettingsModal = () => {
                     <div className="datasource-section">
                       <h3 className="datasource-section-title">Active Datasource</h3>
                       {(() => {
+                        // Check if a custom datasource is active
+                        const activeCustomDs = settings.customDatasources?.find(
+                          (ds) => ds.id === settings.selectedDataSource,
+                        );
+
+                        if (activeCustomDs) {
+                          return (
+                            <CustomDatasourceCard
+                              key={activeCustomDs.id}
+                              datasource={activeCustomDs}
+                              isActive={true}
+                              onToggle={() => {}}
+                              onDelete={() => removeCustomDatasource(activeCustomDs.id)}
+                              onCheckUpdate={
+                                activeCustomDs.sourceType === "url"
+                                  ? () => handleCheckCustomUpdate(activeCustomDs.id)
+                                  : undefined
+                              }
+                              isCheckingUpdate={checkingCustomUpdateId === activeCustomDs.id}
+                            />
+                          );
+                        }
+
+                        // Otherwise show built-in datasource
                         const datasources = [
                           { id: "basic", title: "Basic Cards", hasUpdate: false },
                           { id: "40k-10e", title: "40k 10th Edition import", hasUpdate: true },
@@ -139,6 +212,65 @@ export const SettingsModal = () => {
                             {activeDs.hasUpdate && <DatasourceDetails />}
                           </DatasourceCard>
                         );
+                      })()}
+                    </div>
+
+                    {/* Custom Datasources Section */}
+                    <div className="datasource-section">
+                      <div className="datasource-section-header">
+                        <h3 className="datasource-section-title">Custom Datasources</h3>
+                        <button className="datasource-add-btn" onClick={() => setIsCustomDatasourceModalOpen(true)}>
+                          <Plus size={12} />
+                          Add
+                        </button>
+                      </div>
+                      {(!settings.customDatasources || settings.customDatasources.length === 0) && (
+                        <p className="datasource-empty-text">
+                          No custom datasources imported yet. Click &quot;Add&quot; to import from URL or file.
+                        </p>
+                      )}
+                      {(() => {
+                        const inactiveCustomDs = settings.customDatasources?.filter(
+                          (ds) => ds.id !== settings.selectedDataSource,
+                        );
+                        const activeCustomDs = settings.customDatasources?.find(
+                          (ds) => ds.id === settings.selectedDataSource,
+                        );
+
+                        // Show ghost placeholder if there are custom datasources but all are active
+                        if (
+                          settings.customDatasources?.length > 0 &&
+                          (!inactiveCustomDs || inactiveCustomDs.length === 0) &&
+                          activeCustomDs
+                        ) {
+                          return (
+                            <CustomDatasourceCard
+                              key={activeCustomDs.id}
+                              datasource={activeCustomDs}
+                              isActive={false}
+                              isGhost={true}
+                              onToggle={() => {}}
+                              onDelete={() => {}}
+                            />
+                          );
+                        }
+
+                        return inactiveCustomDs?.map((ds) => (
+                          <CustomDatasourceCard
+                            key={ds.id}
+                            datasource={ds}
+                            isActive={false}
+                            onToggle={() =>
+                              updateSettings({
+                                ...settings,
+                                selectedDataSource: ds.id,
+                              })
+                            }
+                            onDelete={() => removeCustomDatasource(ds.id)}
+                            onCheckUpdate={ds.sourceType === "url" ? () => handleCheckCustomUpdate(ds.id) : undefined}
+                            isCheckingUpdate={checkingCustomUpdateId === ds.id}
+                          />
+                        ));
                       })()}
                     </div>
 
@@ -540,6 +672,11 @@ export const SettingsModal = () => {
           <Settings size={20} />
         </button>
       </Tooltip>
+
+      <CustomDatasourceModal
+        isOpen={isCustomDatasourceModalOpen}
+        onClose={() => setIsCustomDatasourceModalOpen(false)}
+      />
     </>
   );
 };

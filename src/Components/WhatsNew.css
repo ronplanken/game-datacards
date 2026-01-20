@@ -4,15 +4,15 @@
    DESIGN TOKENS
    =========================================== */
 .wn-overlay {
-  --wn-primary: #3b82f6;       /* Vibrant Blue */
+  --wn-primary: #3b82f6; /* Vibrant Blue */
   --wn-primary-light: #60a5fa; /* Lighter shade for accents */
-  --wn-primary-dark: #2563eb;  /* Darker shade for hover */
-  --wn-accent-green: #10b981;  /* Green for 'New' tag */
+  --wn-primary-dark: #2563eb; /* Darker shade for hover */
+  --wn-accent-green: #10b981; /* Green for 'New' tag */
   --wn-bg: #ffffff;
-  --wn-bg-subtle: #f3f4f6;     /* Light gray for background sections */
-  --wn-text-main: #1f2937;     /* Dark gray */
-  --wn-text-muted: #6b7280;    /* Medium gray */
-  --wn-border: #e5e7eb;        /* Light border gray */
+  --wn-bg-subtle: #f3f4f6; /* Light gray for background sections */
+  --wn-text-main: #1f2937; /* Dark gray */
+  --wn-text-muted: #6b7280; /* Medium gray */
+  --wn-border: #e5e7eb; /* Light border gray */
   --wn-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --wn-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --wn-radius: 16px;
@@ -57,7 +57,11 @@
    HEADER
    =========================================== */
 .wn-header {
-  background: linear-gradient(135deg, var(--wn-primary-dark) 0%, var(--wn-primary) 100%); /* Darker blue gradient header */
+  background: linear-gradient(
+    135deg,
+    var(--wn-primary-dark) 0%,
+    var(--wn-primary) 100%
+  ); /* Darker blue gradient header */
   padding: 24px;
   display: flex;
   justify-content: space-between;
@@ -238,7 +242,9 @@
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
 }
 
 .wn-btn:hover {
@@ -253,8 +259,12 @@
    ANIMATIONS
    =========================================== */
 @keyframes wnFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes wnScaleIn {
@@ -294,20 +304,20 @@
     border-radius: 20px 20px 0 0;
     animation: wnSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  
+
   .wn-header {
     padding: 20px;
   }
-  
+
   .wn-title {
     font-size: 24px;
   }
-  
+
   .wn-version-badge {
     font-size: 12px;
     padding: 3px 8px;
   }
-  
+
   .wn-subtitle {
     font-size: 14px;
   }
@@ -320,7 +330,7 @@
   .wn-body {
     padding: 20px;
   }
-  
+
   .wn-features {
     gap: 16px;
   }
@@ -328,7 +338,7 @@
   .wn-feature {
     padding: 10px 0;
   }
-  
+
   .wn-feature-marker {
     width: 8px;
     height: 8px;
@@ -338,12 +348,12 @@
   .wn-feature-title {
     font-size: 15px;
   }
-  
+
   .wn-tag {
     font-size: 10px;
     padding: 2px 6px;
   }
-  
+
   .wn-feature-desc {
     font-size: 13px;
   }
@@ -351,7 +361,7 @@
   .wn-footer {
     padding: 16px 20px 32px;
   }
-  
+
   .wn-btn {
     width: 100%;
     padding: 12px;
@@ -360,6 +370,10 @@
 }
 
 @keyframes wnSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }

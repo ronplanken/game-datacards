@@ -31,7 +31,7 @@ export const MobileAoSFaction = () => {
   if (showGeneric && genericData?.manifestationLores?.length) {
     manifestationSpellCount += genericData.manifestationLores.reduce(
       (total, lore) => total + (lore.spells?.length || 0),
-      0
+      0,
     );
   }
 

@@ -4,14 +4,32 @@ import { compare } from "compare-versions";
 import moment from "moment";
 import React, { useEffect } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
 export const UpdateReminder = () => {
   const [isUpdateReminderVisible, setIsUpdateReminderVisible] = React.useState(false);
   const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
 
   const { dataSource, checkForUpdate } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   useEffect(() => {
+    // Don't show update reminder for local custom datasources (they can't be auto-updated)
+    const isCustomDatasource = settings.selectedDataSource?.startsWith("custom-");
+    if (isCustomDatasource) {
+      const customDs = settings.customDatasources?.find((ds) => ds.id === settings.selectedDataSource);
+      if (customDs?.sourceType === "local") {
+        setIsUpdateReminderVisible(false);
+        return;
+      }
+    }
+
+    // Guard against undefined dataSource.version
+    if (!dataSource.version) {
+      setIsUpdateReminderVisible(false);
+      return;
+    }
+
     if (
       (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 2) ||
       compare(dataSource.version, process.env.REACT_APP_VERSION, "<")
@@ -20,7 +38,7 @@ export const UpdateReminder = () => {
     } else {
       setIsUpdateReminderVisible(false);
     }
-  }, [dataSource]);
+  }, [dataSource, settings.selectedDataSource, settings.customDatasources]);
 
   return (
     <>

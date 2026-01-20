@@ -1,0 +1,811 @@
+/* CustomDatasourceModal.css */
+
+/* ===========================================
+   MODAL OVERLAY & CONTAINER
+   =========================================== */
+
+.cd-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: cdFadeIn 0.2s ease-out;
+}
+
+.cd-modal {
+  width: 520px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow:
+    0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: cdSlideIn 0.2s ease-out;
+}
+
+/* ===========================================
+   MODAL HEADER
+   =========================================== */
+
+.cd-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.cd-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cd-modal-title svg {
+  color: #1677ff;
+}
+
+.cd-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cd-modal-close:hover {
+  background: #f5f5f5;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+/* ===========================================
+   TABS
+   =========================================== */
+
+.cd-tabs {
+  display: flex;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  padding: 0 16px;
+}
+
+.cd-tab {
+  padding: 12px 16px;
+  color: rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  font-size: 14px;
+  user-select: none;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cd-tab:hover {
+  color: #1677ff;
+}
+
+.cd-tab.active {
+  color: #1677ff;
+  border-bottom-color: #1677ff;
+  background: #fff;
+}
+
+.cd-tab-badge {
+  font-size: 10px;
+  padding: 0 5px;
+  background: #1677ff;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 500;
+  line-height: 16px;
+  min-width: 16px;
+  text-align: center;
+  display: inline-block;
+}
+
+/* ===========================================
+   MODAL CONTENT
+   =========================================== */
+
+.cd-modal-content {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  min-height: 280px;
+  background: #fff;
+}
+
+.cd-description {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+
+/* ===========================================
+   URL INPUT
+   =========================================== */
+
+.cd-url-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.cd-url-input-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cd-url-input-icon {
+  position: absolute;
+  left: 12px;
+  color: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.cd-url-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px 0 36px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.cd-url-input:hover {
+  border-color: #1677ff;
+}
+
+.cd-url-input:focus {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.cd-fetch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 40px;
+  min-width: 90px;
+  background: #1677ff;
+  border: 1px solid #1677ff;
+  color: #fff;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cd-fetch-btn:hover:not(:disabled) {
+  background: #4096ff;
+  border-color: #4096ff;
+}
+
+.cd-fetch-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   PREVIEW CARD
+   =========================================== */
+
+.cd-preview-card {
+  margin-top: 16px;
+  border: 1px solid #91caff;
+  border-radius: 8px;
+  background: #e6f4ff;
+  overflow: hidden;
+}
+
+.cd-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(22, 119, 255, 0.1);
+  border-bottom: 1px solid #91caff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0958d9;
+}
+
+.cd-preview-icon.success {
+  color: #52c41a;
+}
+
+.cd-preview-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.cd-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cd-preview-label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cd-preview-value {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: 500;
+}
+
+.cd-format-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: #bae0ff;
+  border-radius: 4px;
+  color: #0958d9;
+  font-weight: 500;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.cd-count-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ===========================================
+   ERROR CARD
+   =========================================== */
+
+.cd-error-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #fff2f0;
+  border: 1px solid #ffccc7;
+  border-radius: 8px;
+  color: #ff4d4f;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.cd-error-card svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ===========================================
+   DROPZONE
+   =========================================== */
+
+.cd-dropzone {
+  border: 2px dashed #d9d9d9;
+  border-radius: 8px;
+  padding: 32px 16px;
+  text-align: center;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cd-dropzone:hover {
+  border-color: #1677ff;
+}
+
+.cd-dropzone.dragging {
+  border-color: #1677ff;
+  background: #e6f4ff;
+}
+
+.cd-dropzone-icon {
+  color: #1677ff;
+  margin-bottom: 8px;
+}
+
+.cd-dropzone-text {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0 0 4px 0;
+}
+
+.cd-dropzone-hint {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+  margin: 0;
+}
+
+/* ===========================================
+   FILE ITEM
+   =========================================== */
+
+.cd-file-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  margin-top: 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.cd-file-item.error {
+  border-color: #ff4d4f;
+  background: #fff2f0;
+}
+
+.cd-file-item.success {
+  border-color: #52c41a;
+  background: #f6ffed;
+}
+
+.cd-file-icon {
+  display: flex;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.cd-file-item.error .cd-file-icon {
+  color: #ff4d4f;
+}
+
+.cd-file-item.success .cd-file-icon {
+  color: #52c41a;
+}
+
+.cd-file-name {
+  flex: 1;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cd-file-size {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.cd-file-remove {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.cd-file-remove:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #ff4d4f;
+}
+
+.cd-file-error-text {
+  font-size: 12px;
+  color: #ff4d4f;
+  margin: 8px 0 0 0;
+}
+
+/* ===========================================
+   EMPTY STATE
+   =========================================== */
+
+.cd-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.cd-empty-icon {
+  color: #d9d9d9;
+  margin-bottom: 12px;
+}
+
+.cd-empty-state p {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.65);
+  margin: 0 0 4px 0;
+}
+
+.cd-empty-state span {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* ===========================================
+   DATASOURCE LIST
+   =========================================== */
+
+.cd-datasource-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cd-datasource-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  animation: cdFadeIn 0.2s ease-out;
+  animation-fill-mode: both;
+}
+
+.cd-datasource-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cd-datasource-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.88);
+  white-space: nowrap;
+}
+
+.cd-datasource-name svg {
+  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+}
+
+.cd-datasource-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cd-version {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.cd-author {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.45);
+  font-style: italic;
+}
+
+.cd-datasource-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cd-action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cd-action-btn:hover:not(:disabled) {
+  background: #f0f0f0;
+  color: #1677ff;
+}
+
+.cd-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cd-action-btn.danger:hover:not(:disabled) {
+  background: #fff2f0;
+  border-color: #ffccc7;
+  color: #ff4d4f;
+}
+
+/* ===========================================
+   UPDATE PREVIEW
+   =========================================== */
+
+.cd-update-preview {
+  margin-top: 16px;
+  padding: 16px;
+  background: #e6f4ff;
+  border: 1px solid #91caff;
+  border-radius: 8px;
+}
+
+.cd-update-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0958d9;
+  margin-bottom: 12px;
+}
+
+.cd-update-icon {
+  color: #1677ff;
+}
+
+.cd-update-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.cd-update-version {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: #fff;
+  border-radius: 6px;
+}
+
+.cd-update-version.new {
+  background: #1677ff;
+}
+
+.cd-update-version.new .cd-update-label,
+.cd-update-version.new .cd-update-value {
+  color: #fff;
+}
+
+.cd-update-label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.45);
+  text-transform: uppercase;
+}
+
+.cd-update-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.cd-update-arrow {
+  color: #1677ff;
+}
+
+.cd-update-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ===========================================
+   BUTTONS
+   =========================================== */
+
+.cd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cd-btn.secondary {
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.cd-btn.secondary:hover {
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+.cd-btn.primary {
+  background: #1677ff;
+  border: 1px solid #1677ff;
+  color: #fff;
+}
+
+.cd-btn.primary:hover:not(:disabled) {
+  background: #4096ff;
+  border-color: #4096ff;
+}
+
+.cd-btn.primary:disabled {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   LOADING SPINNER
+   =========================================== */
+
+.cd-loading-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: cdSpin 0.8s linear infinite;
+}
+
+.cd-loading-spinner.small {
+  width: 12px;
+  height: 12px;
+  border-width: 2px;
+  border-color: rgba(22, 119, 255, 0.2);
+  border-top-color: #1677ff;
+}
+
+/* ===========================================
+   MODAL FOOTER
+   =========================================== */
+
+.cd-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+@keyframes cdSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cdFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cdSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===========================================
+   SCROLLBAR
+   =========================================== */
+
+.cd-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cd-modal-content::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.cd-modal-content::-webkit-scrollbar-thumb {
+  background: #d9d9d9;
+  border-radius: 3px;
+}
+
+.cd-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #bfbfbf;
+}
+
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
+
+@media (max-width: 768px) {
+  .cd-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .cd-preview-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .cd-url-input-group {
+    flex-direction: column;
+  }
+
+  .cd-fetch-btn {
+    width: 100%;
+  }
+
+  .cd-update-comparison {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cd-update-arrow {
+    transform: rotate(90deg);
+  }
+}

@@ -122,6 +122,31 @@ export const MobileListProvider = (props) => {
     }));
   };
 
+  // Create a new list with pre-populated cards (atomic operation)
+  const createListWithCards = (name, cards) => {
+    const listName = name?.trim() || "New List";
+
+    setStoredLists((lists) => {
+      const newList = {
+        name: listName,
+        datacards: cards.map((cardData) => ({
+          card: cardData.card,
+          points: cardData.points,
+          enhancement: cardData.enhancement,
+          warlord: cardData.isWarlord,
+          id: uuidv4(),
+        })),
+      };
+      return [...lists, newList];
+    });
+
+    // Select the newly created list
+    setSelectedListPerDS((prev) => ({
+      ...prev,
+      [dataSource]: storedLists.length, // Index of the new list
+    }));
+  };
+
   // Rename an existing list
   const renameList = (index, newName) => {
     if (index < 0 || !newName?.trim()) {
@@ -183,6 +208,7 @@ export const MobileListProvider = (props) => {
     addDatacard,
     removeDatacard,
     createList,
+    createListWithCards,
     renameList,
     deleteList,
     getListPoints,

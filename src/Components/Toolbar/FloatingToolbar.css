@@ -3,7 +3,7 @@
   position: sticky;
   bottom: 24px;
   width: fit-content;
-  margin: 0 auto;
+  margin: auto auto 24px auto;
   background: #2c2c2c;
   border-radius: 11px;
   padding: 8px 14px;
