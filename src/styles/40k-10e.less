@@ -872,6 +872,7 @@
         overflow: hidden;
 
         // Inline SVG wrapper for phase icons (print-friendly)
+        // Uses color property for SVG fill inheritance via currentColor
         .phase-icon-wrapper {
           display: flex;
           justify-content: center;
@@ -880,6 +881,7 @@
           height: 100%;
           rotate: -45deg;
           padding: 2px;
+          color: var(--stratagem-colour);
         }
       }
     }

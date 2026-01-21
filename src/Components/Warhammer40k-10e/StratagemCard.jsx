@@ -91,7 +91,7 @@ export const StratagemCard = ({
               return (
                 <div className="type-container" key={phase}>
                   <div className="phase-icon-wrapper">
-                    <PhaseIcon phase={phase} color="var(--stratagem-colour)" />
+                    <PhaseIcon phase={phase} />
                   </div>
                 </div>
               );
