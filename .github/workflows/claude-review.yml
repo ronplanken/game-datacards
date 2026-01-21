@@ -40,16 +40,38 @@ jobs:
           prompt: |
             Act as a senior full-stack developer helping a junior developer.
 
-            Review PR #${{ github.event.pull_request.number }} and provide feedback on:
-            - Code quality and best practices
-            - Potential bugs or issues
-            - React and JavaScript/TypeScript patterns
-            - Any security concerns
-            - Suggestions for improvement
+            Review PR #${{ github.event.pull_request.number }}.
 
-            ## Steps to follow:
+            ## IMPORTANT: Check for previous reviews first
+
+            Before reviewing, check if this is a follow-up review:
+
+            1. Run this command to check for previous bot reviews:
+               ```
+               gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+                 --jq '[.[] | select(.user.type == "Bot" or .user.login == "github-actions[bot]")] | length'
+               ```
+
+            2. If there are previous reviews (count > 0), this is a FOLLOW-UP review:
+               - Get the last review timestamp:
+                 ```
+                 gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+                   --jq '[.[] | select(.user.type == "Bot" or .user.login == "github-actions[bot]")] | last | .submitted_at'
+                 ```
+               - Only review commits AFTER that timestamp using:
+                 ```
+                 git log --after="<timestamp>" --oneline origin/${{ github.event.pull_request.base.ref }}..HEAD
+                 ```
+               - Focus ONLY on the new changes, not the entire PR
+               - In your summary, mention this is a follow-up review
+
+            3. If there are NO previous reviews (count == 0), this is an INITIAL review:
+               - Review the full PR diff
+
+            ## Review steps:
 
             1. Use `gh pr diff ${{ github.event.pull_request.number }}` to see the changes.
+               For follow-up reviews, you may want to limit the diff to recent commits.
 
             2. Use `gh pr view ${{ github.event.pull_request.number }} --json files` to get the list of changed files.
 
@@ -75,9 +97,15 @@ jobs:
                gh pr review ${{ github.event.pull_request.number }} --comment --body "Your summary here"
                ```
                The summary should include:
-               - Brief overview of the changes
-               - Key findings (if any issues found)
-               - Overall assessment
+               - For initial reviews: Brief overview of all changes and key findings
+               - For follow-up reviews: Focus on the new commits only, mention what was addressed from previous feedback
+
+            ## Review focus areas:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - React and JavaScript/TypeScript patterns
+            - Any security concerns
+            - Suggestions for improvement
 
             Be constructive and specific in your feedback. Focus on the most important issues first.
             Be to the point and short in your explanations. Never use emojis.
