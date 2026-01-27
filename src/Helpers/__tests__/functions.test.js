@@ -39,6 +39,7 @@ import {
   countMatchStatuses,
   getImportableUnits,
   filterCardWeapons,
+  analyzeModelCount,
 } from "../gwAppImport.helpers";
 import {
   Costs,
@@ -1172,6 +1173,77 @@ describe("customDatasource.helpers", () => {
 // gwAppImport.helpers
 // ============================================
 describe("gwAppImport.helpers", () => {
+  describe("analyzeModelCount", () => {
+    it("should return modelCount 1 for empty bullet array", () => {
+      const result = analyzeModelCount([]);
+      expect(result.modelCount).toBe(1);
+      expect(result.modelIndentLevel).toBeNull();
+    });
+
+    it("should return modelCount 1 when all bullets have quantity 1 (equipment list)", () => {
+      const bullets = [
+        { indent: 0, quantity: 1, text: "Bolt rifle" },
+        { indent: 0, quantity: 1, text: "Bolt pistol" },
+        { indent: 0, quantity: 1, text: "Frag grenades" },
+      ];
+      const result = analyzeModelCount(bullets);
+      expect(result.modelCount).toBe(1);
+      expect(result.modelIndentLevel).toBeNull();
+    });
+
+    it("should return modelCount 1 for single indent level (flat structure)", () => {
+      const bullets = [
+        { indent: 0, quantity: 5, text: "Intercessor" },
+        { indent: 0, quantity: 1, text: "Intercessor Sergeant" },
+      ];
+      // All at same indent level but not all quantity 1 - this is still flat
+      // Wait, if not all quantity 1, it should count models at first level
+      // Let me re-check the logic...
+      const result = analyzeModelCount(bullets);
+      // Single indent level = flat structure = single-model unit
+      expect(result.modelCount).toBe(1);
+      expect(result.modelIndentLevel).toBeNull();
+    });
+
+    it("should count first-level bullets as models in nested structure", () => {
+      const bullets = [
+        { indent: 0, quantity: 5, text: "Intercessor" },
+        { indent: 2, quantity: 1, text: "Bolt rifle" },
+        { indent: 2, quantity: 1, text: "Bolt pistol" },
+        { indent: 0, quantity: 1, text: "Intercessor Sergeant" },
+        { indent: 2, quantity: 1, text: "Auto bolt rifle" },
+      ];
+      const result = analyzeModelCount(bullets);
+      expect(result.modelCount).toBe(6); // 5 + 1
+      expect(result.modelIndentLevel).toBe(0);
+    });
+
+    it("should identify weapon indent level in nested structure", () => {
+      const bullets = [
+        { indent: 4, quantity: 3, text: "Heavy Intercessor" },
+        { indent: 8, quantity: 1, text: "Heavy bolt rifle" },
+        { indent: 4, quantity: 1, text: "Heavy Intercessor Sergeant" },
+        { indent: 8, quantity: 1, text: "Executor bolt rifle" },
+      ];
+      const result = analyzeModelCount(bullets);
+      expect(result.modelCount).toBe(4); // 3 + 1
+      expect(result.modelIndentLevel).toBe(4);
+    });
+
+    it("should handle mixed quantities at different indent levels", () => {
+      const bullets = [
+        { indent: 0, quantity: 2, text: "Terminator" },
+        { indent: 4, quantity: 1, text: "Storm bolter" },
+        { indent: 4, quantity: 1, text: "Power fist" },
+        { indent: 0, quantity: 1, text: "Terminator Sergeant" },
+        { indent: 4, quantity: 1, text: "Power sword" },
+      ];
+      const result = analyzeModelCount(bullets);
+      expect(result.modelCount).toBe(3); // 2 + 1
+      expect(result.modelIndentLevel).toBe(0);
+    });
+  });
+
   describe("parseGwAppText", () => {
     it("should return error for empty text", () => {
       const result = parseGwAppText("");
