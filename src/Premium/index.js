@@ -157,43 +157,8 @@ export const useProducts = () => ({
 // SUBSCRIPTION LIMITS CONSTANT
 // =====================================================
 
-export const SUBSCRIPTION_LIMITS = {
-  free: {
-    categories: 0,
-    datasources: 0,
-    templates: 0,
-    canUploadDatasources: false,
-    canAccessShares: false,
-  },
-  premium: {
-    categories: 50,
-    datasources: 2,
-    templates: 1,
-    canUploadDatasources: true,
-    canAccessShares: true,
-  },
-  creator: {
-    categories: 250,
-    datasources: 10,
-    templates: 5,
-    canUploadDatasources: true,
-    canAccessShares: true,
-  },
-  lifetime: {
-    categories: 999,
-    datasources: 99,
-    templates: 99,
-    canUploadDatasources: true,
-    canAccessShares: true,
-  },
-  admin: {
-    categories: 999,
-    datasources: 99,
-    templates: 99,
-    canUploadDatasources: true,
-    canAccessShares: true,
-  },
-};
+// Import from shared constants (single source of truth)
+export { SUBSCRIPTION_LIMITS } from "./constants";
 
 // =====================================================
 // DESKTOP AUTH COMPONENTS - All render null
@@ -330,12 +295,7 @@ export const useDataBinding = () => ({
 /**
  * Template presets constant (for compatibility)
  */
-export const TEMPLATE_PRESETS = {
-  "40k-datacard": { name: "40K Datacard", width: 500, height: 700, targetFormat: "40k-10e" },
-  "40k-stratagem": { name: "40K Stratagem", width: 500, height: 350, targetFormat: "40k-10e" },
-  "aos-warscroll": { name: "AoS Warscroll", width: 500, height: 700, targetFormat: "aos" },
-  custom: { name: "Custom", width: 500, height: 700, targetFormat: "40k-10e" },
-};
+export { TEMPLATE_PRESETS } from "./constants";
 
 // =====================================================
 // TEMPLATE RENDERING COMPONENTS - Premium only

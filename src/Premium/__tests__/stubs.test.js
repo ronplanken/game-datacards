@@ -1,4 +1,4 @@
-import { useSubscription, SUBSCRIPTION_LIMITS } from "../index";
+import { useSubscription, SUBSCRIPTION_LIMITS, TEMPLATE_PRESETS } from "../index";
 
 // ============================================
 // useSubscription stub
@@ -79,5 +79,38 @@ describe("SUBSCRIPTION_LIMITS", () => {
     expect(limits).toHaveProperty("templates");
     expect(limits).toHaveProperty("canUploadDatasources");
     expect(limits).toHaveProperty("canAccessShares");
+  });
+});
+
+// ============================================
+// TEMPLATE_PRESETS constant
+// ============================================
+describe("TEMPLATE_PRESETS", () => {
+  const presetKeys = ["40k-datacard", "40k-stratagem", "aos-warscroll", "custom"];
+
+  it.each(presetKeys)("should have required properties for %s preset", (preset) => {
+    expect(TEMPLATE_PRESETS[preset]).toHaveProperty("name");
+    expect(TEMPLATE_PRESETS[preset]).toHaveProperty("width");
+    expect(TEMPLATE_PRESETS[preset]).toHaveProperty("height");
+    expect(TEMPLATE_PRESETS[preset]).toHaveProperty("targetFormat");
+  });
+
+  it("should have correct dimensions for 40k-datacard", () => {
+    expect(TEMPLATE_PRESETS["40k-datacard"].width).toBe(500);
+    expect(TEMPLATE_PRESETS["40k-datacard"].height).toBe(700);
+  });
+
+  it("should have correct dimensions for 40k-stratagem", () => {
+    expect(TEMPLATE_PRESETS["40k-stratagem"].width).toBe(500);
+    expect(TEMPLATE_PRESETS["40k-stratagem"].height).toBe(350);
+  });
+
+  it("should have 40k-10e target format for Warhammer 40k presets", () => {
+    expect(TEMPLATE_PRESETS["40k-datacard"].targetFormat).toBe("40k-10e");
+    expect(TEMPLATE_PRESETS["40k-stratagem"].targetFormat).toBe("40k-10e");
+  });
+
+  it("should have aos target format for AoS preset", () => {
+    expect(TEMPLATE_PRESETS["aos-warscroll"].targetFormat).toBe("aos");
   });
 });
