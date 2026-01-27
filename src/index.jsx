@@ -186,9 +186,9 @@ const RootLayout = () => (
               <DataSourceStorageProviderComponent>
                 <DatasourceSharingProvider>
                   <CardStorageProviderComponent>
-                    <SyncProvider>
-                      <CloudCategoriesProvider>
-                        <TemplateStorageProvider>
+                    <TemplateStorageProvider>
+                      <SyncProvider>
+                        <CloudCategoriesProvider>
                           <MobileListProvider>
                             <Outlet />
                             <ScrollRestoration />
@@ -197,9 +197,9 @@ const RootLayout = () => (
                             <CheckoutSuccessHandler />
                             <SyncConflictHandler />
                           </MobileListProvider>
-                        </TemplateStorageProvider>
-                      </CloudCategoriesProvider>
-                    </SyncProvider>
+                        </CloudCategoriesProvider>
+                      </SyncProvider>
+                    </TemplateStorageProvider>
                   </CardStorageProviderComponent>
                 </DatasourceSharingProvider>
               </DataSourceStorageProviderComponent>

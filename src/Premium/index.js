@@ -68,6 +68,13 @@ export const useSync = () => ({
   syncAllDatasources: () => Promise.resolve({ success: false }),
   syncDatasourcesFromCloud: () => Promise.resolve({ success: false, imported: 0 }),
   deleteLocalDatasourceFromCloud: () => Promise.resolve({ success: false }),
+  // Template Sync Actions
+  uploadTemplate: () => Promise.resolve({ success: false }),
+  downloadTemplates: () => Promise.resolve({ success: false, data: [] }),
+  enableTemplateSync: () => Promise.resolve({ success: false }),
+  disableTemplateSync: () => Promise.resolve({ success: false }),
+  syncAllTemplates: () => Promise.resolve({ success: false }),
+  deleteTemplateFromCloud: () => Promise.resolve({ success: false }),
   // State
   isSyncing: false,
   isOnline: true,
@@ -77,6 +84,7 @@ export const useSync = () => ({
   syncedCount: 0,
   syncedCategoryCount: 0,
   syncedDatasourceCount: 0,
+  syncedTemplateCount: 0,
   pendingCount: 0,
   errorCount: 0,
   conflictCount: 0,
@@ -89,12 +97,13 @@ export const useSubscription = () => ({
   // State
   subscription: null,
   loading: false,
-  usage: { categories: 0, datasources: 0 },
+  usage: { categories: 0, datasources: 0, templates: 0 },
   // Utilities - local actions always allowed
   getTier: () => "free",
   getLimits: () => ({
     categories: 0, // No cloud sync in free
     datasources: 0,
+    templates: 0,
     canUploadDatasources: false,
     canAccessShares: false,
   }),
@@ -152,30 +161,35 @@ export const SUBSCRIPTION_LIMITS = {
   free: {
     categories: 0,
     datasources: 0,
+    templates: 0,
     canUploadDatasources: false,
     canAccessShares: false,
   },
   premium: {
     categories: 50,
     datasources: 2,
+    templates: 1,
     canUploadDatasources: true,
     canAccessShares: true,
   },
   creator: {
     categories: 250,
     datasources: 10,
+    templates: 5,
     canUploadDatasources: true,
     canAccessShares: true,
   },
   lifetime: {
     categories: 999,
     datasources: 99,
+    templates: 99,
     canUploadDatasources: true,
     canAccessShares: true,
   },
   admin: {
     categories: 999,
     datasources: 99,
+    templates: 99,
     canUploadDatasources: true,
     canAccessShares: true,
   },
@@ -215,6 +229,7 @@ export const CloudCategorySheet = () => null;
 export const CategorySyncIcon = () => null;
 export const DatasourcePublishIcon = () => null;
 export const DatasourceSyncIcon = () => null;
+export const TemplateSyncIcon = () => null;
 export const SyncClaimModal = () => null;
 export const SyncConflictModal = () => null;
 export const SyncConflictHandler = () => null;
@@ -291,6 +306,12 @@ export const useTemplateStorage = () => ({
   moveElementToRoot: () => {},
   getElementChildren: () => [],
   buildElementTree: () => [],
+  // Sync operations - all no-ops
+  markTemplatePending: () => {},
+  updateTemplateSyncStatus: () => {},
+  setTemplateSyncEnabled: () => {},
+  bulkUpdateTemplates: () => {},
+  getTemplate: () => null,
 });
 
 /**

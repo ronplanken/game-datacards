@@ -24,6 +24,7 @@ export const AppHeader = ({
   pageTitle = null,
   showNav = true,
   showActions = true,
+  showSyncStatus = null, // null means follow showActions, true/false to override
   className = "",
 }) => {
   const screens = useBreakpoint();
@@ -80,7 +81,7 @@ export const AppHeader = ({
 
             {showActions && <NotificationBell />}
 
-            {showActions && <SyncStatusIndicator />}
+            {(showSyncStatus ?? showActions) && <SyncStatusIndicator />}
 
             {showActions && user && <DatasourceUpdateBadge />}
 
