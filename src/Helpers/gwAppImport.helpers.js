@@ -71,7 +71,7 @@ const parseEnhancement = (text) => {
  * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines with indentation
  * @returns {{modelCount: number, modelIndentLevel: number|null}} Object with model count and indent level
  */
-const analyzeModelCount = (bulletLines) => {
+export const analyzeModelCount = (bulletLines) => {
   if (bulletLines.length === 0) {
     return { modelCount: 1, modelIndentLevel: null };
   }
@@ -106,6 +106,41 @@ const analyzeModelCount = (bulletLines) => {
  */
 const removeInvisibleChars = (text) => {
   return text.replace(/[\u2060\u200B\uFEFF\u200C\u200D]/g, "");
+};
+
+/**
+ * Finalize a unit by extracting weapons from bullet lines and calculating model count.
+ * This is a shared helper used when saving units (at section headers, unit headers, or end of parsing).
+ *
+ * @param {Object} unit - The current unit being parsed
+ * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines
+ * @returns {Object} Finalized unit with models and weapons
+ */
+const finalizeUnit = (unit, bulletLines) => {
+  const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
+  const weapons = [];
+
+  if (modelIndentLevel !== null) {
+    // Nested structure: weapons are bullets with indent > model indent level
+    for (const bullet of bulletLines) {
+      if (bullet.indent > modelIndentLevel) {
+        weapons.push(bullet.text);
+      }
+    }
+  } else {
+    // Flat structure: all non-metadata bullets are weapons
+    for (const bullet of bulletLines) {
+      if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
+        weapons.push(bullet.text);
+      }
+    }
+  }
+
+  return {
+    ...unit,
+    models: modelCount,
+    weapons,
+  };
 };
 
 /**
@@ -212,27 +247,7 @@ export const parseGwAppText = (text) => {
     if (SECTION_HEADERS.includes(upperTrimmed)) {
       // Save previous unit if exists
       if (currentUnit) {
-        const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
-        const weapons = [];
-        if (modelIndentLevel !== null) {
-          for (const bullet of bulletLines) {
-            if (bullet.indent > modelIndentLevel) {
-              weapons.push(bullet.text);
-            }
-          }
-        } else {
-          for (const bullet of bulletLines) {
-            if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
-              weapons.push(bullet.text);
-            }
-          }
-        }
-
-        units.push({
-          ...currentUnit,
-          models: modelCount,
-          weapons,
-        });
+        units.push(finalizeUnit(currentUnit, bulletLines));
         currentUnit = null;
         bulletLines = [];
       }
@@ -261,27 +276,7 @@ export const parseGwAppText = (text) => {
     if (unitHeaderMatch) {
       // Save previous unit if exists
       if (currentUnit) {
-        const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
-        const weapons = [];
-        if (modelIndentLevel !== null) {
-          for (const bullet of bulletLines) {
-            if (bullet.indent > modelIndentLevel) {
-              weapons.push(bullet.text);
-            }
-          }
-        } else {
-          for (const bullet of bulletLines) {
-            if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
-              weapons.push(bullet.text);
-            }
-          }
-        }
-
-        units.push({
-          ...currentUnit,
-          models: modelCount,
-          weapons,
-        });
+        units.push(finalizeUnit(currentUnit, bulletLines));
       }
 
       // Start new unit
@@ -335,27 +330,7 @@ export const parseGwAppText = (text) => {
 
   // Save last unit
   if (currentUnit) {
-    const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
-    const weapons = [];
-    if (modelIndentLevel !== null) {
-      for (const bullet of bulletLines) {
-        if (bullet.indent > modelIndentLevel) {
-          weapons.push(bullet.text);
-        }
-      }
-    } else {
-      for (const bullet of bulletLines) {
-        if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
-          weapons.push(bullet.text);
-        }
-      }
-    }
-
-    units.push({
-      ...currentUnit,
-      models: modelCount,
-      weapons,
-    });
+    units.push(finalizeUnit(currentUnit, bulletLines));
   }
 
   if (!factionName) {
