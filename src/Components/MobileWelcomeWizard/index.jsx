@@ -103,8 +103,8 @@ export const MobileWelcomeWizard = () => {
           ...settings.mobile,
           gameSystemSelected: true,
         },
-        wizardCompleted: process.env.REACT_APP_VERSION,
-        lastMajorWizardVersion: process.env.REACT_APP_VERSION,
+        wizardCompleted: import.meta.env.VITE_VERSION,
+        lastMajorWizardVersion: import.meta.env.VITE_VERSION,
       });
       setIsWizardVisible(false);
       setIsExiting(false);

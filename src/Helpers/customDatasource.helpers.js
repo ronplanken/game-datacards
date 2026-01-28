@@ -187,6 +187,45 @@ export const mapCardsToFactionStructure = (cards, factionInfo) => {
 };
 
 /**
+ * Extracts all cards from a faction object back into a flat array
+ * Reverses mapCardsToFactionStructure for download/editing
+ * @param {Object} faction - Faction with typed arrays (datasheets, stratagems, etc.)
+ * @returns {Array} - Flat array of all cards with uuid and isCustom restored
+ */
+export const extractCardsFromFaction = (faction) => {
+  if (!faction) return [];
+
+  const cards = [];
+  const arrayNames = [...new Set(Object.values(CARD_TYPE_TO_ARRAY))];
+
+  // Extract from all typed arrays
+  arrayNames.forEach((arrayName) => {
+    if (faction[arrayName] && Array.isArray(faction[arrayName])) {
+      faction[arrayName].forEach((card) => {
+        cards.push({
+          ...card,
+          uuid: card.uuid || uuidv4(), // Restore uuid for local editing
+          isCustom: true,
+        });
+      });
+    }
+  });
+
+  // Also check 'cards' array for backwards compatibility
+  if (faction.cards && Array.isArray(faction.cards)) {
+    faction.cards.forEach((card) => {
+      cards.push({
+        ...card,
+        uuid: card.uuid || uuidv4(),
+        isCustom: true,
+      });
+    });
+  }
+
+  return cards;
+};
+
+/**
  * Creates a complete datasource object for export
  * @param {Object} options - Export options
  * @param {string} options.name - Datasource name

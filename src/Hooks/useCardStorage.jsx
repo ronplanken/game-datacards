@@ -1,10 +1,45 @@
-import { message } from "antd";
+import { message } from "../Components/Toast/message";
 import clone from "just-clone";
 import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { parseStorageJson } from "../Helpers/cardstorage.helpers";
 
 const CardStorageContext = React.createContext(undefined);
+
+// Default sync fields for new categories
+const defaultSyncFields = {
+  syncEnabled: false,
+  syncStatus: "local", // local | synced | pending | syncing | error | conflict
+  lastSyncedAt: null,
+  localVersion: 1,
+  cloudVersion: null,
+  syncError: null,
+  syncedToUserId: null, // Track which user this category is synced to
+};
+
+// Default fields for local datasources
+const defaultDatasourceFields = {
+  datasourceId: null, // User-defined ID
+  version: "1.0.0",
+  author: null,
+  displayFormat: null,
+  colours: { header: "#1a1a1a", banner: "#4a4a4a" },
+  // Cloud/publishing state
+  cloudId: null, // Database UUID if uploaded
+  isUploaded: false,
+  isPublished: false,
+  shareCode: null,
+  publishedVersion: null,
+};
+
+// Helper to generate slug from name
+const generateIdFromName = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .substring(0, 50);
+};
 
 export function useCardStorage() {
   const context = React.useContext(CardStorageContext);
@@ -34,7 +69,7 @@ export const CardStorageProviderComponent = (props) => {
   const [activeCategory, setActiveCategory] = React.useState(null);
 
   useEffect(() => {
-    const version = process.env.REACT_APP_VERSION;
+    const version = import.meta.env.VITE_VERSION;
     localStorage.setItem("storage", JSON.stringify({ ...cardStorage, version }));
   }, [cardStorage]);
 
@@ -68,9 +103,21 @@ export const CardStorageProviderComponent = (props) => {
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
       const categoryIndex = newStorage.categories.findIndex((cat) => cat.uuid === activeCategory.uuid);
-      const newCards = newStorage.categories[categoryIndex].cards;
+      const category = newStorage.categories[categoryIndex];
+      const newCards = category.cards;
       newCards[newCards.findIndex((card) => card.uuid === activeCard.uuid)] = activeCard;
-      newStorage.categories[categoryIndex].cards = newCards;
+      newStorage.categories[categoryIndex] = {
+        ...category,
+        cards: newCards,
+        // Mark as pending if sync is enabled
+        ...(category.syncEnabled
+          ? {
+              localVersion: (category.localVersion || 1) + 1,
+              syncStatus: "pending",
+              syncError: null,
+            }
+          : {}),
+      };
       return newStorage;
     });
   };
@@ -82,9 +129,21 @@ export const CardStorageProviderComponent = (props) => {
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
       const categoryIndex = newStorage.categories.findIndex((cat) => cat.uuid === category.uuid);
-      const newCards = newStorage.categories[categoryIndex].cards;
+      const cat = newStorage.categories[categoryIndex];
+      const newCards = cat.cards;
       newCards[newCards.findIndex((card) => card.uuid === updatedCard.uuid)] = updatedCard;
-      newStorage.categories[categoryIndex].cards = newCards;
+      newStorage.categories[categoryIndex] = {
+        ...cat,
+        cards: newCards,
+        // Mark as pending if sync is enabled
+        ...(cat.syncEnabled
+          ? {
+              localVersion: (cat.localVersion || 1) + 1,
+              syncStatus: "pending",
+              syncError: null,
+            }
+          : {}),
+      };
       return newStorage;
     });
   };
@@ -97,8 +156,20 @@ export const CardStorageProviderComponent = (props) => {
     if (!categoryId) {
       setCardStorage((prevStorage) => {
         const newStorage = clone(prevStorage);
-        newStorage.categories[0].cards.push(copiedCard);
-        newStorage.categories[0].closed = false;
+        const cat = newStorage.categories[0];
+        cat.cards.push(copiedCard);
+        newStorage.categories[0] = {
+          ...cat,
+          closed: false,
+          // Mark as pending if sync is enabled
+          ...(cat.syncEnabled
+            ? {
+                localVersion: (cat.localVersion || 1) + 1,
+                syncStatus: "pending",
+                syncError: null,
+              }
+            : {}),
+        };
         return {
           ...newStorage,
         };
@@ -106,8 +177,21 @@ export const CardStorageProviderComponent = (props) => {
     } else {
       setCardStorage((prevStorage) => {
         const newStorage = clone(prevStorage);
-        newStorage.categories.find((cat) => cat.uuid === categoryId).cards.push(copiedCard);
-        newStorage.categories.find((cat) => cat.uuid === categoryId).closed = false;
+        const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryId);
+        const cat = newStorage.categories[catIndex];
+        cat.cards.push(copiedCard);
+        newStorage.categories[catIndex] = {
+          ...cat,
+          closed: false,
+          // Mark as pending if sync is enabled
+          ...(cat.syncEnabled
+            ? {
+                localVersion: (cat.localVersion || 1) + 1,
+                syncStatus: "pending",
+                syncError: null,
+              }
+            : {}),
+        };
         return {
           ...newStorage,
         };
@@ -124,13 +208,17 @@ export const CardStorageProviderComponent = (props) => {
     }
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
-      // Add the parent category
-      newStorage.categories.push(category);
+      // Add the parent category with sync fields (imported categories start as local)
+      newStorage.categories.push({
+        ...category,
+        ...defaultSyncFields,
+      });
       // Add sub-categories with parentId set to the imported category's uuid
       subCategories.forEach((sub) => {
         newStorage.categories.push({
           ...sub,
           parentId: category.uuid,
+          ...defaultSyncFields,
         });
       });
       return {
@@ -149,6 +237,7 @@ export const CardStorageProviderComponent = (props) => {
         name: categoryName,
         type,
         cards: [],
+        ...defaultSyncFields,
       });
       return {
         ...newStorage,
@@ -173,6 +262,7 @@ export const CardStorageProviderComponent = (props) => {
         type: "category",
         cards: [],
         parentId,
+        ...defaultSyncFields,
       });
       return {
         ...newStorage,
@@ -187,9 +277,18 @@ export const CardStorageProviderComponent = (props) => {
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
       const index = newStorage.categories.findIndex((cat) => cat.uuid === categoryId);
+      const cat = newStorage.categories[index];
       newStorage.categories[index] = {
-        ...newStorage.categories[index],
+        ...cat,
         name: newCategoryName,
+        // Mark as pending if sync is enabled
+        ...(cat.syncEnabled
+          ? {
+              localVersion: (cat.localVersion || 1) + 1,
+              syncStatus: "pending",
+              syncError: null,
+            }
+          : {}),
       };
       return {
         ...newStorage,
@@ -204,8 +303,20 @@ export const CardStorageProviderComponent = (props) => {
     if (!categoryId) {
       setCardStorage((prevStorage) => {
         const newStorage = clone(prevStorage);
-        const newCards = newStorage.categories[0].cards.filter((card) => card.uuid !== cardId);
-        newStorage.categories[0].cards = newCards;
+        const cat = newStorage.categories[0];
+        const newCards = cat.cards.filter((card) => card.uuid !== cardId);
+        newStorage.categories[0] = {
+          ...cat,
+          cards: newCards,
+          // Mark as pending if sync is enabled
+          ...(cat.syncEnabled
+            ? {
+                localVersion: (cat.localVersion || 1) + 1,
+                syncStatus: "pending",
+                syncError: null,
+              }
+            : {}),
+        };
         return {
           ...newStorage,
           categories: [...newStorage.categories],
@@ -215,8 +326,20 @@ export const CardStorageProviderComponent = (props) => {
       setCardStorage((prevStorage) => {
         const newStorage = clone(prevStorage);
         const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryId);
-        const newCards = newStorage.categories[catIndex].cards.filter((card) => card.uuid !== cardId);
-        newStorage.categories[catIndex].cards = newCards;
+        const cat = newStorage.categories[catIndex];
+        const newCards = cat.cards.filter((card) => card.uuid !== cardId);
+        newStorage.categories[catIndex] = {
+          ...cat,
+          cards: newCards,
+          // Mark as pending if sync is enabled
+          ...(cat.syncEnabled
+            ? {
+                localVersion: (cat.localVersion || 1) + 1,
+                syncStatus: "pending",
+                syncError: null,
+              }
+            : {}),
+        };
         return newStorage;
       });
     }
@@ -252,6 +375,226 @@ export const CardStorageProviderComponent = (props) => {
     });
   };
 
+  // Mark a category as having pending changes (increments version, sets status to pending)
+  const markCategoryPending = (categoryUuid) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryUuid);
+      if (catIndex === -1) return prevStorage;
+
+      const category = newStorage.categories[catIndex];
+      // Only mark as pending if sync is enabled
+      if (category.syncEnabled) {
+        newStorage.categories[catIndex] = {
+          ...category,
+          localVersion: (category.localVersion || 1) + 1,
+          syncStatus: "pending",
+          syncError: null,
+        };
+      }
+      return newStorage;
+    });
+  };
+
+  // Update sync status for a category (used by useSync hook)
+  const updateCategorySyncStatus = (categoryUuid, syncStatus, additionalFields = {}) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryUuid);
+      if (catIndex === -1) return prevStorage;
+
+      newStorage.categories[catIndex] = {
+        ...newStorage.categories[catIndex],
+        syncStatus,
+        ...additionalFields,
+      };
+      return newStorage;
+    });
+  };
+
+  // Enable or disable sync for a category
+  // userId is optional - when enabling sync, pass the user ID to track which user it's synced to
+  const setCategorySyncEnabled = (categoryUuid, enabled, userId = null) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryUuid);
+      if (catIndex === -1) return prevStorage;
+
+      newStorage.categories[catIndex] = {
+        ...newStorage.categories[catIndex],
+        syncEnabled: enabled,
+        syncStatus: enabled ? "pending" : "local",
+        syncError: null,
+        // Set syncedToUserId when enabling sync, clear when disabling
+        syncedToUserId: enabled ? userId : null,
+      };
+      return newStorage;
+    });
+  };
+
+  // Bulk update categories (used for importing from cloud)
+  const bulkUpdateCategories = (cloudCategories) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+
+      cloudCategories.forEach((cloudCat) => {
+        const existingIndex = newStorage.categories.findIndex((cat) => cat.uuid === cloudCat.uuid);
+        if (existingIndex >= 0) {
+          // Update existing category
+          newStorage.categories[existingIndex] = {
+            ...cloudCat,
+            syncEnabled: true,
+            syncStatus: "synced",
+          };
+        } else {
+          // Add new category from cloud
+          newStorage.categories.push({
+            ...cloudCat,
+            syncEnabled: true,
+            syncStatus: "synced",
+          });
+        }
+      });
+
+      return newStorage;
+    });
+  };
+
+  // =====================================================
+  // Local Datasource Functions
+  // =====================================================
+
+  // Get all local datasources
+  const getLocalDatasources = () => {
+    return cardStorage.categories.filter((cat) => cat.type === "local-datasource");
+  };
+
+  // Convert a category to a local datasource
+  // Returns null if category has sub-categories (not allowed)
+  // Preserves sync state from original category
+  const convertCategoryToDatasource = (categoryUuid, metadata) => {
+    const category = cardStorage.categories.find((cat) => cat.uuid === categoryUuid);
+    if (!category) {
+      return { success: false, error: "Category not found" };
+    }
+
+    // Check if category has sub-categories
+    const subCategories = cardStorage.categories.filter((cat) => cat.parentId === categoryUuid);
+    if (subCategories.length > 0) {
+      return { success: false, error: "Cannot convert category with sub-categories" };
+    }
+
+    // Infer display format from first card if not provided
+    const displayFormat = metadata.displayFormat || category.cards?.[0]?.source || "basic";
+
+    // Check if the category was synced (we'll need to delete it from cloud)
+    const wasSynced = category.syncEnabled && category.cloudId;
+
+    // Create new datasource entry, preserving sync state from original category
+    const newDatasourceUuid = uuidv4();
+    const datasource = {
+      uuid: newDatasourceUuid,
+      name: metadata.name || category.name,
+      type: "local-datasource",
+      cards: clone(category.cards || []),
+      // Preserve sync state from category - if category was synced, datasource should be too
+      syncEnabled: category.syncEnabled || false,
+      syncStatus: category.syncEnabled ? "pending" : "local",
+      lastSyncedAt: null,
+      localVersion: 1,
+      cloudVersion: null,
+      syncError: null,
+      syncedToUserId: category.syncedToUserId || null,
+      // Datasource-specific fields
+      ...defaultDatasourceFields,
+      datasourceId: metadata.id || generateIdFromName(metadata.name || category.name),
+      version: metadata.version || "1.0.0",
+      author: metadata.author || null,
+      displayFormat,
+      colours: metadata.colours || { header: "#1a1a1a", banner: "#4a4a4a" },
+    };
+
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      // Remove the original category
+      const newCategories = newStorage.categories.filter((cat) => cat.uuid !== categoryUuid);
+      // Add the new datasource
+      newCategories.push(datasource);
+      return {
+        ...newStorage,
+        categories: newCategories,
+      };
+    });
+
+    return {
+      success: true,
+      datasource,
+      // Flag to indicate if the caller should delete the category from cloud
+      shouldDeleteFromCloud: wasSynced,
+      categoryCloudId: wasSynced ? category.cloudId : null,
+    };
+  };
+
+  // Update metadata for a local datasource
+  const updateDatasourceMetadata = (datasourceUuid, metadata) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const dsIndex = newStorage.categories.findIndex(
+        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource",
+      );
+      if (dsIndex === -1) return prevStorage;
+
+      const ds = newStorage.categories[dsIndex];
+      newStorage.categories[dsIndex] = {
+        ...ds,
+        name: metadata.name !== undefined ? metadata.name : ds.name,
+        datasourceId: metadata.id !== undefined ? metadata.id : ds.datasourceId,
+        version: metadata.version !== undefined ? metadata.version : ds.version,
+        author: metadata.author !== undefined ? metadata.author : ds.author,
+        displayFormat: metadata.displayFormat !== undefined ? metadata.displayFormat : ds.displayFormat,
+        colours: metadata.colours !== undefined ? metadata.colours : ds.colours,
+        // Mark as pending if sync is enabled
+        ...(ds.syncEnabled
+          ? {
+              localVersion: (ds.localVersion || 1) + 1,
+              syncStatus: "pending",
+              syncError: null,
+            }
+          : {}),
+      };
+      return newStorage;
+    });
+  };
+
+  // Remove a local datasource
+  const removeLocalDatasource = (datasourceUuid) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const newCategories = newStorage.categories.filter((cat) => cat.uuid !== datasourceUuid);
+      return {
+        ...newStorage,
+        categories: newCategories,
+      };
+    });
+  };
+
+  // Update cloud/publishing state for a local datasource
+  const updateDatasourceCloudState = (datasourceUuid, cloudState) => {
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const dsIndex = newStorage.categories.findIndex(
+        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource",
+      );
+      if (dsIndex === -1) return prevStorage;
+
+      newStorage.categories[dsIndex] = {
+        ...newStorage.categories[dsIndex],
+        ...cloudState,
+      };
+      return newStorage;
+    });
+  };
+
   const context = {
     cardStorage,
     activeCard,
@@ -271,6 +614,17 @@ export const CardStorageProviderComponent = (props) => {
     getSubCategories,
     updateCategory,
     saveCard,
+    // Sync-related functions
+    markCategoryPending,
+    updateCategorySyncStatus,
+    setCategorySyncEnabled,
+    bulkUpdateCategories,
+    // Local datasource functions
+    getLocalDatasources,
+    convertCategoryToDatasource,
+    updateDatasourceMetadata,
+    removeLocalDatasource,
+    updateDatasourceCloudState,
   };
 
   return <CardStorageContext.Provider value={context}>{props.children}</CardStorageContext.Provider>;

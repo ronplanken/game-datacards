@@ -1,5 +1,6 @@
 import { Database, Loader2 } from "lucide-react";
-import { Popover, message } from "antd";
+import { Popover } from "antd";
+import { message } from "./Toast/message";
 import { compare } from "compare-versions";
 import moment from "moment";
 import React, { useEffect } from "react";
@@ -24,15 +25,13 @@ export const UpdateReminder = () => {
       }
     }
 
-    // Guard against undefined dataSource.version
-    if (!dataSource.version) {
-      setIsUpdateReminderVisible(false);
-      return;
-    }
+    // Check if we have valid versions to compare
+    const appVersion = import.meta.env.VITE_VERSION;
+    const hasVersionInfo = dataSource.version && appVersion;
 
     if (
       (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 2) ||
-      compare(dataSource.version, process.env.REACT_APP_VERSION, "<")
+      (hasVersionInfo && compare(dataSource.version, appVersion, "<"))
     ) {
       setIsUpdateReminderVisible(true);
     } else {
