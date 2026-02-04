@@ -5,14 +5,20 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Globe } from "lucide-react";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
-import { useAuth, usePremiumFeatures, AccountButton, SyncStatusIndicator, DatasourceUpdateBadge } from "../Premium";
+import {
+  useAuth,
+  usePremiumFeatures,
+  AccountButton,
+  SyncStatusIndicator,
+  DatasourceUpdateBadge,
+  CommunityBrowserModal,
+} from "../Premium";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
 import { DatasourceSelector } from "./DatasourceSelector";
 import { NotificationBell } from "./NotificationBell";
 import { SettingsModal } from "./SettingsModal";
 import { ShareModal } from "./ShareModal";
-import { DatasourceBrowserModal } from "./DatasourceBrowser";
 import { WhatsNew } from "./WhatsNew";
 import "./AppHeader.css";
 
@@ -86,7 +92,7 @@ export const AppHeader = ({
             {showActions && user && <DatasourceUpdateBadge />}
 
             {showActions && hasDatasourceBrowser && (
-              <Tooltip content="Browse Community Datasources" placement="bottom-end">
+              <Tooltip content="Browse Community" placement="bottom-end">
                 <button className="app-header-icon-btn" onClick={() => setShowBrowseModal(true)}>
                   <Globe size={18} />
                 </button>
@@ -110,9 +116,9 @@ export const AppHeader = ({
         </div>
       </Header>
 
-      {/* Browse Datasources Modal - Premium only */}
+      {/* Browse Community Modal - Premium only (datasources + templates) */}
       {hasDatasourceBrowser && (
-        <DatasourceBrowserModal isOpen={showBrowseModal} onClose={() => setShowBrowseModal(false)} />
+        <CommunityBrowserModal isOpen={showBrowseModal} onClose={() => setShowBrowseModal(false)} />
       )}
     </>
   );

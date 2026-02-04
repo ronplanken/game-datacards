@@ -6,8 +6,7 @@ import moment from "moment";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { CustomDatasourceModal } from "../../Premium";
-import { DatasourceBrowserModal } from "../DatasourceBrowser";
+import { CustomDatasourceModal, CommunityBrowserModal } from "../../Premium";
 import "./DatasourceSelector.css";
 
 const BUILT_IN_DATASOURCES = [
@@ -290,7 +289,7 @@ export const DatasourceSelector = () => {
         )}
 
       <CustomDatasourceModal isOpen={isCustomModalOpen} onClose={() => setIsCustomModalOpen(false)} />
-      <DatasourceBrowserModal isOpen={isBrowseModalOpen} onClose={() => setIsBrowseModalOpen(false)} />
+      <CommunityBrowserModal isOpen={isBrowseModalOpen} onClose={() => setIsBrowseModalOpen(false)} />
     </>
   );
 };

@@ -116,7 +116,7 @@ const removeInvisibleChars = (text) => {
  * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines
  * @returns {Object} Finalized unit with models and weapons
  */
-const finalizeUnit = (unit, bulletLines) => {
+export const finalizeUnit = (unit, bulletLines) => {
   const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
   const weapons = [];
 

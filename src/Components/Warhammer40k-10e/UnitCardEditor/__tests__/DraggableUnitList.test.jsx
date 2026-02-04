@@ -175,8 +175,105 @@ describe("DraggableUnitList", () => {
     });
   });
 
-  // Note: Delete button tests are skipped due to complexity of testing Ant Design
-  // Button components with icon children. The delete functionality is tested
-  // indirectly through integration testing.
-  // The core logic (splice array and call onItemsChange) is straightforward.
+  describe("delete item", () => {
+    it("should call onItemsChange when delete button is clicked", () => {
+      const onItemsChange = vi.fn();
+      const items = [{ type: "official", name: "Unit 1" }];
+      render(<DraggableUnitList {...defaultProps} items={items} onItemsChange={onItemsChange} />);
+
+      // Find and click the delete button (it's the Button with Trash2 icon)
+      const deleteButtons = screen.getAllByRole("button");
+      const deleteButton = deleteButtons.find((btn) => btn.className.includes("ant-btn-text"));
+      fireEvent.click(deleteButton);
+
+      expect(onItemsChange).toHaveBeenCalledTimes(1);
+      expect(onItemsChange).toHaveBeenCalledWith([]);
+    });
+
+    it("should remove correct item when deleting from list with multiple items", () => {
+      const onItemsChange = vi.fn();
+      const items = [
+        { type: "official", name: "Unit 1" },
+        { type: "official", name: "Unit 2" },
+        { type: "official", name: "Unit 3" },
+      ];
+      render(<DraggableUnitList {...defaultProps} items={items} onItemsChange={onItemsChange} />);
+
+      // Find all delete buttons and click the first one
+      const deleteButtons = screen.getAllByRole("button").filter((btn) => btn.className.includes("ant-btn-text"));
+      fireEvent.click(deleteButtons[0]);
+
+      expect(onItemsChange).toHaveBeenCalledWith([
+        { type: "official", name: "Unit 2" },
+        { type: "official", name: "Unit 3" },
+      ]);
+    });
+  });
+
+  describe("type switching", () => {
+    it("should switch from Official to Custom type", () => {
+      const onItemsChange = vi.fn();
+      const items = [{ type: "official", name: "Test Unit" }];
+      render(<DraggableUnitList {...defaultProps} items={items} onItemsChange={onItemsChange} />);
+
+      // Find the Custom option in the Segmented control and click it
+      const customOption = screen.getByText("Custom");
+      fireEvent.click(customOption);
+
+      expect(onItemsChange).toHaveBeenCalledTimes(1);
+      // Should switch to custom type with first available card
+      const call = onItemsChange.mock.calls[0][0];
+      expect(call[0].type).toBe("custom");
+    });
+
+    it("should switch from Custom to Official type and preserve name", () => {
+      const onItemsChange = vi.fn();
+      const items = [{ type: "custom", uuid: "card-1", name: "Custom Card Name" }];
+      render(<DraggableUnitList {...defaultProps} items={items} onItemsChange={onItemsChange} />);
+
+      // Find and click the Official option
+      const officialOption = screen.getByText("Official");
+      fireEvent.click(officialOption);
+
+      expect(onItemsChange).toHaveBeenCalledWith([{ type: "official", name: "Custom Card Name" }]);
+    });
+
+    it("should show Select dropdown for Custom type items", () => {
+      const items = [{ type: "custom", uuid: "card-1", name: "Test Card 1" }];
+      render(<DraggableUnitList {...defaultProps} items={items} />);
+
+      // Should have a Select component (combobox role) for custom type
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
+    });
+
+    it("should show editable Typography for Official type items", () => {
+      const items = [{ type: "official", name: "Editable Name" }];
+      render(<DraggableUnitList {...defaultProps} items={items} />);
+
+      // Should show the text content
+      expect(screen.getByText("Editable Name")).toBeInTheDocument();
+    });
+  });
+
+  describe("custom card selection", () => {
+    it("should call onItemsChange when selecting a custom card", async () => {
+      const onItemsChange = vi.fn();
+      const items = [{ type: "custom", uuid: "card-1", name: "Test Card 1" }];
+      render(<DraggableUnitList {...defaultProps} items={items} onItemsChange={onItemsChange} />);
+
+      // Find and click the select dropdown
+      const selectBox = screen.getByRole("combobox");
+      fireEvent.mouseDown(selectBox);
+
+      // Wait for dropdown options to appear and select one
+      const option = await screen.findByText(/Test Card 2/);
+      fireEvent.click(option);
+
+      expect(onItemsChange).toHaveBeenCalledTimes(1);
+      const call = onItemsChange.mock.calls[0][0];
+      expect(call[0].type).toBe("custom");
+      expect(call[0].uuid).toBe("card-2");
+      expect(call[0].name).toBe("Test Card 2");
+    });
+  });
 });

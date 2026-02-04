@@ -195,6 +195,7 @@ export const CategorySyncIcon = () => null;
 export const DatasourcePublishIcon = () => null;
 export const DatasourceSyncIcon = () => null;
 export const TemplateSyncIcon = () => null;
+export const TemplatePublishIcon = () => null;
 export const SyncClaimModal = () => null;
 export const SyncConflictModal = () => null;
 export const SyncConflictHandler = () => null;
@@ -321,3 +322,97 @@ export const TemplateRenderer = () => null;
  * Stub for TemplateSelector - returns null (templates not available in community version)
  */
 export const TemplateSelector = () => null;
+
+// =====================================================
+// TEMPLATE SHARING COMPONENTS & HOOKS - Premium only
+// =====================================================
+
+/**
+ * Stub for TemplateSharingProvider - renders children only
+ */
+export const TemplateSharingProvider = ({ children }) => children;
+
+/**
+ * Stub for useTemplateSharing - template sharing disabled in public version
+ */
+export const useTemplateSharing = () => ({
+  // Browse
+  publicTemplates: [],
+  isLoadingPublic: false,
+  browseFilters: { gameSystem: null, search: "", sortBy: "popular" },
+  pagination: { offset: 0, hasMore: false },
+  browsePublicTemplates: () => Promise.resolve([]),
+  getFeaturedTemplates: () => Promise.resolve([]),
+  getTemplateByShareCode: () => Promise.resolve(null),
+  setBrowseFilters: () => {},
+  // Subscriptions
+  subscriptions: [],
+  availableUpdates: [],
+  isLoadingSubscriptions: false,
+  fetchMySubscriptions: () => Promise.resolve([]),
+  subscribeToTemplate: () => Promise.resolve({ success: false }),
+  unsubscribeFromTemplate: () => Promise.resolve({ success: false }),
+  checkForUpdates: () => Promise.resolve([]),
+  // Publishing
+  myTemplates: [],
+  isLoadingMine: false,
+  fetchMyTemplates: () => Promise.resolve([]),
+  publishTemplate: () => Promise.resolve({ success: false }),
+  pushTemplateUpdate: () => Promise.resolve({ success: false }),
+  unpublishTemplate: () => Promise.resolve({ success: false }),
+  deleteTemplate: () => Promise.resolve({ success: false }),
+  updateTemplateMetadata: () => Promise.resolve({ success: false }),
+  getMyPublishedWorks: () => Promise.resolve({ datasources: [], templates: [] }),
+  updateCount: 0,
+});
+
+/**
+ * Game system options constant for templates
+ */
+export const TEMPLATE_GAME_SYSTEMS = [
+  { value: "40k-10e", label: "Warhammer 40k (10th Edition)" },
+  { value: "40k", label: "Warhammer 40k (Legacy)" },
+  { value: "aos", label: "Age of Sigmar" },
+  { value: "necromunda", label: "Necromunda" },
+  { value: "horus-heresy", label: "Horus Heresy" },
+  { value: "basic", label: "Basic/Generic" },
+  { value: "other", label: "Other" },
+];
+
+/**
+ * Sort options constant for templates
+ */
+export const TEMPLATE_SORT_OPTIONS = [
+  { value: "popular", label: "Most Popular" },
+  { value: "new", label: "Newest" },
+  { value: "subscribers", label: "Most Subscribers" },
+];
+
+// =====================================================
+// COMMUNITY BROWSER COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for CommunityBrowserModal - returns null (premium feature)
+ */
+export const CommunityBrowserModal = () => null;
+
+/**
+ * Stub for TemplateCard - returns null (premium feature)
+ */
+export const TemplateCard = () => null;
+
+/**
+ * Stub for TemplateDetailModal - returns null (premium feature)
+ */
+export const TemplateDetailModal = () => null;
+
+/**
+ * Stub for MyWorksTab - returns null (premium feature)
+ */
+export const MyWorksTab = () => null;
+
+/**
+ * Stub for PublishTemplateModal - returns null (premium feature)
+ */
+export const PublishTemplateModal = () => null;
