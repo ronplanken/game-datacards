@@ -1483,6 +1483,31 @@ Impulsor (80 pts)`;
       const result = parseGwAppText(text);
       expect(result.error).toBe("Could not identify faction name");
     });
+
+    it("should parse weapons without bullet points (GW App continuation lines)", () => {
+      const text = `My Army (160 pts)
+
+Space Marines
+Strike Force
+
+BATTLELINE
+
+Intercessor Squad (160 points)
+• 1x Intercessor Sergeant
+  • 1x Bolt pistol
+    1x Bolt rifle
+    1x Close combat weapon
+• 9x Intercessor
+  • 1x Astartes grenade launcher
+    9x Bolt pistol
+    9x Bolt rifle
+    9x Close combat weapon`;
+      const result = parseGwAppText(text);
+      expect(result.units[0].weapons).toContain("Bolt rifle");
+      expect(result.units[0].weapons).toContain("Close combat weapon");
+      expect(result.units[0].weapons).toContain("Bolt pistol");
+      expect(result.units[0].weapons).toContain("Astartes grenade launcher");
+    });
   });
 
   describe("matchUnitsToDatasheets", () => {
@@ -1554,6 +1579,52 @@ Impulsor (80 pts)`;
       const result = matchUnitsToDatasheets(units, factionWithAllied, [alliedFaction]);
       expect(result[0].matchStatus).toBe("exact");
       expect(result[0].matchedCard.name).toBe("Commissar");
+    });
+
+    it("should match units from parent faction for subfactions", () => {
+      const parentFaction = {
+        id: "sm",
+        name: "Space Marines",
+        datasheets: [{ id: "intercessors", name: "Intercessor Squad", factions: ["SM"] }],
+      };
+      const subfaction = {
+        id: "bt",
+        name: "Black Templars",
+        parent_id: "sm",
+        parent_keyword: "SM",
+        is_subfaction: true,
+        datasheets: [{ id: "grimaldus", name: "Chaplain Grimaldus" }],
+      };
+      const units = [
+        { originalName: "Chaplain Grimaldus", section: "CHARACTERS" },
+        { originalName: "Intercessor Squad", section: "BATTLELINE" },
+      ];
+      const result = matchUnitsToDatasheets(units, subfaction, [parentFaction, subfaction]);
+      expect(result[0].matchStatus).toBe("exact"); // Black Templars unit
+      expect(result[0].alliedFactionId).toBeNull();
+      expect(result[1].matchStatus).toBe("exact"); // Parent Space Marines unit
+      expect(result[1].alliedFactionName).toBe("Space Marines"); // From parent
+    });
+
+    it("should prioritize child faction datasheet over parent when unit exists in both", () => {
+      const parentFaction = {
+        id: "sm",
+        name: "Space Marines",
+        datasheets: [{ id: "sm-crusaders", name: "Crusader Squad", factions: ["SM"], points: 100 }],
+      };
+      const subfaction = {
+        id: "bt",
+        name: "Black Templars",
+        parent_id: "sm",
+        parent_keyword: "SM",
+        is_subfaction: true,
+        datasheets: [{ id: "bt-crusaders", name: "Crusader Squad", points: 150 }],
+      };
+      const units = [{ originalName: "Crusader Squad", section: "BATTLELINE" }];
+      const result = matchUnitsToDatasheets(units, subfaction, [parentFaction, subfaction]);
+      expect(result[0].matchStatus).toBe("exact");
+      expect(result[0].matchedCard.id).toBe("bt-crusaders"); // Child faction version
+      expect(result[0].alliedFactionId).toBeNull(); // Not from parent
     });
   });
 
