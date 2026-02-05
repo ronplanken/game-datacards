@@ -4,12 +4,14 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
 import { settings } from "firebase/analytics";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { TemplateSelector, usePremiumFeatures } from "../../../Premium";
 
 const { Option } = Select;
 
 export function UnitBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { settings, updateSettings } = useSettingsStorage();
+  const { hasCardDesigner } = usePremiumFeatures();
 
   return (
     <Form>
@@ -71,6 +73,15 @@ export function UnitBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, legends: value })}
         />
       </Form.Item>
+      {hasCardDesigner && (
+        <Form.Item label={"Template"}>
+          <TemplateSelector
+            value={activeCard.templateId || null}
+            onChange={(templateId) => updateActiveCard({ ...activeCard, templateId })}
+            targetFormat="40k-10e"
+          />
+        </Form.Item>
+      )}
     </Form>
   );
 }

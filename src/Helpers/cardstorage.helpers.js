@@ -4,7 +4,7 @@ import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 
 const defaultCategories = {
-  version: process.env.REACT_APP_VERSION,
+  version: import.meta.env.VITE_VERSION,
   categories: [
     {
       uuid: uuidv4(),
@@ -188,6 +188,32 @@ const upgradeStoredCards = (parsedJson) => {
   }
   return parsedJson;
 };
+// Add sync fields to categories that don't have them
+const addSyncFieldsToCategories = (storage) => {
+  if (!storage.categories) {
+    return storage;
+  }
+
+  const needsMigration = storage.categories.some((cat) => cat.syncEnabled === undefined);
+  if (!needsMigration) {
+    return storage;
+  }
+
+  return {
+    ...storage,
+    categories: storage.categories.map((cat) => ({
+      ...cat,
+      // Add sync fields if they don't exist
+      syncEnabled: cat.syncEnabled ?? false,
+      syncStatus: cat.syncStatus ?? "local",
+      lastSyncedAt: cat.lastSyncedAt ?? null,
+      localVersion: cat.localVersion ?? 1,
+      cloudVersion: cat.cloudVersion ?? null,
+      syncError: cat.syncError ?? null,
+    })),
+  };
+};
+
 export const parseStorageJson = (savedJson) => {
   if (!savedJson) {
     return defaultCategories;
@@ -199,12 +225,16 @@ export const parseStorageJson = (savedJson) => {
     if (!parsedJson.version) {
       return defaultCategories;
     }
+    let result;
     if (compare(parsedJson.version, "1.5.0", ">=")) {
-      return parsedJson;
+      result = parsedJson;
+    } else if (compare(parsedJson.version, "1.5.0", "<")) {
+      result = upgradeStoredCards(parsedJson);
+    } else {
+      result = parsedJson;
     }
-    if (compare(parsedJson.version, "1.5.0", "<")) {
-      return upgradeStoredCards(parsedJson);
-    }
+    // Always check for sync fields migration
+    return addSyncFieldsToCategories(result);
   } catch (e) {
     return defaultCategories;
   }

@@ -1,45 +1,50 @@
-import { Link, Share2, X, Check, Info } from "lucide-react";
-import { Tooltip } from "./Tooltip/Tooltip";
-import React, { useEffect, useCallback } from "react";
+import { Link, Share2, Info } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useFirebase } from "../Hooks/useFirebase";
+import { message } from "./Toast/message";
 import "./ShareModal.css";
 
 export const ShareModal = () => {
-  const [isModalVisible, setIsModalVisible] = React.useState(false);
-  const [shareId, setShareId] = React.useState();
-  const [isGenerating, setIsGenerating] = React.useState(false);
-  const [showCopyToast, setShowCopyToast] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [shareId, setShareId] = useState();
+  const [isGenerating, setIsGenerating] = useState(false);
+  const buttonRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   const { shareCategory, logScreenView } = useFirebase();
   const { activeCategory } = useCardStorage();
 
-  // Handle escape key
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.key === "Escape" && isModalVisible) {
-        handleClose();
-      }
-    },
-    [isModalVisible],
-  );
-
+  // Handle click outside to close
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+    const handleClickOutside = (event) => {
+      if (
+        isOpen &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
 
-  // Handle overlay click
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      handleClose();
-    }
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
-  const handleClose = () => {
-    setIsModalVisible(false);
-    setShareId(undefined);
-  };
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen]);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -49,104 +54,94 @@ export const ShareModal = () => {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`${process.env.REACT_APP_URL}/shared/${shareId}`);
-    setShowCopyToast(true);
-    setTimeout(() => setShowCopyToast(false), 2000);
+    navigator.clipboard.writeText(`${import.meta.env.VITE_URL}/shared/${shareId}`);
+    message.success("Link copied to clipboard");
   };
 
-  const shareUrl = shareId ? `${process.env.REACT_APP_URL}/shared/${shareId}` : null;
+  const handleOpen = () => {
+    logScreenView("Share category");
+    setIsOpen(true);
+  };
+
+  // Calculate dropdown position
+  const getDropdownPosition = () => {
+    if (!buttonRef.current) return { top: 0, right: 0 };
+    const rect = buttonRef.current.getBoundingClientRect();
+    return {
+      top: rect.bottom + 8,
+      right: window.innerWidth - rect.right,
+    };
+  };
+
+  const shareUrl = shareId ? `${import.meta.env.VITE_URL}/shared/${shareId}` : null;
+  const position = getDropdownPosition();
 
   return (
     <>
-      {isModalVisible && (
-        <div className="share-modal-overlay" onClick={handleOverlayClick}>
-          <div className="share-modal" onClick={(e) => e.stopPropagation()}>
-            {/* Header */}
-            <div className="share-modal-header">
-              <span className="share-modal-title">
-                <Share2 size={18} />
-                Share {activeCategory?.type === "list" ? "List" : "Category"}
-              </span>
-              <button className="share-modal-close" onClick={handleClose}>
-                <X size={18} />
-              </button>
-            </div>
+      <button ref={buttonRef} className={`share-btn-trigger ${isOpen ? "active" : ""}`} onClick={handleOpen}>
+        <Share2 size={16} />
+        <span className="share-btn-text">Share</span>
+      </button>
 
-            {/* Content */}
-            <div className="share-modal-content">
-              {/* Category Info */}
-              <div className="share-category-info">
-                <span className="share-category-name">{activeCategory?.name}</span>
-                <span className="share-category-meta">
-                  {activeCategory?.type === "list" ? "List" : "Category"} · {activeCategory?.cards?.length || 0}{" "}
-                  {activeCategory?.cards?.length === 1 ? "card" : "cards"}
-                </span>
+      {isOpen &&
+        ReactDOM.createPortal(
+          <div className="share-dropdown-overlay">
+            <div ref={dropdownRef} className="share-dropdown" style={{ top: position.top, right: position.right }}>
+              {/* Header */}
+              <div className="share-dropdown-header">
+                <Share2 size={16} />
+                <span>Share {activeCategory?.type === "list" ? "List" : "Category"}</span>
               </div>
 
-              <p className="share-modal-description">
-                Share your datacard set with others by generating and sharing the following link. When sharing your
-                datacard set only active sections will be saved.
-              </p>
+              <div className="share-dropdown-divider" />
 
-              <div className="share-link-container">
+              {/* Category Info */}
+              <div className="share-dropdown-section">
+                <div className="share-category-info">
+                  <span className="share-category-name">{activeCategory?.name}</span>
+                  <span className="share-category-meta">
+                    {activeCategory?.cards?.length || 0} {activeCategory?.cards?.length === 1 ? "card" : "cards"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Link Section */}
+              <div className="share-dropdown-section">
                 <div className={`share-link-field ${shareUrl ? "has-link" : ""}`}>
                   {shareUrl ? (
-                    <a className="share-link-text" href={shareUrl} target="_blank" rel="noreferrer">
-                      {shareUrl}
-                    </a>
+                    <>
+                      <a className="share-link-text" href={shareUrl} target="_blank" rel="noreferrer">
+                        {shareUrl}
+                      </a>
+                      <button className="share-link-copy-btn" onClick={handleCopy}>
+                        <Link size={14} />
+                      </button>
+                    </>
                   ) : (
                     <span className="share-link-placeholder">Click generate for a link...</span>
                   )}
                 </div>
 
-                {shareUrl ? (
-                  <button className="share-btn" onClick={handleCopy}>
-                    <Link size={14} />
-                    Copy
-                  </button>
-                ) : (
-                  <button className="share-btn" onClick={handleGenerate} disabled={isGenerating}>
-                    {isGenerating ? <span className="share-btn-spinner" /> : null}
-                    {isGenerating ? "Generating..." : "Generate"}
-                  </button>
-                )}
+                <button
+                  className="share-action-btn"
+                  onClick={shareUrl ? handleCopy : handleGenerate}
+                  disabled={isGenerating}>
+                  {isGenerating && <span className="share-btn-spinner" />}
+                  {isGenerating ? "Generating..." : shareUrl ? "Copy Link" : "Generate Link"}
+                </button>
               </div>
 
-              <div className="share-modal-note">
-                <Info size={16} />
-                <p className="share-modal-note-text">
-                  Please note that the link is a snapshot of the current set and will not be automatically updated.
-                </p>
+              <div className="share-dropdown-divider" />
+
+              {/* Note */}
+              <div className="share-dropdown-note">
+                <Info size={14} />
+                <span>Links are snapshots and won&apos;t auto-update</span>
               </div>
             </div>
-
-            {/* Footer */}
-            <div className="share-modal-footer">
-              <button className="share-btn share-btn-secondary" onClick={handleClose}>
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Copy toast notification */}
-      <div className={`share-copy-toast ${showCopyToast ? "visible" : ""}`}>
-        <Check size={16} />
-        Link copied to clipboard
-      </div>
-
-      <Tooltip content="Share category" placement="bottom-start">
-        <button
-          className="app-header-icon-btn app-header-icon-btn-with-text"
-          onClick={() => {
-            logScreenView("Share category");
-            setIsModalVisible(true);
-          }}>
-          <Share2 size={16} />
-          Share
-        </button>
-      </Tooltip>
+          </div>,
+          document.body,
+        )}
     </>
   );
 };

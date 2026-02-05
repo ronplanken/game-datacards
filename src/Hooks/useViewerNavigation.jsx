@@ -39,9 +39,15 @@ export function useViewerNavigation() {
       if (unit) {
         // Check if we have a pre-filtered card from a mobile list (passed via router state)
         const listCard = location.state?.listCard;
+        // Check if we have a card from cloud category (passed via router state)
+        const cloudCard = location.state?.cloudCard;
+
         if (listCard && listCard.name?.replaceAll(" ", "-").toLowerCase() === unit) {
           // Use the stored card with filtered weapons/wargear
           setActiveCard(listCard);
+        } else if (cloudCard && cloudCard.name?.replaceAll(" ", "-").toLowerCase() === unit) {
+          // Use the cloud card directly - it's self-contained
+          setActiveCard(cloudCard);
         } else {
           // Support both datasheets (40K) and warscrolls (AoS)
           const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
