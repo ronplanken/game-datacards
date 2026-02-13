@@ -2,53 +2,93 @@ import React from "react";
 import { KeywordTooltip } from "./KeywordTooltip";
 import { RuleTooltip } from "./RuleTooltip";
 import { MarkdownSpanWrapDisplay } from "../../MarkdownSpanWrapDisplay";
+const RULE_KEYWORDS = [
+  "feel no pain",
+  "leader",
+  "deadly demise",
+  "deep strike",
+  "firing deck",
+  "scouts",
+  "fights first",
+  "infiltrators",
+  "stealth",
+  "lone operative",
+];
+
+function isRuleKeyword(keyword) {
+  const kw = keyword.toLowerCase();
+  return RULE_KEYWORDS.some((rule) => kw.includes(rule));
+}
+
 export function replaceKeywords(inputString) {
   if (!inputString) {
     return;
   }
-  const keywordRegex = /\[(.*?)\]/g;
-  const listRegex =
+  const bracketRegex = /\[(.*?)\]/g;
+  const ruleRegex =
     /(Stealth|\bLeader\b|Deep Strike|Infiltrators|Deadly Demise \d+|Firing Deck \d+|Deadly Demise D\d+|Scouts \d+"|Fights First|Lone Operative|Feel No Pain \d+\+)/g;
-  const matches = inputString.match(keywordRegex) || [];
-  const listMatches = inputString.match(listRegex) || [];
+  const weaponKeywordRegex =
+    /(Sustained Hits \d+|Lethal Hits|Devastating Wounds|Anti-.+? \d+\+|Torrent|Blast|Rapid Fire \d+|Twin-linked|Hazardous|Melta \d+|Lance|Ignores Cover|Indirect Fire|Precision|Extra Attacks|Psychic|One Shot|Linked Fire)/g;
 
+  // Collect all matches with their positions and types
+  const allMatches = [];
+  let m;
+  while ((m = bracketRegex.exec(inputString)) !== null) {
+    allMatches.push({ type: "bracket", keyword: m[1], start: m.index, end: m.index + m[0].length });
+  }
+  while ((m = ruleRegex.exec(inputString)) !== null) {
+    allMatches.push({ type: "rule", keyword: m[0], start: m.index, end: m.index + m[0].length });
+  }
+  while ((m = weaponKeywordRegex.exec(inputString)) !== null) {
+    allMatches.push({ type: "weapon", keyword: m[0], start: m.index, end: m.index + m[0].length });
+  }
+
+  // Sort by position, then prefer bracket matches over others at the same position
+  allMatches.sort((a, b) => a.start - b.start || (a.type === "bracket" ? -1 : 1));
+
+  // Remove overlapping matches (keep the first/prioritized one)
+  const filteredMatches = [];
+  let lastEnd = 0;
+  for (const match of allMatches) {
+    if (match.start >= lastEnd) {
+      filteredMatches.push(match);
+      lastEnd = match.end;
+    }
+  }
+
+  // Build components in a single pass
   const components = [];
-  let currentIndex = 0;
-  let remainingText = inputString;
+  let currentPos = 0;
 
-  matches?.forEach((match, index) => {
-    const keyword = match.slice(1, -1);
-    const startIndex = remainingText.indexOf(match);
-    const endIndex = startIndex + match.length;
-    const textBefore = remainingText.slice(0, startIndex);
-    remainingText = remainingText.slice(endIndex);
-    components.push(
-      <React.Fragment key={`keyword-${index}`}>
-        {textBefore}
-        <span className="keyword">
-          <KeywordTooltip keyword={keyword.toLowerCase()} />
-        </span>
-      </React.Fragment>,
-    );
+  filteredMatches.forEach((match, index) => {
+    const textBefore = inputString.slice(currentPos, match.start);
+    // For bracket matches, check inner content to decide weapon vs rule style
+    const useWeaponStyle = match.type === "weapon" || (match.type === "bracket" && !isRuleKeyword(match.keyword));
+
+    if (useWeaponStyle) {
+      components.push(
+        <React.Fragment key={`weapon-${index}`}>
+          {textBefore}
+          <span className="keyword">
+            <KeywordTooltip keyword={match.keyword.toLowerCase()} />
+          </span>
+        </React.Fragment>,
+      );
+    } else {
+      components.push(
+        <React.Fragment key={`rule-${index}`}>
+          {textBefore}
+          <span className="rule">
+            <RuleTooltip keyword={match.keyword.toLowerCase()} />
+          </span>
+        </React.Fragment>,
+      );
+    }
+    currentPos = match.end;
   });
 
-  listMatches?.forEach((match, index) => {
-    const startIndex = remainingText.indexOf(match);
-    const endIndex = startIndex + match.length;
-    const textBefore = remainingText.slice(0, startIndex);
-    remainingText = remainingText.slice(endIndex);
-    components.push(
-      <React.Fragment key={`rule-${index}`}>
-        {textBefore}
-        <span className="rule">
-          <RuleTooltip keyword={match.toLowerCase()} />
-        </span>
-      </React.Fragment>,
-    );
-  });
-
-  if (remainingText.length > 0) {
-    components.push(remainingText);
+  if (currentPos < inputString.length) {
+    components.push(inputString.slice(currentPos));
   }
   return components.map((component, index) => {
     // Check if the component has children and if it's a string

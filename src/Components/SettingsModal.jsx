@@ -350,7 +350,19 @@ export const SettingsModal = () => {
                 {activeTab === "changelog" && (
                   <div className="changelog-container">
                     <div className="changelog-timeline">
-                      <ChangelogEntry version="Version 3.0.0" date="01-12-2025" defaultExpanded={true}>
+                      <ChangelogEntry version="Version 3.1.3" date="13-02-2026" defaultExpanded={true}>
+                        <h4 className="changelog-section-title">Fixes</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Ability Keyword Styling</strong>
+                            Weapon keywords (e.g. Sustained Hits, Hazardous, Assault) in ability descriptions now render
+                            with the correct green weapon style and tooltip. Rule keywords (e.g. Feel No Pain, Lone
+                            Operative) use the black rule style.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.0.0" date="01-12-2025">
                         <h4 className="changelog-section-title">Added</h4>
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
