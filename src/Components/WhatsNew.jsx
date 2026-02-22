@@ -2,6 +2,7 @@ import { compare } from "compare-versions";
 import React, { useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { useFeatureFlags } from "../Hooks/useFeatureFlags";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 import { getMajorWizardVersion } from "./WhatsNewWizard";
 import "./WhatsNew.css";
@@ -14,16 +15,19 @@ const features = [
     description:
       "Introducing optional Premium and Creator tiers with expanded storage. All core features remain free forever.",
     isNew: true,
+    requiresPaidTier: true,
   },
   {
     title: "Premium: 50 Categories & 2 Datasources",
     description: "Upgrade to Premium for more card storage and the ability to import custom datasources.",
     isNew: true,
+    requiresPaidTier: true,
   },
   {
     title: "Creator: 250 Categories & 10 Datasources",
     description: "For power users and content creators who need maximum storage capacity.",
     isNew: true,
+    requiresPaidTier: true,
   },
   {
     title: "Redesigned Onboarding",
@@ -44,6 +48,9 @@ export const WhatsNew = () => {
   const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { paidTierEnabled } = useFeatureFlags();
+
+  const visibleFeatures = paidTierEnabled ? features : features.filter((f) => !f.requiresPaidTier);
 
   const closeWhatsNew = () => {
     setIsWhatsNewVisible(false);
@@ -127,7 +134,7 @@ export const WhatsNew = () => {
 
         <div className="wn-body">
           <div className="wn-features">
-            {features.map((feature, index) => (
+            {visibleFeatures.map((feature, index) => (
               <article
                 key={index}
                 className={`wn-feature ${feature.isNew ? "wn-feature--new" : ""}`}

@@ -7,6 +7,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { CustomDatasourceModal, CommunityBrowserModal } from "../../Premium";
+import { useFeatureFlags } from "../../Hooks/useFeatureFlags";
 import "./DatasourceSelector.css";
 
 const BUILT_IN_DATASOURCES = [
@@ -30,6 +31,7 @@ export const DatasourceSelector = () => {
   const { settings, updateSettings } = useSettingsStorage();
   const { dataSource, checkForUpdate } = useDataSourceStorage();
   const { getLocalDatasources } = useCardStorage();
+  const { communityBrowserEnabled } = useFeatureFlags();
 
   // Get local datasources from card storage
   const localDatasources = getLocalDatasources();
@@ -268,15 +270,17 @@ export const DatasourceSelector = () => {
               <div className="ds-dropdown-divider" />
 
               {/* Browse community */}
-              <button
-                className="ds-dropdown-item ds-dropdown-browse"
-                onClick={() => {
-                  setIsOpen(false);
-                  setIsBrowseModalOpen(true);
-                }}>
-                <Users size={16} />
-                <span>Browse Community</span>
-              </button>
+              {communityBrowserEnabled && (
+                <button
+                  className="ds-dropdown-item ds-dropdown-browse"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsBrowseModalOpen(true);
+                  }}>
+                  <Users size={16} />
+                  <span>Browse Community</span>
+                </button>
+              )}
 
               {/* Add external datasource */}
               <button className="ds-dropdown-item ds-dropdown-add" onClick={handleAddExternal}>
@@ -289,7 +293,9 @@ export const DatasourceSelector = () => {
         )}
 
       <CustomDatasourceModal isOpen={isCustomModalOpen} onClose={() => setIsCustomModalOpen(false)} />
-      <CommunityBrowserModal isOpen={isBrowseModalOpen} onClose={() => setIsBrowseModalOpen(false)} />
+      {communityBrowserEnabled && (
+        <CommunityBrowserModal isOpen={isBrowseModalOpen} onClose={() => setIsBrowseModalOpen(false)} />
+      )}
     </>
   );
 };

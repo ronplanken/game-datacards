@@ -28,6 +28,7 @@ import {
   usePremiumFeatures,
   TemplateStorageProvider,
 } from "./Premium";
+import { useFeatureFlags } from "./Hooks/useFeatureFlags";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
@@ -116,10 +117,11 @@ const WhatsNewWizardSelector = () => {
   return isMobileRoute ? <MobileWhatsNewWizard /> : <WhatsNewWizard />;
 };
 
-// Conditional Designer route - only renders if premium feature is available
+// Conditional Designer route - only renders if premium feature is available and flag is on
 const DesignerRoute = () => {
   const { hasCardDesigner } = usePremiumFeatures();
-  return hasCardDesigner ? <DesignerPage /> : null;
+  const { designerEnabled } = useFeatureFlags();
+  return hasCardDesigner && designerEnabled ? <DesignerPage /> : null;
 };
 
 // Component to handle checkout success redirect

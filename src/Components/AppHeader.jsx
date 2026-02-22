@@ -13,6 +13,7 @@ import {
   DatasourceUpdateBadge,
   CommunityBrowserModal,
 } from "../Premium";
+import { useFeatureFlags } from "../Hooks/useFeatureFlags";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
 import { DatasourceSelector } from "./DatasourceSelector";
@@ -38,6 +39,7 @@ export const AppHeader = ({
   const location = useLocation();
   const { user } = useAuth();
   const { hasDatasourceBrowser } = usePremiumFeatures();
+  const { designerEnabled, communityBrowserEnabled } = useFeatureFlags();
 
   const { activeCategory } = useCardStorage();
   const [showBrowseModal, setShowBrowseModal] = useState(false);
@@ -73,9 +75,11 @@ export const AppHeader = ({
                 <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
                   Viewer
                 </Link>
-                <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
-                  Designer
-                </Link>
+                {designerEnabled && (
+                  <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
+                    Designer
+                  </Link>
+                )}
               </nav>
             )}
           </div>
@@ -91,7 +95,7 @@ export const AppHeader = ({
 
             {showActions && user && <DatasourceUpdateBadge />}
 
-            {showActions && hasDatasourceBrowser && (
+            {showActions && hasDatasourceBrowser && communityBrowserEnabled && (
               <Tooltip content="Browse Community" placement="bottom-end">
                 <button className="app-header-icon-btn" onClick={() => setShowBrowseModal(true)}>
                   <Globe size={18} />
@@ -117,7 +121,7 @@ export const AppHeader = ({
       </Header>
 
       {/* Browse Community Modal - Premium only (datasources + templates) */}
-      {hasDatasourceBrowser && (
+      {hasDatasourceBrowser && communityBrowserEnabled && (
         <CommunityBrowserModal isOpen={showBrowseModal} onClose={() => setShowBrowseModal(false)} />
       )}
     </>

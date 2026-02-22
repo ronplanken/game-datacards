@@ -23,6 +23,7 @@ export const MOBILE_VERSION_CONFIG = {
       title: "Premium Features",
       icon: Crown,
       component: StepPremiumFeatures,
+      requiresPaidTier: true,
     },
     {
       key: "3.2.0-thankyou",

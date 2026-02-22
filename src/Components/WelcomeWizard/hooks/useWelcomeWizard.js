@@ -1,20 +1,22 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { WIZARD_STEPS, DEMO_TREE_DATA, DEMO_CARD_DATA } from "../constants";
 import { usePremiumFeatures } from "../../../Premium";
+import { useFeatureFlags } from "../../../Hooks/useFeatureFlags";
 
 /**
  * Custom hook for managing Welcome Wizard state
  */
 export const useWelcomeWizard = (settings, updateSettings) => {
   const { hasSubscription } = usePremiumFeatures();
+  const { paidTierEnabled } = useFeatureFlags();
 
-  // Filter out subscription step when not in premium mode
+  // Filter out subscription step when not in premium mode or paid tier is disabled
   const visibleSteps = useMemo(() => {
-    if (hasSubscription) {
+    if (hasSubscription && paidTierEnabled) {
       return WIZARD_STEPS;
     }
     return WIZARD_STEPS.filter((step) => step.id !== "subscription");
-  }, [hasSubscription]);
+  }, [hasSubscription, paidTierEnabled]);
   // Core navigation state
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(new Set());
