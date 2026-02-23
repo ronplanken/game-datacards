@@ -1,0 +1,93 @@
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { MockHeaderBar } from "../MockHeaderBar";
+import { MockTreeRow } from "../MockTreeRow";
+import { MockConflictDialog } from "../MockConflictDialog";
+
+describe("MockHeaderBar", () => {
+  it("renders without crashing", () => {
+    const { container } = render(<MockHeaderBar highlight="sync" />);
+    expect(container.querySelector(".mock-header-bar")).toBeInTheDocument();
+  });
+
+  it("renders the title text", () => {
+    render(<MockHeaderBar highlight="sync" />);
+    expect(screen.getByText("Game Datacards")).toBeInTheDocument();
+  });
+
+  it("highlights the cloud icon when highlight is sync", () => {
+    const { container } = render(<MockHeaderBar highlight="sync" />);
+    const highlighted = container.querySelector(".mock-header-icon-btn--highlight");
+    expect(highlighted).toBeInTheDocument();
+    expect(screen.getByText("Sync Status")).toBeInTheDocument();
+  });
+
+  it("highlights the user icon when highlight is account", () => {
+    const { container } = render(<MockHeaderBar highlight="account" />);
+    const highlighted = container.querySelector(".mock-header-icon-btn--highlight");
+    expect(highlighted).toBeInTheDocument();
+    expect(screen.getByText("Account")).toBeInTheDocument();
+  });
+
+  it("renders in compact mode", () => {
+    const { container } = render(<MockHeaderBar highlight="sync" compact />);
+    expect(container.querySelector(".mock--compact")).toBeInTheDocument();
+  });
+});
+
+describe("MockTreeRow", () => {
+  it("renders without crashing", () => {
+    const { container } = render(<MockTreeRow />);
+    expect(container.querySelector(".mock-tree-row")).toBeInTheDocument();
+  });
+
+  it("renders the category name", () => {
+    render(<MockTreeRow />);
+    expect(screen.getByText("My Army")).toBeInTheDocument();
+  });
+
+  it("renders cloud icon with highlight", () => {
+    const { container } = render(<MockTreeRow />);
+    expect(container.querySelector(".mock-tree-sync--highlight")).toBeInTheDocument();
+  });
+
+  it("renders the sync label", () => {
+    render(<MockTreeRow />);
+    expect(screen.getByText("Tap to sync")).toBeInTheDocument();
+  });
+
+  it("renders in compact mode", () => {
+    const { container } = render(<MockTreeRow compact />);
+    expect(container.querySelector(".mock--compact")).toBeInTheDocument();
+  });
+});
+
+describe("MockConflictDialog", () => {
+  it("renders without crashing", () => {
+    const { container } = render(<MockConflictDialog />);
+    expect(container.querySelector(".mock-conflict-dialog")).toBeInTheDocument();
+  });
+
+  it("renders the title", () => {
+    render(<MockConflictDialog />);
+    expect(screen.getByText("Sync Conflict")).toBeInTheDocument();
+  });
+
+  it("renders the body text", () => {
+    render(<MockConflictDialog />);
+    expect(screen.getByText("Changes detected on another device")).toBeInTheDocument();
+  });
+
+  it("renders all three resolution buttons", () => {
+    render(<MockConflictDialog />);
+    expect(screen.getByText("Keep Local")).toBeInTheDocument();
+    expect(screen.getByText("Keep Cloud")).toBeInTheDocument();
+    expect(screen.getByText("Keep Both")).toBeInTheDocument();
+  });
+
+  it("renders in compact mode", () => {
+    const { container } = render(<MockConflictDialog compact />);
+    expect(container.querySelector(".mock--compact")).toBeInTheDocument();
+  });
+});

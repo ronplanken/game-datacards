@@ -1,5 +1,6 @@
 import React from "react";
 import { Cloud, RefreshCw, Monitor } from "lucide-react";
+import { MockTreeRow } from "../../../WelcomeWizard/demos";
 
 /**
  * StepCloudSync - Cloud Sync step for mobile v3.2.0
@@ -16,6 +17,10 @@ export const StepCloudSync = () => (
       </div>
       <h2 className="mwnw-features-title">Cloud Sync</h2>
     </header>
+
+    <div className="mwnw-mock-preview">
+      <MockTreeRow compact />
+    </div>
 
     <div className="mwnw-features-list">
       <div className="mwnw-feature-item">

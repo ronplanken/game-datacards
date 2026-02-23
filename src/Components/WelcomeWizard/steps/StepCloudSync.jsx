@@ -1,5 +1,6 @@
 import React from "react";
 import { Cloud, RefreshCw, Monitor, Shield } from "lucide-react";
+import { MockTreeRow, MockHeaderBar } from "../demos";
 
 /**
  * Cloud Sync step explaining sync features for new users
@@ -11,6 +12,11 @@ export const StepCloudSync = () => {
       <p className="wz-step-description">
         Keep your datacards backed up and accessible from any device. Create a free account to get started.
       </p>
+
+      <div className="wz-mock-preview">
+        <MockTreeRow />
+        <MockHeaderBar highlight="sync" />
+      </div>
 
       <div className="wz-explore-grid">
         <div className="wz-explore-card">

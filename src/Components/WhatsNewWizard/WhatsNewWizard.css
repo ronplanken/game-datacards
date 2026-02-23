@@ -517,6 +517,16 @@
   margin: 0 0 28px;
 }
 
+/* Mock Preview */
+.wnw-mock-preview {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: var(--wnw-bg-elevated);
+  border: 1px solid var(--wnw-border);
+  border-radius: var(--wnw-radius-sm);
+  animation: wnwFadeSlideIn 0.35s ease-out;
+}
+
 /* Feature Highlights */
 .wnw-feature-highlights {
   display: flex;

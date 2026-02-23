@@ -1266,6 +1266,21 @@
 }
 
 /* ===========================================
+   MOCK PREVIEW
+   =========================================== */
+.wz-mock-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background: var(--wz-bg-elevated);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-sm);
+  animation: wzFadeSlideIn 0.35s ease-out;
+}
+
+/* ===========================================
    EXPLORE MORE (Step 7)
    =========================================== */
 .wz-explore-grid {

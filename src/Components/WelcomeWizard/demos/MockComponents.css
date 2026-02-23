@@ -1,0 +1,301 @@
+/* MockComponents.css - Shared styles for visual mock controls */
+
+/* ===========================================
+   HEADER BAR MOCK
+   Mimics the AppHeader layout (navy bar with icon buttons)
+   =========================================== */
+.mock-header-bar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  background: #001529;
+  border-radius: 8px;
+  padding: 0 12px;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mock-header-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.mock-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  margin-right: auto;
+  margin-left: 8px;
+}
+
+.mock-header-icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mock-header-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mock-header-icon-btn--highlight {
+  color: #4096ff;
+  background: rgba(22, 119, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.3);
+  animation: mockPulse 2s ease-in-out infinite;
+}
+
+.mock-header-icon-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 600;
+  color: #4096ff;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+/* ===========================================
+   TREE ROW MOCK
+   Mimics a single tree-category row with cloud sync icon
+   =========================================== */
+.mock-tree-row {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0 12px;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mock-tree-chevron {
+  color: rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.mock-tree-chevron svg {
+  width: 12px;
+  height: 12px;
+}
+
+.mock-tree-folder {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.mock-tree-folder svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mock-tree-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  flex: 1;
+}
+
+.mock-tree-sync {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mock-tree-sync svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mock-tree-sync--highlight {
+  color: #4096ff;
+  animation: mockPulse 2s ease-in-out infinite;
+}
+
+.mock-tree-sync-label {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  font-weight: 600;
+  color: #4096ff;
+  white-space: nowrap;
+}
+
+/* ===========================================
+   CONFLICT DIALOG MOCK
+   Mimics SyncConflictModal with 3 resolution buttons
+   =========================================== */
+.mock-conflict-dialog {
+  background: rgba(15, 31, 53, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mock-conflict-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.mock-conflict-header svg {
+  width: 20px;
+  height: 20px;
+  color: #f59e0b;
+}
+
+.mock-conflict-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.mock-conflict-body {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.mock-conflict-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mock-conflict-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+  cursor: default;
+}
+
+.mock-conflict-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.mock-conflict-btn--local {
+  background: rgba(22, 119, 255, 0.12);
+  border-color: rgba(22, 119, 255, 0.3);
+  color: #4096ff;
+}
+
+.mock-conflict-btn--cloud {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+}
+
+.mock-conflict-btn--both {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+
+/* ===========================================
+   COMPACT MODIFIER (mobile)
+   =========================================== */
+.mock--compact .mock-header-bar {
+  height: 40px;
+  padding: 0 10px;
+}
+
+.mock--compact .mock-header-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.mock--compact .mock-header-title {
+  font-size: 12px;
+}
+
+.mock--compact .mock-header-icon-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.mock--compact .mock-header-icon-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+.mock--compact .mock-tree-row {
+  height: 32px;
+  padding: 0 10px;
+}
+
+.mock--compact .mock-tree-name {
+  font-size: 12px;
+}
+
+.mock--compact .mock-conflict-dialog {
+  padding: 14px;
+}
+
+.mock--compact .mock-conflict-title {
+  font-size: 13px;
+}
+
+.mock--compact .mock-conflict-body {
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.mock--compact .mock-conflict-actions {
+  flex-direction: column;
+}
+
+.mock--compact .mock-conflict-btn {
+  font-size: 11px;
+  padding: 7px 8px;
+}
+
+/* ===========================================
+   ANIMATION
+   =========================================== */
+@keyframes mockPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mock-header-icon-btn--highlight,
+  .mock-tree-sync--highlight {
+    animation: none;
+  }
+}

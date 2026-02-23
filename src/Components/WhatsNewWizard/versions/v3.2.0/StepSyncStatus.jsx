@@ -1,5 +1,6 @@
 import React from "react";
 import { BarChart3 } from "lucide-react";
+import { MockHeaderBar } from "../../../WelcomeWizard/demos";
 
 /**
  * StepSyncStatus - Sync Status & Limits step for v3.2.0
@@ -20,6 +21,9 @@ export const StepSyncStatus = () => (
     <p className="wnw-feature-description">
       Monitor your sync status and usage at a glance from the header and account menu.
     </p>
+    <div className="wnw-mock-preview">
+      <MockHeaderBar highlight="sync" />
+    </div>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />

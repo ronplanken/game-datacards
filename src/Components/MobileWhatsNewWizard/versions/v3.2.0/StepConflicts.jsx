@@ -1,5 +1,6 @@
 import React from "react";
 import { GitMerge, Download, Upload, Copy } from "lucide-react";
+import { MockConflictDialog } from "../../../WelcomeWizard/demos";
 
 /**
  * StepConflicts - Conflicts step for mobile v3.2.0
@@ -17,6 +18,10 @@ export const StepConflicts = () => (
       </div>
       <h2 className="mwnw-features-title">Conflicts</h2>
     </header>
+
+    <div className="mwnw-mock-preview">
+      <MockConflictDialog compact />
+    </div>
 
     <div className="mwnw-features-list">
       <div className="mwnw-feature-item">

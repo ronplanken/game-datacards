@@ -1,5 +1,6 @@
 import React from "react";
 import { UserCircle } from "lucide-react";
+import { MockHeaderBar } from "../../../WelcomeWizard/demos";
 
 /**
  * StepAccounts - User Accounts feature step for v3.2.0
@@ -19,6 +20,9 @@ export const StepAccounts = () => (
     <p className="wnw-feature-description">
       Create a free account to unlock cloud sync and keep your datacards safe across devices.
     </p>
+    <div className="wnw-mock-preview">
+      <MockHeaderBar highlight="account" />
+    </div>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />

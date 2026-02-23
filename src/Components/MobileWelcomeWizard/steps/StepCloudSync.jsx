@@ -1,4 +1,5 @@
 import { Cloud, RefreshCw, Monitor } from "lucide-react";
+import { MockTreeRow } from "../../WelcomeWizard/demos";
 
 export const StepCloudSync = () => {
   return (
@@ -12,6 +13,10 @@ export const StepCloudSync = () => {
           Create a free account to keep your datacards backed up and accessible across devices.
         </p>
       </header>
+
+      <div className="mww-mock-preview">
+        <MockTreeRow compact />
+      </div>
 
       <div className="mww-desktop-features">
         <div className="mww-desktop-feature">

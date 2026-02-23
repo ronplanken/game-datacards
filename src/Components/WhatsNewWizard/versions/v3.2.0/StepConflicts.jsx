@@ -1,5 +1,6 @@
 import React from "react";
 import { GitMerge } from "lucide-react";
+import { MockConflictDialog } from "../../../WelcomeWizard/demos";
 
 /**
  * StepConflicts - Resolving Conflicts step for v3.2.0
@@ -20,6 +21,9 @@ export const StepConflicts = () => (
     <p className="wnw-feature-description">
       When changes are made on multiple devices, a conflict dialog will help you choose how to proceed.
     </p>
+    <div className="wnw-mock-preview">
+      <MockConflictDialog />
+    </div>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />

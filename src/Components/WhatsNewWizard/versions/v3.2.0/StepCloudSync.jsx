@@ -1,5 +1,6 @@
 import React from "react";
 import { Cloud } from "lucide-react";
+import { MockTreeRow } from "../../../WelcomeWizard/demos";
 
 /**
  * StepCloudSync - Cloud Sync feature step for v3.2.0
@@ -20,6 +21,9 @@ export const StepCloudSync = () => (
     <p className="wnw-feature-description">
       Keep your datacards backed up and accessible from any device with cloud sync.
     </p>
+    <div className="wnw-mock-preview">
+      <MockTreeRow />
+    </div>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />
