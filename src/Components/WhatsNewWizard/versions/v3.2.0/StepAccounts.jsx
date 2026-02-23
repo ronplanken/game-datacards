@@ -38,13 +38,6 @@ export const StepAccounts = () => (
           <p>Find the account button in the top-right corner to manage your profile and settings</p>
         </div>
       </div>
-      <div className="wnw-highlight-item">
-        <div className="wnw-highlight-dot" />
-        <div>
-          <strong>Optional 2FA</strong>
-          <p>Enable two-factor authentication for extra security on your account</p>
-        </div>
-      </div>
     </div>
   </div>
 );

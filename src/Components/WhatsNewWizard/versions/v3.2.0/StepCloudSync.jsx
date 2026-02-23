@@ -46,13 +46,6 @@ export const StepCloudSync = () => (
           <p>Sign in on any device to access your synced datacards instantly</p>
         </div>
       </div>
-      <div className="wnw-highlight-item">
-        <div className="wnw-highlight-dot" />
-        <div>
-          <strong>Free Tier</strong>
-          <p>Sync up to 2 categories for free, upgrade for more</p>
-        </div>
-      </div>
     </div>
   </div>
 );

@@ -1,5 +1,5 @@
 import React from "react";
-import { Bell, Cloud, Settings, User } from "lucide-react";
+import { Bell, Cloud, LogIn, Settings } from "lucide-react";
 import "./MockComponents.css";
 
 /**
@@ -34,7 +34,7 @@ export const MockHeaderBar = ({ highlight, compact }) => {
         ))}
         <div className={`mock-header-signin${isAccountHighlighted ? " mock-header-signin--highlight" : ""}`}>
           {isAccountHighlighted && <span className="mock-header-tooltip">Account</span>}
-          <User />
+          <LogIn />
           <span>Sign In</span>
         </div>
       </div>

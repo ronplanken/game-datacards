@@ -56,13 +56,14 @@
   box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.3);
 }
 
-/* Sign In button - matches actual user-menu-signin-btn */
+/* Sign In button - matches actual blue Sign In button in AppHeader */
 .mock-header-signin {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 4px 14px;
+  background: #1677ff;
+  border: 1px solid #1677ff;
   border-radius: 6px;
   color: #fff;
   font-size: 13px;
@@ -78,9 +79,7 @@
 }
 
 .mock-header-signin--highlight {
-  border-color: #4096ff;
-  background: rgba(22, 119, 255, 0.15);
-  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.3);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.5);
 }
 
 /* Tooltip with arrow pointing down to the highlighted header element */
@@ -214,84 +213,182 @@
 
 /* ===========================================
    CONFLICT DIALOG MOCK
-   Mimics SyncConflictModal with 3 resolution buttons
+   Matches the actual SyncConflictModal layout:
+   white modal, header + close, version comparison, footer buttons
    =========================================== */
 .mock-conflict-dialog {
-  background: rgba(15, 31, 53, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   width: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .mock-conflict-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.mock-conflict-header svg {
-  width: 20px;
-  height: 20px;
-  color: #f59e0b;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .mock-conflict-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.88);
 }
 
-.mock-conflict-body {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 16px;
-  line-height: 1.4;
-}
-
-.mock-conflict-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.mock-conflict-btn {
-  flex: 1;
+.mock-conflict-close {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 10px;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.mock-conflict-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mock-conflict-body {
+  padding: 20px;
+}
+
+.mock-conflict-description {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.mock-conflict-description strong {
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.mock-conflict-comparison {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.mock-conflict-version {
+  flex: 1;
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+}
+
+.mock-conflict-version--local {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.04);
+}
+
+.mock-conflict-version--cloud {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.04);
+}
+
+.mock-conflict-version-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   font-weight: 600;
-  border: 1px solid;
+  margin-bottom: 10px;
+}
+
+.mock-conflict-version-header svg {
+  width: 14px;
+  height: 14px;
+}
+
+.mock-conflict-version--local .mock-conflict-version-header {
+  color: #3b82f6;
+}
+
+.mock-conflict-version--cloud .mock-conflict-version-header {
+  color: #22c55e;
+}
+
+.mock-conflict-version-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mock-conflict-detail {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.mock-conflict-label {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.mock-conflict-value {
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: 500;
+}
+
+.mock-conflict-vs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.mock-conflict-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.mock-conflict-footer-main {
+  display: flex;
+  gap: 6px;
+}
+
+.mock-conflict-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
   cursor: default;
 }
 
 .mock-conflict-btn svg {
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
   flex-shrink: 0;
 }
 
-.mock-conflict-btn--local {
-  background: rgba(22, 119, 255, 0.12);
-  border-color: rgba(22, 119, 255, 0.3);
-  color: #4096ff;
+.mock-conflict-btn--secondary {
+  background: #fff;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.65);
 }
 
-.mock-conflict-btn--cloud {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #4ade80;
-}
-
-.mock-conflict-btn--both {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #fbbf24;
+.mock-conflict-btn--primary {
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: #fff;
 }
 
 /* ===========================================
@@ -351,25 +448,60 @@
   padding: 3px 8px;
 }
 
-.mock--compact .mock-conflict-dialog {
-  padding: 14px;
+.mock--compact .mock-conflict-header {
+  padding: 12px 14px;
 }
 
 .mock--compact .mock-conflict-title {
-  font-size: 13px;
+  font-size: 14px;
+}
+
+.mock--compact .mock-conflict-close {
+  width: 24px;
+  height: 24px;
+}
+
+.mock--compact .mock-conflict-close svg {
+  width: 14px;
+  height: 14px;
 }
 
 .mock--compact .mock-conflict-body {
+  padding: 14px;
+}
+
+.mock--compact .mock-conflict-description {
   font-size: 12px;
   margin-bottom: 12px;
 }
 
-.mock--compact .mock-conflict-actions {
+.mock--compact .mock-conflict-comparison {
   flex-direction: column;
+  gap: 8px;
+}
+
+.mock--compact .mock-conflict-vs {
+  display: none;
+}
+
+.mock--compact .mock-conflict-version {
+  padding: 10px;
+}
+
+.mock--compact .mock-conflict-footer {
+  padding: 10px 14px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mock--compact .mock-conflict-footer-main {
+  width: 100%;
 }
 
 .mock--compact .mock-conflict-btn {
   font-size: 11px;
-  padding: 7px 8px;
+  height: 28px;
+  padding: 0 10px;
+  flex: 1;
 }
 

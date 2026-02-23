@@ -79,9 +79,17 @@ describe("MockConflictDialog", () => {
     expect(screen.getByText("Sync Conflict")).toBeInTheDocument();
   });
 
-  it("renders the body text", () => {
+  it("renders the description text", () => {
     render(<MockConflictDialog />);
-    expect(screen.getByText("Changes detected on another device")).toBeInTheDocument();
+    expect(screen.getByText(/was modified on another device/)).toBeInTheDocument();
+  });
+
+  it("renders the version comparison cards", () => {
+    const { container } = render(<MockConflictDialog />);
+    expect(container.querySelector(".mock-conflict-version--local")).toBeInTheDocument();
+    expect(container.querySelector(".mock-conflict-version--cloud")).toBeInTheDocument();
+    expect(screen.getByText("Local Version")).toBeInTheDocument();
+    expect(screen.getByText("Cloud Version")).toBeInTheDocument();
   });
 
   it("renders all three resolution buttons", () => {

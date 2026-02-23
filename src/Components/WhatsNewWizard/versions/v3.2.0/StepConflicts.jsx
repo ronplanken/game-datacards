@@ -24,26 +24,26 @@ export const StepConflicts = () => (
     <div className="wnw-mock-preview">
       <MockConflictDialog />
     </div>
-    <div className="wnw-feature-highlights">
+    <div className="wnw-feature-highlights wnw-feature-highlights--row">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />
         <div>
           <strong>Keep Local</strong>
-          <p>Overwrite the cloud version with your local changes</p>
+          <p>Overwrite cloud with your local changes</p>
         </div>
       </div>
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />
         <div>
           <strong>Keep Cloud</strong>
-          <p>Replace your local data with the version stored in the cloud</p>
+          <p>Replace local data with the cloud version</p>
         </div>
       </div>
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />
         <div>
           <strong>Keep Both</strong>
-          <p>Save both versions as separate categories so nothing is lost</p>
+          <p>Save both as separate categories</p>
         </div>
       </div>
     </div>

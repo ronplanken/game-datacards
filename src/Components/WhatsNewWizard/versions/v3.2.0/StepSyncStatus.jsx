@@ -39,13 +39,6 @@ export const StepSyncStatus = () => (
           <p>Open the account menu to see how many synced categories and datasources you are using</p>
         </div>
       </div>
-      <div className="wnw-highlight-item">
-        <div className="wnw-highlight-dot" />
-        <div>
-          <strong>Upgrade Tiers</strong>
-          <p>Need more space? Upgrade your subscription tier from the account menu for additional capacity</p>
-        </div>
-      </div>
     </div>
   </div>
 );

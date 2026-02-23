@@ -534,6 +534,19 @@
   gap: 12px;
 }
 
+.wnw-feature-highlights--row {
+  flex-direction: row;
+}
+
+.wnw-feature-highlights--row .wnw-highlight-item {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 14px 12px;
+}
+
 .wnw-highlight-item {
   display: flex;
   align-items: flex-start;
