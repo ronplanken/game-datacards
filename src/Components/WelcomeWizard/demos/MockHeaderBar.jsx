@@ -27,8 +27,8 @@ export const MockHeaderBar = ({ highlight, compact }) => {
           <div
             key={key}
             className={`mock-header-icon-btn${highlight === key ? " mock-header-icon-btn--highlight" : ""}`}>
+            {highlight === key && label && <span className="mock-header-tooltip">{label}</span>}
             <Icon />
-            {highlight === key && label && <span className="mock-header-icon-label">{label}</span>}
           </div>
         ))}
       </div>

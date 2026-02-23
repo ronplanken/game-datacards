@@ -54,19 +54,33 @@
   color: #4096ff;
   background: rgba(22, 119, 255, 0.15);
   box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.3);
-  animation: mockPulse 2s ease-in-out infinite;
 }
 
-.mock-header-icon-label {
+/* Tooltip with arrow pointing down to the highlighted header icon */
+.mock-header-tooltip {
   position: absolute;
-  bottom: -18px;
+  bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%);
-  font-size: 9px;
+  background: #1677ff;
+  color: #fff;
+  font-size: 11px;
   font-weight: 600;
-  color: #4096ff;
+  padding: 4px 10px;
+  border-radius: 4px;
   white-space: nowrap;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+}
+
+/* Arrow pointing down */
+.mock-header-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1677ff;
 }
 
 /* ===========================================
@@ -158,7 +172,6 @@
   border-radius: 4px;
   white-space: nowrap;
   letter-spacing: 0.01em;
-  animation: mockPulse 2s ease-in-out infinite;
 }
 
 /* Arrow pointing down */
@@ -281,6 +294,11 @@
   height: 15px;
 }
 
+.mock--compact .mock-header-tooltip {
+  font-size: 10px;
+  padding: 3px 8px;
+}
+
 .mock--compact .mock-tree-row {
   height: 28px;
   padding: 0 6px;
@@ -317,23 +335,3 @@
   padding: 7px 8px;
 }
 
-/* ===========================================
-   ANIMATION
-   =========================================== */
-@keyframes mockPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .mock-header-icon-btn--highlight,
-  .mock-tree-sync--highlight {
-    animation: none;
-  }
-}

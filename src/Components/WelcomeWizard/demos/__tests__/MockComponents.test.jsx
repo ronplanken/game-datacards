@@ -16,18 +16,20 @@ describe("MockHeaderBar", () => {
     expect(screen.getByText("Game Datacards")).toBeInTheDocument();
   });
 
-  it("highlights the cloud icon when highlight is sync", () => {
+  it("highlights the cloud icon with tooltip when highlight is sync", () => {
     const { container } = render(<MockHeaderBar highlight="sync" />);
-    const highlighted = container.querySelector(".mock-header-icon-btn--highlight");
-    expect(highlighted).toBeInTheDocument();
-    expect(screen.getByText("Sync Status")).toBeInTheDocument();
+    expect(container.querySelector(".mock-header-icon-btn--highlight")).toBeInTheDocument();
+    const tooltip = container.querySelector(".mock-header-tooltip");
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent("Sync Status");
   });
 
-  it("highlights the user icon when highlight is account", () => {
+  it("highlights the user icon with tooltip when highlight is account", () => {
     const { container } = render(<MockHeaderBar highlight="account" />);
-    const highlighted = container.querySelector(".mock-header-icon-btn--highlight");
-    expect(highlighted).toBeInTheDocument();
-    expect(screen.getByText("Account")).toBeInTheDocument();
+    expect(container.querySelector(".mock-header-icon-btn--highlight")).toBeInTheDocument();
+    const tooltip = container.querySelector(".mock-header-tooltip");
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent("Account");
   });
 
   it("renders in compact mode", () => {
