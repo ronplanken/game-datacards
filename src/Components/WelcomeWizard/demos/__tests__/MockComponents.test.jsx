@@ -52,9 +52,11 @@ describe("MockTreeRow", () => {
     expect(container.querySelector(".mock-tree-sync--highlight")).toBeInTheDocument();
   });
 
-  it("renders the sync label", () => {
-    render(<MockTreeRow />);
-    expect(screen.getByText("Tap to sync")).toBeInTheDocument();
+  it("renders tooltip with arrow pointing to the cloud icon", () => {
+    const { container } = render(<MockTreeRow />);
+    const tooltip = container.querySelector(".mock-tree-tooltip");
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent("Tap to sync");
   });
 
   it("renders in compact mode", () => {

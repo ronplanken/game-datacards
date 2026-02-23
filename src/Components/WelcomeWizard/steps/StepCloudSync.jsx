@@ -1,5 +1,5 @@
 import React from "react";
-import { Cloud, RefreshCw, Monitor, Shield } from "lucide-react";
+import { Cloud, Monitor, Shield } from "lucide-react";
 import { MockTreeRow, MockHeaderBar } from "../demos";
 
 /**
@@ -24,15 +24,9 @@ export const StepCloudSync = () => {
             <Cloud />
           </div>
           <h4 className="wz-explore-title">Enable Sync</h4>
-          <p className="wz-explore-desc">Toggle the cloud icon in the sidebar to sync a category to the cloud.</p>
-        </div>
-
-        <div className="wz-explore-card">
-          <div className="wz-explore-icon">
-            <RefreshCw />
-          </div>
-          <h4 className="wz-explore-title">Automatic Syncing</h4>
-          <p className="wz-explore-desc">Changes are synced automatically in the background as you edit.</p>
+          <p className="wz-explore-desc">
+            Toggle the cloud icon in the sidebar to sync a category. Changes are synced automatically as you edit.
+          </p>
         </div>
 
         <div className="wz-explore-card">

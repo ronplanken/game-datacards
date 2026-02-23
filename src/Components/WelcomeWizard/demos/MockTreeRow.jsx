@@ -20,8 +20,8 @@ export const MockTreeRow = ({ compact }) => {
         </span>
         <span className="mock-tree-name">My Army</span>
         <span className="mock-tree-sync mock-tree-sync--highlight">
+          <span className="mock-tree-tooltip">Tap to sync</span>
           <Cloud />
-          <span className="mock-tree-sync-label">Tap to sync</span>
         </span>
       </div>
     </div>
