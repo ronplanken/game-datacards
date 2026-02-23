@@ -1,17 +1,18 @@
-import { Sparkles, Crown, Cloud, GitMerge } from "lucide-react";
+import { Sparkles, UserCircle, Cloud, BarChart3, GitMerge, Heart } from "lucide-react";
 import { StepWelcome } from "./StepWelcome";
-import { StepPremiumFeatures } from "./StepPremiumFeatures";
+import { StepAccounts } from "./StepAccounts";
 import { StepCloudSync } from "./StepCloudSync";
+import { StepSyncStatus } from "./StepSyncStatus";
 import { StepConflicts } from "./StepConflicts";
 import { StepThankYou } from "./StepThankYou";
 
 /**
- * Mobile version 3.2.0 wizard configuration
- * Features: User accounts, cloud sync, conflict resolution, and premium tiers
+ * Version 3.2.0 wizard configuration
+ * Features user accounts, cloud sync, sync status, and conflict resolution
  */
-export const MOBILE_VERSION_CONFIG = {
+export const VERSION_CONFIG = {
   version: "3.2.0",
-  releaseName: "Accounts & Cloud Sync",
+  releaseName: "User Accounts & Cloud Sync",
   steps: [
     {
       key: "3.2.0-welcome",
@@ -21,11 +22,10 @@ export const MOBILE_VERSION_CONFIG = {
       isWelcome: true,
     },
     {
-      key: "3.2.0-premium",
-      title: "Premium Features",
-      icon: Crown,
-      component: StepPremiumFeatures,
-      requiresPaidTier: true,
+      key: "3.2.0-accounts",
+      title: "User Accounts",
+      icon: UserCircle,
+      component: StepAccounts,
     },
     {
       key: "3.2.0-cloudsync",
@@ -34,19 +34,25 @@ export const MOBILE_VERSION_CONFIG = {
       component: StepCloudSync,
     },
     {
+      key: "3.2.0-syncstatus",
+      title: "Sync Status & Limits",
+      icon: BarChart3,
+      component: StepSyncStatus,
+    },
+    {
       key: "3.2.0-conflicts",
-      title: "Conflicts",
+      title: "Resolving Conflicts",
       icon: GitMerge,
       component: StepConflicts,
     },
     {
       key: "3.2.0-thankyou",
       title: "Thank You",
-      icon: null,
+      icon: Heart,
       component: StepThankYou,
       isThankYou: true,
     },
   ],
 };
 
-export default MOBILE_VERSION_CONFIG;
+export default VERSION_CONFIG;

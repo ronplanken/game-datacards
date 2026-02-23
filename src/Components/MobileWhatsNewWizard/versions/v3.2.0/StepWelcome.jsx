@@ -15,9 +15,10 @@ export const StepWelcome = () => (
         <Sparkles size={18} />
         <span>Version 3.2</span>
       </div>
-      <h1 className="mwnw-welcome-title">Premium Options</h1>
+      <h1 className="mwnw-welcome-title">Accounts &amp; Cloud Sync</h1>
       <p className="mwnw-welcome-subtitle">
-        We&apos;ve added optional premium tiers while keeping all core features completely free.
+        This update introduces user accounts and cloud sync so your datacards stay backed up and accessible across
+        devices.
       </p>
     </header>
   </div>
