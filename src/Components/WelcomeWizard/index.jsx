@@ -14,6 +14,7 @@ import {
   StepAddingCards,
   StepDataPortability,
   StepSubscription,
+  StepCloudSync,
   StepExploreMore,
   StepComplete,
 } from "./steps";
@@ -150,6 +151,9 @@ export const WelcomeWizard = () => {
 
       case "subscription":
         return <StepSubscription />;
+
+      case "cloud-sync":
+        return <StepCloudSync />;
 
       case "explore-more":
         return <StepExploreMore />;

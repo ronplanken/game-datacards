@@ -9,6 +9,7 @@ import { StepDesktopInfo } from "./steps/StepDesktopInfo";
 import { StepGameSystem } from "./steps/StepGameSystem";
 import { Step40KSettings } from "./steps/Step40KSettings";
 import { StepAoSSettings } from "./steps/StepAoSSettings";
+import { StepCloudSync } from "./steps/StepCloudSync";
 import { StepComplete } from "./steps/StepComplete";
 import "./MobileWelcomeWizard.css";
 
@@ -23,7 +24,8 @@ const STEPS = {
   DESKTOP_INFO: 2,
   GAME_SYSTEM: 3,
   SETTINGS: 4,
-  COMPLETE: 5,
+  CLOUD_SYNC: 5,
+  COMPLETE: 6,
 };
 
 // Step titles for progress indicator
@@ -33,6 +35,7 @@ const STEP_TITLES = {
   [STEPS.DESKTOP_INFO]: "Desktop",
   [STEPS.GAME_SYSTEM]: "Game System",
   [STEPS.SETTINGS]: "Settings",
+  [STEPS.CLOUD_SYNC]: "Cloud Sync",
   [STEPS.COMPLETE]: "Done",
 };
 
@@ -57,6 +60,7 @@ export const MobileWelcomeWizard = () => {
       baseSteps.push(STEPS.SETTINGS);
     }
 
+    baseSteps.push(STEPS.CLOUD_SYNC);
     baseSteps.push(STEPS.COMPLETE);
     return baseSteps;
   };
@@ -149,6 +153,8 @@ export const MobileWelcomeWizard = () => {
           return <StepAoSSettings />;
         }
         return <Step40KSettings />;
+      case STEPS.CLOUD_SYNC:
+        return <StepCloudSync />;
       case STEPS.COMPLETE:
         return <StepComplete />;
       default:

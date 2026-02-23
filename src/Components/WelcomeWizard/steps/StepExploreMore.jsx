@@ -1,9 +1,8 @@
 import React from "react";
-import { Cloud, Store, Smartphone } from "lucide-react";
+import { Store, Smartphone } from "lucide-react";
 import { ADVANCED_FEATURES } from "../constants";
 
 const ICON_MAP = {
-  Cloud: Cloud,
   Store: Store,
   Smartphone: Smartphone,
 };
@@ -19,7 +18,7 @@ export const StepExploreMore = () => {
 
       <div className="wz-explore-grid">
         {ADVANCED_FEATURES.map((feature) => {
-          const IconComponent = ICON_MAP[feature.icon] || Cloud;
+          const IconComponent = ICON_MAP[feature.icon] || Store;
 
           return (
             <div key={feature.id} className="wz-explore-card">

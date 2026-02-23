@@ -10,8 +10,9 @@ export const WIZARD_STEPS = [
   { key: 3, id: "adding-cards", title: "Adding Cards", required: false },
   { key: 4, id: "data-portability", title: "Import, Export & Print", required: false },
   { key: 5, id: "subscription", title: "Premium Options", required: false },
-  { key: 6, id: "explore-more", title: "Explore More", required: false },
-  { key: 7, id: "complete", title: "Get Started", required: false },
+  { key: 6, id: "cloud-sync", title: "Cloud Sync", required: false },
+  { key: 7, id: "explore-more", title: "Explore More", required: false },
+  { key: 8, id: "complete", title: "Get Started", required: false },
 ];
 
 // Game system/datasource configuration
@@ -96,12 +97,6 @@ export const FEATURE_HIGHLIGHTS = [
 
 // Advanced features for "Explore More" step
 export const ADVANCED_FEATURES = [
-  {
-    id: "cloud-sync",
-    title: "Cloud Sync",
-    description: "Access your cards from any device. Your data stays synchronized across desktop and mobile.",
-    icon: "Cloud",
-  },
   {
     id: "marketplace",
     title: "Community Marketplace",
