@@ -1,13 +1,13 @@
 import React from "react";
-import { Bell, Cloud, Settings, UserCircle } from "lucide-react";
+import { Bell, Cloud, Settings, User } from "lucide-react";
 import "./MockComponents.css";
 
 /**
  * Static mock of the app header bar with icon buttons.
- * Highlights either the "sync" (cloud) or "account" (user) icon.
+ * Highlights either the "sync" (cloud) or "account" (sign-in button) element.
  *
  * @param {Object} props
- * @param {"sync"|"account"} props.highlight - Which icon to highlight
+ * @param {"sync"|"account"} props.highlight - Which element to highlight
  * @param {boolean} [props.compact] - Use compact sizing for mobile
  */
 export const MockHeaderBar = ({ highlight, compact }) => {
@@ -15,8 +15,9 @@ export const MockHeaderBar = ({ highlight, compact }) => {
     { key: "bell", Icon: Bell },
     { key: "sync", Icon: Cloud, label: "Sync Status" },
     { key: "settings", Icon: Settings },
-    { key: "account", Icon: UserCircle, label: "Account" },
   ];
+
+  const isAccountHighlighted = highlight === "account";
 
   return (
     <div className={compact ? "mock--compact" : undefined}>
@@ -31,6 +32,11 @@ export const MockHeaderBar = ({ highlight, compact }) => {
             <Icon />
           </div>
         ))}
+        <div className={`mock-header-signin${isAccountHighlighted ? " mock-header-signin--highlight" : ""}`}>
+          {isAccountHighlighted && <span className="mock-header-tooltip">Account</span>}
+          <User />
+          <span>Sign In</span>
+        </div>
       </div>
     </div>
   );

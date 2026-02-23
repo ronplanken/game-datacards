@@ -24,9 +24,10 @@ describe("MockHeaderBar", () => {
     expect(tooltip).toHaveTextContent("Sync Status");
   });
 
-  it("highlights the user icon with tooltip when highlight is account", () => {
+  it("highlights the sign-in button with tooltip when highlight is account", () => {
     const { container } = render(<MockHeaderBar highlight="account" />);
-    expect(container.querySelector(".mock-header-icon-btn--highlight")).toBeInTheDocument();
+    expect(container.querySelector(".mock-header-signin--highlight")).toBeInTheDocument();
+    expect(screen.getByText("Sign In")).toBeInTheDocument();
     const tooltip = container.querySelector(".mock-header-tooltip");
     expect(tooltip).toBeInTheDocument();
     expect(tooltip).toHaveTextContent("Account");

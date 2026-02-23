@@ -56,7 +56,34 @@
   box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.3);
 }
 
-/* Tooltip with arrow pointing down to the highlighted header icon */
+/* Sign In button - matches actual user-menu-signin-btn */
+.mock-header-signin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+  position: relative;
+  margin-left: 4px;
+}
+
+.mock-header-signin svg {
+  width: 14px;
+  height: 14px;
+}
+
+.mock-header-signin--highlight {
+  border-color: #4096ff;
+  background: rgba(22, 119, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.3);
+}
+
+/* Tooltip with arrow pointing down to the highlighted header element */
 .mock-header-tooltip {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -287,6 +314,17 @@
 .mock--compact .mock-header-icon-btn {
   width: 28px;
   height: 28px;
+}
+
+.mock--compact .mock-header-signin {
+  font-size: 11px;
+  padding: 3px 8px;
+  gap: 4px;
+}
+
+.mock--compact .mock-header-signin svg {
+  width: 12px;
+  height: 12px;
 }
 
 .mock--compact .mock-header-icon-btn svg {
