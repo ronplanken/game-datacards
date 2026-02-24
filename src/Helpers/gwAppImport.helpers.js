@@ -325,6 +325,16 @@ export const parseGwAppText = (text) => {
 
       // Otherwise it's equipment/weapons
       bulletLines.push({ indent: indentation, quantity: 1, text: cleanText });
+      continue;
+    }
+
+    // Parse quantity lines WITHOUT bullet points (e.g., "9x Bolt rifle")
+    // These are continuation weapons in a model's equipment list
+    const noBulletQuantityMatch = trimmed.match(/^(\d+)x\s+(.+)/);
+    if (noBulletQuantityMatch && currentUnit) {
+      const quantity = parseInt(noBulletQuantityMatch[1], 10);
+      const text = noBulletQuantityMatch[2].trim();
+      bulletLines.push({ indent: indentation, quantity, text });
     }
   }
 
@@ -462,7 +472,36 @@ const getAlliedDatasheets = (faction, allFactions) => {
 };
 
 /**
+ * Get datasheets from parent faction (for subfactions)
+ * @param {Object} faction - The subfaction object
+ * @param {Array} allFactions - All available factions
+ * @returns {Array} Array of parent faction datasheets with metadata
+ */
+const getParentDatasheets = (faction, allFactions) => {
+  if (!faction?.is_subfaction || !faction?.parent_id || !allFactions?.length) {
+    return [];
+  }
+
+  const parentFaction = allFactions.find((f) => f.id === faction.parent_id);
+  if (!parentFaction?.datasheets) return [];
+
+  // Filter to only include datasheets that belong to the parent keyword
+  const filteredDatasheets = parentFaction.datasheets.filter(
+    (val) => val.factions?.length === 1 && val.factions?.includes(faction.parent_keyword),
+  );
+
+  return filteredDatasheets.map((sheet) => ({
+    ...sheet,
+    _isAllied: true,
+    _alliedFactionId: parentFaction.id,
+    _alliedFactionName: parentFaction.name,
+    _isParent: true,
+  }));
+};
+
+/**
  * Match parsed units to datasheets in the faction
+ * For subfactions, also searches parent faction datasheets as fallback
  * For units in ALLIED UNITS section, also searches allied faction datasheets
  * @param {Array} units - Parsed units from GW App text
  * @param {Object} faction - The matched faction object with datasheets
@@ -476,14 +515,14 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
 
   // Get allied datasheets for ALLIED UNITS section matching
   const alliedDatasheets = getAlliedDatasheets(faction, allFactions);
+  // Get parent faction datasheets for subfaction fallback
+  const parentDatasheets = getParentDatasheets(faction, allFactions);
 
   return units.map((unit) => {
-    // For ALLIED UNITS section, include allied faction datasheets in search
     const isAlliedUnit = unit.section === "ALLIED UNITS";
-    const searchableSheets = isAlliedUnit ? [...faction.datasheets, ...alliedDatasheets] : faction.datasheets;
 
-    // First try exact match
-    const exactMatch = searchableSheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
+    // PASS 1: Search in selected faction's datasheets first
+    const exactMatch = faction.datasheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
 
     if (exactMatch) {
       return {
@@ -491,12 +530,51 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
         matchStatus: "exact",
         matchedCard: exactMatch,
         alternatives: [],
-        alliedFactionId: exactMatch._alliedFactionId || null,
-        alliedFactionName: exactMatch._alliedFactionName || null,
+        alliedFactionId: null,
+        alliedFactionName: null,
       };
     }
 
-    // Fuzzy search
+    // PASS 2: For subfactions, try parent faction datasheets
+    if (parentDatasheets.length > 0) {
+      const parentMatch = parentDatasheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
+      if (parentMatch) {
+        return {
+          ...unit,
+          matchStatus: "exact",
+          matchedCard: parentMatch,
+          alternatives: [],
+          alliedFactionId: parentMatch._alliedFactionId,
+          alliedFactionName: parentMatch._alliedFactionName,
+        };
+      }
+    }
+
+    // PASS 3: For ALLIED UNITS section, try allied faction datasheets
+    if (isAlliedUnit && alliedDatasheets.length > 0) {
+      const alliedMatch = alliedDatasheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
+      if (alliedMatch) {
+        return {
+          ...unit,
+          matchStatus: "exact",
+          matchedCard: alliedMatch,
+          alternatives: [],
+          alliedFactionId: alliedMatch._alliedFactionId,
+          alliedFactionName: alliedMatch._alliedFactionName,
+        };
+      }
+    }
+
+    // FUZZY SEARCH: Build searchable sheets with priority ordering
+    // Selected faction first, then parent (for subfactions), then allied (for ALLIED UNITS)
+    let searchableSheets = [...faction.datasheets];
+    if (parentDatasheets.length > 0) {
+      searchableSheets = [...searchableSheets, ...parentDatasheets];
+    }
+    if (isAlliedUnit) {
+      searchableSheets = [...searchableSheets, ...alliedDatasheets];
+    }
+
     const fuse = new Fuse(searchableSheets, {
       keys: ["name"],
       threshold: 0.4,
@@ -510,7 +588,7 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
         ...unit,
         matchStatus: "none",
         matchedCard: null,
-        alternatives: searchableSheets.slice(0, 10), // Show first 10 as options
+        alternatives: searchableSheets.slice(0, 10),
         alliedFactionId: null,
         alliedFactionName: null,
       };
@@ -518,8 +596,6 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
 
     const bestMatch = results[0];
     const status = classifyMatchScore(bestMatch.score);
-
-    // For ambiguous matches, include alternatives
     const alternatives = status === "ambiguous" ? results.slice(1, 5).map((r) => r.item) : [];
 
     return {
