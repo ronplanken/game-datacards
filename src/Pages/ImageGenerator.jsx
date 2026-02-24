@@ -218,8 +218,8 @@ export const ImageGenerator = () => {
         <Row style={{ justifyContent: "space-between" }} gutter={0}>
           <Col>
             <Space size={"large"}>
-              {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
-                <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
+              {import.meta.env.VITE_IS_PRODUCTION === "false" ? (
+                <Badge.Ribbon color="red" text={import.meta.env.VITE_ENVIRONMENT}>
                   <Image preview={false} src={logo} width={50} />
                 </Badge.Ribbon>
               ) : (

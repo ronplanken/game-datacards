@@ -2,6 +2,7 @@ import { compare } from "compare-versions";
 import React, { useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { useFeatureFlags } from "../Hooks/useFeatureFlags";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 import { getMajorWizardVersion } from "./WhatsNewWizard";
 import "./WhatsNew.css";
@@ -10,47 +11,36 @@ const modalRoot = document.getElementById("modal-root");
 
 const features = [
   {
-    title: "Custom Datasources",
+    title: "Premium Subscriptions",
     description:
-      "Import and manage custom datasources from URLs or files. Keep them synced with automatic update checks.",
+      "Introducing optional Premium and Creator tiers with expanded storage. All core features remain free forever.",
+    isNew: true,
+    requiresPaidTier: true,
+  },
+  {
+    title: "Premium: 50 Categories & 2 Datasources",
+    description: "Upgrade to Premium for more card storage and the ability to import custom datasources.",
+    isNew: true,
+    requiresPaidTier: true,
+  },
+  {
+    title: "Creator: 250 Categories & 10 Datasources",
+    description: "For power users and content creators who need maximum storage capacity.",
+    isNew: true,
+    requiresPaidTier: true,
+  },
+  {
+    title: "Redesigned Onboarding",
+    description: "A fresh welcome wizard that better introduces Game Datacards features to new users.",
     isNew: true,
   },
   {
-    title: "Export as Datasource",
-    description: "Export your custom card categories as shareable datasource files that others can import.",
-    isNew: true,
+    title: "Floating Toolbar Guide",
+    description: "New onboarding step explaining how to add and save cards using the floating toolbar.",
   },
   {
-    title: "40K GW App Import",
-    description: "Import your 40K army lists from the GW app on both desktop and mobile with smart unit matching.",
-    isNew: true,
-  },
-  {
-    title: "List Categorization",
-    description: "Improved list overview with role-based categories for 40K and AoS armies.",
-    isNew: true,
-  },
-  {
-    title: "Rule Card Editor",
-    description: "Create and edit custom rule cards for army and detachment rules with auto-height support.",
-    isNew: true,
-  },
-  {
-    title: "Quick Add to Cards",
-    description: "Add units directly from the datasource list to your default category with a single click.",
-    isNew: true,
-  },
-  {
-    title: "Rule Card Print & Export",
-    description: "Rule cards now properly render in print and image export pages.",
-  },
-  {
-    title: "AoS Legends Fix",
-    description: "Fixed Legends units showing in mobile view when the 'Show Legends' setting is disabled.",
-  },
-  {
-    title: "UI Improvements",
-    description: "Refined share modal, tree view interactions, and overall styling polish.",
+    title: "Improved Workspace Demo",
+    description: "Interactive tree view demo in the wizard that matches the actual app styling.",
   },
 ];
 
@@ -58,12 +48,15 @@ export const WhatsNew = () => {
   const [isWhatsNewVisible, setIsWhatsNewVisible] = React.useState(false);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { paidTierEnabled } = useFeatureFlags();
+
+  const visibleFeatures = paidTierEnabled ? features : features.filter((f) => !f.requiresPaidTier);
 
   const closeWhatsNew = () => {
     setIsWhatsNewVisible(false);
     updateSettings({
       ...settings,
-      wizardCompleted: process.env.REACT_APP_VERSION,
+      wizardCompleted: import.meta.env.VITE_VERSION,
     });
   };
 
@@ -83,7 +76,7 @@ export const WhatsNew = () => {
 
   useEffect(() => {
     // Check if major wizard should show instead
-    const currentVersion = process.env.REACT_APP_VERSION;
+    const currentVersion = import.meta.env.VITE_VERSION;
     const majorVersion = getMajorWizardVersion(currentVersion);
 
     // Guard against undefined settings values
@@ -119,7 +112,7 @@ export const WhatsNew = () => {
           <div className="wn-header-content">
             <div className="wn-title-row">
               <h1 className="wn-title">What&apos;s New</h1>
-              <span className="wn-version-badge">v{process.env.REACT_APP_VERSION}</span>
+              <span className="wn-version-badge">v{import.meta.env.VITE_VERSION}</span>
             </div>
             <p className="wn-subtitle">Check out the latest updates and improvements.</p>
           </div>
@@ -141,7 +134,7 @@ export const WhatsNew = () => {
 
         <div className="wn-body">
           <div className="wn-features">
-            {features.map((feature, index) => (
+            {visibleFeatures.map((feature, index) => (
               <article
                 key={index}
                 className={`wn-feature ${feature.isNew ? "wn-feature--new" : ""}`}

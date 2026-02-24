@@ -4,6 +4,7 @@ import v310Config from "./v3.1.0";
 import v311Config from "./v3.1.1";
 import v312Config from "./v3.1.2";
 import v313Config from "./v3.1.3";
+import v320Config from "./v3.2.0";
 
 /**
  * Registry of all version wizard configurations
@@ -14,7 +15,7 @@ import v313Config from "./v3.1.3";
  * 2. Create step components and index.js with VERSION_CONFIG
  * 3. Import and add to VERSION_REGISTRY array below
  */
-export const VERSION_REGISTRY = [v300Config, v310Config, v311Config, v312Config, v313Config]
+export const VERSION_REGISTRY = [v300Config, v310Config, v311Config, v312Config, v313Config, v320Config]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));
 

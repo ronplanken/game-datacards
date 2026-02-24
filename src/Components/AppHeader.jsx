@@ -1,16 +1,25 @@
 import { Badge, Grid, Image, Layout } from "antd";
 import { Tooltip } from "./Tooltip/Tooltip";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Globe } from "lucide-react";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
+import {
+  useAuth,
+  usePremiumFeatures,
+  AccountButton,
+  SyncStatusIndicator,
+  DatasourceUpdateBadge,
+  CommunityBrowserModal,
+} from "../Premium";
+import { useFeatureFlags } from "../Hooks/useFeatureFlags";
 import { Discord } from "../Icons/Discord";
 import logo from "../Images/logo.png";
 import { DatasourceSelector } from "./DatasourceSelector";
 import { NotificationBell } from "./NotificationBell";
 import { SettingsModal } from "./SettingsModal";
 import { ShareModal } from "./ShareModal";
-import { UpdateReminder } from "./UpdateReminder";
 import { WhatsNew } from "./WhatsNew";
 import "./AppHeader.css";
 
@@ -22,32 +31,33 @@ export const AppHeader = ({
   pageTitle = null,
   showNav = true,
   showActions = true,
+  showSyncStatus = null, // null means follow showActions, true/false to override
   className = "",
 }) => {
   const screens = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const { hasDatasourceBrowser } = usePremiumFeatures();
+  const { designerEnabled, communityBrowserEnabled } = useFeatureFlags();
 
   const { activeCategory } = useCardStorage();
+  const [showBrowseModal, setShowBrowseModal] = useState(false);
 
   const isEditorPage = location.pathname === "/" || location.pathname === "";
   const isViewerPage = location.pathname.startsWith("/viewer");
+  const isDesignerPage = location.pathname.startsWith("/designer");
 
   return (
     <>
-      {showModals && (
-        <>
-          <WhatsNew />
-          <UpdateReminder />
-        </>
-      )}
+      {showModals && <WhatsNew />}
       <Header className={`app-header ${className}`}>
         <div className="app-header-content">
           {/* Left section - Logo and Navigation */}
           <div className="app-header-left">
             <div className="app-header-brand" onClick={() => navigate("/")}>
-              {process.env.REACT_APP_IS_PRODUCTION === "false" ? (
-                <Badge.Ribbon color="red" text={process.env.REACT_APP_ENVIRONMENT}>
+              {import.meta.env.VITE_IS_PRODUCTION === "false" ? (
+                <Badge.Ribbon color="red" text={import.meta.env.VITE_ENVIRONMENT}>
                   <Image preview={false} src={logo} width={50} />
                 </Badge.Ribbon>
               ) : (
@@ -65,6 +75,11 @@ export const AppHeader = ({
                 <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
                   Viewer
                 </Link>
+                {designerEnabled && (
+                  <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
+                    Designer
+                  </Link>
+                )}
               </nav>
             )}
           </div>
@@ -75,6 +90,18 @@ export const AppHeader = ({
             {showActions && activeCategory && activeCategory.cards?.length > 0 && <ShareModal />}
 
             {showActions && <NotificationBell />}
+
+            {(showSyncStatus ?? showActions) && <SyncStatusIndicator />}
+
+            {showActions && user && <DatasourceUpdateBadge />}
+
+            {showActions && hasDatasourceBrowser && communityBrowserEnabled && (
+              <Tooltip content="Browse Community" placement="bottom-end">
+                <button className="app-header-icon-btn" onClick={() => setShowBrowseModal(true)}>
+                  <Globe size={18} />
+                </button>
+              </Tooltip>
+            )}
 
             {showActions && (
               <Tooltip content="Join us on discord!" placement="bottom-end">
@@ -88,11 +115,15 @@ export const AppHeader = ({
 
             <SettingsModal />
 
-            {/* User menu - hidden for now, will be implemented with auth later */}
-            {/* <UserMenu onSettingsClick={() => {}} /> */}
+            <AccountButton />
           </div>
         </div>
       </Header>
+
+      {/* Browse Community Modal - Premium only (datasources + templates) */}
+      {hasDatasourceBrowser && communityBrowserEnabled && (
+        <CommunityBrowserModal isOpen={showBrowseModal} onClose={() => setShowBrowseModal(false)} />
+      )}
     </>
   );
 };

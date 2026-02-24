@@ -1,4 +1,5 @@
-import { Layout, Row, message } from "antd";
+import { Layout, Row } from "antd";
+import { message } from "./Components/Toast/message";
 import "antd/dist/antd.min.css";
 import React, { useState, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";

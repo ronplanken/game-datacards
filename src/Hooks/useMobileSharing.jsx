@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { message } from "../Components/Toast/message";
 import { toBlob, toPng } from "html-to-image";
 import { useCallback } from "react";
 import { useCardStorage } from "./useCardStorage";

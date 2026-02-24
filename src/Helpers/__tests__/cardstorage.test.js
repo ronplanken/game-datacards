@@ -43,7 +43,7 @@ describe("cardstorage.helpers", () => {
     });
 
     describe("version >= 1.5.0 (no upgrade needed)", () => {
-      it("should return parsed JSON unchanged for version 1.5.0", () => {
+      it("should return parsed JSON with sync fields added for version 1.5.0", () => {
         const input = {
           version: "1.5.0",
           categories: [
@@ -55,16 +55,28 @@ describe("cardstorage.helpers", () => {
           ],
         };
         const result = parseStorageJson(JSON.stringify(input));
-        expect(result).toEqual(input);
+        // parseStorageJson adds sync fields to categories
+        expect(result.version).toBe("1.5.0");
+        expect(result.categories[0].uuid).toBe("existing-uuid");
+        expect(result.categories[0].name).toBe("Test Category");
+        expect(result.categories[0].cards).toEqual(input.categories[0].cards);
+        // Verify sync fields are added
+        expect(result.categories[0]).toHaveProperty("syncEnabled", false);
+        expect(result.categories[0]).toHaveProperty("syncStatus", "local");
       });
 
-      it("should return parsed JSON unchanged for version 2.0.0", () => {
+      it("should return parsed JSON with sync fields added for version 2.0.0", () => {
         const input = {
           version: "2.0.0",
           categories: [{ uuid: "uuid-1", name: "Category", cards: [] }],
         };
         const result = parseStorageJson(JSON.stringify(input));
-        expect(result).toEqual(input);
+        // parseStorageJson adds sync fields to categories
+        expect(result.version).toBe("2.0.0");
+        expect(result.categories[0].uuid).toBe("uuid-1");
+        expect(result.categories[0].name).toBe("Category");
+        // Verify sync fields are added
+        expect(result.categories[0]).toHaveProperty("syncEnabled", false);
       });
     });
 

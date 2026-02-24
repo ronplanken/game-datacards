@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Bell, Database, Loader2, Repeat } from "lucide-react";
-import { message } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Bell, Database, Loader2, Repeat, User } from "lucide-react";
+import { message } from "../Toast/message";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useAuth } from "../../Premium";
 import { getMessages } from "../../Helpers/external.helpers";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import { MobileNotifications } from "./MobileNotifications";
@@ -24,11 +26,13 @@ const SettingsRow = ({ label, checked, onChange }) => (
 );
 
 export const MobileMenu = ({ isVisible, setIsVisible }) => {
+  const navigate = useNavigate();
   const [checkingForUpdate, setCheckingForUpdate] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const { checkForUpdate } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
+  const { user } = useAuth();
 
   // Fetch messages for unread count
   useEffect(() => {

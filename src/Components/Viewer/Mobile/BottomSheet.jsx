@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useSwipeable } from "react-swipeable";
 import "./BottomSheet.css";
 
-export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, maxHeight = "80vh" }) => {
+export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, maxHeight = "80vh", dark = false }) => {
   const sheetRef = useRef(null);
   const contentRef = useRef(null);
 
@@ -56,7 +56,11 @@ export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, max
       <div className={`bottom-sheet-backdrop ${isOpen ? "open" : ""}`} onClick={onClose} />
 
       {/* Sheet */}
-      <div ref={sheetRef} className={`bottom-sheet ${isOpen ? "open" : ""}`} style={{ maxHeight }} {...swipeHandlers}>
+      <div
+        ref={sheetRef}
+        className={`bottom-sheet ${isOpen ? "open" : ""} ${dark ? "bottom-sheet--dark" : ""}`}
+        style={{ maxHeight }}
+        {...swipeHandlers}>
         {/* Drag handle */}
         <div className="bottom-sheet-handle-container">
           <div className="bottom-sheet-handle" />

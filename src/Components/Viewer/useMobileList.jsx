@@ -10,6 +10,8 @@ const defaultSettings = {
   setSelectedList: () => {},
   addDatacard: () => {},
   removeDatacard: () => {},
+  selectedCloudCategoryId: null,
+  selectCloudCategory: () => {},
 };
 
 export function useMobileList() {
@@ -48,19 +50,53 @@ export const MobileListProvider = (props) => {
   // Selected list index per datasource
   const [selectedListPerDS, setSelectedListPerDS] = React.useState({});
 
+  // Selected cloud category UUID (when viewing a cloud category instead of local list)
+  // We store only the UUID so that realtime updates from useCloudCategories are reflected
+  // Persisted to localStorage so selection survives page refresh
+  const [selectedCloudCategoryId, setSelectedCloudCategoryId] = React.useState(() => {
+    try {
+      const stored = localStorage.getItem("selectedCloudCategoryId");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Persist lists to localStorage
   useEffect(() => {
     localStorage.setItem("lists", JSON.stringify(allLists));
   }, [allLists]);
+
+  // Persist selected cloud category to localStorage
+  useEffect(() => {
+    if (selectedCloudCategoryId) {
+      localStorage.setItem("selectedCloudCategoryId", JSON.stringify(selectedCloudCategoryId));
+    } else {
+      localStorage.removeItem("selectedCloudCategoryId");
+    }
+  }, [selectedCloudCategoryId]);
 
   // Get lists for current datasource
   const storedLists = allLists[dataSource] || [{ name: "Default", datacards: [] }];
   const selectedList = selectedListPerDS[dataSource] ?? 0;
 
   const setSelectedList = (index) => {
+    // Clear cloud category when selecting a local list
+    setSelectedCloudCategoryId(null);
     setSelectedListPerDS((prev) => ({
       ...prev,
       [dataSource]: index,
     }));
+  };
+
+  // Select a cloud category by UUID
+  const selectCloudCategory = (categoryUuid) => {
+    setSelectedCloudCategoryId(categoryUuid);
+  };
+
+  // Clear cloud category selection
+  const clearCloudCategory = () => {
+    setSelectedCloudCategoryId(null);
   };
 
   const setStoredLists = (updater) => {
@@ -212,6 +248,10 @@ export const MobileListProvider = (props) => {
     renameList,
     deleteList,
     getListPoints,
+    // Cloud category selection (by UUID for realtime updates)
+    selectedCloudCategoryId,
+    selectCloudCategory,
+    clearCloudCategory,
   };
 
   return <MobileListContext.Provider value={context}>{props.children}</MobileListContext.Provider>;

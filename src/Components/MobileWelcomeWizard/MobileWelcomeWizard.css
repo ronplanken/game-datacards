@@ -109,7 +109,6 @@
 .mww-welcome-logo {
   width: 56px;
   height: 56px;
-  animation: mwwPulse 2s ease-in-out infinite;
 }
 
 .mww-welcome-title {
@@ -146,16 +145,6 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   animation: mwwFadeSlideUp 0.4s ease-out backwards;
-}
-
-.mww-welcome-feature:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.mww-welcome-feature:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.mww-welcome-feature:nth-child(3) {
-  animation-delay: 0.2s;
 }
 
 .mww-welcome-feature-icon {
@@ -249,7 +238,6 @@
 }
 
 .mww-complete-discord:hover {
-  transform: translateY(-2px);
   opacity: 0.9;
 }
 
@@ -337,16 +325,6 @@
   animation: mwwFadeSlideUp 0.4s ease-out backwards;
 }
 
-.mww-info-step-item:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.mww-info-step-item:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.mww-info-step-item:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
 .mww-info-step-number {
   width: 28px;
   height: 28px;
@@ -401,6 +379,15 @@
   padding-top: 8px;
 }
 
+/* Mock Preview */
+.mww-mock-preview {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
 /* Desktop features list */
 .mww-desktop-features {
   display: flex;
@@ -417,16 +404,6 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   animation: mwwFadeSlideUp 0.4s ease-out backwards;
-}
-
-.mww-desktop-feature:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.mww-desktop-feature:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.mww-desktop-feature:nth-child(3) {
-  animation-delay: 0.2s;
 }
 
 .mww-desktop-feature-icon {
@@ -748,19 +725,6 @@
   animation: mwwFadeSlideUp 0.4s ease-out backwards;
 }
 
-.mww-settings-option:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.mww-settings-option:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.mww-settings-option:nth-child(3) {
-  animation-delay: 0.2s;
-}
-.mww-settings-option:nth-child(4) {
-  animation-delay: 0.25s;
-}
-
 .mww-settings-option-icon {
   width: 36px;
   height: 36px;
@@ -904,7 +868,6 @@
 .mww-progress-dot--active {
   background: #1677ff;
   transform: scale(1.25);
-  box-shadow: 0 0 12px rgba(22, 119, 255, 0.5);
 }
 
 .mww-progress-dot--completed {
@@ -963,12 +926,12 @@
 }
 
 .mww-btn--finish {
-  background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+  background: #f59e0b;
   color: #fff;
 }
 
 .mww-btn--finish:hover {
-  background: linear-gradient(135deg, #4096ff 0%, #1677ff 100%);
+  background: #fbbf24;
 }
 
 .mww-btn svg {
@@ -1057,16 +1020,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes mwwPulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
   }
 }
 

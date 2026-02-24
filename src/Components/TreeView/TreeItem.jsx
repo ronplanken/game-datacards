@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { X, Copy, Crown, Trash2, Flame } from "lucide-react";
-import { Button, Col, List, Row, Select, Space, Typography, message } from "antd";
+import { Button, Col, List, Row, Select, Space, Typography } from "antd";
+import { message } from "../Toast/message";
 import classNames from "classnames";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
@@ -29,7 +30,15 @@ import "./TreeView.css";
 
 const { Option } = Select;
 
-export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeIndex, index, isInSubCategory = false }) {
+export function TreeItem({
+  card,
+  category,
+  selectedTreeIndex,
+  setSelectedTreeIndex,
+  index,
+  isInSubCategory = false,
+  isInDatasource = false,
+}) {
   const {
     setActiveCard,
     activeCategory,
@@ -242,6 +251,7 @@ export function TreeItem({ card, category, selectedTreeIndex, setSelectedTreeInd
               selected: isSelected,
               dragging: snapshot.isDragging,
               "in-sub-category": isInSubCategory,
+              "in-datasource": isInDatasource,
             })}
             ref={provided.innerRef}
             {...provided.draggableProps}

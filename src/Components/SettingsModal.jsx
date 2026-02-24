@@ -1,13 +1,36 @@
-import { Settings, Database, Trash2, Printer, History, Plus } from "lucide-react";
-import { Popconfirm, message } from "antd";
+import { Settings, Database, Trash2, Printer, History, Plus, Package, Cloud, Globe } from "lucide-react";
+import { Popconfirm } from "antd";
+import { message } from "./Toast/message";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback, useState } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { useCardStorage } from "../Hooks/useCardStorage";
+import { useAuth, useSubscription, useSync } from "../Premium";
+import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
 import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
-import { CustomDatasourceModal } from "./CustomDatasource";
+import { CustomDatasourceModal, EditDatasourceMetadataModal } from "../Premium";
+import { PublishDatasourceModal } from "./DatasourcePublish";
 import { confirmDialog } from "./ConfirmChangesModal";
 import "./SettingsModal.css";
+
+// Format ISO date string to localized date/time
+const formatDate = (isoString) => {
+  if (!isoString) return "Never";
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    return date.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return isoString;
+  }
+};
 
 export const SettingsModal = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -15,8 +38,14 @@ export const SettingsModal = () => {
   const [showOlderVersions, setShowOlderVersions] = React.useState(false);
   const [isCustomDatasourceModalOpen, setIsCustomDatasourceModalOpen] = useState(false);
   const [checkingCustomUpdateId, setCheckingCustomUpdateId] = useState(null);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [publishingDatasourceId, setPublishingDatasourceId] = useState(null);
+  const [uploadingDatasourceId, setUploadingDatasourceId] = useState(null);
+  const [isEditMetadataModalOpen, setIsEditMetadataModalOpen] = useState(false);
+  const [editingDatasource, setEditingDatasource] = useState(null);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { getLocalDatasources, updateDatasourceCloudState } = useCardStorage();
   const {
     dataSource,
     checkForUpdate,
@@ -24,9 +53,20 @@ export const SettingsModal = () => {
     removeCustomDatasource,
     checkCustomDatasourceUpdate,
     applyCustomDatasourceUpdate,
+    getCustomDatasourceData,
   } = useDataSourceStorage();
+  const { user } = useAuth();
+  const { subscription } = useSubscription();
+  const { uploadDatasource, publishLocalDatasource, pushDatasourceUpdate } = useDatasourceSharing();
+  const { uploadLocalDatasource } = useSync();
+
+  // Get tier from subscription object
+  const tier = subscription?.tier || "free";
 
   const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
+
+  // Check if user can upload (Premium or Creator tier)
+  const canUpload = user && (tier === "premium" || tier === "creator");
 
   const refreshData = () => {
     setCheckingForUpdate(true);
@@ -71,6 +111,60 @@ export const SettingsModal = () => {
     }
   };
 
+  const handleUploadDatasource = async (datasourceId) => {
+    const registryEntry = settings.customDatasources?.find((ds) => ds.id === datasourceId);
+    if (!registryEntry) return;
+
+    // Get the full datasource data from storage (includes the 'data' array)
+    const fullDatasourceData = await getCustomDatasourceData(datasourceId);
+    if (!fullDatasourceData) {
+      message.error("Could not load datasource data");
+      return;
+    }
+
+    setUploadingDatasourceId(datasourceId);
+    try {
+      const metadata = {
+        name: registryEntry.name,
+        version: registryEntry.version,
+        authorName: registryEntry.author,
+        displayFormat: fullDatasourceData.displayFormat,
+      };
+      const result = await uploadDatasource(fullDatasourceData, metadata);
+      if (result.success) {
+        // Update the local datasource with cloudId
+        const updatedDatasources = settings.customDatasources.map((ds) =>
+          ds.id === datasourceId ? { ...ds, cloudId: result.cloudId } : ds,
+        );
+        updateSettings({ ...settings, customDatasources: updatedDatasources });
+        message.success("Datasource uploaded to cloud successfully");
+      } else {
+        message.error(result.error || "Failed to upload datasource");
+      }
+    } catch (error) {
+      message.error("Failed to upload datasource");
+    } finally {
+      setUploadingDatasourceId(null);
+    }
+  };
+
+  const handlePublishDatasource = (datasourceId) => {
+    setPublishingDatasourceId(datasourceId);
+    setIsPublishModalOpen(true);
+  };
+
+  const handlePublishComplete = (shareCode) => {
+    if (publishingDatasourceId && shareCode) {
+      // Update the local datasource with published state
+      const updatedDatasources = settings.customDatasources.map((ds) =>
+        ds.id === publishingDatasourceId ? { ...ds, isPublished: true, shareCode } : ds,
+      );
+      updateSettings({ ...settings, customDatasources: updatedDatasources });
+    }
+    setIsPublishModalOpen(false);
+    setPublishingDatasourceId(null);
+  };
+
   // Handle escape key
   const handleKeyDown = useCallback(
     (e) => {
@@ -105,11 +199,11 @@ export const SettingsModal = () => {
     <div className="datasource-details">
       <div className="datasource-detail-item">
         <span className="datasource-detail-label">Checked for update</span>
-        <span className="datasource-detail-value">{dataSource.lastCheckedForUpdate}</span>
+        <span className="datasource-detail-value">{formatDate(dataSource.lastCheckedForUpdate)}</span>
       </div>
       <div className="datasource-detail-item">
         <span className="datasource-detail-label">Data snapshot</span>
-        <span className="datasource-detail-value">{dataSource.lastUpdated}</span>
+        <span className="datasource-detail-value">{formatDate(dataSource.lastUpdated)}</span>
       </div>
       <div className="datasource-detail-item">
         <span className="datasource-detail-label">Version</span>
@@ -134,7 +228,7 @@ export const SettingsModal = () => {
             {/* Header */}
             <div className="settings-modal-header">
               <span className="settings-modal-title">Configuration</span>
-              <span className="settings-version-badge">Version {process.env.REACT_APP_VERSION}</span>
+              <span className="settings-version-badge">Version {import.meta.env.VITE_VERSION}</span>
             </div>
 
             {/* Body */}
@@ -178,13 +272,16 @@ export const SettingsModal = () => {
                               datasource={activeCustomDs}
                               isActive={true}
                               onToggle={() => {}}
-                              onDelete={() => removeCustomDatasource(activeCustomDs.id)}
                               onCheckUpdate={
-                                activeCustomDs.sourceType === "url"
+                                activeCustomDs.sourceType === "url" && !activeCustomDs.isSubscribed
                                   ? () => handleCheckCustomUpdate(activeCustomDs.id)
                                   : undefined
                               }
                               isCheckingUpdate={checkingCustomUpdateId === activeCustomDs.id}
+                              onUpload={() => handleUploadDatasource(activeCustomDs.id)}
+                              onPublish={() => handlePublishDatasource(activeCustomDs.id)}
+                              isUploading={uploadingDatasourceId === activeCustomDs.id}
+                              canUpload={canUpload}
                             />
                           );
                         }
@@ -215,6 +312,112 @@ export const SettingsModal = () => {
                       })()}
                     </div>
 
+                    {/* Local Datasources Section */}
+                    {getLocalDatasources().length > 0 && (
+                      <div className="datasource-section">
+                        <h3 className="datasource-section-title">Local Datasources</h3>
+                        <p className="datasource-section-description">
+                          These datasources are editable in your treeview. Upload to cloud to share with others.
+                        </p>
+                        {getLocalDatasources().map((ds) => {
+                          const isActive = settings.selectedDataSource === `local-ds-${ds.uuid}`;
+                          return (
+                            <div key={ds.uuid} className={`local-datasource-card ${isActive ? "active" : ""}`}>
+                              <div className="local-datasource-header">
+                                <Package size={16} className="local-datasource-icon" />
+                                <span className="local-datasource-name">{ds.name}</span>
+                                {ds.isPublished && (
+                                  <span className="local-datasource-badge published">
+                                    <Globe size={10} /> Published
+                                  </span>
+                                )}
+                                {ds.isUploaded && !ds.isPublished && (
+                                  <span className="local-datasource-badge uploaded">
+                                    <Cloud size={10} /> Uploaded
+                                  </span>
+                                )}
+                              </div>
+                              <div className="local-datasource-meta">
+                                <span>v{ds.version || "1.0.0"}</span>
+                                {ds.author && <span>by {ds.author}</span>}
+                                <span>{ds.cards?.length || 0} cards</span>
+                              </div>
+                              <div className="local-datasource-actions">
+                                {!isActive && (
+                                  <button
+                                    className="local-datasource-btn"
+                                    onClick={() =>
+                                      updateSettings({
+                                        ...settings,
+                                        selectedDataSource: `local-ds-${ds.uuid}`,
+                                      })
+                                    }>
+                                    Select
+                                  </button>
+                                )}
+                                <button
+                                  className="local-datasource-btn"
+                                  onClick={() => {
+                                    setEditingDatasource(ds);
+                                    setIsEditMetadataModalOpen(true);
+                                  }}>
+                                  Edit
+                                </button>
+                                {user && canUpload && !ds.isUploaded && (
+                                  <button
+                                    className="local-datasource-btn primary"
+                                    onClick={() => {
+                                      updateDatasourceCloudState(ds.uuid, {
+                                        syncEnabled: true,
+                                        syncStatus: "pending",
+                                      });
+                                      message.info("Uploading datasource...");
+                                    }}>
+                                    Upload
+                                  </button>
+                                )}
+                                {user && ds.isUploaded && !ds.isPublished && (
+                                  <button
+                                    className="local-datasource-btn primary"
+                                    onClick={async () => {
+                                      const result = await publishLocalDatasource(ds.cloudId, {});
+                                      if (result.success) {
+                                        updateDatasourceCloudState(ds.uuid, {
+                                          isPublished: true,
+                                          shareCode: result.shareCode,
+                                          publishedVersion: result.versionNumber,
+                                        });
+                                      }
+                                    }}>
+                                    Publish
+                                  </button>
+                                )}
+                                {user && ds.isPublished && (
+                                  <button
+                                    className="local-datasource-btn"
+                                    onClick={async () => {
+                                      const result = await pushDatasourceUpdate(ds.cloudId);
+                                      if (result.success) {
+                                        updateDatasourceCloudState(ds.uuid, {
+                                          publishedVersion: result.newVersionNumber,
+                                        });
+                                      }
+                                    }}>
+                                    Push Update
+                                  </button>
+                                )}
+                              </div>
+                              {ds.shareCode && (
+                                <div className="local-datasource-share">
+                                  Share code: <code>{ds.shareCode}</code>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
                     {/* Custom Datasources Section */}
                     <div className="datasource-section">
                       <div className="datasource-section-header">
@@ -229,49 +432,28 @@ export const SettingsModal = () => {
                           No custom datasources imported yet. Click &quot;Add&quot; to import from URL or file.
                         </p>
                       )}
-                      {(() => {
-                        const inactiveCustomDs = settings.customDatasources?.filter(
-                          (ds) => ds.id !== settings.selectedDataSource,
-                        );
-                        const activeCustomDs = settings.customDatasources?.find(
-                          (ds) => ds.id === settings.selectedDataSource,
-                        );
-
-                        // Show ghost placeholder if there are custom datasources but all are active
-                        if (
-                          settings.customDatasources?.length > 0 &&
-                          (!inactiveCustomDs || inactiveCustomDs.length === 0) &&
-                          activeCustomDs
-                        ) {
-                          return (
-                            <CustomDatasourceCard
-                              key={activeCustomDs.id}
-                              datasource={activeCustomDs}
-                              isActive={false}
-                              isGhost={true}
-                              onToggle={() => {}}
-                              onDelete={() => {}}
-                            />
-                          );
-                        }
-
-                        return inactiveCustomDs?.map((ds) => (
+                      {settings.customDatasources?.map((ds) => {
+                        const isActive = ds.id === settings.selectedDataSource;
+                        return (
                           <CustomDatasourceCard
                             key={ds.id}
                             datasource={ds}
                             isActive={false}
+                            isGhost={isActive}
                             onToggle={() =>
                               updateSettings({
                                 ...settings,
                                 selectedDataSource: ds.id,
                               })
                             }
-                            onDelete={() => removeCustomDatasource(ds.id)}
-                            onCheckUpdate={ds.sourceType === "url" ? () => handleCheckCustomUpdate(ds.id) : undefined}
-                            isCheckingUpdate={checkingCustomUpdateId === ds.id}
+                            onDelete={!isActive && !ds.isSubscribed ? () => removeCustomDatasource(ds.id) : undefined}
+                            onUpload={() => handleUploadDatasource(ds.id)}
+                            onPublish={() => handlePublishDatasource(ds.id)}
+                            isUploading={uploadingDatasourceId === ds.id}
+                            canUpload={canUpload}
                           />
-                        ));
-                      })()}
+                        );
+                      })}
                     </div>
 
                     {/* Other Datasources Section */}
@@ -286,22 +468,26 @@ export const SettingsModal = () => {
                           { id: "necromunda", title: "Necromunda", hasUpdate: false },
                           { id: "aos", title: "Age of Sigmar", hasUpdate: true },
                         ];
-                        return datasources
-                          .filter((ds) => ds.id !== settings.selectedDataSource)
-                          .map((ds) => (
+                        const isCustomDatasourceActive = settings.customDatasources?.some(
+                          (ds) => ds.id === settings.selectedDataSource,
+                        );
+                        return datasources.map((ds) => {
+                          const isActive = !isCustomDatasourceActive && ds.id === settings.selectedDataSource;
+                          return (
                             <DatasourceCard
                               key={ds.id}
                               title={ds.title}
-                              isActive={false}
+                              isActive={isActive}
                               onToggle={() =>
                                 updateSettings({
                                   ...settings,
                                   selectedDataSource: ds.id,
                                 })
                               }
-                              disabled={false}
+                              disabled={isActive}
                             />
-                          ));
+                          );
+                        });
                       })()}
                     </div>
                   </>
@@ -688,6 +874,25 @@ export const SettingsModal = () => {
       <CustomDatasourceModal
         isOpen={isCustomDatasourceModalOpen}
         onClose={() => setIsCustomDatasourceModalOpen(false)}
+      />
+
+      <EditDatasourceMetadataModal
+        isOpen={isEditMetadataModalOpen}
+        onClose={() => {
+          setIsEditMetadataModalOpen(false);
+          setEditingDatasource(null);
+        }}
+        datasource={editingDatasource}
+      />
+
+      <PublishDatasourceModal
+        isOpen={isPublishModalOpen}
+        onClose={() => {
+          setIsPublishModalOpen(false);
+          setPublishingDatasourceId(null);
+        }}
+        datasource={settings.customDatasources?.find((ds) => ds.id === publishingDatasourceId)}
+        onPublishComplete={handlePublishComplete}
       />
     </>
   );

@@ -1,0 +1,328 @@
+/* PublishDatasourceModal.css */
+
+.pdm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+  animation: pdmOverlayFadeIn 0.2s ease-out;
+}
+
+.pdm-modal {
+  width: 480px;
+  max-width: 95vw;
+  max-height: 85vh;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 8px 32px rgba(22, 119, 255, 0.12),
+    0 4px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: pdmModalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Header */
+.pdm-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.pdm-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 650;
+  color: #1e1b4b;
+  line-height: 1;
+}
+
+.pdm-modal-title svg {
+  color: #1677ff;
+}
+
+.pdm-modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #8b8aa8;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pdm-modal-close:hover {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+/* Content */
+.pdm-modal-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.pdm-description {
+  font-size: 14px;
+  color: #4c4a7d;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+/* Form groups */
+.pdm-form-group {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.pdm-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e1b4b;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.pdm-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e1b4b;
+  line-height: 1.4;
+  resize: vertical;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.pdm-textarea::placeholder {
+  color: #8b8aa8;
+}
+
+.pdm-textarea:focus {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+.pdm-char-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  font-size: 11px;
+  color: #8b8aa8;
+}
+
+.pdm-select {
+  width: 100%;
+  height: 44px;
+  padding: 0 36px 0 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e1b4b;
+  line-height: 1;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b8aa8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pdm-select:focus {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+}
+
+/* Version info for push update mode */
+.pdm-version-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(22, 119, 255, 0.08);
+  border: 1px solid rgba(22, 119, 255, 0.2);
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.pdm-version-label {
+  font-size: 13px;
+  color: #4c4a7d;
+}
+
+.pdm-version-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e1b4b;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+}
+
+.pdm-version-number.new {
+  background: #1677ff;
+  color: #fff;
+}
+
+.pdm-version-arrow {
+  font-size: 14px;
+  color: #8b8aa8;
+}
+
+/* Info box */
+.pdm-info-box {
+  padding: 14px 16px;
+  background: rgba(22, 119, 255, 0.05);
+  border: 1px solid rgba(22, 119, 255, 0.15);
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+.pdm-info-box p {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1677ff;
+  margin: 0 0 8px 0;
+  line-height: 1;
+}
+
+.pdm-info-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.pdm-info-box li {
+  font-size: 13px;
+  color: #4c4a7d;
+  line-height: 1.6;
+}
+
+/* Footer */
+.pdm-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* Buttons */
+.pdm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 20px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.pdm-btn.secondary {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #4c4a7d;
+}
+
+.pdm-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: #1677ff;
+  color: #1677ff;
+}
+
+.pdm-btn.primary {
+  background: #1677ff;
+  border: none;
+  color: #fff;
+}
+
+.pdm-btn.primary:hover:not(:disabled) {
+  background: #4096ff;
+}
+
+.pdm-btn.primary:disabled {
+  background: rgba(148, 163, 184, 0.3);
+  color: #8b8aa8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.pdm-spinner {
+  animation: pdmSpin 1s linear infinite;
+}
+
+/* Animations */
+@keyframes pdmOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pdmModalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pdmSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .pdm-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}

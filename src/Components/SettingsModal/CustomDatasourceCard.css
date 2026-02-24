@@ -1,4 +1,4 @@
-/* CustomDatasourceCard.css - Extends DatasourceCard for custom datasources */
+/* CustomDatasourceCard.css - Extended Glassmorphism Styling */
 
 .datasource-card.custom {
   position: relative;
@@ -7,16 +7,18 @@
 .datasource-card-title-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
   min-width: 0;
+  line-height: 1;
 }
 
 .datasource-card-source-icon {
-  color: rgba(0, 0, 0, 0.45);
+  color: #8b8aa8;
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .datasource-card.active .datasource-card-source-icon {
@@ -25,33 +27,38 @@
 
 .datasource-card-count-badge {
   font-size: 10px;
-  padding: 1px 6px;
-  background: #f0f0f0;
-  border-radius: 3px;
-  color: rgba(0, 0, 0, 0.65);
-  font-weight: 500;
+  padding: 3px 8px;
+  background: rgba(148, 163, 184, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 6px;
+  color: #4c4a7d;
+  font-weight: 600;
   flex-shrink: 0;
-  line-height: 1.4;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
 }
 
 .datasource-card.active .datasource-card-count-badge {
-  background: #bae0ff;
+  background: rgba(22, 119, 255, 0.15);
   color: #0958d9;
 }
 
 button.datasource-delete-btn,
 .datasource-card .datasource-delete-btn {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  color: rgba(0, 0, 0, 0.45);
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 8px;
+  color: #8b8aa8;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
   -webkit-appearance: none;
   appearance: none;
@@ -59,38 +66,152 @@ button.datasource-delete-btn,
 
 button.datasource-delete-btn:hover,
 .datasource-card .datasource-delete-btn:hover {
-  background: #fff2f0;
-  border-color: #ffccc7;
-  color: #ff4d4f;
+  background: rgba(254, 226, 226, 0.8);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #dc2626;
 }
 
 /* Ghost state - placeholder for active datasource */
 .datasource-card.ghost {
-  opacity: 0.5;
+  opacity: 0.55;
   pointer-events: none;
   border-style: dashed;
+  border-color: rgba(22, 119, 255, 0.25);
+}
+
+.datasource-card.ghost::before {
+  background: rgba(230, 244, 255, 0.3);
 }
 
 .datasource-card-ghost-label {
   font-size: 10px;
-  padding: 1px 6px;
-  background: #e6f4ff;
-  border-radius: 3px;
+  padding: 3px 8px;
+  background: rgba(22, 119, 255, 0.12);
+  border-radius: 6px;
   color: #1677ff;
-  font-weight: 500;
+  font-weight: 600;
   flex-shrink: 0;
-  line-height: 1.4;
+  line-height: 1.3;
   font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/* Subscribed state */
+.datasource-card.subscribed {
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.datasource-card.subscribed::before {
+  background: rgba(236, 253, 245, 0.4);
+}
+
+.datasource-card.subscribed .datasource-card-source-icon {
+  color: #10b981;
+}
+
+.datasource-subscribed-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border-radius: 4px;
+  color: #059669;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+/* Upload button */
+button.datasource-upload-btn,
+.datasource-card .datasource-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(22, 119, 255, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(22, 119, 255, 0.2);
+  border-radius: 8px;
+  color: #1677ff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+button.datasource-upload-btn:hover:not(:disabled),
+.datasource-card .datasource-upload-btn:hover:not(:disabled) {
+  background: rgba(22, 119, 255, 0.2);
+  border-color: rgba(22, 119, 255, 0.35);
+}
+
+button.datasource-upload-btn:disabled,
+.datasource-card .datasource-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Publish button */
+button.datasource-publish-btn,
+.datasource-card .datasource-publish-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(16, 185, 129, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 8px;
+  color: #059669;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+button.datasource-publish-btn:hover,
+.datasource-card .datasource-publish-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+/* Status indicators */
+.datasource-published-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #059669 !important;
+}
+
+.datasource-uploaded-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #1677ff !important;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .datasource-card-title-group {
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 6px;
   }
 
   .datasource-card-count-badge {
-    margin-left: 20px;
+    margin-left: 24px;
+  }
+
+  button.datasource-upload-btn,
+  button.datasource-publish-btn {
+    padding: 5px 10px;
+    font-size: 11px;
   }
 }

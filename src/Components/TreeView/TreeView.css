@@ -415,3 +415,113 @@
   background: #4096ff;
   border-color: #4096ff;
 }
+
+/* ===========================================
+   TREE DATASOURCE
+   =========================================== */
+
+.tree-datasource {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  user-select: none;
+}
+
+.tree-datasource:hover {
+  background: #f5f5f5;
+}
+
+.tree-datasource.selected {
+  background: #e6f4ff;
+  border-left: 3px solid #1677ff;
+  padding-left: 5px;
+}
+
+.tree-datasource.selected:hover {
+  background: #bae0ff;
+}
+
+.tree-datasource-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  color: rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s ease;
+}
+
+.tree-datasource-toggle.expanded {
+  transform: rotate(90deg);
+}
+
+.tree-datasource-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  color: inherit;
+}
+
+.tree-datasource-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-datasource-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tree-datasource-badge.published {
+  background: #52c41a;
+  color: #fff;
+}
+
+.tree-datasource-badge.uploaded {
+  background: #1677ff;
+  color: #fff;
+}
+
+.tree-datasource-badge.pending {
+  background: #faad14;
+  color: #fff;
+}
+
+.tree-datasource-badge.syncing {
+  background: #1677ff;
+  color: #fff;
+  animation: pulseBadge 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseBadge {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Items in local datasources get different indentation */
+.tree-item-row.in-datasource {
+  padding-left: 32px;
+}
+
+.tree-item-row.in-datasource.selected {
+  padding-left: 29px;
+}

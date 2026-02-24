@@ -20,7 +20,7 @@ import { getUnseenVersions, mergeVersionSteps } from "../versions";
  */
 export const useVersionWizard = () => {
   const { settings, updateSettings } = useSettingsStorage();
-  const currentVersion = process.env.REACT_APP_VERSION;
+  const currentVersion = import.meta.env.VITE_VERSION;
 
   // Determine which versions need to be shown
   const unseenVersions = useMemo(() => {
