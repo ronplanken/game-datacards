@@ -42,6 +42,8 @@ import { ImageGenerator } from "./Pages/ImageGenerator";
 import { LegacyPrint } from "./Pages/LegacyPrint";
 import { Print } from "./Pages/Print";
 import { Shared } from "./Pages/Shared";
+import { TermsOfService } from "./Pages/TermsOfService";
+import { PrivacyPolicy } from "./Pages/PrivacyPolicy";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
@@ -223,6 +225,9 @@ const router = createBrowserRouter([
       { path: "/", element: isMobile ? <Navigate to="/mobile" replace /> : <App /> },
       // Designer route (premium only)
       { path: "designer", element: <DesignerRoute /> },
+      // Legal pages
+      { path: "terms", element: <TermsOfService /> },
+      { path: "privacy", element: <PrivacyPolicy /> },
       // Shared card view
       { path: "shared/:Id", element: <Shared /> },
       // Desktop viewer routes
