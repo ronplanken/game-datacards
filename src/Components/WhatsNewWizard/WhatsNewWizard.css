@@ -32,7 +32,7 @@
   /* Effects */
   --wnw-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
   --wnw-shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --wnw-glow: 0 0 60px rgba(251, 191, 36, 0.15);
+  --wnw-glow: none;
 
   /* Spacing */
   --wnw-radius: 16px;
@@ -47,8 +47,8 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 10, 20, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,16 +79,6 @@
   border: 1px solid var(--wnw-border);
 }
 
-/* Subtle texture overlay */
-.wnw-modal::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.02;
-  pointer-events: none;
-  border-radius: inherit;
-}
 
 .wnw-overlay--exiting .wnw-modal {
   animation: wnwScaleOut 0.2s ease-out forwards;
@@ -99,35 +89,13 @@
    Dramatic gradient with gold accent
    =========================================== */
 .wnw-header {
-  background: linear-gradient(135deg, var(--wnw-navy) 0%, var(--wnw-navy-light) 50%, #0c2d4d 100%);
+  background: var(--wnw-navy);
   padding: 28px 32px 24px;
   color: #fff;
   position: relative;
   flex-shrink: 0;
   border-bottom: 1px solid var(--wnw-border);
   overflow: hidden;
-}
-
-/* Decorative corner accents */
-.wnw-header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle at top right, rgba(251, 191, 36, 0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.wnw-header::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.3), transparent);
 }
 
 .wnw-header-content {
@@ -185,10 +153,9 @@
 
 .wnw-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--wnw-gold-dark), var(--wnw-gold-light));
+  background: var(--wnw-gold);
   border-radius: 2px;
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
 }
 
 /* ===========================================
@@ -251,7 +218,6 @@
   width: 2px;
   height: 24px;
   background: var(--wnw-gold);
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
 }
 
 .wnw-sidebar-marker {
@@ -274,7 +240,6 @@
   background: var(--wnw-gold);
   color: var(--wnw-navy);
   border-color: var(--wnw-gold);
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
 }
 
 .wnw-sidebar-item--completed .wnw-sidebar-marker {
@@ -356,7 +321,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%);
+  background: rgba(251, 191, 36, 0.1);
   color: var(--wnw-gold-light);
   padding: 10px 20px;
   border-radius: 99px;
@@ -370,19 +335,6 @@
 
 .wnw-welcome-badge svg {
   color: var(--wnw-gold);
-  animation: wnwSparkle 2s ease-in-out infinite;
-}
-
-@keyframes wnwSparkle {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
 }
 
 .wnw-welcome-title {
@@ -431,23 +383,6 @@
   position: relative;
 }
 
-.wnw-feature-icon::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, var(--wnw-gold) 0%, transparent 50%);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
-
 .wnw-feature-icon svg {
   width: 26px;
   height: 26px;
@@ -475,7 +410,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%);
+  background: rgba(139, 92, 246, 0.1);
   color: #a78bfa;
   padding: 6px 12px;
   border-radius: 99px;
@@ -495,7 +430,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.05) 100%);
+  background: rgba(34, 197, 94, 0.1);
   color: #4ade80;
   padding: 6px 12px;
   border-radius: 99px;
@@ -566,19 +501,6 @@
   background: var(--wnw-bg-elevated);
 }
 
-.wnw-highlight-item:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.wnw-highlight-item:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.wnw-highlight-item:nth-child(3) {
-  animation-delay: 0.2s;
-}
-.wnw-highlight-item:nth-child(4) {
-  animation-delay: 0.25s;
-}
-
 .wnw-highlight-dot {
   width: 8px;
   height: 8px;
@@ -586,7 +508,6 @@
   background: var(--wnw-gold);
   margin-top: 7px;
   flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
 }
 
 .wnw-highlight-item strong {
@@ -623,7 +544,6 @@
 }
 
 .wnw-discord-link:hover {
-  transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -671,15 +591,14 @@
 }
 
 .wnw-btn--primary {
-  background: linear-gradient(135deg, var(--wnw-gold) 0%, var(--wnw-gold-dark) 100%);
-  color: var(--wnw-navy);
-  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
+  background: #1677ff;
+  color: white;
+  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
 }
 
 .wnw-btn--primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--wnw-gold-light) 0%, var(--wnw-gold) 100%);
-  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.35);
-  transform: translateY(-1px);
+  background: #4096ff;
+  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.35);
 }
 
 .wnw-btn--primary:active:not(:disabled) {
@@ -698,14 +617,14 @@
 }
 
 .wnw-btn--finish {
-  background: linear-gradient(135deg, var(--wnw-blue) 0%, var(--wnw-blue-light) 100%);
-  color: white;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
+  background: #f59e0b;
+  color: var(--wnw-navy);
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.25);
 }
 
 .wnw-btn--finish:hover:not(:disabled) {
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.35);
-  transform: translateY(-1px);
+  background: #fbbf24;
+  box-shadow: 0 4px 16px rgba(251, 191, 36, 0.35);
 }
 
 .wnw-btn svg {
@@ -736,7 +655,6 @@
 .wnw-mobile-dot--active {
   background: var(--wnw-gold);
   transform: scale(1.3);
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
 }
 
 .wnw-mobile-dot--completed {
