@@ -2,9 +2,9 @@ import { Settings, Share2, User, Cloud } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Row, Space } from "antd";
 import { message } from "../Toast/message";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useAuth, useSubscription, useSync, useCloudCategories, usePremiumFeatures } from "../../Premium";
+import { useAuth, useSubscription, useSync, useCloudCategories, usePremiumFeatures, getAvatarUrl } from "../../Premium";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
@@ -43,6 +43,16 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
 
   // Get tier for avatar border styling
   const tier = subscription?.tier || "free";
+
+  // Avatar image
+  const [imgError, setImgError] = useState(false);
+  const avatarUrl = getAvatarUrl(user);
+  const showImage = !!avatarUrl && !imgError;
+
+  // Reset imgError when avatar URL changes
+  useEffect(() => {
+    setImgError(false);
+  }, [avatarUrl]);
 
   // Sync badge - only show if user has synced items and status is noteworthy
   const showSyncBadge = user && syncedCategoryCount > 0 && globalSyncStatus !== "idle" && globalSyncStatus !== "synced";
@@ -146,12 +156,22 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
             {hasAuth &&
               (user ? (
                 <button
-                  className={`mobile-account-avatar-btn mobile-account-avatar-btn--${tier} ${syncStatusClass}`}
+                  className={`mobile-account-avatar-btn mobile-account-avatar-btn--${tier}${showImage ? " mobile-account-avatar-btn--has-image" : ""} ${syncStatusClass}`}
                   onClick={() => setAccountVisible(true)}
                   type="button"
                   aria-label="Account"
                   style={{ marginRight: "8px" }}>
-                  <span className="mobile-account-avatar-initials">{getInitials(user, profile)}</span>
+                  {showImage ? (
+                    <img
+                      className="mobile-account-avatar-img"
+                      src={avatarUrl}
+                      alt=""
+                      onError={() => setImgError(true)}
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="mobile-account-avatar-initials">{getInitials(user, profile)}</span>
+                  )}
                 </button>
               ) : (
                 <button

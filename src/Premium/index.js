@@ -161,6 +161,12 @@ export const useProducts = () => ({
 export { SUBSCRIPTION_LIMITS } from "./constants";
 
 // =====================================================
+// UTILITIES
+// =====================================================
+
+export const getAvatarUrl = () => null;
+
+// =====================================================
 // DESKTOP AUTH COMPONENTS - All render null
 // =====================================================
 
