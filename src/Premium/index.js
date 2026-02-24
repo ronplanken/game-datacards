@@ -169,6 +169,7 @@ export const LoginModal = () => null;
 export const SignupModal = () => null;
 export const TwoFactorPrompt = () => null;
 export const TwoFactorSetup = () => null;
+export const AccountSettingsModal = () => null;
 
 // =====================================================
 // MOBILE AUTH COMPONENTS - All render null
@@ -184,6 +185,7 @@ export const MobileTwoFactorPage = () => null;
 // =====================================================
 
 export const MobileAccountSheet = () => null;
+export const MobileAccountSettingsSheet = () => null;
 
 // =====================================================
 // SYNC COMPONENTS - All render null

@@ -28,7 +28,7 @@ import {
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
-import { MobileAccountSheet, MobileSyncSheet } from "../Premium";
+import { MobileAccountSheet, MobileAccountSettingsSheet, MobileSyncSheet } from "../Premium";
 
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
@@ -95,6 +95,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const [isListAddVisible, setIsListAddVisible] = useState(false);
   const [isMobileSharingMenuVisible, setIsMobileSharingMenuVisible] = useState(false);
   const [isAccountSheetVisible, setIsAccountSheetVisible] = useState(false);
+  const [isAccountSettingsVisible, setIsAccountSettingsVisible] = useState(false);
   const [isSyncSheetVisible, setIsSyncSheetVisible] = useState(false);
 
   // Search State
@@ -326,6 +327,14 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                   setIsAccountSheetVisible(false);
                   setIsSyncSheetVisible(true);
                 }}
+                onOpenAccountSettings={() => {
+                  setIsAccountSheetVisible(false);
+                  setIsAccountSettingsVisible(true);
+                }}
+              />
+              <MobileAccountSettingsSheet
+                isVisible={isAccountSettingsVisible}
+                setIsVisible={setIsAccountSettingsVisible}
               />
               <MobileSyncSheet isVisible={isSyncSheetVisible} setIsVisible={setIsSyncSheetVisible} />
               <MobileSharingMenu
