@@ -40,7 +40,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+  background: rgba(255, 255, 255, 0.6);
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
 }
 
@@ -191,7 +191,7 @@
 }
 
 .pdm-version-number.new {
-  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  background: #1677ff;
   color: #fff;
 }
 
@@ -234,7 +234,7 @@
   justify-content: flex-end;
   gap: 10px;
   padding: 14px 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.6) 100%);
+  background: rgba(255, 255, 255, 0.3);
   border-top: 1px solid rgba(148, 163, 184, 0.2);
 }
 
@@ -268,15 +268,13 @@
 }
 
 .pdm-btn.primary {
-  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  background: #1677ff;
   border: none;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
 }
 
 .pdm-btn.primary:hover:not(:disabled) {
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
+  background: #4096ff;
 }
 
 .pdm-btn.primary:disabled {

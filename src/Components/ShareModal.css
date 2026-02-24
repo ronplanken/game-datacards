@@ -68,8 +68,6 @@
   --glass-border-subtle: rgba(148, 163, 184, 0.2);
   --accent-primary: #1677ff;
   --accent-secondary: #4096ff;
-  --accent-gradient: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
-  --accent-gradient-soft: linear-gradient(135deg, rgba(22, 119, 255, 0.12) 0%, rgba(64, 150, 255, 0.08) 100%);
   --text-primary: #1e1b4b;
   --text-secondary: #4c4a7d;
   --text-muted: #8b8aa8;
@@ -91,16 +89,6 @@
   pointer-events: auto;
   animation: shareFadeSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
-}
-
-/* Subtle gradient overlay */
-.share-dropdown::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%, rgba(64, 150, 255, 0.03) 100%);
-  border-radius: inherit;
-  pointer-events: none;
 }
 
 /* ===========================================
@@ -143,7 +131,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  background: var(--accent-gradient-soft);
+  background: rgba(22, 119, 255, 0.12);
   border: 1px solid var(--glass-border-subtle);
   border-radius: 12px;
   padding: 14px 16px;
@@ -187,7 +175,7 @@
 }
 
 .share-link-field.has-link {
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08) 0%, rgba(64, 150, 255, 0.04) 100%);
+  background: rgba(22, 119, 255, 0.08);
   border-color: rgba(22, 119, 255, 0.2);
 }
 
@@ -234,12 +222,10 @@
   background: var(--accent-primary);
   border-color: var(--accent-primary);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
-  transform: translateY(-1px);
 }
 
 .share-link-copy-btn:active {
-  transform: translateY(0);
+  opacity: 0.8;
 }
 
 /* ===========================================
@@ -252,7 +238,7 @@
   gap: 8px;
   width: 100%;
   padding: 12px 20px;
-  background: var(--accent-gradient);
+  background: #1677ff;
   border: none;
   border-radius: 10px;
   font-size: 14px;
@@ -260,18 +246,14 @@
   color: #fff;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 12px rgba(22, 119, 255, 0.3);
 }
 
 .share-action-btn:hover {
-  box-shadow:
-    0 4px 20px rgba(22, 119, 255, 0.45),
-    0 0 24px rgba(22, 119, 255, 0.15);
-  transform: translateY(-1px);
+  opacity: 0.9;
 }
 
 .share-action-btn:active {
-  transform: translateY(0);
+  opacity: 0.85;
 }
 
 .share-action-btn:disabled {

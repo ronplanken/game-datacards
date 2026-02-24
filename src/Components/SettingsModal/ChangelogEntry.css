@@ -19,12 +19,7 @@
   top: 8px;
   bottom: 8px;
   width: 2px;
-  background: linear-gradient(
-    180deg,
-    rgba(22, 119, 255, 0.3) 0%,
-    rgba(64, 150, 255, 0.15) 50%,
-    rgba(148, 163, 184, 0.1) 100%
-  );
+  background: rgba(22, 119, 255, 0.3);
   border-radius: 1px;
 }
 
@@ -41,12 +36,10 @@
   top: 10px;
   width: 10px;
   height: 10px;
-  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  background: #1677ff;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow:
-    0 0 0 3px rgba(22, 119, 255, 0.15),
-    0 2px 4px rgba(22, 119, 255, 0.2);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.15);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -77,7 +70,7 @@
 .changelog-version {
   display: inline-flex;
   align-items: center;
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.12) 0%, rgba(64, 150, 255, 0.08) 100%);
+  background: rgba(22, 119, 255, 0.12);
   color: #0958d9;
   padding: 4px 12px;
   border-radius: 8px;
@@ -144,7 +137,7 @@
   color: #1677ff;
   margin: 14px 0 8px;
   padding: 6px 10px;
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08) 0%, rgba(64, 150, 255, 0.04) 100%);
+  background: rgba(22, 119, 255, 0.08);
   border-radius: 6px;
   display: inline-block;
 }
@@ -214,10 +207,9 @@ button.changelog-older-toggle,
 
 button.changelog-older-toggle:hover,
 .changelog-timeline .changelog-older-toggle:hover {
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08) 0%, rgba(64, 150, 255, 0.04) 100%);
+  background: rgba(22, 119, 255, 0.08);
   border-color: rgba(22, 119, 255, 0.4);
   border-style: solid;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
 }
 
 .changelog-discord {
@@ -230,11 +222,4 @@ button.changelog-older-toggle:hover,
 
 .changelog-discord img {
   border-radius: 12px;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.changelog-discord img:hover {
-  transform: scale(1.02) translateY(-2px);
-  box-shadow: 0 8px 24px rgba(22, 119, 255, 0.15);
 }

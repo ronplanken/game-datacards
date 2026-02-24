@@ -12,26 +12,13 @@
   position: relative;
 }
 
-.datasource-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 50%);
-  pointer-events: none;
-}
-
 .datasource-card:hover {
   border-color: rgba(22, 119, 255, 0.3);
-  box-shadow:
-    0 4px 16px rgba(22, 119, 255, 0.08),
-    0 2px 4px rgba(0, 0, 0, 0.04);
-  transform: translateY(-1px);
 }
 
 .datasource-card.active {
   border-color: rgba(22, 119, 255, 0.35);
-  background: linear-gradient(135deg, rgba(230, 244, 255, 0.8) 0%, rgba(240, 245, 255, 0.6) 100%);
+  background: rgba(230, 244, 255, 0.8);
   padding: 10px 16px;
   box-shadow:
     0 4px 20px rgba(22, 119, 255, 0.12),
@@ -46,7 +33,7 @@
   transform: translateY(-50%);
   width: 3px;
   height: 28px;
-  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  background: #1677ff;
   border-radius: 0 3px 3px 0;
 }
 
@@ -116,7 +103,7 @@ button.datasource-update-btn,
   margin-top: 0;
   padding: 6px 14px;
   height: 28px;
-  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  background: #1677ff;
   border: none;
   color: #fff !important;
   border-radius: 8px;
@@ -133,13 +120,10 @@ button.datasource-update-btn,
   gap: 5px;
   -webkit-appearance: none;
   appearance: none;
-  box-shadow: 0 2px 6px rgba(22, 119, 255, 0.25);
 }
 
 button.datasource-update-btn:hover,
 .datasource-details .datasource-update-btn:hover {
-  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
 }
 
 button.datasource-update-btn:disabled,

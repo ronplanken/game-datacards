@@ -16,10 +16,7 @@
 
 .dsc-card:hover {
   border-color: rgba(22, 119, 255, 0.3);
-  box-shadow:
-    0 4px 16px rgba(22, 119, 255, 0.1),
-    0 2px 4px rgba(0, 0, 0, 0.04);
-  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .dsc-card.subscribed {
@@ -46,7 +43,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  background: #1677ff;
   border-radius: 8px;
   color: #fff;
 }

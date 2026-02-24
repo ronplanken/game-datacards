@@ -17,7 +17,6 @@
   --ie-accent-secondary: #4096ff;
   --ie-accent-light: #e6f4ff;
   --ie-accent-ultra-light: #f0f5ff;
-  --ie-accent-gradient: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
 
   /* Text colors */
   --ie-text-primary: #1e1b4b;
@@ -36,9 +35,9 @@
   --ie-warning-border: rgba(250, 173, 20, 0.3);
 
   /* Shadows */
-  --ie-shadow-sm: 0 1px 2px rgba(22, 119, 255, 0.04);
-  --ie-shadow-md: 0 4px 12px rgba(22, 119, 255, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --ie-shadow-lg: 0 8px 32px rgba(22, 119, 255, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+  --ie-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --ie-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --ie-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* ===========================================
@@ -82,27 +81,6 @@
   position: relative;
 }
 
-/* Subtle gradient overlay */
-.import-export-modal::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%, rgba(64, 150, 255, 0.03) 100%);
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* Noise texture */
-.import-export-modal::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.015;
-  pointer-events: none;
-  border-radius: inherit;
-}
-
 /* ===========================================
    MODAL HEADER
    =========================================== */
@@ -114,7 +92,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+  background: rgba(255, 255, 255, 0.6);
   border-bottom: 1px solid var(--ie-glass-border-subtle);
   flex-shrink: 0;
 }
@@ -176,7 +154,7 @@
 
 .import-export-sidebar {
   width: 160px;
-  background: linear-gradient(180deg, rgba(230, 244, 255, 0.5) 0%, rgba(240, 245, 255, 0.3) 100%);
+  background: rgba(230, 244, 255, 0.5);
   border-right: 1px solid var(--ie-glass-border-subtle);
   padding: 12px 8px;
   flex-shrink: 0;
@@ -213,12 +191,10 @@
   background: rgba(255, 255, 255, 0.9);
   color: var(--ie-accent-primary);
   border-color: var(--ie-glass-border);
-  box-shadow:
-    var(--ie-shadow-md),
-    0 0 12px rgba(22, 119, 255, 0.1);
+  box-shadow: var(--ie-shadow-md);
 }
 
-/* Active indicator glow */
+/* Active indicator */
 .import-export-nav-item.active::before {
   content: "";
   position: absolute;
@@ -227,9 +203,8 @@
   transform: translateY(-50%);
   width: 3px;
   height: 20px;
-  background: var(--ie-accent-gradient);
+  background: #1677ff;
   border-radius: 0 3px 3px 0;
-  box-shadow: 0 0 8px rgba(22, 119, 255, 0.4);
 }
 
 .import-export-nav-item.disabled {
@@ -271,7 +246,7 @@
   padding: 16px 20px;
   overflow-y: auto;
   min-height: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(248, 250, 252, 0.6) 100%);
+  background: rgba(255, 255, 255, 0.4);
   animation: ieContentFadeIn 0.3s ease-out;
 }
 
@@ -437,7 +412,7 @@ button.import-file-remove:hover,
   justify-content: flex-end;
   gap: 10px;
   padding: 14px 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.6) 100%);
+  background: rgba(255, 255, 255, 0.3);
   border-top: 1px solid var(--ie-glass-border-subtle);
   flex-shrink: 0;
 }
@@ -488,7 +463,7 @@ button.ie-btn-primary,
   gap: 6px;
   padding: 0 18px;
   height: 36px;
-  background: var(--ie-accent-gradient);
+  background: #1677ff;
   border: none;
   color: #fff !important;
   border-radius: 10px;
@@ -498,7 +473,6 @@ button.ie-btn-primary,
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   line-height: 1;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
   -webkit-appearance: none;
   appearance: none;
 }
@@ -506,8 +480,7 @@ button.ie-btn-primary,
 button.ie-btn-primary:hover:not(:disabled),
 .import-export-modal-footer .ie-btn-primary:hover:not(:disabled),
 .export-actions .ie-btn-primary:hover:not(:disabled) {
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
+  opacity: 0.9;
   color: #fff !important;
 }
 
@@ -530,7 +503,7 @@ button.ie-action-btn,
   gap: 6px;
   padding: 0 18px;
   height: 36px;
-  background: var(--ie-accent-gradient);
+  background: #1677ff;
   border: none;
   color: #fff !important;
   border-radius: 10px;
@@ -539,15 +512,13 @@ button.ie-action-btn,
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
   -webkit-appearance: none;
   appearance: none;
 }
 
 button.ie-action-btn:hover:not(:disabled),
 .import-export-content .ie-action-btn:hover:not(:disabled) {
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
+  opacity: 0.9;
   color: #fff !important;
 }
 
@@ -579,12 +550,12 @@ button.ie-action-btn svg,
 }
 
 .import-export-content::-webkit-scrollbar-thumb {
-  background: rgba(22, 119, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
 }
 
 .import-export-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(22, 119, 255, 0.35);
+  background: rgba(0, 0, 0, 0.35);
 }
 
 /* ===========================================
@@ -869,7 +840,7 @@ button.ie-action-btn svg,
   padding: 0 20px;
   height: 44px;
   min-width: 100px;
-  background: var(--ie-accent-gradient);
+  background: #1677ff;
   border: none;
   color: #fff;
   border-radius: 12px;
@@ -878,12 +849,10 @@ button.ie-action-btn svg,
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
 }
 
 .ie-ds-fetch-btn:hover:not(:disabled) {
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
+  opacity: 0.9;
 }
 
 .ie-ds-fetch-btn:disabled {
@@ -1141,15 +1110,13 @@ button.ie-action-btn svg,
 }
 
 .ie-ds-activation-buttons .ie-btn-primary {
-  background: var(--ie-accent-gradient);
+  background: #1677ff;
   border: none;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
 }
 
 .ie-ds-activation-buttons .ie-btn-primary:hover {
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
+  opacity: 0.9;
 }
 
 .ie-ds-settings-link {
@@ -1645,7 +1612,7 @@ button.ie-action-btn svg,
   gap: 6px;
   padding: 0 18px;
   height: 36px;
-  background: var(--ie-accent-gradient);
+  background: #1677ff;
   border: none;
   color: #fff;
   border-radius: 10px;
@@ -1653,12 +1620,10 @@ button.ie-action-btn svg,
   font-weight: 550;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
 }
 
 .gw-import-parse-btn:hover:not(:disabled) {
-  box-shadow: 0 4px 16px rgba(22, 119, 255, 0.4);
-  transform: translateY(-1px);
+  opacity: 0.9;
 }
 
 .gw-import-parse-btn:disabled {

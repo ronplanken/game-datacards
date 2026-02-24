@@ -40,7 +40,7 @@
 }
 
 .datasource-card.active .datasource-card-count-badge {
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.15) 0%, rgba(64, 150, 255, 0.1) 100%);
+  background: rgba(22, 119, 255, 0.15);
   color: #0958d9;
 }
 
@@ -66,10 +66,9 @@ button.datasource-delete-btn,
 
 button.datasource-delete-btn:hover,
 .datasource-card .datasource-delete-btn:hover {
-  background: linear-gradient(135deg, rgba(254, 226, 226, 0.8) 0%, rgba(254, 202, 202, 0.6) 100%);
+  background: rgba(254, 226, 226, 0.8);
   border-color: rgba(239, 68, 68, 0.25);
   color: #dc2626;
-  transform: scale(1.05);
 }
 
 /* Ghost state - placeholder for active datasource */
@@ -81,13 +80,13 @@ button.datasource-delete-btn:hover,
 }
 
 .datasource-card.ghost::before {
-  background: linear-gradient(135deg, rgba(230, 244, 255, 0.3) 0%, rgba(240, 245, 255, 0.2) 100%);
+  background: rgba(230, 244, 255, 0.3);
 }
 
 .datasource-card-ghost-label {
   font-size: 10px;
   padding: 3px 8px;
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.12) 0%, rgba(64, 150, 255, 0.08) 100%);
+  background: rgba(22, 119, 255, 0.12);
   border-radius: 6px;
   color: #1677ff;
   font-weight: 600;
@@ -103,7 +102,7 @@ button.datasource-delete-btn:hover,
 }
 
 .datasource-card.subscribed::before {
-  background: linear-gradient(135deg, rgba(236, 253, 245, 0.4) 0%, rgba(209, 250, 229, 0.2) 100%);
+  background: rgba(236, 253, 245, 0.4);
 }
 
 .datasource-card.subscribed .datasource-card-source-icon {
@@ -113,7 +112,7 @@ button.datasource-delete-btn:hover,
 .datasource-subscribed-badge {
   font-size: 9px;
   padding: 2px 6px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.1) 100%);
+  background: rgba(16, 185, 129, 0.15);
   border-radius: 4px;
   color: #059669;
   font-weight: 600;
@@ -129,7 +128,7 @@ button.datasource-upload-btn,
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.12) 0%, rgba(64, 150, 255, 0.08) 100%);
+  background: rgba(22, 119, 255, 0.12);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(22, 119, 255, 0.2);
@@ -146,9 +145,8 @@ button.datasource-upload-btn,
 
 button.datasource-upload-btn:hover:not(:disabled),
 .datasource-card .datasource-upload-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.2) 0%, rgba(64, 150, 255, 0.15) 100%);
+  background: rgba(22, 119, 255, 0.2);
   border-color: rgba(22, 119, 255, 0.35);
-  transform: translateY(-1px);
 }
 
 button.datasource-upload-btn:disabled,
@@ -164,7 +162,7 @@ button.datasource-publish-btn,
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(52, 211, 153, 0.08) 100%);
+  background: rgba(16, 185, 129, 0.12);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(16, 185, 129, 0.2);
@@ -181,9 +179,8 @@ button.datasource-publish-btn,
 
 button.datasource-publish-btn:hover,
 .datasource-card .datasource-publish-btn:hover {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(52, 211, 153, 0.15) 100%);
+  background: rgba(16, 185, 129, 0.2);
   border-color: rgba(16, 185, 129, 0.35);
-  transform: translateY(-1px);
 }
 
 /* Status indicators */
