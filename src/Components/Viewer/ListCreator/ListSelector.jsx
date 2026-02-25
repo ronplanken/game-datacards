@@ -108,7 +108,7 @@ const CreateListRow = ({ onCreate }) => {
           <input
             type="text"
             className="list-selector-create-input"
-            placeholder="List name..."
+            placeholder="List name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             autoFocus
@@ -133,7 +133,7 @@ const CreateListRow = ({ onCreate }) => {
   return (
     <button className="list-selector-create" onClick={() => setIsCreating(true)} type="button">
       <Plus size={18} />
-      <span>Create New List</span>
+      <span>Create list</span>
     </button>
   );
 };
@@ -255,7 +255,7 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
             {categoriesLoading ? (
               <div className="cloud-categories-loading">
                 <Loader2 size={18} className="spinning" />
-                <span>Loading...</span>
+                <span>Loading categories...</span>
               </div>
             ) : displayedCloudCategories.length === 0 ? (
               <div className="cloud-categories-empty">
@@ -284,7 +284,7 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
               <span>Cloud Categories</span>
             </div>
             <div className="cloud-categories-empty">
-              <p>Sign in to see your cloud categories</p>
+              <p>Sign in to access your cloud categories</p>
             </div>
           </div>
         )}
