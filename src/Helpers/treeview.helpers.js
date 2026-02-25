@@ -39,6 +39,42 @@ export const move = (source, destination, droppableSource, droppableDestination)
   return result;
 };
 
+export const reorderWithSubCategories = (categories, startIndex, endIndex) => {
+  // Extract top-level categories (no parentId, not local-datasource)
+  const topLevel = categories.filter((cat) => !cat.parentId && cat.type !== "local-datasource");
+  const reordered = reorder(topLevel, startIndex, endIndex);
+
+  // Rebuild: datasources first, then reordered categories with sub-categories inline
+  const datasources = categories.filter((cat) => cat.type === "local-datasource");
+  const result = [...datasources];
+  reordered.forEach((cat) => {
+    result.push(cat);
+    const subs = categories.filter((c) => c.parentId === cat.uuid);
+    result.push(...subs);
+  });
+  return result;
+};
+
+export const reorderSubCategories = (categories, parentUuid, startIndex, endIndex) => {
+  const subs = categories.filter((cat) => cat.parentId === parentUuid);
+  const reorderedSubs = reorder(subs, startIndex, endIndex);
+
+  let subIdx = 0;
+  return categories.map((cat) => {
+    if (cat.parentId === parentUuid) {
+      return reorderedSubs[subIdx++];
+    }
+    return cat;
+  });
+};
+
+export const reorderDatasourceItems = (categories, startIndex, endIndex) => {
+  const datasources = categories.filter((cat) => cat.type === "local-datasource");
+  const nonDatasources = categories.filter((cat) => cat.type !== "local-datasource");
+  const reordered = reorder(datasources, startIndex, endIndex);
+  return [...reordered, ...nonDatasources];
+};
+
 export const getListFactionId = (card, faction) => {
   if (!card) {
     return "";

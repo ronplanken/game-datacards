@@ -9,7 +9,9 @@ export const StepWorkspace = ({ treeData, onToggleTree }) => {
   return (
     <div className="wz-step-workspace">
       <h2 className="wz-step-title">Your Workspace</h2>
-      <p className="wz-step-description">Organize your cards in categories. Try dragging items in the tree below!</p>
+      <p className="wz-step-description">
+        Organize your cards into categories and subcategories. You can drag items to reorder them.
+      </p>
 
       <div className="wz-workspace">
         {/* Tree View Panel */}
@@ -32,14 +34,11 @@ export const StepWorkspace = ({ treeData, onToggleTree }) => {
           </div>
           <div className="wz-workspace-panel-content wz-editor-description">
             <p className="wz-editor-intro">
-              Select any card from your categories to open the full editor. You can customize all aspects of your cards
-              including stats, weapons, abilities, and more.
+              Select any card from your categories to open the editor. Customize stats, weapons, abilities, images, and
+              more.
             </p>
 
-            <p className="wz-editor-note">
-              Cards in your categories can be fully customized. The editor shows different options based on the card
-              type.
-            </p>
+            <p className="wz-editor-note">The editor adapts to each card type, showing only the relevant options.</p>
           </div>
         </div>
       </div>

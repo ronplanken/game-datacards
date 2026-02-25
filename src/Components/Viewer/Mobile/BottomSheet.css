@@ -7,7 +7,7 @@
 .bottom-sheet {
   /* Glass tokens */
   --bs-glass-bg: rgba(255, 255, 255, 0.82);
-  --bs-glass-bg-header: rgba(255, 255, 255, 0.65);
+  --bs-glass-bg-header: rgba(255, 255, 255, 0.82);
   --bs-glass-border: rgba(255, 255, 255, 0.6);
   --bs-glass-border-subtle: rgba(148, 163, 184, 0.15);
   --bs-blur: 20px;
@@ -140,7 +140,7 @@
 .bottom-sheet-handle-container {
   position: relative;
   z-index: 1;
-  padding: 12px 0 8px;
+  padding: 8px 0 4px;
   cursor: grab;
   touch-action: none;
   display: flex;
@@ -160,8 +160,16 @@
   transition: background var(--bs-transition-fast);
 }
 
-.bottom-sheet-handle-container:hover .bottom-sheet-handle {
+.bottom-sheet-handle-container:hover .bottom-sheet-handle,
+.bottom-sheet-handle-container:active .bottom-sheet-handle {
   background: rgba(148, 163, 184, 0.7);
+  transform: scaleX(1.2);
+}
+
+.bottom-sheet-handle {
+  transition:
+    background var(--bs-transition-fast),
+    transform var(--bs-transition-spring);
 }
 
 /* ===========================================
@@ -170,11 +178,11 @@
 .bottom-sheet-header {
   position: relative;
   z-index: 1;
-  padding: 6px 20px 14px;
+  padding: 12px 22px;
   display: flex;
   align-items: center;
-  background: var(--bs-glass-bg-header);
-  border-bottom: 1px solid var(--bs-glass-border-subtle);
+  background: transparent;
+  border-bottom: none;
 }
 
 .bottom-sheet-title {
@@ -199,6 +207,15 @@
 /* ===========================================
    CONTENT
    =========================================== */
+@keyframes bsContentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .bottom-sheet-content {
   position: relative;
   z-index: 1;
@@ -208,6 +225,7 @@
   padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   -webkit-overflow-scrolling: touch;
   background: transparent;
+  animation: bsContentFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
 }
 
 /* Refined scrollbar */
@@ -235,7 +253,8 @@
 @media (prefers-reduced-motion: reduce) {
   .bottom-sheet-backdrop,
   .bottom-sheet,
-  .bottom-sheet-handle {
+  .bottom-sheet-handle,
+  .bottom-sheet-content {
     animation: none;
     transition: none;
   }
@@ -257,7 +276,7 @@
 .bottom-sheet--dark {
   /* Dark Navy Backgrounds */
   --bs-glass-bg: rgba(10, 22, 40, 0.98);
-  --bs-glass-bg-header: rgba(15, 31, 53, 0.95);
+  --bs-glass-bg-header: rgba(10, 22, 40, 0.98);
   --bs-glass-border: rgba(255, 255, 255, 0.08);
   --bs-glass-border-subtle: rgba(255, 255, 255, 0.05);
   --bs-blur: 24px;
@@ -299,8 +318,7 @@
 
 /* Dark theme header */
 .bottom-sheet--dark .bottom-sheet-header {
-  background: rgba(15, 31, 53, 0.95);
-  border-bottom-color: rgba(255, 255, 255, 0.06);
+  background: transparent;
 }
 
 /* Dark theme scrollbar */

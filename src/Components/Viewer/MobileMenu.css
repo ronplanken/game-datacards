@@ -16,20 +16,6 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  animation: settingsFadeIn 0.4s ease backwards;
-}
-
-.settings-section:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.settings-section:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.settings-section:nth-child(3) {
-  animation-delay: 0.2s;
-}
-.settings-section:nth-child(4) {
-  animation-delay: 0.25s;
 }
 
 .settings-section-title {
@@ -196,26 +182,6 @@
   background: #cbd5e1; /* Slate 300 */
 }
 
-/* Primary button style - for Sign In */
-.settings-action-button.primary {
-  background: var(--bs-accent);
-  color: white;
-  border: none;
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
-}
-
-.settings-action-button.primary:active:not(:disabled) {
-  background: #4096ff;
-}
-
-/* Hint text */
-.settings-hint {
-  font-size: 13px;
-  color: var(--bs-text-muted);
-  margin: 4px 4px 0;
-  line-height: 1.5;
-}
-
 /* ===========================================
    HEADER ICON BUTTON
    =========================================== */
@@ -258,6 +224,43 @@
 }
 
 /* ===========================================
+   BOTTOM NAV - BUTTON MICRO-INTERACTIONS
+   =========================================== */
+
+/* Icon buttons - :active scale feedback */
+.mobile-icon-button {
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-icon-button:active {
+  transform: scale(0.9) !important;
+  transition: transform 0.08s ease;
+}
+
+/* Add Card button - satisfying spring press + idle glow */
+@keyframes navAddGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 119, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 8px 2px rgba(22, 119, 255, 0.2);
+  }
+}
+
+.mobile-add-card-btn .ant-btn {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: navAddGlow 2.5s ease-in-out infinite;
+  border-radius: 50%;
+}
+
+.mobile-add-card-btn .ant-btn:active {
+  transform: scale(0.92);
+  transition: transform 0.08s ease;
+  animation: none;
+}
+
+/* ===========================================
    ANIMATIONS
    =========================================== */
 @keyframes spin {
@@ -273,18 +276,82 @@
   animation: spin 1s linear infinite;
 }
 
-/* ===========================================
-   ENTRANCE ANIMATIONS
-   =========================================== */
-@keyframes settingsFadeIn {
+/* Notification badge entrance */
+@keyframes badgeBounceIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Notification badge pulse */
+@keyframes badgePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
+}
+
+.settings-header-badge {
+  animation:
+    badgeBounceIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    badgePulse 2s ease-in-out 0.6s infinite;
+}
+
+/* Settings sections staggered entrance */
+@keyframes settingsFadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.settings-section {
+  animation: settingsFadeSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.settings-section:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.settings-section:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.settings-section:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.settings-section:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+/* Toggle glow on activation */
+@keyframes toggleGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(22, 119, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(22, 119, 255, 0);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+.settings-toggle.active {
+  animation: toggleGlow 0.5s ease-out;
 }
 
 /* ===========================================
@@ -296,6 +363,33 @@
   .settings-action-button,
   .settings-section {
     animation: none;
+    transition: none;
+  }
+
+  .settings-header-badge {
+    animation: none;
+  }
+
+  .settings-toggle.active {
+    animation: none;
+  }
+
+  .mobile-icon-button {
+    transition: none;
+  }
+
+  .mobile-icon-button:active {
+    transform: none !important;
+    transition: none;
+  }
+
+  .mobile-add-card-btn .ant-btn {
+    animation: none;
+    transition: none;
+  }
+
+  .mobile-add-card-btn .ant-btn:active {
+    transform: none;
     transition: none;
   }
 }

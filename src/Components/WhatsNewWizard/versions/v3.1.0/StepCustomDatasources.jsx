@@ -18,8 +18,8 @@ export const StepCustomDatasources = () => (
       <h2 className="wnw-feature-title">Custom Datasources</h2>
     </div>
     <p className="wnw-feature-description">
-      Import and manage custom datasources from URLs or files. Keep your datasource updated with the automatic update
-      checks.
+      Load card data from external URLs or local files. Custom datasources check for updates automatically so your data
+      stays current.
     </p>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">

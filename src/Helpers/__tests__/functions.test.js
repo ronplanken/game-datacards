@@ -363,32 +363,32 @@ describe("external.helpers", () => {
 describe("listCategories.helpers", () => {
   describe("categorize40kUnits", () => {
     it("should categorize characters", () => {
-      const datacards = [{ card: { keywords: ["Character", "Infantry"] } }];
+      const datacards = [{ keywords: ["Character", "Infantry"] }];
       const result = categorize40kUnits(datacards);
       expect(result.characters).toHaveLength(1);
       expect(result.battleline).toHaveLength(0);
     });
 
     it("should categorize battleline", () => {
-      const datacards = [{ card: { keywords: ["Battleline", "Infantry"] } }];
+      const datacards = [{ keywords: ["Battleline", "Infantry"] }];
       const result = categorize40kUnits(datacards);
       expect(result.battleline).toHaveLength(1);
     });
 
     it("should categorize transports", () => {
-      const datacards = [{ card: { keywords: ["Dedicated Transport", "Vehicle"] } }];
+      const datacards = [{ keywords: ["Dedicated Transport", "Vehicle"] }];
       const result = categorize40kUnits(datacards);
       expect(result.transports).toHaveLength(1);
     });
 
     it("should categorize allied units", () => {
-      const datacards = [{ card: { keywords: ["Infantry"], _isAllied: true } }];
+      const datacards = [{ keywords: ["Infantry"], _isAllied: true }];
       const result = categorize40kUnits(datacards);
       expect(result.allied).toHaveLength(1);
     });
 
     it("should categorize other units", () => {
-      const datacards = [{ card: { keywords: ["Infantry"] } }];
+      const datacards = [{ keywords: ["Infantry"] }];
       const result = categorize40kUnits(datacards);
       expect(result.other).toHaveLength(1);
     });
@@ -401,19 +401,19 @@ describe("listCategories.helpers", () => {
 
   describe("categorizeAoSUnits", () => {
     it("should categorize heroes", () => {
-      const datacards = [{ card: { keywords: ["Hero", "Infantry"] } }];
+      const datacards = [{ keywords: ["Hero", "Infantry"] }];
       const result = categorizeAoSUnits(datacards);
       expect(result.heroes).toHaveLength(1);
     });
 
     it("should categorize monsters", () => {
-      const datacards = [{ card: { keywords: ["Monster"] } }];
+      const datacards = [{ keywords: ["Monster"] }];
       const result = categorizeAoSUnits(datacards);
       expect(result.monsters).toHaveLength(1);
     });
 
     it("should categorize cavalry", () => {
-      const datacards = [{ card: { keywords: ["Cavalry"] } }];
+      const datacards = [{ keywords: ["Cavalry"] }];
       const result = categorizeAoSUnits(datacards);
       expect(result.cavalry).toHaveLength(1);
     });
@@ -422,21 +422,21 @@ describe("listCategories.helpers", () => {
   describe("sortCards", () => {
     it("should sort warlord first", () => {
       const cards = [
-        { warlord: false, card: { name: "Unit A" } },
-        { warlord: true, card: { name: "Unit B" } },
+        { isWarlord: false, name: "Unit A" },
+        { isWarlord: true, name: "Unit B" },
       ];
       const result = sortCards(cards);
-      expect(result[0].warlord).toBe(true);
+      expect(result[0].isWarlord).toBe(true);
     });
 
     it("should sort alphabetically after warlord", () => {
       const cards = [
-        { warlord: false, card: { name: "Zebra" } },
-        { warlord: false, card: { name: "Alpha" } },
+        { isWarlord: false, name: "Zebra" },
+        { isWarlord: false, name: "Alpha" },
       ];
       const result = sortCards(cards);
-      expect(result[0].card.name).toBe("Alpha");
-      expect(result[1].card.name).toBe("Zebra");
+      expect(result[0].name).toBe("Alpha");
+      expect(result[1].name).toBe("Zebra");
     });
   });
 
@@ -450,7 +450,7 @@ describe("listCategories.helpers", () => {
 
     it("should include unit details", () => {
       const sortedCards = {
-        characters: [{ card: { name: "Captain" }, points: { cost: 100, models: 1 }, warlord: true }],
+        characters: [{ name: "Captain", unitSize: { cost: 100, models: 1 }, isWarlord: true }],
         battleline: [],
         transports: [],
         other: [],
@@ -466,9 +466,9 @@ describe("listCategories.helpers", () => {
       const sortedCards = {
         characters: [
           {
-            card: { name: "Captain" },
-            points: { cost: 100, models: 1 },
-            enhancement: { name: "iron resolve", cost: 20 },
+            name: "Captain",
+            unitSize: { cost: 100, models: 1 },
+            selectedEnhancement: { name: "iron resolve", cost: 20 },
           },
         ],
         battleline: [],
@@ -485,7 +485,7 @@ describe("listCategories.helpers", () => {
     it("should show model count for units with multiple models", () => {
       const sortedCards = {
         characters: [],
-        battleline: [{ card: { name: "Intercessors" }, points: { cost: 160, models: 10 } }],
+        battleline: [{ name: "Intercessors", unitSize: { cost: 160, models: 10 } }],
         transports: [],
         other: [],
         allied: [],
@@ -497,7 +497,7 @@ describe("listCategories.helpers", () => {
     it("should show ? for units with missing points", () => {
       const sortedCards = {
         characters: [],
-        battleline: [{ card: { name: "Unknown Unit" }, points: {} }],
+        battleline: [{ name: "Unknown Unit", unitSize: {} }],
         transports: [],
         other: [],
         allied: [],
@@ -510,8 +510,8 @@ describe("listCategories.helpers", () => {
     it("should position warlord marker after unit name", () => {
       const sortedCards = {
         characters: [
-          { card: { name: "Captain" }, points: { cost: 100, models: 1 }, warlord: true },
-          { card: { name: "Librarian" }, points: { cost: 80, models: 1 } },
+          { name: "Captain", unitSize: { cost: 100, models: 1 }, isWarlord: true },
+          { name: "Librarian", unitSize: { cost: 80, models: 1 } },
         ],
         battleline: [],
         transports: [],
@@ -546,7 +546,7 @@ describe("listCategories.helpers", () => {
 
     it("should use General marker instead of Warlord", () => {
       const sortedCards = {
-        heroes: [{ card: { name: "Lord-Celestant" }, points: { cost: 200 }, warlord: true }],
+        heroes: [{ name: "Lord-Celestant", unitSize: { cost: 200 }, isWarlord: true }],
         battleline: [],
         monsters: [],
         cavalry: [],
@@ -563,7 +563,7 @@ describe("listCategories.helpers", () => {
 
     it("should show ? for units with missing points", () => {
       const sortedCards = {
-        heroes: [{ card: { name: "Unknown Hero" }, points: {} }],
+        heroes: [{ name: "Unknown Hero", unitSize: {} }],
         battleline: [],
         monsters: [],
         cavalry: [],
@@ -580,8 +580,8 @@ describe("listCategories.helpers", () => {
     it("should position general first in heroes section", () => {
       const sortedCards = {
         heroes: [
-          { card: { name: "Battlemage" }, points: { cost: 100 } },
-          { card: { name: "Lord-Celestant" }, points: { cost: 200 }, warlord: true },
+          { name: "Battlemage", unitSize: { cost: 100 } },
+          { name: "Lord-Celestant", unitSize: { cost: 200 }, isWarlord: true },
         ],
         battleline: [],
         monsters: [],

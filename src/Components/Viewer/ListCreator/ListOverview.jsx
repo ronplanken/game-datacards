@@ -4,7 +4,7 @@ import { message } from "../../Toast/message";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
-import { useCloudCategories } from "../../../Premium";
+import { useCloudCategories, ListSyncButton } from "../../../Premium";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
 import {
@@ -18,6 +18,7 @@ import {
 } from "../../../Helpers/listCategories.helpers";
 import { BottomSheet } from "../Mobile/BottomSheet";
 import { ListSelector } from "./ListSelector";
+import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter } from "../MobileImporter";
 import "./ListOverview.css";
 
@@ -45,43 +46,61 @@ const GameSystemBadge = ({ system }) => {
   );
 };
 
-// Header with list selector and copy button
-const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard, isCloudCategory, gameSystem }) => (
+// Header with list selector, sync button, and copy button
+const ListHeader = ({
+  listName,
+  onListSelectorClick,
+  onCopyToClipboard,
+  isCloudCategory,
+  isSynced,
+  gameSystem,
+  syncButton,
+}) => (
   <div className="list-overview-list-header">
     <button className="list-overview-name-selector" onClick={onListSelectorClick} type="button">
-      {isCloudCategory && <Cloud size={16} className="list-overview-cloud-icon" />}
+      {(isCloudCategory || isSynced) && <Cloud size={16} className="list-overview-cloud-icon" />}
       <span className="list-overview-name-text">{listName}</span>
       {isCloudCategory && <GameSystemBadge system={gameSystem} />}
       <ChevronDown size={16} />
     </button>
-    <button className="list-overview-copy-button" onClick={onCopyToClipboard} type="button">
-      <FileText size={18} />
-    </button>
+    <div className="list-overview-header-actions">
+      {syncButton}
+      <button className="list-overview-copy-button" onClick={onCopyToClipboard} type="button">
+        <FileText size={18} />
+      </button>
+    </div>
   </div>
 );
 
 // Single list item component (local lists - with delete)
-const ListItem = ({ item, onNavigate, onDelete, isAoS }) => {
+const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS }) => {
+  const isUnconfigured = !item.unitSize;
   const totalCost = isAoS
-    ? Number(item.points?.cost) || 0
-    : Number(item.points?.cost) + (Number(item.enhancement?.cost) || 0);
+    ? Number(item.unitSize?.cost) || 0
+    : (Number(item.unitSize?.cost) || 0) + (Number(item.selectedEnhancement?.cost) || 0);
 
   return (
     <div className="list-overview-item">
       <div className="list-overview-item-main" onClick={() => onNavigate(item)}>
         <div className="list-overview-item-name">
-          {item.warlord && <Crown size={14} fill="currentColor" />}
-          <span>{item.card.name}</span>
+          {item.isWarlord && <Crown size={14} fill="currentColor" />}
+          <span>{item.name}</span>
         </div>
-        {!isAoS && item.enhancement && (
-          <div className="list-overview-item-enhancement">{capitalizeSentence(item.enhancement.name)}</div>
+        {!isAoS && item.selectedEnhancement && (
+          <div className="list-overview-item-enhancement">{capitalizeSentence(item.selectedEnhancement.name)}</div>
         )}
       </div>
-      <div className="list-overview-item-points">
-        {!isAoS && item.points?.models > 1 ? `${item.points.models}x ` : ""}
-        {totalCost} pts
-      </div>
-      <button className="list-overview-item-delete" onClick={() => onDelete(item.id)}>
+      {isUnconfigured ? (
+        <button className="list-overview-item-configure" onClick={() => onEdit(item)} type="button">
+          Set
+        </button>
+      ) : (
+        <div className="list-overview-item-points">
+          {!isAoS && item.unitSize?.models > 1 ? `${item.unitSize.models}x ` : ""}
+          {totalCost} pts
+        </div>
+      )}
+      <button className="list-overview-item-delete" onClick={() => onDelete(item.uuid)}>
         <Trash2 size={18} />
       </button>
     </div>
@@ -101,14 +120,21 @@ const CloudListItem = ({ card, onNavigate }) => (
 );
 
 // Section renderer component
-const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, isAoS }) => {
+const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, isAoS }) => {
   if (!cards || cards.length === 0) return null;
 
   return (
     <>
       <div className="list-overview-section">{label}</div>
       {sortCards(cards).map((item) => (
-        <ListItem key={item.id} item={item} onNavigate={onNavigate} onDelete={onDelete} isAoS={isAoS} />
+        <ListItem
+          key={item.uuid}
+          item={item}
+          onNavigate={onNavigate}
+          onDelete={onDelete}
+          onEdit={onEdit}
+          isAoS={isAoS}
+        />
       ))}
     </>
   );
@@ -122,6 +148,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const navigate = useNavigate();
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
   const [isImporterVisible, setIsImporterVisible] = useState(false);
+  const [editingCard, setEditingCard] = useState(null);
 
   // Derive selected cloud category from the realtime-updated list
   const selectedCloudCategory = selectedCloudCategoryId
@@ -136,8 +163,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const is40k = settings.selectedDataSource === "40k-10e";
 
   // Get current list data (local or cloud)
-  const currentListName = isCloudCategory ? selectedCloudCategory.name : lists[selectedList].name;
-  const currentCards = isCloudCategory ? selectedCloudCategory.cards : lists[selectedList].datacards;
+  const currentList = lists[selectedList];
+  const currentListName = isCloudCategory ? selectedCloudCategory.name : currentList?.name || "List";
+  const currentCards = isCloudCategory ? selectedCloudCategory.cards : currentList?.cards || [];
 
   // Get appropriate sections and categorization (only for local lists)
   const sections = isAoS ? SECTIONS_AOS : SECTIONS_40K;
@@ -152,8 +180,8 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   // Navigate to a card (handles both local list items and cloud category cards)
   const handleNavigate = (item) => {
-    // For cloud categories, item is the card itself
-    const card = isCloudCategory ? item : item.card;
+    // Both local list items and cloud category cards are flat — item IS the card
+    const card = item;
     const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
     if (!cardFaction) {
@@ -176,7 +204,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
     navigate(
       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`,
       {
-        state: isCloudCategory ? { cloudCard: card } : { listCard: card },
+        state: { listCard: card },
       },
     );
     handleClose();
@@ -187,11 +215,11 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       // For cloud categories, just list the card names
       const cardNames = currentCards.map((card) => card.name).join("\n");
       navigator.clipboard.writeText(cardNames);
-      message.success("Card names copied to clipboard.");
+      message.success("Card names copied to clipboard");
     } else {
       const listText = isAoS ? formatAoSListText(sortedCards, sections) : format40kListText(sortedCards, sections);
       navigator.clipboard.writeText(listText);
-      message.success("List copied to clipboard.");
+      message.success("List copied to clipboard");
     }
   };
 
@@ -199,9 +227,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const totalPoints = isCloudCategory
     ? 0
     : currentCards.reduce((acc, val) => {
-        let cost = acc + Number(val.points?.cost || 0);
-        if (!isAoS && val.enhancement) {
-          cost = cost + Number(val.enhancement.cost || 0);
+        let cost = acc + Number(val.unitSize?.cost || 0);
+        if (!isAoS && val.selectedEnhancement) {
+          cost = cost + Number(val.selectedEnhancement.cost || 0);
         }
         return cost;
       }, 0);
@@ -225,7 +253,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
             onListSelectorClick={() => setIsListSelectorVisible(true)}
             onCopyToClipboard={handleCopyToClipboard}
             isCloudCategory={isCloudCategory}
+            isSynced={!isCloudCategory && !!currentList?.syncEnabled}
             gameSystem={isCloudCategory ? selectedCloudCategory.gameSystem : null}
+            syncButton={!isCloudCategory && currentList ? <ListSyncButton category={currentList} /> : null}
           />
         </div>
 
@@ -233,7 +263,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
           <div className="list-overview-empty">
             {isCloudCategory ? <Cloud size={48} /> : <List size={48} />}
             <span className="list-overview-empty-text">
-              {isCloudCategory ? "This category has no cards" : "Your list is currently empty"}
+              {isCloudCategory ? "This category has no cards" : "Your list is empty"}
             </span>
           </div>
         ) : isCloudCategory ? (
@@ -257,6 +287,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 cards={sortedCards[section.key]}
                 onNavigate={handleNavigate}
                 onDelete={removeDatacard}
+                onEdit={setEditingCard}
                 isAoS={isAoS}
               />
             ))}
@@ -272,6 +303,14 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
       <MobileGwImporter isOpen={isImporterVisible} onClose={() => setIsImporterVisible(false)} />
+
+      <ListEditCard
+        isVisible={!!editingCard}
+        setIsVisible={(v) => {
+          if (!v) setEditingCard(null);
+        }}
+        card={editingCard}
+      />
     </>
   );
 };

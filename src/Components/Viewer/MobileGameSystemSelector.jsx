@@ -36,7 +36,7 @@ export const MobileGameSystemSelector = ({ onSelect }) => {
 
         <footer className="gss-footer">
           <p>Select a game system to continue.</p>
-          <p>Change anytime via settings.</p>
+          <p>Switch anytime in settings.</p>
         </footer>
       </div>
     </div>

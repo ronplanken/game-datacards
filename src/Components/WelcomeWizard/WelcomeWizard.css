@@ -89,7 +89,6 @@
   border: 1px solid var(--wz-border);
 }
 
-
 .wz-overlay--exiting .wz-modal {
   animation: wzScaleOut 0.2s ease-out forwards;
 }

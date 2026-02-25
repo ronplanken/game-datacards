@@ -1,18 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCardStorage } from "../../Hooks/useCardStorage";
+import { migrateListsToCategories } from "../../Helpers/listMigration.helpers";
 
 const MobileListContext = React.createContext(undefined);
-
-const defaultSettings = {
-  lists: [],
-  selectedList: -1,
-  setSelectedList: () => {},
-  addDatacard: () => {},
-  removeDatacard: () => {},
-  selectedCloudCategoryId: null,
-  selectCloudCategory: () => {},
-};
 
 export function useMobileList() {
   const context = React.useContext(MobileListContext);
@@ -25,34 +17,80 @@ export function useMobileList() {
 export const MobileListProvider = (props) => {
   const { settings } = useSettingsStorage();
   const dataSource = settings.selectedDataSource || "basic";
+  const { cardStorage, importCategory, updateCategory, removeCategory, renameCategory, markCategoryPending } =
+    useCardStorage();
 
-  // Store all lists per datasource
-  const [allLists, setAllLists] = React.useState(() => {
-    try {
-      const stored = localStorage.getItem("lists");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Handle migration from old format (array) to new format (object)
-        if (Array.isArray(parsed)) {
-          // Migrate old array format to 40k-10e (the original datasource)
-          return { "40k-10e": parsed };
-        } else if (typeof parsed === "object" && parsed !== null) {
-          return parsed;
-        }
+  const migrationDone = useRef(false);
+
+  // One-time migration from old localStorage("lists") format
+  useEffect(() => {
+    if (migrationDone.current) return;
+    if (localStorage.getItem("lists_migrated")) {
+      migrationDone.current = true;
+      return;
+    }
+
+    const oldData = localStorage.getItem("lists");
+    if (oldData) {
+      try {
+        const parsed = JSON.parse(oldData);
+        const categories = migrateListsToCategories(parsed);
+        categories.forEach((cat) => importCategory(cat));
+      } catch {
+        // Malformed data — skip migration
       }
-      return {};
-    } catch (e) {
-      console.error("An error occurred while trying to load your lists.");
+    }
+
+    localStorage.setItem("lists_migrated", "true");
+    localStorage.removeItem("lists");
+    migrationDone.current = true;
+  }, []);
+
+  // Derive lists from cardStorage (categories with type "list" for current datasource)
+  // Falls back to first card's source if dataSource is missing on the category
+  const lists = useMemo(() => {
+    if (!cardStorage?.categories) return [];
+    return cardStorage.categories.filter(
+      (cat) => cat.type === "list" && (cat.dataSource || cat.cards?.[0]?.source) === dataSource,
+    );
+  }, [cardStorage?.categories, dataSource]);
+
+  // Create default list if none exist for current datasource
+  const defaultCreated = useRef({});
+  useEffect(() => {
+    if (!migrationDone.current) return;
+    if (lists.length === 0 && !defaultCreated.current[dataSource]) {
+      defaultCreated.current[dataSource] = true;
+      importCategory({
+        uuid: uuidv4(),
+        name: "Default",
+        type: "list",
+        dataSource,
+        cards: [],
+      });
+    }
+  }, [lists.length, dataSource, importCategory]);
+
+  // Selected list index per datasource
+  const [selectedListPerDS, setSelectedListPerDS] = React.useState(() => {
+    try {
+      const stored = localStorage.getItem("selectedListPerDS");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
       return {};
     }
   });
 
-  // Selected list index per datasource
-  const [selectedListPerDS, setSelectedListPerDS] = React.useState({});
+  // Persist selected list index to localStorage
+  useEffect(() => {
+    if (Object.keys(selectedListPerDS).length > 0) {
+      localStorage.setItem("selectedListPerDS", JSON.stringify(selectedListPerDS));
+    } else {
+      localStorage.removeItem("selectedListPerDS");
+    }
+  }, [selectedListPerDS]);
 
-  // Selected cloud category UUID (when viewing a cloud category instead of local list)
-  // We store only the UUID so that realtime updates from useCloudCategories are reflected
-  // Persisted to localStorage so selection survives page refresh
+  // Selected cloud category UUID (for browsing desktop categories on mobile)
   const [selectedCloudCategoryId, setSelectedCloudCategoryId] = React.useState(() => {
     try {
       const stored = localStorage.getItem("selectedCloudCategoryId");
@@ -61,11 +99,6 @@ export const MobileListProvider = (props) => {
       return null;
     }
   });
-
-  // Persist lists to localStorage
-  useEffect(() => {
-    localStorage.setItem("lists", JSON.stringify(allLists));
-  }, [allLists]);
 
   // Persist selected cloud category to localStorage
   useEffect(() => {
@@ -76,12 +109,9 @@ export const MobileListProvider = (props) => {
     }
   }, [selectedCloudCategoryId]);
 
-  // Get lists for current datasource
-  const storedLists = allLists[dataSource] || [{ name: "Default", datacards: [] }];
   const selectedList = selectedListPerDS[dataSource] ?? 0;
 
   const setSelectedList = (index) => {
-    // Clear cloud category when selecting a local list
     setSelectedCloudCategoryId(null);
     setSelectedListPerDS((prev) => ({
       ...prev,
@@ -89,129 +119,107 @@ export const MobileListProvider = (props) => {
     }));
   };
 
-  // Select a cloud category by UUID
   const selectCloudCategory = (categoryUuid) => {
     setSelectedCloudCategoryId(categoryUuid);
   };
 
-  // Clear cloud category selection
   const clearCloudCategory = () => {
     setSelectedCloudCategoryId(null);
   };
 
-  const setStoredLists = (updater) => {
-    setAllLists((prev) => {
-      const currentLists = prev[dataSource] || [{ name: "Default", datacards: [] }];
-      const newLists = typeof updater === "function" ? updater(currentLists) : updater;
-      return {
-        ...prev,
-        [dataSource]: newLists,
-      };
-    });
-  };
-
   const addDatacard = (datacard, points, enhancement, isWarlord) => {
-    if (!datacard) {
-      return;
-    }
-    const newDatacard = { ...datacard };
-    setStoredLists((lists) => {
-      const newLists = [...lists];
-      // Ensure default list exists
-      if (!newLists[selectedList]) {
-        newLists[0] = { name: "Default", datacards: [] };
-      }
-      newLists[selectedList].datacards.push({
-        card: newDatacard,
-        points: points,
-        enhancement,
-        warlord: isWarlord,
-        id: uuidv4(),
-      });
-      return newLists;
-    });
+    if (!datacard) return;
+    const category = lists[selectedList];
+    if (!category) return;
+
+    const updatedCards = [
+      ...category.cards,
+      {
+        ...datacard,
+        unitSize: points,
+        selectedEnhancement: enhancement,
+        isWarlord,
+        uuid: uuidv4(),
+        isCustom: true,
+      },
+    ];
+    updateCategory({ ...category, cards: updatedCards }, category.uuid);
+    markCategoryPending(category.uuid);
   };
 
-  const removeDatacard = (id) => {
-    if (!id) {
-      return;
-    }
-    setStoredLists((lists) => {
-      const newLists = [...lists];
-      const cardIndex = newLists[selectedList].datacards.findIndex((val) => val.id === id);
-      newLists[selectedList].datacards.splice(cardIndex, 1);
-      return newLists;
-    });
+  const removeDatacard = (uuid) => {
+    if (!uuid) return;
+    const category = lists[selectedList];
+    if (!category) return;
+
+    const updatedCards = category.cards.filter((val) => val.uuid !== uuid);
+    updateCategory({ ...category, cards: updatedCards }, category.uuid);
+    markCategoryPending(category.uuid);
   };
 
-  // Create a new list with the given name
+  const updateDatacard = (uuid, unitSize, enhancement, isWarlord) => {
+    if (!uuid) return;
+    const category = lists[selectedList];
+    if (!category) return;
+    const updatedCards = category.cards.map((card) =>
+      card.uuid !== uuid ? card : { ...card, unitSize, selectedEnhancement: enhancement, isWarlord },
+    );
+    updateCategory({ ...category, cards: updatedCards }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
   const createList = (name) => {
     const listName = name?.trim() || "New List";
-    setStoredLists((lists) => {
-      const newLists = [...lists, { name: listName, datacards: [] }];
-      return newLists;
+    importCategory({
+      uuid: uuidv4(),
+      name: listName,
+      type: "list",
+      dataSource,
+      cards: [],
     });
-    // Select the newly created list
+    // Select the newly created list (it will be appended at the end)
     setSelectedListPerDS((prev) => ({
       ...prev,
-      [dataSource]: storedLists.length, // Index of the new list
+      [dataSource]: lists.length,
     }));
   };
 
-  // Create a new list with pre-populated cards (atomic operation)
   const createListWithCards = (name, cards) => {
     const listName = name?.trim() || "New List";
-
-    setStoredLists((lists) => {
-      const newList = {
-        name: listName,
-        datacards: cards.map((cardData) => ({
-          card: cardData.card,
-          points: cardData.points,
-          enhancement: cardData.enhancement,
-          warlord: cardData.isWarlord,
-          id: uuidv4(),
-        })),
-      };
-      return [...lists, newList];
+    importCategory({
+      uuid: uuidv4(),
+      name: listName,
+      type: "list",
+      dataSource,
+      cards: cards.map((cardData) => ({
+        ...cardData.card,
+        unitSize: cardData.points,
+        selectedEnhancement: cardData.enhancement,
+        isWarlord: cardData.isWarlord,
+        uuid: uuidv4(),
+        isCustom: true,
+      })),
     });
-
     // Select the newly created list
     setSelectedListPerDS((prev) => ({
       ...prev,
-      [dataSource]: storedLists.length, // Index of the new list
+      [dataSource]: lists.length,
     }));
   };
 
-  // Rename an existing list
   const renameList = (index, newName) => {
-    if (index < 0 || !newName?.trim()) {
-      return;
-    }
-    setStoredLists((lists) => {
-      const newLists = [...lists];
-      if (newLists[index]) {
-        newLists[index] = { ...newLists[index], name: newName.trim() };
-      }
-      return newLists;
-    });
+    if (index < 0 || !newName?.trim()) return;
+    const category = lists[index];
+    if (!category) return;
+    renameCategory(category.uuid, newName.trim());
   };
 
-  // Delete a list (prevents deleting the last list)
   const deleteList = (index) => {
-    if (storedLists.length <= 1) {
-      // Can't delete the last list
-      return false;
-    }
-    if (index < 0 || index >= storedLists.length) {
-      return false;
-    }
+    if (lists.length <= 1) return false;
+    if (index < 0 || index >= lists.length) return false;
 
-    setStoredLists((lists) => {
-      const newLists = [...lists];
-      newLists.splice(index, 1);
-      return newLists;
-    });
+    const category = lists[index];
+    removeCategory(category.uuid);
 
     // Adjust selected list index if needed
     if (selectedList >= index) {
@@ -224,25 +232,25 @@ export const MobileListProvider = (props) => {
     return true;
   };
 
-  // Calculate total points for a list
   const getListPoints = (listIndex) => {
-    const list = storedLists[listIndex];
-    if (!list?.datacards) return 0;
-    return list.datacards.reduce((acc, val) => {
-      let cost = acc + Number(val.points?.cost || 0);
-      if (val.enhancement) {
-        cost = cost + Number(val.enhancement.cost || 0);
+    const list = lists[listIndex];
+    if (!list?.cards) return 0;
+    return list.cards.reduce((acc, val) => {
+      let cost = acc + Number(val.unitSize?.cost || 0);
+      if (val.selectedEnhancement) {
+        cost = cost + Number(val.selectedEnhancement.cost || 0);
       }
       return cost;
     }, 0);
   };
 
   const context = {
-    lists: storedLists,
+    lists,
     selectedList,
     setSelectedList,
     addDatacard,
     removeDatacard,
+    updateDatacard,
     createList,
     createListWithCards,
     renameList,

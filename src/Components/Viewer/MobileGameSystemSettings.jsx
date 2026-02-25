@@ -49,7 +49,7 @@ export const MobileGameSystemSettings = ({ gameSystem, onContinue }) => {
         <div className="gss-settings-options">
           <div className="gss-settings-option">
             <div className="gss-settings-option-info">
-              <span className="gss-settings-option-label">Use fancy fonts</span>
+              <span className="gss-settings-option-label">Decorative fonts</span>
               <span className="gss-settings-option-description">
                 Themed serif fonts for an authentic look. Disable for better readability.
               </span>

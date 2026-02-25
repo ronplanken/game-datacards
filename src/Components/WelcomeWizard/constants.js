@@ -72,7 +72,7 @@ export const FEATURE_HIGHLIGHTS = [
   {
     id: "systems",
     title: "6 Game Systems",
-    description: "Grimdark, Fantasy, Skirmish, and more",
+    description: "40K, Age of Sigmar, Necromunda, and more",
     icon: "Gamepad2",
   },
   {
@@ -90,7 +90,7 @@ export const FEATURE_HIGHLIGHTS = [
   {
     id: "community",
     title: "Community Content",
-    description: "Browse and share custom datasources",
+    description: "Browse and share community-made card sets",
     icon: "Users",
   },
 ];

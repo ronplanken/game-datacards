@@ -17,9 +17,7 @@ export const StepPrintingFixes = () => (
       </div>
       <h2 className="wnw-feature-title">Various Improvements</h2>
     </div>
-    <p className="wnw-feature-description">
-      We&apos;ve added new features and fixed several issues to improve your experience.
-    </p>
+    <p className="wnw-feature-description">New editing tools and bug fixes for printing and list organization.</p>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronRight, Trash2, FolderOpen, Folder, Plus, Package, Cloud } from "lucide-react";
+import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus, Package, Cloud } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import {
@@ -17,7 +17,14 @@ import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import "./TreeView.css";
 
-export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children, isSubCategory = false }) {
+export function TreeCategory({
+  category,
+  selectedTreeIndex,
+  setSelectedTreeIndex,
+  children,
+  isSubCategory = false,
+  dragHandleProps = null,
+}) {
   const {
     cardStorage,
     setActiveCard,
@@ -44,13 +51,13 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
   const handleRename = (newName) => {
     renameCategory(category.uuid, newName);
     setIsRenameModalOpen(false);
-    message.success("Category has been renamed.");
+    message.success("Category renamed.");
   };
 
   const handleAddSubCategory = (name) => {
     addSubCategory(name, category.uuid);
     setIsSubCategoryModalOpen(false);
-    message.success("Sub-category has been created.");
+    message.success("Sub-category created.");
   };
 
   const pointsTotal = category.cards?.reduce((total, card) => {
@@ -73,18 +80,18 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     const subCategories = getSubCategories(category.uuid);
     const hasSubCategories = subCategories.length > 0;
     const deleteMessage = hasSubCategories
-      ? "This action cannot be undone and will delete all cards and sub-categories in this category."
-      : "This action cannot be undone and will delete all cards in the category.";
+      ? "All cards and sub-categories will be permanently deleted."
+      : "All cards in this category will be permanently deleted.";
 
     deleteConfirmDialog({
-      title: "Are you sure you want to delete this category?",
+      title: `Delete '${category.name}'?`,
       content: deleteMessage,
       onConfirm: async () => {
         // If synced, also delete from cloud
         if (category.syncEnabled) {
           await deleteFromCloud(category.uuid);
         }
-        message.success("Category has been removed.");
+        message.success("Category deleted.");
         removeCategory(category.uuid);
       },
     });
@@ -95,8 +102,7 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       // Ask if they want to delete from cloud too
       deleteConfirmDialog({
         title: "Disable cloud sync?",
-        content:
-          "Do you want to also delete this category from the cloud? Choose 'Keep in cloud' to stop syncing but keep the cloud backup.",
+        content: "Also delete from the cloud, or keep the cloud backup?",
         confirmText: "Delete from cloud",
         cancelText: "Keep in cloud",
         onConfirm: () => disableSync(category.uuid, true),
@@ -236,6 +242,15 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
   return (
     <>
       <div className={categoryClasses} onClick={handleClick} onContextMenu={handleContextMenu}>
+        {dragHandleProps && (
+          <span
+            className="tree-drag-handle"
+            {...dragHandleProps}
+            aria-label="Drag to reorder"
+            onClick={(e) => e.stopPropagation()}>
+            <GripVertical size={12} />
+          </span>
+        )}
         <div className={`tree-category-toggle ${!category.closed ? "expanded" : ""}`} onClick={handleToggle}>
           <ChevronRight size={10} />
         </div>

@@ -88,8 +88,8 @@
    =========================================== */
 .list-overview-list-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
@@ -102,11 +102,13 @@
   gap: 6px;
   padding: 8px 12px;
   background: var(--bs-surface);
-  border: 1px solid var(--bs-border-light);
+  border: 1px solid var(--bs-border);
   border-radius: 8px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
+  flex: 1;
+  min-width: 0;
   transition:
     background 0.2s ease,
     border-color 0.2s ease;
@@ -131,6 +133,15 @@
 .list-overview-name-selector svg {
   color: var(--bs-text-muted);
   flex-shrink: 0;
+}
+
+/* ===========================================
+   HEADER ACTIONS (Sync + Copy buttons)
+   =========================================== */
+.list-overview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* ===========================================
@@ -207,7 +218,6 @@
 .list-overview-items {
   display: flex;
   flex-direction: column;
-  padding-bottom: 72px;
 }
 
 .list-overview-item {
@@ -267,6 +277,27 @@
   flex-shrink: 0;
 }
 
+/* Configure button for unconfigured cards */
+.list-overview-item-configure {
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--bs-accent);
+  background: var(--bs-accent-light, #e6f4ff);
+  color: var(--bs-accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.list-overview-item-configure:active {
+  background: var(--bs-accent);
+  color: #fff;
+}
+
 .list-overview-item-delete {
   width: 36px;
   height: 36px;
@@ -296,14 +327,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-  margin: 0;
+  margin: 0 -20px;
   background: var(--bs-surface);
   border-top: 1px solid var(--bs-border); /* High contrast border */
   font-weight: 600;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: sticky;
+  bottom: -24px;
   z-index: 10;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08); /* Slightly clearer shadow */
 }
@@ -365,7 +394,6 @@
 
 /* Cloud category items container */
 .list-overview-items--cloud {
-  padding-bottom: 56px;
 }
 
 /* Cloud item styling (read-only, no delete) */
@@ -389,13 +417,11 @@
   justify-content: center;
   align-items: center;
   padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-  margin: 0;
+  margin: 0 -20px;
   background: var(--bs-surface);
   border-top: 1px solid var(--bs-border);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: sticky;
+  bottom: -24px;
   z-index: 10;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
 }
@@ -404,4 +430,93 @@
   font-size: 14px;
   color: var(--bs-text-secondary);
   font-weight: 500;
+}
+
+/* ===========================================
+   ENTRANCE ANIMATIONS
+   =========================================== */
+@keyframes listItemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes listFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes listEmptyFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* List items slide in from right */
+.list-overview-item {
+  animation: listItemSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.list-overview-item:nth-child(1) {
+  animation-delay: 0.03s;
+}
+.list-overview-item:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.list-overview-item:nth-child(3) {
+  animation-delay: 0.09s;
+}
+.list-overview-item:nth-child(4) {
+  animation-delay: 0.12s;
+}
+.list-overview-item:nth-child(5) {
+  animation-delay: 0.15s;
+}
+.list-overview-item:nth-child(n + 6) {
+  animation-delay: 0.18s;
+}
+
+/* Section headers fade in */
+.list-overview-section {
+  animation: listFadeSlideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Empty state icon float */
+.list-overview-empty svg {
+  animation: listEmptyFloat 3s ease-in-out infinite;
+}
+
+/* Empty state text fade in */
+.list-overview-empty-text {
+  animation: listFadeSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .list-overview-item,
+  .list-overview-section,
+  .list-overview-empty-text {
+    animation: none;
+  }
+
+  .list-overview-empty svg {
+    animation: none;
+  }
 }

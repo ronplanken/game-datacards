@@ -51,7 +51,7 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
       setCheckingForUpdate(false);
       handleClose();
       message.success({
-        content: "The datasource has been successfully updated.",
+        content: "Game data updated",
         style: { marginTop: "10vh" },
       });
     });
@@ -103,7 +103,7 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
               <span className="settings-game-system-current">{getGameSystemName()}</span>
               <button className="settings-action-button secondary" onClick={handleChangeGameSystem}>
                 <Repeat size={18} />
-                <span>Change</span>
+                <span>Switch</span>
               </button>
             </div>
           </div>
@@ -114,7 +114,7 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
               <h4 className="settings-section-title">Display</h4>
               <div className="settings-section-content">
                 <SettingsRow
-                  label="Use fancy fonts"
+                  label="Decorative fonts"
                   checked={settings.useFancyFonts !== false}
                   onChange={(value) => updateSettings({ ...settings, useFancyFonts: value })}
                 />
@@ -160,13 +160,13 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
 
           {/* Actions Section */}
           <div className="settings-section">
-            <h4 className="settings-section-title">Data</h4>
+            <h4 className="settings-section-title">Updates</h4>
             <button
               className={`settings-action-button ${checkingForUpdate ? "loading" : ""}`}
               onClick={handleUpdateDatasources}
               disabled={checkingForUpdate}>
               {checkingForUpdate ? <Loader2 size={18} className="animate-spin" /> : <Database size={18} />}
-              <span>{checkingForUpdate ? "Updating..." : "Update datasources"}</span>
+              <span>{checkingForUpdate ? "Checking..." : "Check for updates"}</span>
             </button>
           </div>
         </div>

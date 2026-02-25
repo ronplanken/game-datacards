@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ChevronLeft, AlertCircle, Check, X, AlertTriangle, Star, Sparkles, CheckCircle } from "lucide-react";
 import { message } from "../../Toast/message";
 import Fuse from "fuse.js";
-import { BottomSheet } from "../Mobile/BottomSheet";
+import { MobileModal } from "../Mobile/MobileModal";
 import { useMobileList } from "../useMobileList";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import {
@@ -325,12 +325,12 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={handleClose} title={getTitle()} maxHeight="90vh">
+    <MobileModal isOpen={isOpen} onClose={handleClose} title={getTitle()}>
       <div className="mgw-container">
         {/* Step 1: Paste */}
         {step === 1 && (
           <div className="mgw-step mgw-step-paste">
-            <p className="mgw-description">Paste your army list from the GW Warhammer 40k app</p>
+            <p className="mgw-description">Paste your army list from the official Warhammer 40,000 app</p>
 
             <textarea
               className="mgw-textarea"
@@ -349,7 +349,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
             )}
 
             <button className="mgw-primary-btn" onClick={handleParse} disabled={!gwAppText.trim()}>
-              Parse List
+              Continue
             </button>
           </div>
         )}
@@ -452,6 +452,6 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
           </div>
         )}
       </div>
-    </BottomSheet>
+    </MobileModal>
   );
 };

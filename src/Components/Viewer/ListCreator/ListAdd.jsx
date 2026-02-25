@@ -6,7 +6,7 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { useMobileList } from "../useMobileList";
-import { BottomSheet } from "../Mobile/BottomSheet";
+import { MobileModal } from "../Mobile/MobileModal";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
 import "./ListAdd.css";
 
@@ -38,9 +38,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
-  const warlordAlreadyAdded = lists[selectedList]?.datacards?.find((card) => card.warlord);
-  const epicHeroAlreadyAdded = lists[selectedList]?.datacards?.find((card) => {
-    return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.card.id;
+  const warlordAlreadyAdded = lists[selectedList]?.cards?.find((card) => card.isWarlord);
+  const epicHeroAlreadyAdded = lists[selectedList]?.cards?.find((card) => {
+    return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.id;
   });
 
   const [selectedDetachment, setSelectedDetachment] = useState();
@@ -87,7 +87,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const handleAddToList = () => {
     addDatacard(activeCard, selectedUnitSize, selectedEnhancement, isWarlord);
     handleClose();
-    message.success(`${activeCard.name} added to list.`);
+    message.success(`${activeCard.name} added to list`);
   };
 
   const selectEnhancement = (enhancement) => {
@@ -100,7 +100,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   // Check if enhancement is already used
   const isEnhancementDisabled = (enhancement) => {
-    return lists[selectedList]?.datacards?.some((card) => card?.enhancement?.name === enhancement?.name);
+    return lists[selectedList]?.cards?.some((card) => card?.selectedEnhancement?.name === enhancement?.name);
   };
 
   // Filter enhancements for current detachment and card
@@ -137,7 +137,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   return (
     <>
-      <BottomSheet isOpen={isVisible} onClose={handleClose} title={`Add ${activeCard.name}`}>
+      <MobileModal isOpen={isVisible} onClose={handleClose} title={`Add ${activeCard.name}`}>
         <div className="list-add-content">
           {/* Unit Size Section */}
           <div className="list-add-section">
@@ -223,7 +223,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
             Add to List
           </button>
         </div>
-      </BottomSheet>
+      </MobileModal>
 
       {/* Detachment Picker Sub-Sheet */}
       <DetachmentPicker

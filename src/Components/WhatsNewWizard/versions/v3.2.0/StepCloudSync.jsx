@@ -19,7 +19,7 @@ export const StepCloudSync = () => (
       <h2 className="wnw-feature-title">Cloud Sync</h2>
     </div>
     <p className="wnw-feature-description">
-      Keep your datacards backed up and accessible from any device with cloud sync.
+      Back up your cards and access them from any device. Syncing happens automatically as you edit.
     </p>
     <div className="wnw-mock-preview">
       <MockTreeRow />

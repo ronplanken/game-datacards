@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, Pencil, Trash2, Plus, X, Cloud, Loader2 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
 import { useCloudCategories, useAuth, usePremiumFeatures } from "../../../Premium";
-import { BottomSheet } from "../Mobile/BottomSheet";
+import { MobileModal } from "../Mobile/MobileModal";
 import "./ListSelector.css";
 
 // Inline edit input component
@@ -49,6 +49,11 @@ const ListRow = ({ list, index, isSelected, points, onSelect, onRename, onDelete
     <div className={`list-selector-row ${isSelected ? "selected" : ""}`}>
       <button className="list-selector-row-main" onClick={() => onSelect(index)} type="button">
         <div className="list-selector-row-check">{isSelected && <Check size={16} />}</div>
+        {list.syncEnabled && (
+          <div className="list-selector-row-cloud-icon">
+            <Cloud size={14} />
+          </div>
+        )}
         {isEditing ? (
           <EditInput value={list.name} onSave={handleSave} onCancel={() => setIsEditing(false)} />
         ) : (
@@ -103,7 +108,7 @@ const CreateListRow = ({ onCreate }) => {
           <input
             type="text"
             className="list-selector-create-input"
-            placeholder="List name..."
+            placeholder="List name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             autoFocus
@@ -128,7 +133,7 @@ const CreateListRow = ({ onCreate }) => {
   return (
     <button className="list-selector-create" onClick={() => setIsCreating(true)} type="button">
       <Plus size={18} />
-      <span>Create New List</span>
+      <span>Create list</span>
     </button>
   );
 };
@@ -182,6 +187,10 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
   const { categories: cloudCategories, isLoading: categoriesLoading } = useCloudCategories();
   const { hasSync } = usePremiumFeatures();
 
+  // Filter out cloud categories that already exist as local lists (by UUID)
+  const localListUuids = new Set(lists.map((l) => l.uuid));
+  const displayedCloudCategories = cloudCategories.filter((c) => !localListUuids.has(c.uuid));
+
   const handleClose = () => setIsVisible(false);
 
   // Select a local list
@@ -216,7 +225,7 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
   };
 
   return (
-    <BottomSheet isOpen={isVisible} onClose={handleClose} title="Your Lists" maxHeight="70vh">
+    <MobileModal isOpen={isVisible} onClose={handleClose} title="Your Lists">
       <div className="list-selector-content">
         {/* Local Lists Section */}
         <div className="list-selector-lists">
@@ -246,16 +255,16 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
             {categoriesLoading ? (
               <div className="cloud-categories-loading">
                 <Loader2 size={18} className="spinning" />
-                <span>Loading...</span>
+                <span>Loading categories...</span>
               </div>
-            ) : cloudCategories.length === 0 ? (
+            ) : displayedCloudCategories.length === 0 ? (
               <div className="cloud-categories-empty">
                 <p>No cloud categories yet</p>
                 <p className="cloud-categories-hint">Sync categories from the desktop app</p>
               </div>
             ) : (
               <div className="list-selector-lists">
-                {cloudCategories.map((category) => (
+                {displayedCloudCategories.map((category) => (
                   <CloudCategoryRow
                     key={category.uuid}
                     category={category}
@@ -275,11 +284,11 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
               <span>Cloud Categories</span>
             </div>
             <div className="cloud-categories-empty">
-              <p>Sign in to see your cloud categories</p>
+              <p>Sign in to access your cloud categories</p>
             </div>
           </div>
         )}
       </div>
-    </BottomSheet>
+    </MobileModal>
   );
 };

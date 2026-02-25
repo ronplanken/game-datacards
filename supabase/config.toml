@@ -1,0 +1,8 @@
+# Supabase CLI configuration for self-hosted instance (Coolify)
+#
+# Usage (via SSH tunnel):
+#   ssh -f -N -L 54322:localhost:5432 root@89.167.42.14
+#   supabase db push --db-url "postgres://postgres:<password>@localhost:54322/postgres"
+
+[db]
+major_version = 15
