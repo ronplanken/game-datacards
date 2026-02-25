@@ -188,4 +188,43 @@ describe("UnitConfigModal", () => {
     );
     expect(document.body.style.overflow).toBe("hidden");
   });
+
+  it("shows warlord already added warning when category has a warlord", () => {
+    const card = { ...baseCard, keywords: ["Character"], unitSize: { models: 5, cost: 90 } };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "other-unit", isWarlord: true }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    expect(screen.getByText("You already have a warlord")).toBeInTheDocument();
+  });
+
+  it("disables submit when epic hero is already in category", () => {
+    const card = {
+      ...baseCard,
+      keywords: ["Epic Hero"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "unit-1" }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    expect(screen.getByText("Set unit values")).toBeDisabled();
+  });
+
+  it("disables enhancement already taken by another card in the category", () => {
+    const card = {
+      ...baseCard,
+      keywords: ["Character"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "other-unit", selectedEnhancement: { name: "Enhancement 1", cost: 20 } }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    const enhancement1 = screen.getByText("Enhancement 1").closest(".ucm-enhancement-option");
+    expect(enhancement1).toHaveClass("disabled");
+  });
 });
