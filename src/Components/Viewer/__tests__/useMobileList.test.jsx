@@ -331,6 +331,52 @@ describe("useMobileList", () => {
       });
       expect(result.current.selectedCloudCategoryId).toBeNull();
     });
+
+    it("should persist selected list to localStorage", () => {
+      mockCategories = [
+        { uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] },
+        { uuid: "cat-2", name: "List B", type: "list", dataSource: "40k-10e", cards: [] },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.setSelectedList(1);
+      });
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith("selectedListPerDS", JSON.stringify({ "40k-10e": 1 }));
+    });
+
+    it("should restore selected list from localStorage on mount", () => {
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === "selectedListPerDS") return JSON.stringify({ "40k-10e": 1 });
+        if (key === "lists_migrated") return "true";
+        return null;
+      });
+
+      mockCategories = [
+        { uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] },
+        { uuid: "cat-2", name: "List B", type: "list", dataSource: "40k-10e", cards: [] },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      expect(result.current.selectedList).toBe(1);
+    });
+
+    it("should fall back to {} when localStorage contains invalid JSON", () => {
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === "selectedListPerDS") return "not-valid-json";
+        if (key === "lists_migrated") return "true";
+        return null;
+      });
+
+      mockCategories = [{ uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      expect(result.current.selectedList).toBe(0);
+    });
   });
 
   describe("cloud category selection", () => {

@@ -69,7 +69,23 @@ export const MobileListProvider = (props) => {
   }, [lists.length, dataSource, importCategory]);
 
   // Selected list index per datasource
-  const [selectedListPerDS, setSelectedListPerDS] = React.useState({});
+  const [selectedListPerDS, setSelectedListPerDS] = React.useState(() => {
+    try {
+      const stored = localStorage.getItem("selectedListPerDS");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  // Persist selected list index to localStorage
+  useEffect(() => {
+    if (Object.keys(selectedListPerDS).length > 0) {
+      localStorage.setItem("selectedListPerDS", JSON.stringify(selectedListPerDS));
+    } else {
+      localStorage.removeItem("selectedListPerDS");
+    }
+  }, [selectedListPerDS]);
 
   // Selected cloud category UUID (for browsing desktop categories on mobile)
   const [selectedCloudCategoryId, setSelectedCloudCategoryId] = React.useState(() => {
