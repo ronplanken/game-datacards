@@ -3,6 +3,7 @@ import clone from "just-clone";
 import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { parseStorageJson } from "../Helpers/cardstorage.helpers";
+import { reorderWithSubCategories, reorderSubCategories, reorderDatasourceItems } from "../Helpers/treeview.helpers";
 
 const CardStorageContext = React.createContext(undefined);
 
@@ -605,6 +606,27 @@ export const CardStorageProviderComponent = (props) => {
     });
   };
 
+  const reorderCategories = (startIndex, endIndex) => {
+    setCardStorage((prev) => ({
+      ...prev,
+      categories: reorderWithSubCategories(clone(prev.categories), startIndex, endIndex),
+    }));
+  };
+
+  const reorderDatasources = (startIndex, endIndex) => {
+    setCardStorage((prev) => ({
+      ...prev,
+      categories: reorderDatasourceItems(clone(prev.categories), startIndex, endIndex),
+    }));
+  };
+
+  const reorderChildCategories = (parentUuid, startIndex, endIndex) => {
+    setCardStorage((prev) => ({
+      ...prev,
+      categories: reorderSubCategories(clone(prev.categories), parentUuid, startIndex, endIndex),
+    }));
+  };
+
   const context = {
     cardStorage,
     activeCard,
@@ -629,6 +651,10 @@ export const CardStorageProviderComponent = (props) => {
     updateCategorySyncStatus,
     setCategorySyncEnabled,
     bulkUpdateCategories,
+    // Reorder functions
+    reorderCategories,
+    reorderDatasources,
+    reorderChildCategories,
     // Local datasource functions
     getLocalDatasources,
     convertCategoryToDatasource,

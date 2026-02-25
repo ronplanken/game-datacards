@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronRight, Trash2, Package, Share2, RefreshCw, Settings2, Cloud } from "lucide-react";
+import { ChevronRight, GripVertical, Trash2, Package, Share2, RefreshCw, Settings2, Cloud } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import {
@@ -16,7 +16,13 @@ import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import { PublishDatasourceModal } from "../DatasourcePublish/PublishDatasourceModal";
 import "./TreeView.css";
 
-export function TreeDatasource({ datasource, selectedTreeIndex, setSelectedTreeIndex, children }) {
+export function TreeDatasource({
+  datasource,
+  selectedTreeIndex,
+  setSelectedTreeIndex,
+  children,
+  dragHandleProps = null,
+}) {
   const {
     setActiveCard,
     setActiveCategory,
@@ -38,7 +44,7 @@ export function TreeDatasource({ datasource, selectedTreeIndex, setSelectedTreeI
   const handleRename = (newName) => {
     updateDatasourceMetadata(datasource.uuid, { name: newName });
     setIsRenameModalOpen(false);
-    message.success("Datasource has been renamed.");
+    message.success("Datasource renamed.");
   };
 
   const handleContextMenu = (e) => {
@@ -77,11 +83,11 @@ export function TreeDatasource({ datasource, selectedTreeIndex, setSelectedTreeI
     } else {
       // Local-only datasource - simple delete confirmation
       deleteConfirmDialog({
-        title: "Are you sure you want to delete this datasource?",
-        content: "This action cannot be undone and will delete all cards in this datasource.",
+        title: `Delete '${datasource.name}'?`,
+        content: "All cards in this datasource will be permanently deleted.",
         onConfirm: async () => {
           removeLocalDatasource(datasource.uuid);
-          message.success("Datasource has been removed.");
+          message.success("Datasource deleted.");
         },
       });
     }
@@ -169,7 +175,7 @@ export function TreeDatasource({ datasource, selectedTreeIndex, setSelectedTreeI
       : []),
     {
       key: "edit-metadata",
-      label: "Edit Metadata",
+      label: "Edit Details",
       icon: <Settings2 size={14} />,
       onClick: handleEditMetadata,
     },
@@ -233,6 +239,15 @@ export function TreeDatasource({ datasource, selectedTreeIndex, setSelectedTreeI
   return (
     <>
       <div className={datasourceClasses} onClick={handleClick} onContextMenu={handleContextMenu}>
+        {dragHandleProps && (
+          <span
+            className="tree-drag-handle"
+            {...dragHandleProps}
+            aria-label="Drag to reorder"
+            onClick={(e) => e.stopPropagation()}>
+            <GripVertical size={12} />
+          </span>
+        )}
         <div className={`tree-datasource-toggle ${!datasource.closed ? "expanded" : ""}`} onClick={handleToggle}>
           <ChevronRight size={10} />
         </div>
