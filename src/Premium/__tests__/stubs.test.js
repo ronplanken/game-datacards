@@ -5,6 +5,7 @@ import {
   useTemplateSharing,
   TEMPLATE_GAME_SYSTEMS,
   TEMPLATE_SORT_OPTIONS,
+  ListSyncButton,
 } from "../index";
 
 // ============================================
@@ -220,5 +221,15 @@ describe("TEMPLATE_SORT_OPTIONS", () => {
     const values = TEMPLATE_SORT_OPTIONS.map((o) => o.value);
     expect(values).toContain("popular");
     expect(values).toContain("new");
+  });
+});
+
+// ============================================
+// ListSyncButton stub
+// ============================================
+describe("ListSyncButton stub", () => {
+  it("should be a function that returns null", () => {
+    expect(typeof ListSyncButton).toBe("function");
+    expect(ListSyncButton()).toBeNull();
   });
 });

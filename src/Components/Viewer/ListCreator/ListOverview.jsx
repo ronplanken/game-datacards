@@ -4,7 +4,7 @@ import { message } from "../../Toast/message";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
-import { useCloudCategories } from "../../../Premium";
+import { useCloudCategories, ListSyncButton } from "../../../Premium";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
 import {
@@ -45,8 +45,8 @@ const GameSystemBadge = ({ system }) => {
   );
 };
 
-// Header with list selector and copy button
-const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard, isCloudCategory, gameSystem }) => (
+// Header with list selector, sync button, and copy button
+const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard, isCloudCategory, gameSystem, syncButton }) => (
   <div className="list-overview-list-header">
     <button className="list-overview-name-selector" onClick={onListSelectorClick} type="button">
       {isCloudCategory && <Cloud size={16} className="list-overview-cloud-icon" />}
@@ -54,9 +54,12 @@ const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard, isCloudC
       {isCloudCategory && <GameSystemBadge system={gameSystem} />}
       <ChevronDown size={16} />
     </button>
-    <button className="list-overview-copy-button" onClick={onCopyToClipboard} type="button">
-      <FileText size={18} />
-    </button>
+    <div className="list-overview-header-actions">
+      {syncButton}
+      <button className="list-overview-copy-button" onClick={onCopyToClipboard} type="button">
+        <FileText size={18} />
+      </button>
+    </div>
   </div>
 );
 
@@ -136,8 +139,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const is40k = settings.selectedDataSource === "40k-10e";
 
   // Get current list data (local or cloud)
-  const currentListName = isCloudCategory ? selectedCloudCategory.name : lists[selectedList].name;
-  const currentCards = isCloudCategory ? selectedCloudCategory.cards : lists[selectedList].datacards;
+  const currentList = lists[selectedList];
+  const currentListName = isCloudCategory ? selectedCloudCategory.name : currentList?.name || "List";
+  const currentCards = isCloudCategory ? selectedCloudCategory.cards : currentList?.cards || [];
 
   // Get appropriate sections and categorization (only for local lists)
   const sections = isAoS ? SECTIONS_AOS : SECTIONS_40K;
@@ -226,6 +230,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
             onCopyToClipboard={handleCopyToClipboard}
             isCloudCategory={isCloudCategory}
             gameSystem={isCloudCategory ? selectedCloudCategory.gameSystem : null}
+            syncButton={!isCloudCategory && currentList ? <ListSyncButton category={currentList} /> : null}
           />
         </div>
 

@@ -134,6 +134,15 @@
 }
 
 /* ===========================================
+   HEADER ACTIONS (Sync + Copy buttons)
+   =========================================== */
+.list-overview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===========================================
    COPY BUTTON
    =========================================== */
 .list-overview-copy-button {
