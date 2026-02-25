@@ -34,14 +34,21 @@ export function migrateListsToCategories(oldData) {
       if (!list || typeof list !== "object") continue;
 
       const name = list.name || "Imported List";
-      const cards = Array.isArray(list.datacards) ? list.datacards : [];
+      const rawCards = Array.isArray(list.datacards) ? list.datacards : [];
 
       categories.push({
         uuid: uuidv4(),
         name,
         type: "list",
         dataSource,
-        cards,
+        cards: rawCards.map((dc) => ({
+          ...dc.card,
+          unitSize: dc.points,
+          selectedEnhancement: dc.enhancement,
+          isWarlord: dc.warlord,
+          uuid: dc.id || uuidv4(),
+          isCustom: true,
+        })),
       });
     }
   }

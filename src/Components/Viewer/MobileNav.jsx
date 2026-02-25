@@ -98,9 +98,9 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
                 ) : (
                   <>
                     {(lists[selectedList]?.cards || []).reduce((acc, val) => {
-                      let cost = acc + Number(val.points.cost);
-                      if (val.enhancement) {
-                        cost = cost + Number(val.enhancement.cost);
+                      let cost = acc + Number(val.unitSize?.cost || 0);
+                      if (val.selectedEnhancement) {
+                        cost = cost + Number(val.selectedEnhancement.cost);
                       }
                       return cost;
                     }, 0)}{" "}

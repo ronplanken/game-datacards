@@ -25,7 +25,7 @@ describe("migrateListsToCategories", () => {
   });
 
   describe("object format (per-datasource)", () => {
-    it("should convert a single datasource with one list", () => {
+    it("should convert a single datasource with one list (flat card format)", () => {
       const input = {
         "40k-10e": [{ name: "My Army", datacards: [{ card: { name: "Marine" }, points: { cost: 100 }, id: "c1" }] }],
       };
@@ -39,7 +39,10 @@ describe("migrateListsToCategories", () => {
         dataSource: "40k-10e",
       });
       expect(result[0].cards).toHaveLength(1);
-      expect(result[0].cards[0].card.name).toBe("Marine");
+      expect(result[0].cards[0].name).toBe("Marine");
+      expect(result[0].cards[0].unitSize).toEqual({ cost: 100 });
+      expect(result[0].cards[0].uuid).toBe("c1");
+      expect(result[0].cards[0].isCustom).toBe(true);
     });
 
     it("should convert multiple datasources", () => {
@@ -142,12 +145,108 @@ describe("migrateListsToCategories", () => {
       expect(cat).toHaveProperty("cards");
     });
 
-    it("should preserve card data unchanged", () => {
-      const cardData = { card: { name: "Unit" }, points: { cost: 150 }, enhancement: { name: "Buff", cost: 10 } };
+    it("should flatten card data with correct property mapping", () => {
+      const cardData = {
+        card: { name: "Unit", keywords: ["Infantry"] },
+        points: { cost: 150 },
+        enhancement: { name: "Buff", cost: 10 },
+        warlord: true,
+        id: "card-id",
+      };
       const input = { "40k-10e": [{ name: "List", datacards: [cardData] }] };
 
       const result = migrateListsToCategories(input);
-      expect(result[0].cards[0]).toEqual(cardData);
+      const card = result[0].cards[0];
+      expect(card.name).toBe("Unit");
+      expect(card.keywords).toEqual(["Infantry"]);
+      expect(card.unitSize).toEqual({ cost: 150 });
+      expect(card.selectedEnhancement).toEqual({ name: "Buff", cost: 10 });
+      expect(card.isWarlord).toBe(true);
+      expect(card.uuid).toBe("card-id");
+      expect(card.isCustom).toBe(true);
+    });
+  });
+
+  describe("card flattening edge cases", () => {
+    it("should handle card with no card property (undefined spread)", () => {
+      const input = {
+        "40k-10e": [{ name: "List", datacards: [{ points: { cost: 100 }, id: "c1" }] }],
+      };
+
+      const result = migrateListsToCategories(input);
+      const card = result[0].cards[0];
+      expect(card.unitSize).toEqual({ cost: 100 });
+      expect(card.uuid).toBe("c1");
+      expect(card.isCustom).toBe(true);
+      expect(card.name).toBeUndefined();
+    });
+
+    it("should generate uuid when card has no id", () => {
+      const input = {
+        "40k-10e": [{ name: "List", datacards: [{ card: { name: "Marine" }, points: { cost: 80 } }] }],
+      };
+
+      const result = migrateListsToCategories(input);
+      const card = result[0].cards[0];
+      expect(card.uuid).toBe("mocked-uuid");
+      expect(card.name).toBe("Marine");
+    });
+
+    it("should handle card with no enhancement or warlord", () => {
+      const input = {
+        "40k-10e": [{ name: "List", datacards: [{ card: { name: "Trooper" }, points: { cost: 60 }, id: "t1" }] }],
+      };
+
+      const result = migrateListsToCategories(input);
+      const card = result[0].cards[0];
+      expect(card.selectedEnhancement).toBeUndefined();
+      expect(card.isWarlord).toBeUndefined();
+      expect(card.unitSize).toEqual({ cost: 60 });
+      expect(card.isCustom).toBe(true);
+    });
+
+    it("should handle card with no points", () => {
+      const input = {
+        "40k-10e": [{ name: "List", datacards: [{ card: { name: "Freebie" }, id: "f1" }] }],
+      };
+
+      const result = migrateListsToCategories(input);
+      const card = result[0].cards[0];
+      expect(card.name).toBe("Freebie");
+      expect(card.unitSize).toBeUndefined();
+      expect(card.uuid).toBe("f1");
+      expect(card.isCustom).toBe(true);
+    });
+
+    it("should not carry over old wrapped properties (card, points, enhancement, warlord, id)", () => {
+      const input = {
+        "40k-10e": [
+          {
+            name: "List",
+            datacards: [
+              {
+                card: { name: "Captain", source: "40k" },
+                points: { cost: 100 },
+                enhancement: { name: "Shield", cost: 15 },
+                warlord: true,
+                id: "old-id",
+              },
+            ],
+          },
+        ],
+      };
+
+      const result = migrateListsToCategories(input);
+      const card = result[0].cards[0];
+      // Should have flat properties
+      expect(card.name).toBe("Captain");
+      expect(card.source).toBe("40k");
+      expect(card.unitSize).toEqual({ cost: 100 });
+      expect(card.selectedEnhancement).toEqual({ name: "Shield", cost: 15 });
+      expect(card.isWarlord).toBe(true);
+      expect(card.uuid).toBe("old-id");
+      // Should NOT have the old wrapped card property
+      expect(card).not.toHaveProperty("card");
     });
   });
 });

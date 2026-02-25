@@ -66,25 +66,25 @@ const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard, isCloudC
 // Single list item component (local lists - with delete)
 const ListItem = ({ item, onNavigate, onDelete, isAoS }) => {
   const totalCost = isAoS
-    ? Number(item.points?.cost) || 0
-    : Number(item.points?.cost) + (Number(item.enhancement?.cost) || 0);
+    ? Number(item.unitSize?.cost) || 0
+    : Number(item.unitSize?.cost) + (Number(item.selectedEnhancement?.cost) || 0);
 
   return (
     <div className="list-overview-item">
       <div className="list-overview-item-main" onClick={() => onNavigate(item)}>
         <div className="list-overview-item-name">
-          {item.warlord && <Crown size={14} fill="currentColor" />}
-          <span>{item.card.name}</span>
+          {item.isWarlord && <Crown size={14} fill="currentColor" />}
+          <span>{item.name}</span>
         </div>
-        {!isAoS && item.enhancement && (
-          <div className="list-overview-item-enhancement">{capitalizeSentence(item.enhancement.name)}</div>
+        {!isAoS && item.selectedEnhancement && (
+          <div className="list-overview-item-enhancement">{capitalizeSentence(item.selectedEnhancement.name)}</div>
         )}
       </div>
       <div className="list-overview-item-points">
-        {!isAoS && item.points?.models > 1 ? `${item.points.models}x ` : ""}
+        {!isAoS && item.unitSize?.models > 1 ? `${item.unitSize.models}x ` : ""}
         {totalCost} pts
       </div>
-      <button className="list-overview-item-delete" onClick={() => onDelete(item.id)}>
+      <button className="list-overview-item-delete" onClick={() => onDelete(item.uuid)}>
         <Trash2 size={18} />
       </button>
     </div>
@@ -111,7 +111,7 @@ const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, isAoS }) 
     <>
       <div className="list-overview-section">{label}</div>
       {sortCards(cards).map((item) => (
-        <ListItem key={item.id} item={item} onNavigate={onNavigate} onDelete={onDelete} isAoS={isAoS} />
+        <ListItem key={item.uuid} item={item} onNavigate={onNavigate} onDelete={onDelete} isAoS={isAoS} />
       ))}
     </>
   );
@@ -156,8 +156,8 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   // Navigate to a card (handles both local list items and cloud category cards)
   const handleNavigate = (item) => {
-    // For cloud categories, item is the card itself
-    const card = isCloudCategory ? item : item.card;
+    // Both local list items and cloud category cards are flat — item IS the card
+    const card = item;
     const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
 
     if (!cardFaction) {
@@ -180,7 +180,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
     navigate(
       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name.replaceAll(" ", "-").toLowerCase()}`,
       {
-        state: isCloudCategory ? { cloudCard: card } : { listCard: card },
+        state: { listCard: card },
       },
     );
     handleClose();
@@ -203,9 +203,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const totalPoints = isCloudCategory
     ? 0
     : currentCards.reduce((acc, val) => {
-        let cost = acc + Number(val.points?.cost || 0);
-        if (!isAoS && val.enhancement) {
-          cost = cost + Number(val.enhancement.cost || 0);
+        let cost = acc + Number(val.unitSize?.cost || 0);
+        if (!isAoS && val.selectedEnhancement) {
+          cost = cost + Number(val.selectedEnhancement.cost || 0);
         }
         return cost;
       }, 0);

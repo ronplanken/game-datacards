@@ -113,27 +113,27 @@ export const MobileListProvider = (props) => {
     const category = lists[selectedList];
     if (!category) return;
 
-    const newCard = { ...datacard };
     const updatedCards = [
       ...category.cards,
       {
-        card: newCard,
-        points,
-        enhancement,
-        warlord: isWarlord,
-        id: uuidv4(),
+        ...datacard,
+        unitSize: points,
+        selectedEnhancement: enhancement,
+        isWarlord,
+        uuid: uuidv4(),
+        isCustom: true,
       },
     ];
     updateCategory({ ...category, cards: updatedCards }, category.uuid);
     markCategoryPending(category.uuid);
   };
 
-  const removeDatacard = (id) => {
-    if (!id) return;
+  const removeDatacard = (uuid) => {
+    if (!uuid) return;
     const category = lists[selectedList];
     if (!category) return;
 
-    const updatedCards = category.cards.filter((val) => val.id !== id);
+    const updatedCards = category.cards.filter((val) => val.uuid !== uuid);
     updateCategory({ ...category, cards: updatedCards }, category.uuid);
     markCategoryPending(category.uuid);
   };
@@ -162,11 +162,12 @@ export const MobileListProvider = (props) => {
       type: "list",
       dataSource,
       cards: cards.map((cardData) => ({
-        card: cardData.card,
-        points: cardData.points,
-        enhancement: cardData.enhancement,
-        warlord: cardData.isWarlord,
-        id: uuidv4(),
+        ...cardData.card,
+        unitSize: cardData.points,
+        selectedEnhancement: cardData.enhancement,
+        isWarlord: cardData.isWarlord,
+        uuid: uuidv4(),
+        isCustom: true,
       })),
     });
     // Select the newly created list
@@ -205,9 +206,9 @@ export const MobileListProvider = (props) => {
     const list = lists[listIndex];
     if (!list?.cards) return 0;
     return list.cards.reduce((acc, val) => {
-      let cost = acc + Number(val.points?.cost || 0);
-      if (val.enhancement) {
-        cost = cost + Number(val.enhancement.cost || 0);
+      let cost = acc + Number(val.unitSize?.cost || 0);
+      if (val.selectedEnhancement) {
+        cost = cost + Number(val.selectedEnhancement.cost || 0);
       }
       return cost;
     }, 0);

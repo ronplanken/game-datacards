@@ -38,9 +38,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
-  const warlordAlreadyAdded = lists[selectedList]?.cards?.find((card) => card.warlord);
+  const warlordAlreadyAdded = lists[selectedList]?.cards?.find((card) => card.isWarlord);
   const epicHeroAlreadyAdded = lists[selectedList]?.cards?.find((card) => {
-    return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.card.id;
+    return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.id;
   });
 
   const [selectedDetachment, setSelectedDetachment] = useState();
@@ -100,7 +100,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   // Check if enhancement is already used
   const isEnhancementDisabled = (enhancement) => {
-    return lists[selectedList]?.cards?.some((card) => card?.enhancement?.name === enhancement?.name);
+    return lists[selectedList]?.cards?.some((card) => card?.selectedEnhancement?.name === enhancement?.name);
   };
 
   // Filter enhancements for current detachment and card

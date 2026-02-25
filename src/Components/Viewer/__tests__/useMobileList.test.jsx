@@ -98,7 +98,7 @@ describe("useMobileList", () => {
   });
 
   describe("addDatacard", () => {
-    it("should call updateCategory with card appended and then markCategoryPending", () => {
+    it("should call updateCategory with flat card appended and then markCategoryPending", () => {
       mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
 
       const { result } = renderHook(() => useMobileList(), { wrapper });
@@ -111,10 +111,11 @@ describe("useMobileList", () => {
       const [updatedCat, uuid] = mockUpdateCategory.mock.calls[0];
       expect(uuid).toBe("cat-1");
       expect(updatedCat.cards).toHaveLength(1);
-      expect(updatedCat.cards[0].card.name).toBe("Marine");
-      expect(updatedCat.cards[0].points).toEqual({ cost: 100 });
-      expect(updatedCat.cards[0].warlord).toBe(false);
-      expect(updatedCat.cards[0]).toHaveProperty("id");
+      expect(updatedCat.cards[0].name).toBe("Marine");
+      expect(updatedCat.cards[0].unitSize).toEqual({ cost: 100 });
+      expect(updatedCat.cards[0].isWarlord).toBe(false);
+      expect(updatedCat.cards[0].isCustom).toBe(true);
+      expect(updatedCat.cards[0]).toHaveProperty("uuid");
 
       expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
     });
@@ -141,8 +142,8 @@ describe("useMobileList", () => {
           type: "list",
           dataSource: "40k-10e",
           cards: [
-            { card: { name: "A" }, points: { cost: 100 }, id: "card-1" },
-            { card: { name: "B" }, points: { cost: 200 }, id: "card-2" },
+            { name: "A", unitSize: { cost: 100 }, uuid: "card-1", isCustom: true },
+            { name: "B", unitSize: { cost: 200 }, uuid: "card-2", isCustom: true },
           ],
         },
       ];
@@ -156,7 +157,7 @@ describe("useMobileList", () => {
       expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
       const [updatedCat] = mockUpdateCategory.mock.calls[0];
       expect(updatedCat.cards).toHaveLength(1);
-      expect(updatedCat.cards[0].id).toBe("card-2");
+      expect(updatedCat.cards[0].uuid).toBe("card-2");
 
       expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
     });
@@ -275,8 +276,8 @@ describe("useMobileList", () => {
           type: "list",
           dataSource: "40k-10e",
           cards: [
-            { card: { name: "A" }, points: { cost: 100 }, enhancement: { cost: 15 }, id: "1" },
-            { card: { name: "B" }, points: { cost: 200 }, id: "2" },
+            { name: "A", unitSize: { cost: 100 }, selectedEnhancement: { cost: 15 }, uuid: "1", isCustom: true },
+            { name: "B", unitSize: { cost: 200 }, uuid: "2", isCustom: true },
           ],
         },
       ];

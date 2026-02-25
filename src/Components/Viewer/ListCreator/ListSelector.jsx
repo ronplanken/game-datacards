@@ -182,6 +182,10 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
   const { categories: cloudCategories, isLoading: categoriesLoading } = useCloudCategories();
   const { hasSync } = usePremiumFeatures();
 
+  // Filter out cloud categories that already exist as local lists (by UUID)
+  const localListUuids = new Set(lists.map((l) => l.uuid));
+  const displayedCloudCategories = cloudCategories.filter((c) => !localListUuids.has(c.uuid));
+
   const handleClose = () => setIsVisible(false);
 
   // Select a local list
@@ -248,14 +252,14 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
                 <Loader2 size={18} className="spinning" />
                 <span>Loading...</span>
               </div>
-            ) : cloudCategories.length === 0 ? (
+            ) : displayedCloudCategories.length === 0 ? (
               <div className="cloud-categories-empty">
                 <p>No cloud categories yet</p>
                 <p className="cloud-categories-hint">Sync categories from the desktop app</p>
               </div>
             ) : (
               <div className="list-selector-lists">
-                {cloudCategories.map((category) => (
+                {displayedCloudCategories.map((category) => (
                   <CloudCategoryRow
                     key={category.uuid}
                     category={category}

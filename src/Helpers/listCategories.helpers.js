@@ -39,13 +39,13 @@ export const categorize40kUnits = (datacards) => {
   return datacards?.reduce(
     (cats, card) => {
       // Allied units go to their own section (check first!)
-      if (card?.card?._isAllied) {
+      if (card?._isAllied) {
         cats.allied.push(card);
-      } else if (card?.card?.keywords?.includes("Character")) {
+      } else if (card?.keywords?.includes("Character")) {
         cats.characters.push(card);
-      } else if (card?.card?.keywords?.includes("Battleline")) {
+      } else if (card?.keywords?.includes("Battleline")) {
         cats.battleline.push(card);
-      } else if (card?.card?.keywords?.includes("Dedicated Transport")) {
+      } else if (card?.keywords?.includes("Dedicated Transport")) {
         cats.transports.push(card);
       } else {
         cats.other.push(card);
@@ -68,7 +68,7 @@ export const categorize40kUnits = (datacards) => {
  */
 export const categorizeAoSUnits = (datacards) => {
   const hasKeyword = (card, keyword) => {
-    return card?.card?.keywords?.some((k) => k.toLowerCase() === keyword.toLowerCase());
+    return card?.keywords?.some((k) => k.toLowerCase() === keyword.toLowerCase());
   };
 
   return datacards?.reduce(
@@ -119,9 +119,9 @@ export const categorizeAoSUnits = (datacards) => {
  */
 export const sortCards = (cards) =>
   cards.toSorted((a, b) => {
-    if (a.warlord) return -1;
-    if (b.warlord) return 1;
-    return a.card.name.localeCompare(b.card.name);
+    if (a.isWarlord) return -1;
+    if (b.isWarlord) return 1;
+    return a.name.localeCompare(b.name);
   });
 
 // ===========================================
@@ -141,13 +141,13 @@ export const format40kListText = (sortedCards, sections) => {
     if (cards.length === 0) return;
     listText += `\n\n${clipboardLabel}`;
     sortCards(cards).forEach((val) => {
-      const totalCost = Number(val?.points?.cost) + (Number(val.enhancement?.cost) || 0) || "?";
-      listText += `\n\n${val.card.name} ${val.points?.models > 1 ? val.points?.models + "x" : ""} (${totalCost} pts)`;
-      if (val.warlord) {
+      const totalCost = Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?";
+      listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${totalCost} pts)`;
+      if (val.isWarlord) {
         listText += `\n   • Warlord`;
       }
-      if (val.enhancement) {
-        listText += `\n   • Enhancements: ${capitalizeSentence(val.enhancement?.name)} (+${val.enhancement?.cost} pts)`;
+      if (val.selectedEnhancement) {
+        listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${val.selectedEnhancement?.cost} pts)`;
       }
     });
   };
@@ -177,9 +177,9 @@ export const formatAoSListText = (sortedCards, sections) => {
     if (cards.length === 0) return;
     listText += `\n\n${clipboardLabel}`;
     sortCards(cards).forEach((val) => {
-      const cost = val?.points?.cost || "?";
-      listText += `\n\n${val.card.name} (${cost} pts)`;
-      if (val.warlord) {
+      const cost = val?.unitSize?.cost || "?";
+      listText += `\n\n${val.name} (${cost} pts)`;
+      if (val.isWarlord) {
         listText += `\n   • General`;
       }
     });
