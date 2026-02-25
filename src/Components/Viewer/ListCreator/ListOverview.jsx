@@ -47,10 +47,18 @@ const GameSystemBadge = ({ system }) => {
 };
 
 // Header with list selector, sync button, and copy button
-const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard, isCloudCategory, gameSystem, syncButton }) => (
+const ListHeader = ({
+  listName,
+  onListSelectorClick,
+  onCopyToClipboard,
+  isCloudCategory,
+  isSynced,
+  gameSystem,
+  syncButton,
+}) => (
   <div className="list-overview-list-header">
     <button className="list-overview-name-selector" onClick={onListSelectorClick} type="button">
-      {isCloudCategory && <Cloud size={16} className="list-overview-cloud-icon" />}
+      {(isCloudCategory || isSynced) && <Cloud size={16} className="list-overview-cloud-icon" />}
       <span className="list-overview-name-text">{listName}</span>
       {isCloudCategory && <GameSystemBadge system={gameSystem} />}
       <ChevronDown size={16} />
@@ -245,6 +253,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
             onListSelectorClick={() => setIsListSelectorVisible(true)}
             onCopyToClipboard={handleCopyToClipboard}
             isCloudCategory={isCloudCategory}
+            isSynced={!isCloudCategory && !!currentList?.syncEnabled}
             gameSystem={isCloudCategory ? selectedCloudCategory.gameSystem : null}
             syncButton={!isCloudCategory && currentList ? <ListSyncButton category={currentList} /> : null}
           />
