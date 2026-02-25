@@ -52,7 +52,6 @@ import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
-import { MobileListProvider } from "./Components/Viewer/useMobileList";
 
 const { Paragraph, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -193,14 +192,12 @@ const RootLayout = () => (
                     <TemplateStorageProvider>
                       <SyncProvider>
                         <CloudCategoriesProvider>
-                          <MobileListProvider>
-                            <Outlet />
-                            <ScrollRestoration />
-                            <WizardSelector />
-                            <WhatsNewWizardSelector />
-                            <CheckoutSuccessHandler />
-                            <SyncConflictHandler />
-                          </MobileListProvider>
+                          <Outlet />
+                          <ScrollRestoration />
+                          <WizardSelector />
+                          <WhatsNewWizardSelector />
+                          <CheckoutSuccessHandler />
+                          <SyncConflictHandler />
                         </CloudCategoriesProvider>
                       </SyncProvider>
                     </TemplateStorageProvider>
