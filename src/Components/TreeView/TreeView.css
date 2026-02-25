@@ -72,13 +72,51 @@
   text-align: center;
 }
 
-/* Sub-category styling */
+/* Drag handle - hidden by default, visible on hover */
+.tree-drag-handle {
+  display: flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.tree-drag-handle:active {
+  cursor: grabbing;
+}
+
+.tree-category:hover .tree-drag-handle,
+.tree-datasource:hover .tree-drag-handle {
+  opacity: 1;
+}
+
+/* Category/datasource being dragged - elevated card effect */
+.category-dragging {
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.category-dragging .tree-drag-handle {
+  opacity: 1;
+  cursor: grabbing;
+}
+
+.category-dragging .tree-item-row {
+  opacity: 0.6;
+}
+
+/* Sub-category styling (offset 16px for parent drag handle) */
 .tree-category.sub-category {
-  padding-left: 24px;
+  padding-left: 40px;
 }
 
 .tree-category.sub-category.selected {
-  padding-left: 21px;
+  padding-left: 37px;
 }
 
 /* ===========================================
@@ -89,7 +127,7 @@
   display: flex;
   align-items: center;
   height: 32px;
-  padding: 0 8px 0 32px;
+  padding: 0 8px 0 48px;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.88);
   cursor: pointer;
@@ -104,7 +142,7 @@
 .tree-item-row.selected {
   background: #e6f4ff;
   border-left: 3px solid #1677ff;
-  padding-left: 29px;
+  padding-left: 45px;
 }
 
 .tree-item-row.selected:hover {
@@ -117,13 +155,13 @@
   border-radius: 4px;
 }
 
-/* Items in sub-categories get deeper indentation */
+/* Items in sub-categories get deeper indentation (offset for parent + sub-category drag handles) */
 .tree-item-row.in-sub-category {
-  padding-left: 48px;
+  padding-left: 80px;
 }
 
 .tree-item-row.in-sub-category.selected {
-  padding-left: 45px;
+  padding-left: 77px;
 }
 
 .tree-item-icon {
@@ -144,33 +182,71 @@
 .tree-item-indicators {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin-left: 8px;
-  color: rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
 }
 
 .tree-item-indicator {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
   cursor: help;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.tree-item-indicator:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.tree-item-indicator.enhancement {
+  color: #c41d7f;
+  background: #fff0f6;
+  margin-right: 4px;
+}
+
+.tree-item-indicator.enhancement:hover {
+  background: #ffadd2;
+}
+
+.tree-item-indicator.warlord {
+  color: #ad8b00;
+  background: #fffbe6;
+  margin-right: 4px;
+}
+
+.tree-item-indicator.warlord:hover {
+  background: #ffe58f;
 }
 
 .tree-item-points {
   background: #1677ff;
   color: #fff;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   min-width: 40px;
   text-align: center;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
   border: none;
 }
 
 .tree-item-points:hover {
   background: #4096ff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 .tree-item-select {
@@ -517,11 +593,11 @@
   }
 }
 
-/* Items in local datasources get different indentation */
+/* Items in local datasources get different indentation (offset for parent drag handle) */
 .tree-item-row.in-datasource {
-  padding-left: 32px;
+  padding-left: 48px;
 }
 
 .tree-item-row.in-datasource.selected {
-  padding-left: 29px;
+  padding-left: 45px;
 }
