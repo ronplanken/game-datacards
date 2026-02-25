@@ -1,6 +1,6 @@
 import React from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { Toolbar } from "../Toolbar";
+import { Toolbar } from "../Toolbar/Toolbar";
 import { CategoryTree } from "./CategoryTree";
 import { DataSourcePanel } from "./DataSourcePanel";
 

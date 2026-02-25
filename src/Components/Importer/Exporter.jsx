@@ -503,11 +503,12 @@ export const Exporter = () => {
           </div>,
           modalRoot,
         )}
-      <Tooltip content={activeCategory ? "Export category" : "Select a category first"} placement="bottom-start">
+      <Tooltip
+        content={activeCategory ? "Export data as JSON or text" : "Select a category first"}
+        placement="bottom-start">
         <Button
-          type={"text"}
-          shape={"circle"}
-          icon={<Download size={14} />}
+          type="text"
+          icon={<Download size={16} />}
           disabled={!activeCategory}
           onClick={() => {
             logScreenView("Export Category");

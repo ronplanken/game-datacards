@@ -1,16 +1,17 @@
 import { Image, FolderPlus, Printer } from "lucide-react";
-import { Button, Col, Row } from "antd";
-import { Tooltip } from "./Tooltip/Tooltip";
+import { Button } from "antd";
+import { Tooltip } from "../Tooltip/Tooltip";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useCardStorage } from "../Hooks/useCardStorage";
-import { useFirebase } from "../Hooks/useFirebase";
+import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useFirebase } from "../../Hooks/useFirebase";
 
 import { Parser } from "xml2js";
-import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-import { ListCards } from "../Icons/ListCards";
-import { Exporter } from "./Importer/Exporter";
-import { Importer } from "./Importer/Importer";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { ListCards } from "../../Icons/ListCards";
+import { Exporter } from "../Importer/Exporter";
+import { Importer } from "../Importer/Importer";
+import "./Toolbar.css";
 
 const parser = new Parser({ mergeAttrs: true, explicitArray: false });
 
@@ -38,18 +39,11 @@ export const Toolbar = () => {
   const { cardStorage, activeCategory, addCategory } = useCardStorage();
 
   return (
-    <Row style={{ justifyContent: "space-between", background: "white", borderBottom: "1px solid #E5E5E5" }}>
-      <Col
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "start",
-          background: "white",
-        }}>
-        <Tooltip content="Print cards from category" placement="bottom-start">
+    <div className="treeview-toolbar">
+      <div className="treeview-toolbar-group">
+        <Tooltip content="Print all cards in this category" placement="bottom-start">
           <Button
-            type={"text"}
-            shape={"circle"}
+            type="text"
             disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
@@ -60,45 +54,48 @@ export const Toolbar = () => {
                 navigate(`/print/${categoryIndex}`);
               }
             }}
-            icon={<Printer size={14} />}
+            icon={<Printer size={16} />}
           />
         </Tooltip>
-        <Tooltip content="Export category to images" placement="bottom-start">
+        <Tooltip content="Save cards as individual images" placement="bottom-start">
           <Button
-            type={"text"}
-            shape={"circle"}
+            type="text"
             disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
               logScreenView("Export");
               navigate(`/image-export/${categoryIndex}`);
             }}
-            icon={<Image size={14} />}
+            icon={<Image size={16} />}
           />
         </Tooltip>
         <Exporter />
+      </div>
+      <div className="treeview-toolbar-divider" />
+      <div className="treeview-toolbar-group">
         <Importer />
-        <Tooltip content="Add new category" placement="bottom-start">
+      </div>
+      <div className="treeview-toolbar-divider" />
+      <div className="treeview-toolbar-group">
+        <Tooltip content="Create a new category folder" placement="bottom-start">
           <Button
-            type={"text"}
-            shape={"circle"}
-            icon={<FolderPlus size={14} />}
+            type="text"
+            icon={<FolderPlus size={16} />}
             onClick={() => {
               addCategory("New Category");
             }}
           />
         </Tooltip>
-        <Tooltip content="Add new list" placement="bottom-start">
+        <Tooltip content="Start a new army list" placement="bottom-start">
           <Button
-            type={"text"}
-            shape={"circle"}
-            icon={<ListCards />}
+            type="text"
+            icon={<ListCards style={{ fontSize: 16 }} />}
             onClick={() => {
               addCategory("New List", "list", settings.selectedDataSource);
             }}
           />
         </Tooltip>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };

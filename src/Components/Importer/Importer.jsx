@@ -1009,11 +1009,10 @@ export const Importer = () => {
           </div>,
           modalRoot,
         )}
-      <Tooltip content="Import category or datasource" placement="bottom-start">
+      <Tooltip content="Import cards, lists, or datasources" placement="bottom-start">
         <Button
-          type={"text"}
-          shape={"circle"}
-          icon={<Upload size={14} />}
+          type="text"
+          icon={<Upload size={16} />}
           onClick={() => {
             logScreenView("Import Category");
             setIsModalVisible(true);
