@@ -154,6 +154,17 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
+  const updateDatacard = (uuid, unitSize, enhancement, isWarlord) => {
+    if (!uuid) return;
+    const category = lists[selectedList];
+    if (!category) return;
+    const updatedCards = category.cards.map((card) =>
+      card.uuid !== uuid ? card : { ...card, unitSize, selectedEnhancement: enhancement, isWarlord },
+    );
+    updateCategory({ ...category, cards: updatedCards }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
   const createList = (name) => {
     const listName = name?.trim() || "New List";
     importCategory({
@@ -236,6 +247,7 @@ export const MobileListProvider = (props) => {
     setSelectedList,
     addDatacard,
     removeDatacard,
+    updateDatacard,
     createList,
     createListWithCards,
     renameList,

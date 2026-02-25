@@ -175,6 +175,65 @@ describe("useMobileList", () => {
     });
   });
 
+  describe("updateDatacard", () => {
+    it("should update a card in-place and call markCategoryPending", () => {
+      mockCategories = [
+        {
+          uuid: "cat-1",
+          name: "Test",
+          type: "list",
+          dataSource: "40k-10e",
+          cards: [
+            { name: "A", unitSize: { cost: 100 }, uuid: "card-1", isCustom: true },
+            { name: "B", unitSize: { cost: 200 }, uuid: "card-2", isCustom: true },
+          ],
+        },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateDatacard("card-1", { cost: 150 }, { name: "Shield", cost: 10 }, true);
+      });
+
+      expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+      const [updatedCat, uuid] = mockUpdateCategory.mock.calls[0];
+      expect(uuid).toBe("cat-1");
+      expect(updatedCat.cards).toHaveLength(2);
+      expect(updatedCat.cards[0].unitSize).toEqual({ cost: 150 });
+      expect(updatedCat.cards[0].selectedEnhancement).toEqual({ name: "Shield", cost: 10 });
+      expect(updatedCat.cards[0].isWarlord).toBe(true);
+      // Second card should be unchanged
+      expect(updatedCat.cards[1].unitSize).toEqual({ cost: 200 });
+
+      expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
+    });
+
+    it("should not call updateCategory when uuid is null", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateDatacard(null, { cost: 100 }, null, false);
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+
+    it("should not call updateCategory when category does not exist", () => {
+      mockCategories = [];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateDatacard("card-1", { cost: 100 }, null, false);
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+  });
+
   describe("createList", () => {
     it("should call importCategory with a new list category", () => {
       mockCategories = [{ uuid: "cat-1", name: "Default", type: "list", dataSource: "40k-10e", cards: [] }];

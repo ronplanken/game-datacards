@@ -277,6 +277,27 @@
   flex-shrink: 0;
 }
 
+/* Configure button for unconfigured cards */
+.list-overview-item-configure {
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--bs-accent);
+  background: var(--bs-accent-light, #e6f4ff);
+  color: var(--bs-accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.list-overview-item-configure:active {
+  background: var(--bs-accent);
+  color: #fff;
+}
+
 .list-overview-item-delete {
   width: 36px;
   height: 36px;

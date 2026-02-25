@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, Pencil, Trash2, Plus, X, Cloud, Loader2 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
 import { useCloudCategories, useAuth, usePremiumFeatures } from "../../../Premium";
-import { BottomSheet } from "../Mobile/BottomSheet";
+import { MobileModal } from "../Mobile/MobileModal";
 import "./ListSelector.css";
 
 // Inline edit input component
@@ -220,7 +220,7 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
   };
 
   return (
-    <BottomSheet isOpen={isVisible} onClose={handleClose} title="Your Lists" maxHeight="70vh">
+    <MobileModal isOpen={isVisible} onClose={handleClose} title="Your Lists">
       <div className="list-selector-content">
         {/* Local Lists Section */}
         <div className="list-selector-lists">
@@ -284,6 +284,6 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
           </div>
         )}
       </div>
-    </BottomSheet>
+    </MobileModal>
   );
 };

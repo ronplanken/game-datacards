@@ -18,6 +18,7 @@ import {
 } from "../../../Helpers/listCategories.helpers";
 import { BottomSheet } from "../Mobile/BottomSheet";
 import { ListSelector } from "./ListSelector";
+import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter } from "../MobileImporter";
 import "./ListOverview.css";
 
@@ -64,10 +65,11 @@ const ListHeader = ({ listName, onListSelectorClick, onCopyToClipboard, isCloudC
 );
 
 // Single list item component (local lists - with delete)
-const ListItem = ({ item, onNavigate, onDelete, isAoS }) => {
+const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS }) => {
+  const isUnconfigured = !item.unitSize;
   const totalCost = isAoS
     ? Number(item.unitSize?.cost) || 0
-    : Number(item.unitSize?.cost) + (Number(item.selectedEnhancement?.cost) || 0);
+    : (Number(item.unitSize?.cost) || 0) + (Number(item.selectedEnhancement?.cost) || 0);
 
   return (
     <div className="list-overview-item">
@@ -80,10 +82,16 @@ const ListItem = ({ item, onNavigate, onDelete, isAoS }) => {
           <div className="list-overview-item-enhancement">{capitalizeSentence(item.selectedEnhancement.name)}</div>
         )}
       </div>
-      <div className="list-overview-item-points">
-        {!isAoS && item.unitSize?.models > 1 ? `${item.unitSize.models}x ` : ""}
-        {totalCost} pts
-      </div>
+      {isUnconfigured ? (
+        <button className="list-overview-item-configure" onClick={() => onEdit(item)} type="button">
+          Set
+        </button>
+      ) : (
+        <div className="list-overview-item-points">
+          {!isAoS && item.unitSize?.models > 1 ? `${item.unitSize.models}x ` : ""}
+          {totalCost} pts
+        </div>
+      )}
       <button className="list-overview-item-delete" onClick={() => onDelete(item.uuid)}>
         <Trash2 size={18} />
       </button>
@@ -104,14 +112,21 @@ const CloudListItem = ({ card, onNavigate }) => (
 );
 
 // Section renderer component
-const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, isAoS }) => {
+const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, isAoS }) => {
   if (!cards || cards.length === 0) return null;
 
   return (
     <>
       <div className="list-overview-section">{label}</div>
       {sortCards(cards).map((item) => (
-        <ListItem key={item.uuid} item={item} onNavigate={onNavigate} onDelete={onDelete} isAoS={isAoS} />
+        <ListItem
+          key={item.uuid}
+          item={item}
+          onNavigate={onNavigate}
+          onDelete={onDelete}
+          onEdit={onEdit}
+          isAoS={isAoS}
+        />
       ))}
     </>
   );
@@ -125,6 +140,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const navigate = useNavigate();
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
   const [isImporterVisible, setIsImporterVisible] = useState(false);
+  const [editingCard, setEditingCard] = useState(null);
 
   // Derive selected cloud category from the realtime-updated list
   const selectedCloudCategory = selectedCloudCategoryId
@@ -262,6 +278,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 cards={sortedCards[section.key]}
                 onNavigate={handleNavigate}
                 onDelete={removeDatacard}
+                onEdit={setEditingCard}
                 isAoS={isAoS}
               />
             ))}
@@ -277,6 +294,14 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
       <MobileGwImporter isOpen={isImporterVisible} onClose={() => setIsImporterVisible(false)} />
+
+      <ListEditCard
+        isVisible={!!editingCard}
+        setIsVisible={(v) => {
+          if (!v) setEditingCard(null);
+        }}
+        card={editingCard}
+      />
     </>
   );
 };

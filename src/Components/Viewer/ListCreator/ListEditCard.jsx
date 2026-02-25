@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Crown } from "lucide-react";
 import { message } from "../../Toast/message";
-import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
@@ -20,35 +19,27 @@ const Toggle = ({ checked, onChange, disabled }) => (
   </button>
 );
 
-export const ListAdd = ({ isVisible, setIsVisible }) => {
-  const { lists, selectedList, addDatacard } = useMobileList();
-  const { activeCard } = useCardStorage();
+export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
+  const { lists, selectedList, updateDatacard } = useMobileList();
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
   const [selectedEnhancement, setSelectedEnhancement] = useState();
   const [isWarlord, setIsWarlord] = useState(false);
   const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
-  const [selectedUnitSize, setSelectedUnitSize] = useState(() => {
-    if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
-      return activeCard.points[0];
-    }
-    return undefined;
-  });
+  const [selectedUnitSize, setSelectedUnitSize] = useState();
 
-  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+  const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
-  const warlordAlreadyAdded = lists[selectedList]?.cards?.find((card) => card.isWarlord);
-  const epicHeroAlreadyAdded = lists[selectedList]?.cards?.find((card) => {
-    return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.id;
-  });
+
+  // Check warlord — exclude current card's uuid
+  const warlordAlreadyAdded = lists[selectedList]?.cards?.find((c) => c.isWarlord && c.uuid !== card?.uuid);
 
   const [selectedDetachment, setSelectedDetachment] = useState();
 
   useEffect(() => {
-    if (settings?.selectedDetachment?.[activeCard?.faction_id]) {
-      // Check if saved detachment is still valid
-      const savedDetachment = settings?.selectedDetachment?.[activeCard?.faction_id];
+    if (settings?.selectedDetachment?.[card?.faction_id]) {
+      const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
       const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
       if (isStillValid) {
         setSelectedDetachment(savedDetachment);
@@ -58,20 +49,16 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     } else {
       setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [settings, activeCard?.faction_id, detachments]);
+  }, [settings, card?.faction_id, detachments]);
 
-  // Reset state when panel opens with new card
+  // Pre-populate state from card when modal opens
   useEffect(() => {
-    if (isVisible) {
-      setSelectedEnhancement(undefined);
-      setIsWarlord(false);
-      if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
-        setSelectedUnitSize(activeCard.points[0]);
-      } else {
-        setSelectedUnitSize(undefined);
-      }
+    if (isVisible && card) {
+      setSelectedUnitSize(card.unitSize || undefined);
+      setSelectedEnhancement(card.selectedEnhancement || undefined);
+      setIsWarlord(card.isWarlord || false);
     }
-  }, [isVisible, activeCard]);
+  }, [isVisible, card]);
 
   const handleClose = () => setIsVisible(false);
 
@@ -79,15 +66,15 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     setSelectedDetachment(detachment);
     updateSettings({
       ...settings,
-      selectedDetachment: { ...settings.selectedDetachment, [activeCard.faction_id]: detachment },
+      selectedDetachment: { ...settings.selectedDetachment, [card.faction_id]: detachment },
     });
-    setSelectedEnhancement(undefined); // Reset enhancement when detachment changes
+    setSelectedEnhancement(undefined);
   };
 
-  const handleAddToList = () => {
-    addDatacard(activeCard, selectedUnitSize, selectedEnhancement, isWarlord);
+  const handleSave = () => {
+    updateDatacard(card.uuid, selectedUnitSize, selectedEnhancement, isWarlord);
     handleClose();
-    message.success(`${activeCard.name} added to list.`);
+    message.success(`${card.name} updated.`);
   };
 
   const selectEnhancement = (enhancement) => {
@@ -98,9 +85,11 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     }
   };
 
-  // Check if enhancement is already used
+  // Check if enhancement is already used — exclude current card's uuid
   const isEnhancementDisabled = (enhancement) => {
-    return lists[selectedList]?.cards?.some((card) => card?.selectedEnhancement?.name === enhancement?.name);
+    return lists[selectedList]?.cards?.some(
+      (c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid,
+    );
   };
 
   // Filter enhancements for current detachment and card
@@ -115,35 +104,34 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
       .filter((enhancement) => {
         let isActiveEnhancement = false;
         enhancement.keywords?.forEach((keyword) => {
-          if (activeCard?.keywords?.includes(keyword)) isActiveEnhancement = true;
-          if (activeCard?.factions?.includes(keyword)) isActiveEnhancement = true;
+          if (card?.keywords?.includes(keyword)) isActiveEnhancement = true;
+          if (card?.factions?.includes(keyword)) isActiveEnhancement = true;
         });
         enhancement?.excludes?.forEach((exclude) => {
-          if (activeCard?.keywords?.includes(exclude)) isActiveEnhancement = false;
-          if (activeCard?.factions?.includes(exclude)) isActiveEnhancement = false;
+          if (card?.keywords?.includes(exclude)) isActiveEnhancement = false;
+          if (card?.factions?.includes(exclude)) isActiveEnhancement = false;
         });
         return isActiveEnhancement;
       });
   };
 
-  const isCharacter = activeCard?.keywords?.includes("Character");
-  const isEpicHero = activeCard?.keywords?.includes("Epic Hero");
+  const isCharacter = card?.keywords?.includes("Character");
+  const isEpicHero = card?.keywords?.includes("Epic Hero");
   const showWarlord = isCharacter || isEpicHero;
   const showEnhancements = isCharacter && !isEpicHero;
   const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
 
-  // Don't show for cards without array-based points (e.g., AoS warscrolls)
-  if (!activeCard || !Array.isArray(activeCard?.points)) return null;
+  if (!card || !Array.isArray(card?.points)) return null;
 
   return (
     <>
-      <MobileModal isOpen={isVisible} onClose={handleClose} title={`Add ${activeCard.name}`}>
+      <MobileModal isOpen={isVisible} onClose={handleClose} title={`Configure ${card.name}`}>
         <div className="list-add-content">
           {/* Unit Size Section */}
           <div className="list-add-section">
             <h4 className="list-add-section-title">Unit Size</h4>
             <div className="list-add-options">
-              {activeCard?.points
+              {card?.points
                 ?.filter((p) => p.active)
                 .map((point) => (
                   <button
@@ -172,7 +160,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
                   <Crown size={18} className={isWarlord ? "active" : ""} />
                   <span>{warlordAlreadyAdded ? "Warlord already assigned" : "Set as Warlord"}</span>
                 </div>
-                <Toggle checked={isWarlord} onChange={setIsWarlord} disabled={warlordAlreadyAdded} />
+                <Toggle checked={isWarlord} onChange={setIsWarlord} disabled={!!warlordAlreadyAdded} />
               </div>
             </div>
           )}
@@ -212,15 +200,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
             </div>
           )}
 
-          {/* Epic Hero Warning */}
-          {epicHeroAlreadyAdded && <div className="list-add-warning">This Epic Hero is already in your list.</div>}
-
-          {/* Add Button */}
-          <button
-            className="list-add-submit"
-            onClick={handleAddToList}
-            disabled={!selectedUnitSize || epicHeroAlreadyAdded}>
-            Add to List
+          {/* Save Button */}
+          <button className="list-add-submit" onClick={handleSave} disabled={!selectedUnitSize}>
+            Save Changes
           </button>
         </div>
       </MobileModal>
