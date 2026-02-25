@@ -105,8 +105,8 @@ export const MobileWhatsNewWizard = () => {
               </button>
             )}
 
-            {/* Get Started button on first step */}
-            {isFirstStep && (
+            {/* Get Started button on first step (hidden when it's also the last step) */}
+            {isFirstStep && !isLastStep && (
               <button className="mwnw-btn mwnw-btn--primary" onClick={handleNext} type="button">
                 Get Started
                 <ChevronRight />
