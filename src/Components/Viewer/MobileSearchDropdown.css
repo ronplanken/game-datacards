@@ -115,3 +115,118 @@
   color: rgba(0, 0, 0, 0.45);
   white-space: nowrap;
 }
+
+/* ===========================================
+   ENTRANCE ANIMATIONS
+   =========================================== */
+@keyframes searchDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes searchResultSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes searchShimmer {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Dropdown entrance */
+.mobile-search-dropdown {
+  animation: searchDropdownIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Staggered result items */
+.search-result-item {
+  animation: searchResultSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.search-result-item:nth-child(1) {
+  animation-delay: 0.03s;
+}
+.search-result-item:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.search-result-item:nth-child(3) {
+  animation-delay: 0.09s;
+}
+.search-result-item:nth-child(4) {
+  animation-delay: 0.12s;
+}
+.search-result-item:nth-child(5) {
+  animation-delay: 0.15s;
+}
+.search-result-item:nth-child(6) {
+  animation-delay: 0.18s;
+}
+.search-result-item:nth-child(7) {
+  animation-delay: 0.21s;
+}
+.search-result-item:nth-child(8) {
+  animation-delay: 0.24s;
+}
+.search-result-item:nth-child(n + 9) {
+  animation-delay: 0.27s;
+}
+
+/* Tap feedback */
+.search-result-item:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Loading shimmer */
+.search-dropdown-loading span {
+  animation: searchShimmer 1.2s ease-in-out infinite;
+}
+
+/* Empty state fade */
+.search-dropdown-empty {
+  animation: searchResultSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
+/* Hint fade */
+.search-dropdown-hint {
+  animation: searchResultSlideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-search-dropdown,
+  .search-result-item,
+  .search-dropdown-empty,
+  .search-dropdown-hint {
+    animation: none;
+  }
+
+  .search-dropdown-loading span {
+    animation: none;
+  }
+
+  .search-result-item:active {
+    transform: none;
+    transition: none;
+  }
+}

@@ -74,7 +74,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const handleSave = () => {
     updateDatacard(card.uuid, selectedUnitSize, selectedEnhancement, isWarlord);
     handleClose();
-    message.success(`${card.name} updated.`);
+    message.success(`${card.name} updated`);
   };
 
   const selectEnhancement = (enhancement) => {

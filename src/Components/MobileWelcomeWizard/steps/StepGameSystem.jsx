@@ -26,7 +26,7 @@ export const StepGameSystem = ({ selectedSystem, onSelect }) => {
         <div className="mww-gamesystem-icon">
           <Database />
         </div>
-        <h1 className="mww-gamesystem-title">Choose Your Datasource</h1>
+        <h1 className="mww-gamesystem-title">Choose Your Game System</h1>
         <p className="mww-gamesystem-subtitle">
           Select the game system you want to browse. This determines which unit cards and army lists are available.
         </p>

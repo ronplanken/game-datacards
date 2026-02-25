@@ -111,7 +111,7 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
             </Button>
           </Space.Compact>
         </Col>
-        <Col span={8}>
+        <Col span={8} className="mobile-add-card-btn">
           <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
             {activeCard && activeCard.points && (
               <Button

@@ -79,7 +79,6 @@
   border: 1px solid var(--wnw-border);
 }
 
-
 .wnw-overlay--exiting .wnw-modal {
   animation: wnwScaleOut 0.2s ease-out forwards;
 }

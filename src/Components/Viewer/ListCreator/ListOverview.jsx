@@ -215,11 +215,11 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       // For cloud categories, just list the card names
       const cardNames = currentCards.map((card) => card.name).join("\n");
       navigator.clipboard.writeText(cardNames);
-      message.success("Card names copied to clipboard.");
+      message.success("Card names copied to clipboard");
     } else {
       const listText = isAoS ? formatAoSListText(sortedCards, sections) : format40kListText(sortedCards, sections);
       navigator.clipboard.writeText(listText);
-      message.success("List copied to clipboard.");
+      message.success("List copied to clipboard");
     }
   };
 
@@ -263,7 +263,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
           <div className="list-overview-empty">
             {isCloudCategory ? <Cloud size={48} /> : <List size={48} />}
             <span className="list-overview-empty-text">
-              {isCloudCategory ? "This category has no cards" : "Your list is currently empty"}
+              {isCloudCategory ? "This category has no cards" : "Your list is empty"}
             </span>
           </div>
         ) : isCloudCategory ? (

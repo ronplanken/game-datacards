@@ -3,7 +3,6 @@ import { useSwipeable } from "react-swipeable";
 import "./BottomSheet.css";
 
 export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, maxHeight = "80vh", dark = false }) => {
-  const sheetRef = useRef(null);
   const contentRef = useRef(null);
 
   // Handle escape key
@@ -53,14 +52,10 @@ export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, max
   return (
     <>
       {/* Backdrop */}
-      <div className={`bottom-sheet-backdrop ${isOpen ? "open" : ""}`} onClick={onClose} />
+      <div className="bottom-sheet-backdrop" onClick={onClose} />
 
       {/* Sheet */}
-      <div
-        ref={sheetRef}
-        className={`bottom-sheet ${isOpen ? "open" : ""} ${dark ? "bottom-sheet--dark" : ""}`}
-        style={{ maxHeight }}
-        {...swipeHandlers}>
+      <div className={`bottom-sheet ${dark ? "bottom-sheet--dark" : ""}`} style={{ maxHeight }} {...swipeHandlers}>
         {/* Drag handle */}
         <div className="bottom-sheet-handle-container">
           <div className="bottom-sheet-handle" />

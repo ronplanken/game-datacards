@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
+import { List, ChevronRight, ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
@@ -23,7 +23,7 @@ const ExpandableItem = ({ title, cost, costLabel = "CP", children, defaultOpen =
             {cost} {costLabel}
           </span>
         )}
-        {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        <ChevronDown size={18} className={`expandable-item-chevron ${isOpen ? "open" : ""}`} />
       </button>
       {isOpen && <div className="expandable-item-content">{children}</div>}
     </div>

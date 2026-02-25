@@ -90,7 +90,7 @@ export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit
 
       {showResults && !isSearching && !hasResults && (
         <div className="search-dropdown-empty">
-          <span>No units found for &quot;{searchText}&quot;</span>
+          <span>No results found for &quot;{searchText}&quot;</span>
         </div>
       )}
 

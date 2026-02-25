@@ -87,7 +87,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const handleAddToList = () => {
     addDatacard(activeCard, selectedUnitSize, selectedEnhancement, isWarlord);
     handleClose();
-    message.success(`${activeCard.name} added to list.`);
+    message.success(`${activeCard.name} added to list`);
   };
 
   const selectEnhancement = (enhancement) => {

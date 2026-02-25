@@ -465,12 +465,141 @@
 }
 
 /* ===========================================
+   ENTRANCE ANIMATIONS
+   =========================================== */
+@keyframes mgwStepIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mgwFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mgwStatusScaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes mgwConfirmBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes mgwSummaryPop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Step transitions - slide in from right */
+.mgw-step {
+  animation: mgwStepIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Staggered unit cards */
+.mgw-unit-card {
+  animation: mgwFadeSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.mgw-unit-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.mgw-unit-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.mgw-unit-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.mgw-unit-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.mgw-unit-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.mgw-unit-card:nth-child(n + 6) {
+  animation-delay: 0.3s;
+}
+
+/* Status badge scale-in */
+.mgw-status-icon {
+  animation: mgwStatusScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Confirm icon spring bounce */
+.mgw-confirm-icon {
+  animation: mgwConfirmBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+/* Import button press feedback */
+.mgw-primary-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Summary bar badge animations */
+.mgw-summary-item {
+  animation: mgwSummaryPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.mgw-summary-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.mgw-summary-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.mgw-summary-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.mgw-summary-item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {
   .mgw-unit-card,
   .mgw-primary-btn,
-  .mgw-back-btn {
+  .mgw-back-btn,
+  .mgw-step,
+  .mgw-status-icon,
+  .mgw-confirm-icon,
+  .mgw-summary-item {
+    animation: none;
     transition: none;
   }
 }
