@@ -544,6 +544,7 @@ export const Importer = () => {
       uuid: uuidv4(),
       name: gwAppCategoryName || "Imported List",
       type: "list",
+      dataSource: settings.selectedDataSource,
       cards,
     };
 

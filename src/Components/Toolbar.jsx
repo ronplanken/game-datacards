@@ -94,7 +94,7 @@ export const Toolbar = () => {
             shape={"circle"}
             icon={<ListCards />}
             onClick={() => {
-              addCategory("New List", "list");
+              addCategory("New List", "list", settings.selectedDataSource);
             }}
           />
         </Tooltip>

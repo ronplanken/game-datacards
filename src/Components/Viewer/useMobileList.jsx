@@ -47,9 +47,12 @@ export const MobileListProvider = (props) => {
   }, []);
 
   // Derive lists from cardStorage (categories with type "list" for current datasource)
+  // Falls back to first card's source if dataSource is missing on the category
   const lists = useMemo(() => {
     if (!cardStorage?.categories) return [];
-    return cardStorage.categories.filter((cat) => cat.type === "list" && cat.dataSource === dataSource);
+    return cardStorage.categories.filter(
+      (cat) => cat.type === "list" && (cat.dataSource || cat.cards?.[0]?.source) === dataSource,
+    );
   }, [cardStorage?.categories, dataSource]);
 
   // Create default list if none exist for current datasource
