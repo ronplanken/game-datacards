@@ -49,6 +49,11 @@ const ListRow = ({ list, index, isSelected, points, onSelect, onRename, onDelete
     <div className={`list-selector-row ${isSelected ? "selected" : ""}`}>
       <button className="list-selector-row-main" onClick={() => onSelect(index)} type="button">
         <div className="list-selector-row-check">{isSelected && <Check size={16} />}</div>
+        {list.syncEnabled && (
+          <div className="list-selector-row-cloud-icon">
+            <Cloud size={14} />
+          </div>
+        )}
         {isEditing ? (
           <EditInput value={list.name} onSave={handleSave} onCancel={() => setIsEditing(false)} />
         ) : (

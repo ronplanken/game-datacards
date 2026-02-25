@@ -251,7 +251,7 @@
 .cloud-categories-divider span {
   font-size: 12px;
   font-weight: 600;
-  color: var(--bs-text-muted);
+  color: var(--bs-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
@@ -270,7 +270,7 @@
 .cloud-categories-empty {
   text-align: center;
   padding: 16px;
-  color: var(--bs-text-secondary);
+  color: var(--bs-text);
   font-size: 14px;
 }
 
@@ -373,23 +373,23 @@
 }
 
 .cloud-category-badge--40k {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.2);
+  color: #2563eb;
 }
 
 .cloud-category-badge--aos {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  background: rgba(168, 85, 247, 0.2);
+  color: #7c3aed;
 }
 
 .cloud-category-badge--necro {
-  background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #d97706;
 }
 
 .cloud-category-badge--custom {
-  background: rgba(100, 116, 139, 0.15);
-  color: #64748b;
+  background: rgba(100, 116, 139, 0.2);
+  color: #475569;
 }
 
 /* ===========================================
@@ -419,7 +419,7 @@
   width: 24px;
   height: 24px;
   border-radius: 6px;
-  background: var(--bs-accent-muted);
+  background: rgba(22, 119, 255, 0.15);
   color: var(--bs-accent);
   display: flex;
   align-items: center;
@@ -448,5 +448,5 @@
 
 .list-selector-row-cloud-count {
   font-size: 12px;
-  color: var(--bs-text-secondary);
+  color: var(--bs-text);
 }
