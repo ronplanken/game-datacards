@@ -1,6 +1,7 @@
 import compareVersions, { compare } from "compare-versions";
 import v310Config from "./v3.1.0";
 import v320Config from "./v3.2.0";
+import v321Config from "./v3.2.1";
 
 /**
  * Registry of all mobile version wizard configurations
@@ -11,7 +12,7 @@ import v320Config from "./v3.2.0";
  * 2. Create step components and index.js with MOBILE_VERSION_CONFIG
  * 3. Import and add to MOBILE_VERSION_REGISTRY array below
  */
-export const MOBILE_VERSION_REGISTRY = [v310Config, v320Config]
+export const MOBILE_VERSION_REGISTRY = [v310Config, v320Config, v321Config]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));
 
