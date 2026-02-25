@@ -36,7 +36,7 @@ export const StepAddingCards = () => {
           <div className="wz-toolbar-feature-content">
             <h4 className="wz-toolbar-feature-title">Add to Category</h4>
             <p className="wz-toolbar-feature-desc">
-              Browse units from the datasource and click the + button to add them to any of your categories.
+              Browse units from your game system and click the + button to add them to any of your categories.
             </p>
           </div>
         </div>

@@ -49,9 +49,8 @@ export const FactionSettingsModal = () => {
   const renderSubfactionsTab = () => (
     <>
       <p className="faction-section-description">
-        By default all subfactions are shown. If you want to hide certain subfactions you can toggle them here. This
-        will filter stratagems &amp; secondaries. At the moment Datasheets cannot be filtered by subfaction yet because
-        of datasource limitations.
+        Toggle subfactions on or off. Hidden subfactions are also filtered from stratagems and secondaries. Datasheets
+        are not affected by this filter.
       </p>
       <div className="faction-bulk-actions">
         <button
@@ -112,7 +111,7 @@ export const FactionSettingsModal = () => {
     <>
       {!dataSource.noDatasheetByRole && (
         <>
-          <p className="faction-section-title">Generic options</p>
+          <p className="faction-section-title">Layout</p>
           <SettingCard
             title="Split datasheets by role"
             checked={settings.splitDatasheetsByRole}
@@ -146,7 +145,7 @@ export const FactionSettingsModal = () => {
             onChange={(value) => updateSettings({ ...settings, showPointsInListview: value })}
           />
           <SettingCard
-            title="Always show cards in single-side view"
+            title="Show both sides on one page"
             checked={settings.showCardsAsDoubleSided || false}
             onChange={(value) => updateSettings({ ...settings, showCardsAsDoubleSided: value })}
           />
@@ -159,8 +158,7 @@ export const FactionSettingsModal = () => {
       )}
       {settings.selectedDataSource === "40k-10e-cp" && (
         <>
-          <p className="faction-section-title">Warhammer 10th Combat Patrol options</p>
-          <p className="faction-subsection-title">Datacards</p>
+          <p className="faction-section-title">Combat Patrol options</p>
           <p className="faction-subsection-title">Display</p>
           <SettingCard
             title="Show points in listview"
@@ -168,7 +166,7 @@ export const FactionSettingsModal = () => {
             onChange={(value) => updateSettings({ ...settings, showPointsInListview: value })}
           />
           <SettingCard
-            title="Always show cards in single-side view"
+            title="Show both sides on one page"
             checked={settings.showCardsAsDoubleSided || false}
             onChange={(value) => updateSettings({ ...settings, showCardsAsDoubleSided: value })}
           />
@@ -211,7 +209,7 @@ export const FactionSettingsModal = () => {
 
   const renderStratagemsTab = () => (
     <>
-      <p className="faction-section-description">Please select your preferred options here.</p>
+      <p className="faction-section-description">Choose which stratagems appear in the list.</p>
       <SettingCard
         title="Hide basic stratagems"
         checked={settings.hideBasicStratagems}
@@ -222,7 +220,7 @@ export const FactionSettingsModal = () => {
 
   const renderSecondariesTab = () => (
     <>
-      <p className="faction-section-description">Please select your preferred options here.</p>
+      <p className="faction-section-description">Choose which secondaries appear in the list.</p>
       <SettingCard
         title="Hide basic secondaries"
         checked={settings.hideBasicSecondaries}

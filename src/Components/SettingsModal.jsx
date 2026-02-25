@@ -198,11 +198,11 @@ export const SettingsModal = () => {
   const DatasourceDetails = () => (
     <div className="datasource-details">
       <div className="datasource-detail-item">
-        <span className="datasource-detail-label">Checked for update</span>
+        <span className="datasource-detail-label">Last update check</span>
         <span className="datasource-detail-value">{formatDate(dataSource.lastCheckedForUpdate)}</span>
       </div>
       <div className="datasource-detail-item">
-        <span className="datasource-detail-label">Data snapshot</span>
+        <span className="datasource-detail-label">Data version date</span>
         <span className="datasource-detail-value">{formatDate(dataSource.lastUpdated)}</span>
       </div>
       <div className="datasource-detail-item">
@@ -214,8 +214,8 @@ export const SettingsModal = () => {
         <span className="datasource-detail-value">{dataSource.data.length || 0}</span>
       </div>
       <div className="datasource-detail-item">
-        <span className="datasource-detail-label">Storage</span>
-        <span className="datasource-detail-value">IndexDB</span>
+        <span className="datasource-detail-label">Stored</span>
+        <span className="datasource-detail-value">Locally in browser</span>
       </div>
     </div>
   );
@@ -227,7 +227,7 @@ export const SettingsModal = () => {
           <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="settings-modal-header">
-              <span className="settings-modal-title">Configuration</span>
+              <span className="settings-modal-title">Settings</span>
               <span className="settings-version-badge">Version {import.meta.env.VITE_VERSION}</span>
             </div>
 
@@ -252,8 +252,7 @@ export const SettingsModal = () => {
                 {activeTab === "datasources" && (
                   <>
                     <p className="settings-section-description">
-                      Please select your preferred game and datasource system. If no system is selected it will default
-                      to the Basic Card system.
+                      Choose a game system to load its unit data. If none is selected, the Basic Card system is used.
                     </p>
 
                     {/* Active Datasource Section */}
@@ -317,7 +316,7 @@ export const SettingsModal = () => {
                       <div className="datasource-section">
                         <h3 className="datasource-section-title">Local Datasources</h3>
                         <p className="datasource-section-description">
-                          These datasources are editable in your treeview. Upload to cloud to share with others.
+                          Datasources you created from your card categories. Upload to cloud to share with others.
                         </p>
                         {getLocalDatasources().map((ds) => {
                           const isActive = settings.selectedDataSource === `local-ds-${ds.uuid}`;
@@ -498,12 +497,14 @@ export const SettingsModal = () => {
                   <>
                     <div className="warning-box">
                       <p className="warning-box-text">
-                        If you would like to clear the local storage please use the button below. Please be noted that
-                        this is a one way operation and will remove all stored data including saved cards.
+                        This permanently deletes all locally stored data, including your saved cards and categories.
+                        This action cannot be undone.
                       </p>
                     </div>
-                    <Popconfirm title={"Are you sure you want to remove all data?"} onConfirm={clearData}>
-                      <button className="danger-btn">Clear data</button>
+                    <Popconfirm
+                      title={"Delete all saved cards, categories, and settings? This cannot be undone."}
+                      onConfirm={clearData}>
+                      <button className="danger-btn">Clear all data</button>
                     </Popconfirm>
                   </>
                 )}
@@ -511,12 +512,13 @@ export const SettingsModal = () => {
                 {/* Printing Tab */}
                 {activeTab === "printing" && (
                   <>
-                    <p className="settings-section-description">You can configure printing options here.</p>
+                    <p className="settings-section-description">Adjust how your cards are printed.</p>
                     <div className="setting-row">
                       <div className="setting-info">
                         <div className="setting-label">Legacy Printing</div>
                         <div className="setting-description">
-                          Enable the legacy printing mode for older print layouts.
+                          Use the original print layout from earlier versions. Try this if the default layout has issues
+                          with your printer.
                         </div>
                       </div>
                       <Toggle

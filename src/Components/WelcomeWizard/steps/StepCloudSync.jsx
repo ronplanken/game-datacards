@@ -10,7 +10,7 @@ export const StepCloudSync = () => {
     <div className="wz-step-cloud-sync">
       <h2 className="wz-step-title">Cloud Sync</h2>
       <p className="wz-step-description">
-        Keep your datacards backed up and accessible from any device. Create a free account to get started.
+        Back up your cards and access them from any device. Create a free account to get started.
       </p>
 
       <div className="wz-mock-preview">

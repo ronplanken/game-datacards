@@ -19,7 +19,7 @@ export const StepConflicts = () => (
       <h2 className="wnw-feature-title">Resolving Conflicts</h2>
     </div>
     <p className="wnw-feature-description">
-      When changes are made on multiple devices, a conflict dialog will help you choose how to proceed.
+      If you edit the same category on different devices, a dialog lets you choose which version to keep.
     </p>
     <div className="wnw-mock-preview">
       <MockConflictDialog />
