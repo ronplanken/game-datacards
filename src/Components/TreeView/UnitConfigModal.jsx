@@ -78,9 +78,9 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   if (!isOpen) return null;
 
-  const warlordAlreadyAdded = category?.cards?.find((c) => c.warlord);
+  const warlordAlreadyAdded = category?.cards?.find((c) => c.isWarlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
-    return card?.keywords?.includes("Epic Hero") && card?.id === foundCard?.card?.id;
+    return card?.keywords?.includes("Epic Hero") && card?.id === foundCard?.id;
   });
 
   const isCharacter = card?.keywords?.includes("Character");
@@ -137,7 +137,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     });
 
   const isEnhancementDisabled = (enhancement) => {
-    return category?.cards?.some((c) => c?.enhancement?.name === enhancement?.name);
+    return category?.cards?.some((c) => c?.selectedEnhancement?.name === enhancement?.name);
   };
 
   const modalRoot = document.getElementById("modal-root");
