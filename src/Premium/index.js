@@ -230,6 +230,12 @@ export const EditDatasourceMetadataModal = () => null;
 export const ExportDatasourceModal = () => null;
 
 // =====================================================
+// SHARING COMPONENTS - All render null
+// =====================================================
+
+export const MySharedListsModal = () => null;
+
+// =====================================================
 // WELCOME WIZARD COMPONENTS - All render null
 // =====================================================
 

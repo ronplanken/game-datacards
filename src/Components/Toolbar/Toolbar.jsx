@@ -4,7 +4,6 @@ import { Tooltip } from "../Tooltip/Tooltip";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useFirebase } from "../../Hooks/useFirebase";
 
 import { Parser } from "xml2js";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -34,8 +33,6 @@ export const Toolbar = () => {
 
   const navigate = useNavigate();
 
-  const { logScreenView } = useFirebase();
-
   const { cardStorage, activeCategory, addCategory } = useCardStorage();
 
   return (
@@ -47,7 +44,6 @@ export const Toolbar = () => {
             disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
-              logScreenView("Print");
               if (settings.legacyPrinting) {
                 navigate(`/legacy-print/${categoryIndex}`);
               } else {
@@ -63,7 +59,6 @@ export const Toolbar = () => {
             disabled={getTotalCardCount(activeCategory, cardStorage.categories) === 0}
             onClick={() => {
               const categoryIndex = cardStorage?.categories?.findIndex((cat) => cat.uuid === activeCategory.uuid);
-              logScreenView("Export");
               navigate(`/image-export/${categoryIndex}`);
             }}
             icon={<Image size={16} />}

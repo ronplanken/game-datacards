@@ -1,8 +1,9 @@
-import { Link, Share2, Info } from "lucide-react";
+import { Link, Share2, Info, RefreshCw } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
-import { useFirebase } from "../Hooks/useFirebase";
+import { useCategorySharing } from "../Hooks/useCategorySharing";
+import { useAuth } from "../Premium";
 import { message } from "./Toast/message";
 import "./ShareModal.css";
 
@@ -10,10 +11,13 @@ export const ShareModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [shareId, setShareId] = useState();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [existingShare, setExistingShare] = useState(null);
+  const [isPublic, setIsPublic] = useState(true);
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
 
-  const { shareCategory, logScreenView } = useFirebase();
+  const { shareAnonymous, shareOwned, updateShare, getExistingShare } = useCategorySharing();
+  const { isAuthenticated } = useAuth();
   const { activeCategory } = useCardStorage();
 
   // Handle click outside to close
@@ -46,20 +50,64 @@ export const ShareModal = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
+  // Check for existing share when modal opens (authenticated only)
+  useEffect(() => {
+    if (isOpen && isAuthenticated && activeCategory?.uuid) {
+      getExistingShare(activeCategory.uuid).then((share) => {
+        setExistingShare(share);
+      });
+    }
+  }, [isOpen, isAuthenticated, activeCategory?.uuid, getExistingShare]);
+
   const handleGenerate = async () => {
     setIsGenerating(true);
-    const docId = await shareCategory(activeCategory);
-    setShareId(docId.id);
+    try {
+      let result;
+      if (isAuthenticated) {
+        result = await shareOwned(activeCategory, isPublic);
+      } else {
+        result = await shareAnonymous(activeCategory);
+      }
+
+      if (result.success) {
+        setShareId(result.shareId);
+      } else {
+        message.error(result.error || "Failed to share");
+      }
+    } catch {
+      message.error("Failed to generate share link");
+    }
+    setIsGenerating(false);
+  };
+
+  const handleUpdate = async () => {
+    if (!existingShare?.share_id) return;
+
+    setIsGenerating(true);
+    try {
+      const result = await updateShare(existingShare.share_id, activeCategory);
+      if (result.success) {
+        setShareId(existingShare.share_id);
+        message.success("Share updated successfully");
+      } else {
+        message.error(result.error || "Failed to update share");
+      }
+    } catch {
+      message.error("Failed to update share");
+    }
     setIsGenerating(false);
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`${import.meta.env.VITE_URL}/shared/${shareId}`);
+    const id = shareId || existingShare?.share_id;
+    navigator.clipboard.writeText(`${import.meta.env.VITE_URL}/shared/${id}`);
     message.success("Link copied to clipboard");
   };
 
   const handleOpen = () => {
-    logScreenView("Share category");
+    setShareId(null);
+    setExistingShare(null);
+    setIsPublic(true);
     setIsOpen(true);
   };
 
@@ -73,7 +121,8 @@ export const ShareModal = () => {
     };
   };
 
-  const shareUrl = shareId ? `${import.meta.env.VITE_URL}/shared/${shareId}` : null;
+  const currentShareId = shareId || existingShare?.share_id;
+  const shareUrl = currentShareId ? `${import.meta.env.VITE_URL}/shared/${currentShareId}` : null;
   const position = getDropdownPosition();
 
   return (
@@ -105,6 +154,22 @@ export const ShareModal = () => {
                 </div>
               </div>
 
+              {/* Visibility toggle (authenticated only) */}
+              {isAuthenticated && !shareId && !existingShare && (
+                <div className="share-dropdown-section">
+                  <label className="share-visibility-toggle">
+                    <span className="share-visibility-label">Public link</span>
+                    <button
+                      className={`share-toggle ${isPublic ? "active" : ""}`}
+                      onClick={() => setIsPublic(!isPublic)}
+                      role="switch"
+                      aria-checked={isPublic}>
+                      <span className="share-toggle-thumb" />
+                    </button>
+                  </label>
+                </div>
+              )}
+
               {/* Link Section */}
               <div className="share-dropdown-section">
                 <div className={`share-link-field ${shareUrl ? "has-link" : ""}`}>
@@ -122,13 +187,39 @@ export const ShareModal = () => {
                   )}
                 </div>
 
-                <button
-                  className="share-action-btn"
-                  onClick={shareUrl ? handleCopy : handleGenerate}
-                  disabled={isGenerating}>
-                  {isGenerating && <span className="share-btn-spinner" />}
-                  {isGenerating ? "Generating..." : shareUrl ? "Copy Link" : "Generate Link"}
-                </button>
+                {/* Existing share: show update + new buttons */}
+                {existingShare && !shareId ? (
+                  <div className="share-action-group">
+                    <button
+                      className="share-action-btn share-action-btn--update"
+                      onClick={handleUpdate}
+                      disabled={isGenerating}>
+                      {isGenerating && <span className="share-btn-spinner" />}
+                      <RefreshCw size={14} />
+                      {isGenerating ? "Updating..." : "Update Existing Share"}
+                    </button>
+                    <button
+                      className="share-action-btn share-action-btn--secondary"
+                      onClick={handleGenerate}
+                      disabled={isGenerating}>
+                      Create New Share
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="share-action-btn"
+                    onClick={shareUrl ? handleCopy : handleGenerate}
+                    disabled={isGenerating}>
+                    {isGenerating && <span className="share-btn-spinner" />}
+                    {isGenerating
+                      ? "Generating..."
+                      : shareUrl
+                        ? "Copy Link"
+                        : isAuthenticated
+                          ? "Share"
+                          : "Generate Link"}
+                  </button>
+                )}
               </div>
 
               <div className="share-dropdown-divider" />
@@ -136,7 +227,11 @@ export const ShareModal = () => {
               {/* Note */}
               <div className="share-dropdown-note">
                 <Info size={14} />
-                <span>Links are snapshots and won&apos;t auto-update</span>
+                <span>
+                  {isAuthenticated
+                    ? "You can update this share later from your account menu"
+                    : "Links are snapshots and won\u0027t auto-update"}
+                </span>
               </div>
             </div>
           </div>,

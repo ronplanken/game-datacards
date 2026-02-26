@@ -32,7 +32,7 @@ import { useFeatureFlags } from "./Hooks/useFeatureFlags";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
-import { FirebaseProviderComponent } from "./Hooks/useFirebase";
+import { CategorySharingProvider } from "./Hooks/useCategorySharing";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
 import { UserProviderComponent } from "./Hooks/useUser";
 
@@ -185,7 +185,7 @@ const RootLayout = () => (
       <AuthProvider>
         <SubscriptionProvider>
           <UserProviderComponent>
-            <FirebaseProviderComponent>
+            <CategorySharingProvider>
               <DataSourceStorageProviderComponent>
                 <DatasourceSharingProvider>
                   <CardStorageProviderComponent>
@@ -204,7 +204,7 @@ const RootLayout = () => (
                   </CardStorageProviderComponent>
                 </DatasourceSharingProvider>
               </DataSourceStorageProviderComponent>
-            </FirebaseProviderComponent>
+            </CategorySharingProvider>
           </UserProviderComponent>
         </SubscriptionProvider>
       </AuthProvider>

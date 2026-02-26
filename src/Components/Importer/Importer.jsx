@@ -28,7 +28,6 @@ import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { useFirebase } from "../../Hooks/useFirebase";
 import { v4 as uuidv4 } from "uuid";
 import { validateCustomDatasource, countDatasourceCards } from "../../Helpers/customDatasource.helpers";
 import {
@@ -81,7 +80,6 @@ export const Importer = () => {
   const { importCategory } = useCardStorage();
   const { importCustomDatasource, dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
-  const { logScreenView } = useFirebase();
 
   const handleClose = () => {
     setIsModalVisible(false);
@@ -1014,7 +1012,6 @@ export const Importer = () => {
           type="text"
           icon={<Upload size={16} />}
           onClick={() => {
-            logScreenView("Import Category");
             setIsModalVisible(true);
           }}
         />

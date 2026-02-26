@@ -31,3 +31,4 @@ yarn-error.log*
 .env
 supabase/.temp/
 /audit/
+*-service-account*.json
