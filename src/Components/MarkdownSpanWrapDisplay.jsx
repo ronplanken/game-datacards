@@ -1,3 +1,4 @@
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeRaw from "rehype-raw";
@@ -19,6 +20,8 @@ const customSchema = {
 };
 
 export const MarkdownSpanWrapDisplay = ({ content, components }) => {
+  let paragraphCount = 0;
+
   return (
     <ReactMarkdown
       remarkPlugins={[
@@ -32,6 +35,15 @@ export const MarkdownSpanWrapDisplay = ({ content, components }) => {
       components={{
         p(props) {
           const { node, ...rest } = props;
+          paragraphCount++;
+          if (paragraphCount > 1) {
+            return (
+              <React.Fragment>
+                <span style={{ display: "block", height: "8px" }} aria-hidden="true" />
+                <span style={{ whiteSpace: "pre-wrap" }} {...rest} />
+              </React.Fragment>
+            );
+          }
           return <span style={{ whiteSpace: "pre-wrap" }} {...rest} />;
         },
         span(props) {
