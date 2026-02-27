@@ -18,6 +18,7 @@ ALTER TABLE public.category_shares
   ADD COLUMN IF NOT EXISTS version_number INTEGER DEFAULT 1;
 
 -- Reuse existing update_updated_at_column() trigger from migration 001
+DROP TRIGGER IF EXISTS update_category_shares_updated_at ON public.category_shares;
 CREATE TRIGGER update_category_shares_updated_at
   BEFORE UPDATE ON public.category_shares
   FOR EACH ROW

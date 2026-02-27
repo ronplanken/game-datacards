@@ -157,7 +157,7 @@ export const ShareModal = () => {
               {/* Visibility toggle (authenticated only) */}
               {isAuthenticated && !shareId && !existingShare && (
                 <div className="share-dropdown-section">
-                  <label className="share-visibility-toggle">
+                  <div className="share-visibility-toggle">
                     <span className="share-visibility-label">Public link</span>
                     <button
                       className={`share-toggle ${isPublic ? "active" : ""}`}
@@ -166,7 +166,7 @@ export const ShareModal = () => {
                       aria-checked={isPublic}>
                       <span className="share-toggle-thumb" />
                     </button>
-                  </label>
+                  </div>
                 </div>
               )}
 

@@ -26,16 +26,16 @@ function cleanCardsForSharing(category) {
     if (cleaned.cardType === "datasheet") {
       return {
         ...cleaned,
-        datasheet: cleaned.datasheet
+        datasheet: (cleaned.datasheet ?? [])
           .filter((sheet) => sheet.active)
           .map((sheet) => {
             const s = { ...sheet };
             delete s.link;
             return s;
           }),
-        keywords: cleaned.keywords.filter((keyword) => keyword.active),
-        wargear: cleaned.wargear.filter((wargear) => wargear.active),
-        abilities: cleaned.abilities.filter((ability) => ability.showAbility),
+        keywords: (cleaned.keywords ?? []).filter((keyword) => keyword.active),
+        wargear: (cleaned.wargear ?? []).filter((wargear) => wargear.active),
+        abilities: (cleaned.abilities ?? []).filter((ability) => ability.showAbility),
       };
     }
     return cleaned;
