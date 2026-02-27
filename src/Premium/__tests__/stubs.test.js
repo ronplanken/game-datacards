@@ -7,6 +7,7 @@ import {
   TEMPLATE_SORT_OPTIONS,
   ListSyncButton,
   MySharedListsModal,
+  MobileSharedListsModal,
 } from "../index";
 
 // ============================================
@@ -242,5 +243,15 @@ describe("MySharedListsModal stub", () => {
   it("should be a function that returns null", () => {
     expect(typeof MySharedListsModal).toBe("function");
     expect(MySharedListsModal()).toBeNull();
+  });
+});
+
+// ============================================
+// MobileSharedListsModal stub
+// ============================================
+describe("MobileSharedListsModal stub", () => {
+  it("should be a function that returns null", () => {
+    expect(typeof MobileSharedListsModal).toBe("function");
+    expect(MobileSharedListsModal()).toBeNull();
   });
 });

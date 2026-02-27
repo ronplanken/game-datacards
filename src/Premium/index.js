@@ -234,6 +234,7 @@ export const ExportDatasourceModal = () => null;
 // =====================================================
 
 export const MySharedListsModal = () => null;
+export const MobileSharedListsModal = () => null;
 
 // =====================================================
 // WELCOME WIZARD COMPONENTS - All render null
