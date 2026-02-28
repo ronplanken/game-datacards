@@ -34,6 +34,7 @@ import {
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
 import { BottomSheet } from "../Mobile/BottomSheet";
+import { MobileModal } from "../Mobile/MobileModal";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter } from "../MobileImporter";
@@ -255,7 +256,7 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
   const shareUrl = currentShareId ? `${import.meta.env.VITE_URL}/shared/${currentShareId}` : null;
 
   return (
-    <BottomSheet isOpen={isVisible} onClose={handleClose} title="Share List">
+    <MobileModal isOpen={isVisible} onClose={handleClose} title="Share List">
       <div className="list-share-sheet">
         <div className="list-share-info">
           <span className="list-share-name">{category?.name}</span>
@@ -317,7 +318,7 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
           </button>
         )}
       </div>
-    </BottomSheet>
+    </MobileModal>
   );
 };
 
