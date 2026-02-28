@@ -420,7 +420,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   return (
     <>
-      <BottomSheet isOpen={isVisible} onClose={handleClose} maxHeight="90vh">
+      <BottomSheet isOpen={isVisible} onClose={handleClose} maxHeight="85vh">
         <div className="list-overview-top-section">
           {/* Only show import for 40k local lists */}
           {is40k && !isCloudCategory && (
