@@ -421,14 +421,13 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   return (
     <>
       <MobileModal isOpen={isVisible} onClose={handleClose} title={isCloudCategory ? "Cloud Category" : "Lists"}>
-        <div className="list-overview-top-section">
-          {/* Only show import for 40k local lists */}
-          {is40k && !isCloudCategory && (
-            <>
-              <ImportActionButton onClick={() => setIsImporterVisible(true)} />
-              <div className="list-overview-divider" />
-            </>
-          )}
+        {/* Only show import for 40k local lists */}
+        {is40k && !isCloudCategory && (
+          <div className="list-overview-import-section">
+            <ImportActionButton onClick={() => setIsImporterVisible(true)} />
+          </div>
+        )}
+        <div className="list-overview-header-sticky">
           <ListHeader
             listName={currentListName}
             onListSelectorClick={() => setIsListSelectorVisible(true)}
