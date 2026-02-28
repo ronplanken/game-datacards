@@ -255,7 +255,7 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
   const shareUrl = currentShareId ? `${import.meta.env.VITE_URL}/shared/${currentShareId}` : null;
 
   return (
-    <MobileModal isOpen={isVisible} onClose={handleClose} title="Share List">
+    <MobileModal isOpen={isVisible} onClose={handleClose} title="Share List" zIndex={1100}>
       <div className="list-share-sheet">
         <div className="list-share-info">
           <span className="list-share-name">{category?.name}</span>

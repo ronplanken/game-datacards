@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { X } from "lucide-react";
 import "./MobileModal.css";
 
-export const MobileModal = ({ isOpen, onClose, title, children }) => {
+export const MobileModal = ({ isOpen, onClose, title, children, zIndex = 1000 }) => {
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e) => {
@@ -35,8 +35,8 @@ export const MobileModal = ({ isOpen, onClose, title, children }) => {
 
   return ReactDOM.createPortal(
     <>
-      <div className="mobile-modal-backdrop" onClick={onClose} />
-      <div className="mobile-modal">
+      <div className="mobile-modal-backdrop" onClick={onClose} style={{ zIndex }} />
+      <div className="mobile-modal" style={{ zIndex: zIndex + 1 }}>
         <div className="mobile-modal-header">
           <span className="mobile-modal-title">{title}</span>
           <button className="mobile-modal-close" onClick={onClose} type="button">
