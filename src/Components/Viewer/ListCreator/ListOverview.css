@@ -6,6 +6,15 @@
 .list-overview-top-section {
   margin: 0 -20px;
   padding: 0 20px;
+  position: sticky;
+  top: -24px;
+  z-index: 10;
+  background: var(--bs-glass-bg, rgba(255, 255, 255, 0.82));
+  backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+  padding-top: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--bs-border);
 }
 
 /* ===========================================
@@ -145,9 +154,13 @@
 }
 
 /* ===========================================
-   COPY BUTTON
+   MORE ACTIONS BUTTON & MENU
    =========================================== */
-.list-overview-copy-button {
+.list-overview-more-wrapper {
+  position: relative;
+}
+
+.list-overview-more-button {
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -162,10 +175,259 @@
   flex-shrink: 0;
 }
 
-.list-overview-copy-button:active {
+.list-overview-more-button:active {
   background: var(--bs-surface-hover);
   color: var(--bs-text);
   border-color: var(--bs-text-muted);
+}
+
+.list-overview-more-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.list-overview-more-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 180px;
+  background: var(--bs-bg);
+  border: 1px solid var(--bs-border);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.06);
+  z-index: 51;
+  overflow: hidden;
+  animation: listMoreMenuIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes listMoreMenuIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.list-overview-more-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 44px;
+  background: transparent;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-text);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.list-overview-more-item:active {
+  background: var(--bs-surface-hover);
+}
+
+.list-overview-more-item + .list-overview-more-item {
+  border-top: 1px solid var(--bs-border);
+}
+
+.list-overview-more-item svg {
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   LIST SHARE SHEET
+   =========================================== */
+.list-share-sheet {
+  padding: 0 16px 16px;
+}
+
+.list-share-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.list-share-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bs-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.list-share-meta {
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Visibility Toggle */
+.list-share-visibility {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.list-share-visibility-label {
+  font-size: 14px;
+  color: var(--bs-text);
+}
+
+.list-share-visibility-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--bs-surface-hover, rgba(148, 163, 184, 0.3));
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding: 0;
+}
+
+.list-share-visibility-toggle.active {
+  background: #1677ff;
+}
+
+.list-share-visibility-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.list-share-visibility-toggle.active .list-share-visibility-thumb {
+  transform: translateX(20px);
+}
+
+/* Share Result */
+.list-share-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bs-surface-hover, rgba(148, 163, 184, 0.1));
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.list-share-result-url {
+  flex: 1;
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.list-share-result-copy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #1677ff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.list-share-result-copy:active {
+  opacity: 0.85;
+}
+
+/* Share Button */
+.list-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #1677ff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.list-share-btn:active {
+  opacity: 0.85;
+}
+
+.list-share-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.list-share-btn--secondary {
+  background: transparent;
+  color: var(--bs-text-secondary);
+  border: 1px solid var(--bs-border, rgba(148, 163, 184, 0.25));
+  margin-top: 8px;
+}
+
+.list-share-btn--secondary:active {
+  background: var(--bs-surface-hover, rgba(148, 163, 184, 0.1));
+}
+
+/* Share Actions */
+.list-share-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading */
+.list-share-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  color: var(--bs-text-secondary);
+  font-size: 14px;
+}
+
+/* Spinner */
+.list-share-spinner {
+  animation: listShareSpin 1s linear infinite;
+}
+
+@keyframes listShareSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===========================================
@@ -328,13 +590,15 @@
   align-items: center;
   padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
   margin: 0 -20px;
-  background: var(--bs-surface);
-  border-top: 1px solid var(--bs-border); /* High contrast border */
+  background: var(--bs-glass-bg, rgba(255, 255, 255, 0.82));
+  backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+  border-top: 1px solid var(--bs-border);
   font-weight: 600;
   position: sticky;
   bottom: -24px;
   z-index: 10;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08); /* Slightly clearer shadow */
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .list-overview-total-label {
@@ -418,7 +682,9 @@
   align-items: center;
   padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
   margin: 0 -20px;
-  background: var(--bs-surface);
+  background: var(--bs-glass-bg, rgba(255, 255, 255, 0.82));
+  backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
   border-top: 1px solid var(--bs-border);
   position: sticky;
   bottom: -24px;
@@ -512,7 +778,9 @@
 @media (prefers-reduced-motion: reduce) {
   .list-overview-item,
   .list-overview-section,
-  .list-overview-empty-text {
+  .list-overview-empty-text,
+  .list-overview-more-menu,
+  .list-share-spinner {
     animation: none;
   }
 
