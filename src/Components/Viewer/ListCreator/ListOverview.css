@@ -6,10 +6,6 @@
 .list-overview-top-section {
   margin: 0 -20px;
   padding: 0 20px;
-  position: sticky;
-  top: -24px;
-  z-index: 10;
-  background: #ffffff;
   padding-top: 4px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--bs-border);

@@ -33,7 +33,6 @@ import {
   SECTIONS_40K,
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
-import { BottomSheet } from "../Mobile/BottomSheet";
 import { MobileModal } from "../Mobile/MobileModal";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
@@ -421,7 +420,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   return (
     <>
-      <BottomSheet isOpen={isVisible} onClose={handleClose} maxHeight="85vh">
+      <MobileModal isOpen={isVisible} onClose={handleClose} title={isCloudCategory ? "Cloud Category" : "Lists"}>
         <div className="list-overview-top-section">
           {/* Only show import for 40k local lists */}
           {is40k && !isCloudCategory && (
@@ -430,7 +429,6 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
               <div className="list-overview-divider" />
             </>
           )}
-          <h2 className="list-overview-title">{isCloudCategory ? "Cloud Category" : "Lists"}</h2>
           <ListHeader
             listName={currentListName}
             onListSelectorClick={() => setIsListSelectorVisible(true)}
@@ -482,7 +480,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
             </div>
           </div>
         )}
-      </BottomSheet>
+      </MobileModal>
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
