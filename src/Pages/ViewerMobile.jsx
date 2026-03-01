@@ -28,7 +28,11 @@ import {
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
-import { MobileAccountSheet, MobileAccountSettingsSheet, MobileSyncSheet, MobileSharedListsModal } from "../Premium";
+import { MobileAccountSheet, MobileAccountSettingsSheet, MobileSyncSheet } from "../Premium";
+
+const MobileSharedListsModal = React.lazy(() =>
+  import("../Premium").then((mod) => ({ default: mod.MobileSharedListsModal })),
+);
 
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
@@ -342,10 +346,12 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                 setIsVisible={setIsAccountSettingsVisible}
               />
               <MobileSyncSheet isVisible={isSyncSheetVisible} setIsVisible={setIsSyncSheetVisible} />
-              <MobileSharedListsModal
-                visible={isMobileSharedListsVisible}
-                onCancel={() => setIsMobileSharedListsVisible(false)}
-              />
+              <React.Suspense fallback={null}>
+                <MobileSharedListsModal
+                  visible={isMobileSharedListsVisible}
+                  onCancel={() => setIsMobileSharedListsVisible(false)}
+                />
+              </React.Suspense>
               <MobileSharingMenu
                 isVisible={isMobileSharingMenuVisible}
                 setIsVisible={setIsMobileSharingMenuVisible}

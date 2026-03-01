@@ -14,12 +14,7 @@ vi.mock("nanoid", () => ({
   nanoid: () => "mock-nanoid-id-1234",
 }));
 
-// Mock useAuth
-vi.mock("../../Premium", () => ({
-  useAuth: () => ({ isAuthenticated: false }),
-}));
-
-const wrapper = ({ children }) => <CategorySharingProvider>{children}</CategorySharingProvider>;
+const wrapper = ({ children }) => <CategorySharingProvider isAuthenticated={false}>{children}</CategorySharingProvider>;
 
 describe("useCategorySharing", () => {
   beforeEach(() => {

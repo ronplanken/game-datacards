@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef, useContext, createCont
 import { message } from "../Components/Toast/message";
 import localForage from "localforage";
 import { supabase } from "../config/supabase";
-import { useAuth, useSubscription } from "../Premium";
 import { useSettingsStorage } from "./useSettingsStorage";
 import { validateCustomDatasource, createRegistryEntry } from "../Helpers/customDatasource.helpers";
 
@@ -36,10 +35,8 @@ export const SORT_OPTIONS = [
 ];
 
 // Provider component
-export function DatasourceSharingProvider({ children }) {
-  const { user } = useAuth();
+export function DatasourceSharingProvider({ children, user = null, canPerformAction = () => true }) {
   const { settings, updateSettings } = useSettingsStorage();
-  const { canPerformAction } = useSubscription();
 
   // Browse state
   const [publicDatasources, setPublicDatasources] = useState([]);

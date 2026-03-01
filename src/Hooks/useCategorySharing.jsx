@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { nanoid } from "nanoid";
 import { supabase, isSupabaseConfigured } from "../config/supabase";
-import { useAuth } from "../Premium";
 
 const CategorySharingContext = React.createContext(undefined);
 
@@ -44,9 +43,7 @@ function cleanCardsForSharing(category) {
   return { ...category, cards: cleanCards };
 }
 
-export const CategorySharingProvider = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-
+export const CategorySharingProvider = ({ children, isAuthenticated = false }) => {
   const [myShares, setMyShares] = useState([]);
   const [isLoadingMyShares, setIsLoadingMyShares] = useState(false);
   const [isSharing, setIsSharing] = useState(false);

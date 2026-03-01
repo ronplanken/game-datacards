@@ -24,6 +24,8 @@ import {
   MobilePasswordResetPage,
   MobileTwoFactorPage,
   useProducts,
+  useAuth,
+  useSubscription,
   DesignerPage,
   usePremiumFeatures,
   TemplateStorageProvider,
@@ -178,6 +180,23 @@ const CheckoutSuccessHandler = () => {
   return <CheckoutSuccessModal visible={showSuccess} onClose={() => setShowSuccess(false)} tier={tier} />;
 };
 
+// Wrappers that connect sharing providers to auth/subscription context.
+// Avoids circular module dependency: @gdc/premium barrel -> premium components -> main app hooks -> @gdc/premium barrel
+const ConnectedCategorySharingProvider = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return <CategorySharingProvider isAuthenticated={isAuthenticated}>{children}</CategorySharingProvider>;
+};
+
+const ConnectedDatasourceSharingProvider = ({ children }) => {
+  const { user } = useAuth();
+  const { canPerformAction } = useSubscription();
+  return (
+    <DatasourceSharingProvider user={user} canPerformAction={canPerformAction}>
+      {children}
+    </DatasourceSharingProvider>
+  );
+};
+
 // Layout component that wraps all routes with providers
 const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -185,9 +204,9 @@ const RootLayout = () => (
       <AuthProvider>
         <SubscriptionProvider>
           <UserProviderComponent>
-            <CategorySharingProvider>
+            <ConnectedCategorySharingProvider>
               <DataSourceStorageProviderComponent>
-                <DatasourceSharingProvider>
+                <ConnectedDatasourceSharingProvider>
                   <CardStorageProviderComponent>
                     <TemplateStorageProvider>
                       <SyncProvider>
@@ -202,9 +221,9 @@ const RootLayout = () => (
                       </SyncProvider>
                     </TemplateStorageProvider>
                   </CardStorageProviderComponent>
-                </DatasourceSharingProvider>
+                </ConnectedDatasourceSharingProvider>
               </DataSourceStorageProviderComponent>
-            </CategorySharingProvider>
+            </ConnectedCategorySharingProvider>
           </UserProviderComponent>
         </SubscriptionProvider>
       </AuthProvider>
