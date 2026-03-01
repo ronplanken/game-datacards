@@ -4,13 +4,13 @@ import { Select } from "antd";
 import { Trash2, File, Inbox, Check, X, Shield } from "lucide-react";
 import { message } from "../../Toast/message";
 import { v4 as uuidv4 } from "uuid";
+import Fuse from "fuse.js";
 import {
   matchFaction,
   matchUnitsToDatasheets,
-  matchEnhancementsToFaction,
   countMatchStatuses,
   getImportableUnits,
-  buildCardsFromUnits,
+  filterCardWeapons,
 } from "../../../Helpers/gwAppImport.helpers";
 import {
   validateListforgeJson,
@@ -19,6 +19,93 @@ import {
   buildCardFromSelection,
   buildCoreAbilitySet,
 } from "../../../Helpers/listforgeImport.helpers";
+
+const matchEnhancementsToFaction = (units, faction, listDetachment) => {
+  if (!faction?.enhancements?.length) return units;
+
+  return units.map((unit) => {
+    if (!unit.enhancement) return unit;
+
+    const enhancements = faction.enhancements;
+    let factionEnhancement = null;
+
+    if (listDetachment) {
+      factionEnhancement = enhancements.find(
+        (e) =>
+          e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
+          e.detachment?.toLowerCase() === listDetachment.toLowerCase(),
+      );
+    }
+
+    if (!factionEnhancement) {
+      factionEnhancement = enhancements.find((e) => e.name.toLowerCase() === unit.enhancement.name.toLowerCase());
+    }
+
+    if (!factionEnhancement) {
+      const enhancementFuse = new Fuse(enhancements, {
+        keys: ["name"],
+        threshold: 0.4,
+        includeScore: true,
+      });
+      const results = enhancementFuse.search(unit.enhancement.name);
+      if (results.length > 0) {
+        factionEnhancement = results[0].item;
+      }
+    }
+
+    if (factionEnhancement) {
+      return {
+        ...unit,
+        enhancement: {
+          ...unit.enhancement,
+          ...factionEnhancement,
+          cost: unit.enhancement.cost || factionEnhancement.cost,
+          matched: true,
+        },
+        detachment: factionEnhancement.detachment,
+      };
+    }
+
+    return unit;
+  });
+};
+
+const buildCardsFromUnits = (units) => {
+  return units.map((unit) => {
+    let card = { ...unit.matchedCard };
+    card.uuid = uuidv4();
+    card.isCustom = true;
+
+    if (unit.points) {
+      card.unitSize = {
+        ...(card.unitSize || {}),
+        cost: unit.points - (unit.enhancement?.cost || 0),
+        models: unit.models || 1,
+      };
+    }
+
+    if (unit.isWarlord) {
+      card.isWarlord = true;
+    }
+
+    if (unit.enhancement) {
+      card.selectedEnhancement = {
+        name: unit.enhancement.name,
+        cost: unit.enhancement.cost || 0,
+        ...(unit.enhancement.matched ? unit.enhancement : {}),
+      };
+      if (unit.detachment) {
+        card.detachment = unit.detachment;
+      }
+    }
+
+    if (unit.weapons?.length && !card._directRead) {
+      card = filterCardWeapons(card, unit.weapons);
+    }
+
+    return card;
+  });
+};
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { ImportReviewPanel } from "../ImportReviewPanel";
 
