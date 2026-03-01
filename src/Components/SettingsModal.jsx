@@ -547,13 +547,13 @@ export const SettingsModal = () => {
                             <a href="https://listforge.club/" target="_blank" rel="noreferrer">
                               List Forge
                             </a>{" "}
-                            by uploading an exported file or pasting its contents. Match units to your datasource for full
-                            datasheet cards, or import the exported data directly.
+                            by uploading an exported file or pasting its contents. Match units to your datasource for
+                            full datasheet cards, or import the exported data directly.
                           </li>
                           <li className="changelog-list-item">
                             <strong>Automatic Unit Matching</strong>
-                            Factions, detachments, units, and enhancements are detected and matched automatically with the
-                            option to review and adjust before importing.
+                            Factions, detachments, units, and enhancements are detected and matched automatically with
+                            the option to review and adjust before importing.
                           </li>
                         </ul>
                       </ChangelogEntry>
@@ -885,7 +885,7 @@ export const SettingsModal = () => {
 
       <Tooltip content="Configuration" placement="bottom-start">
         <button
-          className="app-header-icon-btn"
+          className="app-header-icon-btn app-header-settings-btn"
           onClick={() => {
             setIsModalVisible(true);
           }}>

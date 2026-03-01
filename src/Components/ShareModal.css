@@ -49,6 +49,15 @@
 }
 
 /* ===========================================
+   FOCUS-VISIBLE
+   =========================================== */
+
+.share-btn-trigger:focus-visible {
+  outline: 2px solid rgba(22, 119, 255, 0.7);
+  outline-offset: 2px;
+}
+
+/* ===========================================
    DROPDOWN OVERLAY
    =========================================== */
 .share-dropdown-overlay {

@@ -37,7 +37,8 @@ export const StepListForge = () => (
         <div>
           <strong>Match or Import Directly</strong>
           <p>
-            Match units to your datasource for full datasheet cards, or import the exported data as-is for a quick setup.
+            Match units to your datasource for full datasheet cards, or import the exported data as-is for a quick
+            setup.
           </p>
         </div>
       </div>
