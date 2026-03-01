@@ -408,8 +408,8 @@ export const Importer = () => {
                         <div className="import-dropzone-icon">
                           <Inbox size={24} />
                         </div>
-                        <p className="import-dropzone-text">Click or drag a file to this area to upload</p>
-                        <p className="import-dropzone-hint">Support for a single file upload. Only .json files.</p>
+                        <p className="import-dropzone-text">Click or drag a file to upload</p>
+                        <p className="import-dropzone-hint">Only .json files exported from GameDatacards.</p>
                       </div>
 
                       {fileInfo && (

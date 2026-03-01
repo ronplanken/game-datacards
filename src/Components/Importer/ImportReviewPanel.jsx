@@ -1,5 +1,5 @@
-import { Select, Segmented } from "antd";
-import { Check, X, AlertTriangle, ChevronLeft, Star, Sparkles } from "lucide-react";
+import { Select } from "antd";
+import { Check, X, AlertTriangle, ChevronLeft, Star, Sparkles, Database, FileJson } from "lucide-react";
 
 const filterOption = (input, option) => option?.label?.toLowerCase().includes(input.toLowerCase());
 
@@ -31,23 +31,29 @@ export const ImportReviewPanel = ({
 
       {/* Import Mode Toggle (only shown when props are provided) */}
       {onImportModeChange && (
-        <div className="gw-import-mode-row">
-          <Segmented
-            value={importMode || "match"}
-            onChange={onImportModeChange}
-            options={[
-              { value: "match", label: "Match to datasource" },
-              { value: "direct", label: "Read from export" },
-            ]}
-            size="small"
-            block
+        <div className="gw-import-mode-toggle">
+          <div
+            className="gw-import-mode-slider"
+            style={{ transform: (importMode || "match") === "direct" ? "translateX(100%)" : "translateX(0)" }}
           />
+          <button
+            className={`gw-import-mode-option ${(importMode || "match") === "match" ? "active" : ""}`}
+            onClick={() => onImportModeChange("match")}>
+            <Database size={13} />
+            <span>Match to datasource</span>
+          </button>
+          <button
+            className={`gw-import-mode-option ${(importMode || "match") === "direct" ? "active" : ""}`}
+            onClick={() => onImportModeChange("direct")}>
+            <FileJson size={13} />
+            <span>Use exported data</span>
+          </button>
         </div>
       )}
 
       {/* Faction Row */}
       <div className="gw-import-faction-row">
-        <span className="gw-import-faction-label">{isDirectMode ? "Faction (optional)" : "Faction"}</span>
+        <span className="gw-import-faction-label">Faction</span>
         <div className="gw-import-faction-value">
           {matchedFaction ? (
             <>
@@ -113,7 +119,7 @@ export const ImportReviewPanel = ({
                   )}
                   <span className="gw-import-unit-meta">
                     {unit.models > 1 && <span className="gw-import-unit-size">{unit.models}x</span>}
-                    <span className="gw-import-unit-points">{unit.points ? `${unit.points} pts` : "? pts"}</span>
+                    <span className="gw-import-unit-points">{unit.points ? `${unit.points} pts` : ""}</span>
                   </span>
                 </div>
                 <div className="gw-import-unit-details">
@@ -131,17 +137,15 @@ export const ImportReviewPanel = ({
                 {isDirectMode && unit.matchedCard && !unit.skipped && (
                   <div className="gw-import-unit-direct-info">
                     <span className="gw-import-unit-match-label">
-                      {unit.matchedCard.stats?.length || 0} stat line
-                      {(unit.matchedCard.stats?.length || 0) !== 1 ? "s" : ""}
-                      {" / "}
+                      {unit.matchedCard.stats?.length || 0} stat{" "}
+                      {(unit.matchedCard.stats?.length || 0) !== 1 ? "lines" : "line"},{" "}
                       {(unit.matchedCard.rangedWeapons?.[0]?.profiles?.length || 0) +
                         (unit.matchedCard.meleeWeapons?.[0]?.profiles?.length || 0)}{" "}
-                      weapon
                       {(unit.matchedCard.rangedWeapons?.[0]?.profiles?.length || 0) +
                         (unit.matchedCard.meleeWeapons?.[0]?.profiles?.length || 0) !==
                       1
-                        ? "s"
-                        : ""}
+                        ? "weapons"
+                        : "weapon"}
                     </span>
                   </div>
                 )}
@@ -196,7 +200,8 @@ export const ImportReviewPanel = ({
               </span>
               {matchCounts.needsReview > 0 && (
                 <span className="gw-import-summary-item review">
-                  <AlertTriangle size={14} /> {matchCounts.needsReview} needs review
+                  <AlertTriangle size={14} /> {matchCounts.needsReview}{" "}
+                  {matchCounts.needsReview === 1 ? "needs" : "need"} review
                 </span>
               )}
               {matchCounts.notMatched > 0 && (

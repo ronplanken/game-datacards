@@ -433,8 +433,8 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
                 <div className="import-dropzone-icon">
                   <Inbox size={24} />
                 </div>
-                <p className="import-dropzone-text">Click or drag a JSON file to upload</p>
-                <p className="import-dropzone-hint">Only .json files exported from List Forge</p>
+                <p className="import-dropzone-text">Click or drag a file to upload</p>
+                <p className="import-dropzone-hint">Only .json files exported from List Forge.</p>
               </div>
 
               <div className="ie-import-divider">
@@ -450,7 +450,7 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
               {jsonText.trim() && (
                 <div className="gw-import-actions">
                   <button className="gw-import-parse-btn" onClick={handleParseJsonText}>
-                    Load JSON
+                    Parse Roster
                   </button>
                 </div>
               )}
