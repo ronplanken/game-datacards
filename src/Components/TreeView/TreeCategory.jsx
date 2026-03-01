@@ -10,6 +10,7 @@ import {
   SyncClaimModal,
   ConvertToDatasourceModal,
 } from "../../Premium";
+import { useUmami } from "../../Hooks/useUmami";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
@@ -40,6 +41,7 @@ export function TreeCategory({
   const { user } = useAuth();
   const { enableSync, disableSync, deleteFromCloud } = useSync();
   const { hasCustomDatasources } = usePremiumFeatures();
+  const { trackEvent } = useUmami();
 
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
@@ -51,12 +53,14 @@ export function TreeCategory({
   const handleRename = (newName) => {
     renameCategory(category.uuid, newName);
     setIsRenameModalOpen(false);
+    trackEvent("category-rename");
     message.success("Category renamed.");
   };
 
   const handleAddSubCategory = (name) => {
     addSubCategory(name, category.uuid);
     setIsSubCategoryModalOpen(false);
+    trackEvent("subcategory-create");
     message.success("Sub-category created.");
   };
 
@@ -91,6 +95,7 @@ export function TreeCategory({
         if (category.syncEnabled) {
           await deleteFromCloud(category.uuid);
         }
+        trackEvent("category-delete");
         message.success("Category deleted.");
         removeCategory(category.uuid);
       },

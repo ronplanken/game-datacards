@@ -2,21 +2,24 @@ import { message } from "../Components/Toast/message";
 import { toBlob, toPng } from "html-to-image";
 import { useCallback } from "react";
 import { useCardStorage } from "./useCardStorage";
+import { useUmami } from "./useUmami";
 
 export const useMobileSharing = () => {
   const { activeCard } = useCardStorage();
+  const { trackEvent } = useUmami();
   const shareLink = useCallback(() => {
     if (navigator.share) {
       const data = { url: window.location.href, title: `Game-Datacards.eu - ${activeCard.name}` };
       if (navigator.canShare(data)) {
         navigator.share(data);
+        trackEvent("mobile-share-link");
       } else {
         message.warn("Your browser is not supported to share this link");
       }
     } else {
       message.warn("Your browser is not supported to share this link");
     }
-  }, [activeCard]);
+  }, [activeCard, trackEvent]);
 
   const htmlToImageConvert = useCallback(
     (divRef, overlayRef) => {
@@ -36,6 +39,7 @@ export const useMobileSharing = () => {
             };
             if (navigator.canShare(fileData)) {
               navigator.share(fileData);
+              trackEvent("mobile-share-image");
             } else {
               message.warn("Your browser is not supported to share this file");
             }
@@ -56,6 +60,7 @@ export const useMobileSharing = () => {
             link.download = `${activeCard.name}.png`;
             link.href = data;
             link.click();
+            trackEvent("mobile-share-image");
           })
           .catch((err) => {
             divRef.current.style.display = "none";
@@ -64,7 +69,7 @@ export const useMobileSharing = () => {
           });
       }
     },
-    [activeCard],
+    [activeCard, trackEvent],
   );
 
   return { shareLink, htmlToImageConvert };

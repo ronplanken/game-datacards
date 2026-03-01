@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useUmami } from "../../Hooks/useUmami";
 import { StepWelcome } from "./steps/StepWelcome";
 import { StepImportList } from "./steps/StepImportList";
 import { StepDesktopInfo } from "./steps/StepDesktopInfo";
@@ -48,6 +49,7 @@ export const MobileWelcomeWizard = () => {
   const [transitionDirection, setTransitionDirection] = useState("forward");
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
 
   // Get visible steps based on selected system
   const getVisibleSteps = () => {
@@ -97,6 +99,7 @@ export const MobileWelcomeWizard = () => {
 
   // Handle wizard completion
   const handleComplete = () => {
+    trackEvent("wizard-complete", { type: "mobile-welcome" });
     setIsExiting(true);
     setTimeout(() => {
       updateSettings({

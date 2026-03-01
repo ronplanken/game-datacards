@@ -15,6 +15,7 @@ import {
   countCardsByType,
   formatCardBreakdown,
 } from "../../Helpers/customDatasource.helpers";
+import { useUmami } from "../../Hooks/useUmami";
 import "./ImportExport.css";
 
 const modalRoot = document.getElementById("modal-root");
@@ -35,6 +36,7 @@ export const Exporter = () => {
   const [activeTab, setActiveTab] = useState("json");
   const { activeCategory, cardStorage } = useCardStorage();
   const { settings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
 
   // Preview state
   const [jsonPreview, setJsonPreview] = useState("");
@@ -115,6 +117,7 @@ export const Exporter = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      trackEvent("export-datasource");
       message.success(`Datasource exported as ${filename}`);
       handleClose();
     } catch (error) {
@@ -179,12 +182,14 @@ export const Exporter = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    trackEvent("export-json", { method: "download" });
     message.success("JSON file downloaded");
   };
 
   const handleCopyJson = () => {
     if (!jsonPreview) return;
     navigator.clipboard.writeText(jsonPreview);
+    trackEvent("export-json", { method: "clipboard" });
     message.success("JSON copied to clipboard");
   };
 
@@ -299,6 +304,7 @@ export const Exporter = () => {
   const handleCopyGwApp = () => {
     if (!gwAppPreview) return;
     navigator.clipboard.writeText(gwAppPreview);
+    trackEvent("export-gw-list");
     message.success("List copied to clipboard");
   };
 

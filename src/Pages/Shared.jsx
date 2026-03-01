@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import "../App.css";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useCategorySharing } from "../Hooks/useCategorySharing";
+import { useUmami } from "../Hooks/useUmami";
 import { useAutoFitScale } from "../Hooks/useAutoFitScale";
 import logo from "../Images/logo.png";
 import { SharedCardDisplay } from "../Components/Shared/SharedCardDisplay";
@@ -22,6 +23,7 @@ export const Shared = () => {
   const navigate = useNavigate();
 
   const { getSharedCategory } = useCategorySharing();
+  const { trackEvent } = useUmami();
 
   const [sharedStorage, setSharedStorage] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -83,6 +85,7 @@ export const Shared = () => {
         .then((data) => {
           if (data) {
             setSharedStorage(data);
+            trackEvent("shared-view");
           } else {
             setError("This shared link could not be found.");
           }
@@ -109,6 +112,7 @@ export const Shared = () => {
     };
 
     importCategory(cloneCategory);
+    trackEvent("shared-clone");
     navigate("/");
   };
 

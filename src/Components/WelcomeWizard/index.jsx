@@ -4,6 +4,7 @@ import * as ReactDOM from "react-dom";
 import { message } from "../Toast/message";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useUmami } from "../../Hooks/useUmami";
 import { useWelcomeWizard } from "./hooks/useWelcomeWizard";
 import { WIZARD_VERSION, WIZARD_STEPS } from "./constants";
 import { WizardHeader, WizardSidebar, WizardFooter, StepTransition, MobileProgress } from "./components";
@@ -34,6 +35,7 @@ export const WelcomeWizard = () => {
 
   const { settings, updateSettings } = useSettingsStorage();
   const { addCategory, setActiveCategory } = useCardStorage();
+  const { trackEvent } = useUmami();
 
   const wizard = useWelcomeWizard(settings, updateSettings);
 
@@ -76,6 +78,7 @@ export const WelcomeWizard = () => {
 
   // Close with exit animation
   const handleClose = useCallback(() => {
+    trackEvent("wizard-complete", { type: "welcome" });
     setIsExiting(true);
     setTimeout(() => {
       setIsWizardVisible(false);
@@ -86,7 +89,7 @@ export const WelcomeWizard = () => {
         lastMajorWizardVersion: import.meta.env.VITE_VERSION,
       });
     }, 200);
-  }, [settings, updateSettings]);
+  }, [settings, updateSettings, trackEvent]);
 
   // Skip tutorial
   const handleSkip = useCallback(() => {

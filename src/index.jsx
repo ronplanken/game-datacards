@@ -31,6 +31,7 @@ import {
   TemplateStorageProvider,
 } from "./Premium";
 import { useFeatureFlags } from "./Hooks/useFeatureFlags";
+import { useUmami } from "./Hooks/useUmami";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
@@ -197,6 +198,18 @@ const ConnectedDatasourceSharingProvider = ({ children }) => {
   );
 };
 
+// Sends session-level context to Umami on mount
+const UmamiSessionIdentifier = () => {
+  const { identify } = useUmami();
+  React.useEffect(() => {
+    identify({
+      appVersion: import.meta.env.VITE_APP_VERSION || "unknown",
+      device: isMobile ? "mobile" : "desktop",
+    });
+  }, [identify]);
+  return null;
+};
+
 // Layout component that wraps all routes with providers
 const RootLayout = () => (
   <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -213,6 +226,7 @@ const RootLayout = () => (
                         <CloudCategoriesProvider>
                           <Outlet />
                           <ScrollRestoration />
+                          <UmamiSessionIdentifier />
                           <WizardSelector />
                           <WhatsNewWizardSelector />
                           <CheckoutSuccessHandler />

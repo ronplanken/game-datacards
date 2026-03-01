@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useUmami } from "../../Hooks/useUmami";
 import { FactionSettingsModal } from "../FactionSettingsModal";
 import "./FactionSelector.css";
 
@@ -11,6 +12,7 @@ export const FactionSelector = () => {
   const searchInputRef = useRef(null);
 
   const { dataSource, selectedFaction, updateSelectedFaction } = useDataSourceStorage();
+  const { trackEvent } = useUmami();
 
   // Filter factions based on search text
   const filteredFactions = dataSource.data.filter((faction) =>
@@ -66,6 +68,7 @@ export const FactionSelector = () => {
 
   const handleSelectFaction = (faction) => {
     updateSelectedFaction(faction);
+    trackEvent("filter-faction", { faction: faction.name });
     setIsOpen(false);
     setSearchText("");
   };

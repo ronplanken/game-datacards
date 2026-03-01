@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useCategorySharing } from "../Hooks/useCategorySharing";
 import { useAuth } from "../Premium";
+import { useUmami } from "../Hooks/useUmami";
 import { message } from "./Toast/message";
 import "./ShareModal.css";
 
@@ -19,6 +20,7 @@ export const ShareModal = () => {
   const { shareAnonymous, shareOwned, updateShare, getExistingShare } = useCategorySharing();
   const { isAuthenticated } = useAuth();
   const { activeCategory } = useCardStorage();
+  const { trackEvent } = useUmami();
 
   // Handle click outside to close
   useEffect(() => {
@@ -70,6 +72,7 @@ export const ShareModal = () => {
       }
 
       if (result.success) {
+        trackEvent("share-generate", { authenticated: isAuthenticated });
         setShareId(result.shareId);
       } else {
         message.error(result.error || "Failed to share");
@@ -87,6 +90,7 @@ export const ShareModal = () => {
     try {
       const result = await updateShare(existingShare.share_id, activeCategory);
       if (result.success) {
+        trackEvent("share-update");
         setShareId(existingShare.share_id);
         message.success("Share updated successfully");
       } else {
@@ -101,6 +105,7 @@ export const ShareModal = () => {
   const handleCopy = () => {
     const id = shareId || existingShare?.share_id;
     navigator.clipboard.writeText(`${import.meta.env.VITE_URL}/shared/${id}`);
+    trackEvent("share-copy-link");
     message.success("Link copied to clipboard");
   };
 
