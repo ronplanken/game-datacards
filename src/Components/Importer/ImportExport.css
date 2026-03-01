@@ -1656,6 +1656,66 @@ button.ie-action-btn svg,
   border-color: var(--ie-accent-primary);
 }
 
+/* Import Mode Toggle */
+.gw-import-mode-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 34px;
+  padding: 3px;
+  background: var(--ie-glass-bg-subtle);
+  border: 1px solid var(--ie-glass-border-subtle);
+  border-radius: 10px;
+}
+
+.gw-import-mode-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  height: calc(100% - 6px);
+  background: var(--ie-glass-bg);
+  border: 1px solid var(--ie-glass-border);
+  border-radius: 7px;
+  box-shadow: var(--ie-shadow-sm);
+  transition: transform 0.25s ease;
+  pointer-events: none;
+}
+
+button.gw-import-mode-option,
+.gw-import-mode-toggle .gw-import-mode-option {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ie-text-muted);
+  cursor: pointer;
+  transition: color 0.25s ease;
+  white-space: nowrap;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  box-shadow: none;
+}
+
+button.gw-import-mode-option.active,
+.gw-import-mode-toggle .gw-import-mode-option.active {
+  color: var(--ie-accent-primary);
+  font-weight: 550;
+}
+
+button.gw-import-mode-option:not(.active):hover,
+.gw-import-mode-toggle .gw-import-mode-option:not(.active):hover {
+  color: var(--ie-text-secondary);
+}
+
 /* Error State */
 .gw-import-error {
   display: flex;
