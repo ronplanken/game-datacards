@@ -2,7 +2,6 @@ import { Form, Input, Select, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
-import { settings } from "firebase/analytics";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { TemplateSelector, usePremiumFeatures } from "../../../Premium";
 import { useFeatureFlags } from "../../../Hooks/useFeatureFlags";

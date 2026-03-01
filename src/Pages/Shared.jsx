@@ -1,14 +1,13 @@
-import { GitFork, Heart, AlertCircle } from "lucide-react";
+import { GitFork, AlertCircle } from "lucide-react";
 import { Image } from "antd";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useSwipeable } from "react-swipeable";
-import clone from "just-clone";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import "../App.css";
 import { useCardStorage } from "../Hooks/useCardStorage";
-import { useFirebase } from "../Hooks/useFirebase";
+import { useCategorySharing } from "../Hooks/useCategorySharing";
 import { useAutoFitScale } from "../Hooks/useAutoFitScale";
 import logo from "../Images/logo.png";
 import { SharedCardDisplay } from "../Components/Shared/SharedCardDisplay";
@@ -22,9 +21,8 @@ export const Shared = () => {
   const { Id } = useParams();
   const navigate = useNavigate();
 
-  const { getCategory, likeCategory, logScreenView } = useFirebase();
+  const { getSharedCategory } = useCategorySharing();
 
-  const [historyStorage, setHistoryStorage] = useState({ liked: [] });
   const [sharedStorage, setSharedStorage] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,7 +52,6 @@ export const Shared = () => {
   const totalCards = cards.length;
   const canGoPrev = selectedCardIndex > 0;
   const canGoNext = selectedCardIndex < totalCards - 1;
-  const isLiked = historyStorage.liked.includes(Id);
 
   // Determine card type for auto-fit scaling
   const getCardType = () => {
@@ -72,33 +69,20 @@ export const Shared = () => {
   // Auto-fit scaling for desktop
   const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), !isMobile);
 
-  // Load history from localStorage
-  useEffect(() => {
-    const localShareStorage = localStorage.getItem("historyStorage");
-    if (localShareStorage) {
-      setHistoryStorage(JSON.parse(localShareStorage));
-    }
-  }, []);
-
   // Update document title
   useEffect(() => {
     document.title = `Shared ${sharedStorage?.category?.name || ""} - Game Datacards`;
   }, [sharedStorage]);
-
-  // Save history to localStorage
-  useEffect(() => {
-    localStorage.setItem("historyStorage", JSON.stringify(historyStorage));
-  }, [historyStorage]);
 
   // Fetch shared category
   useEffect(() => {
     if (Id) {
       setIsLoading(true);
       setError(null);
-      getCategory(Id)
-        .then((cat) => {
-          if (cat) {
-            setSharedStorage(cat);
+      getSharedCategory(Id)
+        .then((data) => {
+          if (data) {
+            setSharedStorage(data);
           } else {
             setError("This shared link could not be found.");
           }
@@ -110,25 +94,10 @@ export const Shared = () => {
           setIsLoading(false);
         });
     }
-  }, [Id, getCategory]);
-
-  // Handle like
-  const handleLike = () => {
-    if (isLiked) return;
-
-    const newStorage = clone(historyStorage);
-    newStorage.liked.push(Id);
-    setHistoryStorage(newStorage);
-    setSharedStorage((prev) => ({
-      ...prev,
-      likes: (prev.likes || 0) + 1,
-    }));
-    likeCategory(Id);
-  };
+  }, [Id, getSharedCategory]);
 
   // Handle clone
   const handleClone = () => {
-    logScreenView("Clone cards");
     const cloneCategory = {
       ...sharedStorage.category,
       name: `Imported ${sharedStorage.category.name}`,
@@ -212,9 +181,6 @@ export const Shared = () => {
           onPrev={goToPrev}
           onNext={goToNext}
           onShowList={() => setShowCardList(true)}
-          onLike={handleLike}
-          isLiked={isLiked}
-          likes={sharedStorage?.likes || 0}
         />
 
         {/* Card List Bottom Sheet */}
@@ -250,12 +216,6 @@ export const Shared = () => {
         </div>
 
         <div className="shared-header-actions">
-          <button className={`shared-header-btn ${isLiked ? "liked" : ""}`} onClick={handleLike} disabled={isLiked}>
-            <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
-            <span>{isLiked ? "Liked" : "Like"}</span>
-            {(sharedStorage?.likes || 0) > 0 && <span className="shared-like-count">{sharedStorage.likes}</span>}
-          </button>
-
           <button className="shared-header-btn" onClick={handleClone}>
             <GitFork size={16} />
             <span>Clone</span>

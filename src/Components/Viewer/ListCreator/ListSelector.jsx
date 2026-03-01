@@ -225,7 +225,7 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
   };
 
   return (
-    <MobileModal isOpen={isVisible} onClose={handleClose} title="Your Lists">
+    <MobileModal isOpen={isVisible} onClose={handleClose} title="Your Lists" zIndex={1002}>
       <div className="list-selector-content">
         {/* Local Lists Section */}
         <div className="list-selector-lists">

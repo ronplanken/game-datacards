@@ -14,7 +14,6 @@ import {
   createRegistryEntry,
   compareVersions,
 } from "../Helpers/customDatasource.helpers";
-import { useFirebase } from "./useFirebase";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
@@ -33,8 +32,6 @@ var dataStore = localForage.createInstance({
 
 export const DataSourceStorageProviderComponent = (props) => {
   const { settings, updateSettings } = useSettingsStorage();
-
-  const { logLocalEvent } = useFirebase();
 
   const [dataSource, setDataSource] = React.useState(getBasicData());
   const [selectedFaction, setSelectedFaction] = React.useState(null);
@@ -61,7 +58,6 @@ export const DataSourceStorageProviderComponent = (props) => {
       if (!dataStore) {
         return;
       }
-      logLocalEvent("select_datasource", { dataSource: settings.selectedDataSource });
       const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
 
       if (settings.selectedDataSource === "40k") {
@@ -201,7 +197,6 @@ export const DataSourceStorageProviderComponent = (props) => {
    * @param {Object} faction - The faction object to select
    */
   const updateSelectedFaction = (faction) => {
-    logLocalEvent("select_faction", { faction: faction?.name, dataSource: settings.selectedDataSource });
     setSelectedFaction(faction);
     const newIndex = dataSource?.data?.findIndex((f) => f?.id === faction?.id);
     // Update the per-datasource faction index
@@ -289,15 +284,9 @@ export const DataSourceStorageProviderComponent = (props) => {
         customDatasources: [...currentCustomDatasources, registryEntry],
       });
 
-      logLocalEvent("import_custom_datasource", {
-        name: preparedDatasource.name,
-        displayFormat: preparedDatasource.displayFormat,
-        sourceType,
-      });
-
       return { success: true, id: preparedDatasource.id };
     },
-    [settings, updateSettings, logLocalEvent],
+    [settings, updateSettings],
   );
 
   /**
@@ -329,10 +318,8 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
       }
-
-      logLocalEvent("remove_custom_datasource", { datasourceId });
     },
-    [settings, updateSettings, logLocalEvent],
+    [settings, updateSettings],
   );
 
   /**
@@ -436,14 +423,9 @@ export const DataSourceStorageProviderComponent = (props) => {
         setSelectedFaction(preparedDatasource.data[0]);
       }
 
-      logLocalEvent("update_custom_datasource", {
-        datasourceId,
-        newVersion: newData.version,
-      });
-
       return { success: true };
     },
-    [settings, updateSettings, logLocalEvent],
+    [settings, updateSettings],
   );
 
   /**

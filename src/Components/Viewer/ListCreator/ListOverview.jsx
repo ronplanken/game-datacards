@@ -1,10 +1,27 @@
-import { useState } from "react";
-import { Crown, Trash2, FileText, List, ChevronDown, Upload, ChevronRight, Cloud } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import {
+  Crown,
+  Trash2,
+  FileText,
+  List,
+  ChevronDown,
+  Upload,
+  ChevronRight,
+  Cloud,
+  MoreHorizontal,
+  Share2,
+  Link,
+  Check,
+  Loader,
+  RefreshCw,
+} from "lucide-react";
 import { message } from "../../Toast/message";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useCloudCategories, ListSyncButton } from "../../../Premium";
+import { useAuth } from "../../../Premium";
+import { useCategorySharing } from "../../../Hooks/useCategorySharing";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
 import {
@@ -16,7 +33,7 @@ import {
   SECTIONS_40K,
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
-import { BottomSheet } from "../Mobile/BottomSheet";
+import { MobileModal } from "../Mobile/MobileModal";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter } from "../MobileImporter";
@@ -46,31 +63,68 @@ const GameSystemBadge = ({ system }) => {
   );
 };
 
-// Header with list selector, sync button, and copy button
+// Header with list selector, sync button, and more actions menu
 const ListHeader = ({
   listName,
   onListSelectorClick,
   onCopyToClipboard,
+  onShareList,
   isCloudCategory,
   isSynced,
   gameSystem,
   syncButton,
-}) => (
-  <div className="list-overview-list-header">
-    <button className="list-overview-name-selector" onClick={onListSelectorClick} type="button">
-      {(isCloudCategory || isSynced) && <Cloud size={16} className="list-overview-cloud-icon" />}
-      <span className="list-overview-name-text">{listName}</span>
-      {isCloudCategory && <GameSystemBadge system={gameSystem} />}
-      <ChevronDown size={16} />
-    </button>
-    <div className="list-overview-header-actions">
-      {syncButton}
-      <button className="list-overview-copy-button" onClick={onCopyToClipboard} type="button">
-        <FileText size={18} />
+}) => {
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  return (
+    <div className="list-overview-list-header">
+      <button className="list-overview-name-selector" onClick={onListSelectorClick} type="button">
+        {(isCloudCategory || isSynced) && <Cloud size={16} className="list-overview-cloud-icon" />}
+        <span className="list-overview-name-text">{listName}</span>
+        {isCloudCategory && <GameSystemBadge system={gameSystem} />}
+        <ChevronDown size={16} />
       </button>
+      <div className="list-overview-header-actions">
+        {syncButton}
+        <div className="list-overview-more-wrapper" ref={menuRef}>
+          <button className="list-overview-more-button" onClick={() => setShowMoreMenu(!showMoreMenu)} type="button">
+            <MoreHorizontal size={18} />
+          </button>
+          {showMoreMenu && (
+            <>
+              <div className="list-overview-more-backdrop" onClick={() => setShowMoreMenu(false)} />
+              <div className="list-overview-more-menu">
+                <button
+                  className="list-overview-more-item"
+                  onClick={() => {
+                    onCopyToClipboard();
+                    setShowMoreMenu(false);
+                  }}
+                  type="button">
+                  <FileText size={16} />
+                  <span>Copy List</span>
+                </button>
+                {!isCloudCategory && (
+                  <button
+                    className="list-overview-more-item"
+                    onClick={() => {
+                      onShareList();
+                      setShowMoreMenu(false);
+                    }}
+                    type="button">
+                    <Share2 size={16} />
+                    <span>Share List</span>
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Single list item component (local lists - with delete)
 const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS }) => {
@@ -140,6 +194,133 @@ const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, i
   );
 };
 
+// Share sheet for category sharing (inline in ListOverview)
+const ListShareSheet = ({ isVisible, onClose, category }) => {
+  const { shareAnonymous, shareOwned, updateShare, getExistingShare, isSharing } = useCategorySharing();
+  const { isAuthenticated } = useAuth();
+
+  const [shareResult, setShareResult] = useState(null);
+  const [existingShare, setExistingShare] = useState(null);
+  const [isPublic, setIsPublic] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [checkingExisting, setCheckingExisting] = useState(false);
+
+  useEffect(() => {
+    if (isVisible && isAuthenticated && category?.uuid) {
+      setCheckingExisting(true);
+      getExistingShare(category.uuid)
+        .then((share) => setExistingShare(share))
+        .finally(() => setCheckingExisting(false));
+    }
+  }, [isVisible, isAuthenticated, category?.uuid, getExistingShare]);
+
+  const handleClose = () => {
+    onClose();
+    setShareResult(null);
+    setExistingShare(null);
+    setIsPublic(true);
+    setCopied(false);
+  };
+
+  const handleShare = async () => {
+    if (!category) return;
+    let result;
+    if (isAuthenticated) {
+      result = await shareOwned(category, isPublic);
+    } else {
+      result = await shareAnonymous(category);
+    }
+    if (result.success) {
+      setShareResult(result.shareId);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!category || !existingShare?.share_id) return;
+    const result = await updateShare(existingShare.share_id, category);
+    if (result.success) {
+      setShareResult(existingShare.share_id);
+    }
+  };
+
+  const handleCopy = () => {
+    const id = shareResult || existingShare?.share_id;
+    if (!id) return;
+    navigator.clipboard.writeText(`${import.meta.env.VITE_URL}/shared/${id}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const currentShareId = shareResult || existingShare?.share_id;
+  const shareUrl = currentShareId ? `${import.meta.env.VITE_URL}/shared/${currentShareId}` : null;
+
+  return (
+    <MobileModal isOpen={isVisible} onClose={handleClose} title="Share List" zIndex={1002}>
+      <div className="list-share-sheet">
+        <div className="list-share-info">
+          <span className="list-share-name">{category?.name}</span>
+          <span className="list-share-meta">
+            {category?.cards?.length || 0} {category?.cards?.length === 1 ? "card" : "cards"}
+          </span>
+        </div>
+
+        {/* Visibility toggle (authenticated, before sharing) */}
+        {isAuthenticated && !shareResult && !existingShare && (
+          <div className="list-share-visibility">
+            <span className="list-share-visibility-label">Public link</span>
+            <button
+              className={`list-share-visibility-toggle ${isPublic ? "active" : ""}`}
+              onClick={() => setIsPublic(!isPublic)}
+              role="switch"
+              aria-checked={isPublic}>
+              <span className="list-share-visibility-thumb" />
+            </button>
+          </div>
+        )}
+
+        {/* Share result */}
+        {shareUrl && (
+          <div className="list-share-result">
+            <span className="list-share-result-url">{shareUrl}</span>
+            <button className="list-share-result-copy" onClick={handleCopy}>
+              {copied ? <Check size={16} /> : <Link size={16} />}
+              <span>{copied ? "Copied" : "Copy"}</span>
+            </button>
+          </div>
+        )}
+
+        {/* Actions */}
+        {checkingExisting ? (
+          <div className="list-share-loading">
+            <Loader size={16} className="list-share-spinner" />
+            <span>Checking...</span>
+          </div>
+        ) : existingShare && !shareResult ? (
+          <div className="list-share-actions">
+            <button className="list-share-btn" onClick={handleUpdate} disabled={isSharing}>
+              {isSharing ? <Loader size={16} className="list-share-spinner" /> : <RefreshCw size={16} />}
+              <span>{isSharing ? "Updating..." : "Update Existing Share"}</span>
+            </button>
+            <button className="list-share-btn list-share-btn--secondary" onClick={handleShare} disabled={isSharing}>
+              <span>Create New Share</span>
+            </button>
+          </div>
+        ) : !shareResult ? (
+          <button className="list-share-btn" onClick={handleShare} disabled={isSharing}>
+            {isSharing ? <Loader size={16} className="list-share-spinner" /> : <Share2 size={16} />}
+            <span>{isSharing ? "Generating..." : isAuthenticated ? "Share" : "Generate Link"}</span>
+          </button>
+        ) : (
+          <button className="list-share-btn" onClick={handleCopy}>
+            {copied ? <Check size={16} /> : <Link size={16} />}
+            <span>{copied ? "Copied" : "Copy Link"}</span>
+          </button>
+        )}
+      </div>
+    </MobileModal>
+  );
+};
+
 export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, removeDatacard, selectedCloudCategoryId } = useMobileList();
   const { dataSource } = useDataSourceStorage();
@@ -149,6 +330,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
   const [isImporterVisible, setIsImporterVisible] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
+  const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
 
   // Derive selected cloud category from the realtime-updated list
   const selectedCloudCategory = selectedCloudCategoryId
@@ -238,20 +420,19 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   return (
     <>
-      <BottomSheet isOpen={isVisible} onClose={handleClose} maxHeight="70vh">
-        <div className="list-overview-top-section">
-          {/* Only show import for 40k local lists */}
-          {is40k && !isCloudCategory && (
-            <>
-              <ImportActionButton onClick={() => setIsImporterVisible(true)} />
-              <div className="list-overview-divider" />
-            </>
-          )}
-          <h2 className="list-overview-title">{isCloudCategory ? "Cloud Category" : "Lists"}</h2>
+      <MobileModal isOpen={isVisible} onClose={handleClose} title={isCloudCategory ? "Cloud Category" : "Lists"}>
+        {/* Only show import for 40k local lists */}
+        {is40k && !isCloudCategory && (
+          <div className="list-overview-import-section">
+            <ImportActionButton onClick={() => setIsImporterVisible(true)} />
+          </div>
+        )}
+        <div className="list-overview-header-sticky">
           <ListHeader
             listName={currentListName}
             onListSelectorClick={() => setIsListSelectorVisible(true)}
             onCopyToClipboard={handleCopyToClipboard}
+            onShareList={() => setIsShareSheetVisible(true)}
             isCloudCategory={isCloudCategory}
             isSynced={!isCloudCategory && !!currentList?.syncEnabled}
             gameSystem={isCloudCategory ? selectedCloudCategory.gameSystem : null}
@@ -298,7 +479,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
             </div>
           </div>
         )}
-      </BottomSheet>
+      </MobileModal>
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
@@ -311,6 +492,14 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
         }}
         card={editingCard}
       />
+
+      {!isCloudCategory && currentList && (
+        <ListShareSheet
+          isVisible={isShareSheetVisible}
+          onClose={() => setIsShareSheetVisible(false)}
+          category={currentList}
+        />
+      )}
     </>
   );
 };

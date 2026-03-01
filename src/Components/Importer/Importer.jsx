@@ -8,18 +8,14 @@ import {
   CheckCircle,
   AlertCircle,
   Settings,
-  Check,
   X,
-  AlertTriangle,
-  ChevronLeft,
-  Star,
-  Sparkles,
   Users,
   FileJson,
   Gamepad2,
   Database,
+  Swords,
 } from "lucide-react";
-import { Button, Select } from "antd";
+import { Button } from "antd";
 import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { compare } from "compare-versions";
@@ -28,18 +24,10 @@ import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { useFirebase } from "../../Hooks/useFirebase";
 import { v4 as uuidv4 } from "uuid";
 import { validateCustomDatasource, countDatasourceCards } from "../../Helpers/customDatasource.helpers";
-import {
-  parseGwAppText,
-  matchFaction,
-  matchUnitsToDatasheets,
-  countMatchStatuses,
-  getImportableUnits,
-  filterCardWeapons,
-} from "../../Helpers/gwAppImport.helpers";
-import Fuse from "fuse.js";
+import { GwAppTab } from "./tabs/GwAppTab";
+import { ListForgeTab } from "./tabs/ListForgeTab";
 import "./ImportExport.css";
 
 const modalRoot = document.getElementById("modal-root");
@@ -69,19 +57,12 @@ export const Importer = () => {
   const [showActivationPrompt, setShowActivationPrompt] = useState(false);
   const [importedDatasource, setImportedDatasource] = useState(null);
 
-  // GW 40k App tab state
-  const [gwAppText, setGwAppText] = useState("");
-  const [gwAppPhase, setGwAppPhase] = useState("paste"); // "paste" or "review"
-  const [gwAppError, setGwAppError] = useState(null);
-  const [gwAppParsedFaction, setGwAppParsedFaction] = useState(null);
-  const [gwAppMatchedFaction, setGwAppMatchedFaction] = useState(null);
-  const [gwAppUnits, setGwAppUnits] = useState([]);
-  const [gwAppCategoryName, setGwAppCategoryName] = useState("");
+  // Footer slot for tab-rendered buttons
+  const [footerNode, setFooterNode] = useState(null);
 
   const { importCategory } = useCardStorage();
   const { importCustomDatasource, dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
-  const { logScreenView } = useFirebase();
 
   const handleClose = () => {
     setIsModalVisible(false);
@@ -98,18 +79,11 @@ export const Importer = () => {
     setDsPreview(null);
     setShowActivationPrompt(false);
     setImportedDatasource(null);
-    // Reset GW 40k App state
-    setGwAppText("");
-    setGwAppPhase("paste");
-    setGwAppError(null);
-    setGwAppParsedFaction(null);
-    setGwAppMatchedFaction(null);
-    setGwAppUnits([]);
-    setGwAppCategoryName("");
   };
 
-  // Check if GW 40k App tab should be enabled
+  // Check if GW 40k App / List Forge tabs should be enabled
   const isGwAppEnabled = settings.selectedDataSource === "40k-10e";
+  const isLfEnabled = settings.selectedDataSource === "40k-10e";
 
   // ===========================================
   // GDC JSON Tab Handlers
@@ -358,204 +332,6 @@ export const Importer = () => {
     handleClose();
   };
 
-  // ===========================================
-  // GW 40k App Tab Handlers
-  // ===========================================
-
-  // Match enhancements to faction data and update units with cost/detachment
-  // listDetachment: the detachment from the list header (e.g., "Nightmare Hunt")
-  const matchEnhancementsToFaction = (units, faction, listDetachment) => {
-    if (!faction?.enhancements?.length) return units;
-
-    return units.map((unit) => {
-      if (!unit.enhancement) return unit;
-
-      const enhancements = faction.enhancements;
-      let factionEnhancement = null;
-
-      // 1. First try exact match with BOTH name AND detachment (if detachment is known)
-      if (listDetachment) {
-        factionEnhancement = enhancements.find(
-          (e) =>
-            e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
-            e.detachment?.toLowerCase() === listDetachment.toLowerCase(),
-        );
-      }
-
-      // 2. If no detachment-specific match, try just name match
-      if (!factionEnhancement) {
-        factionEnhancement = enhancements.find((e) => e.name.toLowerCase() === unit.enhancement.name.toLowerCase());
-      }
-
-      // 3. If still no match, try Fuse.js
-      if (!factionEnhancement) {
-        const enhancementFuse = new Fuse(enhancements, {
-          keys: ["name"],
-          threshold: 0.4,
-          includeScore: true,
-        });
-        const results = enhancementFuse.search(unit.enhancement.name);
-        if (results.length > 0) {
-          factionEnhancement = results[0].item;
-        }
-      }
-
-      if (factionEnhancement) {
-        return {
-          ...unit,
-          enhancement: {
-            ...unit.enhancement,
-            ...factionEnhancement,
-            cost: unit.enhancement.cost || factionEnhancement.cost,
-            matched: true,
-          },
-          detachment: factionEnhancement.detachment,
-        };
-      }
-
-      return unit;
-    });
-  };
-
-  const handleParseGwApp = () => {
-    setGwAppError(null);
-
-    const parsed = parseGwAppText(gwAppText);
-
-    if (parsed.error) {
-      setGwAppError(parsed.error);
-      return;
-    }
-
-    if (!parsed.units.length) {
-      setGwAppError("No units found in the list");
-      return;
-    }
-
-    setGwAppParsedFaction(parsed.factionName);
-
-    // Try to match faction
-    const factionMatch = matchFaction(parsed.factionName, dataSource?.data || []);
-    setGwAppMatchedFaction(factionMatch.matchedFaction);
-
-    // Use list name if available, otherwise faction name
-    const categoryName = parsed.listName || parsed.factionName || "Imported List";
-
-    // If we have a faction, match units (include all factions for allied unit matching)
-    if (factionMatch.matchedFaction) {
-      let matchedUnits = matchUnitsToDatasheets(parsed.units, factionMatch.matchedFaction, dataSource?.data || []);
-      // Also match enhancements to get cost and detachment
-      matchedUnits = matchEnhancementsToFaction(matchedUnits, factionMatch.matchedFaction, parsed.detachment);
-      setGwAppUnits(matchedUnits);
-      setGwAppCategoryName(categoryName);
-    } else {
-      // Set units without matches for now
-      setGwAppUnits(parsed.units.map((u) => ({ ...u, matchStatus: "none", matchedCard: null, alternatives: [] })));
-      setGwAppCategoryName(categoryName);
-    }
-
-    setGwAppPhase("review");
-  };
-
-  const handleGwAppFactionChange = (factionId) => {
-    const faction = dataSource?.data?.find((f) => f.id === factionId);
-    if (faction) {
-      setGwAppMatchedFaction(faction);
-      // Re-match units with new faction (include all factions for allied unit matching)
-      const parsed = parseGwAppText(gwAppText);
-      let matchedUnits = matchUnitsToDatasheets(parsed.units, faction, dataSource?.data || []);
-      // Also match enhancements to get cost and detachment
-      matchedUnits = matchEnhancementsToFaction(matchedUnits, faction, parsed.detachment);
-      setGwAppUnits(matchedUnits);
-    }
-  };
-
-  const handleGwAppUnitChange = (unitIndex, datasheetId) => {
-    const datasheet = gwAppMatchedFaction?.datasheets?.find((d) => d.id === datasheetId);
-    if (datasheet) {
-      setGwAppUnits((prev) =>
-        prev.map((unit, idx) =>
-          idx === unitIndex ? { ...unit, matchedCard: datasheet, matchStatus: "confident", skipped: false } : unit,
-        ),
-      );
-    }
-  };
-
-  const handleGwAppUnitSkip = (unitIndex) => {
-    setGwAppUnits((prev) => prev.map((unit, idx) => (idx === unitIndex ? { ...unit, skipped: !unit.skipped } : unit)));
-  };
-
-  const handleGwAppBack = () => {
-    setGwAppPhase("paste");
-    setGwAppError(null);
-  };
-
-  const handleGwAppImport = () => {
-    const importableUnits = getImportableUnits(gwAppUnits);
-
-    if (!importableUnits.length) {
-      message.error("No units to import");
-      return;
-    }
-
-    // Create cards from matched units
-    const cards = importableUnits.map((unit) => {
-      let card = { ...unit.matchedCard };
-      card.uuid = uuidv4();
-      card.isCustom = true;
-
-      // Set unit size and cost
-      if (unit.points) {
-        card.unitSize = {
-          ...(card.unitSize || {}),
-          cost: unit.points - (unit.enhancement?.cost || 0),
-          models: unit.models || 1,
-        };
-      }
-
-      // Set warlord
-      if (unit.isWarlord) {
-        card.isWarlord = true;
-      }
-
-      // Set enhancement (already matched during review phase)
-      if (unit.enhancement) {
-        card.selectedEnhancement = {
-          name: unit.enhancement.name,
-          cost: unit.enhancement.cost || 0,
-          ...(unit.enhancement.matched ? unit.enhancement : {}),
-        };
-        // Set detachment from matched enhancement
-        if (unit.detachment) {
-          card.detachment = unit.detachment;
-        }
-      }
-
-      // Filter weapons based on imported list (hide non-selected weapons)
-      if (unit.weapons?.length) {
-        card = filterCardWeapons(card, unit.weapons);
-      }
-
-      return card;
-    });
-
-    // Create category
-    const category = {
-      uuid: uuidv4(),
-      name: gwAppCategoryName || "Imported List",
-      type: "list",
-      dataSource: settings.selectedDataSource,
-      cards,
-    };
-
-    importCategory(category);
-    message.success(`Imported ${cards.length} units to "${category.name}"`);
-    handleClose();
-  };
-
-  const gwAppMatchCounts = countMatchStatuses(gwAppUnits);
-  const gwAppImportableCount = getImportableUnits(gwAppUnits).length;
-
   return (
     <>
       {isModalVisible &&
@@ -590,6 +366,16 @@ export const Importer = () => {
                       <span>GW 40k App</span>
                     </div>
                   </Tooltip>
+                  <Tooltip content={!isLfEnabled ? "Only available for 10th Edition 40k" : ""} placement="right">
+                    <div
+                      className={`import-export-nav-item ${activeTab === "listforge" ? "active" : ""} ${
+                        !isLfEnabled ? "disabled" : ""
+                      }`}
+                      onClick={() => isLfEnabled && setActiveTab("listforge")}>
+                      <Swords size={16} className="import-export-nav-icon" />
+                      <span>List Forge</span>
+                    </div>
+                  </Tooltip>
                   <div
                     className={`import-export-nav-item ${activeTab === "datasource" ? "active" : ""}`}
                     onClick={() => setActiveTab("datasource")}>
@@ -622,8 +408,8 @@ export const Importer = () => {
                         <div className="import-dropzone-icon">
                           <Inbox size={24} />
                         </div>
-                        <p className="import-dropzone-text">Click or drag a file to this area to upload</p>
-                        <p className="import-dropzone-hint">Support for a single file upload. Only .json files.</p>
+                        <p className="import-dropzone-text">Click or drag a file to upload</p>
+                        <p className="import-dropzone-hint">Only .json files exported from GameDatacards.</p>
                       </div>
 
                       {fileInfo && (
@@ -643,193 +429,25 @@ export const Importer = () => {
                   )}
 
                   {/* GW 40k App Tab */}
-                  {activeTab === "gwapp" && gwAppPhase === "paste" && (
-                    <div className="gw-import-container">
-                      <p className="import-export-description">
-                        Paste your army list from the GW Warhammer 40k app or any compatible text format.
-                      </p>
-                      <textarea
-                        className="gw-import-textarea"
-                        value={gwAppText}
-                        onChange={(e) => setGwAppText(e.target.value)}
-                        placeholder={`Blood Angels\n\nCHARACTERS\n\nCaptain (120 pts)\n   • Warlord\n\nBATTLELINE\n\nAssault Intercessors 5x (75 pts)\n\nCreated with https://game-datacards.eu`}
-                      />
-                      {gwAppError && (
-                        <div className="gw-import-error">
-                          <AlertCircle size={14} />
-                          <span>{gwAppError}</span>
-                        </div>
-                      )}
-                      <div className="gw-import-actions">
-                        <button className="gw-import-parse-btn" onClick={handleParseGwApp} disabled={!gwAppText.trim()}>
-                          Parse List
-                        </button>
-                      </div>
-                    </div>
+                  {activeTab === "gwapp" && (
+                    <GwAppTab
+                      dataSource={dataSource}
+                      settings={settings}
+                      importCategory={importCategory}
+                      onClose={handleClose}
+                      footerNode={footerNode}
+                    />
                   )}
 
-                  {activeTab === "gwapp" && gwAppPhase === "review" && (
-                    <div className="gw-import-container">
-                      <button className="gw-import-back-btn" onClick={handleGwAppBack}>
-                        <ChevronLeft size={14} /> Back to paste
-                      </button>
-
-                      {/* Faction Row */}
-                      <div className="gw-import-faction-row">
-                        <span className="gw-import-faction-label">Faction</span>
-                        <div className="gw-import-faction-value">
-                          {gwAppMatchedFaction ? (
-                            <>
-                              <span
-                                className={`gw-import-unit-status ${
-                                  gwAppParsedFaction === gwAppMatchedFaction.name ? "exact" : "confident"
-                                }`}>
-                                <Check size={12} />
-                              </span>
-                              <Select
-                                className="gw-import-faction-select"
-                                value={gwAppMatchedFaction.id}
-                                onChange={handleGwAppFactionChange}
-                                size="small"
-                                showSearch
-                                filterOption={(input, option) =>
-                                  option?.label?.toLowerCase().includes(input.toLowerCase())
-                                }
-                                options={dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || []}
-                              />
-                            </>
-                          ) : (
-                            <>
-                              <span className="gw-import-unit-status none">
-                                <X size={12} />
-                              </span>
-                              <Select
-                                className="gw-import-faction-select"
-                                placeholder="Select faction..."
-                                onChange={handleGwAppFactionChange}
-                                size="small"
-                                showSearch
-                                filterOption={(input, option) =>
-                                  option?.label?.toLowerCase().includes(input.toLowerCase())
-                                }
-                                options={dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || []}
-                              />
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Unit List */}
-                      {gwAppUnits.length > 0 && (
-                        <div className="gw-import-unit-list">
-                          {gwAppUnits.map((unit, idx) => (
-                            <div key={idx} className={`gw-import-unit-item ${unit.skipped ? "skipped" : ""}`}>
-                              <span className={`gw-import-unit-status ${unit.matchStatus || "none"}`}>
-                                {unit.matchStatus === "exact" || unit.matchStatus === "confident" ? (
-                                  <Check size={12} />
-                                ) : unit.matchStatus === "ambiguous" ? (
-                                  <AlertTriangle size={12} />
-                                ) : (
-                                  <X size={12} />
-                                )}
-                              </span>
-                              <div className="gw-import-unit-content">
-                                <div className="gw-import-unit-header">
-                                  <span className="gw-import-unit-name">{unit.originalName}</span>
-                                  {unit.alliedFactionName && (
-                                    <span className="gw-import-unit-faction-badge">{unit.alliedFactionName}</span>
-                                  )}
-                                  <span className="gw-import-unit-meta">
-                                    {unit.models > 1 && <span className="gw-import-unit-size">{unit.models}x</span>}
-                                    <span className="gw-import-unit-points">
-                                      {unit.points ? `${unit.points} pts` : "? pts"}
-                                    </span>
-                                  </span>
-                                </div>
-                                <div className="gw-import-unit-details">
-                                  {unit.isWarlord && (
-                                    <span className="gw-import-unit-badge warlord">
-                                      <Star size={10} /> Warlord
-                                    </span>
-                                  )}
-                                  {unit.enhancement && (
-                                    <span className="gw-import-unit-badge enhancement">
-                                      <Sparkles size={10} /> {unit.enhancement.name} (+{unit.enhancement.cost} pts)
-                                    </span>
-                                  )}
-                                </div>
-                                {unit.matchedCard && !unit.skipped && (
-                                  <div className="gw-import-unit-match">
-                                    <span className="gw-import-unit-match-label">Matched: </span>
-                                    <span className="gw-import-unit-match-name">{unit.matchedCard.name}</span>
-                                  </div>
-                                )}
-                                {(unit.matchStatus === "ambiguous" || unit.matchStatus === "none") &&
-                                  !unit.skipped &&
-                                  gwAppMatchedFaction && (
-                                    <Select
-                                      className="gw-import-unit-select"
-                                      size="small"
-                                      value={unit.matchedCard?.id}
-                                      placeholder="Select unit..."
-                                      onChange={(value) => handleGwAppUnitChange(idx, value)}
-                                      showSearch
-                                      filterOption={(input, option) =>
-                                        option?.label?.toLowerCase().includes(input.toLowerCase())
-                                      }
-                                      options={gwAppMatchedFaction.datasheets?.map((d) => ({
-                                        value: d.id,
-                                        label: d.name,
-                                      }))}
-                                    />
-                                  )}
-                              </div>
-                              <div className="gw-import-unit-actions">
-                                <button
-                                  className={`gw-import-skip-btn ${unit.skipped ? "skipped" : ""}`}
-                                  onClick={() => handleGwAppUnitSkip(idx)}>
-                                  {unit.skipped ? "Undo" : "Skip"}
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Summary */}
-                      {gwAppUnits.length > 0 && (
-                        <div className="gw-import-summary">
-                          <span className="gw-import-summary-item ready">
-                            <Check size={14} /> {gwAppMatchCounts.ready} ready
-                          </span>
-                          {gwAppMatchCounts.needsReview > 0 && (
-                            <span className="gw-import-summary-item review">
-                              <AlertTriangle size={14} /> {gwAppMatchCounts.needsReview} needs review
-                            </span>
-                          )}
-                          {gwAppMatchCounts.notMatched > 0 && (
-                            <span className="gw-import-summary-item unmatched">
-                              <X size={14} /> {gwAppMatchCounts.notMatched} not matched
-                            </span>
-                          )}
-                          {gwAppMatchCounts.skipped > 0 && (
-                            <span className="gw-import-summary-item skipped">{gwAppMatchCounts.skipped} skipped</span>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Category Name */}
-                      <div className="gw-import-category-row">
-                        <span className="gw-import-category-label">Category name:</span>
-                        <input
-                          type="text"
-                          className="gw-import-category-input"
-                          value={gwAppCategoryName}
-                          onChange={(e) => setGwAppCategoryName(e.target.value)}
-                          placeholder="My Army List"
-                        />
-                      </div>
-                    </div>
+                  {/* List Forge Tab */}
+                  {activeTab === "listforge" && (
+                    <ListForgeTab
+                      dataSource={dataSource}
+                      settings={settings}
+                      importCategory={importCategory}
+                      onClose={handleClose}
+                      footerNode={footerNode}
+                    />
                   )}
 
                   {/* Datasource Tab */}
@@ -989,14 +607,8 @@ export const Importer = () => {
                         Import
                       </button>
                     )}
-                    {activeTab === "gwapp" && gwAppPhase === "review" && (
-                      <button
-                        className="ie-btn-primary"
-                        onClick={handleGwAppImport}
-                        disabled={gwAppImportableCount === 0}>
-                        Import {gwAppImportableCount} Unit{gwAppImportableCount !== 1 ? "s" : ""}
-                      </button>
-                    )}
+                    {/* GW App and List Forge footer buttons are rendered via portal by their tab components */}
+                    <div ref={setFooterNode} style={{ display: "contents" }} />
                     {activeTab === "datasource" && (
                       <button className="ie-btn-primary" onClick={handleImportDatasource} disabled={!dsPreview}>
                         Import Datasource
@@ -1014,7 +626,6 @@ export const Importer = () => {
           type="text"
           icon={<Upload size={16} />}
           onClick={() => {
-            logScreenView("Import Category");
             setIsModalVisible(true);
           }}
         />

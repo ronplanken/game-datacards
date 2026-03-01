@@ -6,7 +6,6 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { useFirebase } from "../../Hooks/useFirebase";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
 import {
@@ -34,7 +33,6 @@ const getAllCategoryCards = (category, allCategories) => {
 export const Exporter = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("json");
-  const { logScreenView } = useFirebase();
   const { activeCategory, cardStorage } = useCardStorage();
   const { settings } = useSettingsStorage();
 
@@ -511,7 +509,6 @@ export const Exporter = () => {
           icon={<Download size={16} />}
           disabled={!activeCategory}
           onClick={() => {
-            logScreenView("Export Category");
             setIsModalVisible(true);
           }}
         />

@@ -1,6 +1,35 @@
+---
+title: Custom Datasource Format
+description: JSON format specification for creating and sharing custom card datasources
+category: data-formats
+tags: [datasource, json, import, export, validation]
+related:
+  - card-data-formats.md
+file_locations:
+  validator: src/Helpers/customDatasource.helpers.js
+  import_helpers: src/Helpers/external.helpers.js
+---
+
 # Custom Datasource Format
 
-This document describes the JSON format for custom datasources in Game Datacards. Custom datasources allow you to create and share your own card collections that can be imported into the app.
+JSON format for custom datasources in Game Datacards. Custom datasources allow you to create and share card collections that can be imported into the app.
+
+## Table of Contents
+
+- [Importing a Custom Datasource](#importing-a-custom-datasource)
+- [Supported Game Systems](#supported-game-systems)
+- [Top-Level Structure](#top-level-structure)
+- [Faction Object Structure](#faction-object-structure)
+- [Card Type to Array Mapping](#card-type-to-array-mapping)
+- [Card Types by Game System](#card-types-by-game-system)
+  - [Warhammer 40k 10th Edition](#warhammer-40k-10th-edition-source-40k-10e)
+  - [Warhammer 40k 9th Edition](#warhammer-40k-9th-edition-source-40k)
+  - [Age of Sigmar](#age-of-sigmar-source-aos)
+  - [Necromunda](#necromunda-source-necromunda)
+  - [Basic Cards](#basic-cards-source-basic)
+- [Validation Limits](#validation-limits)
+- [Hosting and Updates](#hosting-and-updates)
+- [Examples](#examples)
 
 ## Importing a Custom Datasource
 
@@ -23,7 +52,7 @@ Each card in a datasource specifies its game system via the `source` field. The 
 
 A single datasource can contain cards from different game systems. Each card is rendered using the renderer matching its `source` field.
 
-## Top-Level Datasource Structure
+## Top-Level Structure
 
 ```json
 {
@@ -248,7 +277,7 @@ Each card has a `cardType` field that determines which faction array it belongs 
 
 | Field | Description |
 |-------|-------------|
-| `stats` | Array of stat line objects. Each has `m`, `t`, `sv`, `w`, `ld`, `oc`. |
+| `stats` | Array of stat line objects. Each has `m`, `t`, `sv`, `w`, `ld`, `oc` (lowercase). |
 | `rangedWeapons` | Array of weapon groups, each with a `profiles` array. Profile fields: `name`, `range`, `attacks`, `skill` (BS), `strength`, `ap`, `damage`, `keywords`. |
 | `meleeWeapons` | Same structure as `rangedWeapons`. `skill` represents WS for melee. |
 | `abilities.core` | Array of core ability name strings. |
@@ -273,7 +302,7 @@ Each card has a `cardType` field that determines which faction array it belongs 
   "cardType": "stratagem",
   "source": "40k-10e",
   "faction_id": "my-faction",
-  "cp_cost": "1",
+  "cost": "1",
   "type": "Battle Tactic",
   "when": "Your opponent's Shooting phase or the Fight phase.",
   "target": "One Adeptus Astartes unit.",
@@ -281,6 +310,8 @@ Each card has a `cardType` field that determines which faction array it belongs 
   "restrictions": ""
 }
 ```
+
+Note: 10th edition stratagems use the `cost` field (rendered as `{cost} CP`).
 
 #### Enhancements (10th Edition)
 
@@ -382,6 +413,8 @@ Each card has a `cardType` field that determines which faction array it belongs 
   "description": "Description text. Supports _markdown_."
 }
 ```
+
+Note: 9th edition stratagems use the `cp_cost` field (includes "CP" suffix in the value).
 
 #### Secondaries (9th Edition)
 
@@ -813,7 +846,7 @@ The smallest possible valid datasource with a single 10th edition datasheet:
 
 ### Multi-Card-Type Faction
 
-A faction containing both a stratagem and an enhancement (10th edition):
+A faction containing a datasheet, stratagem, and enhancement (10th edition):
 
 ```json
 {
@@ -937,7 +970,7 @@ A faction containing both a stratagem and an enhancement (10th edition):
           "cardType": "stratagem",
           "source": "40k-10e",
           "faction_id": "homebrew",
-          "cp_cost": "1",
+          "cost": "1",
           "type": "Battle Tactic",
           "when": "Your Charge phase.",
           "target": "One Homebrew unit that made a charge move this phase.",

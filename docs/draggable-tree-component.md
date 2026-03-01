@@ -1,25 +1,72 @@
+---
+title: Draggable Tree Component
+description: Interactive tree view with drag-and-drop for the Welcome Wizard workspace step
+category: components
+tags: [wizard, tree-view, drag-and-drop, ui]
+related:
+  - welcome-wizard-v2.md
+file_locations:
+  component: src/Components/WelcomeWizard/demos/TreeViewDemo.jsx
+  styles: src/Components/WelcomeWizard/WelcomeWizard.css
+  sample_data: src/Components/WelcomeWizard/constants.js (DEMO_TREE_DATA)
+---
+
 # Draggable Tree Component
 
-> A modern, interactive tree view component with drag-and-drop support, designed for the Game Datacards Welcome Wizard. Supports both dark and light themes.
+Interactive tree view component with drag-and-drop support, used in the Welcome Wizard workspace step. Supports hierarchical categories with expandable children.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Props](#props)
+- [Data Structure](#data-structure)
+- [Drag and Drop Behavior](#drag-and-drop-behavior)
+- [Visual Design](#visual-design)
+- [CSS Classes](#css-classes)
+- [Animation](#animation)
+- [Usage](#usage)
 
 ## Overview
 
-The Draggable Tree component provides a visual representation of hierarchical data (categories and cards) with the following features:
+The `TreeViewDemo` component provides a visual representation of hierarchical data (categories and cards) with:
 
 - **Drag and drop** - Reorder items and move between categories
 - **Expand/Collapse** - Toggle category visibility
-- **Visual feedback** - Hover, active, and drag states
-- **Theme support** - Dark (default) and light variants
-- **Internal state management** - Component manages its own tree state
+- **Selection** - Click to select/deselect items
+- **Visual feedback** - Hover, selected, and drag-over states
+- **Internal state management** - Component manages its own tree state from initial props
 
-### Drag and Drop Behavior
+## Props
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `treeData` | `Array<TreeItem>` | Yes | Initial hierarchical data structure. Used as initial state; drag operations update internal state. |
+| `onToggle` | `(itemId: string) => void` | No | Called when a category expand/collapse toggle is clicked |
+
+The component syncs with external `treeData` changes via a `useEffect`.
+
+## Data Structure
+
+```typescript
+interface TreeItem {
+  id: string;           // Unique identifier
+  name: string;         // Display label
+  type: "category" | "card";
+  expanded?: boolean;   // Only for categories - controls child visibility
+  children?: TreeItem[]; // Only for categories - nested items
+}
+```
+
+## Drag and Drop Behavior
 
 | Action | Result |
 |--------|--------|
 | Drop card onto category | Card moves into that category (category auto-expands) |
 | Drop card onto another card | Card inserts before the target card |
-| Drop category onto category | Category moves into target as nested category |
 | Drop onto self | No change (ignored) |
+| Drop category into its own child | No change (prevented) |
+
+During drag, the source item renders at 50% opacity.
 
 ## Visual Design
 
@@ -27,73 +74,54 @@ The Draggable Tree component provides a visual representation of hierarchical da
 
 ```
 ┌─────────────────────────────────────────────────┐
-│ ⋮⋮  📁  Category Name                      ▶   │  ← Category (collapsible)
+│  ▶  📁  Category Name                          │  ← Category (collapsible)
 ├─────────────────────────────────────────────────┤
-│     ⋮⋮  📄  Card Name                          │  ← Child item (indented)
-│     ⋮⋮  📄  Another Card                       │
+│     ⋮⋮  🃏  Card Name                          │  ← Child card (indented)
+│     ⋮⋮  🃏  Another Card                       │
 └─────────────────────────────────────────────────┘
 ```
 
 | Element | Description |
 |---------|-------------|
-| Grip handle (⋮⋮) | Indicates draggable, shows on all items |
-| Icon | Folder (open/closed) for categories, FileText for cards |
-| Name | Item label, truncates on overflow |
-| Expand chevron | Only on categories, rotates 90° when expanded |
+| Toggle chevron (▶) | Only on categories, rotates 90deg when expanded |
+| Icon | `FolderOpen`/`Folder` (categories), `Datacard10e` (cards) |
+| Name | Item label |
+| Grip handle (⋮⋮) | Drag handle, shown on card items only |
 
 ### States
 
 | State | Visual Change |
 |-------|---------------|
 | Default | Subtle background, muted border |
-| Hover | Elevated background, blue-tinted border |
-| Active (dragging) | Scaled down (98%), grabbing cursor |
+| Selected | Elevated background, blue-tinted border |
 | Drag over | Primary color border highlight |
-| Category | Slight blue tint background |
+| Dragging | 50% opacity |
 
-## Color Tokens
+## CSS Classes
 
-### Dark Theme (Default)
+| Class | Element |
+|-------|---------|
+| `.wz-tree` | Container element |
+| `.wz-tree-category` | Category row |
+| `.wz-tree-category--selected` | Selected category highlight |
+| `.wz-tree-category--drag-over` | Category drop target highlight |
+| `.wz-tree-toggle` | Chevron expand/collapse button |
+| `.wz-tree-toggle--expanded` | Rotated chevron (90deg) when expanded |
+| `.wz-tree-children` | Indented container for child items |
+| `.wz-tree-card` | Card row |
+| `.wz-tree-card--selected` | Selected card highlight |
+| `.wz-tree-card--drag-over` | Card drop target highlight |
+| `.wz-tree-icon` | Icon container (categories and cards) |
+| `.wz-tree-name` | Text label |
+| `.wz-tree-grip` | Drag handle icon (cards only) |
+
+## Animation
 
 ```css
---tree-bg: #0a1628;
---tree-bg-elevated: #162a46;
---tree-bg-category: rgba(22, 119, 255, 0.05);
---tree-border: rgba(255, 255, 255, 0.08);
---tree-border-hover: rgba(22, 119, 255, 0.3);
---tree-border-category: rgba(22, 119, 255, 0.2);
---tree-text: #f1f5f9;
---tree-text-dim: #64748b;
---tree-icon-category: #4096ff;
---tree-primary: #1677ff;
+/* Expand chevron rotation */
+transition: transform 0.2s;
+transform: rotate(90deg); /* when .wz-tree-toggle--expanded */
 ```
-
-### Light Theme
-
-```css
---tree-bg: #ffffff;
---tree-bg-elevated: #f8fafc;
---tree-bg-category: rgba(22, 119, 255, 0.04);
---tree-border: #e2e8f0;
---tree-border-hover: rgba(22, 119, 255, 0.4);
---tree-border-category: rgba(22, 119, 255, 0.25);
---tree-text: #1e293b;
---tree-text-dim: #64748b;
---tree-icon-category: #1677ff;
---tree-primary: #1677ff;
-```
-
-## Spacing & Sizing
-
-| Property | Value |
-|----------|-------|
-| Item padding | 10px 12px |
-| Item gap (between icon/text) | 8px |
-| Item border radius | 6px |
-| Child indent | 24px |
-| Icon size | 18px |
-| Font size | 13px |
-| Gap between items | 4px |
 
 ## Usage
 
@@ -118,74 +146,12 @@ const treeData = [
 <TreeViewDemo
   treeData={treeData}
   onToggle={(id) => handleToggle(id)}
-  theme="dark"
 />
 ```
 
-### Props
-
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `treeData` | `Array` | Required | Initial hierarchical data structure |
-| `onToggle` | `Function` | Optional | Called when category expand/collapse is clicked |
-| `theme` | `"dark" \| "light"` | `"dark"` | Color theme variant |
-
-> **Note:** The component maintains internal state for drag-and-drop operations. The `treeData` prop is used as the initial state, and changes from drag operations are managed internally. If you need to sync external changes, the component will update when `treeData` prop changes.
-
-### Data Structure
-
-```typescript
-interface TreeItem {
-  id: string;           // Unique identifier
-  name: string;         // Display label
-  type: "category" | "card";
-  expanded?: boolean;   // Only for categories
-  children?: TreeItem[]; // Only for categories
-}
-```
-
-## CSS Classes
-
-| Class | Description |
-|-------|-------------|
-| `.wz-tree` | Container element |
-| `.wz-tree--light` | Light theme modifier |
-| `.wz-tree-item` | Individual tree row |
-| `.wz-tree-item--category` | Category-specific styling |
-| `.wz-tree-item--child` | Indented child item |
-| `.wz-tree-item--dragging` | Currently being dragged |
-| `.wz-tree-item--drag-over` | Drop target highlight |
-| `.wz-tree-icon` | Icon container |
-| `.wz-tree-name` | Text label |
-| `.wz-tree-expand` | Chevron button |
-| `.wz-tree-expand--expanded` | Rotated state |
-| `.wz-tree-grip` | Drag handle |
-
-## Animation
-
-```css
-/* Hover transition */
-transition: all 0.15s ease;
-
-/* Active scale */
-transform: scale(0.98);
-
-/* Expand chevron rotation */
-transition: transform 0.2s;
-transform: rotate(90deg); /* when expanded */
-```
-
-## Accessibility
-
-- Items are `draggable` with proper drag events
-- Expand buttons have `cursor: pointer`
-- `user-select: none` prevents text selection during drag
-- Color contrast meets WCAG AA standards in both themes
-
-## Integration Example
+### Integration Example
 
 ```jsx
-// In a wizard or settings panel
 const [treeData, setTreeData] = useState(initialData);
 
 const handleToggle = (itemId) => {
@@ -204,14 +170,7 @@ return (
     <TreeViewDemo
       treeData={treeData}
       onToggle={handleToggle}
-      theme={isDarkMode ? "dark" : "light"}
     />
   </div>
 );
 ```
-
-## File Locations
-
-- **Component**: `src/Components/WelcomeWizard/demos/TreeViewDemo.jsx`
-- **Styles**: `src/Components/WelcomeWizard/WelcomeWizard.css` (search for "Tree Demo")
-- **Sample Data**: `src/Components/WelcomeWizard/constants.js` (`DEMO_TREE_DATA`)

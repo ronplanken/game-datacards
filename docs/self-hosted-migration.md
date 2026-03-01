@@ -1,6 +1,35 @@
+---
+title: Self-Hosted Supabase Migration (Coolify)
+description: Guide for migrating the Game Datacards backend from Supabase Cloud to a self-hosted instance on Coolify
+category: infrastructure
+tags: [supabase, coolify, migration, deployment, self-hosted]
+prerequisites:
+  - Coolify server with Supabase template deployed
+  - Supabase CLI installed locally
+  - SSH access to the Coolify server
+  - gdc-premium repository cloned alongside game-datacards
+file_locations:
+  migration_script: scripts/migrate-to-coolify.sh
+  migrations_dir: supabase/migrations/
+  edge_functions: ../gdc-premium/supabase/functions/
+---
+
 # Migrating to Self-Hosted Supabase (Coolify)
 
-This guide covers migrating the Game Datacards backend from Supabase Cloud to a self-hosted Supabase instance running on Coolify.
+Guide for migrating the Game Datacards backend from Supabase Cloud to a self-hosted Supabase instance running on Coolify.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Step 1: Apply Database Migrations](#step-1-apply-database-migrations)
+- [Step 2: Deploy Edge Functions](#step-2-deploy-edge-functions)
+- [Step 3: Configure Edge Function Secrets](#step-3-configure-edge-function-secrets)
+- [Step 4: Update Creem Webhook URL](#step-4-update-creem-webhook-url)
+- [Step 5: Update Frontend Environment Variables](#step-5-update-frontend-environment-variables)
+- [Step 6: Configure Auth (GoTrue)](#step-6-configure-auth-gotrue)
+- [Verification Checklist](#verification-checklist)
+- [Notes](#notes)
 
 ## Prerequisites
 
@@ -21,7 +50,30 @@ Or follow the manual steps below.
 
 ## Step 1: Apply Database Migrations
 
-All 15 migrations are in `supabase/migrations/`. Since the Hetzner firewall only exposes ports 80/443, Postgres (port 5432) is not directly reachable. Use an SSH tunnel to connect.
+All 18 migrations are in `supabase/migrations/`. Since the Hetzner firewall only exposes ports 80/443, Postgres (port 5432) is not directly reachable. Use an SSH tunnel to connect.
+
+### Migrations
+
+| # | File | Purpose |
+|---|------|---------|
+| 001 | `initial_schema.sql` | Base tables and schema |
+| 002 | `rls_policies.sql` | Row-level security policies |
+| 003 | `indexes.sql` | Performance indexes |
+| 004 | `creem_integration.sql` | Payment integration |
+| 005 | `tier_support.sql` | Subscription tier tables |
+| 006 | `fix_user_categories_trigger.sql` | Trigger fix |
+| 007 | `realtime_setup.sql` | Realtime channel config |
+| 008 | `subscription_limit_enforcement.sql` | Tier limit enforcement |
+| 009 | `datasource_sharing.sql` | Datasource sharing |
+| 010 | `datasource_rpc.sql` | Datasource stored procedures |
+| 011 | `local_datasource_support.sql` | Local datasource support |
+| 012 | `soft_delete_datasources.sql` | Soft delete for datasources |
+| 013 | `lifetime_admin_tiers.sql` | Lifetime and admin tier support |
+| 014 | `user_templates.sql` | User template tables |
+| 015 | `template_publishing.sql` | Template publishing |
+| 016 | `fix_search_path.sql` | Search path fix |
+| 017 | `fix_rls_initplan.sql` | RLS init plan fix |
+| 018 | `category_sharing.sql` | Category sharing |
 
 ### Open an SSH tunnel
 

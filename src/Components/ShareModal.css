@@ -297,6 +297,80 @@
 }
 
 /* ===========================================
+   VISIBILITY TOGGLE
+   =========================================== */
+.share-visibility-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.share-visibility-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.share-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: rgba(148, 163, 184, 0.3);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.share-toggle.active {
+  background: #1677ff;
+  border-color: #1677ff;
+}
+
+.share-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.share-toggle.active .share-toggle-thumb {
+  transform: translateX(18px);
+}
+
+/* ===========================================
+   ACTION BUTTON GROUP
+   =========================================== */
+.share-action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.share-action-btn--update {
+  background: #1677ff;
+}
+
+.share-action-btn--secondary {
+  background: transparent;
+  color: var(--accent-primary);
+  border: 1px solid rgba(22, 119, 255, 0.3);
+  font-size: 13px;
+  padding: 10px 20px;
+}
+
+.share-action-btn--secondary:hover {
+  background: rgba(22, 119, 255, 0.08);
+}
+
+/* ===========================================
    ANIMATIONS
    =========================================== */
 @keyframes shareFadeSlideIn {

@@ -6,6 +6,8 @@ import {
   TEMPLATE_GAME_SYSTEMS,
   TEMPLATE_SORT_OPTIONS,
   ListSyncButton,
+  MySharedListsModal,
+  MobileSharedListsModal,
 } from "../index";
 
 // ============================================
@@ -231,5 +233,25 @@ describe("ListSyncButton stub", () => {
   it("should be a function that returns null", () => {
     expect(typeof ListSyncButton).toBe("function");
     expect(ListSyncButton()).toBeNull();
+  });
+});
+
+// ============================================
+// MySharedListsModal stub
+// ============================================
+describe("MySharedListsModal stub", () => {
+  it("should be a function that returns null", () => {
+    expect(typeof MySharedListsModal).toBe("function");
+    expect(MySharedListsModal()).toBeNull();
+  });
+});
+
+// ============================================
+// MobileSharedListsModal stub
+// ============================================
+describe("MobileSharedListsModal stub", () => {
+  it("should be a function that returns null", () => {
+    expect(typeof MobileSharedListsModal).toBe("function");
+    expect(MobileSharedListsModal()).toBeNull();
   });
 });

@@ -538,7 +538,27 @@ export const SettingsModal = () => {
                 {activeTab === "changelog" && (
                   <div className="changelog-container">
                     <div className="changelog-timeline">
-                      <ChangelogEntry version="Version 3.1.3" date="13-02-2026" defaultExpanded={true}>
+                      <ChangelogEntry version="Version 3.3.0" date="01-03-2026" defaultExpanded={true}>
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>List Forge Import</strong>
+                            Import army lists from{" "}
+                            <a href="https://listforge.club/" target="_blank" rel="noreferrer">
+                              List Forge
+                            </a>{" "}
+                            by uploading an exported file or pasting its contents. Match units to your datasource for full
+                            datasheet cards, or import the exported data directly.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Automatic Unit Matching</strong>
+                            Factions, detachments, units, and enhancements are detected and matched automatically with the
+                            option to review and adjust before importing.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.3" date="13-02-2026">
                         <h4 className="changelog-section-title">Fixes</h4>
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
