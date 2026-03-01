@@ -34,16 +34,16 @@ export const ImportReviewPanel = ({
         <div className="gw-import-mode-toggle">
           <div
             className="gw-import-mode-slider"
-            style={{ transform: (importMode || "match") === "direct" ? "translateX(100%)" : "translateX(0)" }}
+            style={{ transform: isDirectMode ? "translateX(100%)" : "translateX(0)" }}
           />
           <button
-            className={`gw-import-mode-option ${(importMode || "match") === "match" ? "active" : ""}`}
+            className={`gw-import-mode-option ${!isDirectMode ? "active" : ""}`}
             onClick={() => onImportModeChange("match")}>
             <Database size={13} />
             <span>Match to datasource</span>
           </button>
           <button
-            className={`gw-import-mode-option ${(importMode || "match") === "direct" ? "active" : ""}`}
+            className={`gw-import-mode-option ${isDirectMode ? "active" : ""}`}
             onClick={() => onImportModeChange("direct")}>
             <FileJson size={13} />
             <span>Use exported data</span>
@@ -53,7 +53,7 @@ export const ImportReviewPanel = ({
 
       {/* Faction Row */}
       <div className="gw-import-faction-row">
-        <span className="gw-import-faction-label">Faction</span>
+        <span className="gw-import-faction-label">{isDirectMode ? "Faction (optional)" : "Faction"}</span>
         <div className="gw-import-faction-value">
           {matchedFaction ? (
             <>
@@ -101,7 +101,7 @@ export const ImportReviewPanel = ({
       {units.length > 0 && (
         <div className="gw-import-unit-list">
           {units.map((unit, idx) => (
-            <div key={idx} className={`gw-import-unit-item ${unit.skipped ? "skipped" : ""}`}>
+            <div key={`${unit.originalName}-${idx}`} className={`gw-import-unit-item ${unit.skipped ? "skipped" : ""}`}>
               <span className={`gw-import-unit-status ${isDirectMode ? "exact" : unit.matchStatus || "none"}`}>
                 {isDirectMode || unit.matchStatus === "exact" || unit.matchStatus === "confident" ? (
                   <Check size={12} />

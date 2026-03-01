@@ -19,6 +19,8 @@ import {
   buildCardFromSelection,
   buildCoreAbilitySet,
 } from "../../../Helpers/listforgeImport.helpers";
+import { getDetachmentName } from "../../../Helpers/faction.helpers";
+import { ImportReviewPanel } from "../ImportReviewPanel";
 
 const matchEnhancementsToFaction = (units, faction, listDetachment) => {
   if (!faction?.enhancements?.length) return units;
@@ -106,8 +108,6 @@ const buildCardsFromUnits = (units) => {
     return card;
   });
 };
-import { getDetachmentName } from "../../../Helpers/faction.helpers";
-import { ImportReviewPanel } from "../ImportReviewPanel";
 
 const filterOption = (input, option) => option?.label?.toLowerCase().includes(input.toLowerCase());
 
@@ -126,6 +126,7 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
   const [detachment, setDetachment] = useState(null);
   const [parsedDetachment, setParsedDetachment] = useState(null);
   const [importMode, setImportMode] = useState("match");
+  const [parsedUnits, setParsedUnits] = useState([]);
 
   const factionOptions = dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || [];
   const coreAbilityNames = useMemo(() => buildCoreAbilitySet(dataSource?.data), [dataSource?.data]);
@@ -236,6 +237,7 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
 
     setParsedFaction(parsed.factionName);
     setParsedDetachment(parsed.detachmentName);
+    setParsedUnits(parsed.units);
 
     const name = parsed.rosterName || parsed.factionName || "Imported List";
     setCategoryName(name);
@@ -292,9 +294,8 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
 
       // In direct mode, faction change is for theming only — don't re-match units
       if (importMode !== "direct") {
-        const parsed = parseListforgeRoster(file);
-        let matchedUnits = matchUnitsToDatasheets(parsed.units, faction, dataSource?.data || []);
-        matchedUnits = matchEnhancementsToFaction(matchedUnits, faction, parsed.detachmentName);
+        let matchedUnits = matchUnitsToDatasheets(parsedUnits, faction, dataSource?.data || []);
+        matchedUnits = matchEnhancementsToFaction(matchedUnits, faction, parsedDetachment);
         setUnits(matchedUnits);
       }
     }
@@ -321,13 +322,10 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
 
   const handleImportModeChange = (mode) => {
     setImportMode(mode);
-    // If already in review phase, re-parse with new mode
-    if (phase === "review" && file) {
-      const parsed = parseListforgeRoster(file);
-      if (parsed.error || !parsed.units.length) return;
-
+    // If already in review phase, re-match with new mode using cached parsed units
+    if (phase === "review" && parsedUnits.length) {
       if (mode === "direct") {
-        const directUnits = parsed.units.map((unit) => ({
+        const directUnits = parsedUnits.map((unit) => ({
           ...unit,
           matchedCard: buildCardFromSelection(unit._selection, unit, coreAbilityNames, matchedFaction?.id),
           matchStatus: "exact",
@@ -335,11 +333,11 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
         setUnits(directUnits);
       } else {
         if (matchedFaction) {
-          let matchedUnits = matchUnitsToDatasheets(parsed.units, matchedFaction, dataSource?.data || []);
-          matchedUnits = matchEnhancementsToFaction(matchedUnits, matchedFaction, parsed.detachmentName);
+          let matchedUnits = matchUnitsToDatasheets(parsedUnits, matchedFaction, dataSource?.data || []);
+          matchedUnits = matchEnhancementsToFaction(matchedUnits, matchedFaction, parsedDetachment);
           setUnits(matchedUnits);
         } else {
-          setUnits(parsed.units.map((u) => ({ ...u, matchStatus: "none", matchedCard: null, alternatives: [] })));
+          setUnits(parsedUnits.map((u) => ({ ...u, matchStatus: "none", matchedCard: null, alternatives: [] })));
         }
       }
     }
