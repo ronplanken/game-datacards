@@ -5,6 +5,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
+import { useUmami } from "../../../Hooks/useUmami";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
@@ -23,6 +24,7 @@ const Toggle = ({ checked, onChange, disabled }) => (
 export const ListAdd = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, addDatacard } = useMobileList();
   const { activeCard } = useCardStorage();
+  const { trackEvent } = useUmami();
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
@@ -86,6 +88,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   const handleAddToList = () => {
     addDatacard(activeCard, selectedUnitSize, selectedEnhancement, isWarlord);
+    trackEvent("list-add-unit", { unitName: activeCard.name, isWarlord });
     handleClose();
     message.success(`${activeCard.name} added to list`);
   };

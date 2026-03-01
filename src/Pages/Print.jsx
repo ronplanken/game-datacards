@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Input, Typography } from "antd";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import split from "just-split";
@@ -14,6 +14,7 @@ import { PrintFaq } from "../Components/PrintFaq";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { usePrintSettings } from "../Hooks/usePrintSettings";
+import { useUmami } from "../Hooks/useUmami";
 
 const { Panel } = Collapse;
 const { Header, Sider, Content } = Layout;
@@ -39,6 +40,7 @@ export const Print = () => {
 
   // Use the custom hook for all print settings
   const printSettings = usePrintSettings(settings, updateSettings);
+  const { trackEvent } = useUmami();
 
   // Memoize cards to prevent unnecessary recalculations
   const cards = useMemo(() => {
@@ -50,6 +52,14 @@ export const Print = () => {
   const pages = useMemo(() => {
     return split(cards, printSettings.cardsPerPage);
   }, [cards, printSettings.cardsPerPage]);
+
+  // Track print page open (only on mount)
+  const cardCount = cards.length;
+  useEffect(() => {
+    if (cardCount > 0) {
+      trackEvent("print-open", { cardCount });
+    }
+  }, [cardCount, trackEvent]);
 
   // Redirect if invalid category
   if (!CategoryId || CategoryId >= cardStorage?.categories?.length) {

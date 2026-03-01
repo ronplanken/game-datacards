@@ -20,6 +20,7 @@ import {
   buildCoreAbilitySet,
 } from "../../../Helpers/listforgeImport.helpers";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
+import { useUmami } from "../../../Hooks/useUmami";
 import { ImportReviewPanel } from "../ImportReviewPanel";
 
 const matchEnhancementsToFaction = (units, faction, listDetachment) => {
@@ -128,6 +129,7 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
   const [importMode, setImportMode] = useState("match");
   const [parsedUnits, setParsedUnits] = useState([]);
 
+  const { trackEvent } = useUmami();
   const factionOptions = dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || [];
   const coreAbilityNames = useMemo(() => buildCoreAbilitySet(dataSource?.data), [dataSource?.data]);
 
@@ -370,6 +372,7 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
     };
 
     importCategory(category);
+    trackEvent("import-listforge", { faction: matchedFaction?.name, unitCount: cards.length, mode: importMode });
     message.success(`Imported ${cards.length} units to "${category.name}"`);
     onClose();
   };

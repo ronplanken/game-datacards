@@ -12,6 +12,7 @@ import {
   getImportableUnits,
   filterCardWeapons,
 } from "../../../Helpers/gwAppImport.helpers";
+import { useUmami } from "../../../Hooks/useUmami";
 import { ImportReviewPanel } from "../ImportReviewPanel";
 
 const matchEnhancementsToFaction = (units, faction, listDetachment) => {
@@ -110,6 +111,7 @@ export const GwAppTab = ({ dataSource, settings, importCategory, onClose, footer
   const [units, setUnits] = useState([]);
   const [categoryName, setCategoryName] = useState("");
 
+  const { trackEvent } = useUmami();
   const factionOptions = dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || [];
 
   const handleParse = () => {
@@ -197,6 +199,7 @@ export const GwAppTab = ({ dataSource, settings, importCategory, onClose, footer
     };
 
     importCategory(category);
+    trackEvent("import-gw-list", { faction: matchedFaction?.name, unitCount: cards.length });
     message.success(`Imported ${cards.length} units to "${category.name}"`);
     onClose();
   };

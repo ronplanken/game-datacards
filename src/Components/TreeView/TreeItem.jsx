@@ -19,6 +19,7 @@ import { Battlerule } from "../../Icons/Battlerule";
 import { Warscroll } from "../../Icons/Warscroll";
 import { Spell } from "../../Icons/Spell";
 import { Rule } from "../../Icons/Rule";
+import { useUmami } from "../../Hooks/useUmami";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import { ContextMenu } from "./ContextMenu";
@@ -44,6 +45,7 @@ export function TreeItem({
     saveCard,
     saveActiveCard,
   } = useCardStorage();
+  const { trackEvent } = useUmami();
   const cardIndex = `card-${card.uuid}`;
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -67,6 +69,7 @@ export function TreeItem({
     };
     addCardToCategory(newCard, activeCategory.uuid);
     setActiveCard(newCard);
+    trackEvent("card-duplicate", { cardType: card.cardType });
   };
 
   const handleDelete = () => {
@@ -77,6 +80,7 @@ export function TreeItem({
         removeCardFromCategory(card.uuid, category.uuid);
         setActiveCard(null);
         setSelectedTreeIndex(null);
+        trackEvent("card-delete", { cardType: card.cardType });
         message.success("Card has been deleted.");
       },
     });

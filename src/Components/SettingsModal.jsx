@@ -7,6 +7,7 @@ import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useAuth, useSubscription, useSync } from "../Premium";
+import { useUmami } from "../Hooks/useUmami";
 import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
 import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
 import { CustomDatasourceModal, EditDatasourceMetadataModal } from "../Premium";
@@ -45,6 +46,7 @@ export const SettingsModal = () => {
   const [editingDatasource, setEditingDatasource] = useState(null);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
   const { getLocalDatasources, updateDatasourceCloudState } = useCardStorage();
   const {
     dataSource,
@@ -888,6 +890,7 @@ export const SettingsModal = () => {
           className="app-header-icon-btn app-header-settings-btn"
           onClick={() => {
             setIsModalVisible(true);
+            trackEvent("settings-open");
           }}>
           <Settings size={20} />
         </button>

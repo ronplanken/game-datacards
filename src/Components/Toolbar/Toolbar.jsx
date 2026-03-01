@@ -7,6 +7,7 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 
 import { Parser } from "xml2js";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useUmami } from "../../Hooks/useUmami";
 import { ListCards } from "../../Icons/ListCards";
 import { Exporter } from "../Importer/Exporter";
 import { Importer } from "../Importer/Importer";
@@ -30,6 +31,7 @@ const getTotalCardCount = (category, allCategories) => {
 
 export const Toolbar = () => {
   const { settings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
 
   const navigate = useNavigate();
 
@@ -78,6 +80,7 @@ export const Toolbar = () => {
             icon={<FolderPlus size={16} />}
             onClick={() => {
               addCategory("New Category");
+              trackEvent("category-create", { type: "category" });
             }}
           />
         </Tooltip>
@@ -87,6 +90,7 @@ export const Toolbar = () => {
             icon={<ListCards style={{ fontSize: 16 }} />}
             onClick={() => {
               addCategory("New List", "list", settings.selectedDataSource);
+              trackEvent("category-create", { type: "list" });
             }}
           />
         </Tooltip>

@@ -26,6 +26,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { v4 as uuidv4 } from "uuid";
 import { validateCustomDatasource, countDatasourceCards } from "../../Helpers/customDatasource.helpers";
+import { useUmami } from "../../Hooks/useUmami";
 import { GwAppTab } from "./tabs/GwAppTab";
 import { ListForgeTab } from "./tabs/ListForgeTab";
 import "./ImportExport.css";
@@ -63,6 +64,7 @@ export const Importer = () => {
   const { importCategory } = useCardStorage();
   const { importCustomDatasource, dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
 
   const handleClose = () => {
     setIsModalVisible(false);
@@ -118,6 +120,7 @@ export const Importer = () => {
       importCategory(uploadFile.category, importedSubCategories);
     }
 
+    trackEvent("import-file", { format: "gdc-json" });
     handleClose();
   };
 
@@ -141,6 +144,7 @@ export const Importer = () => {
           });
           setUploadFile(null);
           setFileError(true);
+          trackEvent("import-error", { type: "invalid-file" });
         }
       } catch (e) {
         setFileInfo({
@@ -149,6 +153,7 @@ export const Importer = () => {
         });
         setUploadFile(null);
         setFileError(true);
+        trackEvent("import-error", { type: "invalid-file" });
       }
     };
 
@@ -306,6 +311,7 @@ export const Importer = () => {
     );
 
     if (result.success) {
+      trackEvent("import-datasource", { sourceType: dsPreview.sourceType });
       setImportedDatasource({
         id: result.id,
         name: dsPreview.data.name,
