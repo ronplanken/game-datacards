@@ -12,6 +12,12 @@ This is a React 18.3 application built with Vite 7 for fast development and buil
 - Firebase and Supabase for backend services
 - Vitest for testing
 
+## Documentation
+
+For detailed documentation on card data formats, import features, components, and infrastructure, see `docs/INDEX.md` for a full index of available docs.
+
+- **When implementing a major feature or working on data/file formats**, add a new doc file in `docs/` with YAML frontmatter (title, description, category, tags, related, file_locations) and a table of contents. Then update `docs/INDEX.md` to include the new file in the appropriate category.
+
 ## Development Rules
 
 - **All new features require unit tests.** Write tests using Vitest before or alongside implementation.

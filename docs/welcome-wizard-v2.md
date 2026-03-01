@@ -1,20 +1,35 @@
-# Welcome Wizard v2.0.0 - Feature Documentation
+---
+title: Welcome Wizard v2.0.0
+description: Onboarding wizard that introduces new users to Game Datacards features and guides game system selection
+category: features
+tags: [onboarding, wizard, game-systems, ux]
+version: "2.0.0"
+related:
+  - draggable-tree-component.md
+file_locations:
+  entry: src/Components/WelcomeWizard/index.jsx
+  styles: src/Components/WelcomeWizard/WelcomeWizard.css
+  constants: src/Components/WelcomeWizard/constants.js
+  hook: src/Components/WelcomeWizard/hooks/useWelcomeWizard.js
+---
 
-> This document provides comprehensive documentation of the Game Datacards Welcome Wizard redesign, cataloging all platform features to be showcased during user onboarding.
+# Welcome Wizard v2.0.0
+
+The Welcome Wizard is the primary onboarding experience for new Game Datacards users. It showcases platform features, guides game system selection, and provides interactive demos.
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Current State Analysis](#current-state-analysis)
-3. [Platform Features Catalog](#platform-features-catalog)
-4. [Wizard Step Design](#wizard-step-design)
-5. [Technical Specifications](#technical-specifications)
-
----
+- [Overview](#overview)
+- [Wizard Steps](#wizard-steps)
+- [Supported Game Systems](#supported-game-systems)
+- [Platform Features Catalog](#platform-features-catalog)
+- [Component Architecture](#component-architecture)
+- [State Management](#state-management)
+- [Configuration Constants](#configuration-constants)
+- [Design Tokens](#design-tokens)
+- [Integration Points](#integration-points)
 
 ## Overview
-
-The Welcome Wizard serves as the primary onboarding experience for new Game Datacards users. Version 2.0.0 represents a complete redesign to showcase the full breadth of platform capabilities that have evolved since version 1.0.
 
 ### Goals
 
@@ -24,120 +39,119 @@ The Welcome Wizard serves as the primary onboarding experience for new Game Data
 - Present cloud sync and subscription value proposition
 - Highlight community and mobile companion features
 
----
+## Wizard Steps
 
-## Current State Analysis
+The wizard has 9 steps (8 when the subscription step is hidden). The subscription step is conditionally shown based on premium mode and paid tier feature flag.
 
-### Existing Wizard (v1.2.0)
+| Step | ID | Title | Required | Description |
+|------|----|-------|----------|-------------|
+| 0 | `welcome` | Welcome | No | Animated intro with feature highlight carousel |
+| 1 | `game-system` | Choose Your Game | Yes | Select primary game system (required to proceed) |
+| 2 | `workspace` | Your Workspace | No | Interactive tree view demo, workspace overview |
+| 3 | `adding-cards` | Adding Cards | No | Card explorer and adding cards workflow |
+| 4 | `data-portability` | Import, Export & Print | No | Tab interface showing import/export/print features |
+| 5 | `subscription` | Premium Options | No | Subscription tiers (conditional: premium + paid tier) |
+| 6 | `cloud-sync` | Cloud Sync | No | Cloud sync and multi-device features |
+| 7 | `explore-more` | Explore More | No | Community marketplace and mobile companion |
+| 8 | `complete` | Get Started | No | Summary and quick action buttons |
 
-| Step | Title | Content |
-|------|-------|---------|
-| 0 | Welcome | Basic introduction |
-| 1 | Managing Cards | Tree view navigation |
-| 2 | Adding Cards | Card explorer basics |
-| 3 | Editing Cards | Card customization |
-| 4 | Sharing Cards | Category sharing |
-| 5 | Datasources | Game system selection |
-| 6 | Thank You | Discord link |
+### Step Details
 
-### Gaps Identified
+#### Step 0: Welcome
+- Animated Game Datacards logo
+- Tagline: "Create, customize, and share datacards for your favorite tabletop games"
+- Feature highlight cards (auto-rotating): "6 Game Systems", "Print-Ready Cards", "Cloud Sync", "Community Content"
+- "Skip Tutorial" option for returning users
 
-Features **not covered** in the current wizard:
+#### Step 1: Choose Your Game
+- 6 game system cards in a grid
+- Each card shows name, subtitle, description, colored accent bar, and optional tag (Popular/New/Legacy)
+- Single selection required to proceed
+- Selected card gets visual highlight
 
-- Cloud synchronization and multi-device support
-- Subscription tiers (Free/Premium/Creator)
-- Custom datasources (URL import, file upload, export)
-- Community datasource marketplace
-- Image export functionality
-- Print customization options
-- Account features (login, 2FA)
-- Mobile companion experience
-- Age of Sigmar 4th Edition
-- GW App import/export format
+#### Step 2: Your Workspace
+- Split layout with interactive tree view demo on left
+- Right side shows workspace description text
+- Pre-populated with sample categories ("My Army", "Characters") and sample cards
+- Drag items to reorder, click to expand/collapse categories
 
----
+#### Step 3: Adding Cards
+- Card explorer and adding cards workflow demo
+
+#### Step 4: Import, Export & Print
+- Tab interface with 3 tabs: Import, Export, Print
+- Each tab lists available formats and options
+- Informational only (no actual import/export in wizard)
+
+#### Step 5: Premium Options (Conditional)
+- Only shown when `hasSubscription` and `paidTierEnabled` are both true
+- Imported from the Premium package (`StepSubscription`)
+- Shows subscription tier comparison
+
+#### Step 6: Cloud Sync
+- Cloud sync and multi-device feature overview
+- Interactive mock demos: `MockHeaderBar`, `MockTreeRow`, `MockConflictDialog`
+
+#### Step 7: Explore More
+- Feature cards for Community Marketplace and Mobile Companion
+- Informational, non-interactive
+
+#### Step 8: Get Started
+- Completion summary with selected game system
+- Quick action buttons: Browse Units, Create Category, Open Settings
+- Discord community link
+- "Don't show again" checkbox
+
+## Supported Game Systems
+
+| System | ID | Color | Tag | Description |
+|--------|----|-------|-----|-------------|
+| Warhammer 40K 10th Edition | `40k-10e` | `#dc2626` | Popular | Community-maintained datacards |
+| Age of Sigmar 4th Edition | `aos` | `#ca8a04` | New | Community-maintained warscrolls |
+| Combat Patrol 10th Edition | `40k-10e-cp` | `#0891b2` | - | Simplified Combat Patrol cards |
+| Necromunda | `necromunda` | `#a05236` | - | Fighter cards for skirmish games |
+| Basic Cards | `basic` | `#6366f1` | - | Fully custom cards from scratch |
+| Wahapedia Import 9th Edition | `40k` | `#737373` | Legacy | Import from Wahapedia data |
 
 ## Platform Features Catalog
 
-### 1. Supported Game Systems
-
-| System | ID | Status | Description |
-|--------|-----|--------|-------------|
-| Warhammer 40K 10th Edition | `40k-10e` | Active | Full datasheet support, most popular |
-| Age of Sigmar 4th Edition | `aos` | Active | Warscrolls, spell lores, manifestations |
-| Combat Patrol 10th Edition | `40k-10e-cp` | Active | Simplified 40K subset |
-| Necromunda | `necromunda` | Active | Gang warfare skirmish system |
-| Basic Cards | `basic` | Active | Universal custom card creation |
-| Wahapedia 9th Edition | `40k` | Legacy | Import from Wahapedia format |
-
-### 2. Card Management
-
-**Category System:**
+### Card Management
 - Hierarchical category tree with drag-and-drop reordering
 - Nested parent/child category relationships
-- Category types: Standard and List modes
 - Right-click context menus for actions
 - Search and filtering across categories
-
-**Card Operations:**
-- Add cards from faction databases
-- Edit card properties with live preview
-- Duplicate cards for variations
-- Mark cards as custom/modified
 - Auto-save functionality
 
-### 3. Import & Export Capabilities
+### Import & Export
 
 **Import Formats:**
-| Format | Description | Use Case |
-|--------|-------------|----------|
-| GDC JSON | Native Game Datacards format | Backup/restore, sharing |
-| GW App | Games Workshop app list format | Import existing army lists |
-| Custom Datasource | External JSON datasources | Community content |
-| URL Import | Load datasource from web URL | Live updating sources |
+
+| Format | Description |
+|--------|-------------|
+| GDC JSON | Native Game Datacards format (backup/restore, sharing) |
+| GW App | Games Workshop app list format |
 
 **Export Formats:**
-| Format | Description | Use Case |
-|--------|-------------|----------|
-| GDC JSON | Full category with cards | Sharing, backup |
-| GW App Format | Compatible with GW app | Cross-app usage |
-| PNG Images | Individual card images | Social sharing, TTS |
-| ZIP Archive | Batch image export | Bulk download |
-| Datasource JSON | Convert to datasource | Publishing content |
 
-### 4. Print Functionality
+| Format | Description |
+|--------|-------------|
+| JSON | Full category with cards (sharing, backup) |
+| GW App | Compatible with GW app |
+| PNG Images | Individual card images (social sharing, TTS) |
+| Datasource | Convert to custom datasource format |
 
-**Page Settings:**
-- Paper sizes: A4, A5, Letter, Half-Letter, Custom
+### Print Features
+- Paper sizes: A4, A5, Letter, Half-Letter
 - Orientation: Portrait, Landscape
-- Card alignment options
-- Cards per page configuration
-- Vertical alignment control
+- Cards per page layout customization
 
-**Print Features:**
-- Print preview with live updates
-- Browser print dialog integration
-- Print-optimized CSS styles
-- Multi-page support
-- Double-sided card handling
-
-### 5. Cloud Sync & Account Features
-
-**Authentication:**
-- Email/password registration
-- Google OAuth integration
-- Two-factor authentication (2FA)
-- Password reset via email
-- Email verification
-
-**Cloud Synchronization:**
+### Cloud Sync & Accounts (Premium)
 - Real-time category sync to cloud
 - Multi-device access
-- Offline-first with sync on reconnect
-- Conflict detection and resolution
-- Device-specific tracking
+- Email/password and Google OAuth authentication
+- Two-factor authentication (2FA)
 
-### 6. Subscription Tiers
+### Subscription Tiers
 
 | Feature | Free | Premium | Creator |
 |---------|------|---------|---------|
@@ -145,269 +159,142 @@ Features **not covered** in the current wizard:
 | Custom Datasources | 0 | 2 | 10 |
 | Upload Datasources | No | Yes | Yes |
 | Publish to Community | No | Yes | Yes |
-| Push Updates | No | Yes | Yes |
-| Price | Free | €3.99/mo | €7.99/mo |
+| Price | Free | 3.99/mo | 7.99/mo |
 
-### 7. Custom Datasources
-
-**Capabilities:**
-- Import from URL (HTTP/HTTPS endpoints)
-- Import from local JSON file
+### Custom Datasources (Premium)
+- Import from URL or local JSON file
 - Export categories as datasource format
 - Version management with semantic versioning
 - Update checking for URL sources
 
-**Validation Limits:**
-- Maximum 10 factions per datasource
-- Maximum 2000 cards total
-- Maximum 200 character names
-- Maximum 50 character versions
-
-### 8. Community Marketplace
-
-**For All Users:**
-- Browse public datasources
-- Subscribe to community content
+### Community Marketplace
+- Browse and subscribe to public datasources
 - Search by game system
-- View ratings and subscriber counts
+- Premium/Creator users can publish and push updates
 
-**For Premium/Creator:**
-- Upload datasources to cloud
-- Publish datasources publicly
-- Push updates to subscribers
-- Share codes for direct linking
-
-### 9. Mobile Companion
-
-**Mobile Features:**
+### Mobile Companion
 - Touch-optimized card viewing
-- Faction drawer navigation
-- GW App list import
-- Offline card access
-- Share functionality
 - PWA support (installable)
+- Cross-device sync with desktop
 
-**Cross-Device Sync:**
-- View desktop categories on mobile
-- Real-time sync updates
-- Shared account access
-
-### 10. Card Editing Features
-
-**40K 10th Edition:**
-- Unit datasheets with full stat editing
-- Weapon profiles and loadouts
-- Enhancement selection
-- Keyword management
-- Point calculations
-- Stratagem, Enhancement, Rule cards
-
-**Age of Sigmar:**
-- Warscroll editing
-- Stat wheel or badge display modes
-- Spell and manifestation lores
-- Faction color customization
-
-**Universal Features:**
-- Custom faction colors (header/banner)
-- Markdown support in descriptions
-- Zoom controls (25%-100%, Auto)
-- Double-sided card toggle
-- Fancy fonts option
-
----
-
-## Wizard Step Design
-
-### Desktop Wizard Flow (6 Steps)
-
-#### Step 1: Welcome
-**Purpose:** Create excitement and set expectations
-
-**Content:**
-- Animated Game Datacards logo
-- Tagline: "Create, customize, and share datacards for your favorite tabletop games"
-- Feature highlight cards (auto-rotating):
-  - "6 Game Systems"
-  - "Print-Ready Cards"
-  - "Cloud Sync"
-  - "Community Content"
-- "Skip Tutorial" option for returning users
-
-#### Step 2: Choose Your Game
-**Purpose:** Select primary game system
-
-**Content:**
-- 6 game system cards in 2x3 grid
-- Each card includes:
-  - Game name and edition
-  - Colored accent bar (game-specific)
-  - Tags where applicable (Popular, New, Legacy)
-- Selection required to proceed
-
-**Game Systems Displayed:**
-1. Warhammer 40K 10th Edition (Popular tag, red accent)
-2. Age of Sigmar 4th Edition (New tag, gold accent)
-3. Combat Patrol 10th Edition (cyan accent)
-4. Necromunda (brown accent)
-5. Basic Cards (indigo accent)
-6. Wahapedia 9th Edition (Legacy tag, gray accent)
-
-**Interaction:**
-- Click to select (single selection)
-- Selected card gets glow effect + checkmark
-
-#### Step 3: Your Workspace
-**Purpose:** Demonstrate card management and editing through hands-on interaction
-
-**Content:**
-- Split view layout:
-  - Left: Interactive tree view demo
-  - Right: Live card editor with preview
-- Brief instructional text above each section
-
-**Interactive Demo - Tree View:**
-- Pre-populated with sample categories ("My Army", "Characters", "Units")
-- Drag items to reorder
-- Click to expand/collapse categories
-- Right-click shows context menu preview
-
-**Interactive Demo - Card Editor:**
-- Editable unit name field
-- Stat adjustment with clickable +/- buttons
-- Live card preview updates in real-time as user types/clicks
-
-#### Step 4: Import, Export & Print
-**Purpose:** Showcase data portability features
-
-**Content:**
-- Tab interface with 3 tabs:
-  1. **Import** - JSON files, GW App format
-  2. **Export** - JSON, GW App format, PNG images, Datasource format
-  3. **Print** - Paper sizes, orientation, cards per page slider
-
-**Interaction:**
-- Click tabs to switch views
-- Each tab shows visual preview/illustration
-- Informational only (no actual import/export in wizard)
-
-#### Step 5: Explore More
-**Purpose:** Introduce advanced features without requiring account action
-
-**Content:**
-- 3 feature cards in a row (informational, non-interactive):
-  1. **Cloud Sync** - "Access your cards from any device"
-  2. **Community Marketplace** - "Browse and share custom datasources"
-  3. **Mobile Companion** - "View your cards on the go"
-- Small text below: "Create an account in Settings to unlock cloud features"
-
-**Design:**
-- Cards have subtle gradient backgrounds
-- Icons for each feature (Cloud, Store, Smartphone)
-- No auth buttons or account prompts
-
-#### Step 6: Get Started
-**Purpose:** Completion and next steps
-
-**Content:**
-- "You're all set!" heading
-- Summary of selected game system
-- Quick action buttons:
-  - "Browse Units" (primary CTA)
-  - "Create Category"
-  - "Open Settings"
-- Discord community link
-- "Don't show again" checkbox
-
----
-
-### Mobile Wizard Flow (6 Steps)
-
-| Step | Title | Key Content |
-|------|-------|-------------|
-| 1 | Welcome | Logo, 3-feature highlights |
-| 2 | Import Your List | GW App import instructions |
-| 3 | Desktop Features | Teaser for full editor |
-| 4 | Choose Game | 40K or AoS selection |
-| 5 | Game Settings | System-specific options |
-| 6 | Ready | Browse CTA, completion |
-
----
-
-## Technical Specifications
-
-### Component Architecture
+## Component Architecture
 
 ```
 src/Components/WelcomeWizard/
 ├── index.jsx                    # Main orchestrator
-├── WelcomeWizard.css           # Styles
-├── constants.js                 # Configuration
+├── WelcomeWizard.css            # Styles
+├── constants.js                 # Configuration and sample data
 ├── hooks/
-│   └── useWelcomeWizard.js     # State management
+│   └── useWelcomeWizard.js      # State management hook
 ├── components/
-│   ├── WizardHeader.jsx        # Progress + title
-│   ├── WizardSidebar.jsx       # Step navigation
-│   ├── WizardFooter.jsx        # Navigation buttons
-│   └── StepTransition.jsx      # Animations
+│   ├── index.js                 # Barrel export
+│   ├── WizardHeader.jsx         # Progress bar + title
+│   ├── WizardSidebar.jsx        # Step navigation sidebar
+│   ├── WizardFooter.jsx         # Navigation buttons
+│   ├── StepTransition.jsx       # Step animation transitions
+│   └── MobileProgress.jsx       # Mobile progress indicator
 ├── steps/
+│   ├── index.js                 # Barrel export (includes StepSubscription from Premium)
 │   ├── StepWelcome.jsx
 │   ├── StepGameSystem.jsx
-│   ├── StepCardManagement.jsx
-│   ├── StepCardEditor.jsx
-│   ├── StepImportExport.jsx
-│   ├── StepPrinting.jsx
-│   ├── StepAccountSync.jsx
-│   ├── StepSubscription.jsx
-│   ├── StepCustomDatasources.jsx
-│   ├── StepMarketplace.jsx
-│   ├── StepMobileCompanion.jsx
+│   ├── StepWorkspace.jsx
+│   ├── StepAddingCards.jsx
+│   ├── StepDataPortability.jsx
+│   ├── StepCloudSync.jsx
+│   ├── StepExploreMore.jsx
 │   └── StepComplete.jsx
 └── demos/
-    ├── TreeViewDemo.jsx
-    ├── CardEditorDemo.jsx
-    └── MarketplaceBrowseDemo.jsx
+    ├── index.js                 # Barrel export
+    ├── TreeViewDemo.jsx         # Interactive drag-and-drop tree
+    ├── CardEditorDemo.jsx       # Card stat editor demo
+    ├── MockHeaderBar.jsx        # Mock app header for sync demo
+    ├── MockTreeRow.jsx          # Mock tree row for sync demo
+    ├── MockConflictDialog.jsx   # Mock conflict resolution dialog
+    ├── MockComponents.css       # Styles for mock components
+    └── __tests__/
+        └── MockComponents.test.jsx
 ```
 
-### State Management
+The `StepSubscription` component is imported from the Premium package via `steps/index.js`.
 
-```typescript
-interface WizardState {
-  currentStep: number;
-  completedSteps: Set<number>;
-  transitionDirection: 'forward' | 'backward';
-  selectedGameSystem: string | null;
-  selectedTier: 'free' | 'premium' | 'creator' | null;
-  hasSkippedAuth: boolean;
-  demoState: {
-    cardName: string;
-    treeItems: DemoTreeItem[];
-  };
+## State Management
+
+The `useWelcomeWizard` hook manages all wizard state:
+
+```javascript
+// Hook signature
+useWelcomeWizard(settings, updateSettings)
+
+// Returned state
+{
+  // Navigation
+  currentStep,          // number - current step index
+  currentStepConfig,    // object - { key, id, title, required }
+  totalSteps,           // number - count of visible steps
+  progress,             // number - percentage (0-100)
+  isFirstStep,          // boolean
+  isLastStep,           // boolean
+  completedSteps,       // Set<number> - completed step indices
+  transitionDirection,  // "forward" | "backward"
+  canProceed,           // boolean - whether Next is enabled
+  visibleSteps,         // array - filtered WIZARD_STEPS
+
+  // Navigation actions
+  goToStep,             // (stepIndex, direction?) => void
+  goNext,               // () => void
+  goPrevious,           // () => void
+
+  // Game system
+  selectedGameSystem,   // string | null
+  selectGameSystem,     // (systemId) => void
+
+  // Demo state
+  demoTreeData,         // array - TreeItem[] for tree demo
+  demoCardData,         // object - { name, movement, toughness, save, wounds, leadership, objectiveControl }
+  activeDataTab,        // string - "import" | "export" | "print"
+
+  // Demo actions
+  toggleTreeItem,       // (itemId) => void
+  reorderTreeItems,     // (sourceId, targetId) => void
+  updateDemoCard,       // (field, value) => void
+  resetDemoCard,        // () => void
+  setActiveDataTab,     // (tabId) => void
 }
 ```
 
-### Version Configuration
+### Step Visibility Logic
+
+The subscription step is filtered out when either `hasSubscription` (from `usePremiumFeatures`) or `paidTierEnabled` (from `useFeatureFlags`) is false:
 
 ```javascript
-export const WIZARD_VERSION = "2.0.0";
-
-export const WIZARD_STEPS = [
-  { id: "welcome", title: "Welcome", required: false },
-  { id: "game-system", title: "Choose Your Game", required: true },
-  { id: "card-management", title: "Card Management", required: false },
-  { id: "card-editor", title: "Card Editor", required: false },
-  { id: "import-export", title: "Import & Export", required: false },
-  { id: "printing", title: "Print Cards", required: false },
-  { id: "account-sync", title: "Account & Sync", required: false },
-  { id: "subscription", title: "Subscription", required: false, conditional: "authenticated" },
-  { id: "custom-datasources", title: "Custom Datasources", required: false },
-  { id: "marketplace", title: "Marketplace", required: false },
-  { id: "mobile", title: "Mobile Companion", required: false },
-  { id: "complete", title: "Get Started", required: false },
-];
+const visibleSteps = useMemo(() => {
+  if (hasSubscription && paidTierEnabled) {
+    return WIZARD_STEPS; // All 9 steps
+  }
+  return WIZARD_STEPS.filter((step) => step.id !== "subscription"); // 8 steps
+}, [hasSubscription, paidTierEnabled]);
 ```
 
-### Design Tokens
+### Proceed Validation
+
+Only the game-system step enforces a requirement (a game system must be selected).
+
+## Configuration Constants
+
+Defined in `constants.js`:
+
+| Export | Description |
+|--------|-------------|
+| `WIZARD_VERSION` | `"2.0.0"` |
+| `WIZARD_STEPS` | Array of 9 step config objects (`{ key, id, title, required }`) |
+| `GAME_SYSTEMS` | Array of 6 game system objects |
+| `FEATURE_HIGHLIGHTS` | Array of 4 feature cards for welcome carousel |
+| `ADVANCED_FEATURES` | Array of 2 feature cards for explore-more step |
+| `DATA_TABS` | Array of 3 tab configs (import/export/print) with items |
+| `DEMO_TREE_DATA` | Sample tree data for workspace demo |
+| `DEMO_CARD_DATA` | Sample card stats for editor demo |
+
+## Design Tokens
 
 ```css
 /* Colors */
@@ -433,32 +320,11 @@ export const WIZARD_STEPS = [
 --wz-stagger-delay: 0.08s;
 ```
 
-### Integration Points
+## Integration Points
 
 | Hook/Component | Purpose |
 |----------------|---------|
-| `useSettingsStorage` | Persist wizard completion, game system selection |
-| `useAuth` | Account creation/login in Step 7 |
-| `useSubscription` | Tier display in Step 8 |
-| `useDataSourceStorage` | Custom datasource demo in Step 9 |
-| `useDatasourceSharing` | Marketplace preview in Step 10 |
-
----
-
-## Verification Plan
-
-### Testing Checklist
-
-- [ ] All 12 desktop steps render correctly
-- [ ] All 8 mobile steps render correctly
-- [ ] Game system selection persists to settings
-- [ ] Auth flow integrates without breaking wizard
-- [ ] Subscription step conditional visibility works
-- [ ] Interactive demos function as expected
-- [ ] Keyboard navigation (arrows, Enter, Esc)
-- [ ] Mobile swipe gestures work
-- [ ] Progress persistence across sessions
-- [ ] Version migration from v1.2.0 to v2.0.0
-- [ ] Responsive breakpoints (desktop, tablet, mobile)
-- [ ] Animation performance (no jank)
-- [ ] Accessibility (screen reader, focus management)
+| `useSettingsStorage` | Persist wizard completion and game system selection |
+| `usePremiumFeatures` | Check `hasSubscription` for subscription step visibility |
+| `useFeatureFlags` | Check `paidTierEnabled` for subscription step visibility |
+| `StepSubscription` | Imported from Premium package for subscription step content |
