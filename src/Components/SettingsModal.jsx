@@ -885,7 +885,7 @@ export const SettingsModal = () => {
 
       <Tooltip content="Configuration" placement="bottom-start">
         <button
-          className="app-header-icon-btn"
+          className="app-header-icon-btn app-header-settings-btn"
           onClick={() => {
             setIsModalVisible(true);
           }}>

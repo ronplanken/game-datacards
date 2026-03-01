@@ -86,36 +86,56 @@ export const AppHeader = ({
 
           {/* Right section - Actions and User */}
           <div className="app-header-right">
-            {showActions && screens.md && <DatasourceSelector />}
-            {showActions && activeCategory && activeCategory.cards?.length > 0 && <ShareModal />}
-
-            {showActions && <NotificationBell />}
-
-            {(showSyncStatus ?? showActions) && <SyncStatusIndicator />}
-
-            {showActions && user && <DatasourceUpdateBadge />}
-
-            {showActions && hasDatasourceBrowser && communityBrowserEnabled && (
-              <Tooltip content="Browse Community" placement="bottom-end">
-                <button className="app-header-icon-btn" onClick={() => setShowBrowseModal(true)}>
-                  <Globe size={18} />
-                </button>
-              </Tooltip>
+            {/* Workflow group: Datasource + Share */}
+            {showActions && screens.md && (
+              <>
+                <div className="app-header-group">
+                  <DatasourceSelector />
+                  {activeCategory && activeCategory.cards?.length > 0 && <ShareModal />}
+                </div>
+                <span className="app-header-separator" />
+              </>
             )}
 
-            {showActions && (
-              <Tooltip content="Join us on discord!" placement="bottom-end">
-                <button
-                  className="app-header-icon-btn"
-                  onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}>
-                  <Discord />
-                </button>
-              </Tooltip>
-            )}
+            {/* Status group: Bell + Sync + Updates */}
+            <div className="app-header-group">
+              {showActions && <NotificationBell />}
+              {(showSyncStatus ?? showActions) && <SyncStatusIndicator />}
+              {showActions && user && <DatasourceUpdateBadge />}
+            </div>
 
-            <SettingsModal />
+            <span className="app-header-separator" />
 
-            <AccountButton />
+            {/* Social group: Community + Discord */}
+            <div className="app-header-group">
+              {showActions && hasDatasourceBrowser && communityBrowserEnabled && (
+                <Tooltip content="Browse Community" placement="bottom-end">
+                  <button
+                    className="app-header-icon-btn app-header-social-btn"
+                    onClick={() => setShowBrowseModal(true)}>
+                    <Globe size={18} />
+                  </button>
+                </Tooltip>
+              )}
+
+              {showActions && (
+                <Tooltip content="Join us on discord!" placement="bottom-end">
+                  <button
+                    className="app-header-icon-btn app-header-social-btn"
+                    onClick={() => window.open("https://discord.gg/anfn4qTYC4", "_blank")}>
+                    <Discord />
+                  </button>
+                </Tooltip>
+              )}
+            </div>
+
+            <span className="app-header-separator" />
+
+            {/* User group: Settings + Account */}
+            <div className="app-header-group">
+              <SettingsModal />
+              <AccountButton />
+            </div>
           </div>
         </div>
       </Header>

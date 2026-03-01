@@ -34,6 +34,15 @@
   align-items: center;
   gap: 16px;
   cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.app-header-brand:hover {
+  opacity: 0.85;
+}
+
+.app-header-brand:hover img {
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.4));
 }
 
 .app-header-title {
@@ -62,6 +71,7 @@
 }
 
 .app-header-nav-item {
+  position: relative;
   padding: 0 16px;
   height: 64px;
   line-height: 64px;
@@ -72,14 +82,36 @@
   border-bottom: 2px solid transparent;
 }
 
+.app-header-nav-item::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #1677ff;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translateX(-50%);
+}
+
+.app-header-nav-item:hover::after {
+  width: 60%;
+}
+
 .app-header-nav-item:hover {
   color: #fff;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .app-header-nav-item.active {
   color: #fff;
-  border-bottom-color: #1677ff;
+  border-bottom-color: transparent;
+  background: rgba(22, 119, 255, 0.1);
+}
+
+.app-header-nav-item.active::after {
+  width: 100%;
+  background: linear-gradient(90deg, transparent 0%, #1677ff 15%, #4096ff 50%, #1677ff 85%, transparent 100%);
 }
 
 /* ===========================================
@@ -89,7 +121,21 @@
 .app-header-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+}
+
+.app-header-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.app-header-separator {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 4px;
+  flex-shrink: 0;
 }
 
 .app-header-icon-btn {
@@ -103,12 +149,27 @@
   border-radius: 6px;
   color: rgba(255, 255, 255, 0.85);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .app-header-icon-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
+  transform: translateY(-1px);
+}
+
+.app-header-icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* Settings gear rotation on hover */
+.app-header-settings-btn:hover svg {
+  transform: rotate(90deg);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-header-settings-btn svg {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .app-header-icon-btn svg {
@@ -127,6 +188,25 @@
 .app-header-icon-btn-with-text svg {
   width: 16px;
   height: 16px;
+}
+
+/* ===========================================
+   SOCIAL BUTTONS - Gold Hover
+   =========================================== */
+
+.app-header-social-btn:hover {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
+}
+
+/* ===========================================
+   FOCUS-VISIBLE STATES
+   =========================================== */
+
+.app-header-icon-btn:focus-visible,
+.app-header-nav-item:focus-visible {
+  outline: 2px solid rgba(22, 119, 255, 0.7);
+  outline-offset: 2px;
 }
 
 /* ===========================================

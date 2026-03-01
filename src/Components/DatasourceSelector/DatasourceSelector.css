@@ -77,34 +77,34 @@
 
 .ds-selector-chevron {
   margin-left: 2px;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .ds-selector-chevron.rotated {
   transform: rotate(180deg);
 }
 
-/* Update indicator dot */
+/* Update indicator dot - amber for "update available" */
 .ds-update-dot {
   position: absolute;
   top: 4px;
   right: 4px;
   width: 10px;
   height: 10px;
-  background: #ef4444;
+  background: #f59e0b;
   border-radius: 50%;
   border: 2px solid var(--ds-navy);
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
   animation: dsPulse 2s ease-in-out infinite;
 }
 
 @keyframes dsPulse {
   0%,
   100% {
-    box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
   }
   50% {
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.9);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.9);
   }
 }
 
@@ -336,6 +336,31 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ===========================================
+   FACTION THEMING
+   =========================================== */
+
+.ds-selector-btn[data-type="40k"] {
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+.ds-selector-btn[data-type="aos"] {
+  border-color: rgba(168, 85, 247, 0.25);
+}
+
+.ds-selector-btn[data-type="necromunda"] {
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+/* ===========================================
+   FOCUS-VISIBLE
+   =========================================== */
+
+.ds-selector-btn:focus-visible {
+  outline: 2px solid rgba(22, 119, 255, 0.7);
+  outline-offset: 2px;
 }
 
 /* ===========================================

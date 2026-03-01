@@ -153,6 +153,15 @@ export const DatasourceSelector = () => {
   const currentId = settings.selectedDataSource || "basic";
   const position = getDropdownPosition();
 
+  // Determine faction type for theming
+  const getFactionType = () => {
+    if (currentId.startsWith("40k")) return "40k";
+    if (currentId === "aos") return "aos";
+    if (currentId === "necromunda") return "necromunda";
+    return null;
+  };
+  const factionType = getFactionType();
+
   // Check if current datasource is a local, custom, or subscribed datasource (they have their own sync)
   const isCustomOrLocalDatasource =
     currentId.startsWith("local-ds-") || currentId.startsWith("custom-") || currentId.startsWith("subscribed-");
@@ -162,6 +171,7 @@ export const DatasourceSelector = () => {
       <button
         ref={buttonRef}
         className={`ds-selector-btn ${isOpen ? "active" : ""}`}
+        data-type={factionType}
         onClick={() => setIsOpen(!isOpen)}>
         <Database size={16} />
         <span className="ds-selector-text">{getCurrentDatasourceName()}</span>

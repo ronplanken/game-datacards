@@ -68,7 +68,9 @@ export const NotificationBell = () => {
 
   return (
     <div className="notification-bell-container" ref={containerRef}>
-      <button className="app-header-icon-btn notification-bell-btn" onClick={() => setIsOpen(!isOpen)}>
+      <button
+        className={`app-header-icon-btn notification-bell-btn ${unreadCount > 0 ? "has-unread" : ""}`}
+        onClick={() => setIsOpen(!isOpen)}>
         <Bell size={20} />
         {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>}
       </button>
