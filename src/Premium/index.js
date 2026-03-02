@@ -40,6 +40,12 @@ export const useAuth = () => ({
   updatePassword: () => Promise.resolve({ success: false, error: "Not available in community version" }),
   updateUserMetadata: () => Promise.resolve({ success: false, error: "Not available in community version" }),
   fetchUserProfile: () => Promise.resolve(),
+  // Email confirmation methods - all return failure
+  resendConfirmation: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  verifyOtp: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  // Auth redirect error
+  authRedirectError: null,
+  clearAuthRedirectError: () => {},
   // 2FA methods - all return failure
   enroll2FA: () => Promise.resolve({ success: false, error: "Not available in community version" }),
   verify2FAEnrollment: () => Promise.resolve({ success: false, error: "Not available in community version" }),
