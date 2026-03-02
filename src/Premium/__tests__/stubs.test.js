@@ -1,4 +1,5 @@
 import {
+  useAuth,
   useSubscription,
   SUBSCRIPTION_LIMITS,
   TEMPLATE_PRESETS,
@@ -253,5 +254,43 @@ describe("MobileSharedListsModal stub", () => {
   it("should be a function that returns null", () => {
     expect(typeof MobileSharedListsModal).toBe("function");
     expect(MobileSharedListsModal()).toBeNull();
+  });
+});
+
+// ============================================
+// useAuth stub - email confirmation methods
+// ============================================
+describe("useAuth stub", () => {
+  it("should return resendConfirmation that resolves to failure", async () => {
+    const auth = useAuth();
+    const result = await auth.resendConfirmation("test@example.com");
+    expect(result).toEqual({ success: false, error: "Not available in community version" });
+  });
+
+  it("should return verifyOtp that resolves to failure", async () => {
+    const auth = useAuth();
+    const result = await auth.verifyOtp("test@example.com", "123456");
+    expect(result).toEqual({ success: false, error: "Not available in community version" });
+  });
+
+  it("should return null authRedirectError", () => {
+    const auth = useAuth();
+    expect(auth.authRedirectError).toBeNull();
+  });
+
+  it("should return clearAuthRedirectError as a no-op function", () => {
+    const auth = useAuth();
+    expect(typeof auth.clearAuthRedirectError).toBe("function");
+    expect(auth.clearAuthRedirectError()).toBeUndefined();
+  });
+
+  it("should return isAuthenticated as false", () => {
+    const auth = useAuth();
+    expect(auth.isAuthenticated).toBe(false);
+  });
+
+  it("should return user as null", () => {
+    const auth = useAuth();
+    expect(auth.user).toBeNull();
   });
 });
