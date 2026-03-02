@@ -84,12 +84,36 @@
 }
 
 /* ===========================================
-   IMPORT PICKER (BottomSheet content)
+   IMPORT PICKER (Inline step in MobileModal)
    =========================================== */
+.import-picker-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.import-picker-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-accent);
+  transition: opacity 0.15s ease;
+}
+
+.import-picker-back:active {
+  opacity: 0.7;
+}
+
 .import-picker-list {
   display: flex;
   flex-direction: column;
-  padding: 0 16px 16px;
 }
 
 .import-picker-option {
