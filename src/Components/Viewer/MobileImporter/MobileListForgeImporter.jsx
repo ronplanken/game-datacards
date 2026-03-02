@@ -328,6 +328,11 @@ export const MobileListForgeImporter = ({ isOpen, onClose }) => {
 
   const handleDetachmentChange = (detachmentName) => {
     setDetachment(detachmentName);
+    if (importMode !== "direct" && matchedFaction && parsedUnits.length) {
+      let matchedUnits = matchUnitsToDatasheets(parsedUnits, matchedFaction, dataSource?.data || []);
+      matchedUnits = matchEnhancementsToFaction(matchedUnits, matchedFaction, detachmentName);
+      setUnits(matchedUnits);
+    }
   };
 
   // Step 2: Handle unit selection
@@ -381,24 +386,12 @@ export const MobileListForgeImporter = ({ isOpen, onClose }) => {
 
     const cards = buildCardsFromUnits(importableUnits);
 
-    const cardsToImport = cards.map((card, idx) => {
-      const unit = importableUnits[idx];
-      const points = {
-        cost: unit.points - (unit.enhancement?.cost || 0),
-        models: unit.models || 1,
-      };
-
-      let enhancement = null;
-      if (unit.enhancement) {
-        enhancement = {
-          name: unit.enhancement.name,
-          cost: unit.enhancement.cost || 0,
-          ...(unit.enhancement.matched ? unit.enhancement : {}),
-        };
-      }
-
-      return { card, points, enhancement, isWarlord: unit.isWarlord };
-    });
+    const cardsToImport = cards.map((card) => ({
+      card,
+      points: card.unitSize,
+      enhancement: card.selectedEnhancement || null,
+      isWarlord: card.isWarlord || false,
+    }));
 
     createListWithCards(listName || "Imported List", cardsToImport);
 

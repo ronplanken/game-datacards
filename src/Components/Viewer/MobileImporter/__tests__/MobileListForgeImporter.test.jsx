@@ -208,17 +208,22 @@ describe("MobileListForgeImporter", () => {
 
   it("resets state when closed", () => {
     const onClose = vi.fn();
-    const { rerender } = render(<MobileListForgeImporter isOpen={true} onClose={onClose} />);
+    render(<MobileListForgeImporter isOpen={true} onClose={onClose} />);
 
+    // Advance to step 2
     const textarea = screen.getByPlaceholderText("Paste List Forge JSON export here...");
     fireEvent.change(textarea, { target: { value: JSON.stringify(createValidExport()) } });
     fireEvent.click(screen.getByText("Parse JSON"));
+    fireEvent.click(screen.getByText("Continue"));
 
-    // Re-render as closed then open again
-    rerender(<MobileListForgeImporter isOpen={false} onClose={onClose} />);
-    rerender(<MobileListForgeImporter isOpen={true} onClose={onClose} />);
+    // Verify we are on step 2
+    expect(screen.getByText("Back")).toBeTruthy();
 
-    // Should be back to upload step (note: state persists in component, but closing resets)
+    // Close via the modal close button (triggers handleClose which calls resetState)
+    const closeButton = document.querySelector(".mobile-modal-close");
+    fireEvent.click(closeButton);
+
+    // Should be back to upload step
     expect(screen.getByText(/Import an army list exported from List Forge/)).toBeTruthy();
   });
 });
