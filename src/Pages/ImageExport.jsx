@@ -14,6 +14,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 import JSZip from "jszip";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { buildUniqueFilenames } from "../Helpers/export.helpers";
 
 // Helper to get all cards from a category including sub-categories
 const getAllCategoryCards = (category, allCategories) => {
@@ -54,20 +55,17 @@ export const ImageExport = () => {
     // skipFonts: true works around a bug in html-to-image where the font embedding code
     // calls .trim() on undefined font-family values, causing "can't access property 'trim'" errors.
     // Fonts still render correctly since they're already loaded in the browser when the DOM is captured.
+    const uniqueNames = buildUniqueFilenames(allCards);
+
     const files = cardsFrontRef?.current?.map(async (card, index) => {
       const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
       return data;
     });
 
     files?.forEach(async (file, index) => {
-      const card = allCards[index];
-      const cardName = card?.name || `card-${index}`;
-      zip.file(
-        `${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}${
-          allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
-        }`,
-        file,
-      );
+      const suffix =
+        allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png";
+      zip.file(`${category.name}/${uniqueNames[index]}${suffix}`, file);
     });
     if (settings.showCardsAsDoubleSided !== true) {
       const backFiles = cardsBackRef?.current?.map(async (card, index) => {
@@ -76,8 +74,7 @@ export const ImageExport = () => {
       });
 
       backFiles?.forEach(async (file, index) => {
-        const cardName = allCards[index]?.name || `card-${index}`;
-        zip.file(`${category.name}/${cardName.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
+        zip.file(`${category.name}/${uniqueNames[index]}-back.png`, file);
       });
     }
 
