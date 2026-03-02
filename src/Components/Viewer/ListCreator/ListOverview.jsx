@@ -6,7 +6,6 @@ import {
   List,
   ChevronDown,
   Upload,
-  FileJson,
   ChevronRight,
   Cloud,
   MoreHorizontal,
@@ -35,16 +34,17 @@ import {
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
 import { MobileModal } from "../Mobile/MobileModal";
+import { BottomSheet } from "../Mobile/BottomSheet";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter, MobileListForgeImporter } from "../MobileImporter";
 import "./ListOverview.css";
 
 // Import action button (prominent, at top of content)
-const ImportActionButton = ({ onClick, icon: Icon = Upload, label = "Import from GW App" }) => (
+const ImportActionButton = ({ onClick }) => (
   <button className="list-overview-import-action" onClick={onClick} type="button">
-    <Icon size={18} />
-    <span>{label}</span>
+    <Upload size={18} />
+    <span>Import Army List</span>
     <ChevronRight size={18} />
   </button>
 );
@@ -329,8 +329,8 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { categories: cloudCategories } = useCloudCategories();
   const navigate = useNavigate();
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
-  const [isImporterVisible, setIsImporterVisible] = useState(false);
-  const [isListForgeImporterVisible, setIsListForgeImporterVisible] = useState(false);
+  const [isImportPickerVisible, setIsImportPickerVisible] = useState(false);
+  const [activeImporter, setActiveImporter] = useState(null); // null | "gw" | "listforge"
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
 
@@ -426,14 +426,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
         {/* Only show import for 40k local lists */}
         {is40k && !isCloudCategory && (
           <div className="list-overview-import-section">
-            <div className="list-overview-import-buttons">
-              <ImportActionButton onClick={() => setIsImporterVisible(true)} icon={Upload} label="Import from GW App" />
-              <ImportActionButton
-                onClick={() => setIsListForgeImporterVisible(true)}
-                icon={FileJson}
-                label="Import from List Forge"
-              />
-            </div>
+            <ImportActionButton onClick={() => setIsImportPickerVisible(true)} />
           </div>
         )}
         <div className="list-overview-header-sticky">
@@ -492,12 +485,42 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
-      <MobileGwImporter isOpen={isImporterVisible} onClose={() => setIsImporterVisible(false)} />
+      <BottomSheet isOpen={isImportPickerVisible} onClose={() => setIsImportPickerVisible(false)} title="Import Army List">
+        <div className="import-picker-list">
+          <button
+            className="import-picker-option"
+            onClick={() => {
+              setIsImportPickerVisible(false);
+              setActiveImporter("gw");
+            }}
+            type="button">
+            <Upload size={18} />
+            <div className="import-picker-option-text">
+              <span className="import-picker-option-title">GW App</span>
+              <span className="import-picker-option-desc">Paste text from the official Warhammer 40,000 app</span>
+            </div>
+            <ChevronRight size={16} />
+          </button>
+          <button
+            className="import-picker-option"
+            onClick={() => {
+              setIsImportPickerVisible(false);
+              setActiveImporter("listforge");
+            }}
+            type="button">
+            <FileText size={18} />
+            <div className="import-picker-option-text">
+              <span className="import-picker-option-title">List Forge</span>
+              <span className="import-picker-option-desc">Upload or paste a JSON export</span>
+            </div>
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      </BottomSheet>
 
-      <MobileListForgeImporter
-        isOpen={isListForgeImporterVisible}
-        onClose={() => setIsListForgeImporterVisible(false)}
-      />
+      <MobileGwImporter isOpen={activeImporter === "gw"} onClose={() => setActiveImporter(null)} />
+
+      <MobileListForgeImporter isOpen={activeImporter === "listforge"} onClose={() => setActiveImporter(null)} />
 
       <ListEditCard
         isVisible={!!editingCard}
