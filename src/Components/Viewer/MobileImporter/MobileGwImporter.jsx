@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { ChevronLeft, AlertCircle, Check, X, AlertTriangle, Star, Sparkles, CheckCircle } from "lucide-react";
 import { message } from "../../Toast/message";
-import Fuse from "fuse.js";
 import { MobileModal } from "../Mobile/MobileModal";
 import { useMobileList } from "../useMobileList";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
@@ -13,81 +12,29 @@ import {
   countMatchStatuses,
   getImportableUnits,
   filterCardWeapons,
+  matchEnhancementsToFaction,
 } from "../../../Helpers/gwAppImport.helpers";
+import "./MobileImporter.shared.css";
 import "./MobileGwImporter.css";
-
-// Match enhancements to faction data (copied from desktop Importer)
-const matchEnhancementsToFaction = (units, faction, listDetachment) => {
-  if (!faction?.enhancements?.length) return units;
-
-  return units.map((unit) => {
-    if (!unit.enhancement) return unit;
-
-    const enhancements = faction.enhancements;
-    let factionEnhancement = null;
-
-    // 1. First try exact match with BOTH name AND detachment
-    if (listDetachment) {
-      factionEnhancement = enhancements.find(
-        (e) =>
-          e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
-          e.detachment?.toLowerCase() === listDetachment.toLowerCase(),
-      );
-    }
-
-    // 2. If no detachment-specific match, try just name match
-    if (!factionEnhancement) {
-      factionEnhancement = enhancements.find((e) => e.name.toLowerCase() === unit.enhancement.name.toLowerCase());
-    }
-
-    // 3. If still no match, try Fuse.js
-    if (!factionEnhancement) {
-      const enhancementFuse = new Fuse(enhancements, {
-        keys: ["name"],
-        threshold: 0.4,
-        includeScore: true,
-      });
-      const results = enhancementFuse.search(unit.enhancement.name);
-      if (results.length > 0) {
-        factionEnhancement = results[0].item;
-      }
-    }
-
-    if (factionEnhancement) {
-      return {
-        ...unit,
-        enhancement: {
-          ...unit.enhancement,
-          ...factionEnhancement,
-          cost: unit.enhancement.cost || factionEnhancement.cost,
-          matched: true,
-        },
-        detachment: factionEnhancement.detachment,
-      };
-    }
-
-    return unit;
-  });
-};
 
 // Status icon component
 const StatusIcon = ({ status }) => {
   if (status === "exact" || status === "confident") {
     return (
-      <span className="mgw-status-icon matched">
+      <span className="mi-status-icon matched">
         <Check size={12} />
       </span>
     );
   }
   if (status === "ambiguous") {
     return (
-      <span className="mgw-status-icon ambiguous">
+      <span className="mi-status-icon ambiguous">
         <AlertTriangle size={12} />
       </span>
     );
   }
   return (
-    <span className="mgw-status-icon unmatched">
+    <span className="mi-status-icon unmatched">
       <X size={12} />
     </span>
   );
@@ -98,32 +45,32 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
   const [showSelect, setShowSelect] = useState(false);
 
   return (
-    <div className={`mgw-unit-card ${unit.skipped ? "skipped" : ""}`}>
-      <div className="mgw-unit-main">
+    <div className={`mi-unit-card ${unit.skipped ? "skipped" : ""}`}>
+      <div className="mi-unit-main">
         <StatusIcon status={unit.matchStatus} />
-        <div className="mgw-unit-content">
-          <div className="mgw-unit-header">
-            <span className="mgw-unit-name">{unit.originalName}</span>
-            <span className="mgw-unit-points">{unit.points} pts</span>
+        <div className="mi-unit-content">
+          <div className="mi-unit-header">
+            <span className="mi-unit-name">{unit.originalName}</span>
+            <span className="mi-unit-points">{unit.points} pts</span>
           </div>
-          {unit.models > 1 && <span className="mgw-unit-size">{unit.models} models</span>}
-          <div className="mgw-unit-badges">
+          {unit.models > 1 && <span className="mi-unit-size">{unit.models} models</span>}
+          <div className="mi-unit-badges">
             {unit.isWarlord && (
-              <span className="mgw-badge warlord">
+              <span className="mi-badge warlord">
                 <Star size={10} /> Warlord
               </span>
             )}
             {unit.enhancement && (
-              <span className="mgw-badge enhancement">
+              <span className="mi-badge enhancement">
                 <Sparkles size={10} /> {unit.enhancement.name} (+
                 {unit.enhancement.cost})
               </span>
             )}
           </div>
           {unit.matchedCard && !unit.skipped && (
-            <div className="mgw-unit-match">
-              <span className="mgw-match-arrow">→</span>
-              <span className="mgw-match-name">{unit.matchedCard.name}</span>
+            <div className="mi-unit-match">
+              <span className="mi-match-arrow">→</span>
+              <span className="mi-match-name">{unit.matchedCard.name}</span>
             </div>
           )}
           {(unit.matchStatus === "ambiguous" || unit.matchStatus === "none") &&
@@ -132,7 +79,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
               <>
                 {showSelect ? (
                   <select
-                    className="mgw-unit-select"
+                    className="mi-unit-select"
                     value={unit.matchedCard?.id || ""}
                     onChange={(e) => {
                       onSelect(e.target.value);
@@ -148,7 +95,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
                     ))}
                   </select>
                 ) : (
-                  <button className="mgw-change-btn" onClick={() => setShowSelect(true)}>
+                  <button className="mi-change-btn" onClick={() => setShowSelect(true)}>
                     {unit.matchedCard ? "Change" : "Select unit"}
                   </button>
                 )}
@@ -156,7 +103,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
             )}
         </div>
       </div>
-      <button className={`mgw-skip-btn ${unit.skipped ? "skipped" : ""}`} onClick={onSkip}>
+      <button className={`mi-skip-btn ${unit.skipped ? "skipped" : ""}`} onClick={onSkip}>
         {unit.skipped ? "Undo" : "Skip"}
       </button>
     </div>
@@ -326,11 +273,11 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
   return (
     <MobileModal isOpen={isOpen} onClose={handleClose} title={getTitle()}>
-      <div className="mgw-container">
+      <div className="mi-container">
         {/* Step 1: Paste */}
         {step === 1 && (
-          <div className="mgw-step mgw-step-paste">
-            <p className="mgw-description">Paste your army list from the official Warhammer 40,000 app</p>
+          <div className="mi-step mgw-step-paste">
+            <p className="mi-description">Paste your army list from the official Warhammer 40,000 app</p>
 
             <textarea
               className="mgw-textarea"
@@ -342,13 +289,13 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
             />
 
             {error && (
-              <div className="mgw-error">
+              <div className="mi-error">
                 <AlertCircle size={16} />
                 <span>{error}</span>
               </div>
             )}
 
-            <button className="mgw-primary-btn" onClick={handleParse} disabled={!gwAppText.trim()}>
+            <button className="mi-primary-btn" onClick={handleParse} disabled={!gwAppText.trim()}>
               Continue
             </button>
           </div>
@@ -356,18 +303,18 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
         {/* Step 2: Review */}
         {step === 2 && (
-          <div className="mgw-step mgw-step-review">
-            <button className="mgw-back-btn" onClick={() => setStep(1)}>
+          <div className="mi-step mgw-step-review">
+            <button className="mi-back-btn" onClick={() => setStep(1)}>
               <ChevronLeft size={16} /> Back
             </button>
 
             {/* Faction selector */}
-            <div className="mgw-faction-row">
-              <label className="mgw-faction-label">Faction</label>
-              <div className="mgw-faction-select-wrapper">
+            <div className="mi-faction-row">
+              <label className="mi-faction-label">Faction</label>
+              <div className="mi-faction-select-wrapper">
                 <StatusIcon status={matchedFaction ? "exact" : "none"} />
                 <select
-                  className="mgw-faction-select"
+                  className="mi-faction-select"
                   value={matchedFaction?.id || ""}
                   onChange={(e) => handleFactionChange(e.target.value)}>
                   {!matchedFaction && <option value="">Select faction...</option>}
@@ -381,7 +328,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
             </div>
 
             {/* Unit list */}
-            <div className="mgw-unit-list">
+            <div className="mi-unit-list">
               {units.map((unit, idx) => (
                 <UnitCard
                   key={idx}
@@ -394,26 +341,26 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
             </div>
 
             {/* Summary bar */}
-            <div className="mgw-summary">
-              <span className="mgw-summary-item ready">
+            <div className="mi-summary">
+              <span className="mi-summary-item ready">
                 <Check size={14} /> {matchCounts.ready}
               </span>
               {matchCounts.needsReview > 0 && (
-                <span className="mgw-summary-item review">
+                <span className="mi-summary-item review">
                   <AlertTriangle size={14} /> {matchCounts.needsReview}
                 </span>
               )}
               {matchCounts.notMatched > 0 && (
-                <span className="mgw-summary-item unmatched">
+                <span className="mi-summary-item unmatched">
                   <X size={14} /> {matchCounts.notMatched}
                 </span>
               )}
               {matchCounts.skipped > 0 && (
-                <span className="mgw-summary-item skipped">{matchCounts.skipped} skipped</span>
+                <span className="mi-summary-item skipped">{matchCounts.skipped} skipped</span>
               )}
             </div>
 
-            <button className="mgw-primary-btn" onClick={() => setStep(3)} disabled={importableCount === 0}>
+            <button className="mi-primary-btn" onClick={() => setStep(3)} disabled={importableCount === 0}>
               Continue
             </button>
           </div>
@@ -421,32 +368,32 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
         {/* Step 3: Confirm */}
         {step === 3 && (
-          <div className="mgw-step mgw-step-confirm">
-            <button className="mgw-back-btn" onClick={() => setStep(2)}>
+          <div className="mi-step mi-step-confirm">
+            <button className="mi-back-btn" onClick={() => setStep(2)}>
               <ChevronLeft size={16} /> Back
             </button>
 
-            <div className="mgw-confirm-icon">
+            <div className="mi-confirm-icon">
               <CheckCircle size={48} />
             </div>
 
-            <h2 className="mgw-confirm-title">Ready to Import</h2>
-            <p className="mgw-confirm-subtitle">
+            <h2 className="mi-confirm-title">Ready to Import</h2>
+            <p className="mi-confirm-subtitle">
               {importableCount} unit{importableCount !== 1 ? "s" : ""} will be added to your list
             </p>
 
-            <div className="mgw-name-field">
-              <label className="mgw-name-label">List Name</label>
+            <div className="mi-name-field">
+              <label className="mi-name-label">List Name</label>
               <input
                 type="text"
-                className="mgw-name-input"
+                className="mi-name-input"
                 value={listName}
                 onChange={(e) => setListName(e.target.value)}
                 placeholder="My Army List"
               />
             </div>
 
-            <button className="mgw-primary-btn" onClick={handleImport} disabled={importableCount === 0}>
+            <button className="mi-primary-btn" onClick={handleImport} disabled={importableCount === 0}>
               Import {importableCount} Unit{importableCount !== 1 ? "s" : ""}
             </button>
           </div>

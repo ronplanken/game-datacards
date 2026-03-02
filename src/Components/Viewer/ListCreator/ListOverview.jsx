@@ -6,6 +6,7 @@ import {
   List,
   ChevronDown,
   Upload,
+  FileJson,
   ChevronRight,
   Cloud,
   MoreHorizontal,
@@ -36,14 +37,14 @@ import {
 import { MobileModal } from "../Mobile/MobileModal";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
-import { MobileGwImporter } from "../MobileImporter";
+import { MobileGwImporter, MobileListForgeImporter } from "../MobileImporter";
 import "./ListOverview.css";
 
 // Import action button (prominent, at top of content)
-const ImportActionButton = ({ onClick }) => (
+const ImportActionButton = ({ onClick, icon: Icon = Upload, label = "Import from GW App" }) => (
   <button className="list-overview-import-action" onClick={onClick} type="button">
-    <Upload size={18} />
-    <span>Import from GW App</span>
+    <Icon size={18} />
+    <span>{label}</span>
     <ChevronRight size={18} />
   </button>
 );
@@ -329,6 +330,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const navigate = useNavigate();
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
   const [isImporterVisible, setIsImporterVisible] = useState(false);
+  const [isListForgeImporterVisible, setIsListForgeImporterVisible] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
 
@@ -424,7 +426,14 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
         {/* Only show import for 40k local lists */}
         {is40k && !isCloudCategory && (
           <div className="list-overview-import-section">
-            <ImportActionButton onClick={() => setIsImporterVisible(true)} />
+            <div className="list-overview-import-buttons">
+              <ImportActionButton onClick={() => setIsImporterVisible(true)} icon={Upload} label="Import from GW App" />
+              <ImportActionButton
+                onClick={() => setIsListForgeImporterVisible(true)}
+                icon={FileJson}
+                label="Import from List Forge"
+              />
+            </div>
           </div>
         )}
         <div className="list-overview-header-sticky">
@@ -484,6 +493,11 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
       <MobileGwImporter isOpen={isImporterVisible} onClose={() => setIsImporterVisible(false)} />
+
+      <MobileListForgeImporter
+        isOpen={isListForgeImporterVisible}
+        onClose={() => setIsListForgeImporterVisible(false)}
+      />
 
       <ListEditCard
         isVisible={!!editingCard}

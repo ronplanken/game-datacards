@@ -29,6 +29,15 @@
 }
 
 /* ===========================================
+   IMPORT BUTTONS CONTAINER
+   =========================================== */
+.list-overview-import-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ===========================================
    IMPORT ACTION BUTTON
    =========================================== */
 .list-overview-import-action {
