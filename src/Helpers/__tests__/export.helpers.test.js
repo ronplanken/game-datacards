@@ -56,6 +56,16 @@ describe("buildUniqueFilenames", () => {
     expect(result).toEqual(["fire_and_fury_squad"]);
   });
 
+  it("replaces filesystem-unsafe characters to avoid nested ZIP paths", () => {
+    const result = buildUniqueFilenames([{ name: "Razorback/Repulsor" }]);
+    expect(result).toEqual(["razorback_repulsor"]);
+  });
+
+  it("replaces backslashes, colons, and other unsafe characters", () => {
+    const result = buildUniqueFilenames([{ name: 'Unit: "Alpha" <Beta>' }]);
+    expect(result).toEqual(["unit___alpha___beta_"]);
+  });
+
   it("converts names to lowercase", () => {
     const result = buildUniqueFilenames([{ name: "CAPTAIN" }]);
     expect(result).toEqual(["captain"]);

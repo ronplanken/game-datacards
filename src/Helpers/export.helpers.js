@@ -12,7 +12,11 @@ export const buildUniqueFilenames = (cards) => {
     const name = card?.name || `card-${index}`;
     const sub = card?.subname || card?.extra || "";
     const baseName = sub ? `${name}_${sub}` : name;
-    return baseName.replaceAll(" ", "_").replaceAll("&", "and").toLowerCase();
+    return baseName
+      .replaceAll(" ", "_")
+      .replaceAll("&", "and")
+      .replace(/[/\\:*?"<>|]/g, "_")
+      .toLowerCase();
   });
 
   const totalCounts = {};
