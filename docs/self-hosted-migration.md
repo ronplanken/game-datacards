@@ -203,6 +203,30 @@ In the Coolify environment for the GoTrue/Auth service, configure:
 - **Site URL**: Set to your app URL (e.g., `https://game-datacards.eu`)
 - **Redirect URLs**: Allowed redirect URLs after login/signup
 
+### Email Templates
+
+Self-hosted Supabase does not have a dashboard UI for email templates. Instead, GoTrue loads templates from URLs via environment variables. The branded templates are hosted as static files in `public/email-templates/` and deployed to Cloudflare Pages alongside the app.
+
+Add these environment variables to the **GoTrue/Auth** service in Coolify:
+
+| Variable | Value |
+|----------|-------|
+| `GOTRUE_MAILER_TEMPLATES_CONFIRMATION` | `https://game-datacards.eu/email-templates/confirmation.html` |
+| `GOTRUE_MAILER_TEMPLATES_RECOVERY` | `https://game-datacards.eu/email-templates/recovery.html` |
+| `GOTRUE_MAILER_TEMPLATES_MAGIC_LINK` | `https://game-datacards.eu/email-templates/magic-link.html` |
+| `GOTRUE_MAILER_TEMPLATES_EMAIL_CHANGE` | `https://game-datacards.eu/email-templates/email-change.html` |
+| `GOTRUE_MAILER_TEMPLATES_INVITE` | `https://game-datacards.eu/email-templates/invite.html` |
+
+Optional but recommended - increase the OTP expiry from the default 1 hour to 24 hours:
+
+| Variable | Value |
+|----------|-------|
+| `GOTRUE_MAILER_OTP_EXP` | `86400` |
+
+After setting these variables, restart the GoTrue/Auth service in Coolify for the changes to take effect.
+
+**Template files**: `public/email-templates/` in the `game-datacards` repository. Templates use Go template syntax (`{{ .ConfirmationURL }}`, `{{ .SiteURL }}`).
+
 ## Verification Checklist
 
 1. **Database**: Connect and verify tables exist (`user_profiles`, `user_categories`, `user_datasources`, etc.)
