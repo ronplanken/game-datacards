@@ -12,6 +12,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 import JSZip from "jszip";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { buildUniqueFilenames } from "../Helpers/export.helpers";
 
 const { useBreakpoint } = Grid;
 const { Option } = Select;
@@ -126,21 +127,18 @@ export const ImageGenerator = () => {
     await sleep(100);
 
     selectedFactions.forEach((faction) => {
-      const factionName = dataSource.data.find((f) => f.id === faction).name;
+      const factionData = dataSource.data.find((f) => f.id === faction);
+      const factionName = factionData.name;
       if (addDatasheets) {
+        const datasheetNames = buildUniqueFilenames(factionData.datasheets || []);
+
         const files = cardsFrontRef?.current?.[faction]?.map(async (card, index) => {
           const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
           return data;
         });
 
         files?.forEach(async (file, index) => {
-          zip.file(
-            `${factionName}/${dataSource.data
-              .filter((f) => f.id === faction)[0]
-              ?.datasheets[index].name.replaceAll(" ", "_")
-              .toLowerCase()}-front.png`,
-            file,
-          );
+          zip.file(`${factionName}/${datasheetNames[index]}-front.png`, file);
         });
         if (settings.showCardsAsDoubleSided !== true) {
           const backFiles = cardsBackRef?.current?.[faction]?.map(async (card, index) => {
@@ -149,48 +147,35 @@ export const ImageGenerator = () => {
           });
 
           backFiles?.forEach(async (file, index) => {
-            zip.file(
-              `${factionName}/${dataSource.data
-                .filter((f) => f.id === faction)[0]
-                ?.datasheets[index].name.replaceAll(" ", "_")
-                .toLowerCase()}-back.png`,
-              file,
-            );
+            zip.file(`${factionName}/${datasheetNames[index]}-back.png`, file);
           });
         }
       }
       if (addStratagems) {
+        const stratagemNames = buildUniqueFilenames(factionData.stratagems || []);
+
         const stratagems = cardsStratagems?.current?.[faction]?.map(async (card, index) => {
           const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
           return data;
         });
 
         stratagems?.forEach(async (file, index) => {
-          zip.file(
-            `${factionName}/${
-              dataSource.data.filter((f) => f.id === faction)[0]?.stratagems[index].detachment
-            }/${dataSource.data
-              .filter((f) => f.id === faction)[0]
-              ?.stratagems[index].name.replaceAll(" ", "_")
-              .replaceAll("&", "and")
-              .toLowerCase()}.png`,
-            file,
-          );
+          const detachment = factionData.stratagems[index].detachment;
+          zip.file(`${factionName}/${detachment}/${stratagemNames[index]}.png`, file);
         });
       }
     });
 
     if (addStratagems) {
+      const basicStratagemNames = buildUniqueFilenames(dataSource.data[0]?.basicStratagems || []);
+
       const basicStrats = basicStratagems?.current?.map(async (card, index) => {
         const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
         return data;
       });
 
       basicStrats?.forEach(async (file, index) => {
-        zip.file(
-          `basic/${dataSource.data[0]?.basicStratagems[index].name.replaceAll(" ", "_").toLowerCase()}.png`,
-          file,
-        );
+        zip.file(`basic/${basicStratagemNames[index]}.png`, file);
       });
     }
     zip.generateAsync({ type: "blob" }).then((content) => {
