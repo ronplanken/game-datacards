@@ -485,7 +485,10 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
-      <BottomSheet isOpen={isImportPickerVisible} onClose={() => setIsImportPickerVisible(false)} title="Import Army List">
+      <BottomSheet
+        isOpen={isImportPickerVisible}
+        onClose={() => setIsImportPickerVisible(false)}
+        title="Import Army List">
         <div className="import-picker-list">
           <button
             className="import-picker-option"
