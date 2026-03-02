@@ -84,6 +84,101 @@
 }
 
 /* ===========================================
+   IMPORT PICKER (Inline step in MobileModal)
+   =========================================== */
+.import-picker-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.import-picker-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-accent);
+  transition: opacity 0.15s ease;
+}
+
+.import-picker-back:active {
+  opacity: 0.7;
+}
+
+.import-picker-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.import-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.import-picker-option:first-child {
+  border-radius: 10px 10px 0 0;
+}
+
+.import-picker-option:last-child {
+  border-radius: 0 0 10px 10px;
+}
+
+.import-picker-option + .import-picker-option {
+  border-top: none;
+}
+
+.import-picker-option:active {
+  background: var(--bs-surface-hover);
+  transform: scale(0.99);
+}
+
+.import-picker-option > svg:first-child {
+  flex-shrink: 0;
+  color: var(--bs-accent);
+  opacity: 0.7;
+}
+
+.import-picker-option-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.import-picker-option-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-text);
+}
+
+.import-picker-option-desc {
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+}
+
+.import-picker-option > svg:last-child {
+  flex-shrink: 0;
+  color: var(--bs-text-muted);
+  opacity: 0.5;
+}
+
+/* ===========================================
    DIVIDER
    =========================================== */
 .list-overview-divider {

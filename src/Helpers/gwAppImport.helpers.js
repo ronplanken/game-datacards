@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+import { v4 as uuidv4 } from "uuid";
 
 // All valid section headers
 const SECTION_HEADERS = [
@@ -762,4 +763,105 @@ export const filterCardWeapons = (card, importedWeapons) => {
   }
 
   return filteredCard;
+};
+
+/**
+ * Match enhancement names from parsed units to faction enhancement data.
+ * Tries: detachment-scoped exact match → name-only exact match → fuzzy match.
+ * @param {Array} units - Parsed units with enhancement data
+ * @param {Object} faction - The matched faction object with enhancements
+ * @param {string} listDetachment - The list's detachment name for scoped matching
+ * @returns {Array} Units with matched enhancement data
+ */
+export const matchEnhancementsToFaction = (units, faction, listDetachment) => {
+  if (!faction?.enhancements?.length) return units;
+
+  return units.map((unit) => {
+    if (!unit.enhancement) return unit;
+
+    const enhancements = faction.enhancements;
+    let factionEnhancement = null;
+
+    if (listDetachment) {
+      factionEnhancement = enhancements.find(
+        (e) =>
+          e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
+          e.detachment?.toLowerCase() === listDetachment.toLowerCase(),
+      );
+    }
+
+    if (!factionEnhancement) {
+      factionEnhancement = enhancements.find((e) => e.name.toLowerCase() === unit.enhancement.name.toLowerCase());
+    }
+
+    if (!factionEnhancement) {
+      const enhancementFuse = new Fuse(enhancements, {
+        keys: ["name"],
+        threshold: 0.4,
+        includeScore: true,
+      });
+      const results = enhancementFuse.search(unit.enhancement.name);
+      if (results.length > 0) {
+        factionEnhancement = results[0].item;
+      }
+    }
+
+    if (factionEnhancement) {
+      return {
+        ...unit,
+        enhancement: {
+          ...unit.enhancement,
+          ...factionEnhancement,
+          cost: unit.enhancement.cost || factionEnhancement.cost,
+          matched: true,
+        },
+        detachment: factionEnhancement.detachment,
+      };
+    }
+
+    return unit;
+  });
+};
+
+/**
+ * Build import-ready card objects from matched units.
+ * Assigns UUIDs, sets points/models, applies enhancements, and filters weapons.
+ * @param {Array} units - Units with matchedCard data
+ * @returns {Array} Array of card objects ready for import
+ */
+export const buildCardsFromUnits = (units) => {
+  return units.map((unit) => {
+    let card = { ...unit.matchedCard };
+    card.uuid = uuidv4();
+    card.isCustom = true;
+
+    if (unit.points) {
+      card.unitSize = {
+        ...(card.unitSize || {}),
+        cost: unit.points - (unit.enhancement?.cost || 0),
+        models: unit.models || 1,
+      };
+    }
+
+    if (unit.isWarlord) {
+      card.isWarlord = true;
+    }
+
+    if (unit.enhancement) {
+      card.selectedEnhancement = {
+        name: unit.enhancement.name,
+        cost: unit.enhancement.cost || 0,
+        ...(unit.enhancement.matched ? unit.enhancement : {}),
+      };
+      if (unit.detachment) {
+        card.detachment = unit.detachment;
+      }
+    }
+
+    if (unit.weapons?.length && !card._directRead) {
+      card = filterCardWeapons(card, unit.weapons);
+    }
+
+    return card;
+  });
 };

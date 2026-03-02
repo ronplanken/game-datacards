@@ -5,6 +5,7 @@ import {
   FileText,
   List,
   ChevronDown,
+  ChevronLeft,
   Upload,
   ChevronRight,
   Cloud,
@@ -36,14 +37,14 @@ import {
 import { MobileModal } from "../Mobile/MobileModal";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
-import { MobileGwImporter } from "../MobileImporter";
+import { MobileGwImporter, MobileListForgeImporter } from "../MobileImporter";
 import "./ListOverview.css";
 
 // Import action button (prominent, at top of content)
 const ImportActionButton = ({ onClick }) => (
   <button className="list-overview-import-action" onClick={onClick} type="button">
     <Upload size={18} />
-    <span>Import from GW App</span>
+    <span>Import Army List</span>
     <ChevronRight size={18} />
   </button>
 );
@@ -328,7 +329,8 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { categories: cloudCategories } = useCloudCategories();
   const navigate = useNavigate();
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
-  const [isImporterVisible, setIsImporterVisible] = useState(false);
+  const [showImportPicker, setShowImportPicker] = useState(false);
+  const [activeImporter, setActiveImporter] = useState(null); // null | "gw" | "listforge"
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
 
@@ -358,7 +360,10 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
         : categorize40kUnits(currentCards)
       : {};
 
-  const handleClose = () => setIsVisible(false);
+  const handleClose = () => {
+    setShowImportPicker(false);
+    setIsVisible(false);
+  };
 
   // Navigate to a card (handles both local list items and cloud category cards)
   const handleNavigate = (item) => {
@@ -420,70 +425,117 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
   return (
     <>
-      <MobileModal isOpen={isVisible} onClose={handleClose} title={isCloudCategory ? "Cloud Category" : "Lists"}>
-        {/* Only show import for 40k local lists */}
-        {is40k && !isCloudCategory && (
-          <div className="list-overview-import-section">
-            <ImportActionButton onClick={() => setIsImporterVisible(true)} />
-          </div>
-        )}
-        <div className="list-overview-header-sticky">
-          <ListHeader
-            listName={currentListName}
-            onListSelectorClick={() => setIsListSelectorVisible(true)}
-            onCopyToClipboard={handleCopyToClipboard}
-            onShareList={() => setIsShareSheetVisible(true)}
-            isCloudCategory={isCloudCategory}
-            isSynced={!isCloudCategory && !!currentList?.syncEnabled}
-            gameSystem={isCloudCategory ? selectedCloudCategory.gameSystem : null}
-            syncButton={!isCloudCategory && currentList ? <ListSyncButton category={currentList} /> : null}
-          />
-        </div>
-
-        {isEmpty ? (
-          <div className="list-overview-empty">
-            {isCloudCategory ? <Cloud size={48} /> : <List size={48} />}
-            <span className="list-overview-empty-text">
-              {isCloudCategory ? "This category has no cards" : "Your list is empty"}
-            </span>
-          </div>
-        ) : isCloudCategory ? (
-          /* Cloud category cards - simple flat list, read-only */
-          <div className="list-overview-items list-overview-items--cloud">
-            {currentCards.map((card, index) => (
-              <CloudListItem key={card.uuid || card.id || index} card={card} onNavigate={handleNavigate} />
-            ))}
-            <div className="list-overview-cloud-footer">
-              <span className="list-overview-cloud-count">{currentCards.length} cards</span>
+      <MobileModal
+        isOpen={isVisible}
+        onClose={handleClose}
+        title={showImportPicker ? "Import Army List" : isCloudCategory ? "Cloud Category" : "Lists"}>
+        {showImportPicker ? (
+          <div className="import-picker-step">
+            <button className="import-picker-back" onClick={() => setShowImportPicker(false)} type="button">
+              <ChevronLeft size={16} /> Back
+            </button>
+            <div className="import-picker-list">
+              <button
+                className="import-picker-option"
+                onClick={() => {
+                  setShowImportPicker(false);
+                  setActiveImporter("gw");
+                  setIsVisible(false);
+                }}
+                type="button">
+                <Upload size={18} />
+                <div className="import-picker-option-text">
+                  <span className="import-picker-option-title">GW App</span>
+                  <span className="import-picker-option-desc">Paste text from the official Warhammer 40,000 app</span>
+                </div>
+                <ChevronRight size={16} />
+              </button>
+              <button
+                className="import-picker-option"
+                onClick={() => {
+                  setShowImportPicker(false);
+                  setActiveImporter("listforge");
+                  setIsVisible(false);
+                }}
+                type="button">
+                <FileText size={18} />
+                <div className="import-picker-option-text">
+                  <span className="import-picker-option-title">List Forge</span>
+                  <span className="import-picker-option-desc">Upload or paste a JSON export</span>
+                </div>
+                <ChevronRight size={16} />
+              </button>
             </div>
           </div>
         ) : (
-          /* Local list cards - categorized with delete buttons */
-          <div className="list-overview-items">
-            {sections.map((section) => (
-              <ListSection
-                key={section.key}
-                sectionKey={section.key}
-                label={section.label}
-                cards={sortedCards[section.key]}
-                onNavigate={handleNavigate}
-                onDelete={removeDatacard}
-                onEdit={setEditingCard}
-                isAoS={isAoS}
+          <>
+            {/* Only show import for 40k local lists */}
+            {is40k && !isCloudCategory && (
+              <div className="list-overview-import-section">
+                <ImportActionButton onClick={() => setShowImportPicker(true)} />
+              </div>
+            )}
+            <div className="list-overview-header-sticky">
+              <ListHeader
+                listName={currentListName}
+                onListSelectorClick={() => setIsListSelectorVisible(true)}
+                onCopyToClipboard={handleCopyToClipboard}
+                onShareList={() => setIsShareSheetVisible(true)}
+                isCloudCategory={isCloudCategory}
+                isSynced={!isCloudCategory && !!currentList?.syncEnabled}
+                gameSystem={isCloudCategory ? selectedCloudCategory.gameSystem : null}
+                syncButton={!isCloudCategory && currentList ? <ListSyncButton category={currentList} /> : null}
               />
-            ))}
-
-            <div className="list-overview-total">
-              <span className="list-overview-total-label">Total</span>
-              <span className="list-overview-total-value">{totalPoints} pts</span>
             </div>
-          </div>
+
+            {isEmpty ? (
+              <div className="list-overview-empty">
+                {isCloudCategory ? <Cloud size={48} /> : <List size={48} />}
+                <span className="list-overview-empty-text">
+                  {isCloudCategory ? "This category has no cards" : "Your list is empty"}
+                </span>
+              </div>
+            ) : isCloudCategory ? (
+              /* Cloud category cards - simple flat list, read-only */
+              <div className="list-overview-items list-overview-items--cloud">
+                {currentCards.map((card, index) => (
+                  <CloudListItem key={card.uuid || card.id || index} card={card} onNavigate={handleNavigate} />
+                ))}
+                <div className="list-overview-cloud-footer">
+                  <span className="list-overview-cloud-count">{currentCards.length} cards</span>
+                </div>
+              </div>
+            ) : (
+              /* Local list cards - categorized with delete buttons */
+              <div className="list-overview-items">
+                {sections.map((section) => (
+                  <ListSection
+                    key={section.key}
+                    sectionKey={section.key}
+                    label={section.label}
+                    cards={sortedCards[section.key]}
+                    onNavigate={handleNavigate}
+                    onDelete={removeDatacard}
+                    onEdit={setEditingCard}
+                    isAoS={isAoS}
+                  />
+                ))}
+
+                <div className="list-overview-total">
+                  <span className="list-overview-total-label">Total</span>
+                  <span className="list-overview-total-value">{totalPoints} pts</span>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </MobileModal>
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
 
-      <MobileGwImporter isOpen={isImporterVisible} onClose={() => setIsImporterVisible(false)} />
+      <MobileGwImporter isOpen={activeImporter === "gw"} onClose={() => setActiveImporter(null)} />
+
+      <MobileListForgeImporter isOpen={activeImporter === "listforge"} onClose={() => setActiveImporter(null)} />
 
       <ListEditCard
         isVisible={!!editingCard}
