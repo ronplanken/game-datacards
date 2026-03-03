@@ -30,3 +30,10 @@ description: Table of contents for all Game Datacards documentation files
 | File | Description |
 |------|-------------|
 | [self-hosted-migration.md](self-hosted-migration.md) | Migration guide from Supabase Cloud to self-hosted Coolify (18 migrations, edge functions, auth setup) |
+
+## LLM Documentation
+
+| File | Description |
+|------|-------------|
+| [/llms.txt](../public/llms.txt) | Compact llms.txt with project overview, game systems, and links to data format docs |
+| [/llms-full.txt](../public/llms-full.txt) | Full llms.txt with all data format and import documentation inlined |
