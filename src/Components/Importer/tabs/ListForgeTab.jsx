@@ -415,7 +415,7 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
 
           {file && (
             <div className="gw-import-actions">
-              <button className="gw-import-parse-btn" onClick={handleParse}>
+              <button className="gw-import-parse-btn" onClick={() => handleParse()}>
                 Parse Roster
               </button>
             </div>

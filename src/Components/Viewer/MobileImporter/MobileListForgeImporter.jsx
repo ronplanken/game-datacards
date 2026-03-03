@@ -500,7 +500,7 @@ export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null })
             )}
 
             {file && (
-              <button className="mi-primary-btn" onClick={handleParse}>
+              <button className="mi-primary-btn" onClick={() => handleParse()}>
                 Continue
               </button>
             )}
