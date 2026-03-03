@@ -33,11 +33,7 @@ import {
 } from "./Premium";
 import { useFeatureFlags } from "./Hooks/useFeatureFlags";
 import { useUmami } from "./Hooks/useUmami";
-import {
-  isListForgeHash,
-  decodeListForgeUrlPayload,
-  cleanListForgeHash,
-} from "./Helpers/listforgeUrl.helpers";
+import { isListForgeHash, decodeListForgeUrlPayload, cleanListForgeHash } from "./Helpers/listforgeUrl.helpers";
 import { validateListforgeJson } from "./Helpers/listforgeImport.helpers";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
