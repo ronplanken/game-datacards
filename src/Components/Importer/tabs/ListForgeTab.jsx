@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { Select } from "antd";
 import { Trash2, File, Inbox, Check, X, Shield } from "lucide-react";
@@ -25,7 +25,7 @@ import { ImportReviewPanel } from "../ImportReviewPanel";
 
 const filterOption = (input, option) => option?.label?.toLowerCase().includes(input.toLowerCase());
 
-export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, footerNode }) => {
+export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, footerNode, initialData = null }) => {
   const [file, setFile] = useState(null);
   const [fileInfo, setFileInfo] = useState(null);
   const [fileError, setFileError] = useState(null);
@@ -45,6 +45,25 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
   const { trackEvent } = useUmami();
   const factionOptions = dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || [];
   const coreAbilityNames = useMemo(() => buildCoreAbilitySet(dataSource?.data), [dataSource?.data]);
+
+  // When initialData is provided (from URL payload), skip upload and auto-advance.
+  // Wait for the real datasource (40k-10e, ~27 factions) to load — not just the
+  // initial basic datasource (1 entry) that useDataSourceStorage starts with.
+  const [pendingInitialData, setPendingInitialData] = useState(false);
+  useEffect(() => {
+    if (initialData && !pendingInitialData && phase === "upload" && !file && dataSource?.data?.length > 1) {
+      setPendingInitialData(true);
+      processData(initialData);
+    }
+  }, [initialData, dataSource?.data?.length]);
+
+  // Once file is set from initialData processing, auto-parse to advance to review
+  useEffect(() => {
+    if (pendingInitialData && file && phase === "upload") {
+      setPendingInitialData(false);
+      handleParse();
+    }
+  }, [pendingInitialData, file, phase]);
 
   const processData = (data, fileName) => {
     const validation = validateListforgeJson(data);

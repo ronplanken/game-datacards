@@ -19,8 +19,9 @@ import { Button } from "antd";
 import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { compare } from "compare-versions";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -36,6 +37,11 @@ const modalRoot = document.getElementById("modal-root");
 export const Importer = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("json");
+  const [urlPayload, setUrlPayload] = useState(null);
+  const [pendingImport, setPendingImport] = useState(null);
+  const prevDataSourceRef = useRef(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // GDC JSON tab state
   const [uploadFile, setUploadFile] = useState(null);
@@ -66,6 +72,45 @@ export const Importer = () => {
   const { settings, updateSettings } = useSettingsStorage();
   const { trackEvent } = useUmami();
 
+  // Consume ListForge URL payload from router state
+  useEffect(() => {
+    const payload = location.state?.listForgePayload;
+    if (payload) {
+      const requiredDs = location.state?.requiredDataSource;
+      const requiredDsLabel = location.state?.requiredDataSourceLabel;
+
+      // Clean up router state to prevent re-trigger
+      navigate(location.pathname, { replace: true, state: {} });
+
+      // Switch datasource if needed
+      if (requiredDs && settings.selectedDataSource !== requiredDs) {
+        // Save the current (wrong) dataSource reference so we can detect when it changes
+        prevDataSourceRef.current = dataSource;
+        updateSettings({ ...settings, selectedDataSource: requiredDs });
+        if (requiredDsLabel) {
+          message.info(`Switched datasource to ${requiredDsLabel}`);
+        }
+        // Don't open modal yet — wait for the new datasource data to load
+        setPendingImport(payload);
+      } else {
+        setUrlPayload(payload);
+        setActiveTab("listforge");
+        setIsModalVisible(true);
+      }
+    }
+  }, [location.state?.listForgePayload]);
+
+  // Open modal once the datasource has actually loaded after a switch
+  useEffect(() => {
+    if (pendingImport && dataSource !== prevDataSourceRef.current && dataSource?.data?.length > 1) {
+      prevDataSourceRef.current = null;
+      setUrlPayload(pendingImport);
+      setPendingImport(null);
+      setActiveTab("listforge");
+      setIsModalVisible(true);
+    }
+  }, [pendingImport, dataSource]);
+
   const handleClose = () => {
     setIsModalVisible(false);
     setActiveTab("json");
@@ -81,6 +126,9 @@ export const Importer = () => {
     setDsPreview(null);
     setShowActivationPrompt(false);
     setImportedDatasource(null);
+    setUrlPayload(null);
+    setPendingImport(null);
+    prevDataSourceRef.current = null;
   };
 
   // Check if GW 40k App / List Forge tabs should be enabled
@@ -453,6 +501,7 @@ export const Importer = () => {
                       importCategory={importCategory}
                       onClose={handleClose}
                       footerNode={footerNode}
+                      initialData={urlPayload}
                     />
                   )}
 

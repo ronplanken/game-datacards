@@ -25,6 +25,7 @@
     "classnames": "^2.5.0",
     "compare-versions": "^4.1.4",
     "fabric": "^7.1.0",
+    "fflate": "^0.8.2",
     "fitty": "^2.4.0",
     "fuse.js": "^7.1.0",
     "ga-gtag": "^1.2.0",

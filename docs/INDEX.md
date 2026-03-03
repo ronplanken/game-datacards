@@ -18,6 +18,7 @@ description: Table of contents for all Game Datacards documentation files
 |------|-------------|
 | [welcome-wizard-v2.md](welcome-wizard-v2.md) | Onboarding wizard (v2.0.0): 9-step flow, game system selection, interactive demos, component architecture |
 | [listforge-direct-read-import.md](listforge-direct-read-import.md) | ListForge/NewRecruit roster import with match and direct-read modes, format mapping reference |
+| [listforge-url-import.md](listforge-url-import.md) | One-click import via URL hash fragment with gzip-compressed JSON payload from ListForge |
 
 ## Components
 

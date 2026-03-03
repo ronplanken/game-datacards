@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft,
   AlertCircle,
@@ -143,7 +143,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets, importMode }) => {
   );
 };
 
-export const MobileListForgeImporter = ({ isOpen, onClose }) => {
+export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null }) => {
   const { dataSource } = useDataSourceStorage();
   const { createListWithCards } = useMobileList();
   const { trackEvent } = useUmami();
@@ -187,6 +187,25 @@ export const MobileListForgeImporter = ({ isOpen, onClose }) => {
     resetState();
     onClose();
   };
+
+  // When initialData is provided (from URL payload), skip upload and auto-advance.
+  // Wait for the real datasource (40k-10e, ~27 factions) to load — not just the
+  // initial basic datasource (1 entry) that useDataSourceStorage starts with.
+  const [pendingInitialData, setPendingInitialData] = useState(false);
+  useEffect(() => {
+    if (initialData && isOpen && !pendingInitialData && step === 1 && !file && dataSource?.data?.length > 1) {
+      setPendingInitialData(true);
+      processData(initialData);
+    }
+  }, [initialData, isOpen, dataSource?.data?.length]);
+
+  // Once file is set from initialData processing, auto-parse to advance to review
+  useEffect(() => {
+    if (pendingInitialData && file && step === 1) {
+      setPendingInitialData(false);
+      handleParse();
+    }
+  }, [pendingInitialData, file, step]);
 
   // Step 1: Process data (from file or paste)
   const processData = (data, fileName) => {
