@@ -18,8 +18,8 @@ const VALID_ROSTER = {
   id: "roster-1",
   name: "Test Roster",
   generatedBy: "List Forge",
-  gameSystemId: "sys-40k",
-  gameSystemName: "Warhammer 40,000",
+  gameSystemId: "sys-352e-adc2-7639-d6a9",
+  gameSystemName: "wh40k-10e_main",
   roster: {
     name: "My Roster",
     costs: [{ name: "pts", typeId: "points", value: 1000 }],
@@ -158,8 +158,20 @@ describe("resolveDataSourceFromPayload", () => {
     expect(result.label).toBe("Warhammer 40k (10th Edition)");
   });
 
+  it("resolves wh40k-10e_main to 40k-10e", () => {
+    const result = resolveDataSourceFromPayload({ gameSystemName: "wh40k-10e_main" });
+    expect(result.dataSourceId).toBe("40k-10e");
+    expect(result.label).toBe("Warhammer 40k (10th Edition)");
+  });
+
   it("resolves Age of Sigmar to aos", () => {
     const result = resolveDataSourceFromPayload({ gameSystemName: "Age of Sigmar" });
+    expect(result.dataSourceId).toBe("aos");
+    expect(result.label).toBe("Age of Sigmar");
+  });
+
+  it("resolves aos-4e_main to aos", () => {
+    const result = resolveDataSourceFromPayload({ gameSystemName: "aos-4e_main" });
     expect(result.dataSourceId).toBe("aos");
     expect(result.label).toBe("Age of Sigmar");
   });

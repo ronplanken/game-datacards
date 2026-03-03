@@ -85,7 +85,9 @@ export const cleanListForgeHash = () => {
 const GAME_SYSTEM_TO_DATASOURCE = {
   "warhammer 40,000": "40k-10e",
   "warhammer 40k": "40k-10e",
+  "wh40k-10e_main": "40k-10e",
   "age of sigmar": "aos",
+  "aos-4e_main": "aos",
 };
 
 /**
