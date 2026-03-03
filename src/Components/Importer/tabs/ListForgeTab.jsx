@@ -50,6 +50,8 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
   // Wait for the real datasource (40k-10e, ~27 factions) to load — not just the
   // initial basic datasource (1 entry) that useDataSourceStorage starts with.
   const initialDataProcessed = useRef(false);
+  // Deps: only initialData and datasource length — phase and handleParse are intentionally
+  // omitted because the ref guard prevents re-processing after the first successful parse.
   useEffect(() => {
     if (initialData && !initialDataProcessed.current && phase === "upload" && dataSource?.data?.length > 1) {
       const validation = validateListforgeJson(initialData);

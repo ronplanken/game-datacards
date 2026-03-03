@@ -207,7 +207,6 @@ const ConnectedDatasourceSharingProvider = ({ children }) => {
 // and navigates with the payload in router state for the appropriate view to consume.
 const ListForgeUrlHandler = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { trackEvent } = useUmami();
 
   React.useEffect(() => {

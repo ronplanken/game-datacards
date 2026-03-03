@@ -39,35 +39,33 @@ export const decodeListForgeUrlPayload = (hash) => {
     return { data: null, error: "Invalid payload: not a gzip-compressed stream" };
   }
 
+  // Base64 decode to Uint8Array
+  let bytes;
   try {
-    // Base64 decode to Uint8Array
     const binaryString = atob(payload);
-    const bytes = new Uint8Array(binaryString.length);
+    bytes = new Uint8Array(binaryString.length);
     for (let i = 0; i < binaryString.length; i++) {
       bytes[i] = binaryString.charCodeAt(i);
     }
+  } catch {
+    return { data: null, error: "Invalid payload: malformed base64" };
+  }
 
-    // Gzip decompress
+  // Gzip decompress
+  let jsonString;
+  try {
     const decompressed = decompressSync(bytes);
+    jsonString = new TextDecoder().decode(decompressed);
+  } catch {
+    return { data: null, error: "Invalid payload: decompression failed" };
+  }
 
-    // UTF-8 decode
-    const jsonString = new TextDecoder().decode(decompressed);
-
-    // JSON parse
+  // JSON parse
+  try {
     const data = JSON.parse(jsonString);
-
     return { data, error: null };
-  } catch (err) {
-    if (err instanceof DOMException || err?.name === "InvalidCharacterError") {
-      return { data: null, error: "Invalid payload: malformed base64" };
-    }
-    if (err?.message?.includes("invalid") || err?.code) {
-      return { data: null, error: "Invalid payload: decompression failed" };
-    }
-    if (err instanceof SyntaxError) {
-      return { data: null, error: "Invalid payload: malformed JSON" };
-    }
-    return { data: null, error: `Failed to decode payload: ${err.message}` };
+  } catch {
+    return { data: null, error: "Invalid payload: malformed JSON" };
   }
 };
 

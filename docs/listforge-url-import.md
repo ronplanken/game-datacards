@@ -114,22 +114,22 @@ Located in `src/index.jsx`, renders alongside `CheckoutSuccessHandler` in `RootL
 5. Validates with `validateListforgeJson()`
 6. Navigates to the appropriate view with `{ listForgePayload: data }` in router state
 
-### Datasource Switching
+### Datasource Handling
 
-When the URL payload requires a different datasource (e.g., user has AoS selected but opens a 40k link), the parent component switches the datasource and opens the modal immediately. The tab components (`ListForgeTab`, `MobileListForgeImporter`) handle the waiting internally — they have `useEffect` hooks that guard on `dataSource?.data?.length > 1` before processing `initialData`. A loading indicator is shown while the datasource loads.
+The importer opens with the currently-active datasource. The tab components (`ListForgeTab`, `MobileListForgeImporter`) guard on `dataSource?.data?.length > 1` before processing `initialData`, showing a loading indicator while the datasource data loads.
 
 ### Mobile Flow
 
 1. `ListForgeUrlHandler` navigates to `/mobile` with payload in router state
 2. `ListOverview` reads `location.state.listForgePayload`
-3. Switches datasource if needed and opens `MobileListForgeImporter` immediately with `initialData` prop
+3. Opens `MobileListForgeImporter` immediately with `initialData` prop
 4. Importer shows loading indicator while datasource loads, then auto-advances to review
 
 ### Desktop Flow
 
 1. `ListForgeUrlHandler` navigates to `/` with payload in router state
 2. `Importer` component reads `location.state.listForgePayload`
-3. Switches datasource if needed and opens the import modal immediately with ListForge tab active
+3. Opens the import modal immediately with ListForge tab active
 4. `ListForgeTab` receives `initialData` prop, shows loading indicator while datasource loads, then auto-advances to review
 
 ## Code Samples

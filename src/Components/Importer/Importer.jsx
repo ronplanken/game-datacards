@@ -70,7 +70,8 @@ export const Importer = () => {
   const { settings, updateSettings } = useSettingsStorage();
   const { trackEvent } = useUmami();
 
-  // Consume ListForge URL payload from router state
+  // Consume ListForge URL payload from router state.
+  // Deps: only listForgePayload — navigate is stable, location.pathname won't change here.
   useEffect(() => {
     const payload = location.state?.listForgePayload;
     if (payload) {
