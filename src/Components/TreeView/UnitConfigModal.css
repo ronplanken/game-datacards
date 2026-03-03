@@ -548,6 +548,14 @@
   box-shadow: none;
 }
 
+.ucm-epic-hero-warning {
+  display: block;
+  font-size: 13px;
+  color: #dc2626;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 /* ===========================================
    ANIMATIONS
    =========================================== */
