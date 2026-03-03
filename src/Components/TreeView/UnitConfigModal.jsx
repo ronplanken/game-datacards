@@ -80,7 +80,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   const warlordAlreadyAdded = category?.cards?.find((c) => c.isWarlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
-    return card?.keywords?.includes("Epic Hero") && card?.id === foundCard?.id;
+    return foundCard.uuid !== card?.uuid && card?.keywords?.includes("Epic Hero") && card?.id === foundCard?.id;
   });
 
   const isCharacter = card?.keywords?.includes("Character");
@@ -264,6 +264,9 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
         {/* Footer */}
         <div className="ucm-footer">
+          {epicHeroAlreadyAdded && (
+            <span className="ucm-epic-hero-warning">This Epic Hero has already been added to this list</span>
+          )}
           <button
             className="ucm-submit"
             onClick={handleSubmit}

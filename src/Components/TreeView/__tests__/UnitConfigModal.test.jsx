@@ -199,18 +199,36 @@ describe("UnitConfigModal", () => {
     expect(screen.getByText("You already have a warlord")).toBeInTheDocument();
   });
 
-  it("disables submit when epic hero is already in category", () => {
+  it("disables submit and shows warning when a different Epic Hero instance with same id exists in category", () => {
     const card = {
       ...baseCard,
+      uuid: "card-uuid-1",
       keywords: ["Epic Hero"],
       unitSize: { models: 5, cost: 90 },
     };
     const category = {
       ...baseCategory,
-      cards: [{ id: "unit-1" }],
+      cards: [{ id: "unit-1", uuid: "card-uuid-other" }],
     };
     render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
     expect(screen.getByText("Set unit values")).toBeDisabled();
+    expect(screen.getByText("This Epic Hero has already been added to this list")).toBeInTheDocument();
+  });
+
+  it("allows submit and shows no warning when editing an existing Epic Hero (same uuid)", () => {
+    const card = {
+      ...baseCard,
+      uuid: "card-uuid-1",
+      keywords: ["Epic Hero"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "unit-1", uuid: "card-uuid-1" }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    expect(screen.getByText("Set unit values")).not.toBeDisabled();
+    expect(screen.queryByText("This Epic Hero has already been added to this list")).not.toBeInTheDocument();
   });
 
   it("disables enhancement already taken by another card in the category", () => {
