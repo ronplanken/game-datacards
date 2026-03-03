@@ -178,6 +178,7 @@ export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null })
     setParsedUnits([]);
     setListName("");
     setImportMode("match");
+    initialDataProcessed.current = false;
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -191,21 +192,19 @@ export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null })
   // When initialData is provided (from URL payload), skip upload and auto-advance.
   // Wait for the real datasource (40k-10e, ~27 factions) to load — not just the
   // initial basic datasource (1 entry) that useDataSourceStorage starts with.
-  const [pendingInitialData, setPendingInitialData] = useState(false);
+  const initialDataProcessed = useRef(false);
   useEffect(() => {
-    if (initialData && isOpen && !pendingInitialData && step === 1 && !file && dataSource?.data?.length > 1) {
-      setPendingInitialData(true);
-      processData(initialData);
+    if (initialData && isOpen && !initialDataProcessed.current && step === 1 && dataSource?.data?.length > 1) {
+      const validation = validateListforgeJson(initialData);
+      if (!validation.isValid) {
+        setError(validation.errors.join(", "));
+        return;
+      }
+      initialDataProcessed.current = true;
+      setFile(initialData);
+      handleParse(initialData);
     }
   }, [initialData, isOpen, dataSource?.data?.length]);
-
-  // Once file is set from initialData processing, auto-parse to advance to review
-  useEffect(() => {
-    if (pendingInitialData && file && step === 1) {
-      setPendingInitialData(false);
-      handleParse();
-    }
-  }, [pendingInitialData, file, step]);
 
   // Step 1: Process data (from file or paste)
   const processData = (data, fileName) => {
@@ -275,10 +274,11 @@ export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null })
     }
   };
 
-  const handleParse = () => {
-    if (!file) return;
+  const handleParse = (data) => {
+    const source = data || file;
+    if (!source) return;
 
-    const parsed = parseListforgeRoster(file);
+    const parsed = parseListforgeRoster(source);
 
     if (parsed.error) {
       setError(parsed.error);

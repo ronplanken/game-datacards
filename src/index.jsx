@@ -37,7 +37,6 @@ import {
   isListForgeHash,
   decodeListForgeUrlPayload,
   cleanListForgeHash,
-  resolveDataSourceFromPayload,
 } from "./Helpers/listforgeUrl.helpers";
 import { validateListforgeJson } from "./Helpers/listforgeImport.helpers";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
@@ -240,19 +239,12 @@ const ListForgeUrlHandler = () => {
 
       trackEvent("import-listforge-url");
 
-      // Resolve which datasource the payload requires based on its gameSystemName
-      const { dataSourceId, label } = resolveDataSourceFromPayload(data);
-
       // Navigate to the current path with the payload in router state
       // The target view (App for desktop, ViewerMobile for mobile) will pick it up
       const targetPath = isMobile ? "/mobile" : "/";
       navigate(targetPath, {
         replace: true,
-        state: {
-          listForgePayload: data,
-          requiredDataSource: dataSourceId,
-          requiredDataSourceLabel: label,
-        },
+        state: { listForgePayload: data },
       });
     };
 
@@ -262,6 +254,12 @@ const ListForgeUrlHandler = () => {
   }, []);
 
   return null;
+};
+
+// Preserves hash fragment when redirecting mobile users to /mobile
+const MobileRedirect = () => {
+  const hash = window.location.hash;
+  return <Navigate to={hash ? { pathname: "/mobile", hash } : "/mobile"} replace />;
 };
 
 // Sends session-level context to Umami on mount
@@ -319,7 +317,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       // Root route - redirect based on device
-      { path: "/", element: isMobile ? <Navigate to="/mobile" replace /> : <App /> },
+      { path: "/", element: isMobile ? <MobileRedirect /> : <App /> },
       // Designer route (premium only)
       { path: "designer", element: <DesignerRoute /> },
       // Legal pages

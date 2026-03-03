@@ -49,21 +49,19 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
   // When initialData is provided (from URL payload), skip upload and auto-advance.
   // Wait for the real datasource (40k-10e, ~27 factions) to load — not just the
   // initial basic datasource (1 entry) that useDataSourceStorage starts with.
-  const [pendingInitialData, setPendingInitialData] = useState(false);
+  const initialDataProcessed = useRef(false);
   useEffect(() => {
-    if (initialData && !pendingInitialData && phase === "upload" && !file && dataSource?.data?.length > 1) {
-      setPendingInitialData(true);
-      processData(initialData);
+    if (initialData && !initialDataProcessed.current && phase === "upload" && dataSource?.data?.length > 1) {
+      const validation = validateListforgeJson(initialData);
+      if (!validation.isValid) {
+        setFileError(validation.errors.join(", "));
+        return;
+      }
+      initialDataProcessed.current = true;
+      setFile(initialData);
+      handleParse(initialData);
     }
   }, [initialData, dataSource?.data?.length]);
-
-  // Once file is set from initialData processing, auto-parse to advance to review
-  useEffect(() => {
-    if (pendingInitialData && file && phase === "upload") {
-      setPendingInitialData(false);
-      handleParse();
-    }
-  }, [pendingInitialData, file, phase]);
 
   const processData = (data, fileName) => {
     const validation = validateListforgeJson(data);
@@ -154,10 +152,11 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
     }
   };
 
-  const handleParse = () => {
-    if (!file) return;
+  const handleParse = (data) => {
+    const source = data || file;
+    if (!source) return;
 
-    const parsed = parseListforgeRoster(file);
+    const parsed = parseListforgeRoster(source);
 
     if (parsed.error) {
       setFileError(parsed.error);

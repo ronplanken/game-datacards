@@ -335,54 +335,22 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
   const [urlPayload, setUrlPayload] = useState(null);
-  const [pendingImport, setPendingImport] = useState(null);
-  const prevDataSourceRef = useRef(null);
 
   // Consume ListForge URL payload from router state
   useEffect(() => {
     const payload = location.state?.listForgePayload;
     if (payload) {
-      const requiredDs = location.state?.requiredDataSource;
-      const requiredDsLabel = location.state?.requiredDataSourceLabel;
-
-      // Clean up router state to prevent re-trigger
       navigate(location.pathname, { replace: true, state: {} });
-
-      // Switch datasource if needed
-      if (requiredDs && settings.selectedDataSource !== requiredDs) {
-        // Save the current (wrong) dataSource reference so we can detect when it changes
-        prevDataSourceRef.current = dataSource;
-        updateSettings({ ...settings, selectedDataSource: requiredDs });
-        if (requiredDsLabel) {
-          message.info(`Switched datasource to ${requiredDsLabel}`);
-        }
-        // Don't open importer yet — wait for the new datasource data to load
-        setPendingImport(payload);
-      } else {
-        setUrlPayload(payload);
-        setActiveImporter("listforge");
-        setIsVisible(true);
-      }
-    }
-  }, [location.state?.listForgePayload]);
-
-  // Open importer once the datasource has actually loaded after a switch
-  useEffect(() => {
-    if (pendingImport && dataSource !== prevDataSourceRef.current && dataSource?.data?.length > 1) {
-      prevDataSourceRef.current = null;
-      setUrlPayload(pendingImport);
-      setPendingImport(null);
+      setUrlPayload(payload);
       setActiveImporter("listforge");
       setIsVisible(true);
     }
-  }, [pendingImport, dataSource]);
+  }, [location.state?.listForgePayload]);
 
   // Clear URL payload when importer closes
   const handleImporterClose = useCallback(() => {
     setActiveImporter(null);
     setUrlPayload(null);
-    setPendingImport(null);
-    prevDataSourceRef.current = null;
   }, []);
 
   // Derive selected cloud category from the realtime-updated list
