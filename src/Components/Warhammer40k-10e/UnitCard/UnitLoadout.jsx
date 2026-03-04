@@ -15,7 +15,8 @@ export const UnitLoadout = ({ unit }) => {
   const { dataSource } = useDataSourceStorage();
   const { cardStorage, setActiveCard, setActiveCategory, cardUpdated, saveActiveCard } = useCardStorage();
   const unitFaction = dataSource?.data?.find((faction) => faction.id === unit?.faction_id);
-  const unitLoadouts = unit?.loadout?.split(".").filter((val) => val);
+  const sanitized = unit?.loadout?.replace(/\\?\n/g, "");
+  const unitLoadouts = sanitized?.split(".").filter((val) => val?.trim());
 
   // Function to select a custom card by UUID
   const selectCardByUuid = (uuid) => {
