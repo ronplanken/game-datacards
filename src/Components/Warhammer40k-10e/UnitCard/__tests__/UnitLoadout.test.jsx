@@ -29,44 +29,50 @@ const renderLoadout = (unit) =>
   );
 
 describe("UnitLoadout", () => {
-  it("renders standard period-delimited loadout correctly", () => {
-    const unit = { loadout: "Bolt rifle.Grenades.Combat knife" };
+  it("renders markdown text content", () => {
+    const unit = { loadout: "Bolt rifle and grenades" };
     renderLoadout(unit);
 
-    expect(screen.getByText("Bolt rifle")).toBeInTheDocument();
-    expect(screen.getByText("Grenades")).toBeInTheDocument();
-    expect(screen.getByText("Combat knife")).toBeInTheDocument();
+    expect(screen.getByText("Bolt rifle and grenades")).toBeInTheDocument();
   });
 
-  it("renders loadout with colon as name and description", () => {
-    const unit = { loadout: "Every model: bolt rifle and grenades." };
+  it("renders markdown bold text", () => {
+    const unit = { loadout: "**Important** loadout" };
     renderLoadout(unit);
 
-    expect(screen.getByText("Every model")).toBeInTheDocument();
-    // The component splits by "." then by ":", so description is " bolt rifle and grenades" + appended "."
-    expect(screen.getByText((_, el) => el?.textContent === " bolt rifle and grenades.")).toBeInTheDocument();
+    expect(screen.getByText("Important")).toBeInTheDocument();
+    expect(screen.getByText("Important").tagName).toBe("STRONG");
   });
 
-  it("strips backslash-newline markdown line breaks from loadout", () => {
-    const unit = { loadout: "Bolt rifle.\\\nGrenades.\\\nCombat knife" };
-    renderLoadout(unit);
+  it("renders markdown unordered list", () => {
+    const unit = { loadout: "- Bolt rifle\n- Grenades\n- Combat knife" };
+    const { container } = renderLoadout(unit);
 
-    expect(screen.getByText("Bolt rifle")).toBeInTheDocument();
-    expect(screen.getByText("Grenades")).toBeInTheDocument();
-    expect(screen.getByText("Combat knife")).toBeInTheDocument();
-    expect(screen.queryByText(/\\/)).not.toBeInTheDocument();
+    const listItems = container.querySelectorAll("li");
+    expect(listItems).toHaveLength(3);
+    expect(listItems[0].textContent).toBe("Bolt rifle");
+    expect(listItems[1].textContent).toBe("Grenades");
+    expect(listItems[2].textContent).toBe("Combat knife");
   });
 
-  it("strips plain newlines from loadout", () => {
-    const unit = { loadout: "Bolt rifle.\nGrenades.\nCombat knife" };
-    renderLoadout(unit);
+  it("renders markdown ordered list", () => {
+    const unit = { loadout: "1. First item\n2. Second item\n3. Third item" };
+    const { container } = renderLoadout(unit);
 
-    expect(screen.getByText("Bolt rifle")).toBeInTheDocument();
-    expect(screen.getByText("Grenades")).toBeInTheDocument();
-    expect(screen.getByText("Combat knife")).toBeInTheDocument();
+    const listItems = container.querySelectorAll("li");
+    expect(listItems).toHaveLength(3);
+    expect(listItems[0].textContent).toBe("First item");
   });
 
-  it("renders no loadout entries for empty string", () => {
+  it("renders markdown horizontal rule", () => {
+    const unit = { loadout: "Section one\n\n---\n\nSection two" };
+    const { container } = renderLoadout(unit);
+
+    const hr = container.querySelector("hr");
+    expect(hr).toBeInTheDocument();
+  });
+
+  it("renders no loadout for empty string", () => {
     const unit = { loadout: "" };
     const { container } = renderLoadout(unit);
 
@@ -74,7 +80,7 @@ describe("UnitLoadout", () => {
     expect(loadoutDivs).toHaveLength(0);
   });
 
-  it("renders no loadout entries for undefined loadout", () => {
+  it("renders no loadout for undefined", () => {
     const unit = { loadout: undefined };
     const { container } = renderLoadout(unit);
 
