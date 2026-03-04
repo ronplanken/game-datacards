@@ -19,8 +19,9 @@ import { Button } from "antd";
 import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { compare } from "compare-versions";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -36,6 +37,9 @@ const modalRoot = document.getElementById("modal-root");
 export const Importer = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("json");
+  const [urlPayload, setUrlPayload] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // GDC JSON tab state
   const [uploadFile, setUploadFile] = useState(null);
@@ -66,6 +70,18 @@ export const Importer = () => {
   const { settings, updateSettings } = useSettingsStorage();
   const { trackEvent } = useUmami();
 
+  // Consume ListForge URL payload from router state.
+  // Deps: only listForgePayload — navigate is stable, location.pathname won't change here.
+  useEffect(() => {
+    const payload = location.state?.listForgePayload;
+    if (payload) {
+      navigate(location.pathname, { replace: true, state: {} });
+      setUrlPayload(payload);
+      setActiveTab("listforge");
+      setIsModalVisible(true);
+    }
+  }, [location.state?.listForgePayload]);
+
   const handleClose = () => {
     setIsModalVisible(false);
     setActiveTab("json");
@@ -81,6 +97,7 @@ export const Importer = () => {
     setDsPreview(null);
     setShowActivationPrompt(false);
     setImportedDatasource(null);
+    setUrlPayload(null);
   };
 
   // Check if GW 40k App / List Forge tabs should be enabled
@@ -453,6 +470,7 @@ export const Importer = () => {
                       importCategory={importCategory}
                       onClose={handleClose}
                       footerNode={footerNode}
+                      initialData={urlPayload}
                     />
                   )}
 

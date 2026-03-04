@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Crown,
   Trash2,
@@ -17,7 +17,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { message } from "../../Toast/message";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useCloudCategories, ListSyncButton } from "../../../Premium";
@@ -325,14 +325,33 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
 export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, removeDatacard, selectedCloudCategoryId } = useMobileList();
   const { dataSource } = useDataSourceStorage();
-  const { settings } = useSettingsStorage();
+  const { settings, updateSettings } = useSettingsStorage();
   const { categories: cloudCategories } = useCloudCategories();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isListSelectorVisible, setIsListSelectorVisible] = useState(false);
   const [showImportPicker, setShowImportPicker] = useState(false);
   const [activeImporter, setActiveImporter] = useState(null); // null | "gw" | "listforge"
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
+  const [urlPayload, setUrlPayload] = useState(null);
+
+  // Consume ListForge URL payload from router state
+  useEffect(() => {
+    const payload = location.state?.listForgePayload;
+    if (payload) {
+      navigate(location.pathname, { replace: true, state: {} });
+      setUrlPayload(payload);
+      setActiveImporter("listforge");
+      setIsVisible(true);
+    }
+  }, [location.state?.listForgePayload]);
+
+  // Clear URL payload when importer closes
+  const handleImporterClose = useCallback(() => {
+    setActiveImporter(null);
+    setUrlPayload(null);
+  }, []);
 
   // Derive selected cloud category from the realtime-updated list
   const selectedCloudCategory = selectedCloudCategoryId
@@ -535,7 +554,11 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
 
       <MobileGwImporter isOpen={activeImporter === "gw"} onClose={() => setActiveImporter(null)} />
 
-      <MobileListForgeImporter isOpen={activeImporter === "listforge"} onClose={() => setActiveImporter(null)} />
+      <MobileListForgeImporter
+        isOpen={activeImporter === "listforge"}
+        onClose={handleImporterClose}
+        initialData={urlPayload}
+      />
 
       <ListEditCard
         isVisible={!!editingCard}

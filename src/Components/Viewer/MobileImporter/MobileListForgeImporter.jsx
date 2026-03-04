@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ChevronLeft,
   AlertCircle,
@@ -143,7 +143,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets, importMode }) => {
   );
 };
 
-export const MobileListForgeImporter = ({ isOpen, onClose }) => {
+export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null }) => {
   const { dataSource } = useDataSourceStorage();
   const { createListWithCards } = useMobileList();
   const { trackEvent } = useUmami();
@@ -178,6 +178,7 @@ export const MobileListForgeImporter = ({ isOpen, onClose }) => {
     setParsedUnits([]);
     setListName("");
     setImportMode("match");
+    initialDataProcessed.current = false;
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -187,6 +188,25 @@ export const MobileListForgeImporter = ({ isOpen, onClose }) => {
     resetState();
     onClose();
   };
+
+  // When initialData is provided (from URL payload), skip upload and auto-advance.
+  // Wait for the real datasource (40k-10e, ~27 factions) to load — not just the
+  // initial basic datasource (1 entry) that useDataSourceStorage starts with.
+  const initialDataProcessed = useRef(false);
+  // Deps: only initialData, isOpen, and datasource length — step and handleParse are
+  // intentionally omitted because the ref guard prevents re-processing after the first parse.
+  useEffect(() => {
+    if (initialData && isOpen && !initialDataProcessed.current && step === 1 && dataSource?.data?.length > 1) {
+      const validation = validateListforgeJson(initialData);
+      if (!validation.isValid) {
+        setError(validation.errors.join(", "));
+        return;
+      }
+      initialDataProcessed.current = true;
+      setFile(initialData);
+      handleParse(initialData);
+    }
+  }, [initialData, isOpen, dataSource?.data?.length]);
 
   // Step 1: Process data (from file or paste)
   const processData = (data, fileName) => {
@@ -256,10 +276,11 @@ export const MobileListForgeImporter = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleParse = () => {
-    if (!file) return;
+  const handleParse = (data) => {
+    const source = data || file;
+    if (!source) return;
 
-    const parsed = parseListforgeRoster(file);
+    const parsed = parseListforgeRoster(source);
 
     if (parsed.error) {
       setError(parsed.error);
@@ -479,7 +500,7 @@ export const MobileListForgeImporter = ({ isOpen, onClose }) => {
             )}
 
             {file && (
-              <button className="mi-primary-btn" onClick={handleParse}>
+              <button className="mi-primary-btn" onClick={() => handleParse()}>
                 Continue
               </button>
             )}

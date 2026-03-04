@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as ReactDOM from "react-dom";
 import { Select } from "antd";
 import { Trash2, File, Inbox, Check, X, Shield } from "lucide-react";
@@ -25,7 +25,7 @@ import { ImportReviewPanel } from "../ImportReviewPanel";
 
 const filterOption = (input, option) => option?.label?.toLowerCase().includes(input.toLowerCase());
 
-export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, footerNode }) => {
+export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, footerNode, initialData = null }) => {
   const [file, setFile] = useState(null);
   const [fileInfo, setFileInfo] = useState(null);
   const [fileError, setFileError] = useState(null);
@@ -45,6 +45,25 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
   const { trackEvent } = useUmami();
   const factionOptions = dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || [];
   const coreAbilityNames = useMemo(() => buildCoreAbilitySet(dataSource?.data), [dataSource?.data]);
+
+  // When initialData is provided (from URL payload), skip upload and auto-advance.
+  // Wait for the real datasource (40k-10e, ~27 factions) to load — not just the
+  // initial basic datasource (1 entry) that useDataSourceStorage starts with.
+  const initialDataProcessed = useRef(false);
+  // Deps: only initialData and datasource length — phase and handleParse are intentionally
+  // omitted because the ref guard prevents re-processing after the first successful parse.
+  useEffect(() => {
+    if (initialData && !initialDataProcessed.current && phase === "upload" && dataSource?.data?.length > 1) {
+      const validation = validateListforgeJson(initialData);
+      if (!validation.isValid) {
+        setFileError(validation.errors.join(", "));
+        return;
+      }
+      initialDataProcessed.current = true;
+      setFile(initialData);
+      handleParse(initialData);
+    }
+  }, [initialData, dataSource?.data?.length]);
 
   const processData = (data, fileName) => {
     const validation = validateListforgeJson(data);
@@ -135,10 +154,11 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
     }
   };
 
-  const handleParse = () => {
-    if (!file) return;
+  const handleParse = (data) => {
+    const source = data || file;
+    if (!source) return;
 
-    const parsed = parseListforgeRoster(file);
+    const parsed = parseListforgeRoster(source);
 
     if (parsed.error) {
       setFileError(parsed.error);
@@ -395,7 +415,7 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
 
           {file && (
             <div className="gw-import-actions">
-              <button className="gw-import-parse-btn" onClick={handleParse}>
+              <button className="gw-import-parse-btn" onClick={() => handleParse()}>
                 Parse Roster
               </button>
             </div>

@@ -10,6 +10,7 @@ import {
   Outlet,
   Navigate,
   useLocation,
+  useNavigate,
   useSearchParams,
 } from "react-router-dom";
 import {
@@ -32,6 +33,8 @@ import {
 } from "./Premium";
 import { useFeatureFlags } from "./Hooks/useFeatureFlags";
 import { useUmami } from "./Hooks/useUmami";
+import { isListForgeHash, decodeListForgeUrlPayload, cleanListForgeHash } from "./Helpers/listforgeUrl.helpers";
+import { validateListforgeJson } from "./Helpers/listforgeImport.helpers";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
@@ -39,6 +42,7 @@ import { CategorySharingProvider } from "./Hooks/useCategorySharing";
 import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
 import { UserProviderComponent } from "./Hooks/useUser";
 
+import { message } from "./Components/Toast/message";
 import App from "./App";
 import { ImageExport } from "./Pages/ImageExport";
 import { ImageGenerator } from "./Pages/ImageGenerator";
@@ -198,6 +202,61 @@ const ConnectedDatasourceSharingProvider = ({ children }) => {
   );
 };
 
+// Handles ListForge URL payload imports via hash fragment
+// Reads #/listforge/{base64_payload} from the URL, decodes it, cleans the hash,
+// and navigates with the payload in router state for the appropriate view to consume.
+const ListForgeUrlHandler = () => {
+  const navigate = useNavigate();
+  const { trackEvent } = useUmami();
+
+  React.useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (!isListForgeHash(hash)) return;
+
+      // Clean hash immediately to prevent re-trigger on refresh
+      cleanListForgeHash();
+
+      const { data, error } = decodeListForgeUrlPayload(hash);
+
+      if (error || !data) {
+        message.error(error || "Failed to decode ListForge URL payload");
+        trackEvent("import-listforge-url-error", { error: error || "unknown" });
+        return;
+      }
+
+      const validation = validateListforgeJson(data);
+      if (!validation.isValid) {
+        message.error(`Invalid ListForge data: ${validation.errors.join(", ")}`);
+        trackEvent("import-listforge-url-error", { error: "validation-failed" });
+        return;
+      }
+
+      trackEvent("import-listforge-url");
+
+      // Navigate to the current path with the payload in router state
+      // The target view (App for desktop, ViewerMobile for mobile) will pick it up
+      const targetPath = isMobile ? "/mobile" : "/";
+      navigate(targetPath, {
+        replace: true,
+        state: { listForgePayload: data },
+      });
+    };
+
+    handleHash(); // Check on mount (handles fresh page loads)
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  return null;
+};
+
+// Preserves hash fragment when redirecting mobile users to /mobile
+const MobileRedirect = () => {
+  const hash = window.location.hash;
+  return <Navigate to={hash ? { pathname: "/mobile", hash } : "/mobile"} replace />;
+};
+
 // Sends session-level context to Umami on mount
 const UmamiSessionIdentifier = () => {
   const { identify } = useUmami();
@@ -230,6 +289,7 @@ const RootLayout = () => (
                           <WizardSelector />
                           <WhatsNewWizardSelector />
                           <CheckoutSuccessHandler />
+                          <ListForgeUrlHandler />
                           <SyncConflictHandler />
                         </CloudCategoriesProvider>
                       </SyncProvider>
@@ -252,7 +312,7 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       // Root route - redirect based on device
-      { path: "/", element: isMobile ? <Navigate to="/mobile" replace /> : <App /> },
+      { path: "/", element: isMobile ? <MobileRedirect /> : <App /> },
       // Designer route (premium only)
       { path: "designer", element: <DesignerRoute /> },
       // Legal pages
