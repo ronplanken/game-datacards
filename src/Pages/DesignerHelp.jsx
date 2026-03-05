@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Typography, Layout, Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useUmami } from "../Hooks/useUmami";
 import { AppHeader } from "../Components/AppHeader";
 import "./DesignerHelp.css";
 
@@ -25,8 +26,13 @@ const sections = [
 
 export const DesignerHelp = () => {
   const navigate = useNavigate();
+  const { trackEvent } = useUmami();
   const [activeKey, setActiveKey] = useState("getting-started");
   const contentRef = useRef(null);
+
+  useEffect(() => {
+    trackEvent("designer-help-view", {});
+  }, [trackEvent]);
 
   useEffect(() => {
     const container = contentRef.current;

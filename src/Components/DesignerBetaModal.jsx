@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import * as ReactDOM from "react-dom";
 import { FlaskConical, ArrowLeft, ArrowRight } from "lucide-react";
+import { useUmami } from "../Hooks/useUmami";
 import "../Components/WelcomeWizard/WelcomeWizard.css";
 
 export const DesignerBetaModal = ({ visible, onAccept, onDecline }) => {
   const [isExiting, setIsExiting] = useState(false);
+  const { trackEvent } = useUmami();
 
   if (!visible) return null;
 
@@ -12,6 +14,7 @@ export const DesignerBetaModal = ({ visible, onAccept, onDecline }) => {
   if (!modalRoot) return null;
 
   const handleAccept = () => {
+    trackEvent("designer-beta-accept", {});
     setIsExiting(true);
     setTimeout(() => {
       onAccept();
@@ -19,6 +22,7 @@ export const DesignerBetaModal = ({ visible, onAccept, onDecline }) => {
   };
 
   const handleDecline = () => {
+    trackEvent("designer-beta-decline", {});
     setIsExiting(true);
     setTimeout(() => {
       onDecline();
