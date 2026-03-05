@@ -2,7 +2,7 @@ import { Badge, Grid, Image, Layout } from "antd";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Globe } from "lucide-react";
+import { Globe, HelpCircle } from "lucide-react";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
 import {
@@ -37,7 +37,7 @@ export const AppHeader = ({
   const screens = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { hasDatasourceBrowser } = usePremiumFeatures();
   const { designerEnabled, communityBrowserEnabled } = useFeatureFlags();
 
@@ -75,9 +75,10 @@ export const AppHeader = ({
                 <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
                   Viewer
                 </Link>
-                {designerEnabled && (
+                {designerEnabled && isAuthenticated && (
                   <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
                     Designer
+                    <span className="app-header-beta-badge">beta</span>
                   </Link>
                 )}
               </nav>
@@ -103,6 +104,20 @@ export const AppHeader = ({
               {(showSyncStatus ?? showActions) && <SyncStatusIndicator />}
               {showActions && user && <DatasourceUpdateBadge />}
             </div>
+
+            {/* Designer help button - only on designer page */}
+            {isDesignerPage && (
+              <>
+                <span className="app-header-separator" />
+                <div className="app-header-group">
+                  <Tooltip content="Designer Help" placement="bottom-end">
+                    <button className="app-header-icon-btn" onClick={() => navigate("/designer/help")}>
+                      <HelpCircle size={18} />
+                    </button>
+                  </Tooltip>
+                </div>
+              </>
+            )}
 
             <span className="app-header-separator" />
 

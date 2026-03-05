@@ -114,6 +114,21 @@
   background: linear-gradient(90deg, transparent 0%, #1677ff 15%, #4096ff 50%, #1677ff 85%, transparent 100%);
 }
 
+.app-header-beta-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background: #fa8c16;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
 /* ===========================================
    RIGHT SECTION - Actions
    =========================================== */

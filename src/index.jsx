@@ -53,10 +53,12 @@ import { TermsOfService } from "./Pages/TermsOfService";
 import { PrivacyPolicy } from "./Pages/PrivacyPolicy";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
+import { DesignerBetaModal } from "./Components/DesignerBetaModal";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
+import { DesignerHelp } from "./Pages/DesignerHelp";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -125,11 +127,39 @@ const WhatsNewWizardSelector = () => {
   return isMobileRoute ? <MobileWhatsNewWizard /> : <WhatsNewWizard />;
 };
 
-// Conditional Designer route - only renders if premium feature is available and flag is on
+// Conditional Designer route - only renders if premium feature is available, flag is on,
+// user is authenticated, and has accepted the beta disclaimer.
 const DesignerRoute = () => {
   const { hasCardDesigner } = usePremiumFeatures();
   const { designerEnabled } = useFeatureFlags();
-  return hasCardDesigner && designerEnabled ? <DesignerPage /> : null;
+  const { isAuthenticated } = useAuth();
+  const { settings, updateSettings } = useSettingsStorage();
+  const navigate = useNavigate();
+
+  if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
+
+  if (!settings.designerBetaAccepted) {
+    return (
+      <DesignerBetaModal
+        visible
+        onAccept={() => updateSettings({ ...settings, designerBetaAccepted: true })}
+        onDecline={() => navigate("/")}
+      />
+    );
+  }
+
+  return <DesignerPage />;
+};
+
+// Designer Help route - requires same gates as Designer
+const DesignerHelpRoute = () => {
+  const { hasCardDesigner } = usePremiumFeatures();
+  const { designerEnabled } = useFeatureFlags();
+  const { isAuthenticated } = useAuth();
+
+  if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
+
+  return <DesignerHelp />;
 };
 
 // Component to handle checkout success redirect
@@ -322,8 +352,9 @@ const router = createBrowserRouter([
     children: [
       // Root route - redirect based on device
       { path: "/", element: isMobile ? <MobileRedirect /> : <App /> },
-      // Designer route (premium only)
+      // Designer routes (premium only)
       { path: "designer", element: <DesignerRoute /> },
+      { path: "designer/help", element: <DesignerHelpRoute /> },
       // Legal pages
       { path: "terms", element: <TermsOfService /> },
       { path: "privacy", element: <PrivacyPolicy /> },
