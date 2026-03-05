@@ -138,17 +138,16 @@ const DesignerRoute = () => {
 
   if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
 
-  if (!settings.designerBetaAccepted) {
-    return (
+  return (
+    <>
+      <DesignerPage />
       <DesignerBetaModal
-        visible
+        visible={!settings.designerBetaAccepted}
         onAccept={() => updateSettings({ ...settings, designerBetaAccepted: true })}
         onDecline={() => navigate("/")}
       />
-    );
-  }
-
-  return <DesignerPage />;
+    </>
+  );
 };
 
 // Designer Help route - requires same gates as Designer

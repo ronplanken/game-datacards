@@ -48,6 +48,9 @@ export const AppHeader = ({
   const isViewerPage = location.pathname.startsWith("/viewer");
   const isDesignerPage = location.pathname.startsWith("/designer");
 
+  // Designer page should show all header actions like the Editor does
+  const effectiveShowActions = showActions || isDesignerPage;
+
   return (
     <>
       {showModals && <WhatsNew />}
@@ -81,6 +84,14 @@ export const AppHeader = ({
                     <span className="app-header-beta-badge">beta</span>
                   </Link>
                 )}
+                {designerEnabled && !isAuthenticated && (
+                  <Tooltip content="Log in to use the Designer" placement="bottom">
+                    <span className="app-header-nav-item app-header-nav-item--disabled">
+                      Designer
+                      <span className="app-header-beta-badge">beta</span>
+                    </span>
+                  </Tooltip>
+                )}
               </nav>
             )}
           </div>
@@ -88,7 +99,7 @@ export const AppHeader = ({
           {/* Right section - Actions and User */}
           <div className="app-header-right">
             {/* Workflow group: Datasource + Share */}
-            {showActions && screens.md && (
+            {effectiveShowActions && screens.md && (
               <>
                 <div className="app-header-group">
                   <DatasourceSelector />
@@ -100,9 +111,9 @@ export const AppHeader = ({
 
             {/* Status group: Bell + Sync + Updates */}
             <div className="app-header-group">
-              {showActions && <NotificationBell />}
-              {(showSyncStatus ?? showActions) && <SyncStatusIndicator />}
-              {showActions && user && <DatasourceUpdateBadge />}
+              {effectiveShowActions && <NotificationBell />}
+              {(showSyncStatus ?? effectiveShowActions) && <SyncStatusIndicator />}
+              {effectiveShowActions && user && <DatasourceUpdateBadge />}
             </div>
 
             {/* Designer help button - only on designer page */}
@@ -123,7 +134,7 @@ export const AppHeader = ({
 
             {/* Social group: Community + Discord */}
             <div className="app-header-group">
-              {showActions && hasDatasourceBrowser && communityBrowserEnabled && (
+              {effectiveShowActions && hasDatasourceBrowser && communityBrowserEnabled && (
                 <Tooltip content="Browse Community" placement="bottom-end">
                   <button
                     className="app-header-icon-btn app-header-social-btn"
@@ -133,7 +144,7 @@ export const AppHeader = ({
                 </Tooltip>
               )}
 
-              {showActions && (
+              {effectiveShowActions && (
                 <Tooltip content="Join us on discord!" placement="bottom-end">
                   <button
                     className="app-header-icon-btn app-header-social-btn"
