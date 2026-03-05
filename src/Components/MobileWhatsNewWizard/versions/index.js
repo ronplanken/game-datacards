@@ -4,6 +4,7 @@ import v320Config from "./v3.2.0";
 import v321Config from "./v3.2.1";
 import v322Config from "./v3.2.2";
 import v330Config from "./v3.3.0";
+import v340Config from "./v3.4.0";
 
 /**
  * Registry of all mobile version wizard configurations
@@ -14,7 +15,7 @@ import v330Config from "./v3.3.0";
  * 2. Create step components and index.js with MOBILE_VERSION_CONFIG
  * 3. Import and add to MOBILE_VERSION_REGISTRY array below
  */
-export const MOBILE_VERSION_REGISTRY = [v310Config, v320Config, v321Config, v322Config, v330Config]
+export const MOBILE_VERSION_REGISTRY = [v310Config, v320Config, v321Config, v322Config, v330Config, v340Config]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));
 

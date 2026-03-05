@@ -2,7 +2,7 @@ import { Badge, Grid, Image, Layout } from "antd";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Globe } from "lucide-react";
+import { Globe, HelpCircle } from "lucide-react";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
 import {
@@ -37,7 +37,7 @@ export const AppHeader = ({
   const screens = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { hasDatasourceBrowser } = usePremiumFeatures();
   const { designerEnabled, communityBrowserEnabled } = useFeatureFlags();
 
@@ -47,6 +47,9 @@ export const AppHeader = ({
   const isEditorPage = location.pathname === "/" || location.pathname === "";
   const isViewerPage = location.pathname.startsWith("/viewer");
   const isDesignerPage = location.pathname.startsWith("/designer");
+
+  // Designer page should show all header actions like the Editor does
+  const effectiveShowActions = showActions || isDesignerPage;
 
   return (
     <>
@@ -75,10 +78,19 @@ export const AppHeader = ({
                 <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
                   Viewer
                 </Link>
-                {designerEnabled && (
+                {designerEnabled && isAuthenticated && (
                   <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
                     Designer
+                    <span className="app-header-beta-badge">beta</span>
                   </Link>
+                )}
+                {designerEnabled && !isAuthenticated && (
+                  <Tooltip content="Log in to use the Designer" placement="bottom">
+                    <span className="app-header-nav-item app-header-nav-item--disabled">
+                      Designer
+                      <span className="app-header-beta-badge">beta</span>
+                    </span>
+                  </Tooltip>
                 )}
               </nav>
             )}
@@ -87,7 +99,7 @@ export const AppHeader = ({
           {/* Right section - Actions and User */}
           <div className="app-header-right">
             {/* Workflow group: Datasource + Share */}
-            {showActions && screens.md && (
+            {effectiveShowActions && screens.md && (
               <>
                 <div className="app-header-group">
                   <DatasourceSelector />
@@ -99,16 +111,30 @@ export const AppHeader = ({
 
             {/* Status group: Bell + Sync + Updates */}
             <div className="app-header-group">
-              {showActions && <NotificationBell />}
-              {(showSyncStatus ?? showActions) && <SyncStatusIndicator />}
-              {showActions && user && <DatasourceUpdateBadge />}
+              {effectiveShowActions && <NotificationBell />}
+              {(showSyncStatus ?? effectiveShowActions) && <SyncStatusIndicator />}
+              {effectiveShowActions && user && <DatasourceUpdateBadge />}
             </div>
+
+            {/* Designer help button - only on designer page */}
+            {isDesignerPage && (
+              <>
+                <span className="app-header-separator" />
+                <div className="app-header-group">
+                  <Tooltip content="Designer Help" placement="bottom-end">
+                    <button className="app-header-icon-btn" onClick={() => navigate("/designer/help")}>
+                      <HelpCircle size={18} />
+                    </button>
+                  </Tooltip>
+                </div>
+              </>
+            )}
 
             <span className="app-header-separator" />
 
             {/* Social group: Community + Discord */}
             <div className="app-header-group">
-              {showActions && hasDatasourceBrowser && communityBrowserEnabled && (
+              {effectiveShowActions && hasDatasourceBrowser && communityBrowserEnabled && (
                 <Tooltip content="Browse Community" placement="bottom-end">
                   <button
                     className="app-header-icon-btn app-header-social-btn"
@@ -118,7 +144,7 @@ export const AppHeader = ({
                 </Tooltip>
               )}
 
-              {showActions && (
+              {effectiveShowActions && (
                 <Tooltip content="Join us on discord!" placement="bottom-end">
                   <button
                     className="app-header-icon-btn app-header-social-btn"
