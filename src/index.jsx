@@ -39,7 +39,7 @@ import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
 import { CategorySharingProvider } from "./Hooks/useCategorySharing";
-import { SettingsStorageProviderComponent } from "./Hooks/useSettingsStorage";
+import { SettingsStorageProviderComponent, useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { UserProviderComponent } from "./Hooks/useUser";
 
 import { message } from "./Components/Toast/message";
@@ -208,6 +208,9 @@ const ConnectedDatasourceSharingProvider = ({ children }) => {
 const ListForgeUrlHandler = () => {
   const navigate = useNavigate();
   const { trackEvent } = useUmami();
+  const { settings, updateSettings } = useSettingsStorage();
+  const settingsRef = React.useRef(settings);
+  settingsRef.current = settings;
 
   React.useEffect(() => {
     const handleHash = () => {
@@ -230,6 +233,12 @@ const ListForgeUrlHandler = () => {
         message.error(`Invalid ListForge data: ${validation.errors.join(", ")}`);
         trackEvent("import-listforge-url-error", { error: "validation-failed" });
         return;
+      }
+
+      // ListForge only supports 40k — force-switch if another datasource is active
+      if (settingsRef.current.selectedDataSource !== "40k-10e") {
+        updateSettings({ ...settingsRef.current, selectedDataSource: "40k-10e" });
+        message.info("Switched to Warhammer 40k datasource for ListForge import");
       }
 
       trackEvent("import-listforge-url");
