@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { confirmDialog } from "../../ConfirmChangesModal";
+import { MarkdownSpanWrapDisplay } from "../../MarkdownSpanWrapDisplay";
 
 // Helper to normalize entry to object format (handles legacy string format)
 const normalizeEntry = (entry) => {
@@ -15,8 +16,6 @@ export const UnitLoadout = ({ unit }) => {
   const { dataSource } = useDataSourceStorage();
   const { cardStorage, setActiveCard, setActiveCategory, cardUpdated, saveActiveCard } = useCardStorage();
   const unitFaction = dataSource?.data?.find((faction) => faction.id === unit?.faction_id);
-  const unitLoadouts = unit?.loadout?.split(".").filter((val) => val);
-
   // Function to select a custom card by UUID
   const selectCardByUuid = (uuid) => {
     for (const category of cardStorage?.categories || []) {
@@ -107,25 +106,12 @@ export const UnitLoadout = ({ unit }) => {
             })}
           </>
         )}
-        {unit.showLoadout !== false && (
-          <>
-            {unitLoadouts?.map((loadout, index) => {
-              const line = loadout?.split(":");
-              if (line?.length > 1) {
-                return (
-                  <div className="loadout" key={`loadout-${line[0]}`}>
-                    <span className="name">{line[0]}</span>
-                    <span className="description">{line[1]}.</span>
-                  </div>
-                );
-              }
-              return (
-                <div className="loadout" key={`loadout-${loadout}`}>
-                  <span className="description">{loadout}</span>
-                </div>
-              );
-            })}
-          </>
+        {unit.showLoadout !== false && unit?.loadout && (
+          <div className="loadout">
+            <div className="description">
+              <MarkdownSpanWrapDisplay content={unit.loadout} />
+            </div>
+          </div>
         )}
         {unit.leads && (
           <>
