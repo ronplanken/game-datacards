@@ -108,9 +108,9 @@ export const UnitLoadout = ({ unit }) => {
         )}
         {unit.showLoadout !== false && unit?.loadout && (
           <div className="loadout">
-            <span className="description">
+            <div className="description">
               <MarkdownSpanWrapDisplay content={unit.loadout} />
-            </span>
+            </div>
           </div>
         )}
         {unit.leads && (
