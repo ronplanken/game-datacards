@@ -72,6 +72,13 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
     typeof settings.hasFactionSelected === "object"
       ? (settings.hasFactionSelected?.[settings.selectedDataSource] ?? false)
       : false;
+  // Always force double-sided cards on mobile (no swap button exists)
+  useEffect(() => {
+    if (settings.showCardsAsDoubleSided !== true) {
+      updateSettings({ ...settings, showCardsAsDoubleSided: true });
+    }
+  }, [settings.showCardsAsDoubleSided]);
+
   const { activeCard } = useCardStorage();
   const { shareLink, htmlToImageConvert } = useMobileSharing();
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();

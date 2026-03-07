@@ -300,7 +300,7 @@ const UmamiSessionIdentifier = () => {
   const { identify } = useUmami();
   React.useEffect(() => {
     identify({
-      appVersion: import.meta.env.VITE_APP_VERSION || "unknown",
+      appVersion: import.meta.env.VITE_VERSION || "unknown",
       device: isMobile ? "mobile" : "desktop",
     });
   }, [identify]);
