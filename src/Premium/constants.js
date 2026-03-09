@@ -20,22 +20,22 @@
 export const SUBSCRIPTION_LIMITS = {
   free: {
     categories: 2, // Cloud categories (premium feature)
-    datasources: 0,
-    templates: 0,
+    datasources: 1,
+    templates: 2,
     canUploadDatasources: false,
     canAccessShares: true, // Can view shared content
   },
   premium: {
     categories: 50,
     datasources: 2,
-    templates: 1,
+    templates: 4,
     canUploadDatasources: true,
     canAccessShares: true,
   },
   creator: {
     categories: 250,
     datasources: 10,
-    templates: 5,
+    templates: 10,
     canUploadDatasources: true,
     canAccessShares: true,
   },

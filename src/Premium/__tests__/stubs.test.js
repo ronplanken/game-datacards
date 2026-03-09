@@ -63,16 +63,16 @@ describe("SUBSCRIPTION_LIMITS", () => {
     expect(typeof SUBSCRIPTION_LIMITS[tier].templates).toBe("number");
   });
 
-  it("should have 0 templates for free tier", () => {
-    expect(SUBSCRIPTION_LIMITS.free.templates).toBe(0);
+  it("should have 2 templates for free tier", () => {
+    expect(SUBSCRIPTION_LIMITS.free.templates).toBe(2);
   });
 
-  it("should have 1 template for premium tier", () => {
-    expect(SUBSCRIPTION_LIMITS.premium.templates).toBe(1);
+  it("should have 4 templates for premium tier", () => {
+    expect(SUBSCRIPTION_LIMITS.premium.templates).toBe(4);
   });
 
-  it("should have 5 templates for creator tier", () => {
-    expect(SUBSCRIPTION_LIMITS.creator.templates).toBe(5);
+  it("should have 10 templates for creator tier", () => {
+    expect(SUBSCRIPTION_LIMITS.creator.templates).toBe(10);
   });
 
   it("should have 99 templates for lifetime tier", () => {

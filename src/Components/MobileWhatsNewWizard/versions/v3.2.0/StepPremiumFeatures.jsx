@@ -1,5 +1,6 @@
 import React from "react";
 import { Crown, Check, Folder, Database } from "lucide-react";
+import { SUBSCRIPTION_LIMITS } from "../../../../Premium";
 
 /**
  * StepPremiumFeatures - Premium features step for v3.2.0
@@ -29,7 +30,8 @@ export const StepPremiumFeatures = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Free Tier</span>
           <span className="mwnw-feature-item-desc">
-            Sync 2 categories to cloud, unlimited local, full card editing, print and export
+            Sync {SUBSCRIPTION_LIMITS.free.categories} categories to cloud, unlimited local, full card editing, print and
+            export
           </span>
         </div>
       </div>
@@ -41,7 +43,8 @@ export const StepPremiumFeatures = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Premium</span>
           <span className="mwnw-feature-item-desc">
-            Sync 10 categories, unlimited local and 2 custom datasources for &euro;3.99/mo
+            Sync {SUBSCRIPTION_LIMITS.premium.categories} categories, unlimited local and{" "}
+            {SUBSCRIPTION_LIMITS.premium.datasources} custom datasources for &euro;3.99/mo
           </span>
         </div>
       </div>
@@ -53,7 +56,8 @@ export const StepPremiumFeatures = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Creator</span>
           <span className="mwnw-feature-item-desc">
-            Sync 50 categories, unlimited local and 10 custom datasources for &euro;7.99/mo
+            Sync {SUBSCRIPTION_LIMITS.creator.categories} categories, unlimited local and{" "}
+            {SUBSCRIPTION_LIMITS.creator.datasources} custom datasources for &euro;7.99/mo
           </span>
         </div>
       </div>

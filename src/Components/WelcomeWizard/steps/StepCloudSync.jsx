@@ -1,6 +1,7 @@
 import React from "react";
 import { Cloud, Monitor, Shield } from "lucide-react";
 import { MockTreeRow, MockHeaderBar } from "../demos";
+import { SUBSCRIPTION_LIMITS } from "../../../Premium";
 
 /**
  * Cloud Sync step explaining sync features for new users
@@ -47,7 +48,7 @@ export const StepCloudSync = () => {
       </div>
 
       <div className="wz-explore-hint">
-        Free accounts can sync up to <strong>2 categories</strong>. Upgrade for more.
+        Free accounts can sync up to <strong>{SUBSCRIPTION_LIMITS.free.categories} categories</strong>. Upgrade for more.
       </div>
     </div>
   );
