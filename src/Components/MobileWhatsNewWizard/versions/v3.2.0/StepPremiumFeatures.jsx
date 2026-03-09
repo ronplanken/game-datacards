@@ -30,8 +30,8 @@ export const StepPremiumFeatures = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Free Tier</span>
           <span className="mwnw-feature-item-desc">
-            Sync {SUBSCRIPTION_LIMITS.free.categories} categories to cloud, unlimited local, full card editing, print and
-            export
+            Sync {SUBSCRIPTION_LIMITS.free.categories} categories to cloud, unlimited local, full card editing, print
+            and export
           </span>
         </div>
       </div>

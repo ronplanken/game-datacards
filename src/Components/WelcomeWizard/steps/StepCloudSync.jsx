@@ -48,7 +48,8 @@ export const StepCloudSync = () => {
       </div>
 
       <div className="wz-explore-hint">
-        Free accounts can sync up to <strong>{SUBSCRIPTION_LIMITS.free.categories} categories</strong>. Upgrade for more.
+        Free accounts can sync up to <strong>{SUBSCRIPTION_LIMITS.free.categories} categories</strong>. Upgrade for
+        more.
       </div>
     </div>
   );
