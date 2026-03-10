@@ -8,6 +8,7 @@ import { StepBaseSystem } from "./steps/StepBaseSystem";
 import { StepCardType } from "./steps/StepCardType";
 import { StepReview } from "./steps/StepReview";
 import { StepStats } from "./steps/StepStats";
+import { StepWeapons } from "./steps/StepWeapons";
 import "./DatasourceWizard.css";
 
 /**
@@ -153,6 +154,8 @@ export const DatasourceWizard = ({ open, onClose, onComplete, existingDatasource
         return <StepCardType wizard={wizard} />;
       case "stats":
         return <StepStats wizard={wizard} />;
+      case "weapons":
+        return <StepWeapons wizard={wizard} />;
       case "review":
         return <StepReview wizard={wizard} />;
       default:

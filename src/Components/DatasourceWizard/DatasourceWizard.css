@@ -1107,6 +1107,91 @@
 }
 
 /* ===========================================
+   WEAPONS STEP
+   =========================================== */
+.dsw-weapons-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dsw-weapons-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--wz-border);
+  padding-bottom: 8px;
+}
+
+.dsw-weapons-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wz-text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--wz-radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dsw-weapons-tab:hover {
+  color: var(--wz-text-main);
+  background: var(--wz-bg-elevated);
+}
+
+.dsw-weapons-tab--active {
+  color: var(--wz-primary-light);
+  background: var(--wz-primary-glow);
+  border-color: var(--wz-border-blue);
+  font-weight: 600;
+}
+
+.dsw-weapons-tab-label {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dsw-weapons-tab-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  color: var(--wz-text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dsw-weapons-tab-remove:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.dsw-weapons-type-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--wz-bg-card);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-xs);
+}
+
+.dsw-weapons-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {
