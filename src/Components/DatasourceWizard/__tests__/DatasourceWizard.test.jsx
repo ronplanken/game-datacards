@@ -204,29 +204,24 @@ describe("DatasourceWizard", () => {
   });
 
   describe("completion action", () => {
-    it("shows 'Create Datasource' button on the last step in create mode", () => {
-      const existingDatasource = { name: "Test", schema: { cardTypes: [] } };
-      render(
-        <DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} existingDatasource={existingDatasource} />,
-      );
-      // In add-card-type with no baseType, steps are: card-type, review (2 steps)
-      // We are on step 1 (card-type), which is not last step
-      // We cannot easily navigate to last step without selecting a baseType,
-      // so we verify the button text adapts in add-card-type mode
+    it("does not show complete button when not on the last step", () => {
+      render(<DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} />);
+      // On the first step (metadata), should show Next, not Complete
       expect(screen.queryByTestId("dsw-btn-complete")).not.toBeInTheDocument();
+      expect(screen.getByTestId("dsw-btn-next")).toBeInTheDocument();
     });
 
-    it("shows 'Add Card Type' text for completion button in add-card-type mode when on last step", () => {
-      // With add-card-type mode and no baseType selected, review is step index 1
-      // canProceed on card-type is false without a baseType, so we can't easily navigate
-      // We just test that the text changes based on mode by examining the render at step 0
+    it("header shows 'Add Card Type' in add-card-type mode", () => {
       const existingDatasource = { name: "Test", schema: { cardTypes: [] } };
       render(
         <DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} existingDatasource={existingDatasource} />,
       );
-      // The "Add Card Type" text should not appear at step 0 (it's the completion button text)
-      // But the header should say "Add Card Type"
       expect(screen.getByText("Add Card Type")).toBeInTheDocument();
+    });
+
+    it("header shows 'Create Datasource' in create mode", () => {
+      render(<DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} />);
+      expect(screen.getByText("Create Datasource")).toBeInTheDocument();
     });
   });
 });
