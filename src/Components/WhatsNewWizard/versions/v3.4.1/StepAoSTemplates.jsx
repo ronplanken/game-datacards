@@ -1,5 +1,5 @@
 import React from "react";
-import { LayoutTemplate, Palette, Printer } from "lucide-react";
+import { LayoutTemplate } from "lucide-react";
 
 /**
  * StepAoSTemplates - Single step for v3.4.1 AoS Custom Templates

@@ -60,7 +60,7 @@ export function WarscrollBasicInfo() {
         />
       </Form.Item>
       {hasCardDesigner && designerEnabled && (
-        <Form.Item label={"Template"}>
+        <Form.Item label="Template">
           <TemplateSelector
             value={activeCard.templateId || null}
             onChange={(templateId) => updateActiveCard({ ...activeCard, templateId })}
