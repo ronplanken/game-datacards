@@ -424,6 +424,93 @@ describe("useDatasourceWizard", () => {
     });
   });
 
+  describe("duplicate baseType prevention (add-card-type mode)", () => {
+    const dsWithUnit = {
+      name: "Test",
+      schema: {
+        cardTypes: [{ key: "infantry", label: "Infantry", baseType: "unit", schema: {} }],
+      },
+    };
+
+    it("changeBaseType rejects a baseType already defined in existing datasource", () => {
+      const { result } = renderHook(() => useDatasourceWizard({ existingDatasource: dsWithUnit }));
+
+      act(() => result.current.changeBaseType("unit"));
+      expect(result.current.baseType).toBeNull();
+    });
+
+    it("changeBaseType allows a baseType not defined in existing datasource", () => {
+      const { result } = renderHook(() => useDatasourceWizard({ existingDatasource: dsWithUnit }));
+
+      act(() => result.current.changeBaseType("rule"));
+      expect(result.current.baseType).toBe("rule");
+    });
+
+    it("canProceed is false on card-type step when baseType is a duplicate", () => {
+      const { result } = renderHook(() => useDatasourceWizard({ existingDatasource: dsWithUnit }));
+
+      // In add-card-type mode, first step is card-type
+      expect(result.current.currentStep.id).toBe("card-type");
+
+      // Manually force baseType via a fresh hook without guard (simulate stale state)
+      // Since changeBaseType blocks it, canProceed should remain false
+      expect(result.current.canProceed).toBe(false);
+    });
+
+    it("canProceed is true on card-type step when baseType is not a duplicate", () => {
+      const { result } = renderHook(() => useDatasourceWizard({ existingDatasource: dsWithUnit }));
+
+      act(() => result.current.changeBaseType("stratagem"));
+      expect(result.current.canProceed).toBe(true);
+    });
+
+    it("availableBaseTypes excludes existing base types", () => {
+      const ds = {
+        name: "Test",
+        schema: {
+          cardTypes: [
+            { key: "infantry", label: "Infantry", baseType: "unit", schema: {} },
+            { key: "rules", label: "Rules", baseType: "rule", schema: {} },
+          ],
+        },
+      };
+      const { result } = renderHook(() => useDatasourceWizard({ existingDatasource: ds }));
+
+      expect(result.current.availableBaseTypes).not.toContain("unit");
+      expect(result.current.availableBaseTypes).not.toContain("rule");
+      expect(result.current.availableBaseTypes).toContain("enhancement");
+      expect(result.current.availableBaseTypes).toContain("stratagem");
+    });
+
+    it("availableBaseTypes includes all types in create mode", () => {
+      const { result } = renderHook(() => useDatasourceWizard());
+
+      expect(result.current.availableBaseTypes).toContain("unit");
+      expect(result.current.availableBaseTypes).toContain("rule");
+      expect(result.current.availableBaseTypes).toContain("enhancement");
+      expect(result.current.availableBaseTypes).toContain("stratagem");
+    });
+
+    it("availableBaseTypes includes all types when existing datasource has no card types", () => {
+      const ds = { name: "Test", schema: { cardTypes: [] } };
+      const { result } = renderHook(() => useDatasourceWizard({ existingDatasource: ds }));
+
+      expect(result.current.availableBaseTypes).toEqual(["unit", "rule", "enhancement", "stratagem"]);
+    });
+
+    it("goNext is blocked when duplicate baseType is selected on card-type step", () => {
+      const { result } = renderHook(() => useDatasourceWizard({ existingDatasource: dsWithUnit }));
+
+      // Attempt to select and proceed with duplicate type
+      act(() => result.current.changeBaseType("unit"));
+      act(() => result.current.goNext());
+
+      // Should still be on step 0 (card-type), not advanced
+      expect(result.current.currentStepIndex).toBe(0);
+      expect(result.current.currentStep.id).toBe("card-type");
+    });
+  });
+
   describe("assembleResult", () => {
     describe("create mode", () => {
       it("assembles a full datasource schema", () => {

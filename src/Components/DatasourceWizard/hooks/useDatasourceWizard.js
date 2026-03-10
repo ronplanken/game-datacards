@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { WIZARD_MODES, getWizardMode, resolveSteps } from "../constants";
+import { WIZARD_MODES, BASE_TYPES, getWizardMode, resolveSteps } from "../constants";
 
 /**
  * Step IDs that carry type-specific state and should be reset
@@ -21,9 +21,10 @@ const TYPE_SPECIFIC_STEP_IDS = new Set([
  * @param {import('../constants').WizardStep} step - The step definition
  * @param {Object<string, object>} stepData - Accumulated data keyed by step id
  * @param {string|null} baseType - Currently selected baseType
+ * @param {string[]} existingBaseTypes - Base types already defined in the existing datasource
  * @returns {boolean} Whether the user can proceed past this step
  */
-const isStepValid = (step, stepData, baseType) => {
+const isStepValid = (step, stepData, baseType, existingBaseTypes) => {
   const data = stepData[step.id];
 
   switch (step.id) {
@@ -32,7 +33,7 @@ const isStepValid = (step, stepData, baseType) => {
     case "base-system":
       return Boolean(data?.baseSystem);
     case "card-type":
-      return Boolean(baseType);
+      return Boolean(baseType) && !existingBaseTypes.includes(baseType);
     case "review":
       return true;
     default:
@@ -78,11 +79,32 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
   const isLastStep = currentStepIndex === totalSteps - 1;
   const progress = totalSteps > 0 ? ((currentStepIndex + 1) / totalSteps) * 100 : 0;
 
+  /**
+   * Get the base types that are already defined in the existing datasource.
+   * Only relevant in add-card-type mode.
+   */
+  const existingBaseTypes = useMemo(() => {
+    if (mode !== WIZARD_MODES.ADD_CARD_TYPE || !existingDatasource?.schema?.cardTypes) {
+      return [];
+    }
+    return existingDatasource.schema.cardTypes.map((ct) => ct.baseType);
+  }, [mode, existingDatasource]);
+
+  /**
+   * The base types available for selection, excluding those already
+   * defined in the existing datasource (add-card-type mode only).
+   */
+  const availableBaseTypes = useMemo(() => {
+    const all = Object.values(BASE_TYPES);
+    if (existingBaseTypes.length === 0) return all;
+    return all.filter((bt) => !existingBaseTypes.includes(bt));
+  }, [existingBaseTypes]);
+
   // Per-step validation
   const canProceed = useMemo(() => {
     if (!currentStep) return false;
-    return isStepValid(currentStep, stepData, baseType);
-  }, [currentStep, stepData, baseType]);
+    return isStepValid(currentStep, stepData, baseType, existingBaseTypes);
+  }, [currentStep, stepData, baseType, existingBaseTypes]);
 
   /**
    * Update data for a specific step.
@@ -97,10 +119,12 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
   /**
    * Change the selected baseType. Resets type-specific step data and
    * adjusts currentStepIndex if the step list shrinks.
+   * In add-card-type mode, rejects base types that already exist.
    */
   const changeBaseType = useCallback(
     (newBaseType) => {
       if (newBaseType === baseType) return;
+      if (existingBaseTypes.includes(newBaseType)) return;
 
       // Reset type-specific data
       setStepData((prev) => {
@@ -127,7 +151,7 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
 
       setBaseType(newBaseType);
     },
-    [baseType, steps],
+    [baseType, existingBaseTypes, steps],
   );
 
   /**
@@ -167,17 +191,6 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
       goToStep(currentStepIndex - 1, "backward");
     }
   }, [currentStepIndex, goToStep]);
-
-  /**
-   * Get the base types that are already defined in the existing datasource.
-   * Only relevant in add-card-type mode.
-   */
-  const existingBaseTypes = useMemo(() => {
-    if (mode !== WIZARD_MODES.ADD_CARD_TYPE || !existingDatasource?.schema?.cardTypes) {
-      return [];
-    }
-    return existingDatasource.schema.cardTypes.map((ct) => ct.baseType);
-  }, [mode, existingDatasource]);
 
   /**
    * Assemble the final result from accumulated step data.
@@ -272,6 +285,7 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
     baseType,
     changeBaseType,
     existingBaseTypes,
+    availableBaseTypes,
 
     // Step data
     stepData,
