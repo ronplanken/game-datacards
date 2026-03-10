@@ -9,6 +9,7 @@ import {
   createFieldDefinition,
   createCollectionDefinition,
   create40kPreset,
+  createAoSPreset,
 } from "../customSchema.helpers";
 
 describe("customSchema.helpers - constants", () => {
@@ -286,5 +287,185 @@ describe("customSchema.helpers - create40kPreset", () => {
     expect(a.cardTypes).not.toBe(b.cardTypes);
     a.cardTypes[0].schema.stats.fields.push(createFieldDefinition({ key: "x", label: "X" }));
     expect(b.cardTypes[0].schema.stats.fields).toHaveLength(6);
+  });
+});
+
+describe("customSchema.helpers - createAoSPreset", () => {
+  it("returns a schema with correct version and base system", () => {
+    const schema = createAoSPreset();
+    expect(schema.version).toBe(SCHEMA_VERSION);
+    expect(schema.baseSystem).toBe("aos");
+  });
+
+  it("includes all four card types", () => {
+    const schema = createAoSPreset();
+    expect(schema.cardTypes).toHaveLength(4);
+    const baseTypes = schema.cardTypes.map((ct) => ct.baseType);
+    expect(baseTypes).toEqual(["unit", "rule", "enhancement", "stratagem"]);
+  });
+
+  it("each card type has key, label, baseType, and schema", () => {
+    const schema = createAoSPreset();
+    for (const ct of schema.cardTypes) {
+      expect(ct).toHaveProperty("key");
+      expect(ct).toHaveProperty("label");
+      expect(ct).toHaveProperty("baseType");
+      expect(ct).toHaveProperty("schema");
+      expect(typeof ct.key).toBe("string");
+      expect(typeof ct.label).toBe("string");
+      expect(VALID_BASE_TYPES).toContain(ct.baseType);
+    }
+  });
+
+  describe("warscroll card type", () => {
+    it("has stats with 7 fields matching AoS characteristics", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(warscroll.key).toBe("warscroll");
+      expect(warscroll.label).toBe("Warscroll");
+      expect(warscroll.schema.stats.fields).toHaveLength(7);
+      const keys = warscroll.schema.stats.fields.map((f) => f.key);
+      expect(keys).toEqual(["move", "save", "control", "health", "ward", "wizard", "priest"]);
+    });
+
+    it("has stats with sequential displayOrder", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const orders = warscroll.schema.stats.fields.map((f) => f.displayOrder);
+      expect(orders).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    });
+
+    it("does not allow multiple stat profiles", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(warscroll.schema.stats.allowMultipleProfiles).toBe(false);
+    });
+
+    it("stats section is labelled Characteristics", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(warscroll.schema.stats.label).toBe("Characteristics");
+    });
+
+    it("has ranged and melee weapon types", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const weaponKeys = warscroll.schema.weaponTypes.types.map((t) => t.key);
+      expect(weaponKeys).toEqual(["ranged", "melee"]);
+    });
+
+    it("ranged weapons have 6 columns with AoS stat names", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const ranged = warscroll.schema.weaponTypes.types.find((t) => t.key === "ranged");
+      expect(ranged.columns).toHaveLength(6);
+      expect(ranged.columns.map((c) => c.key)).toEqual(["range", "attacks", "hit", "wound", "rend", "damage"]);
+      expect(ranged.hasKeywords).toBe(true);
+      expect(ranged.hasProfiles).toBe(false);
+    });
+
+    it("melee weapons have 5 columns (no range)", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const melee = warscroll.schema.weaponTypes.types.find((t) => t.key === "melee");
+      expect(melee.columns).toHaveLength(5);
+      expect(melee.columns.map((c) => c.key)).toEqual(["attacks", "hit", "wound", "rend", "damage"]);
+      expect(melee.hasKeywords).toBe(true);
+      expect(melee.hasProfiles).toBe(false);
+    });
+
+    it("all weapon columns are required", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      for (const wt of warscroll.schema.weaponTypes.types) {
+        for (const col of wt.columns) {
+          expect(col.required).toBe(true);
+        }
+      }
+    });
+
+    it("has a single abilities category", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(warscroll.schema.abilities.categories).toHaveLength(1);
+      expect(warscroll.schema.abilities.categories[0]).toEqual({
+        key: "abilities",
+        label: "Abilities",
+        format: "name-description",
+      });
+    });
+
+    it("has no invulnerable save or damaged ability", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(warscroll.schema.abilities.hasInvulnerableSave).toBe(false);
+      expect(warscroll.schema.abilities.hasDamagedAbility).toBe(false);
+    });
+
+    it("has metadata with keywords, faction keywords, and per-unit points", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(warscroll.schema.metadata).toEqual({
+        hasKeywords: true,
+        hasFactionKeywords: true,
+        hasPoints: true,
+        pointsFormat: "per-unit",
+      });
+    });
+  });
+
+  describe("spell card type", () => {
+    it("has fields and rules collection", () => {
+      const spell = createAoSPreset().cardTypes.find((ct) => ct.baseType === "rule");
+      expect(spell.key).toBe("spell");
+      expect(spell.schema.fields).toHaveLength(3);
+      expect(spell.schema.rules).toBeDefined();
+      expect(spell.schema.rules.allowMultiple).toBe(false);
+    });
+
+    it("has type enum with spell, prayer, manifestation options", () => {
+      const spell = createAoSPreset().cardTypes.find((ct) => ct.baseType === "rule");
+      const typeField = spell.schema.fields.find((f) => f.key === "type");
+      expect(typeField.type).toBe("enum");
+      expect(typeField.options).toEqual(["spell", "prayer", "manifestation"]);
+    });
+
+    it("rules collection has declare and effect fields", () => {
+      const spell = createAoSPreset().cardTypes.find((ct) => ct.baseType === "rule");
+      const fieldKeys = spell.schema.rules.fields.map((f) => f.key);
+      expect(fieldKeys).toEqual(["declare", "effect"]);
+    });
+  });
+
+  describe("enhancement card type", () => {
+    it("has fields and keywords collection", () => {
+      const enhancement = createAoSPreset().cardTypes.find((ct) => ct.baseType === "enhancement");
+      expect(enhancement.schema.fields).toHaveLength(4);
+      expect(enhancement.schema.keywords).toBeDefined();
+      expect(enhancement.schema.keywords.allowMultiple).toBe(true);
+    });
+
+    it("has type enum with AoS enhancement types", () => {
+      const enhancement = createAoSPreset().cardTypes.find((ct) => ct.baseType === "enhancement");
+      const typeField = enhancement.schema.fields.find((f) => f.key === "type");
+      expect(typeField.type).toBe("enum");
+      expect(typeField.options).toEqual(["heroic-trait", "artefact", "prayer", "spell-lore"]);
+    });
+  });
+
+  describe("battle tactic card type", () => {
+    it("has fields only (no collections)", () => {
+      const tactic = createAoSPreset().cardTypes.find((ct) => ct.baseType === "stratagem");
+      expect(tactic.key).toBe("battle-tactic");
+      expect(tactic.schema.fields).toHaveLength(3);
+      expect(tactic.schema).not.toHaveProperty("rules");
+      expect(tactic.schema).not.toHaveProperty("keywords");
+    });
+
+    it("has type enum with battle-tactic and grand-strategy", () => {
+      const tactic = createAoSPreset().cardTypes.find((ct) => ct.baseType === "stratagem");
+      const typeField = tactic.schema.fields.find((f) => f.key === "type");
+      expect(typeField.type).toBe("enum");
+      expect(typeField.required).toBe(true);
+      expect(typeField.options).toEqual(["battle-tactic", "grand-strategy"]);
+    });
+  });
+
+  it("returns a new object on each call (no shared references)", () => {
+    const a = createAoSPreset();
+    const b = createAoSPreset();
+    expect(a).not.toBe(b);
+    expect(a.cardTypes).not.toBe(b.cardTypes);
+    a.cardTypes[0].schema.stats.fields.push(createFieldDefinition({ key: "x", label: "X" }));
+    expect(b.cardTypes[0].schema.stats.fields).toHaveLength(7);
   });
 });

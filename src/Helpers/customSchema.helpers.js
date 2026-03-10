@@ -211,6 +211,153 @@ export const createCollectionDefinition = ({ label, allowMultiple = true, fields
   fields: [...fields],
 });
 
+// --- Preset: Age of Sigmar ---
+
+/**
+ * Creates a schema preset matching the Age of Sigmar format.
+ * Includes card types for warscrolls, spells, enhancements, and battle tactics.
+ * @returns {DatasourceSchema}
+ */
+export const createAoSPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "aos",
+  cardTypes: [
+    {
+      key: "warscroll",
+      label: "Warscroll",
+      baseType: "unit",
+      schema: {
+        stats: {
+          label: "Characteristics",
+          allowMultipleProfiles: false,
+          fields: [
+            createFieldDefinition({ key: "move", label: "Move", type: "string", displayOrder: 1 }),
+            createFieldDefinition({ key: "save", label: "Save", type: "string", displayOrder: 2 }),
+            createFieldDefinition({ key: "control", label: "Control", type: "string", displayOrder: 3 }),
+            createFieldDefinition({ key: "health", label: "Health", type: "string", displayOrder: 4 }),
+            createFieldDefinition({ key: "ward", label: "Ward", type: "string", displayOrder: 5 }),
+            createFieldDefinition({ key: "wizard", label: "Wizard", type: "string", displayOrder: 6 }),
+            createFieldDefinition({ key: "priest", label: "Priest", type: "string", displayOrder: 7 }),
+          ],
+        },
+        weaponTypes: {
+          label: "Weapon Types",
+          allowMultiple: true,
+          types: [
+            {
+              key: "ranged",
+              label: "Ranged Weapons",
+              hasKeywords: true,
+              hasProfiles: false,
+              columns: [
+                createFieldDefinition({ key: "range", label: "Range", type: "string", required: true }),
+                createFieldDefinition({ key: "attacks", label: "Atk", type: "string", required: true }),
+                createFieldDefinition({ key: "hit", label: "Hit", type: "string", required: true }),
+                createFieldDefinition({ key: "wound", label: "Wnd", type: "string", required: true }),
+                createFieldDefinition({ key: "rend", label: "Rend", type: "string", required: true }),
+                createFieldDefinition({ key: "damage", label: "Dmg", type: "string", required: true }),
+              ],
+            },
+            {
+              key: "melee",
+              label: "Melee Weapons",
+              hasKeywords: true,
+              hasProfiles: false,
+              columns: [
+                createFieldDefinition({ key: "attacks", label: "Atk", type: "string", required: true }),
+                createFieldDefinition({ key: "hit", label: "Hit", type: "string", required: true }),
+                createFieldDefinition({ key: "wound", label: "Wnd", type: "string", required: true }),
+                createFieldDefinition({ key: "rend", label: "Rend", type: "string", required: true }),
+                createFieldDefinition({ key: "damage", label: "Dmg", type: "string", required: true }),
+              ],
+            },
+          ],
+        },
+        abilities: {
+          label: "Abilities",
+          categories: [{ key: "abilities", label: "Abilities", format: "name-description" }],
+          hasInvulnerableSave: false,
+          hasDamagedAbility: false,
+        },
+        metadata: {
+          hasKeywords: true,
+          hasFactionKeywords: true,
+          hasPoints: true,
+          pointsFormat: "per-unit",
+        },
+      },
+    },
+    {
+      key: "spell",
+      label: "Spell",
+      baseType: "rule",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
+          createFieldDefinition({ key: "castingValue", label: "Casting Value", type: "string", required: false }),
+          createFieldDefinition({
+            key: "type",
+            label: "Type",
+            type: "enum",
+            required: true,
+            options: ["spell", "prayer", "manifestation"],
+          }),
+        ],
+        rules: createCollectionDefinition({
+          label: "Effects",
+          allowMultiple: false,
+          fields: [
+            createFieldDefinition({ key: "declare", label: "Declare", type: "richtext", required: false }),
+            createFieldDefinition({ key: "effect", label: "Effect", type: "richtext", required: true }),
+          ],
+        }),
+      },
+    },
+    {
+      key: "enhancement",
+      label: "Enhancement",
+      baseType: "enhancement",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string", required: false }),
+          createFieldDefinition({
+            key: "type",
+            label: "Type",
+            type: "enum",
+            required: true,
+            options: ["heroic-trait", "artefact", "prayer", "spell-lore"],
+          }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+        ],
+        keywords: createCollectionDefinition({
+          label: "Keywords",
+          allowMultiple: true,
+          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string", required: true })],
+        }),
+      },
+    },
+    {
+      key: "battle-tactic",
+      label: "Battle Tactic",
+      baseType: "stratagem",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
+          createFieldDefinition({
+            key: "type",
+            label: "Type",
+            type: "enum",
+            required: true,
+            options: ["battle-tactic", "grand-strategy"],
+          }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+        ],
+      },
+    },
+  ],
+});
+
 // --- Preset: Warhammer 40K 10th Edition ---
 
 /**
