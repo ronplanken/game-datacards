@@ -8,6 +8,7 @@ import {
   SCHEMA_VERSION,
   createFieldDefinition,
   createCollectionDefinition,
+  createBlankPreset,
   create40kPreset,
   createAoSPreset,
 } from "../customSchema.helpers";
@@ -287,6 +288,29 @@ describe("customSchema.helpers - create40kPreset", () => {
     expect(a.cardTypes).not.toBe(b.cardTypes);
     a.cardTypes[0].schema.stats.fields.push(createFieldDefinition({ key: "x", label: "X" }));
     expect(b.cardTypes[0].schema.stats.fields).toHaveLength(6);
+  });
+});
+
+describe("customSchema.helpers - createBlankPreset", () => {
+  it("returns a schema with correct version and base system", () => {
+    const schema = createBlankPreset();
+    expect(schema.version).toBe(SCHEMA_VERSION);
+    expect(schema.baseSystem).toBe("blank");
+  });
+
+  it("has an empty cardTypes array", () => {
+    const schema = createBlankPreset();
+    expect(schema.cardTypes).toEqual([]);
+    expect(schema.cardTypes).toHaveLength(0);
+  });
+
+  it("returns a new object on each call (no shared references)", () => {
+    const a = createBlankPreset();
+    const b = createBlankPreset();
+    expect(a).not.toBe(b);
+    expect(a.cardTypes).not.toBe(b.cardTypes);
+    a.cardTypes.push({ key: "test", label: "Test", baseType: "unit", schema: {} });
+    expect(b.cardTypes).toHaveLength(0);
   });
 });
 

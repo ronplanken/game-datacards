@@ -358,6 +358,19 @@ export const createAoSPreset = () => ({
   ],
 });
 
+// --- Preset: Blank ---
+
+/**
+ * Creates a minimal blank schema preset with no predefined card types.
+ * Users add their own card types from scratch.
+ * @returns {DatasourceSchema}
+ */
+export const createBlankPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "blank",
+  cardTypes: [],
+});
+
 // --- Preset: Warhammer 40K 10th Edition ---
 
 /**
