@@ -8,6 +8,7 @@ import {
   SCHEMA_VERSION,
   createFieldDefinition,
   createCollectionDefinition,
+  create40kPreset,
 } from "../customSchema.helpers";
 
 describe("customSchema.helpers - constants", () => {
@@ -115,5 +116,175 @@ describe("customSchema.helpers - createCollectionDefinition", () => {
     const collection = createCollectionDefinition({ label: "Test", fields });
     collection.fields.push(createFieldDefinition({ key: "b", label: "B" }));
     expect(fields).toHaveLength(1);
+  });
+});
+
+describe("customSchema.helpers - create40kPreset", () => {
+  it("returns a schema with correct version and base system", () => {
+    const schema = create40kPreset();
+    expect(schema.version).toBe(SCHEMA_VERSION);
+    expect(schema.baseSystem).toBe("40k-10e");
+  });
+
+  it("includes all four card types", () => {
+    const schema = create40kPreset();
+    expect(schema.cardTypes).toHaveLength(4);
+    const baseTypes = schema.cardTypes.map((ct) => ct.baseType);
+    expect(baseTypes).toEqual(["unit", "rule", "enhancement", "stratagem"]);
+  });
+
+  it("each card type has key, label, baseType, and schema", () => {
+    const schema = create40kPreset();
+    for (const ct of schema.cardTypes) {
+      expect(ct).toHaveProperty("key");
+      expect(ct).toHaveProperty("label");
+      expect(ct).toHaveProperty("baseType");
+      expect(ct).toHaveProperty("schema");
+      expect(typeof ct.key).toBe("string");
+      expect(typeof ct.label).toBe("string");
+      expect(VALID_BASE_TYPES).toContain(ct.baseType);
+    }
+  });
+
+  describe("unit card type", () => {
+    it("has stats with 6 fields matching 40K stat line", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(unit.schema.stats.fields).toHaveLength(6);
+      const keys = unit.schema.stats.fields.map((f) => f.key);
+      expect(keys).toEqual(["m", "t", "sv", "w", "ld", "oc"]);
+    });
+
+    it("has stats with sequential displayOrder", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const orders = unit.schema.stats.fields.map((f) => f.displayOrder);
+      expect(orders).toEqual([1, 2, 3, 4, 5, 6]);
+    });
+
+    it("allows multiple stat profiles", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(unit.schema.stats.allowMultipleProfiles).toBe(true);
+    });
+
+    it("has ranged and melee weapon types", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const weaponKeys = unit.schema.weaponTypes.types.map((t) => t.key);
+      expect(weaponKeys).toEqual(["ranged", "melee"]);
+    });
+
+    it("ranged weapons have 6 columns with BS", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const ranged = unit.schema.weaponTypes.types.find((t) => t.key === "ranged");
+      expect(ranged.columns).toHaveLength(6);
+      expect(ranged.columns.map((c) => c.key)).toEqual(["range", "a", "bs", "s", "ap", "d"]);
+      expect(ranged.hasKeywords).toBe(true);
+      expect(ranged.hasProfiles).toBe(true);
+    });
+
+    it("melee weapons have 6 columns with WS", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const melee = unit.schema.weaponTypes.types.find((t) => t.key === "melee");
+      expect(melee.columns).toHaveLength(6);
+      expect(melee.columns.map((c) => c.key)).toEqual(["range", "a", "ws", "s", "ap", "d"]);
+      expect(melee.hasKeywords).toBe(true);
+      expect(melee.hasProfiles).toBe(true);
+    });
+
+    it("all weapon columns are required", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      for (const wt of unit.schema.weaponTypes.types) {
+        for (const col of wt.columns) {
+          expect(col.required).toBe(true);
+        }
+      }
+    });
+
+    it("has three ability categories", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(unit.schema.abilities.categories).toHaveLength(3);
+      expect(unit.schema.abilities.categories.map((c) => c.key)).toEqual(["core", "faction", "unit"]);
+    });
+
+    it("core abilities use name-only format, others use name-description", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const core = unit.schema.abilities.categories.find((c) => c.key === "core");
+      const faction = unit.schema.abilities.categories.find((c) => c.key === "faction");
+      const unitAb = unit.schema.abilities.categories.find((c) => c.key === "unit");
+      expect(core.format).toBe("name-only");
+      expect(faction.format).toBe("name-description");
+      expect(unitAb.format).toBe("name-description");
+    });
+
+    it("has invulnerable save and damaged ability enabled", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(unit.schema.abilities.hasInvulnerableSave).toBe(true);
+      expect(unit.schema.abilities.hasDamagedAbility).toBe(true);
+    });
+
+    it("has metadata with keywords, faction keywords, and per-model points", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(unit.schema.metadata).toEqual({
+        hasKeywords: true,
+        hasFactionKeywords: true,
+        hasPoints: true,
+        pointsFormat: "per-model",
+      });
+    });
+  });
+
+  describe("rule card type", () => {
+    it("has fields and rules collection", () => {
+      const rule = create40kPreset().cardTypes.find((ct) => ct.baseType === "rule");
+      expect(rule.schema.fields).toHaveLength(3);
+      expect(rule.schema.rules).toBeDefined();
+      expect(rule.schema.rules.allowMultiple).toBe(true);
+    });
+
+    it("rules collection has format enum with correct options", () => {
+      const rule = create40kPreset().cardTypes.find((ct) => ct.baseType === "rule");
+      const formatField = rule.schema.rules.fields.find((f) => f.key === "format");
+      expect(formatField.type).toBe("enum");
+      expect(formatField.options).toEqual(["name-description", "name-only", "table"]);
+    });
+  });
+
+  describe("enhancement card type", () => {
+    it("has fields and keywords collection", () => {
+      const enhancement = create40kPreset().cardTypes.find((ct) => ct.baseType === "enhancement");
+      expect(enhancement.schema.fields).toHaveLength(3);
+      expect(enhancement.schema.keywords).toBeDefined();
+      expect(enhancement.schema.keywords.allowMultiple).toBe(true);
+    });
+
+    it("has name, cost, and description fields", () => {
+      const enhancement = create40kPreset().cardTypes.find((ct) => ct.baseType === "enhancement");
+      const keys = enhancement.schema.fields.map((f) => f.key);
+      expect(keys).toEqual(["name", "cost", "description"]);
+    });
+  });
+
+  describe("stratagem card type", () => {
+    it("has fields only (no collections)", () => {
+      const stratagem = create40kPreset().cardTypes.find((ct) => ct.baseType === "stratagem");
+      expect(stratagem.schema.fields).toHaveLength(5);
+      expect(stratagem.schema).not.toHaveProperty("rules");
+      expect(stratagem.schema).not.toHaveProperty("keywords");
+    });
+
+    it("has phase enum with correct options", () => {
+      const stratagem = create40kPreset().cardTypes.find((ct) => ct.baseType === "stratagem");
+      const phase = stratagem.schema.fields.find((f) => f.key === "phase");
+      expect(phase.type).toBe("enum");
+      expect(phase.required).toBe(true);
+      expect(phase.options).toEqual(["command", "movement", "shooting", "charge", "fight", "any"]);
+    });
+  });
+
+  it("returns a new object on each call (no shared references)", () => {
+    const a = create40kPreset();
+    const b = create40kPreset();
+    expect(a).not.toBe(b);
+    expect(a.cardTypes).not.toBe(b.cardTypes);
+    a.cardTypes[0].schema.stats.fields.push(createFieldDefinition({ key: "x", label: "X" }));
+    expect(b.cardTypes[0].schema.stats.fields).toHaveLength(6);
   });
 });

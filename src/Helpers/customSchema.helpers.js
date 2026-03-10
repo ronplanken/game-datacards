@@ -210,3 +210,149 @@ export const createCollectionDefinition = ({ label, allowMultiple = true, fields
   allowMultiple,
   fields: [...fields],
 });
+
+// --- Preset: Warhammer 40K 10th Edition ---
+
+/**
+ * Creates a schema preset matching the Warhammer 40K 10th Edition format.
+ * Includes card types for units, rules, enhancements, and stratagems.
+ * @returns {DatasourceSchema}
+ */
+export const create40kPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "40k-10e",
+  cardTypes: [
+    {
+      key: "unit",
+      label: "Unit",
+      baseType: "unit",
+      schema: {
+        stats: {
+          label: "Stat Profiles",
+          allowMultipleProfiles: true,
+          fields: [
+            createFieldDefinition({ key: "m", label: "M", type: "string", displayOrder: 1 }),
+            createFieldDefinition({ key: "t", label: "T", type: "string", displayOrder: 2 }),
+            createFieldDefinition({ key: "sv", label: "SV", type: "string", displayOrder: 3 }),
+            createFieldDefinition({ key: "w", label: "W", type: "string", displayOrder: 4 }),
+            createFieldDefinition({ key: "ld", label: "LD", type: "string", displayOrder: 5 }),
+            createFieldDefinition({ key: "oc", label: "OC", type: "string", displayOrder: 6 }),
+          ],
+        },
+        weaponTypes: {
+          label: "Weapon Types",
+          allowMultiple: true,
+          types: [
+            {
+              key: "ranged",
+              label: "Ranged Weapons",
+              hasKeywords: true,
+              hasProfiles: true,
+              columns: [
+                createFieldDefinition({ key: "range", label: "Range", type: "string", required: true }),
+                createFieldDefinition({ key: "a", label: "A", type: "string", required: true }),
+                createFieldDefinition({ key: "bs", label: "BS", type: "string", required: true }),
+                createFieldDefinition({ key: "s", label: "S", type: "string", required: true }),
+                createFieldDefinition({ key: "ap", label: "AP", type: "string", required: true }),
+                createFieldDefinition({ key: "d", label: "D", type: "string", required: true }),
+              ],
+            },
+            {
+              key: "melee",
+              label: "Melee Weapons",
+              hasKeywords: true,
+              hasProfiles: true,
+              columns: [
+                createFieldDefinition({ key: "range", label: "Range", type: "string", required: true }),
+                createFieldDefinition({ key: "a", label: "A", type: "string", required: true }),
+                createFieldDefinition({ key: "ws", label: "WS", type: "string", required: true }),
+                createFieldDefinition({ key: "s", label: "S", type: "string", required: true }),
+                createFieldDefinition({ key: "ap", label: "AP", type: "string", required: true }),
+                createFieldDefinition({ key: "d", label: "D", type: "string", required: true }),
+              ],
+            },
+          ],
+        },
+        abilities: {
+          label: "Abilities",
+          categories: [
+            { key: "core", label: "Core", format: "name-only" },
+            { key: "faction", label: "Faction", format: "name-description" },
+            { key: "unit", label: "Unit Abilities", format: "name-description" },
+          ],
+          hasInvulnerableSave: true,
+          hasDamagedAbility: true,
+        },
+        metadata: {
+          hasKeywords: true,
+          hasFactionKeywords: true,
+          hasPoints: true,
+          pointsFormat: "per-model",
+        },
+      },
+    },
+    {
+      key: "rule",
+      label: "Rule",
+      baseType: "rule",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
+          createFieldDefinition({ key: "ruleType", label: "Rule Type", type: "string", required: true }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: false }),
+        ],
+        rules: createCollectionDefinition({
+          label: "Rules",
+          allowMultiple: true,
+          fields: [
+            createFieldDefinition({ key: "title", label: "Title", type: "string", required: true }),
+            createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+            createFieldDefinition({
+              key: "format",
+              label: "Format",
+              type: "enum",
+              options: ["name-description", "name-only", "table"],
+            }),
+          ],
+        }),
+      },
+    },
+    {
+      key: "enhancement",
+      label: "Enhancement",
+      baseType: "enhancement",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string", required: true }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+        ],
+        keywords: createCollectionDefinition({
+          label: "Keywords",
+          allowMultiple: true,
+          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string", required: true })],
+        }),
+      },
+    },
+    {
+      key: "stratagem",
+      label: "Stratagem",
+      baseType: "stratagem",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string", required: true }),
+          createFieldDefinition({
+            key: "phase",
+            label: "Phase",
+            type: "enum",
+            required: true,
+            options: ["command", "movement", "shooting", "charge", "fight", "any"],
+          }),
+          createFieldDefinition({ key: "type", label: "Stratagem Type", type: "string", required: true }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+        ],
+      },
+    },
+  ],
+});
