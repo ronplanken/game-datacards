@@ -21,7 +21,7 @@ describe("WhatsNewWizard version registry", () => {
   });
 
   it("has v3.4.0 as the latest version", () => {
-    expect(getLatestWizardVersion()).toBe("3.4.0");
+    expect(getLatestWizardVersion()).toBe("3.4.1");
   });
 
   it("returns v3.2.2 config via getVersionConfig", () => {

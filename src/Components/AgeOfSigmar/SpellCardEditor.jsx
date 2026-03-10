@@ -5,6 +5,8 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { FactionSelect } from "./FactionSelect";
 import { CustomMarkdownEditor } from "../CustomMarkdownEditor";
+import { TemplateSelector, usePremiumFeatures } from "../../Premium";
+import { useFeatureFlags } from "../../Hooks/useFeatureFlags";
 
 const { Panel } = Collapse;
 const { TextArea } = Input;
@@ -12,6 +14,8 @@ const { TextArea } = Input;
 export const SpellCardEditor = () => {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { selectedFaction, dataSource } = useDataSourceStorage();
+  const { hasCardDesigner } = usePremiumFeatures();
+  const { designerEnabled } = useFeatureFlags();
   const [activeKeys, setActiveKeys] = useState(["1"]);
 
   // Get faction for this card
@@ -81,6 +85,15 @@ export const SpellCardEditor = () => {
               onChange={(value) => updateActiveCard({ ...activeCard, castingValue: value })}
             />
           </Form.Item>
+          {hasCardDesigner && designerEnabled && (
+            <Form.Item label="Template">
+              <TemplateSelector
+                value={activeCard.templateId || null}
+                onChange={(templateId) => updateActiveCard({ ...activeCard, templateId })}
+                targetFormat="aos"
+              />
+            </Form.Item>
+          )}
         </Form>
       </Panel>
       <Panel header="Spell Text" style={{ width: "100%" }} key="2">
