@@ -379,6 +379,76 @@
 }
 
 /* ===========================================
+   FORM FIELDS (used by StepMetadata and other form steps)
+   =========================================== */
+.dsw-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dsw-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dsw-form-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wz-text-main);
+  letter-spacing: 0.02em;
+}
+
+.dsw-form-label svg {
+  width: 14px;
+  height: 14px;
+  color: var(--wz-text-dim);
+}
+
+.dsw-form-required {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.dsw-form-input {
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--wz-text-main);
+  background: var(--wz-bg-card);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-xs);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.dsw-form-input::placeholder {
+  color: var(--wz-text-dim);
+}
+
+.dsw-form-input:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dsw-form-input:focus {
+  border-color: var(--wz-primary);
+  box-shadow: 0 0 0 2px var(--wz-primary-glow);
+}
+
+.dsw-form-hint {
+  font-size: 11px;
+  color: var(--wz-text-dim);
+  line-height: 1.4;
+}
+
+/* ===========================================
    STEP PLACEHOLDER
    =========================================== */
 .dsw-step-placeholder {

@@ -186,10 +186,10 @@ describe("DatasourceWizard", () => {
       expect(stepContent).toBeInTheDocument();
     });
 
-    it("shows placeholder content for unimplemented steps", () => {
+    it("renders the metadata step content in create mode", () => {
       render(<DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} />);
       expect(screen.getByTestId("dsw-step-metadata")).toBeInTheDocument();
-      expect(screen.getByText("This step will be implemented in a later phase.")).toBeInTheDocument();
+      expect(screen.getByText("Datasource Information")).toBeInTheDocument();
     });
   });
 

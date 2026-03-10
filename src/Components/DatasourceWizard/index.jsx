@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 import { Check, ChevronLeft, ChevronRight, Database } from "lucide-react";
 import { useDatasourceWizard } from "./hooks/useDatasourceWizard";
 import { WIZARD_MODES } from "./constants";
+import { StepMetadata } from "./steps/StepMetadata";
 import "./DatasourceWizard.css";
 
 /**
@@ -137,9 +138,14 @@ export const DatasourceWizard = ({ open, onClose, onComplete, existingDatasource
     }
   };
 
-  // Render current step content (placeholder for now; real steps added in later tasks)
+  // Render current step content
   const renderStepContent = () => {
-    return <StepPlaceholder step={wizard.currentStep} />;
+    switch (wizard.currentStep.id) {
+      case "metadata":
+        return <StepMetadata wizard={wizard} />;
+      default:
+        return <StepPlaceholder step={wizard.currentStep} />;
+    }
   };
 
   if (!open) return null;
