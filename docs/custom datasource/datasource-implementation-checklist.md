@@ -21,7 +21,7 @@ Description and file format can be found in `docs/custom datasource/datasource-s
 - [x] `create40kPreset()` - schema matching 40K 10e format as a base (consolidate nested abilities and stats into the new format)
 - [x] `createAoSPreset()` - schema matching AoS format (stats: move/save/control/health/ward/wizard/priest)
 - [x] `createBlankPreset()` - minimal empty schema
-- [ ] `validateSchema(schema)` - integrity checks
+- [x] `validateSchema(schema)` - integrity checks
 - [ ] `migrateCardToSchema(card, oldSchema, newSchema)` - handle schema changes
 - [ ] Unit tests for all helpers
 

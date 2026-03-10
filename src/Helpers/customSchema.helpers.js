@@ -371,6 +371,347 @@ export const createBlankPreset = () => ({
   cardTypes: [],
 });
 
+// --- Validation ---
+
+/**
+ * Validation result object.
+ * @typedef {Object} ValidationResult
+ * @property {boolean} valid - Whether the schema passed all checks
+ * @property {string[]} errors - List of error messages (empty if valid)
+ */
+
+/**
+ * Validates a field definition for correctness.
+ * @param {object} field - The field definition to validate
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateFieldDefinition = (field, path) => {
+  const errors = [];
+  if (!field || typeof field !== "object") {
+    errors.push(`${path}: must be an object`);
+    return errors;
+  }
+  if (!field.key || typeof field.key !== "string") {
+    errors.push(`${path}: missing or invalid "key" (must be a non-empty string)`);
+  }
+  if (!field.label || typeof field.label !== "string") {
+    errors.push(`${path}: missing or invalid "label" (must be a non-empty string)`);
+  }
+  if (!field.type || !VALID_FIELD_TYPES.includes(field.type)) {
+    errors.push(`${path}: invalid "type" "${field.type}" (must be one of ${VALID_FIELD_TYPES.join(", ")})`);
+  }
+  if (field.type === "enum") {
+    if (!Array.isArray(field.options) || field.options.length === 0) {
+      errors.push(`${path}: enum field must have a non-empty "options" array`);
+    }
+  }
+  if (field.displayOrder !== undefined && typeof field.displayOrder !== "number") {
+    errors.push(`${path}: "displayOrder" must be a number`);
+  }
+  if (field.required !== undefined && typeof field.required !== "boolean") {
+    errors.push(`${path}: "required" must be a boolean`);
+  }
+  return errors;
+};
+
+/**
+ * Validates an array of field definitions, including duplicate key checks.
+ * @param {object[]} fields - Array of field definitions
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateFieldArray = (fields, path) => {
+  const errors = [];
+  if (!Array.isArray(fields)) {
+    errors.push(`${path}: must be an array`);
+    return errors;
+  }
+  const keys = new Set();
+  fields.forEach((field, i) => {
+    errors.push(...validateFieldDefinition(field, `${path}[${i}]`));
+    if (field?.key) {
+      if (keys.has(field.key)) {
+        errors.push(`${path}[${i}]: duplicate key "${field.key}"`);
+      }
+      keys.add(field.key);
+    }
+  });
+  return errors;
+};
+
+/**
+ * Validates a collection definition (rules, keywords).
+ * @param {object} collection - The collection to validate
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateCollectionDefinition = (collection, path) => {
+  const errors = [];
+  if (!collection || typeof collection !== "object") {
+    errors.push(`${path}: must be an object`);
+    return errors;
+  }
+  if (!collection.label || typeof collection.label !== "string") {
+    errors.push(`${path}: missing or invalid "label"`);
+  }
+  if (typeof collection.allowMultiple !== "boolean") {
+    errors.push(`${path}: "allowMultiple" must be a boolean`);
+  }
+  errors.push(...validateFieldArray(collection.fields, `${path}.fields`));
+  return errors;
+};
+
+/**
+ * Validates a unit-type card schema.
+ * @param {object} schema - The unit schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateUnitSchema = (schema, path) => {
+  const errors = [];
+
+  // Stats
+  if (!schema.stats || typeof schema.stats !== "object") {
+    errors.push(`${path}.stats: must be an object`);
+  } else {
+    if (!schema.stats.label || typeof schema.stats.label !== "string") {
+      errors.push(`${path}.stats: missing or invalid "label"`);
+    }
+    if (typeof schema.stats.allowMultipleProfiles !== "boolean") {
+      errors.push(`${path}.stats: "allowMultipleProfiles" must be a boolean`);
+    }
+    errors.push(...validateFieldArray(schema.stats.fields, `${path}.stats.fields`));
+  }
+
+  // Weapon types
+  if (!schema.weaponTypes || typeof schema.weaponTypes !== "object") {
+    errors.push(`${path}.weaponTypes: must be an object`);
+  } else {
+    if (!schema.weaponTypes.label || typeof schema.weaponTypes.label !== "string") {
+      errors.push(`${path}.weaponTypes: missing or invalid "label"`);
+    }
+    if (typeof schema.weaponTypes.allowMultiple !== "boolean") {
+      errors.push(`${path}.weaponTypes: "allowMultiple" must be a boolean`);
+    }
+    if (!Array.isArray(schema.weaponTypes.types)) {
+      errors.push(`${path}.weaponTypes.types: must be an array`);
+    } else {
+      const weaponKeys = new Set();
+      schema.weaponTypes.types.forEach((wt, i) => {
+        const wtPath = `${path}.weaponTypes.types[${i}]`;
+        if (!wt || typeof wt !== "object") {
+          errors.push(`${wtPath}: must be an object`);
+          return;
+        }
+        if (!wt.key || typeof wt.key !== "string") {
+          errors.push(`${wtPath}: missing or invalid "key"`);
+        }
+        if (!wt.label || typeof wt.label !== "string") {
+          errors.push(`${wtPath}: missing or invalid "label"`);
+        }
+        if (typeof wt.hasKeywords !== "boolean") {
+          errors.push(`${wtPath}: "hasKeywords" must be a boolean`);
+        }
+        if (typeof wt.hasProfiles !== "boolean") {
+          errors.push(`${wtPath}: "hasProfiles" must be a boolean`);
+        }
+        errors.push(...validateFieldArray(wt.columns, `${wtPath}.columns`));
+        if (wt.key) {
+          if (weaponKeys.has(wt.key)) {
+            errors.push(`${wtPath}: duplicate weapon type key "${wt.key}"`);
+          }
+          weaponKeys.add(wt.key);
+        }
+      });
+    }
+  }
+
+  // Abilities
+  if (!schema.abilities || typeof schema.abilities !== "object") {
+    errors.push(`${path}.abilities: must be an object`);
+  } else {
+    if (!schema.abilities.label || typeof schema.abilities.label !== "string") {
+      errors.push(`${path}.abilities: missing or invalid "label"`);
+    }
+    if (typeof schema.abilities.hasInvulnerableSave !== "boolean") {
+      errors.push(`${path}.abilities: "hasInvulnerableSave" must be a boolean`);
+    }
+    if (typeof schema.abilities.hasDamagedAbility !== "boolean") {
+      errors.push(`${path}.abilities: "hasDamagedAbility" must be a boolean`);
+    }
+    if (!Array.isArray(schema.abilities.categories)) {
+      errors.push(`${path}.abilities.categories: must be an array`);
+    } else {
+      const catKeys = new Set();
+      schema.abilities.categories.forEach((cat, i) => {
+        const catPath = `${path}.abilities.categories[${i}]`;
+        if (!cat || typeof cat !== "object") {
+          errors.push(`${catPath}: must be an object`);
+          return;
+        }
+        if (!cat.key || typeof cat.key !== "string") {
+          errors.push(`${catPath}: missing or invalid "key"`);
+        }
+        if (!cat.label || typeof cat.label !== "string") {
+          errors.push(`${catPath}: missing or invalid "label"`);
+        }
+        if (!VALID_ABILITY_FORMATS.includes(cat.format)) {
+          errors.push(
+            `${catPath}: invalid "format" "${cat.format}" (must be one of ${VALID_ABILITY_FORMATS.join(", ")})`,
+          );
+        }
+        if (cat.key) {
+          if (catKeys.has(cat.key)) {
+            errors.push(`${catPath}: duplicate category key "${cat.key}"`);
+          }
+          catKeys.add(cat.key);
+        }
+      });
+    }
+  }
+
+  // Metadata
+  if (!schema.metadata || typeof schema.metadata !== "object") {
+    errors.push(`${path}.metadata: must be an object`);
+  } else {
+    if (typeof schema.metadata.hasKeywords !== "boolean") {
+      errors.push(`${path}.metadata: "hasKeywords" must be a boolean`);
+    }
+    if (typeof schema.metadata.hasFactionKeywords !== "boolean") {
+      errors.push(`${path}.metadata: "hasFactionKeywords" must be a boolean`);
+    }
+    if (typeof schema.metadata.hasPoints !== "boolean") {
+      errors.push(`${path}.metadata: "hasPoints" must be a boolean`);
+    }
+    if (!VALID_POINTS_FORMATS.includes(schema.metadata.pointsFormat)) {
+      errors.push(
+        `${path}.metadata: invalid "pointsFormat" "${schema.metadata.pointsFormat}" (must be one of ${VALID_POINTS_FORMATS.join(", ")})`,
+      );
+    }
+  }
+
+  return errors;
+};
+
+/**
+ * Validates a rule-type card schema.
+ * @param {object} schema - The rule schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateRuleSchema = (schema, path) => {
+  const errors = [];
+  errors.push(...validateFieldArray(schema.fields, `${path}.fields`));
+  errors.push(...validateCollectionDefinition(schema.rules, `${path}.rules`));
+  return errors;
+};
+
+/**
+ * Validates an enhancement-type card schema.
+ * @param {object} schema - The enhancement schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateEnhancementSchema = (schema, path) => {
+  const errors = [];
+  errors.push(...validateFieldArray(schema.fields, `${path}.fields`));
+  errors.push(...validateCollectionDefinition(schema.keywords, `${path}.keywords`));
+  return errors;
+};
+
+/**
+ * Validates a stratagem-type card schema.
+ * @param {object} schema - The stratagem schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateStratagemSchema = (schema, path) => {
+  return validateFieldArray(schema.fields, `${path}.fields`);
+};
+
+/**
+ * Validates a complete datasource schema for structural integrity.
+ * Checks version, baseSystem, cardTypes, and all nested definitions.
+ * @param {object} schema - The datasource schema to validate
+ * @returns {ValidationResult} Result with valid flag and error list
+ */
+export const validateSchema = (schema) => {
+  const errors = [];
+
+  if (!schema || typeof schema !== "object") {
+    return { valid: false, errors: ["Schema must be an object"] };
+  }
+
+  // Version
+  if (!schema.version || typeof schema.version !== "string") {
+    errors.push('Missing or invalid "version" (must be a non-empty string)');
+  }
+
+  // Base system
+  if (!VALID_BASE_SYSTEMS.includes(schema.baseSystem)) {
+    errors.push(`Invalid "baseSystem" "${schema.baseSystem}" (must be one of ${VALID_BASE_SYSTEMS.join(", ")})`);
+  }
+
+  // Card types
+  if (!Array.isArray(schema.cardTypes)) {
+    errors.push('"cardTypes" must be an array');
+    return { valid: false, errors };
+  }
+
+  const cardTypeKeys = new Set();
+  schema.cardTypes.forEach((ct, i) => {
+    const ctPath = `cardTypes[${i}]`;
+
+    if (!ct || typeof ct !== "object") {
+      errors.push(`${ctPath}: must be an object`);
+      return;
+    }
+
+    if (!ct.key || typeof ct.key !== "string") {
+      errors.push(`${ctPath}: missing or invalid "key"`);
+    }
+    if (!ct.label || typeof ct.label !== "string") {
+      errors.push(`${ctPath}: missing or invalid "label"`);
+    }
+    if (!VALID_BASE_TYPES.includes(ct.baseType)) {
+      errors.push(`${ctPath}: invalid "baseType" "${ct.baseType}" (must be one of ${VALID_BASE_TYPES.join(", ")})`);
+      return;
+    }
+    if (!ct.schema || typeof ct.schema !== "object") {
+      errors.push(`${ctPath}: missing or invalid "schema"`);
+      return;
+    }
+
+    // Duplicate key check
+    if (ct.key) {
+      if (cardTypeKeys.has(ct.key)) {
+        errors.push(`${ctPath}: duplicate card type key "${ct.key}"`);
+      }
+      cardTypeKeys.add(ct.key);
+    }
+
+    // Type-specific validation
+    const schemaPath = `${ctPath}.schema`;
+    switch (ct.baseType) {
+      case "unit":
+        errors.push(...validateUnitSchema(ct.schema, schemaPath));
+        break;
+      case "rule":
+        errors.push(...validateRuleSchema(ct.schema, schemaPath));
+        break;
+      case "enhancement":
+        errors.push(...validateEnhancementSchema(ct.schema, schemaPath));
+        break;
+      case "stratagem":
+        errors.push(...validateStratagemSchema(ct.schema, schemaPath));
+        break;
+    }
+  });
+
+  return { valid: errors.length === 0, errors };
+};
+
 // --- Preset: Warhammer 40K 10th Edition ---
 
 /**

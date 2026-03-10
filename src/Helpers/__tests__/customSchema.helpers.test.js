@@ -11,6 +11,7 @@ import {
   createBlankPreset,
   create40kPreset,
   createAoSPreset,
+  validateSchema,
 } from "../customSchema.helpers";
 
 describe("customSchema.helpers - constants", () => {
@@ -491,5 +492,454 @@ describe("customSchema.helpers - createAoSPreset", () => {
     expect(a.cardTypes).not.toBe(b.cardTypes);
     a.cardTypes[0].schema.stats.fields.push(createFieldDefinition({ key: "x", label: "X" }));
     expect(b.cardTypes[0].schema.stats.fields).toHaveLength(7);
+  });
+});
+
+describe("customSchema.helpers - validateSchema", () => {
+  // Helper to create a minimal valid schema for testing
+  const minimalValidSchema = () => ({
+    version: "1.0.0",
+    baseSystem: "blank",
+    cardTypes: [],
+  });
+
+  const validUnitCardType = () => ({
+    key: "unit",
+    label: "Unit",
+    baseType: "unit",
+    schema: {
+      stats: {
+        label: "Stats",
+        allowMultipleProfiles: false,
+        fields: [createFieldDefinition({ key: "m", label: "M", displayOrder: 1 })],
+      },
+      weaponTypes: {
+        label: "Weapons",
+        allowMultiple: true,
+        types: [
+          {
+            key: "ranged",
+            label: "Ranged",
+            hasKeywords: true,
+            hasProfiles: false,
+            columns: [createFieldDefinition({ key: "range", label: "Range", required: true })],
+          },
+        ],
+      },
+      abilities: {
+        label: "Abilities",
+        categories: [{ key: "core", label: "Core", format: "name-only" }],
+        hasInvulnerableSave: false,
+        hasDamagedAbility: false,
+      },
+      metadata: {
+        hasKeywords: true,
+        hasFactionKeywords: true,
+        hasPoints: false,
+        pointsFormat: "per-unit",
+      },
+    },
+  });
+
+  const validRuleCardType = () => ({
+    key: "rule",
+    label: "Rule",
+    baseType: "rule",
+    schema: {
+      fields: [createFieldDefinition({ key: "name", label: "Name", required: true })],
+      rules: createCollectionDefinition({
+        label: "Rules",
+        allowMultiple: true,
+        fields: [createFieldDefinition({ key: "title", label: "Title", required: true })],
+      }),
+    },
+  });
+
+  const validEnhancementCardType = () => ({
+    key: "enh",
+    label: "Enhancement",
+    baseType: "enhancement",
+    schema: {
+      fields: [createFieldDefinition({ key: "name", label: "Name", required: true })],
+      keywords: createCollectionDefinition({
+        label: "Keywords",
+        allowMultiple: true,
+        fields: [createFieldDefinition({ key: "keyword", label: "Keyword", required: true })],
+      }),
+    },
+  });
+
+  const validStratagemCardType = () => ({
+    key: "strat",
+    label: "Stratagem",
+    baseType: "stratagem",
+    schema: {
+      fields: [createFieldDefinition({ key: "name", label: "Name", required: true })],
+    },
+  });
+
+  describe("root-level validation", () => {
+    it("validates a minimal valid schema", () => {
+      const result = validateSchema(minimalValidSchema());
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("rejects null", () => {
+      const result = validateSchema(null);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("Schema must be an object");
+    });
+
+    it("rejects undefined", () => {
+      const result = validateSchema(undefined);
+      expect(result.valid).toBe(false);
+    });
+
+    it("rejects non-object", () => {
+      const result = validateSchema("not an object");
+      expect(result.valid).toBe(false);
+    });
+
+    it("rejects missing version", () => {
+      const schema = minimalValidSchema();
+      delete schema.version;
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("version"))).toBe(true);
+    });
+
+    it("rejects invalid baseSystem", () => {
+      const schema = minimalValidSchema();
+      schema.baseSystem = "invalid";
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("baseSystem"))).toBe(true);
+    });
+
+    it("rejects non-array cardTypes", () => {
+      const schema = minimalValidSchema();
+      schema.cardTypes = "not-array";
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("cardTypes"))).toBe(true);
+    });
+  });
+
+  describe("card type validation", () => {
+    it("rejects card type with missing key", () => {
+      const schema = minimalValidSchema();
+      schema.cardTypes = [{ label: "Test", baseType: "unit", schema: {} }];
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("key"))).toBe(true);
+    });
+
+    it("rejects card type with missing label", () => {
+      const schema = minimalValidSchema();
+      schema.cardTypes = [{ key: "test", baseType: "unit", schema: {} }];
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("label"))).toBe(true);
+    });
+
+    it("rejects card type with invalid baseType", () => {
+      const schema = minimalValidSchema();
+      schema.cardTypes = [{ key: "test", label: "Test", baseType: "invalid", schema: {} }];
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("baseType"))).toBe(true);
+    });
+
+    it("rejects card type with missing schema", () => {
+      const schema = minimalValidSchema();
+      schema.cardTypes = [{ key: "test", label: "Test", baseType: "unit" }];
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("schema"))).toBe(true);
+    });
+
+    it("rejects duplicate card type keys", () => {
+      const schema = minimalValidSchema();
+      schema.cardTypes = [validStratagemCardType(), { ...validStratagemCardType(), label: "Stratagem 2" }];
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("duplicate card type key"))).toBe(true);
+    });
+  });
+
+  describe("unit schema validation", () => {
+    it("validates a complete unit card type", () => {
+      const schema = minimalValidSchema();
+      schema.cardTypes = [validUnitCardType()];
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("rejects missing stats", () => {
+      const ct = validUnitCardType();
+      delete ct.schema.stats;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("stats"))).toBe(true);
+    });
+
+    it("rejects stats without allowMultipleProfiles", () => {
+      const ct = validUnitCardType();
+      delete ct.schema.stats.allowMultipleProfiles;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("allowMultipleProfiles"))).toBe(true);
+    });
+
+    it("rejects missing weaponTypes", () => {
+      const ct = validUnitCardType();
+      delete ct.schema.weaponTypes;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("weaponTypes"))).toBe(true);
+    });
+
+    it("rejects weapon type without key", () => {
+      const ct = validUnitCardType();
+      delete ct.schema.weaponTypes.types[0].key;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("weaponTypes.types[0]") && e.includes("key"))).toBe(true);
+    });
+
+    it("rejects duplicate weapon type keys", () => {
+      const ct = validUnitCardType();
+      ct.schema.weaponTypes.types.push({
+        key: "ranged",
+        label: "Ranged 2",
+        hasKeywords: false,
+        hasProfiles: false,
+        columns: [],
+      });
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("duplicate weapon type key"))).toBe(true);
+    });
+
+    it("rejects weapon type without hasKeywords boolean", () => {
+      const ct = validUnitCardType();
+      ct.schema.weaponTypes.types[0].hasKeywords = "yes";
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("hasKeywords"))).toBe(true);
+    });
+
+    it("rejects missing abilities", () => {
+      const ct = validUnitCardType();
+      delete ct.schema.abilities;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("abilities"))).toBe(true);
+    });
+
+    it("rejects invalid ability format", () => {
+      const ct = validUnitCardType();
+      ct.schema.abilities.categories[0].format = "invalid-format";
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("format"))).toBe(true);
+    });
+
+    it("rejects duplicate ability category keys", () => {
+      const ct = validUnitCardType();
+      ct.schema.abilities.categories.push({ key: "core", label: "Core 2", format: "name-only" });
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("duplicate category key"))).toBe(true);
+    });
+
+    it("rejects missing metadata", () => {
+      const ct = validUnitCardType();
+      delete ct.schema.metadata;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("metadata"))).toBe(true);
+    });
+
+    it("rejects invalid pointsFormat", () => {
+      const ct = validUnitCardType();
+      ct.schema.metadata.pointsFormat = "invalid";
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("pointsFormat"))).toBe(true);
+    });
+  });
+
+  describe("rule schema validation", () => {
+    it("validates a complete rule card type", () => {
+      const schema = { ...minimalValidSchema(), cardTypes: [validRuleCardType()] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it("rejects missing fields array", () => {
+      const ct = validRuleCardType();
+      delete ct.schema.fields;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("fields"))).toBe(true);
+    });
+
+    it("rejects missing rules collection", () => {
+      const ct = validRuleCardType();
+      delete ct.schema.rules;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("rules"))).toBe(true);
+    });
+  });
+
+  describe("enhancement schema validation", () => {
+    it("validates a complete enhancement card type", () => {
+      const schema = { ...minimalValidSchema(), cardTypes: [validEnhancementCardType()] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it("rejects missing keywords collection", () => {
+      const ct = validEnhancementCardType();
+      delete ct.schema.keywords;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("keywords"))).toBe(true);
+    });
+  });
+
+  describe("stratagem schema validation", () => {
+    it("validates a complete stratagem card type", () => {
+      const schema = { ...minimalValidSchema(), cardTypes: [validStratagemCardType()] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it("rejects missing fields", () => {
+      const ct = validStratagemCardType();
+      delete ct.schema.fields;
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+    });
+  });
+
+  describe("field definition validation", () => {
+    it("rejects field with invalid type", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "name", label: "Name", type: "invalid" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("type") && e.includes("invalid"))).toBe(true);
+    });
+
+    it("rejects enum field without options", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "phase", label: "Phase", type: "enum" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("enum") && e.includes("options"))).toBe(true);
+    });
+
+    it("rejects enum field with empty options", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "phase", label: "Phase", type: "enum", options: [] }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("enum") && e.includes("options"))).toBe(true);
+    });
+
+    it("rejects duplicate field keys", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [
+        createFieldDefinition({ key: "name", label: "Name" }),
+        createFieldDefinition({ key: "name", label: "Name 2" }),
+      ];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes('duplicate key "name"'))).toBe(true);
+    });
+
+    it("rejects field with non-number displayOrder", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "name", label: "Name", type: "string", displayOrder: "first" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("displayOrder"))).toBe(true);
+    });
+
+    it("rejects field with non-boolean required", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "name", label: "Name", type: "string", required: "yes" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("required"))).toBe(true);
+    });
+  });
+
+  describe("preset validation", () => {
+    it("40K preset passes validation", () => {
+      const result = validateSchema(create40kPreset());
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("AoS preset passes validation", () => {
+      const result = validateSchema(createAoSPreset());
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("blank preset passes validation", () => {
+      const result = validateSchema(createBlankPreset());
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+  });
+
+  describe("mixed card types", () => {
+    it("validates a schema with all four card types", () => {
+      const schema = {
+        ...minimalValidSchema(),
+        cardTypes: [validUnitCardType(), validRuleCardType(), validEnhancementCardType(), validStratagemCardType()],
+      };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it("collects errors from multiple card types", () => {
+      const badUnit = validUnitCardType();
+      delete badUnit.schema.stats;
+      const badRule = validRuleCardType();
+      delete badRule.schema.rules;
+      const schema = { ...minimalValidSchema(), cardTypes: [badUnit, badRule] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThanOrEqual(2);
+    });
   });
 });
