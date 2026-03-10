@@ -63,7 +63,7 @@ Type-specific step sequences:
 
 The step list must be recomputed whenever `baseType` changes in the card-type step. Steps that have already accumulated state from a previous `baseType` selection should be discarded on change.
 
-- [ ] Wizard mode constant (`create` | `add-card-type`), derived from presence of existing datasource prop
+- [x] Wizard mode constant (`create` | `add-card-type`), derived from presence of existing datasource prop
 - [ ] Step definitions in `constants.js`: shared creation steps as a fixed array, type-specific steps as a map keyed by `baseType`
 - [ ] Step resolver function that concatenates the appropriate prefix (mode-dependent) + type-specific steps + review
 - [ ] `useDatasourceWizard({ existingDatasource? })` hook with: wizard mode resolution, step navigation (`goNext`, `goPrevious`, `goToStep`), per-step validation (`canProceed`), schema state accumulation across steps, transition direction tracking, step list recomputation on `baseType` change (resetting type-specific state)
