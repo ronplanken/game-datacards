@@ -2,9 +2,13 @@ import { Form, Input, InputNumber, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSelect } from "../FactionSelect";
+import { TemplateSelector, usePremiumFeatures } from "../../../Premium";
+import { useFeatureFlags } from "../../../Hooks/useFeatureFlags";
 
 export function WarscrollBasicInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
+  const { hasCardDesigner } = usePremiumFeatures();
+  const { designerEnabled } = useFeatureFlags();
 
   return (
     <Form>
@@ -55,6 +59,15 @@ export function WarscrollBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, legends: value })}
         />
       </Form.Item>
+      {hasCardDesigner && designerEnabled && (
+        <Form.Item label={"Template"}>
+          <TemplateSelector
+            value={activeCard.templateId || null}
+            onChange={(templateId) => updateActiveCard({ ...activeCard, templateId })}
+            targetFormat="aos"
+          />
+        </Form.Item>
+      )}
     </Form>
   );
 }
