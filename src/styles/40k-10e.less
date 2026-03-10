@@ -4044,17 +4044,15 @@
 
     .rule-button {
       font-size: inherit;
-      height: 16px;
+      cursor: pointer;
       padding: 0px;
 
       @media screen {
-        span {
-          &::before {
-            content: "[ ";
-          }
-          &::after {
-            content: " ]";
-          }
+        &::before {
+          content: "[ ";
+        }
+        &::after {
+          content: " ]";
         }
       }
     }
@@ -4084,7 +4082,7 @@
       color: var(--weapon-keyword-colour);
       font-size: 0.7rem;
       font-weight: 600;
-      height: 16px;
+      cursor: pointer;
       padding: 0px;
 
       &::after {

@@ -1,4 +1,3 @@
-import { Button } from "antd";
 import { Tooltip } from "../../Tooltip/Tooltip";
 
 export const tooltipProps = {
@@ -8,7 +7,7 @@ export const tooltipProps = {
 const CustomTooltip = ({ title, keyword }) => {
   return (
     <Tooltip {...tooltipProps} content={title}>
-      <Button type="text" size="small" className="rule-button">{`${keyword}`}</Button>
+      <span className="rule-button">{`${keyword}`}</span>
     </Tooltip>
   );
 };
