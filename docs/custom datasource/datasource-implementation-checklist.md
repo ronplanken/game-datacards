@@ -65,7 +65,7 @@ The step list must be recomputed whenever `baseType` changes in the card-type st
 
 - [x] Wizard mode constant (`create` | `add-card-type`), derived from presence of existing datasource prop
 - [x] Step definitions in `constants.js`: shared creation steps as a fixed array, type-specific steps as a map keyed by `baseType`
-- [ ] Step resolver function that concatenates the appropriate prefix (mode-dependent) + type-specific steps + review
+- [x] Step resolver function that concatenates the appropriate prefix (mode-dependent) + type-specific steps + review
 - [ ] `useDatasourceWizard({ existingDatasource? })` hook with: wizard mode resolution, step navigation (`goNext`, `goPrevious`, `goToStep`), per-step validation (`canProceed`), schema state accumulation across steps, transition direction tracking, step list recomputation on `baseType` change (resetting type-specific state)
 - [ ] In `add-card-type` mode: the card-type step should exclude `baseType` values that already have a card type defined in the existing datasource (prevent duplicates)
 - [ ] On completion in `add-card-type` mode: return the new card type entry to be appended, not a full datasource object
