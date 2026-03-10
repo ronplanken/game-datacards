@@ -89,12 +89,49 @@ describe("DatasourceWizard", () => {
       expect(firstItem).toHaveTextContent("Datasource Info");
     });
 
-    it("reflects the dynamic step list", () => {
+    it("reflects the dynamic step list in create mode", () => {
       render(<DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} />);
       const sidebar = screen.getByTestId("dsw-sidebar");
       const items = sidebar.querySelectorAll(".dsw-sidebar-item");
       // Create mode without baseType: metadata, base-system, card-type, review = 4
       expect(items).toHaveLength(4);
+      const titles = Array.from(items).map((item) => item.querySelector(".dsw-sidebar-title").textContent);
+      expect(titles).toEqual(["Datasource Info", "Base System", "Card Type", "Review"]);
+    });
+
+    it("reflects a different step list in add-card-type mode", () => {
+      const existingDatasource = { name: "Test", schema: { cardTypes: [] } };
+      render(
+        <DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} existingDatasource={existingDatasource} />,
+      );
+      const sidebar = screen.getByTestId("dsw-sidebar");
+      const items = sidebar.querySelectorAll(".dsw-sidebar-item");
+      // Add-card-type mode without baseType: card-type, review = 2
+      expect(items).toHaveLength(2);
+      const titles = Array.from(items).map((item) => item.querySelector(".dsw-sidebar-title").textContent);
+      expect(titles).toEqual(["Card Type", "Review"]);
+    });
+
+    it("highlights the first step as active in add-card-type mode", () => {
+      const existingDatasource = { name: "Test", schema: { cardTypes: [] } };
+      render(
+        <DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} existingDatasource={existingDatasource} />,
+      );
+      const sidebar = screen.getByTestId("dsw-sidebar");
+      const activeItem = sidebar.querySelector(".dsw-sidebar-item--active");
+      expect(activeItem).toBeInTheDocument();
+      expect(activeItem).toHaveTextContent("Card Type");
+    });
+
+    it("shows step numbers in sidebar markers", () => {
+      render(<DatasourceWizard open={true} onClose={vi.fn()} onComplete={vi.fn()} />);
+      const sidebar = screen.getByTestId("dsw-sidebar");
+      const markers = sidebar.querySelectorAll(".dsw-sidebar-marker");
+      expect(markers).toHaveLength(4);
+      expect(markers[0]).toHaveTextContent("1");
+      expect(markers[1]).toHaveTextContent("2");
+      expect(markers[2]).toHaveTextContent("3");
+      expect(markers[3]).toHaveTextContent("4");
     });
   });
 

@@ -104,7 +104,7 @@ Generic field steps (used by `rule`, `enhancement`, `stratagem`):
 
 Wizard shell:
 - [x] Modal container, sidebar with step indicators, header, footer with navigation buttons, animated step transitions
-- [ ] Sidebar should reflect the dynamic step list and highlight the current step
+- [x] Sidebar should reflect the dynamic step list and highlight the current step
 - [ ] Header title adapts to mode: "Create Datasource" vs "Add Card Type"
 - [ ] Completion action adapts to mode: creates full datasource vs returns new card type entry
 
