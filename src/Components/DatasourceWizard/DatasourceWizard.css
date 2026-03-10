@@ -766,6 +766,160 @@
 }
 
 /* ===========================================
+   REVIEW STEP
+   =========================================== */
+.dsw-review-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dsw-review-section {
+  background: var(--wz-bg-card);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-sm);
+  overflow: hidden;
+}
+
+.dsw-review-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--wz-bg-elevated);
+  border-bottom: 1px solid var(--wz-border);
+  color: var(--wz-text-main);
+}
+
+.dsw-review-section-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--wz-text-main);
+}
+
+.dsw-review-fields {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dsw-review-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dsw-review-field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wz-text-dim);
+}
+
+.dsw-review-field-label svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+}
+
+.dsw-review-field-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wz-text-main);
+}
+
+.dsw-review-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dsw-review-code {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--wz-border);
+}
+
+.dsw-review-list {
+  list-style: none;
+  margin: 0;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dsw-review-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--wz-text-main);
+}
+
+.dsw-review-list-item svg {
+  color: var(--wz-gold);
+  flex-shrink: 0;
+}
+
+.dsw-review-empty {
+  margin: 0;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--wz-text-dim);
+  text-align: center;
+  font-style: italic;
+}
+
+.dsw-review-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 12px;
+}
+
+.dsw-review-toggle-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--wz-primary-light);
+  background: var(--wz-primary-glow);
+  border: 1px solid var(--wz-border-blue);
+  padding: 3px 10px;
+  border-radius: 99px;
+  letter-spacing: 0.02em;
+}
+
+.dsw-review-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: rgba(22, 119, 255, 0.06);
+  border: 1px solid var(--wz-border-blue);
+  border-radius: var(--wz-radius-xs);
+  font-size: 12px;
+  color: var(--wz-text-muted);
+}
+
+.dsw-review-footer-note svg {
+  color: var(--wz-primary-light);
+  flex-shrink: 0;
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {
