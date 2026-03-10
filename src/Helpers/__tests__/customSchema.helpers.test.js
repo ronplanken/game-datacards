@@ -12,6 +12,8 @@ import {
   create40kPreset,
   createAoSPreset,
   validateSchema,
+  getDefaultValueForType,
+  migrateCardToSchema,
 } from "../customSchema.helpers";
 
 describe("customSchema.helpers - constants", () => {
@@ -940,6 +942,664 @@ describe("customSchema.helpers - validateSchema", () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+});
+
+describe("customSchema.helpers - getDefaultValueForType", () => {
+  it("returns empty string for string type", () => {
+    expect(getDefaultValueForType({ key: "k", label: "K", type: "string" })).toBe("");
+  });
+
+  it("returns empty string for richtext type", () => {
+    expect(getDefaultValueForType({ key: "k", label: "K", type: "richtext" })).toBe("");
+  });
+
+  it("returns false for boolean type", () => {
+    expect(getDefaultValueForType({ key: "k", label: "K", type: "boolean" })).toBe(false);
+  });
+
+  it("returns first option for enum type", () => {
+    expect(getDefaultValueForType({ key: "k", label: "K", type: "enum", options: ["a", "b", "c"] })).toBe("a");
+  });
+
+  it("returns empty string for enum type with no options", () => {
+    expect(getDefaultValueForType({ key: "k", label: "K", type: "enum" })).toBe("");
+  });
+
+  it("returns empty string for unknown type", () => {
+    expect(getDefaultValueForType({ key: "k", label: "K", type: "unknown" })).toBe("");
+  });
+});
+
+describe("customSchema.helpers - migrateCardToSchema", () => {
+  describe("edge cases", () => {
+    it("returns empty object for null card", () => {
+      expect(migrateCardToSchema(null, {}, {})).toEqual({});
+    });
+
+    it("returns empty object for undefined card", () => {
+      expect(migrateCardToSchema(undefined, {}, {})).toEqual({});
+    });
+
+    it("returns empty object for non-object card", () => {
+      expect(migrateCardToSchema("not-object", {}, {})).toEqual({});
+    });
+
+    it("returns shallow copy when newSchema is null", () => {
+      const card = { name: "Test" };
+      const result = migrateCardToSchema(card, {}, null);
+      expect(result).toEqual({ name: "Test" });
+      expect(result).not.toBe(card);
+    });
+
+    it("returns shallow copy when oldSchema is null", () => {
+      const card = { name: "Test" };
+      const result = migrateCardToSchema(card, null, {});
+      expect(result).toEqual({ name: "Test" });
+      expect(result).not.toBe(card);
+    });
+  });
+
+  describe("field-based cards (rule, enhancement, stratagem)", () => {
+    it("preserves values for unchanged fields", () => {
+      const oldSchema = {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", required: true }),
+          createFieldDefinition({ key: "cost", label: "Cost" }),
+        ],
+      };
+      const newSchema = { ...oldSchema };
+      const card = { name: "My Enhancement", cost: "10pts" };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result).toEqual({ name: "My Enhancement", cost: "10pts" });
+    });
+
+    it("adds default values for new fields", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+      };
+      const newSchema = {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name" }),
+          createFieldDefinition({ key: "cost", label: "Cost" }),
+          createFieldDefinition({ key: "active", label: "Active", type: "boolean" }),
+        ],
+      };
+      const card = { name: "My Card" };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result).toEqual({ name: "My Card", cost: "", active: false });
+    });
+
+    it("drops values for removed fields", () => {
+      const oldSchema = {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name" }),
+          createFieldDefinition({ key: "legacy", label: "Legacy" }),
+        ],
+      };
+      const newSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+      };
+      const card = { name: "My Card", legacy: "old data" };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result).toEqual({ name: "My Card" });
+      expect(result).not.toHaveProperty("legacy");
+    });
+
+    it("coerces string to enum when value is a valid option", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "phase", label: "Phase", type: "string" })],
+      };
+      const newSchema = {
+        fields: [
+          createFieldDefinition({ key: "phase", label: "Phase", type: "enum", options: ["command", "movement"] }),
+        ],
+      };
+      const card = { phase: "command" };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.phase).toBe("command");
+    });
+
+    it("uses default when coercing to enum and value is not a valid option", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "phase", label: "Phase", type: "string" })],
+      };
+      const newSchema = {
+        fields: [
+          createFieldDefinition({ key: "phase", label: "Phase", type: "enum", options: ["command", "movement"] }),
+        ],
+      };
+      const card = { phase: "invalid-phase" };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.phase).toBe("command");
+    });
+
+    it("coerces boolean to string", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "active", label: "Active", type: "boolean" })],
+      };
+      const newSchema = {
+        fields: [createFieldDefinition({ key: "active", label: "Active", type: "string" })],
+      };
+      const card = { active: true };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.active).toBe("true");
+    });
+
+    it("coerces string to boolean", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "flag", label: "Flag", type: "string" })],
+      };
+      const newSchema = {
+        fields: [createFieldDefinition({ key: "flag", label: "Flag", type: "boolean" })],
+      };
+      const card = { flag: "yes" };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.flag).toBe(true);
+    });
+
+    it("adds default for enum with new field", () => {
+      const oldSchema = { fields: [] };
+      const newSchema = {
+        fields: [
+          createFieldDefinition({ key: "phase", label: "Phase", type: "enum", options: ["command", "movement"] }),
+        ],
+      };
+
+      const result = migrateCardToSchema({}, oldSchema, newSchema);
+      expect(result.phase).toBe("command");
+    });
+
+    it("migrates collection entries when fields change", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+        rules: createCollectionDefinition({
+          label: "Rules",
+          fields: [
+            createFieldDefinition({ key: "title", label: "Title" }),
+            createFieldDefinition({ key: "oldField", label: "Old" }),
+          ],
+        }),
+      };
+      const newSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+        rules: createCollectionDefinition({
+          label: "Rules",
+          fields: [
+            createFieldDefinition({ key: "title", label: "Title" }),
+            createFieldDefinition({ key: "newField", label: "New" }),
+          ],
+        }),
+      };
+      const card = {
+        name: "My Rule",
+        rules: [
+          { title: "Rule 1", oldField: "old data" },
+          { title: "Rule 2", oldField: "more old data" },
+        ],
+      };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.name).toBe("My Rule");
+      expect(result.rules).toHaveLength(2);
+      expect(result.rules[0]).toEqual({ title: "Rule 1", newField: "" });
+      expect(result.rules[1]).toEqual({ title: "Rule 2", newField: "" });
+    });
+
+    it("handles collection added to schema", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+      };
+      const newSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+        keywords: createCollectionDefinition({
+          label: "Keywords",
+          fields: [createFieldDefinition({ key: "keyword", label: "Keyword" })],
+        }),
+      };
+      const card = { name: "My Card" };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.name).toBe("My Card");
+      expect(result.keywords).toEqual([]);
+    });
+
+    it("drops collection when removed from schema", () => {
+      const oldSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+        rules: createCollectionDefinition({
+          label: "Rules",
+          fields: [createFieldDefinition({ key: "title", label: "Title" })],
+        }),
+      };
+      const newSchema = {
+        fields: [createFieldDefinition({ key: "name", label: "Name" })],
+      };
+      const card = { name: "My Card", rules: [{ title: "Rule 1" }] };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.name).toBe("My Card");
+      expect(result).not.toHaveProperty("rules");
+    });
+
+    it("handles empty collection entries array", () => {
+      const oldSchema = {
+        fields: [],
+        rules: createCollectionDefinition({
+          label: "Rules",
+          fields: [createFieldDefinition({ key: "title", label: "Title" })],
+        }),
+      };
+      const newSchema = {
+        fields: [],
+        rules: createCollectionDefinition({
+          label: "Rules",
+          fields: [
+            createFieldDefinition({ key: "title", label: "Title" }),
+            createFieldDefinition({ key: "desc", label: "Desc" }),
+          ],
+        }),
+      };
+      const card = { rules: [] };
+
+      const result = migrateCardToSchema(card, oldSchema, newSchema);
+      expect(result.rules).toEqual([]);
+    });
+  });
+
+  describe("unit cards", () => {
+    const oldUnitSchema = {
+      stats: {
+        label: "Stats",
+        allowMultipleProfiles: true,
+        fields: [
+          createFieldDefinition({ key: "m", label: "M", displayOrder: 1 }),
+          createFieldDefinition({ key: "t", label: "T", displayOrder: 2 }),
+          createFieldDefinition({ key: "sv", label: "SV", displayOrder: 3 }),
+        ],
+      },
+      weaponTypes: {
+        label: "Weapons",
+        allowMultiple: true,
+        types: [
+          {
+            key: "ranged",
+            label: "Ranged",
+            hasKeywords: true,
+            hasProfiles: false,
+            columns: [
+              createFieldDefinition({ key: "range", label: "Range", required: true }),
+              createFieldDefinition({ key: "s", label: "S", required: true }),
+            ],
+          },
+        ],
+      },
+      abilities: {
+        label: "Abilities",
+        categories: [
+          { key: "core", label: "Core", format: "name-only" },
+          { key: "faction", label: "Faction", format: "name-description" },
+        ],
+        hasInvulnerableSave: true,
+        hasDamagedAbility: false,
+      },
+      metadata: {
+        hasKeywords: true,
+        hasFactionKeywords: true,
+        hasPoints: true,
+        pointsFormat: "per-model",
+      },
+    };
+
+    it("migrates stat profiles when fields are added", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        stats: {
+          ...oldUnitSchema.stats,
+          fields: [...oldUnitSchema.stats.fields, createFieldDefinition({ key: "w", label: "W", displayOrder: 4 })],
+        },
+      };
+      const card = {
+        stats: [{ m: '6"', t: "4", sv: "3+" }],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: 100,
+        invulnerableSave: "4+",
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.stats).toHaveLength(1);
+      expect(result.stats[0]).toEqual({ m: '6"', t: "4", sv: "3+", w: "" });
+    });
+
+    it("migrates stat profiles when fields are removed", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        stats: {
+          ...oldUnitSchema.stats,
+          fields: [createFieldDefinition({ key: "m", label: "M", displayOrder: 1 })],
+        },
+      };
+      const card = {
+        stats: [{ m: '6"', t: "4", sv: "3+" }],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: "4+",
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.stats[0]).toEqual({ m: '6"' });
+      expect(result.stats[0]).not.toHaveProperty("t");
+      expect(result.stats[0]).not.toHaveProperty("sv");
+    });
+
+    it("handles multiple stat profiles", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        stats: {
+          ...oldUnitSchema.stats,
+          fields: [
+            createFieldDefinition({ key: "m", label: "M", displayOrder: 1 }),
+            createFieldDefinition({ key: "t", label: "T", displayOrder: 2 }),
+            createFieldDefinition({ key: "hp", label: "HP", displayOrder: 3 }),
+          ],
+        },
+      };
+      const card = {
+        stats: [
+          { m: '6"', t: "4", sv: "3+" },
+          { m: '8"', t: "5", sv: "2+" },
+        ],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.stats).toHaveLength(2);
+      expect(result.stats[0]).toEqual({ m: '6"', t: "4", hp: "" });
+      expect(result.stats[1]).toEqual({ m: '8"', t: "5", hp: "" });
+    });
+
+    it("initializes empty stats when card has no stat data", () => {
+      const card = {
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
+      expect(result.stats).toEqual([]);
+    });
+
+    it("migrates weapon columns within existing weapon type", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        weaponTypes: {
+          ...oldUnitSchema.weaponTypes,
+          types: [
+            {
+              key: "ranged",
+              label: "Ranged",
+              hasKeywords: true,
+              hasProfiles: false,
+              columns: [
+                createFieldDefinition({ key: "range", label: "Range", required: true }),
+                createFieldDefinition({ key: "s", label: "S", required: true }),
+                createFieldDefinition({ key: "ap", label: "AP", required: true }),
+              ],
+            },
+          ],
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: {
+          ranged: [{ name: "Bolt Rifle", range: '24"', s: "4" }],
+        },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.weapons.ranged).toHaveLength(1);
+      expect(result.weapons.ranged[0]).toEqual({ name: "Bolt Rifle", range: '24"', s: "4", ap: "" });
+    });
+
+    it("preserves weapon name during column migration", () => {
+      const card = {
+        stats: [],
+        weapons: {
+          ranged: [{ name: "Lascannon", range: '48"', s: "12" }],
+        },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
+      expect(result.weapons.ranged[0].name).toBe("Lascannon");
+    });
+
+    it("creates empty array for new weapon type", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        weaponTypes: {
+          ...oldUnitSchema.weaponTypes,
+          types: [
+            ...oldUnitSchema.weaponTypes.types,
+            {
+              key: "melee",
+              label: "Melee",
+              hasKeywords: true,
+              hasProfiles: false,
+              columns: [createFieldDefinition({ key: "a", label: "A", required: true })],
+            },
+          ],
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [{ name: "Bolt Rifle", range: '24"', s: "4" }] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.weapons.melee).toEqual([]);
+      expect(result.weapons.ranged).toHaveLength(1);
+    });
+
+    it("drops weapon data for removed weapon type", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        weaponTypes: {
+          ...oldUnitSchema.weaponTypes,
+          types: [],
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [{ name: "Bolt Rifle", range: '24"', s: "4" }] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.weapons).toEqual({});
+    });
+
+    it("filters abilities by removed category", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        abilities: {
+          ...oldUnitSchema.abilities,
+          categories: [{ key: "core", label: "Core", format: "name-only" }],
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [
+          { category: "core", name: "Scouts" },
+          { category: "faction", name: "Oath of Moment", description: "Re-roll..." },
+        ],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.abilities).toHaveLength(1);
+      expect(result.abilities[0].name).toBe("Scouts");
+    });
+
+    it("preserves keywords when metadata still has them", () => {
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: ["Infantry", "Imperium"],
+        factionKeywords: ["Space Marines"],
+        points: 90,
+        invulnerableSave: "4+",
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
+      expect(result.keywords).toEqual(["Infantry", "Imperium"]);
+      expect(result.factionKeywords).toEqual(["Space Marines"]);
+      expect(result.points).toBe(90);
+    });
+
+    it("drops keywords when metadata removes them", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        metadata: {
+          hasKeywords: false,
+          hasFactionKeywords: false,
+          hasPoints: false,
+          pointsFormat: "per-unit",
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: ["Infantry"],
+        factionKeywords: ["Marines"],
+        points: 100,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result).not.toHaveProperty("keywords");
+      expect(result).not.toHaveProperty("factionKeywords");
+      expect(result).not.toHaveProperty("points");
+    });
+
+    it("preserves invulnerableSave when enabled", () => {
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: "4+",
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
+      expect(result.invulnerableSave).toBe("4+");
+    });
+
+    it("drops invulnerableSave when disabled", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        abilities: {
+          ...oldUnitSchema.abilities,
+          hasInvulnerableSave: false,
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: "4+",
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result).not.toHaveProperty("invulnerableSave");
+    });
+
+    it("adds damagedAbility as null when newly enabled", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        abilities: {
+          ...oldUnitSchema.abilities,
+          hasDamagedAbility: true,
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        invulnerableSave: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.damagedAbility).toBeNull();
+    });
+
+    it("does not mutate the original card", () => {
+      const card = {
+        stats: [{ m: '6"', t: "4", sv: "3+" }],
+        weapons: { ranged: [{ name: "Bolt Rifle", range: '24"', s: "4" }] },
+        abilities: [{ category: "core", name: "Scouts" }],
+        keywords: ["Infantry"],
+        factionKeywords: ["Marines"],
+        points: 90,
+        invulnerableSave: "4+",
+      };
+      const originalCard = JSON.parse(JSON.stringify(card));
+
+      migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
+      expect(card).toEqual(originalCard);
     });
   });
 });

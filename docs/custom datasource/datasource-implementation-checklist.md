@@ -22,7 +22,7 @@ Description and file format can be found in `docs/custom datasource/datasource-s
 - [x] `createAoSPreset()` - schema matching AoS format (stats: move/save/control/health/ward/wizard/priest)
 - [x] `createBlankPreset()` - minimal empty schema
 - [x] `validateSchema(schema)` - integrity checks
-- [ ] `migrateCardToSchema(card, oldSchema, newSchema)` - handle schema changes
+- [x] `migrateCardToSchema(card, oldSchema, newSchema)` - handle schema changes
 - [ ] Unit tests for all helpers
 
 ---

@@ -712,6 +712,205 @@ export const validateSchema = (schema) => {
   return { valid: errors.length === 0, errors };
 };
 
+// --- Migration Helpers ---
+
+/**
+ * Returns the default value for a given field type.
+ * @param {FieldDefinition} fieldDef - The field definition
+ * @returns {string | boolean} Default value for the field type
+ */
+export const getDefaultValueForType = (fieldDef) => {
+  switch (fieldDef.type) {
+    case "boolean":
+      return false;
+    case "enum":
+      return fieldDef.options?.[0] ?? "";
+    case "richtext":
+    case "string":
+    default:
+      return "";
+  }
+};
+
+/**
+ * Migrates a flat object of field values from old field definitions to new ones.
+ * Preserves values for fields present in both, adds defaults for new fields,
+ * drops values for removed fields, and coerces values when types change.
+ * @param {object} data - The source data object
+ * @param {FieldDefinition[]} oldFields - Previous field definitions
+ * @param {FieldDefinition[]} newFields - Updated field definitions
+ * @returns {object} Migrated data with keys matching newFields
+ */
+const migrateFieldValues = (data, oldFields, newFields) => {
+  const result = {};
+  const oldFieldMap = new Map((oldFields || []).map((f) => [f.key, f]));
+
+  for (const field of newFields) {
+    if (data && field.key in data && oldFieldMap.has(field.key)) {
+      const oldField = oldFieldMap.get(field.key);
+      if (oldField.type === field.type) {
+        // Same type — preserve value
+        result[field.key] = data[field.key];
+      } else if (field.type === "enum") {
+        // Coerce to enum — keep if valid option, otherwise use default
+        result[field.key] = field.options?.includes(data[field.key]) ? data[field.key] : getDefaultValueForType(field);
+      } else if (field.type === "boolean") {
+        result[field.key] = Boolean(data[field.key]);
+      } else {
+        // Coerce to string/richtext
+        result[field.key] = data[field.key] != null ? String(data[field.key]) : getDefaultValueForType(field);
+      }
+    } else {
+      // New field or not present in data — use default
+      result[field.key] = getDefaultValueForType(field);
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Migrates collection entries (e.g. rules[], keywords[]) from old to new field definitions.
+ * @param {object[]} entries - Array of collection entry objects
+ * @param {CollectionDefinition} oldCollection - Previous collection definition
+ * @param {CollectionDefinition} newCollection - Updated collection definition
+ * @returns {object[]} Migrated entries
+ */
+const migrateCollectionEntries = (entries, oldCollection, newCollection) => {
+  if (!Array.isArray(entries) || !newCollection) return [];
+  if (!oldCollection) return entries;
+  return entries.map((entry) => migrateFieldValues(entry, oldCollection.fields || [], newCollection.fields || []));
+};
+
+/**
+ * Detects whether a card type schema is a unit schema (has named sub-objects).
+ * @param {object} schema - The card type schema
+ * @returns {boolean}
+ */
+const isUnitSchema = (schema) => {
+  return schema && typeof schema === "object" && "stats" in schema && "weaponTypes" in schema;
+};
+
+/**
+ * Migrates a unit card's data to a new unit schema.
+ * @param {object} card - Unit card data
+ * @param {UnitSchema} oldSchema - Previous unit schema
+ * @param {UnitSchema} newSchema - Updated unit schema
+ * @returns {object} Migrated unit card data
+ */
+const migrateUnitCard = (card, oldSchema, newSchema) => {
+  const result = {};
+
+  // Migrate stat profiles
+  if (newSchema.stats) {
+    if (Array.isArray(card.stats)) {
+      result.stats = card.stats.map((profile) =>
+        migrateFieldValues(profile, oldSchema.stats?.fields || [], newSchema.stats.fields),
+      );
+    } else {
+      result.stats = [];
+    }
+  }
+
+  // Migrate weapons by weapon type key
+  if (newSchema.weaponTypes) {
+    result.weapons = {};
+    const oldTypeMap = new Map((oldSchema.weaponTypes?.types || []).map((t) => [t.key, t]));
+
+    for (const weaponType of newSchema.weaponTypes.types) {
+      const oldType = oldTypeMap.get(weaponType.key);
+      const existingWeapons = card.weapons?.[weaponType.key];
+
+      if (Array.isArray(existingWeapons) && oldType) {
+        result.weapons[weaponType.key] = existingWeapons.map((weapon) => {
+          const migrated = migrateFieldValues(weapon, oldType.columns, weaponType.columns);
+          // Preserve weapon name (always present, not a schema column)
+          if ("name" in weapon) migrated.name = weapon.name;
+          return migrated;
+        });
+      } else {
+        result.weapons[weaponType.key] = [];
+      }
+    }
+  }
+
+  // Migrate abilities — filter to categories that still exist
+  if (newSchema.abilities) {
+    const newCategoryKeys = new Set(newSchema.abilities.categories.map((c) => c.key));
+    result.abilities = Array.isArray(card.abilities)
+      ? card.abilities.filter((a) => newCategoryKeys.has(a.category))
+      : [];
+  }
+
+  // Migrate metadata-driven fields
+  if (newSchema.metadata) {
+    if (newSchema.metadata.hasKeywords) {
+      result.keywords = Array.isArray(card.keywords) ? [...card.keywords] : [];
+    }
+    if (newSchema.metadata.hasFactionKeywords) {
+      result.factionKeywords = Array.isArray(card.factionKeywords) ? [...card.factionKeywords] : [];
+    }
+    if (newSchema.metadata.hasPoints) {
+      result.points = card.points != null ? card.points : null;
+    }
+  }
+
+  // Invulnerable save
+  if (newSchema.abilities?.hasInvulnerableSave) {
+    result.invulnerableSave = card.invulnerableSave ?? null;
+  }
+
+  // Damaged ability
+  if (newSchema.abilities?.hasDamagedAbility) {
+    result.damagedAbility = card.damagedAbility ?? null;
+  }
+
+  return result;
+};
+
+/**
+ * Migrates a field-based card (rule, enhancement, stratagem) to a new schema.
+ * @param {object} card - Card data
+ * @param {RuleSchema | EnhancementSchema | StratagemSchema} oldSchema - Previous schema
+ * @param {RuleSchema | EnhancementSchema | StratagemSchema} newSchema - Updated schema
+ * @returns {object} Migrated card data
+ */
+const migrateFieldCard = (card, oldSchema, newSchema) => {
+  const result = migrateFieldValues(card, oldSchema.fields || [], newSchema.fields || []);
+
+  // Migrate known collection types
+  const collectionKeys = ["rules", "keywords"];
+  for (const key of collectionKeys) {
+    if (newSchema[key]) {
+      result[key] = migrateCollectionEntries(card[key], oldSchema[key], newSchema[key]);
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Migrates card data when the schema definition changes.
+ * Handles all base types: preserves data for unchanged fields,
+ * adds defaults for new fields, drops data for removed fields,
+ * and attempts type coercion for type changes.
+ *
+ * @param {object} card - The card data to migrate
+ * @param {object} oldSchema - The previous card type schema (the `schema` property of a CardTypeDefinition)
+ * @param {object} newSchema - The updated card type schema
+ * @returns {object} Migrated card data conforming to newSchema
+ */
+export const migrateCardToSchema = (card, oldSchema, newSchema) => {
+  if (!card || typeof card !== "object") return {};
+  if (!newSchema || typeof newSchema !== "object") return { ...card };
+  if (!oldSchema || typeof oldSchema !== "object") return { ...card };
+
+  if (isUnitSchema(newSchema)) {
+    return migrateUnitCard(card, oldSchema, newSchema);
+  }
+  return migrateFieldCard(card, oldSchema, newSchema);
+};
+
 // --- Preset: Warhammer 40K 10th Edition ---
 
 /**
