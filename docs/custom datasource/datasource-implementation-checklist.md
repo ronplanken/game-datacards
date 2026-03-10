@@ -23,7 +23,7 @@ Description and file format can be found in `docs/custom datasource/datasource-s
 - [x] `createBlankPreset()` - minimal empty schema
 - [x] `validateSchema(schema)` - integrity checks
 - [x] `migrateCardToSchema(card, oldSchema, newSchema)` - handle schema changes
-- [ ] Unit tests for all helpers
+- [x] Unit tests for all helpers
 
 ---
 
