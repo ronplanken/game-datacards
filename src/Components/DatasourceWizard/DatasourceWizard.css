@@ -568,6 +568,40 @@
 }
 
 /* ===========================================
+   CARD TYPE STEP
+   =========================================== */
+.dsw-system-card--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.dsw-card-type-exists-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--wz-text-dim);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--wz-border);
+  padding: 2px 8px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dsw-card-type-details {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--wz-border);
+}
+
+.dsw-card-type-details-title {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wz-text-main);
+}
+
+/* ===========================================
    STEP PLACEHOLDER
    =========================================== */
 .dsw-step-placeholder {

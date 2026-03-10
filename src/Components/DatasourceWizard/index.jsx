@@ -5,6 +5,7 @@ import { useDatasourceWizard } from "./hooks/useDatasourceWizard";
 import { WIZARD_MODES } from "./constants";
 import { StepMetadata } from "./steps/StepMetadata";
 import { StepBaseSystem } from "./steps/StepBaseSystem";
+import { StepCardType } from "./steps/StepCardType";
 import "./DatasourceWizard.css";
 
 /**
@@ -146,6 +147,8 @@ export const DatasourceWizard = ({ open, onClose, onComplete, existingDatasource
         return <StepMetadata wizard={wizard} />;
       case "base-system":
         return <StepBaseSystem wizard={wizard} />;
+      case "card-type":
+        return <StepCardType wizard={wizard} />;
       default:
         return <StepPlaceholder step={wizard.currentStep} />;
     }

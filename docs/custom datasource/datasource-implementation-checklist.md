@@ -111,7 +111,7 @@ Wizard shell:
 Shared steps:
 - [x] StepMetadata - form inputs for name, version, author (create mode only)
 - [x] StepBaseSystem - card grid selection (40K / AoS / Blank) (create mode only)
-- [ ] StepCardType - card grid or radio selection for baseType, changing selection resets type-specific state, already-defined types shown as disabled with a label indicating they exist in add-card-type mode
+- [x] StepCardType - card grid or radio selection for baseType, changing selection resets type-specific state, already-defined types shown as disabled with a label indicating they exist in add-card-type mode
 - [ ] StepReview - read-only summary of the assembled schema, action button labelled "Create Datasource" or "Add Card Type" depending on mode
 
 Unit steps:
