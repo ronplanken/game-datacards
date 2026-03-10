@@ -920,6 +920,193 @@
 }
 
 /* ===========================================
+   STATS STEP
+   =========================================== */
+.dsw-stats-toggle {
+  margin-bottom: 20px;
+}
+
+.dsw-toggle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  padding: 12px 14px;
+  background: var(--wz-bg-card);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-xs);
+  transition: border-color 0.2s ease;
+}
+
+.dsw-toggle-row:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dsw-toggle-checkbox {
+  margin-top: 2px;
+  accent-color: var(--wz-primary);
+  flex-shrink: 0;
+}
+
+.dsw-toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wz-text-main);
+  line-height: 1.3;
+}
+
+.dsw-toggle-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--wz-text-dim);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+.dsw-stats-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dsw-stats-fields-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.dsw-stats-fields-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--wz-text-main);
+  letter-spacing: 0.02em;
+}
+
+.dsw-stats-fields-title svg {
+  color: var(--wz-text-dim);
+}
+
+.dsw-btn--sm {
+  padding: 6px 12px;
+  font-size: 11px;
+}
+
+.dsw-stats-empty {
+  padding: 24px 16px;
+  text-align: center;
+  background: var(--wz-bg-card);
+  border: 1px dashed var(--wz-border);
+  border-radius: var(--wz-radius-xs);
+}
+
+.dsw-stats-empty p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--wz-text-dim);
+}
+
+.dsw-stats-warning {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--wz-radius-xs);
+}
+
+.dsw-stats-field-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--wz-bg-card);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-xs);
+  transition: border-color 0.2s ease;
+}
+
+.dsw-stats-field-row:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dsw-stats-field-order {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--wz-text-dim);
+  background: var(--wz-bg-elevated);
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.dsw-stats-field-inputs {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dsw-stats-field-key {
+  flex: 1;
+  height: 32px !important;
+  font-size: 12px !important;
+  font-family: "SF Mono", "Fira Code", monospace !important;
+}
+
+.dsw-stats-field-label {
+  flex: 1;
+  height: 32px !important;
+  font-size: 12px !important;
+}
+
+.dsw-stats-field-actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.dsw-stats-action-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--wz-text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.dsw-stats-action-btn:hover:not(:disabled) {
+  background: var(--wz-bg-elevated);
+  border-color: var(--wz-border);
+  color: var(--wz-text-main);
+}
+
+.dsw-stats-action-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.dsw-stats-action-btn--danger:hover:not(:disabled) {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {

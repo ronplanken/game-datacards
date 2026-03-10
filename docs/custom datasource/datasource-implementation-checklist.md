@@ -115,7 +115,7 @@ Shared steps:
 - [x] StepReview - read-only summary of the assembled schema, action button labelled "Create Datasource" or "Add Card Type" depending on mode
 
 Unit steps:
-- [ ] StepStats - editable field list with add/remove/rename, drag-to-reorder, displayOrder auto-assignment, allowMultipleProfiles toggle
+- [x] StepStats - editable field list with add/remove/rename, drag-to-reorder, displayOrder auto-assignment, allowMultipleProfiles toggle
 - [ ] StepWeapons - tabbed interface per weapon type, editable column list per tab, add/remove weapon types, hasKeywords/hasProfiles toggles per type
 - [ ] StepAbilities - editable category list with format selection (name-only / name-description), invulnerable save and damaged ability toggles
 - [ ] StepUnitMetadata - keyword toggles, faction keyword toggle, points toggle with format selection (per-model / per-unit)
