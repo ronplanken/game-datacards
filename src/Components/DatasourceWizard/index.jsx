@@ -4,6 +4,7 @@ import { Check, ChevronLeft, ChevronRight, Database } from "lucide-react";
 import { useDatasourceWizard } from "./hooks/useDatasourceWizard";
 import { WIZARD_MODES } from "./constants";
 import { StepMetadata } from "./steps/StepMetadata";
+import { StepBaseSystem } from "./steps/StepBaseSystem";
 import "./DatasourceWizard.css";
 
 /**
@@ -143,6 +144,8 @@ export const DatasourceWizard = ({ open, onClose, onComplete, existingDatasource
     switch (wizard.currentStep.id) {
       case "metadata":
         return <StepMetadata wizard={wizard} />;
+      case "base-system":
+        return <StepBaseSystem wizard={wizard} />;
       default:
         return <StepPlaceholder step={wizard.currentStep} />;
     }

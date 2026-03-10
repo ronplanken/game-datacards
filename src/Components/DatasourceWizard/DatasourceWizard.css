@@ -449,6 +449,125 @@
 }
 
 /* ===========================================
+   BASE SYSTEM SELECTION GRID
+   =========================================== */
+.dsw-system-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dsw-system-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  background: var(--wz-bg-card);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  outline: none;
+}
+
+.dsw-system-card:hover {
+  background: var(--wz-bg-elevated);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dsw-system-card:focus-visible {
+  border-color: var(--wz-primary);
+  box-shadow: 0 0 0 2px var(--wz-primary-glow);
+}
+
+.dsw-system-card--selected {
+  background: rgba(22, 119, 255, 0.06);
+  border-color: var(--wz-primary);
+  box-shadow: 0 0 0 1px rgba(22, 119, 255, 0.15);
+}
+
+.dsw-system-card--selected:hover {
+  background: rgba(22, 119, 255, 0.08);
+  border-color: var(--wz-primary-light);
+}
+
+.dsw-system-card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--system-color, var(--wz-text-dim));
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.dsw-system-card--selected .dsw-system-card-accent {
+  opacity: 1;
+}
+
+.dsw-system-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--system-color, var(--wz-text-dim));
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.dsw-system-card--selected .dsw-system-card-icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dsw-system-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dsw-system-card-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.dsw-system-card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wz-text-main);
+}
+
+.dsw-system-card-subtitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--wz-text-dim);
+}
+
+.dsw-system-card-desc {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--wz-text-muted);
+}
+
+.dsw-system-card-check {
+  flex-shrink: 0;
+  color: var(--wz-text-dim);
+  transition: color 0.2s ease;
+}
+
+.dsw-system-card--selected .dsw-system-card-check {
+  color: var(--wz-primary-light);
+}
+
+/* ===========================================
    STEP PLACEHOLDER
    =========================================== */
 .dsw-step-placeholder {
