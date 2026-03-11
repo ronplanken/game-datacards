@@ -243,8 +243,8 @@ Design quality:
 - [ ] (Wired to SchemaDefinitionEditor in Phase 6)
 
 ### Route and navigation
-- [ ] Add route in `src/index.jsx`: `{ path: "datasources", element: <DatasourceEditorPage /> }` — no gate, placed between designer routes and legal pages
-- [ ] Add nav link in `src/Components/AppHeader.jsx`: `<Link to="/datasources">Datasources</Link>` with `app-header-nav-item` class, active detection via `location.pathname.startsWith("/datasources")`, positioned after Viewer before Designer
+- [x] Add route in `src/index.jsx`: `{ path: "datasources", element: <DatasourceEditorPage /> }` — no gate, placed between designer routes and legal pages
+- [x] Add nav link in `src/Components/AppHeader.jsx`: `<Link to="/datasources">Datasources</Link>` with `app-header-nav-item` class, active detection via `location.pathname.startsWith("/datasources")`, positioned after Viewer before Designer
 
 ### Tests
 - [x] `DatasourceEditor.test.jsx`: route renders page, PanelGroup mounts with 3 panels

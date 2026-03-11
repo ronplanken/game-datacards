@@ -51,6 +51,7 @@ import { Print } from "./Pages/Print";
 import { Shared } from "./Pages/Shared";
 import { TermsOfService } from "./Pages/TermsOfService";
 import { PrivacyPolicy } from "./Pages/PrivacyPolicy";
+import { DatasourceEditorPage } from "./Pages/DatasourceEditor";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
 import { DesignerBetaModal } from "./Components/DesignerBetaModal";
@@ -354,6 +355,8 @@ const router = createBrowserRouter([
       // Designer routes (premium only)
       { path: "designer", element: <DesignerRoute /> },
       { path: "designer/help", element: <DesignerHelpRoute /> },
+      // Datasource editor (community feature)
+      { path: "datasources", element: <DatasourceEditorPage /> },
       // Legal pages
       { path: "terms", element: <TermsOfService /> },
       { path: "privacy", element: <PrivacyPolicy /> },

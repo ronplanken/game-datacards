@@ -47,6 +47,7 @@ export const AppHeader = ({
   const isEditorPage = location.pathname === "/" || location.pathname === "";
   const isViewerPage = location.pathname.startsWith("/viewer");
   const isDesignerPage = location.pathname.startsWith("/designer");
+  const isDatasourcesPage = location.pathname.startsWith("/datasources");
 
   // Designer page should show all header actions like the Editor does
   const effectiveShowActions = showActions || isDesignerPage;
@@ -77,6 +78,9 @@ export const AppHeader = ({
                 </Link>
                 <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
                   Viewer
+                </Link>
+                <Link to="/datasources" className={`app-header-nav-item ${isDatasourcesPage ? "active" : ""}`}>
+                  Datasources
                 </Link>
                 {designerEnabled && isAuthenticated && (
                   <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
