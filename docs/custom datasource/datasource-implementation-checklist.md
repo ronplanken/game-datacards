@@ -205,7 +205,7 @@ Design quality:
 - [x] Custom scrollbar styles: 6px width, transparent track, `--designer-border` thumb, 3px radius
 
 ### Shared components
-- [ ] `Section.jsx` — collapsible section with `title`, `icon`, `defaultOpen` props, uses `ChevronDown`/`ChevronRight` from lucide-react, CSS classes `.props-section`, `.props-section-header`, `.props-section-content`
+- [x] `Section.jsx` — collapsible section with `title`, `icon`, `defaultOpen` props, uses `ChevronDown`/`ChevronRight` from lucide-react, CSS classes `.props-section`, `.props-section-header`, `.props-section-content`
 - [ ] `CompactInput.jsx` — inline-label input with `label`, `value`, `onChange`, `type`, `suffix`, `min`, `max`, `step` props, 28px height, hides number spinners
 - [ ] `ColorInput.jsx` — color swatch + hex text input with `value`, `onChange`, `allowTransparent` props, transparent checkerboard pattern for null/transparent values, monospace font
 - [ ] `index.js` barrel export
