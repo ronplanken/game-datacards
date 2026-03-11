@@ -256,8 +256,8 @@ Design quality:
 - [x] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
 
 ### Verification
-- [ ] `yarn lint` and `yarn prettier:fix` pass
-- [ ] `yarn test:ci` passes
+- [x] `yarn lint` and `yarn prettier:fix` pass
+- [x] `yarn test:ci` passes
 - [ ] `yarn start` — navigate to `/datasources`, verify 3-panel layout renders
 - [ ] Panels resize correctly
 - [ ] Empty states display in all three panels
