@@ -41,16 +41,6 @@
   }
 }
 
-@keyframes designer-pulse-subtle {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
 /* ===========================================
    PAGE LAYOUT
    =========================================== */
@@ -71,24 +61,19 @@
 
 .designer-resizer {
   background: var(--designer-border-subtle);
-  transition:
-    background-color 0.2s ease,
-    width 0.15s ease;
-  position: relative;
+  transition: background-color 0.2s ease;
 }
 
 .designer-resizer.vertical {
   width: 1px;
 }
 
-.designer-resizer:hover {
-  background: var(--designer-accent);
-  width: 3px;
+.designer-resizer.horizontal {
+  height: 1px;
 }
 
-.designer-resizer:active {
+.designer-resizer:hover {
   background: var(--designer-accent);
-  width: 3px;
 }
 
 /* ===========================================
@@ -264,7 +249,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--designer-accent);
   border: none;
   border-radius: var(--designer-radius-md);
@@ -272,19 +257,11 @@
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.1s ease;
+  transition: background-color 0.15s ease;
 }
 
 .designer-template-btn:hover {
   background: var(--designer-accent-hover);
-  box-shadow: 0 2px 8px rgba(22, 119, 255, 0.25);
-}
-
-.designer-template-btn:active {
-  transform: scale(0.98);
 }
 
 .designer-template-btn:focus-visible {
@@ -364,11 +341,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--designer-bg-secondary);
   border: 1px solid var(--designer-border);
-  border-radius: var(--designer-radius-sm);
-  color: var(--designer-text-secondary);
+  border-radius: var(--designer-radius-md);
+  color: var(--designer-text-primary);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -413,26 +390,20 @@
   justify-content: center;
   padding: 32px;
   text-align: center;
-  color: var(--designer-text-tertiary);
-  gap: 4px;
+  color: var(--designer-text-muted);
   animation: designer-fade-in 0.3s ease-out;
 }
 
 .designer-empty-state svg {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 8px;
-  opacity: 0.3;
-  color: var(--designer-text-tertiary);
-  animation: designer-pulse-subtle 3s ease-in-out infinite;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
 }
 
 .designer-empty-state p {
   margin: 0;
   font-size: 13px;
-  line-height: 1.5;
-  max-width: 220px;
-  color: var(--designer-text-tertiary);
 }
 
 .designer-empty-state .designer-template-btn {
@@ -509,9 +480,8 @@
 }
 
 .props-empty svg {
-  opacity: 0.25;
+  opacity: 0.4;
   color: var(--designer-text-tertiary);
-  animation: designer-pulse-subtle 3s ease-in-out infinite;
 }
 
 .props-empty p {
