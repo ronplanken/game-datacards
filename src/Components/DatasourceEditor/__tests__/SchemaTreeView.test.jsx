@@ -175,7 +175,7 @@ describe("SchemaTreeView", () => {
     it("shows empty message when no card types", () => {
       const emptyDs = { ...mockDatasource, schema: { cardTypes: [] } };
       render(<SchemaTreeView selectedItem={{ type: "datasource" }} activeDatasource={emptyDs} />);
-      expect(screen.getByText("No card types defined")).toBeInTheDocument();
+      expect(screen.getByText(/No card types defined/)).toBeInTheDocument();
     });
   });
 
@@ -198,7 +198,7 @@ describe("SchemaTreeView", () => {
 
     it("shows multiple profiles flag", () => {
       render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Multiple profiles allowed")).toBeInTheDocument();
+      expect(screen.getByText("Multiple profiles enabled")).toBeInTheDocument();
     });
 
     it("renders weapon types section with badge count", () => {
@@ -215,15 +215,15 @@ describe("SchemaTreeView", () => {
 
     it("shows invulnerable save and damaged ability flags", () => {
       render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Invulnerable save")).toBeInTheDocument();
-      expect(screen.getByText("Damaged ability")).toBeInTheDocument();
+      expect(screen.getByText("Invulnerable save enabled")).toBeInTheDocument();
+      expect(screen.getByText("Damaged profile enabled")).toBeInTheDocument();
     });
 
     it("renders metadata section with flags", () => {
       render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Metadata")).toBeInTheDocument();
-      expect(screen.getByText("Keywords")).toBeInTheDocument();
-      expect(screen.getByText("Faction keywords")).toBeInTheDocument();
+      expect(screen.getByText("Card Properties")).toBeInTheDocument();
+      expect(screen.getByText("Keywords enabled")).toBeInTheDocument();
+      expect(screen.getByText("Faction keywords enabled")).toBeInTheDocument();
       expect(screen.getByText("Points (per-model)")).toBeInTheDocument();
     });
 
@@ -234,8 +234,8 @@ describe("SchemaTreeView", () => {
       // Weapon types are collapsed by default, click to expand
       await user.click(screen.getByText("Ranged Weapons"));
       expect(screen.getByText("range")).toBeInTheDocument();
-      expect(screen.getByText("Has keywords")).toBeInTheDocument();
-      expect(screen.getByText("Has profiles")).toBeInTheDocument();
+      expect(screen.getByText("Weapon keywords enabled")).toBeInTheDocument();
+      expect(screen.getByText("Weapon profiles enabled")).toBeInTheDocument();
     });
   });
 
@@ -252,7 +252,7 @@ describe("SchemaTreeView", () => {
     it("renders rules collection section", () => {
       render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
       expect(screen.getByText("Rules")).toBeInTheDocument();
-      expect(screen.getByText("Allow multiple")).toBeInTheDocument();
+      expect(screen.getByText("Multiple entries allowed")).toBeInTheDocument();
     });
 
     it("shows required indicators", () => {

@@ -132,7 +132,7 @@ const UnitSchemaTree = ({ schema }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Multiple profiles allowed</span>
+                <span className="schema-tree-flag-label">Multiple profiles enabled</span>
               </div>
             </div>
           )}
@@ -156,7 +156,7 @@ const UnitSchemaTree = ({ schema }) => {
                 <div className="schema-tree-node">
                   <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 2 * 16 }}>
                     <span className="schema-tree-chevron-spacer" />
-                    <span className="schema-tree-flag-label">Has keywords</span>
+                    <span className="schema-tree-flag-label">Weapon keywords enabled</span>
                   </div>
                 </div>
               )}
@@ -164,7 +164,7 @@ const UnitSchemaTree = ({ schema }) => {
                 <div className="schema-tree-node">
                   <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 2 * 16 }}>
                     <span className="schema-tree-chevron-spacer" />
-                    <span className="schema-tree-flag-label">Has profiles</span>
+                    <span className="schema-tree-flag-label">Weapon profiles enabled</span>
                   </div>
                 </div>
               )}
@@ -195,7 +195,7 @@ const UnitSchemaTree = ({ schema }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Invulnerable save</span>
+                <span className="schema-tree-flag-label">Invulnerable save enabled</span>
               </div>
             </div>
           )}
@@ -203,7 +203,7 @@ const UnitSchemaTree = ({ schema }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Damaged ability</span>
+                <span className="schema-tree-flag-label">Damaged profile enabled</span>
               </div>
             </div>
           )}
@@ -212,12 +212,12 @@ const UnitSchemaTree = ({ schema }) => {
 
       {/* Metadata section */}
       {schema.metadata && (
-        <TreeNode label="Metadata" icon={Settings} defaultOpen={true} depth={0}>
+        <TreeNode label="Card Properties" icon={Settings} defaultOpen={true} depth={0}>
           {schema.metadata.hasKeywords && (
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Keywords</span>
+                <span className="schema-tree-flag-label">Keywords enabled</span>
               </div>
             </div>
           )}
@@ -225,7 +225,7 @@ const UnitSchemaTree = ({ schema }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Faction keywords</span>
+                <span className="schema-tree-flag-label">Faction keywords enabled</span>
               </div>
             </div>
           )}
@@ -275,7 +275,7 @@ const GenericSchemaTree = ({ schema, baseType }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Allow multiple</span>
+                <span className="schema-tree-flag-label">Multiple entries allowed</span>
               </div>
             </div>
           )}
@@ -297,7 +297,7 @@ const GenericSchemaTree = ({ schema, baseType }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Allow multiple</span>
+                <span className="schema-tree-flag-label">Multiple entries allowed</span>
               </div>
             </div>
           )}
@@ -351,7 +351,11 @@ const DatasourceOverview = ({ datasource }) => {
             </div>
           );
         })}
-        {cardTypes.length === 0 && <div className="schema-tree-overview-empty">No card types defined</div>}
+        {cardTypes.length === 0 && (
+          <div className="schema-tree-overview-empty">
+            No card types defined. Use &ldquo;Add Card Type&rdquo; to get started.
+          </div>
+        )}
       </div>
     </div>
   );
@@ -383,7 +387,7 @@ export const SchemaTreeView = ({ selectedItem, activeDatasource }) => {
         <div className="schema-tree-header">
           <Icon size={16} className="schema-tree-icon" />
           <span className="schema-tree-header-title">{cardType.label}</span>
-          <span className="schema-type-badge string">{cardType.baseType}</span>
+          <span className="schema-tree-overview-item-type">{cardType.baseType}</span>
         </div>
         <div className="schema-tree-content">
           {cardType.baseType === "unit" ? (
