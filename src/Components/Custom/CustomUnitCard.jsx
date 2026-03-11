@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { CustomCardStats } from "./CustomCardStats";
+import { CustomCardWeapons } from "./CustomCardWeapons";
 
 const HeaderContainer = styled.div`
   &:before {
@@ -72,7 +73,9 @@ export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle }) => {
         </div>
         <div className="data_container">
           <div className="data">
-            <div className="weapons">{/* Weapon rendering delegated to CustomCardWeapons (next task) */}</div>
+            <div className="weapons">
+              <CustomCardWeapons unit={unit} weaponTypes={schema.weaponTypes} />
+            </div>
             <div className="extra">{/* Abilities rendering delegated to CustomCardAbilities (next task) */}</div>
           </div>
         </div>
