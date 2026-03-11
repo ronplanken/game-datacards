@@ -1,21 +1,18 @@
 import { renderHook, act } from "@testing-library/react";
 import { useDatasourceEditorState } from "../hooks/useDatasourceEditorState";
 
-// Mock localforage
-vi.mock("localforage", () => {
-  const store = {};
-  return {
-    default: {
-      createInstance: () => ({
-        getItem: vi.fn((key) => Promise.resolve(store[key] || null)),
-        setItem: vi.fn((key, value) => {
-          store[key] = value;
-          return Promise.resolve();
-        }),
-      }),
-    },
-  };
-});
+// Mock localforage with trackable setItem
+const mockSetItem = vi.fn((key, value) => Promise.resolve());
+const mockGetItem = vi.fn((key) => Promise.resolve(null));
+
+vi.mock("localforage", () => ({
+  default: {
+    createInstance: () => ({
+      getItem: (...args) => mockGetItem(...args),
+      setItem: (...args) => mockSetItem(...args),
+    }),
+  },
+}));
 
 // Mock settings storage
 const mockSettings = {
@@ -164,5 +161,116 @@ describe("useDatasourceEditorState", () => {
 
     expect(result.current.activeDatasource).toEqual(fullDatasource);
     expect(result.current.selectedItem).toEqual({ type: "datasource" });
+  });
+
+  describe("localForage persistence", () => {
+    it("updateDatasource persists to localForage with datasource id as key", async () => {
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      const updated = { ...fullDatasource, name: "Persisted Name" };
+
+      await act(async () => {
+        await result.current.updateDatasource(updated);
+      });
+
+      expect(mockSetItem).toHaveBeenCalledWith("custom-1", updated);
+    });
+
+    it("updateDatasource persists schema changes to localForage", async () => {
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      // Simulate a schema edit (e.g. adding a stat field)
+      const updatedSchema = {
+        ...fullDatasource.schema,
+        cardTypes: fullDatasource.schema.cardTypes.map((ct) =>
+          ct.key === "infantry"
+            ? {
+                ...ct,
+                schema: {
+                  ...ct.schema,
+                  stats: {
+                    fields: [{ key: "m", label: "M", type: "string", displayOrder: 1 }],
+                  },
+                },
+              }
+            : ct,
+        ),
+      };
+      const updatedDatasource = { ...fullDatasource, schema: updatedSchema };
+
+      await act(async () => {
+        await result.current.updateDatasource(updatedDatasource);
+      });
+
+      expect(mockSetItem).toHaveBeenCalledWith("custom-1", updatedDatasource);
+      expect(result.current.activeDatasource.schema.cardTypes[0].schema.stats.fields).toHaveLength(1);
+    });
+
+    it("updateDatasource persists metadata changes to localForage", async () => {
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      const updated = { ...fullDatasource, name: "New Name", version: "2.0.0", author: "New Author" };
+
+      await act(async () => {
+        await result.current.updateDatasource(updated);
+      });
+
+      expect(mockSetItem).toHaveBeenCalledWith(
+        "custom-1",
+        expect.objectContaining({ name: "New Name", version: "2.0.0", author: "New Author" }),
+      );
+    });
+
+    it("updateDatasource handles localForage errors gracefully", async () => {
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      mockSetItem.mockRejectedValueOnce(new Error("Storage quota exceeded"));
+
+      const updated = { ...fullDatasource, name: "Should Still Update State" };
+
+      // Should not throw
+      await act(async () => {
+        await result.current.updateDatasource(updated);
+      });
+
+      // State should still be updated even if storage fails
+      expect(result.current.activeDatasource.name).toBe("Should Still Update State");
+    });
+
+    it("multiple rapid updates each persist to localForage", async () => {
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      mockSetItem.mockClear();
+
+      await act(async () => {
+        await result.current.updateDatasource({ ...fullDatasource, name: "Update 1" });
+      });
+      await act(async () => {
+        await result.current.updateDatasource({ ...fullDatasource, name: "Update 2" });
+      });
+
+      expect(mockSetItem).toHaveBeenCalledTimes(2);
+      expect(mockSetItem).toHaveBeenLastCalledWith("custom-1", expect.objectContaining({ name: "Update 2" }));
+    });
   });
 });
