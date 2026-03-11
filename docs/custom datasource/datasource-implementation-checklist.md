@@ -192,17 +192,17 @@ Design quality:
 
 ### CSS foundation
 - [x] Create `DatasourceEditor.css` with `--designer-*` CSS variable system (copy from Designer.css `:root` block: bg-deep `#f0f2f5`, bg-primary `#ffffff`, bg-secondary `#fafafa`, bg-tertiary `#f5f5f5`, border `#d9d9d9`, border-subtle `#e8e8e8`, text-primary `#1f1f1f`, text-secondary `rgba(0,0,0,0.65)`, text-tertiary `rgba(0,0,0,0.45)`, text-muted `rgba(0,0,0,0.25)`, accent `#1677ff`, accent-hover `#4096ff`, accent-subtle `rgba(22,119,255,0.1)`, radius-sm `4px`, radius-md `8px`, radius-lg `12px`, shadow, shadow-elevated)
-- [ ] Panel layout styles: `.datasource-editor-layout`, `.datasource-editor-content` (`height: calc(100vh - 64px)`)
-- [ ] Panel styles: `.designer-layer-panel` (full height, flex column, bg-primary, border-right), `.designer-properties-panel.props-panel` (full height, flex column, bg-primary, border-left, overflow hidden)
-- [ ] Panel header styles: `.designer-panel-header` (flex, 16px padding), `.designer-panel-title` (12px, uppercase, 600 weight, letter-spacing 0.5px)
-- [ ] Section styles: `.props-section` (border-bottom divider), `.props-section-header` (flex row, 8x12px padding, cursor pointer, hover bg secondary), `.props-section-title` (11px, 600 weight, uppercase, 0.3px letter-spacing), `.props-section-content` (8x12px padding, flex column, 8px gap)
-- [ ] Compact input styles: `.props-compact-input` (flex row, 28px height, border), `.props-compact-label` (22px width, bg tertiary, 10px font, weight 600), `.props-compact-field` (flex 1, 11px font, hide spinners), `.props-compact-suffix` (10px font, text-muted)
-- [ ] Color input styles: `.props-color-input` (flex row, gap 6px, 28px height), `.props-color-swatch` (28x28px, rounded), `.props-color-swatch.transparent` (checkered bg pattern), `.props-color-text` (monospace 11px, secondary bg)
-- [ ] Button styles: `.designer-btn` (32px height, secondary border), `.designer-btn-primary` (accent bg, white text), `.designer-btn-sm`, `.designer-template-btn` (100% width, 36px, accent bg, white, 13px font)
-- [ ] Layer item styles: `.designer-layer-item` (8x12px padding), `.designer-layer-icon` (16x16px), `.designer-layer-name` (truncate ellipsis), `.designer-layer-actions` (hidden, reveal on hover), `.designer-layer-item.selected` (accent-subtle bg, accent border)
-- [ ] Empty state styles: `.designer-empty-state` (centered flex, icon + text), `.props-empty` (flex column center, gap 8px, 40px padding, icon opacity 0.4, 12px text)
-- [ ] Resize handle styles: `.designer-resizer.vertical` (1px width, border-subtle bg, accent on hover, transition 0.2s)
-- [ ] Custom scrollbar styles: 6px width, transparent track, `--designer-border` thumb, 3px radius
+- [x] Panel layout styles: `.datasource-editor-layout`, `.datasource-editor-content` (`height: calc(100vh - 64px)`)
+- [x] Panel styles: `.designer-layer-panel` (full height, flex column, bg-primary, border-right), `.designer-properties-panel.props-panel` (full height, flex column, bg-primary, border-left, overflow hidden)
+- [x] Panel header styles: `.designer-panel-header` (flex, 16px padding), `.designer-panel-title` (12px, uppercase, 600 weight, letter-spacing 0.5px)
+- [x] Section styles: `.props-section` (border-bottom divider), `.props-section-header` (flex row, 8x12px padding, cursor pointer, hover bg secondary), `.props-section-title` (11px, 600 weight, uppercase, 0.3px letter-spacing), `.props-section-content` (8x12px padding, flex column, 8px gap)
+- [x] Compact input styles: `.props-compact-input` (flex row, 28px height, border), `.props-compact-label` (22px width, bg tertiary, 10px font, weight 600), `.props-compact-field` (flex 1, 11px font, hide spinners), `.props-compact-suffix` (10px font, text-muted)
+- [x] Color input styles: `.props-color-input` (flex row, gap 6px, 28px height), `.props-color-swatch` (28x28px, rounded), `.props-color-swatch.transparent` (checkered bg pattern), `.props-color-text` (monospace 11px, secondary bg)
+- [x] Button styles: `.designer-btn` (32px height, secondary border), `.designer-btn-primary` (accent bg, white text), `.designer-btn-sm`, `.designer-template-btn` (100% width, 36px, accent bg, white, 13px font)
+- [x] Layer item styles: `.designer-layer-item` (8x12px padding), `.designer-layer-icon` (16x16px), `.designer-layer-name` (truncate ellipsis), `.designer-layer-actions` (hidden, reveal on hover), `.designer-layer-item.selected` (accent-subtle bg, accent border)
+- [x] Empty state styles: `.designer-empty-state` (centered flex, icon + text), `.props-empty` (flex column center, gap 8px, 40px padding, icon opacity 0.4, 12px text)
+- [x] Resize handle styles: `.designer-resizer.vertical` (1px width, border-subtle bg, accent on hover, transition 0.2s)
+- [x] Custom scrollbar styles: 6px width, transparent track, `--designer-border` thumb, 3px radius
 
 ### Shared components
 - [ ] `Section.jsx` — collapsible section with `title`, `icon`, `defaultOpen` props, uses `ChevronDown`/`ChevronRight` from lucide-react, CSS classes `.props-section`, `.props-section-header`, `.props-section-content`
