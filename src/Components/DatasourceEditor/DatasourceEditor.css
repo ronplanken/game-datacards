@@ -1079,6 +1079,20 @@ select.props-compact-field {
   flex-shrink: 0;
 }
 
+/* Enum option values */
+.schema-tree-enum-option {
+  cursor: default;
+}
+
+.schema-tree-enum-option-value {
+  font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
+  font-size: 10px;
+  color: #d48806;
+  background: rgba(250, 173, 20, 0.06);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
 /* Flag (boolean property) */
 .schema-tree-flag {
   cursor: default;

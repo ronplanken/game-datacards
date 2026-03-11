@@ -346,7 +346,7 @@ Design quality:
 **Styling:** Uses `DatasourceEditor.css` classes from Phase 5 (`.designer-layer-item`, tree connectors). Center panel uses `--designer-bg-deep` background.
 
 - [x] Tree component rendering schema structure: top-level sections (stats, weaponTypes, abilities, metadata for units; fields, rules/keywords for other types)
-- [ ] Collapsible nodes for nested definitions (e.g. expand weaponTypes → ranged → columns) using `ChevronDown`/`ChevronRight` from lucide-react
+- [x] Collapsible nodes for nested definitions (e.g. expand weaponTypes → ranged → columns) using `ChevronDown`/`ChevronRight` from lucide-react
 - [ ] Field nodes show: key, label, type badge, required indicator
 - [ ] Color-coded type badges (string, richtext, enum, boolean)
 - [ ] When datasource parent selected: show overview of all card types with their field counts

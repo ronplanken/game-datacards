@@ -63,18 +63,48 @@ const TreeNode = ({ label, icon: Icon, defaultOpen = false, children, badge, dep
 
 /**
  * Renders a single field definition node.
+ * Enum fields with options are collapsible to reveal the option values.
  */
 const FieldNode = ({ field, depth }) => {
+  const [open, setOpen] = useState(false);
   const badgeClass = TYPE_BADGE_CLASSES[field.type] || "schema-type-badge";
+  const hasOptions = field.type === "enum" && Array.isArray(field.options) && field.options.length > 0;
+
   return (
     <div className="schema-tree-node">
-      <div className="schema-tree-node-header schema-tree-field" style={{ paddingLeft: 12 + depth * 16 }}>
-        <span className="schema-tree-chevron-spacer" />
+      <button
+        className={`schema-tree-node-header schema-tree-field ${hasOptions ? "expandable" : ""}`}
+        style={{ paddingLeft: 12 + depth * 16 }}
+        onClick={() => hasOptions && setOpen(!open)}
+        aria-expanded={hasOptions ? open : undefined}>
+        {hasOptions ? (
+          open ? (
+            <ChevronDown size={14} className="schema-tree-chevron" />
+          ) : (
+            <ChevronRight size={14} className="schema-tree-chevron" />
+          )
+        ) : (
+          <span className="schema-tree-chevron-spacer" />
+        )}
         <span className="schema-tree-field-key">{field.key}</span>
         {field.label && field.label !== field.key && <span className="schema-tree-field-label">{field.label}</span>}
         <span className={badgeClass}>{field.type}</span>
         {field.required && <span className="schema-tree-required">required</span>}
-      </div>
+      </button>
+      {open && hasOptions && (
+        <div className="schema-tree-children">
+          {field.options.map((opt) => (
+            <div key={opt} className="schema-tree-node">
+              <div
+                className="schema-tree-node-header schema-tree-enum-option"
+                style={{ paddingLeft: 12 + (depth + 1) * 16 }}>
+                <span className="schema-tree-chevron-spacer" />
+                <span className="schema-tree-enum-option-value">{opt}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

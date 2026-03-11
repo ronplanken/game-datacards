@@ -318,5 +318,46 @@ describe("SchemaTreeView", () => {
       await user.click(screen.getByText("Stat Profiles"));
       expect(screen.getByText("m")).toBeInTheDocument();
     });
+
+    it("expands enum field to show options", async () => {
+      const user = userEvent.setup();
+      const selectedItem = { type: "cardType", key: "battle-rules", data: mockRuleCardType };
+      render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
+
+      // First expand the Rules section (defaultOpen=true, so fields are visible)
+      // The "format" enum field should be collapsible
+      const formatField = screen.getByText("format");
+      expect(formatField).toBeInTheDocument();
+
+      // Options should not be visible yet
+      expect(screen.queryByText("name-description")).not.toBeInTheDocument();
+
+      // Click the format field to expand its options
+      await user.click(formatField);
+      expect(screen.getByText("name-description")).toBeInTheDocument();
+      expect(screen.getByText("name-only")).toBeInTheDocument();
+
+      // Click again to collapse
+      await user.click(formatField);
+      expect(screen.queryByText("name-description")).not.toBeInTheDocument();
+    });
+
+    it("does not make non-enum fields collapsible", () => {
+      const selectedItem = { type: "cardType", key: "battle-rules", data: mockRuleCardType };
+      render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
+
+      // The "name" field is type string - should not have expand/collapse chevron
+      const nameButton = screen.getByText("name").closest("button");
+      expect(nameButton).not.toHaveAttribute("aria-expanded");
+    });
+
+    it("shows chevron icons on collapsible enum fields", () => {
+      const selectedItem = { type: "cardType", key: "battle-rules", data: mockRuleCardType };
+      render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
+
+      // The "format" enum field should have a chevron-right icon (collapsed)
+      const formatButton = screen.getByText("format").closest("button");
+      expect(formatButton).toHaveAttribute("aria-expanded", "false");
+    });
   });
 });
