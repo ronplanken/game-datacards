@@ -128,7 +128,7 @@ Generic steps:
 - [x] Component tests for each step, including both wizard modes where behaviour differs
 
 Design quality:
-- [ ] Run `/frontend-design` on wizard modal and all step components
+- [x] Run `/frontend-design` on wizard modal and all step components
 - [ ] Run `/clarify` to review all labels, button text, empty states, and validation messages
 - [ ] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
 
