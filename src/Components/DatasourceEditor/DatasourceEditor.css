@@ -921,3 +921,258 @@ select.props-compact-field {
 .designer-properties-panel ::-webkit-scrollbar-thumb:hover {
   background: var(--designer-text-tertiary);
 }
+
+/* ===========================================
+   SCHEMA TREE VIEW (Center Panel)
+   =========================================== */
+
+.schema-tree-container {
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  animation: designer-fade-in 0.3s ease-out;
+}
+
+.schema-tree-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--designer-bg-primary);
+  border: 1px solid var(--designer-border-subtle);
+  border-radius: var(--designer-radius-md);
+  margin-bottom: 12px;
+}
+
+.schema-tree-header-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--designer-text-primary);
+}
+
+.schema-tree-content {
+  background: var(--designer-bg-primary);
+  border: 1px solid var(--designer-border-subtle);
+  border-radius: var(--designer-radius-md);
+  overflow: hidden;
+}
+
+.schema-tree-icon {
+  color: var(--designer-text-tertiary);
+  flex-shrink: 0;
+}
+
+/* Tree node */
+.schema-tree-node {
+  display: flex;
+  flex-direction: column;
+}
+
+.schema-tree-node-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--designer-text-secondary);
+  transition: background-color 0.1s ease;
+}
+
+.schema-tree-node-header.expandable {
+  cursor: pointer;
+}
+
+.schema-tree-node-header.expandable:hover {
+  background: var(--designer-bg-secondary);
+}
+
+.schema-tree-chevron {
+  color: var(--designer-text-muted);
+  flex-shrink: 0;
+}
+
+.schema-tree-chevron-spacer {
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.schema-tree-label {
+  font-weight: 600;
+  color: var(--designer-text-primary);
+  font-size: 12px;
+}
+
+.schema-tree-badge {
+  font-size: 10px;
+  color: var(--designer-text-muted);
+  background: var(--designer-bg-tertiary);
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+
+.schema-tree-children {
+  animation: designer-fade-in 0.15s ease-out;
+}
+
+/* Field node */
+.schema-tree-field {
+  cursor: default;
+}
+
+.schema-tree-field-key {
+  font-family: "SF Mono", "Monaco", "Inconsolata", monospace;
+  font-size: 11px;
+  color: var(--designer-text-primary);
+  font-weight: 500;
+}
+
+.schema-tree-field-label {
+  font-size: 10px;
+  color: var(--designer-text-muted);
+}
+
+/* Type badges */
+.schema-type-badge {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--designer-bg-tertiary);
+  color: var(--designer-text-tertiary);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.schema-type-badge.string {
+  background: rgba(22, 119, 255, 0.08);
+  color: #1677ff;
+}
+
+.schema-type-badge.richtext {
+  background: rgba(114, 46, 209, 0.08);
+  color: #722ed1;
+}
+
+.schema-type-badge.enum {
+  background: rgba(250, 173, 20, 0.08);
+  color: #d48806;
+}
+
+.schema-type-badge.boolean {
+  background: rgba(82, 196, 26, 0.08);
+  color: #389e0d;
+}
+
+/* Required indicator */
+.schema-tree-required {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--designer-error);
+  flex-shrink: 0;
+}
+
+/* Flag (boolean property) */
+.schema-tree-flag {
+  cursor: default;
+}
+
+.schema-tree-flag-label {
+  font-size: 11px;
+  color: var(--designer-text-tertiary);
+  font-style: italic;
+}
+
+/* Datasource overview */
+.schema-tree-overview {
+  background: var(--designer-bg-primary);
+  border: 1px solid var(--designer-border-subtle);
+  border-radius: var(--designer-radius-md);
+  overflow: hidden;
+}
+
+.schema-tree-overview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--designer-border-subtle);
+}
+
+.schema-tree-overview-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--designer-text-primary);
+}
+
+.schema-tree-overview-list {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.schema-tree-overview-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--designer-radius-sm);
+  transition: background-color 0.1s ease;
+}
+
+.schema-tree-overview-item:hover {
+  background: var(--designer-bg-secondary);
+}
+
+.schema-tree-overview-item-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--designer-text-primary);
+  flex: 1;
+}
+
+.schema-tree-overview-item-type {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--designer-text-tertiary);
+}
+
+.schema-tree-overview-item-count {
+  font-size: 11px;
+  color: var(--designer-text-muted);
+}
+
+.schema-tree-overview-empty {
+  padding: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--designer-text-muted);
+}
+
+/* Scrollbar for schema tree */
+.schema-tree-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.schema-tree-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.schema-tree-container::-webkit-scrollbar-thumb {
+  background: var(--designer-border);
+  border-radius: 3px;
+}
+
+.schema-tree-container::-webkit-scrollbar-thumb:hover {
+  background: var(--designer-text-tertiary);
+}
