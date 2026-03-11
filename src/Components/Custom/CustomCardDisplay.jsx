@@ -1,0 +1,158 @@
+import { Col } from "antd";
+import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+
+/**
+ * Resolves the schema card type definition for a given card.
+ * Matches by cardType against the schema's cardTypes array,
+ * checking both the `key` and `baseType` fields.
+ *
+ * @param {Object} card - The card to resolve
+ * @param {Object} schema - The datasource schema
+ * @returns {{ cardTypeDef: Object|null, baseType: string|null }}
+ */
+export const resolveCardType = (card, schema) => {
+  if (!card || !schema?.cardTypes?.length) {
+    return { cardTypeDef: null, baseType: null };
+  }
+
+  const cardType = card.cardType;
+
+  // Try matching by key first, then by baseType
+  const match =
+    schema.cardTypes.find((ct) => ct.key === cardType) || schema.cardTypes.find((ct) => ct.baseType === cardType);
+
+  if (match) {
+    return { cardTypeDef: match, baseType: match.baseType };
+  }
+
+  // Map legacy cardType values to baseType
+  const legacyMap = {
+    DataCard: "unit",
+    datasheet: "unit",
+  };
+
+  const mappedType = legacyMap[cardType];
+  if (mappedType) {
+    const legacyMatch = schema.cardTypes.find((ct) => ct.baseType === mappedType);
+    if (legacyMatch) {
+      return { cardTypeDef: legacyMatch, baseType: legacyMatch.baseType };
+    }
+  }
+
+  return { cardTypeDef: null, baseType: null };
+};
+
+export const CustomCardDisplay = ({
+  type,
+  card,
+  cardScaling,
+  printPadding,
+  side = "front",
+  backgrounds = "standard",
+}) => {
+  const { activeCard } = useCardStorage();
+  const { dataSource } = useDataSourceStorage();
+
+  const displayCard = card || activeCard;
+  const schema = dataSource?.schema;
+  const cardFaction = dataSource?.data?.find((faction) => faction.id === displayCard?.faction_id);
+
+  const { cardTypeDef, baseType } = resolveCardType(displayCard, schema);
+
+  // Get colours from faction or custom overrides
+  const headerColour = displayCard?.useCustomColours
+    ? displayCard.customHeaderColour || cardFaction?.colours?.header
+    : cardFaction?.colours?.header;
+  const bannerColour = displayCard?.useCustomColours
+    ? displayCard.customBannerColour || cardFaction?.colours?.banner
+    : cardFaction?.colours?.banner;
+
+  const cardStyle = {
+    "--header-colour": headerColour,
+    "--banner-colour": bannerColour,
+  };
+
+  if (!displayCard || !schema) {
+    return null;
+  }
+
+  if (!cardTypeDef) {
+    return (
+      <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
+        <div className="data-custom" style={{ padding: "24px", textAlign: "center", color: "rgba(0,0,0,0.45)" }}>
+          Unknown card type: {displayCard.cardType}
+        </div>
+      </Col>
+    );
+  }
+
+  // Render based on display mode (normal, print, viewer)
+  const renderCard = () => {
+    // Placeholder: delegates to type-specific renderers once they exist
+    // CustomUnitCard, CustomRuleCard, etc. will be created in subsequent tasks
+    switch (baseType) {
+      case "unit":
+        return (
+          <div className="custom-card custom-unit-card" style={cardStyle} data-testid="custom-unit-card">
+            <div className="custom-card-header">{displayCard.name || "Untitled Unit"}</div>
+            <div className="custom-card-body">Unit card renderer (Phase 7)</div>
+          </div>
+        );
+      case "rule":
+        return (
+          <div className="custom-card custom-rule-card" style={cardStyle} data-testid="custom-rule-card">
+            <div className="custom-card-header">{displayCard.name || "Untitled Rule"}</div>
+            <div className="custom-card-body">Rule card renderer (Phase 7)</div>
+          </div>
+        );
+      case "enhancement":
+        return (
+          <div className="custom-card custom-enhancement-card" style={cardStyle} data-testid="custom-enhancement-card">
+            <div className="custom-card-header">{displayCard.name || "Untitled Enhancement"}</div>
+            <div className="custom-card-body">Enhancement card renderer (Phase 7)</div>
+          </div>
+        );
+      case "stratagem":
+        return (
+          <div className="custom-card custom-stratagem-card" style={cardStyle} data-testid="custom-stratagem-card">
+            <div className="custom-card-header">{displayCard.name || "Untitled Stratagem"}</div>
+            <div className="custom-card-body">Stratagem card renderer (Phase 7)</div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <>
+      {!type && activeCard && (
+        <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
+          {renderCard()}
+        </Col>
+      )}
+      {!type && card && renderCard()}
+      {type === "print" && card && (
+        <div
+          className="data-custom"
+          style={{
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
+          }}>
+          {renderCard()}
+        </div>
+      )}
+      {type === "viewer" && (
+        <div
+          className="data-custom"
+          style={{
+            transformOrigin: "0% 0%",
+            ...(cardScaling && { transform: `scale(${cardScaling / 100})` }),
+          }}>
+          {renderCard()}
+        </div>
+      )}
+    </>
+  );
+};
