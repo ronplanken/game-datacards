@@ -211,12 +211,12 @@ Design quality:
 - [x] `index.js` barrel export
 
 ### Page layout
-- [ ] `DatasourceEditorPage` with `<Layout className="datasource-editor-layout">` > `<AppHeader showModals={false} showNav={true} showActions={false} />` > `<Content className="datasource-editor-content">` > `<PanelGroup direction="horizontal" autoSaveId="datasourceEditorLayout">`
-- [ ] Left Panel: `<Panel defaultSize={18} minSize={12} maxSize={30} order={1}>`
-- [ ] Center Panel: `<Panel defaultSize={52} minSize={30} order={2}>`
-- [ ] Right Panel: `<Panel defaultSize={22} minSize={15} maxSize={35} order={3}>`
-- [ ] `<PanelResizeHandle className="designer-resizer vertical" />` between panels
-- [ ] Import `DatasourceEditor.css` in the page component
+- [x] `DatasourceEditorPage` with `<Layout className="datasource-editor-layout">` > `<AppHeader showModals={false} showNav={true} showActions={false} />` > `<Content className="datasource-editor-content">` > `<PanelGroup direction="horizontal" autoSaveId="datasourceEditorLayout">`
+- [x] Left Panel: `<Panel defaultSize={18} minSize={12} maxSize={30} order={1}>`
+- [x] Center Panel: `<Panel defaultSize={52} minSize={30} order={2}>`
+- [x] Right Panel: `<Panel defaultSize={22} minSize={15} maxSize={35} order={3}>`
+- [x] `<PanelResizeHandle className="designer-resizer vertical" />` between panels
+- [x] Import `DatasourceEditor.css` in the page component
 
 ### EditorLeftPanel
 - [ ] Container: `.designer-layer-panel` (full height, flex column, bg-primary, border-right)
