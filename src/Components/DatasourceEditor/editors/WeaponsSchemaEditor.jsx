@@ -84,6 +84,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
 
   return (
     <Section title="Weapon Types" icon={Swords} defaultOpen={true}>
+      {types.length === 0 && <div className="props-field-list-empty">No weapon types defined yet</div>}
       {types.length > 0 && (
         <div className="props-weapon-tabs" role="tablist" aria-label="Weapon types">
           {types.map((wt, index) => (
@@ -147,6 +148,9 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
           </div>
 
           <div className="props-field-list">
+            {(activeType.columns || []).length === 0 && (
+              <div className="props-field-list-empty">No columns defined yet</div>
+            )}
             {(activeType.columns || []).map((col, colIndex) => (
               <div key={col.key + "-" + colIndex} className="props-field-item">
                 <div className="props-field-item-inputs">

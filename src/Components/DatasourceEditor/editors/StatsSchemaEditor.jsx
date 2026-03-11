@@ -63,6 +63,7 @@ export const StatsSchemaEditor = ({ schema, onChange }) => {
       </label>
 
       <div className="props-field-list">
+        {fields.length === 0 && <div className="props-field-list-empty">No stat fields defined yet</div>}
         {fields.map((field, index) => (
           <div key={field.key + "-" + index} className="props-field-item">
             <div className="props-field-item-inputs">

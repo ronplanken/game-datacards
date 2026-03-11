@@ -543,6 +543,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  animation: designer-fade-in 0.2s ease-out;
 }
 
 /* ===========================================
@@ -568,7 +569,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
+  min-width: 22px;
+  padding: 0 6px;
   height: 100%;
   background: var(--designer-bg-tertiary);
   color: var(--designer-text-tertiary);
@@ -576,6 +578,7 @@
   font-weight: 600;
   flex-shrink: 0;
   border-right: 1px solid var(--designer-border);
+  white-space: nowrap;
 }
 
 .props-compact-field {
@@ -588,6 +591,17 @@
   color: var(--designer-text-primary);
   font-size: 11px;
   min-width: 0;
+}
+
+select.props-compact-field {
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='rgba(0,0,0,0.35)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  padding-right: 20px;
 }
 
 .props-compact-field::-webkit-inner-spin-button,
@@ -690,6 +704,15 @@
   user-select: none;
 }
 
+.props-checkbox:hover {
+  color: var(--designer-text-primary);
+}
+
+.props-checkbox input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--designer-accent);
+  outline-offset: 1px;
+}
+
 /* ===========================================
    FIELD LIST EDITOR
    =========================================== */
@@ -700,6 +723,16 @@
   gap: 6px;
 }
 
+.props-field-list-empty {
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--designer-text-muted);
+  background: var(--designer-bg-secondary);
+  border: 1px dashed var(--designer-border-subtle);
+  border-radius: var(--designer-radius-sm);
+}
+
 .props-field-item {
   display: flex;
   align-items: flex-start;
@@ -708,11 +741,14 @@
   background: var(--designer-bg-secondary);
   border: 1px solid var(--designer-border-subtle);
   border-radius: var(--designer-radius-sm);
-  transition: border-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .props-field-item:hover {
   border-color: var(--designer-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .props-field-item-inputs {
@@ -772,6 +808,7 @@
   background: var(--designer-accent-subtle);
   border-color: var(--designer-accent);
   color: var(--designer-accent);
+  font-weight: 600;
 }
 
 .props-weapon-tab-label {
@@ -805,6 +842,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.props-field-list + .designer-btn {
+  margin-top: 4px;
 }
 
 .props-field-list-header {

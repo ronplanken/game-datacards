@@ -68,6 +68,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
       </label>
 
       <div className="props-field-list">
+        {categories.length === 0 && <div className="props-field-list-empty">No categories defined yet</div>}
         {categories.map((category, index) => (
           <div key={category.key + "-" + index} className="props-field-item">
             <div className="props-field-item-inputs">
