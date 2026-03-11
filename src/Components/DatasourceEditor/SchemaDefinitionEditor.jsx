@@ -23,7 +23,7 @@ export const SchemaDefinitionEditor = ({ selectedItem = null, activeDatasource =
       <div className="props-empty">
         <Settings size={32} />
         <p>Select a datasource or card type</p>
-        <p style={{ fontSize: 11, color: "var(--designer-text-muted)" }}>Details and settings will appear here</p>
+        <p className="props-empty-subtitle">Details and settings will appear here</p>
       </div>
     );
   }

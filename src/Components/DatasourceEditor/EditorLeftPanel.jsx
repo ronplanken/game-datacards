@@ -47,10 +47,10 @@ export const EditorLeftPanel = ({
   if (!activeDatasource && datasources.length === 0) {
     return (
       <div className="designer-layer-panel">
-        <div className="designer-empty-state" style={{ flex: 1 }}>
+        <div className="designer-empty-state full-height">
           <Database />
           <p>No custom datasources yet</p>
-          <p>Define custom card types and field layouts</p>
+          <p className="designer-empty-state-subtitle">Define custom card types and field layouts</p>
           <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Create new datasource">
             <Plus size={14} />
             New Datasource

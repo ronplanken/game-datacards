@@ -19,6 +19,8 @@
   --designer-success: #52c41a;
   --designer-warning: #faad14;
   --designer-error: #ff4d4f;
+  --designer-canvas-bg: #e8e8e8;
+  --designer-grid-color: rgba(0, 0, 0, 0.06);
   --designer-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   --designer-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.12);
   --designer-radius-sm: 4px;
@@ -44,7 +46,7 @@
 @keyframes designer-dialog-in {
   from {
     opacity: 0;
-    transform: scale(0.95) translateY(8px);
+    transform: scale(0.95) translateY(10px);
   }
   to {
     opacity: 1;
@@ -456,6 +458,16 @@
   padding: 0 20px;
 }
 
+.designer-empty-state.full-height {
+  flex: 1;
+}
+
+.designer-empty-state-subtitle {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--designer-text-muted);
+}
+
 /* ===========================================
    CENTER PANEL
    =========================================== */
@@ -465,7 +477,7 @@
   display: flex;
   flex-direction: column;
   background: var(--designer-bg-deep);
-  background-image: radial-gradient(circle, var(--designer-border-subtle) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--designer-grid-color) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -532,6 +544,11 @@
   margin: 0;
   font-size: 12px;
   color: var(--designer-text-tertiary);
+}
+
+.props-empty-subtitle {
+  font-size: 11px;
+  color: var(--designer-text-muted);
 }
 
 /* ===========================================
@@ -1338,7 +1355,7 @@ select.props-compact-field {
   width: 360px;
   max-width: 90vw;
   overflow: hidden;
-  animation: designer-dialog-in 0.2s ease-out;
+  animation: designer-dialog-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .designer-confirm-header {

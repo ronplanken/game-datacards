@@ -381,7 +381,7 @@ Design quality:
 Design quality:
 - [x] Run `/frontend-design` on any new UI (confirmation dialogs, import/export flows)
 - [x] Run `/clarify` to review confirmation messages, export/import labels, and error states
-- [ ] Run `/normalize` final pass across all editor components for full design system consistency
+- [x] Run `/normalize` final pass across all editor components for full design system consistency
 
 ---
 
