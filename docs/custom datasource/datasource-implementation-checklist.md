@@ -122,7 +122,7 @@ Unit steps:
 
 Generic steps:
 - [x] StepFields - reusable editable field list, used by rule/enhancement/stratagem for their top-level `fields[]` definition, type dropdown per field, conditional enum options editor
-- [ ] StepRules - configure `rules` collection field definitions, allowMultiple toggle
+- [x] StepRules - configure `rules` collection field definitions, allowMultiple toggle
 - [ ] StepKeywords - configure `keywords` collection field definitions, allowMultiple toggle
 
 - [ ] Component tests for each step, including both wizard modes where behaviour differs
