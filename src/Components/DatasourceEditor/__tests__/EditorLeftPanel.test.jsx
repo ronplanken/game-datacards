@@ -15,6 +15,7 @@ vi.mock("lucide-react", () => ({
   ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
   Download: (props) => <svg data-testid="icon-download" {...props} />,
+  Upload: (props) => <svg data-testid="icon-upload" {...props} />,
 }));
 
 const mockDatasource = {
@@ -96,6 +97,11 @@ describe("EditorLeftPanel", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
       expect(screen.getByText("Export")).toBeInTheDocument();
     });
+
+    it("renders Import button when datasource is active", () => {
+      render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+      expect(screen.getByText("Import")).toBeInTheDocument();
+    });
   });
 
   describe("interactions", () => {
@@ -171,6 +177,20 @@ describe("EditorLeftPanel", () => {
       );
       await user.click(screen.getByText("Export"));
       expect(onExportDatasource).toHaveBeenCalledWith(mockDatasource);
+    });
+
+    it("calls onImportSchema when Import button clicked", async () => {
+      const user = userEvent.setup();
+      const onImportSchema = vi.fn();
+      render(
+        <EditorLeftPanel
+          datasources={mockDatasources}
+          activeDatasource={mockDatasource}
+          onImportSchema={onImportSchema}
+        />,
+      );
+      await user.click(screen.getByText("Import"));
+      expect(onImportSchema).toHaveBeenCalledTimes(1);
     });
 
     it("toggles datasource list on Your Datasources click", async () => {

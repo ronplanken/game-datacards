@@ -11,6 +11,7 @@ import {
   ChevronRight,
   ChevronUp,
   Download,
+  Upload,
 } from "lucide-react";
 
 const BASETYPE_ICONS = {
@@ -38,6 +39,7 @@ export const EditorLeftPanel = ({
   onDeleteCardType,
   onReorderCardTypes,
   onExportDatasource,
+  onImportSchema,
   onOpenDatasource,
 }) => {
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
@@ -112,6 +114,14 @@ export const EditorLeftPanel = ({
               aria-label="Export datasource schema">
               <Download size={12} />
               Export
+            </button>
+            <button
+              className="designer-btn designer-btn-sm"
+              onClick={() => onImportSchema?.()}
+              title="Import schema from JSON"
+              aria-label="Import datasource schema">
+              <Upload size={12} />
+              Import
             </button>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { AppHeader } from "../Components/AppHeader";
 import { EditorLeftPanel } from "../Components/DatasourceEditor/EditorLeftPanel";
 import { EditorCenterPanel } from "../Components/DatasourceEditor/EditorCenterPanel";
 import { EditorRightPanel } from "../Components/DatasourceEditor/EditorRightPanel";
-import { ConfirmDialog } from "../Components/DatasourceEditor/components";
+import { ConfirmDialog, ImportSchemaDialog } from "../Components/DatasourceEditor/components";
 import { DatasourceWizard } from "../Components/DatasourceWizard";
 import { useDatasourceEditorState } from "../Components/DatasourceEditor/hooks/useDatasourceEditorState";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -38,6 +38,9 @@ export const DatasourceEditorPage = () => {
 
   // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState(null);
+
+  // Import dialog state
+  const [importOpen, setImportOpen] = useState(false);
 
   const handleNewDatasource = useCallback(() => {
     setWizardMode("create");
@@ -125,6 +128,44 @@ export const DatasourceEditorPage = () => {
     downloadJsonFile(schemaExport, filename);
   }, []);
 
+  const handleOpenImport = useCallback(() => {
+    setImportOpen(true);
+  }, []);
+
+  const handleImportSchema = useCallback(
+    async (importedData) => {
+      setImportOpen(false);
+      if (!activeDatasource) return;
+
+      // Merge imported schema into the active datasource
+      const updatedDatasource = {
+        ...activeDatasource,
+        name: importedData.name || activeDatasource.name,
+        version: importedData.version || activeDatasource.version,
+        author: importedData.author || activeDatasource.author,
+        schema: importedData.schema || activeDatasource.schema,
+      };
+
+      // Merge faction colours if present
+      if (importedData.factions && Array.isArray(importedData.factions) && activeDatasource.data) {
+        updatedDatasource.data = activeDatasource.data.map((faction, i) => {
+          const importedFaction = importedData.factions[i];
+          if (importedFaction?.colours) {
+            return { ...faction, colours: importedFaction.colours };
+          }
+          return faction;
+        });
+      }
+
+      await updateDatasource(updatedDatasource);
+    },
+    [activeDatasource, updateDatasource],
+  );
+
+  const handleCancelImport = useCallback(() => {
+    setImportOpen(false);
+  }, []);
+
   const handleReorderCardTypes = useCallback(
     async (reorderedCardTypes) => {
       if (!activeDatasource) return;
@@ -158,6 +199,7 @@ export const DatasourceEditorPage = () => {
               onDeleteCardType={handleDeleteCardType}
               onReorderCardTypes={handleReorderCardTypes}
               onExportDatasource={handleExportDatasource}
+              onImportSchema={handleOpenImport}
             />
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />
@@ -188,6 +230,7 @@ export const DatasourceEditorPage = () => {
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />
+      <ImportSchemaDialog open={importOpen} onImport={handleImportSchema} onCancel={handleCancelImport} />
     </Layout>
   );
 };

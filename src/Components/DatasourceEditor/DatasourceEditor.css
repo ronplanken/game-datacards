@@ -1350,3 +1350,111 @@ select.props-compact-field {
   background: #ff7875;
   border-color: #ff7875;
 }
+
+/* ===========================================
+   IMPORT SCHEMA DIALOG
+   =========================================== */
+
+.designer-import-dialog {
+  max-width: 460px;
+}
+
+.designer-import-dialog .designer-confirm-header svg {
+  color: var(--designer-accent);
+}
+
+.designer-import-description {
+  font-size: 12px;
+  color: var(--designer-text-secondary);
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.designer-import-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  border: 2px dashed var(--designer-border);
+  border-radius: var(--designer-radius-md);
+  background: var(--designer-bg-secondary);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  font-size: 12px;
+  color: var(--designer-text-tertiary);
+}
+
+.designer-import-dropzone:hover {
+  border-color: var(--designer-accent);
+  background: var(--designer-accent-subtle);
+}
+
+.designer-import-dropzone svg {
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+}
+
+.designer-import-file-input {
+  display: none;
+}
+
+.designer-import-filename {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--designer-text-primary);
+}
+
+.designer-import-preview {
+  margin-top: 12px;
+}
+
+.designer-import-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.designer-import-status-valid {
+  color: var(--designer-success);
+}
+
+.designer-import-status-invalid {
+  color: var(--designer-error);
+}
+
+.designer-import-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--designer-text-tertiary);
+}
+
+.designer-import-meta span::after {
+  content: "\00b7";
+  margin-left: 8px;
+}
+
+.designer-import-meta span:last-child::after {
+  content: "";
+  margin-left: 0;
+}
+
+.designer-import-errors {
+  margin-top: 12px;
+}
+
+.designer-import-error-list {
+  margin: 0;
+  padding: 0 0 0 16px;
+  font-size: 11px;
+  color: var(--designer-error);
+  line-height: 1.6;
+}

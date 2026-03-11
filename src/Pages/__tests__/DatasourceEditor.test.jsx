@@ -65,8 +65,9 @@ vi.mock("../../Components/DatasourceWizard", () => ({
   },
 }));
 
-// Mock ConfirmDialog to capture props
+// Mock ConfirmDialog and ImportSchemaDialog to capture props
 let capturedConfirmProps = {};
+let capturedImportProps = {};
 vi.mock("../../Components/DatasourceEditor/components", () => ({
   ConfirmDialog: (props) => {
     capturedConfirmProps = props;
@@ -83,10 +84,21 @@ vi.mock("../../Components/DatasourceEditor/components", () => ({
       </div>
     ) : null;
   },
+  ImportSchemaDialog: (props) => {
+    capturedImportProps = props;
+    return props.open ? <div data-testid="import-dialog">Import Dialog</div> : null;
+  },
 }));
 
 // Mock CSS import
 vi.mock("../../Components/DatasourceEditor/DatasourceEditor.css", () => ({}));
+
+// Mock helpers
+vi.mock("../../Helpers/customDatasource.helpers", () => ({
+  exportDatasourceSchema: vi.fn((ds) => ({ name: ds?.name, schema: ds?.schema })),
+  downloadJsonFile: vi.fn(),
+  generateDatasourceFilename: vi.fn((name) => `${name}-datasource.json`),
+}));
 
 // Mock storage hooks
 const mockCreateCustomDatasource = vi.fn().mockResolvedValue({ success: true, id: "custom-new-123" });
@@ -147,6 +159,7 @@ describe("DatasourceEditorPage", () => {
     capturedLeftPanelProps = {};
     capturedWizardProps = {};
     capturedConfirmProps = {};
+    capturedImportProps = {};
     editorStateOverrides = {};
     mockCreateCustomDatasource.mockClear();
     mockGetCustomDatasourceData.mockClear();
