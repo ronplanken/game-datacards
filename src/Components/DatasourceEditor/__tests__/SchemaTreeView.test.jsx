@@ -267,6 +267,12 @@ describe("SchemaTreeView", () => {
       expect(stringBadges.length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("richtext")).toBeInTheDocument();
     });
+
+    it("applies color-coded CSS classes to richtext type badge", () => {
+      render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
+      const richtextBadge = screen.getByText("richtext");
+      expect(richtextBadge).toHaveClass("schema-type-badge", "richtext");
+    });
   });
 
   describe("enhancement card type tree", () => {
@@ -298,6 +304,22 @@ describe("SchemaTreeView", () => {
       expect(stringBadges.length).toBeGreaterThanOrEqual(1);
       expect(screen.getByText("enum")).toBeInTheDocument();
       expect(screen.getByText("boolean")).toBeInTheDocument();
+    });
+
+    it("applies color-coded CSS classes to type badges", () => {
+      render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
+
+      // string badge gets "schema-type-badge string" class
+      const stringBadge = screen.getAllByText("string").find((el) => el.classList.contains("schema-type-badge"));
+      expect(stringBadge).toHaveClass("schema-type-badge", "string");
+
+      // enum badge gets "schema-type-badge enum" class
+      const enumBadge = screen.getByText("enum");
+      expect(enumBadge).toHaveClass("schema-type-badge", "enum");
+
+      // boolean badge gets "schema-type-badge boolean" class
+      const booleanBadge = screen.getByText("boolean");
+      expect(booleanBadge).toHaveClass("schema-type-badge", "boolean");
     });
   });
 
