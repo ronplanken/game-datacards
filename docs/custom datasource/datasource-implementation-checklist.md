@@ -125,7 +125,7 @@ Generic steps:
 - [x] StepRules - configure `rules` collection field definitions, allowMultiple toggle
 - [x] StepKeywords - configure `keywords` collection field definitions, allowMultiple toggle
 
-- [ ] Component tests for each step, including both wizard modes where behaviour differs
+- [x] Component tests for each step, including both wizard modes where behaviour differs
 
 Design quality:
 - [ ] Run `/frontend-design` on wizard modal and all step components
