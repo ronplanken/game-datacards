@@ -327,7 +327,7 @@ Design quality:
 - [x] CustomCardAbilities: grouped by category with format from schema
 - [x] Support `--header-colour` / `--banner-colour` CSS variables
 - [x] Check Mobile.js for a card source switch and add custom source rendering support so custom cards display correctly on mobile
-- [ ] Component tests
+- [x] Component tests
 
 Design quality:
 - [ ] Run `/frontend-design` on card renderer components and layout
