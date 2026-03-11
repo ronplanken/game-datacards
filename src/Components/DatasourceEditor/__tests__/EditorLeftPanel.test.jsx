@@ -12,6 +12,7 @@ vi.mock("lucide-react", () => ({
   Zap: (props) => <svg data-testid="icon-zap" {...props} />,
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
+  ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
 }));
 
@@ -176,6 +177,76 @@ describe("EditorLeftPanel", () => {
       );
       const infantryItem = screen.getByText("Infantry").closest(".designer-layer-item");
       expect(infantryItem).toHaveClass("selected");
+    });
+
+    it("renders move up and move down buttons for card type items", () => {
+      render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+      expect(screen.getAllByTitle("Move up").length).toBe(2);
+      expect(screen.getAllByTitle("Move down").length).toBe(2);
+    });
+
+    it("disables move up on first card type", () => {
+      render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+      const moveUpButtons = screen.getAllByTitle("Move up");
+      expect(moveUpButtons[0]).toBeDisabled();
+    });
+
+    it("disables move down on last card type", () => {
+      render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+      const moveDownButtons = screen.getAllByTitle("Move down");
+      expect(moveDownButtons[moveDownButtons.length - 1]).toBeDisabled();
+    });
+
+    it("calls onReorderCardTypes with swapped array when move down clicked", async () => {
+      const user = userEvent.setup();
+      const onReorderCardTypes = vi.fn();
+      render(
+        <EditorLeftPanel
+          datasources={mockDatasources}
+          activeDatasource={mockDatasource}
+          onReorderCardTypes={onReorderCardTypes}
+        />,
+      );
+      const moveDownButtons = screen.getAllByTitle("Move down");
+      await user.click(moveDownButtons[0]);
+      expect(onReorderCardTypes).toHaveBeenCalledTimes(1);
+      const reordered = onReorderCardTypes.mock.calls[0][0];
+      expect(reordered[0].key).toBe("battle-rules");
+      expect(reordered[1].key).toBe("infantry");
+    });
+
+    it("calls onReorderCardTypes with swapped array when move up clicked", async () => {
+      const user = userEvent.setup();
+      const onReorderCardTypes = vi.fn();
+      render(
+        <EditorLeftPanel
+          datasources={mockDatasources}
+          activeDatasource={mockDatasource}
+          onReorderCardTypes={onReorderCardTypes}
+        />,
+      );
+      const moveUpButtons = screen.getAllByTitle("Move up");
+      // Click move up on the second card type (index 1)
+      await user.click(moveUpButtons[1]);
+      expect(onReorderCardTypes).toHaveBeenCalledTimes(1);
+      const reordered = onReorderCardTypes.mock.calls[0][0];
+      expect(reordered[0].key).toBe("battle-rules");
+      expect(reordered[1].key).toBe("infantry");
+    });
+
+    it("does not call onReorderCardTypes when move up clicked on first item", async () => {
+      const user = userEvent.setup();
+      const onReorderCardTypes = vi.fn();
+      render(
+        <EditorLeftPanel
+          datasources={mockDatasources}
+          activeDatasource={mockDatasource}
+          onReorderCardTypes={onReorderCardTypes}
+        />,
+      );
+      const moveUpButtons = screen.getAllByTitle("Move up");
+      await user.click(moveUpButtons[0]);
+      expect(onReorderCardTypes).not.toHaveBeenCalled();
     });
 
     it("highlights selected datasource", () => {

@@ -371,7 +371,7 @@ Design quality:
 
 - [x] "Add Card Type" in left panel opens DatasourceWizard in `add-card-type` mode, appends result to schema
 - [x] Delete card type via `.designer-layer-actions` hover icon (`Trash2`) with confirmation
-- [ ] Reorder card types via drag or move-up/move-down actions
+- [x] Reorder card types via drag or move-up/move-down actions
 - [ ] Export datasource schema as JSON
 - [ ] Import datasource schema with validation
 - [ ] Inline schema editing via right panel persists changes to localForage

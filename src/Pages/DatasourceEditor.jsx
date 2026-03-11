@@ -113,6 +113,21 @@ export const DatasourceEditorPage = () => {
     setDeleteTarget(null);
   }, []);
 
+  const handleReorderCardTypes = useCallback(
+    async (reorderedCardTypes) => {
+      if (!activeDatasource) return;
+      const updatedDatasource = {
+        ...activeDatasource,
+        schema: {
+          ...activeDatasource.schema,
+          cardTypes: reorderedCardTypes,
+        },
+      };
+      await updateDatasource(updatedDatasource);
+    },
+    [activeDatasource, updateDatasource],
+  );
+
   return (
     <Layout className="datasource-editor-layout">
       <AppHeader showModals={false} showNav={true} showActions={false} />
@@ -129,6 +144,7 @@ export const DatasourceEditorPage = () => {
               onNewDatasource={handleNewDatasource}
               onAddCardType={handleAddCardType}
               onDeleteCardType={handleDeleteCardType}
+              onReorderCardTypes={handleReorderCardTypes}
             />
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />

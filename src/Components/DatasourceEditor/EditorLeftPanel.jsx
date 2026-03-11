@@ -1,5 +1,16 @@
 import { useState } from "react";
-import { Database, Plus, Swords, BookOpen, Sparkles, Zap, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Database,
+  Plus,
+  Swords,
+  BookOpen,
+  Sparkles,
+  Zap,
+  Trash2,
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+} from "lucide-react";
 
 const BASETYPE_ICONS = {
   unit: Swords,
@@ -24,6 +35,7 @@ export const EditorLeftPanel = ({
   onNewDatasource,
   onAddCardType,
   onDeleteCardType,
+  onReorderCardTypes,
   onOpenDatasource,
 }) => {
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
@@ -113,18 +125,60 @@ export const EditorLeftPanel = ({
 
             {/* Card type children */}
             <div className="designer-layer-nested">
-              {cardTypes.map((cardType) => {
+              {cardTypes.map((cardType, index) => {
                 const Icon = BASETYPE_ICONS[cardType.baseType] || BookOpen;
                 return (
-                  <button
+                  <div
                     key={cardType.key}
                     className={`designer-layer-item ${
                       selectedItem?.type === "cardType" && selectedItem?.key === cardType.key ? "selected" : ""
                     }`}
-                    onClick={() => onSelectCardType?.(cardType)}>
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onSelectCardType?.(cardType)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onSelectCardType?.(cardType);
+                      }
+                    }}>
                     <Icon className="designer-layer-icon" />
                     <span className="designer-layer-name">{cardType.label}</span>
                     <span className="designer-layer-actions">
+                      <button
+                        className="designer-layer-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (index > 0) {
+                            const reordered = [...cardTypes];
+                            const temp = reordered[index];
+                            reordered[index] = reordered[index - 1];
+                            reordered[index - 1] = temp;
+                            onReorderCardTypes?.(reordered);
+                          }
+                        }}
+                        disabled={index === 0}
+                        title="Move up"
+                        aria-label={`Move ${cardType.label} up`}>
+                        <ChevronUp size={14} />
+                      </button>
+                      <button
+                        className="designer-layer-action-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (index < cardTypes.length - 1) {
+                            const reordered = [...cardTypes];
+                            const temp = reordered[index];
+                            reordered[index] = reordered[index + 1];
+                            reordered[index + 1] = temp;
+                            onReorderCardTypes?.(reordered);
+                          }
+                        }}
+                        disabled={index === cardTypes.length - 1}
+                        title="Move down"
+                        aria-label={`Move ${cardType.label} down`}>
+                        <ChevronDown size={14} />
+                      </button>
                       <button
                         className="designer-layer-action-btn danger"
                         onClick={(e) => {
@@ -135,7 +189,7 @@ export const EditorLeftPanel = ({
                         <Trash2 size={14} />
                       </button>
                     </span>
-                  </button>
+                  </div>
                 );
               })}
             </div>
