@@ -130,7 +130,7 @@ Generic steps:
 Design quality:
 - [x] Run `/frontend-design` on wizard modal and all step components
 - [x] Run `/clarify` to review all labels, button text, empty states, and validation messages
-- [ ] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
+- [x] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
 
 ---
 

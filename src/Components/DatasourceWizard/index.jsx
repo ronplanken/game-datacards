@@ -40,7 +40,7 @@ const WizardSidebar = ({ steps, currentStepIndex, completedSteps, onStepClick })
                 onStepClick(index);
               }
             }}>
-            <div className="dsw-sidebar-marker">{isCompleted ? <Check size={12} /> : <span>{index + 1}</span>}</div>
+            <div className="dsw-sidebar-marker">{isCompleted ? <Check size={14} /> : <span>{index + 1}</span>}</div>
             <span className="dsw-sidebar-title">{step.title}</span>
           </div>
         );
@@ -225,7 +225,7 @@ export const DatasourceWizard = ({ open, onClose, onComplete, existingDatasource
           <div className="dsw-footer-left">
             {!wizard.isFirstStep && (
               <button className="dsw-btn dsw-btn--secondary" onClick={wizard.goPrevious} data-testid="dsw-btn-previous">
-                <ChevronLeft size={14} />
+                <ChevronLeft size={16} />
                 Previous
               </button>
             )}
@@ -244,7 +244,7 @@ export const DatasourceWizard = ({ open, onClose, onComplete, existingDatasource
                 disabled={!wizard.canProceed}
                 data-testid="dsw-btn-next">
                 Next
-                <ChevronRight size={14} />
+                <ChevronRight size={16} />
               </button>
             )}
             {wizard.isLastStep && (
