@@ -3,6 +3,11 @@ import { render, screen } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { CustomCardDisplay, resolveCardType } from "../CustomCardDisplay";
 
+// Mock react-fitty (used by CustomUnitCard)
+vi.mock("react-fitty", () => ({
+  ReactFitty: ({ children }) => <span>{children}</span>,
+}));
+
 // Mock hooks
 const mockActiveCard = { ref: null };
 const mockDataSource = { ref: null };

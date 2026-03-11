@@ -321,7 +321,7 @@ Design quality:
 - `src/Mobile.js` - Check if the mobile view has a similar card source switch and add `custom` source support if needed, so custom cards render correctly on mobile devices
 
 - [x] CustomCardDisplay: looks up datasource schema, delegates to card type renderer
-- [ ] CustomUnitCard: layout based on 40K style but with dynamic stat headers from schema
+- [x] CustomUnitCard: layout based on 40K style but with dynamic stat headers from schema
 - [ ] CustomCardStats: iterate `schema.stats.fields` for columns
 - [ ] CustomCardWeapons: render table per weapon type with schema-defined columns
 - [ ] CustomCardAbilities: grouped by category with format from schema

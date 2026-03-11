@@ -1,6 +1,7 @@
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { CustomUnitCard } from "./CustomUnitCard";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -89,16 +90,9 @@ export const CustomCardDisplay = ({
 
   // Render based on display mode (normal, print, viewer)
   const renderCard = () => {
-    // Placeholder: delegates to type-specific renderers once they exist
-    // CustomUnitCard, CustomRuleCard, etc. will be created in subsequent tasks
     switch (baseType) {
       case "unit":
-        return (
-          <div className="custom-card custom-unit-card" style={cardStyle} data-testid="custom-unit-card">
-            <div className="custom-card-header">{displayCard.name || "Untitled Unit"}</div>
-            <div className="custom-card-body">Unit card renderer (Phase 7)</div>
-          </div>
-        );
+        return <CustomUnitCard unit={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
       case "rule":
         return (
           <div className="custom-card custom-rule-card" style={cardStyle} data-testid="custom-rule-card">
