@@ -9,7 +9,11 @@ export const Section = ({ title, icon: Icon, defaultOpen = true, children }) => 
 
   return (
     <div className="props-section">
-      <button className="props-section-header" onClick={() => setIsOpen(!isOpen)}>
+      <button
+        className="props-section-header"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-label={`${isOpen ? "Collapse" : "Expand"} ${title}`}>
         {Icon && <Icon size={12} stroke={1.5} className="props-section-icon" />}
         <span className="props-section-title">{title}</span>
         {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}

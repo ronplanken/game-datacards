@@ -15,6 +15,7 @@ export const CompactInput = ({ label, value, onChange, type = "number", suffix, 
       max={max}
       step={step}
       className="props-compact-field"
+      aria-label={label}
     />
     {suffix && <span className="props-compact-suffix">{suffix}</span>}
   </div>

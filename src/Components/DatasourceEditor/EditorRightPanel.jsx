@@ -57,12 +57,21 @@ export const EditorRightPanel = ({ selectedItem = null, activeDatasource = null 
     );
   };
 
+  const headerTitle =
+    selectedItem?.type === "datasource" ? "Datasource" : selectedItem?.type === "cardType" ? "Card Type" : "Properties";
+
   return (
     <div className="designer-properties-panel props-panel">
+      {selectedItem && (
+        <div className="props-panel-header">
+          <h3 className="props-panel-header-title">{headerTitle}</h3>
+        </div>
+      )}
       {!selectedItem && (
         <div className="props-empty">
           <Settings size={32} />
           <p>Select a datasource or card type</p>
+          <p style={{ fontSize: 11, color: "var(--designer-text-muted)" }}>Properties will appear here</p>
         </div>
       )}
       {selectedItem?.type === "datasource" && renderDatasourceMetadata()}

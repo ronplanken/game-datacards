@@ -34,7 +34,8 @@ export const EditorLeftPanel = ({
         <div className="designer-empty-state" style={{ flex: 1 }}>
           <Database />
           <p>No custom datasources yet</p>
-          <button className="designer-template-btn" style={{ width: "auto", marginTop: 12 }} onClick={onNewDatasource}>
+          <p>Create one to define your own card formats</p>
+          <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Create new datasource">
             <Plus size={14} />
             New Datasource
           </button>
@@ -57,16 +58,13 @@ export const EditorLeftPanel = ({
 
       {/* Open datasource list */}
       {datasources.length > 0 && (
-        <div style={{ borderBottom: "1px solid var(--designer-border-subtle)" }}>
-          <button
-            className="designer-btn"
-            style={{ width: "100%", borderRadius: 0, border: "none", justifyContent: "flex-start" }}
-            onClick={() => setDatasourceListOpen(!datasourceListOpen)}>
+        <div className="designer-datasource-toggle">
+          <button className="designer-datasource-toggle-btn" onClick={() => setDatasourceListOpen(!datasourceListOpen)}>
             {datasourceListOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             Open Datasource
           </button>
           {datasourceListOpen && (
-            <div className="designer-layer-list" style={{ padding: "4px 8px 8px" }}>
+            <div className="designer-layer-list designer-datasource-toggle-list">
               {datasources.map((ds) => (
                 <button
                   key={ds.id}
@@ -128,7 +126,7 @@ export const EditorLeftPanel = ({
                     <span className="designer-layer-name">{cardType.label}</span>
                     <span className="designer-layer-actions">
                       <button
-                        className="designer-layer-action-btn"
+                        className="designer-layer-action-btn danger"
                         onClick={(e) => {
                           e.stopPropagation();
                           onDeleteCardType?.(cardType);
@@ -143,7 +141,7 @@ export const EditorLeftPanel = ({
             </div>
 
             {/* Add card type button */}
-            <div style={{ padding: "8px 0 0 28px" }}>
+            <div className="designer-add-card-type">
               <button className="designer-btn designer-btn-sm" onClick={onAddCardType}>
                 <Plus size={12} />
                 Add Card Type

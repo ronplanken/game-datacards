@@ -251,7 +251,7 @@ Design quality:
 - [x] `EditorLeftPanel.test.jsx`: empty state renders, datasource list renders, New Datasource button present
 
 ### Design quality
-- [ ] Run `/frontend-design` on all three panels, empty states, and shared components
+- [x] Run `/frontend-design` on all three panels, empty states, and shared components
 - [ ] Run `/clarify` to review panel headers, empty state messages, button labels, and nav link text
 - [ ] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
 
