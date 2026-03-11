@@ -121,7 +121,7 @@ Unit steps:
 - [x] StepUnitMetadata - keyword toggles, faction keyword toggle, points toggle with format selection (per-model / per-unit)
 
 Generic steps:
-- [ ] StepFields - reusable editable field list, used by rule/enhancement/stratagem for their top-level `fields[]` definition, type dropdown per field, conditional enum options editor
+- [x] StepFields - reusable editable field list, used by rule/enhancement/stratagem for their top-level `fields[]` definition, type dropdown per field, conditional enum options editor
 - [ ] StepRules - configure `rules` collection field definitions, allowMultiple toggle
 - [ ] StepKeywords - configure `keywords` collection field definitions, allowMultiple toggle
 

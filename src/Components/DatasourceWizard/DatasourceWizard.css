@@ -1234,6 +1234,98 @@
 }
 
 /* ===========================================
+   STEP: FIELDS (rule / enhancement / stratagem)
+   =========================================== */
+
+.dsw-step-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dsw-fields-field-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.dsw-fields-type-select {
+  width: 120px;
+  flex: 0 0 auto !important;
+  height: 32px !important;
+  font-size: 12px !important;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.dsw-fields-required-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  user-select: none;
+}
+
+.dsw-fields-required-label {
+  font-size: 11px;
+  color: var(--wz-text-muted);
+  white-space: nowrap;
+}
+
+.dsw-fields-enum-options {
+  margin-left: 30px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--wz-border);
+  border-top: none;
+  border-radius: 0 0 var(--wz-radius-xs) var(--wz-radius-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dsw-fields-enum-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.dsw-fields-enum-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--wz-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dsw-fields-enum-empty {
+  font-size: 11px;
+  color: var(--wz-text-dim);
+  text-align: center;
+  padding: 8px;
+}
+
+.dsw-fields-enum-option-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dsw-fields-enum-input {
+  flex: 1;
+  height: 28px !important;
+  font-size: 12px !important;
+}
+
+.dsw-btn--xs {
+  padding: 2px 8px;
+  font-size: 11px;
+  height: 24px;
+  gap: 4px;
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {

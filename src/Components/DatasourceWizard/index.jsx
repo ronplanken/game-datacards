@@ -11,6 +11,7 @@ import { StepStats } from "./steps/StepStats";
 import { StepWeapons } from "./steps/StepWeapons";
 import { StepAbilities } from "./steps/StepAbilities";
 import { StepUnitMetadata } from "./steps/StepUnitMetadata";
+import { StepFields } from "./steps/StepFields";
 import "./DatasourceWizard.css";
 
 /**
@@ -162,6 +163,8 @@ export const DatasourceWizard = ({ open, onClose, onComplete, existingDatasource
         return <StepAbilities wizard={wizard} />;
       case "unit-metadata":
         return <StepUnitMetadata wizard={wizard} />;
+      case "fields":
+        return <StepFields wizard={wizard} />;
       case "review":
         return <StepReview wizard={wizard} />;
       default:
