@@ -286,7 +286,7 @@ Design quality:
 - [x] `DatasourceMetadataEditor` - edit datasource name, version, author using `CompactInput`, baseSystem as read-only display
 - [x] For `baseType: "unit"`: render `Section` components for `StatsSchemaEditor`, `WeaponsSchemaEditor`, `AbilitiesSchemaEditor`, `MetadataSchemaEditor`
 - [x] `StatsSchemaEditor` - editable field list (key, label, type, displayOrder), add/remove/reorder, `allowMultipleProfiles` toggle
-- [ ] `WeaponsSchemaEditor` - tabbed per weapon type, editable column list per tab, add/remove weapon types, `hasKeywords`/`hasProfiles` toggles
+- [x] `WeaponsSchemaEditor` - tabbed per weapon type, editable column list per tab, add/remove weapon types, `hasKeywords`/`hasProfiles` toggles
 - [ ] `AbilitiesSchemaEditor` - editable category list (key, label, format dropdown), `hasInvulnerableSave`/`hasDamagedAbility` toggles
 - [ ] `MetadataSchemaEditor` - toggles for `hasKeywords`, `hasFactionKeywords`, `hasPoints`, `pointsFormat` dropdown
 - [ ] For `baseType: "rule"/"enhancement"/"stratagem"`: render `FieldsSchemaEditor` with type-specific sections (e.g. `rules` collection for rule, `keywords` collection for enhancement)

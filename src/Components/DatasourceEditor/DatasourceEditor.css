@@ -737,6 +737,92 @@
 }
 
 /* ===========================================
+   WEAPON TYPE TABS
+   =========================================== */
+
+.props-weapon-tabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--designer-border-subtle);
+  padding-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.props-weapon-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--designer-bg-secondary);
+  border: 1px solid var(--designer-border-subtle);
+  border-radius: var(--designer-radius-sm);
+  color: var(--designer-text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.props-weapon-tab:hover {
+  background: var(--designer-bg-tertiary);
+  border-color: var(--designer-border);
+}
+
+.props-weapon-tab.active {
+  background: var(--designer-accent-subtle);
+  border-color: var(--designer-accent);
+  color: var(--designer-accent);
+}
+
+.props-weapon-tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+}
+
+.props-weapon-tab-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  color: var(--designer-text-tertiary);
+}
+
+.props-weapon-tab:hover .props-weapon-tab-remove {
+  opacity: 1;
+}
+
+.props-weapon-tab-remove:hover {
+  color: var(--designer-error);
+}
+
+.props-weapon-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.props-field-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+
+.props-field-list-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--designer-text-tertiary);
+}
+
+/* ===========================================
    METADATA ROWS
    =========================================== */
 
