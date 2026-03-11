@@ -157,7 +157,7 @@ describe("CustomCardDisplay", () => {
       data: [{ id: "f1", colours: { header: "#000", banner: "#111" } }],
     };
     render(<CustomCardDisplay />);
-    expect(screen.getByText(/Unknown card type: unknown-type/)).toBeInTheDocument();
+    expect(screen.getByText(/No matching card type definition found for/)).toBeInTheDocument();
   });
 
   it("renders unit card placeholder for unit baseType", () => {

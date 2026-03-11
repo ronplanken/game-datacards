@@ -85,7 +85,7 @@ export const CustomCardDisplay = ({
     return (
       <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
         <div className="data-custom" style={{ padding: "24px", textAlign: "center", color: "rgba(0,0,0,0.45)" }}>
-          Unknown card type: {displayCard.cardType}
+          No matching card type definition found for &quot;{displayCard.cardType}&quot;
         </div>
       </Col>
     );
