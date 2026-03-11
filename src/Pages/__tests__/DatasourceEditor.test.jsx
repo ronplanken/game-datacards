@@ -55,6 +55,21 @@ vi.mock("../../Components/DatasourceEditor/EditorRightPanel", () => ({
 // Mock CSS import
 vi.mock("../../Components/DatasourceEditor/DatasourceEditor.css", () => ({}));
 
+// Mock editor state hook
+vi.mock("../../Components/DatasourceEditor/hooks/useDatasourceEditorState", () => ({
+  useDatasourceEditorState: () => ({
+    datasources: [],
+    activeDatasource: null,
+    selectedItem: null,
+    isLoading: false,
+    openDatasource: vi.fn(),
+    selectDatasource: vi.fn(),
+    selectCardType: vi.fn(),
+    updateDatasource: vi.fn(),
+    setCreatedDatasource: vi.fn(),
+  }),
+}));
+
 import { DatasourceEditorPage } from "../DatasourceEditor";
 
 const renderPage = () =>

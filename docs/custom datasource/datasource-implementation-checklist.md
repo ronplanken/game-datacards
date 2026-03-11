@@ -291,7 +291,7 @@ Design quality:
 - [x] `MetadataSchemaEditor` - toggles for `hasKeywords`, `hasFactionKeywords`, `hasPoints`, `pointsFormat` dropdown
 - [x] For `baseType: "rule"/"enhancement"/"stratagem"`: render `FieldsSchemaEditor` with type-specific sections (e.g. `rules` collection for rule, `keywords` collection for enhancement)
 - [x] `FieldsSchemaEditor` - generic editable field list (key, label, type dropdown, required toggle), conditional enum options editor, add/remove/reorder
-- [ ] Wire into EditorRightPanel (replace empty state when datasource or card type is selected)
+- [x] Wire into EditorRightPanel (replace empty state when datasource or card type is selected)
 - [ ] Component tests
 
 Design quality:
