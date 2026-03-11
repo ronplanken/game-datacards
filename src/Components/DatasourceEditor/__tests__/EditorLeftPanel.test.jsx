@@ -14,6 +14,7 @@ vi.mock("lucide-react", () => ({
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+  Download: (props) => <svg data-testid="icon-download" {...props} />,
 }));
 
 const mockDatasource = {
@@ -90,6 +91,11 @@ describe("EditorLeftPanel", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
       expect(screen.getByText("Add Card Type")).toBeInTheDocument();
     });
+
+    it("renders Export button when datasource is active", () => {
+      render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+      expect(screen.getByText("Export")).toBeInTheDocument();
+    });
   });
 
   describe("interactions", () => {
@@ -151,6 +157,20 @@ describe("EditorLeftPanel", () => {
       );
       await user.click(screen.getByText("Add Card Type"));
       expect(onAddCardType).toHaveBeenCalledTimes(1);
+    });
+
+    it("calls onExportDatasource when Export button clicked", async () => {
+      const user = userEvent.setup();
+      const onExportDatasource = vi.fn();
+      render(
+        <EditorLeftPanel
+          datasources={mockDatasources}
+          activeDatasource={mockDatasource}
+          onExportDatasource={onExportDatasource}
+        />,
+      );
+      await user.click(screen.getByText("Export"));
+      expect(onExportDatasource).toHaveBeenCalledWith(mockDatasource);
     });
 
     it("toggles datasource list on Your Datasources click", async () => {

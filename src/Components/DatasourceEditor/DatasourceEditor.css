@@ -331,6 +331,12 @@
   margin: 0;
 }
 
+.designer-template-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
 /* ===========================================
    BUTTONS
    =========================================== */

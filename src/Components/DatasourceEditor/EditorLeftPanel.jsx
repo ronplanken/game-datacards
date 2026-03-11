@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronUp,
+  Download,
 } from "lucide-react";
 
 const BASETYPE_ICONS = {
@@ -36,6 +37,7 @@ export const EditorLeftPanel = ({
   onAddCardType,
   onDeleteCardType,
   onReorderCardTypes,
+  onExportDatasource,
   onOpenDatasource,
 }) => {
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
@@ -102,6 +104,16 @@ export const EditorLeftPanel = ({
             v{activeDatasource.version} &middot; {activeDatasource.schema?.baseSystem || "custom"} &middot;{" "}
             {cardTypes.length} card type{cardTypes.length !== 1 ? "s" : ""}
           </p>
+          <div className="designer-template-actions">
+            <button
+              className="designer-btn designer-btn-sm"
+              onClick={() => onExportDatasource?.(activeDatasource)}
+              title="Export schema as JSON"
+              aria-label="Export datasource schema">
+              <Download size={12} />
+              Export
+            </button>
+          </div>
         </div>
       )}
 

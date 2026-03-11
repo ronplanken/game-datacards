@@ -9,6 +9,11 @@ import { ConfirmDialog } from "../Components/DatasourceEditor/components";
 import { DatasourceWizard } from "../Components/DatasourceWizard";
 import { useDatasourceEditorState } from "../Components/DatasourceEditor/hooks/useDatasourceEditorState";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
+import {
+  exportDatasourceSchema,
+  downloadJsonFile,
+  generateDatasourceFilename,
+} from "../Helpers/customDatasource.helpers";
 import "../Components/DatasourceEditor/DatasourceEditor.css";
 
 const { Content } = Layout;
@@ -113,6 +118,13 @@ export const DatasourceEditorPage = () => {
     setDeleteTarget(null);
   }, []);
 
+  const handleExportDatasource = useCallback((datasource) => {
+    if (!datasource) return;
+    const schemaExport = exportDatasourceSchema(datasource);
+    const filename = generateDatasourceFilename(datasource.name).replace("-datasource.json", "-schema.json");
+    downloadJsonFile(schemaExport, filename);
+  }, []);
+
   const handleReorderCardTypes = useCallback(
     async (reorderedCardTypes) => {
       if (!activeDatasource) return;
@@ -145,6 +157,7 @@ export const DatasourceEditorPage = () => {
               onAddCardType={handleAddCardType}
               onDeleteCardType={handleDeleteCardType}
               onReorderCardTypes={handleReorderCardTypes}
+              onExportDatasource={handleExportDatasource}
             />
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />

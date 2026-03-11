@@ -13,6 +13,8 @@ import {
   compareVersions,
   countCardsByType,
   formatCardBreakdown,
+  exportDatasourceSchema,
+  downloadJsonFile,
 } from "../customDatasource.helpers";
 
 // Helper to create a minimal valid datasource
@@ -426,5 +428,102 @@ describe("createDatasourceExport", () => {
       colours: { header: "#000", banner: "#111" },
     });
     expect(result.author).toBeUndefined();
+  });
+});
+
+describe("exportDatasourceSchema", () => {
+  it("returns null for null input", () => {
+    expect(exportDatasourceSchema(null)).toBeNull();
+  });
+
+  it("exports name, version, and lastUpdated", () => {
+    const ds = { name: "Test", version: "1.0.0" };
+    const result = exportDatasourceSchema(ds);
+    expect(result.name).toBe("Test");
+    expect(result.version).toBe("1.0.0");
+    expect(result.lastUpdated).toBeDefined();
+  });
+
+  it("includes author when present", () => {
+    const ds = { name: "Test", version: "1.0.0", author: "Author" };
+    const result = exportDatasourceSchema(ds);
+    expect(result.author).toBe("Author");
+  });
+
+  it("omits author when not present", () => {
+    const ds = { name: "Test", version: "1.0.0" };
+    const result = exportDatasourceSchema(ds);
+    expect(result.author).toBeUndefined();
+  });
+
+  it("includes schema when present", () => {
+    const schema = { baseSystem: "40k-10e", cardTypes: [{ key: "unit", baseType: "unit" }] };
+    const ds = { name: "Test", version: "1.0.0", schema };
+    const result = exportDatasourceSchema(ds);
+    expect(result.schema).toEqual(schema);
+  });
+
+  it("includes faction colours stripped of card data", () => {
+    const ds = {
+      name: "Test",
+      version: "1.0.0",
+      data: [
+        {
+          id: "f1",
+          name: "Faction 1",
+          colours: { header: "#000", banner: "#111" },
+          datasheets: [{ id: "card1", name: "Unit" }],
+        },
+      ],
+    };
+    const result = exportDatasourceSchema(ds);
+    expect(result.factions).toHaveLength(1);
+    expect(result.factions[0].id).toBe("f1");
+    expect(result.factions[0].name).toBe("Faction 1");
+    expect(result.factions[0].colours).toEqual({ header: "#000", banner: "#111" });
+    expect(result.factions[0].datasheets).toBeUndefined();
+  });
+
+  it("strips internal storage fields like id, sourceType, sourceUrl", () => {
+    const ds = {
+      id: "custom-123",
+      name: "Test",
+      version: "1.0.0",
+      sourceType: "local",
+      sourceUrl: null,
+    };
+    const result = exportDatasourceSchema(ds);
+    expect(result.id).toBeUndefined();
+    expect(result.sourceType).toBeUndefined();
+    expect(result.sourceUrl).toBeUndefined();
+  });
+});
+
+describe("downloadJsonFile", () => {
+  it("creates a link, clicks it, and cleans up", () => {
+    const mockLink = { href: "", download: "", click: vi.fn() };
+    const createElementSpy = vi.spyOn(document, "createElement").mockReturnValue(mockLink);
+    const appendChildSpy = vi.spyOn(document.body, "appendChild").mockImplementation(() => {});
+    const removeChildSpy = vi.spyOn(document.body, "removeChild").mockImplementation(() => {});
+
+    // URL.createObjectURL/revokeObjectURL may not exist in jsdom
+    const originalCreateObjectURL = URL.createObjectURL;
+    const originalRevokeObjectURL = URL.revokeObjectURL;
+    URL.createObjectURL = vi.fn().mockReturnValue("blob:test");
+    URL.revokeObjectURL = vi.fn();
+
+    downloadJsonFile({ foo: "bar" }, "test.json");
+
+    expect(createElementSpy).toHaveBeenCalledWith("a");
+    expect(mockLink.href).toBe("blob:test");
+    expect(mockLink.download).toBe("test.json");
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:test");
+
+    createElementSpy.mockRestore();
+    appendChildSpy.mockRestore();
+    removeChildSpy.mockRestore();
+    URL.createObjectURL = originalCreateObjectURL;
+    URL.revokeObjectURL = originalRevokeObjectURL;
   });
 });

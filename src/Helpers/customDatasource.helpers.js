@@ -380,6 +380,60 @@ export const countCardsByType = (cards) => {
 };
 
 /**
+ * Creates a schema-only export of a datasource for sharing or backup.
+ * Strips internal storage fields (id, sourceType, sourceUrl, etc.) and card data,
+ * keeping only the schema definition, metadata, and faction colours.
+ * @param {Object} datasource - The full datasource object from storage
+ * @returns {Object} - Clean schema export object
+ */
+export const exportDatasourceSchema = (datasource) => {
+  if (!datasource) return null;
+
+  const exported = {
+    name: datasource.name,
+    version: datasource.version,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  if (datasource.author) {
+    exported.author = datasource.author;
+  }
+
+  if (datasource.schema) {
+    exported.schema = datasource.schema;
+  }
+
+  // Include faction colours for theming
+  if (datasource.data && Array.isArray(datasource.data)) {
+    exported.factions = datasource.data.map((faction) => ({
+      id: faction.id,
+      name: faction.name,
+      colours: faction.colours,
+    }));
+  }
+
+  return exported;
+};
+
+/**
+ * Downloads a JSON object as a file via browser download.
+ * @param {Object} data - The data to export
+ * @param {string} filename - The filename for the download
+ */
+export const downloadJsonFile = (data, filename) => {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+/**
  * Formats card count breakdown as a string
  * @param {Object} counts - Card type counts
  * @returns {string} - Formatted string (e.g., "8 datasheets, 4 stratagems")
