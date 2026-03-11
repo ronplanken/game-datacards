@@ -225,7 +225,7 @@ export const DatasourceEditorPage = () => {
       <ConfirmDialog
         open={!!deleteTarget}
         title="Delete Card Type"
-        message={`Are you sure you want to delete "${deleteTarget?.label}"? This will remove the card type definition from this datasource.`}
+        message={`Are you sure you want to delete "${deleteTarget?.label}"? This will remove the card type definition from this datasource. This action cannot be undone.`}
         confirmLabel="Delete"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}

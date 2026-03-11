@@ -65,7 +65,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
             validationErrors.push(...schemaResult.errors);
           }
         } else {
-          validationErrors.push("Missing 'schema' field — file does not contain a schema definition");
+          validationErrors.push("Missing 'schema' property. The file does not contain a valid schema definition.");
         }
 
         if (validationErrors.length > 0) {
@@ -78,7 +78,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
           setParsed(data);
         }
       } catch {
-        setErrors(["Invalid JSON — could not parse the file"]);
+        setErrors(["Invalid JSON. The file could not be parsed."]);
         setStatus("invalid");
         setParsed(null);
       }
@@ -114,7 +114,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
       if (droppedFile && (droppedFile.type === "application/json" || droppedFile.name.endsWith(".json"))) {
         processFile(droppedFile);
       } else if (droppedFile) {
-        setErrors(["Please drop a JSON file"]);
+        setErrors(["Only JSON files are supported. Please select a .json file."]);
         setStatus("invalid");
       }
     },
@@ -143,7 +143,8 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
         </div>
         <div className="designer-confirm-body">
           <p className="designer-import-description">
-            Select a datasource schema JSON file to import. The file will be validated before import.
+            Select a datasource schema JSON file to import. This will replace the current schema definition. The file
+            will be validated before import.
           </p>
 
           <div
@@ -206,7 +207,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
             Cancel
           </button>
           <button className="designer-btn designer-btn-primary" onClick={handleImport} disabled={status !== "valid"}>
-            Import
+            Import Schema
           </button>
         </div>
       </div>

@@ -47,7 +47,7 @@ describe("ImportSchemaDialog", () => {
 
   it("renders dialog when open", () => {
     render(<ImportSchemaDialog open={true} onImport={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText("Import Schema")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Import Schema" })).toBeInTheDocument();
     expect(screen.getByText(/Select a datasource schema JSON file/)).toBeInTheDocument();
   });
 
@@ -56,9 +56,9 @@ describe("ImportSchemaDialog", () => {
     expect(screen.getByText("Click or drag a JSON file here")).toBeInTheDocument();
   });
 
-  it("has Import button disabled initially", () => {
+  it("has Import Schema button disabled initially", () => {
     render(<ImportSchemaDialog open={true} onImport={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText("Import")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Import Schema" })).toBeDisabled();
   });
 
   it("calls onCancel when Cancel button clicked", async () => {
@@ -90,10 +90,10 @@ describe("ImportSchemaDialog", () => {
       expect(screen.getByText("Valid schema")).toBeInTheDocument();
     });
     expect(screen.getByText("Test Schema")).toBeInTheDocument();
-    expect(screen.getByText("Import")).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Import Schema" })).not.toBeDisabled();
   });
 
-  it("calls onImport with parsed data when Import clicked after valid file", async () => {
+  it("calls onImport with parsed data when Import Schema clicked after valid file", async () => {
     const user = userEvent.setup();
     const onImport = vi.fn();
     render(<ImportSchemaDialog open={true} onImport={onImport} onCancel={vi.fn()} />);
@@ -105,7 +105,7 @@ describe("ImportSchemaDialog", () => {
       expect(screen.getByText("Valid schema")).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText("Import"));
+    await user.click(screen.getByRole("button", { name: "Import Schema" }));
     expect(onImport).toHaveBeenCalledTimes(1);
     expect(onImport.mock.calls[0][0].name).toBe("Test Schema");
     expect(onImport.mock.calls[0][0].schema.cardTypes).toHaveLength(1);
@@ -122,10 +122,10 @@ describe("ImportSchemaDialog", () => {
       expect(screen.getByText("Validation failed")).toBeInTheDocument();
     });
     expect(screen.getByText(/Invalid JSON/)).toBeInTheDocument();
-    expect(screen.getByText("Import")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Import Schema" })).toBeDisabled();
   });
 
-  it("shows error for missing schema field", async () => {
+  it("shows error for missing schema property", async () => {
     const user = userEvent.setup();
     render(<ImportSchemaDialog open={true} onImport={vi.fn()} onCancel={vi.fn()} />);
 
@@ -135,8 +135,8 @@ describe("ImportSchemaDialog", () => {
     await waitFor(() => {
       expect(screen.getByText("Validation failed")).toBeInTheDocument();
     });
-    expect(screen.getByText(/Missing 'schema' field/)).toBeInTheDocument();
-    expect(screen.getByText("Import")).toBeDisabled();
+    expect(screen.getByText(/Missing 'schema' property/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Import Schema" })).toBeDisabled();
   });
 
   it("resets state when dialog is closed and reopened", async () => {
@@ -158,6 +158,6 @@ describe("ImportSchemaDialog", () => {
 
     // Should be back to initial state
     expect(screen.getByText("Click or drag a JSON file here")).toBeInTheDocument();
-    expect(screen.getByText("Import")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Import Schema" })).toBeDisabled();
   });
 });
