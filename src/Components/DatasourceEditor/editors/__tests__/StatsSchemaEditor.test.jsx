@@ -121,7 +121,7 @@ describe("StatsSchemaEditor", () => {
   it("adds a new field when Add Field is clicked", () => {
     const onChange = vi.fn();
     render(<StatsSchemaEditor schema={mockSchema} onChange={onChange} />);
-    fireEvent.click(screen.getByLabelText("Add stat field"));
+    fireEvent.click(screen.getByLabelText("Add stat"));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         stats: expect.objectContaining({
@@ -140,7 +140,7 @@ describe("StatsSchemaEditor", () => {
     const onChange = vi.fn();
     const emptySchema = { stats: { label: "Stats", allowMultipleProfiles: false, fields: [] } };
     render(<StatsSchemaEditor schema={emptySchema} onChange={onChange} />);
-    fireEvent.click(screen.getByLabelText("Add stat field"));
+    fireEvent.click(screen.getByLabelText("Add stat"));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         stats: expect.objectContaining({

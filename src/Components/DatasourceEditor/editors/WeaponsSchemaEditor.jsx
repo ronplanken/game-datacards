@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import { Swords, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { Section, CompactInput } from "../components";
 
-const COLUMN_TYPES = ["string", "richtext", "enum", "boolean"];
+const COLUMN_TYPES = [
+  { value: "string", label: "Text" },
+  { value: "richtext", label: "Rich Text" },
+  { value: "enum", label: "Enum" },
+  { value: "boolean", label: "Boolean" },
+];
 
 /**
  * Editor for weapon type definitions.
@@ -132,7 +137,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
               checked={!!activeType.hasKeywords}
               onChange={() => updateType(activeTab, { hasKeywords: !activeType.hasKeywords })}
             />
-            <span>Has keywords</span>
+            <span>Enable weapon keywords</span>
           </label>
           <label className="props-checkbox">
             <input
@@ -140,7 +145,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
               checked={!!activeType.hasProfiles}
               onChange={() => updateType(activeTab, { hasProfiles: !activeType.hasProfiles })}
             />
-            <span>Has profiles</span>
+            <span>Enable weapon profiles</span>
           </label>
 
           <div className="props-field-list-header">
@@ -174,8 +179,8 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
                       onChange={(e) => updateColumn(activeTab, colIndex, "type", e.target.value)}
                       aria-label="Column type">
                       {COLUMN_TYPES.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
+                        <option key={t.value} value={t.value}>
+                          {t.label}
                         </option>
                       ))}
                     </select>

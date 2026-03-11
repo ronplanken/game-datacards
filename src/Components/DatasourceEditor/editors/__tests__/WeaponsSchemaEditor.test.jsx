@@ -88,7 +88,7 @@ describe("WeaponsSchemaEditor", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
     const checkboxes = screen.getAllByRole("checkbox");
     const hasKeywordsCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("Has keywords") && cb.checked,
+      (cb) => cb.closest("label")?.textContent?.includes("Enable weapon keywords") && cb.checked,
     );
     expect(hasKeywordsCheckbox).toBeTruthy();
   });
@@ -97,7 +97,7 @@ describe("WeaponsSchemaEditor", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
     const checkboxes = screen.getAllByRole("checkbox");
     const hasProfilesCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("Has profiles") && cb.checked,
+      (cb) => cb.closest("label")?.textContent?.includes("Enable weapon profiles") && cb.checked,
     );
     expect(hasProfilesCheckbox).toBeTruthy();
   });
@@ -106,7 +106,9 @@ describe("WeaponsSchemaEditor", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
     const checkboxes = screen.getAllByRole("checkbox");
-    const hasKeywordsCheckbox = checkboxes.find((cb) => cb.closest("label")?.textContent?.includes("Has keywords"));
+    const hasKeywordsCheckbox = checkboxes.find((cb) =>
+      cb.closest("label")?.textContent?.includes("Enable weapon keywords"),
+    );
     fireEvent.click(hasKeywordsCheckbox);
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -121,7 +123,9 @@ describe("WeaponsSchemaEditor", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
     const checkboxes = screen.getAllByRole("checkbox");
-    const hasProfilesCheckbox = checkboxes.find((cb) => cb.closest("label")?.textContent?.includes("Has profiles"));
+    const hasProfilesCheckbox = checkboxes.find((cb) =>
+      cb.closest("label")?.textContent?.includes("Enable weapon profiles"),
+    );
     fireEvent.click(hasProfilesCheckbox);
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({

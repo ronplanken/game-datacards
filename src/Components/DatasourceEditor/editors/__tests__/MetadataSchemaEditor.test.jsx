@@ -27,16 +27,16 @@ describe("MetadataSchemaEditor", () => {
     expect(container.innerHTML).toBe("");
   });
 
-  it("renders section with Metadata title", () => {
+  it("renders section with Card Options title", () => {
     render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    expect(screen.getByText("Metadata")).toBeInTheDocument();
+    expect(screen.getByText("Card Options")).toBeInTheDocument();
   });
 
   it("renders all three checkboxes", () => {
     render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    expect(screen.getByText("Keywords")).toBeInTheDocument();
-    expect(screen.getByText("Faction keywords")).toBeInTheDocument();
-    expect(screen.getByText("Points")).toBeInTheDocument();
+    expect(screen.getByText("Include keywords")).toBeInTheDocument();
+    expect(screen.getByText("Include faction keywords")).toBeInTheDocument();
+    expect(screen.getByText("Include points cost")).toBeInTheDocument();
   });
 
   it("renders hasKeywords checkbox checked when true", () => {
@@ -143,11 +143,13 @@ describe("MetadataSchemaEditor", () => {
     );
   });
 
-  it("renders per-model and per-unit as dropdown options", () => {
+  it("renders Per Model and Per Unit as dropdown options", () => {
     render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
     const options = screen.getByLabelText("Points format").querySelectorAll("option");
     expect(options).toHaveLength(2);
     expect(options[0].value).toBe("per-model");
+    expect(options[0].textContent).toBe("Per Model");
     expect(options[1].value).toBe("per-unit");
+    expect(options[1].textContent).toBe("Per Unit");
   });
 });

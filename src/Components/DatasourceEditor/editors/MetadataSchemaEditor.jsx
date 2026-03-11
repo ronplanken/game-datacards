@@ -2,7 +2,10 @@ import React from "react";
 import { Tags } from "lucide-react";
 import { Section } from "../components";
 
-const POINTS_FORMAT_OPTIONS = ["per-model", "per-unit"];
+const POINTS_FORMAT_OPTIONS = [
+  { value: "per-model", label: "Per Model" },
+  { value: "per-unit", label: "Per Unit" },
+];
 
 /**
  * Editor for unit metadata flags.
@@ -17,14 +20,14 @@ export const MetadataSchemaEditor = ({ schema, onChange }) => {
   };
 
   return (
-    <Section title="Metadata" icon={Tags} defaultOpen={true}>
+    <Section title="Card Options" icon={Tags} defaultOpen={true}>
       <label className="props-checkbox">
         <input
           type="checkbox"
           checked={!!metadata.hasKeywords}
           onChange={() => updateMetadata({ hasKeywords: !metadata.hasKeywords })}
         />
-        <span>Keywords</span>
+        <span>Include keywords</span>
       </label>
       <label className="props-checkbox">
         <input
@@ -32,7 +35,7 @@ export const MetadataSchemaEditor = ({ schema, onChange }) => {
           checked={!!metadata.hasFactionKeywords}
           onChange={() => updateMetadata({ hasFactionKeywords: !metadata.hasFactionKeywords })}
         />
-        <span>Faction keywords</span>
+        <span>Include faction keywords</span>
       </label>
       <label className="props-checkbox">
         <input
@@ -40,7 +43,7 @@ export const MetadataSchemaEditor = ({ schema, onChange }) => {
           checked={!!metadata.hasPoints}
           onChange={() => updateMetadata({ hasPoints: !metadata.hasPoints })}
         />
-        <span>Points</span>
+        <span>Include points cost</span>
       </label>
       {metadata.hasPoints && (
         <div className="props-compact-input">
@@ -50,9 +53,9 @@ export const MetadataSchemaEditor = ({ schema, onChange }) => {
             value={metadata.pointsFormat || "per-model"}
             onChange={(e) => updateMetadata({ pointsFormat: e.target.value })}
             aria-label="Points format">
-            {POINTS_FORMAT_OPTIONS.map((f) => (
-              <option key={f} value={f}>
-                {f}
+            {POINTS_FORMAT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
               </option>
             ))}
           </select>

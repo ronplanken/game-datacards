@@ -2,7 +2,10 @@ import React from "react";
 import { Sparkles, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { Section, CompactInput } from "../components";
 
-const FORMAT_OPTIONS = ["name-only", "name-description"];
+const FORMAT_OPTIONS = [
+  { value: "name-only", label: "Name Only" },
+  { value: "name-description", label: "Name + Description" },
+];
 
 /**
  * Editor for ability category definitions.
@@ -56,7 +59,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
           checked={!!abilities.hasInvulnerableSave}
           onChange={() => updateAbilities({ hasInvulnerableSave: !abilities.hasInvulnerableSave })}
         />
-        <span>Invulnerable save</span>
+        <span>Include invulnerable save</span>
       </label>
       <label className="props-checkbox">
         <input
@@ -64,7 +67,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
           checked={!!abilities.hasDamagedAbility}
           onChange={() => updateAbilities({ hasDamagedAbility: !abilities.hasDamagedAbility })}
         />
-        <span>Damaged ability</span>
+        <span>Include damaged ability</span>
       </label>
 
       <div className="props-field-list">
@@ -91,9 +94,9 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
                   value={category.format}
                   onChange={(e) => updateCategory(index, "format", e.target.value)}
                   aria-label="Format">
-                  {FORMAT_OPTIONS.map((f) => (
-                    <option key={f} value={f}>
-                      {f}
+                  {FORMAT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
                     </option>
                   ))}
                 </select>

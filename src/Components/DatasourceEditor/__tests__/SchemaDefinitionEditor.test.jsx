@@ -153,7 +153,7 @@ describe("SchemaDefinitionEditor", () => {
       expect(screen.getByText("Stats")).toBeInTheDocument();
       expect(screen.getByText("Weapon Types")).toBeInTheDocument();
       expect(screen.getByText("Abilities")).toBeInTheDocument();
-      expect(screen.getByText("Metadata")).toBeInTheDocument();
+      expect(screen.getByText("Card Options")).toBeInTheDocument();
     });
 
     it("shows stat fields as editable inputs", () => {

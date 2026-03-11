@@ -2,7 +2,12 @@ import React from "react";
 import { List, BookOpen, Tag, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { Section, CompactInput } from "../components";
 
-const FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
+const FIELD_TYPES = [
+  { value: "string", label: "Text" },
+  { value: "richtext", label: "Rich Text" },
+  { value: "enum", label: "Enum" },
+  { value: "boolean", label: "Boolean" },
+];
 
 /**
  * Reusable field list renderer with add/remove/reorder and type selection.
@@ -66,8 +71,8 @@ const FieldList = ({ fields, onUpdate, fieldLabel = "field" }) => {
                   onChange={(e) => updateField(index, "type", e.target.value)}
                   aria-label="Type">
                   {FIELD_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
+                    <option key={t.value} value={t.value}>
+                      {t.label}
                     </option>
                   ))}
                 </select>

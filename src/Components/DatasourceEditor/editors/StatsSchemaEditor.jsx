@@ -2,7 +2,12 @@ import React from "react";
 import { BarChart3, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { Section, CompactInput } from "../components";
 
-const FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
+const FIELD_TYPES = [
+  { value: "string", label: "Text" },
+  { value: "richtext", label: "Rich Text" },
+  { value: "enum", label: "Enum" },
+  { value: "boolean", label: "Boolean" },
+];
 
 /**
  * Editor for unit stat field definitions.
@@ -87,8 +92,8 @@ export const StatsSchemaEditor = ({ schema, onChange }) => {
                   onChange={(e) => updateField(index, "type", e.target.value)}
                   aria-label="Type">
                   {FIELD_TYPES.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
+                    <option key={t.value} value={t.value}>
+                      {t.label}
                     </option>
                   ))}
                 </select>
@@ -123,9 +128,9 @@ export const StatsSchemaEditor = ({ schema, onChange }) => {
         ))}
       </div>
 
-      <button className="designer-btn designer-btn-sm" onClick={addField} aria-label="Add stat field">
+      <button className="designer-btn designer-btn-sm" onClick={addField} aria-label="Add stat">
         <Plus size={14} />
-        Add Field
+        Add Stat
       </button>
     </Section>
   );
