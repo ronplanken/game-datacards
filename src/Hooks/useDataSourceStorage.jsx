@@ -1,5 +1,6 @@
 import localForage from "localforage";
 import React, { useEffect, useCallback } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   get40KData,
   get40k10eData,
@@ -437,6 +438,84 @@ export const DataSourceStorageProviderComponent = (props) => {
     return await dataStore.getItem(datasourceId);
   }, []);
 
+  /**
+   * Create a new custom datasource from wizard output
+   * @param {Object} metadata - Datasource metadata { name, version, author }
+   * @param {Object} schema - The schema definition from the wizard
+   * @returns {Promise<{success: boolean, id?: string, error?: string}>}
+   */
+  const createCustomDatasource = useCallback(
+    async (metadata, schema) => {
+      if (!metadata?.name || typeof metadata.name !== "string" || metadata.name.trim() === "") {
+        return { success: false, error: "Datasource name is required" };
+      }
+
+      if (!schema || typeof schema !== "object") {
+        return { success: false, error: "Schema is required" };
+      }
+
+      const storageId = `custom-${uuidv4()}`;
+      const now = new Date().toISOString();
+
+      // Create default faction with datasource name
+      const defaultFaction = {
+        id: `${storageId}-default`,
+        name: metadata.name,
+        colours: {
+          header: "#1a1a2e",
+          banner: "#16213e",
+        },
+      };
+
+      // Build the datasource object
+      const datasource = {
+        id: storageId,
+        name: metadata.name,
+        version: metadata.version || "1.0.0",
+        author: metadata.author || null,
+        lastUpdated: now,
+        sourceType: "local",
+        schema: {
+          version: schema.version || "1.0.0",
+          baseSystem: schema.baseSystem || "blank",
+          cardTypes: schema.cardTypes || [],
+        },
+        data: [defaultFaction],
+      };
+
+      // Store in localForage
+      await dataStore.setItem(storageId, datasource);
+
+      // Create registry entry and update settings
+      const registryEntry = {
+        id: storageId,
+        name: datasource.name,
+        cardCount: 0,
+        sourceType: "local",
+        sourceUrl: null,
+        version: datasource.version,
+        author: datasource.author,
+        lastUpdated: now,
+        lastCheckedForUpdate: null,
+      };
+
+      const currentCustomDatasources = settings.customDatasources || [];
+
+      updateSettings({
+        ...settings,
+        customDatasources: [...currentCustomDatasources, registryEntry],
+        selectedDataSource: storageId,
+      });
+
+      // Switch active datasource to the new one
+      setDataSource(datasource);
+      setSelectedFaction(defaultFaction);
+
+      return { success: true, id: storageId };
+    },
+    [settings, updateSettings],
+  );
+
   const context = {
     dataSource,
     setDataSource,
@@ -450,6 +529,7 @@ export const DataSourceStorageProviderComponent = (props) => {
     checkForUpdate,
     clearData,
     // Custom datasource functions
+    createCustomDatasource,
     importCustomDatasource,
     removeCustomDatasource,
     checkCustomDatasourceUpdate,

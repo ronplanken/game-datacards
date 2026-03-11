@@ -145,7 +145,7 @@ Design quality:
 
 **Reuse:** Existing `custom-{uuid}` key pattern in localForage, `settings.customDatasources` registry.
 
-- [ ] `createCustomDatasource(metadata, schema)` in useDataSourceStorage that creates datasource object with schema at root, creates default faction with name + colours, stores in localForage with `custom-{uuid}` key, registers in `settings.customDatasources`, switches active datasource to new one
+- [x] `createCustomDatasource(metadata, schema)` in useDataSourceStorage that creates datasource object with schema at root, creates default faction with name + colours, stores in localForage with `custom-{uuid}` key, registers in `settings.customDatasources`, switches active datasource to new one
 - [ ] Add `"custom"` to `VALID_DISPLAY_FORMATS` in `customDatasource.helpers.js`
 - [ ] Extend `validateCustomDatasource()` to handle optional `schema` property
 - [ ] Integration tests
