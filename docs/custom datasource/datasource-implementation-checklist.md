@@ -117,7 +117,7 @@ Shared steps:
 Unit steps:
 - [x] StepStats - editable field list with add/remove/rename, drag-to-reorder, displayOrder auto-assignment, allowMultipleProfiles toggle
 - [x] StepWeapons - tabbed interface per weapon type, editable column list per tab, add/remove weapon types, hasKeywords/hasProfiles toggles per type
-- [ ] StepAbilities - editable category list with format selection (name-only / name-description), invulnerable save and damaged ability toggles
+- [x] StepAbilities - editable category list with format selection (name-only / name-description), invulnerable save and damaged ability toggles
 - [ ] StepUnitMetadata - keyword toggles, faction keyword toggle, points toggle with format selection (per-model / per-unit)
 
 Generic steps:

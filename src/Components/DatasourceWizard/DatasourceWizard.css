@@ -1192,6 +1192,25 @@
 }
 
 /* ===========================================
+   ABILITIES STEP
+   =========================================== */
+.dsw-abilities-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.dsw-abilities-format-select {
+  width: 160px;
+  flex: 0 0 auto !important;
+  height: 32px !important;
+  font-size: 12px !important;
+  cursor: pointer;
+  appearance: auto;
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {
