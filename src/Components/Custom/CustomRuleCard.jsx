@@ -1,3 +1,5 @@
+import { ReactFitty } from "react-fitty";
+
 /**
  * CustomRuleCard - Schema-driven rule card renderer.
  * Reads field definitions from the schema to display top-level fields
@@ -33,16 +35,34 @@ export const CustomRuleCard = ({ card, cardTypeDef, cardStyle }) => {
   // Get nested rules data
   const rulesData = card.rules || [];
 
+  // Support dynamic sizing from card.styling, matching 40K RuleCard pattern
+  const useAutoHeight = card.styling?.autoHeight !== false;
+
   return (
-    <div className="custom-card custom-rule-card" style={cardStyle} data-testid="custom-rule-card">
+    <div
+      className="custom-card custom-rule-card"
+      style={{
+        "--width": `${card.styling?.width ?? 458}px`,
+        "--height": useAutoHeight ? "auto" : `${card.styling?.height ?? 320}px`,
+        ...cardStyle,
+      }}
+      data-testid="custom-rule-card">
       <div className="border">
         <div className="background-side-bar"></div>
         <div className="background-header-bar"></div>
-        <div className="header">{cardName}</div>
+        <div className="header">
+          <ReactFitty maxSize={18} minSize={10}>
+            {cardName}
+          </ReactFitty>
+        </div>
         {ruleTypeField && getFieldValue(ruleTypeField.key) && (
-          <div className="type">{getFieldValue(ruleTypeField.key)}</div>
+          <div className="type">
+            <ReactFitty maxSize={11} minSize={7}>
+              {getFieldValue(ruleTypeField.key)}
+            </ReactFitty>
+          </div>
         )}
-        <div className="content">
+        <div className="content" style={{ fontSize: card.styling?.textSize ?? 16 }}>
           {contentFields.map((field) => {
             const value = getFieldValue(field.key);
             if (!value) return null;

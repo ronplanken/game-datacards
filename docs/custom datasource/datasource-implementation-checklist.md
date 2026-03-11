@@ -332,7 +332,7 @@ Design quality:
 Design quality:
 - [x] Run `/frontend-design` on card renderer components and layout
 - [x] Run `/clarify` to review any visible text, labels, or fallback content on rendered cards
-- [ ] Run `/normalize` to ensure card styling is consistent with existing 40K/AoS card renderers
+- [x] Run `/normalize` to ensure card styling is consistent with existing 40K/AoS card renderers
 
 ---
 

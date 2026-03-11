@@ -1,3 +1,5 @@
+import { ReactFitty } from "react-fitty";
+
 /**
  * CustomEnhancementCard - Schema-driven enhancement card renderer.
  * Reads field definitions from the schema to display fields
@@ -34,13 +36,30 @@ export const CustomEnhancementCard = ({ card, cardTypeDef, cardStyle }) => {
   const keywordsData = card.keywords || [];
 
   return (
-    <div className="custom-card custom-enhancement-card" style={cardStyle} data-testid="custom-enhancement-card">
+    <div
+      className="custom-card custom-enhancement-card"
+      style={{
+        "--width": `${card.styling?.width ?? 260}px`,
+        "--height": `${card.styling?.height ?? 458}px`,
+        ...cardStyle,
+      }}
+      data-testid="custom-enhancement-card">
       <div className="border">
         <div className="background-side-bar"></div>
         <div className="background-header-bar"></div>
-        <div className="header">{cardName}</div>
-        {card.detachment && <div className="type">{card.detachment}</div>}
-        <div className="content">
+        <div className="header">
+          <ReactFitty maxSize={16} minSize={10}>
+            {cardName}
+          </ReactFitty>
+        </div>
+        {card.detachment && (
+          <div className="type">
+            <ReactFitty maxSize={10} minSize={2}>
+              {card.detachment}
+            </ReactFitty>
+          </div>
+        )}
+        <div className="content" style={{ fontSize: card.styling?.textSize ?? 16 }}>
           {contentFields.map((field) => {
             const value = getFieldValue(field.key);
             if (!value) return null;
@@ -62,7 +81,11 @@ export const CustomEnhancementCard = ({ card, cardTypeDef, cardStyle }) => {
         {costValue && (
           <div className="containers">
             <div className="cost-container">
-              <div className="value">{costValue}</div>
+              <div className="value">
+                <ReactFitty maxSize={18} minSize={10}>
+                  {costValue}
+                </ReactFitty>
+              </div>
             </div>
           </div>
         )}

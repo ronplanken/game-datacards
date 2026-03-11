@@ -1,3 +1,5 @@
+import { ReactFitty } from "react-fitty";
+
 /**
  * CustomStratagemCard - Schema-driven stratagem card renderer.
  * Reads field definitions from the schema to display fields dynamically.
@@ -32,20 +34,34 @@ export const CustomStratagemCard = ({ card, cardTypeDef, cardStyle }) => {
     (f) => f.key !== nameField?.key && f.key !== costField?.key && f.key !== typeField?.key,
   );
 
-  // Determine turn classification from card data for styling
+  // Determine turn classification from card data for styling (matches 40K: "your" → own)
   const turnClass = card.turn === "opponents" ? "other" : card.turn === "either" ? "either" : "own";
 
   return (
     <div
       className={`custom-card custom-stratagem-card ${turnClass}`}
-      style={cardStyle}
+      style={{
+        "--width": `${card.styling?.width ?? 260}px`,
+        "--height": `${card.styling?.height ?? 458}px`,
+        ...cardStyle,
+      }}
       data-testid="custom-stratagem-card">
       <div className="border">
         <div className="background-side-bar"></div>
         <div className="background-header-bar"></div>
-        <div className="header">{cardName}</div>
-        {typeValue && <div className="type">{typeValue}</div>}
-        <div className="content">
+        <div className="header">
+          <ReactFitty maxSize={16} minSize={10}>
+            {cardName}
+          </ReactFitty>
+        </div>
+        {typeValue && (
+          <div className="type">
+            <ReactFitty maxSize={14} minSize={2}>
+              {typeValue}
+            </ReactFitty>
+          </div>
+        )}
+        <div className="content" style={{ fontSize: card.styling?.textSize ?? 16 }}>
           {contentFields.map((field) => {
             const value = getFieldValue(field.key);
             if (!value) return null;
@@ -61,7 +77,11 @@ export const CustomStratagemCard = ({ card, cardTypeDef, cardStyle }) => {
         {costValue && (
           <div className="containers">
             <div className="cp-container">
-              <div className="value">{costValue}</div>
+              <div className="value">
+                <ReactFitty maxSize={18} minSize={10}>
+                  {costValue}
+                </ReactFitty>
+              </div>
             </div>
           </div>
         )}

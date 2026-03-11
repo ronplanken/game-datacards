@@ -100,4 +100,19 @@ describe("CustomRuleCard", () => {
     expect(container.querySelector(".background-side-bar")).toBeInTheDocument();
     expect(container.querySelector(".background-header-bar")).toBeInTheDocument();
   });
+
+  it("sets default --width and --height CSS variables", () => {
+    render(<CustomRuleCard card={makeCard()} cardTypeDef={ruleCardTypeDef} cardStyle={{}} />);
+    const card = screen.getByTestId("custom-rule-card");
+    expect(card.style.getPropertyValue("--width")).toBe("458px");
+    expect(card.style.getPropertyValue("--height")).toBe("auto");
+  });
+
+  it("respects card.styling overrides for width and height", () => {
+    const card = makeCard({ styling: { width: 500, height: 600, autoHeight: false } });
+    render(<CustomRuleCard card={card} cardTypeDef={ruleCardTypeDef} cardStyle={{}} />);
+    const el = screen.getByTestId("custom-rule-card");
+    expect(el.style.getPropertyValue("--width")).toBe("500px");
+    expect(el.style.getPropertyValue("--height")).toBe("600px");
+  });
 });

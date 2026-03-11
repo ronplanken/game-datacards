@@ -107,4 +107,19 @@ describe("CustomStratagemCard", () => {
     expect(container.querySelector(".background-side-bar")).toBeInTheDocument();
     expect(container.querySelector(".background-header-bar")).toBeInTheDocument();
   });
+
+  it("sets default --width and --height CSS variables", () => {
+    render(<CustomStratagemCard card={makeCard()} cardTypeDef={stratagemCardTypeDef} cardStyle={{}} />);
+    const card = screen.getByTestId("custom-stratagem-card");
+    expect(card.style.getPropertyValue("--width")).toBe("260px");
+    expect(card.style.getPropertyValue("--height")).toBe("458px");
+  });
+
+  it("respects card.styling overrides for width and height", () => {
+    const card = makeCard({ styling: { width: 300, height: 500 } });
+    render(<CustomStratagemCard card={card} cardTypeDef={stratagemCardTypeDef} cardStyle={{}} />);
+    const el = screen.getByTestId("custom-stratagem-card");
+    expect(el.style.getPropertyValue("--width")).toBe("300px");
+    expect(el.style.getPropertyValue("--height")).toBe("500px");
+  });
 });
