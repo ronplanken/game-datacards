@@ -353,7 +353,7 @@ Design quality:
 - [x] When card type selected: show that type's full schema tree (replaces empty state from Phase 5)
 
 Design quality:
-- [ ] Run `/frontend-design` on tree view, type badges, and collapsible nodes
+- [x] Run `/frontend-design` on tree view, type badges, and collapsible nodes
 - [ ] Run `/clarify` to review node labels, type badge text, and overview content
 - [ ] Run `/normalize` to ensure tree styling matches the left panel tree and gdc-premium patterns
 

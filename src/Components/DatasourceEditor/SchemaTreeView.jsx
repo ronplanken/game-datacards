@@ -35,9 +35,10 @@ const TYPE_BADGE_CLASSES = {
 const TreeNode = ({ label, icon: Icon, defaultOpen = false, children, badge, depth = 0 }) => {
   const [open, setOpen] = useState(defaultOpen);
   const hasChildren = children != null;
+  const connectorLeft = 12 + depth * 16 + 7;
 
   return (
-    <div className="schema-tree-node">
+    <div className={`schema-tree-node${depth === 0 ? " schema-tree-node-root" : ""}`}>
       <button
         className={`schema-tree-node-header ${hasChildren ? "expandable" : ""}`}
         style={{ paddingLeft: 12 + depth * 16 }}
@@ -56,7 +57,11 @@ const TreeNode = ({ label, icon: Icon, defaultOpen = false, children, badge, dep
         <span className="schema-tree-label">{label}</span>
         {badge && <span className="schema-tree-badge">{badge}</span>}
       </button>
-      {open && hasChildren && <div className="schema-tree-children">{children}</div>}
+      {open && hasChildren && (
+        <div className="schema-tree-children" style={{ "--tree-connector-left": `${connectorLeft}px` }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 };
