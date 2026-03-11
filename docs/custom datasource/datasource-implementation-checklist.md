@@ -208,7 +208,7 @@ Design quality:
 - [x] `Section.jsx` — collapsible section with `title`, `icon`, `defaultOpen` props, uses `ChevronDown`/`ChevronRight` from lucide-react, CSS classes `.props-section`, `.props-section-header`, `.props-section-content`
 - [x] `CompactInput.jsx` — inline-label input with `label`, `value`, `onChange`, `type`, `suffix`, `min`, `max`, `step` props, 28px height, hides number spinners
 - [x] `ColorInput.jsx` — color swatch + hex text input with `value`, `onChange`, `allowTransparent` props, transparent checkerboard pattern for null/transparent values, monospace font
-- [ ] `index.js` barrel export
+- [x] `index.js` barrel export
 
 ### Page layout
 - [ ] `DatasourceEditorPage` with `<Layout className="datasource-editor-layout">` > `<AppHeader showModals={false} showNav={true} showActions={false} />` > `<Content className="datasource-editor-content">` > `<PanelGroup direction="horizontal" autoSaveId="datasourceEditorLayout">`
