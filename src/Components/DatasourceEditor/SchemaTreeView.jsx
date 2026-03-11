@@ -53,7 +53,7 @@ const TreeNode = ({ label, icon: Icon, defaultOpen = false, children, badge, dep
         ) : (
           <span className="schema-tree-chevron-spacer" />
         )}
-        {Icon && <Icon size={14} className="schema-tree-icon" />}
+        {Icon && <Icon size={16} className="schema-tree-icon" />}
         <span className="schema-tree-label">{label}</span>
         {badge && <span className="schema-tree-badge">{badge}</span>}
       </button>

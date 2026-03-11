@@ -355,7 +355,7 @@ Design quality:
 Design quality:
 - [x] Run `/frontend-design` on tree view, type badges, and collapsible nodes
 - [x] Run `/clarify` to review node labels, type badge text, and overview content
-- [ ] Run `/normalize` to ensure tree styling matches the left panel tree and gdc-premium patterns
+- [x] Run `/normalize` to ensure tree styling matches the left panel tree and gdc-premium patterns
 
 ---
 
