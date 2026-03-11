@@ -292,7 +292,7 @@ Design quality:
 - [x] For `baseType: "rule"/"enhancement"/"stratagem"`: render `FieldsSchemaEditor` with type-specific sections (e.g. `rules` collection for rule, `keywords` collection for enhancement)
 - [x] `FieldsSchemaEditor` - generic editable field list (key, label, type dropdown, required toggle), conditional enum options editor, add/remove/reorder
 - [x] Wire into EditorRightPanel (replace empty state when datasource or card type is selected)
-- [ ] Component tests
+- [x] Component tests
 
 Design quality:
 - [ ] Run `/frontend-design` on all schema editors and form layouts
