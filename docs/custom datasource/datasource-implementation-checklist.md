@@ -238,8 +238,8 @@ Design quality:
 ### EditorRightPanel
 - [x] Container: `.designer-properties-panel.props-panel` (full height, flex column, bg-primary, border-left, overflow hidden)
 - [x] Empty state (nothing selected): `.props-empty` with icon (opacity 0.4) and "Select a datasource or card type" text (12px)
-- [ ] When datasource parent selected: show datasource metadata editor using `Section` components — name, version, author, baseSystem (read-only summary)
-- [ ] When card type selected: show that card type's schema definition editor — the fields, stats, weapon columns, ability categories etc. that define the shape of cards of this type (editing the schema, not card data)
+- [x] When datasource parent selected: show datasource metadata editor using `Section` components — name, version, author, baseSystem (read-only summary)
+- [x] When card type selected: show that card type's schema definition editor — the fields, stats, weapon columns, ability categories etc. that define the shape of cards of this type (editing the schema, not card data)
 - [ ] (Wired to SchemaDefinitionEditor in Phase 6)
 
 ### Route and navigation

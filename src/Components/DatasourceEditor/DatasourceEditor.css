@@ -549,6 +549,32 @@
 }
 
 /* ===========================================
+   METADATA ROWS
+   =========================================== */
+
+.props-metadata-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.props-metadata-label {
+  font-size: 11px;
+  color: var(--designer-text-tertiary);
+  flex-shrink: 0;
+}
+
+.props-metadata-value {
+  font-size: 12px;
+  color: var(--designer-text-primary);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===========================================
    SCROLLBAR STYLING
    =========================================== */
 
