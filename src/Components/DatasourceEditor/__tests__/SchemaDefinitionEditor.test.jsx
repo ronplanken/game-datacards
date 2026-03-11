@@ -5,6 +5,7 @@ import { SchemaDefinitionEditor } from "../SchemaDefinitionEditor";
 vi.mock("lucide-react", () => ({
   Settings: (props) => <svg data-testid="icon-settings" {...props} />,
   Database: (props) => <svg data-testid="icon-database" {...props} />,
+  Info: (props) => <svg data-testid="icon-info" {...props} />,
   BarChart3: (props) => <svg data-testid="icon-barchart" {...props} />,
   Swords: (props) => <svg data-testid="icon-swords" {...props} />,
   Sparkles: (props) => <svg data-testid="icon-sparkles" {...props} />,
@@ -122,9 +123,9 @@ describe("SchemaDefinitionEditor", () => {
         />,
       );
       expect(screen.getByText("Datasource Info")).toBeInTheDocument();
-      expect(screen.getByText("Test Datasource")).toBeInTheDocument();
-      expect(screen.getByText("1.0.0")).toBeInTheDocument();
-      expect(screen.getByText("Test Author")).toBeInTheDocument();
+      expect(screen.getByLabelText("Name")).toHaveValue("Test Datasource");
+      expect(screen.getByLabelText("Version")).toHaveValue("1.0.0");
+      expect(screen.getByLabelText("Author")).toHaveValue("Test Author");
     });
 
     it("renders nothing for datasource when activeDatasource is null", () => {

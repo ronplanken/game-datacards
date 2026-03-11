@@ -283,7 +283,7 @@ Design quality:
 **Styling:** Uses `DatasourceEditor.css` classes from Phase 5 (`.props-section`, `.props-compact-input`, etc.) — NOT Ant Design Collapse.
 
 - [x] `SchemaDefinitionEditor` switches on selected item: datasource parent → `DatasourceMetadataEditor`, card type → sub-editor based on `baseType`
-- [ ] `DatasourceMetadataEditor` - edit datasource name, version, author using `CompactInput`, baseSystem as read-only display
+- [x] `DatasourceMetadataEditor` - edit datasource name, version, author using `CompactInput`, baseSystem as read-only display
 - [ ] For `baseType: "unit"`: render `Section` components for `StatsSchemaEditor`, `WeaponsSchemaEditor`, `AbilitiesSchemaEditor`, `MetadataSchemaEditor`
 - [ ] `StatsSchemaEditor` - editable field list (key, label, type, displayOrder), add/remove/reorder, `allowMultipleProfiles` toggle
 - [ ] `WeaponsSchemaEditor` - tabbed per weapon type, editable column list per tab, add/remove weapon types, `hasKeywords`/`hasProfiles` toggles
