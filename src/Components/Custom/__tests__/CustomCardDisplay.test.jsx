@@ -171,35 +171,47 @@ describe("CustomCardDisplay", () => {
     expect(screen.getByText("Space Marine")).toBeInTheDocument();
   });
 
-  it("renders rule card placeholder for rule baseType", () => {
+  it("renders rule card with header-colour and banner-colour CSS variables", () => {
     mockActiveCard.ref = { cardType: "battle-rules", name: "Core Rules", faction_id: "f1" };
     mockDataSource.ref = {
       schema: makeSchema([ruleCardType]),
-      data: [{ id: "f1", colours: { header: "#000", banner: "#111" } }],
+      data: [{ id: "f1", colours: { header: "#aa0000", banner: "#bb0000" } }],
     };
     render(<CustomCardDisplay />);
-    expect(screen.getByTestId("custom-rule-card")).toBeInTheDocument();
+    const card = screen.getByTestId("custom-rule-card");
+    expect(card).toBeInTheDocument();
     expect(screen.getByText("Core Rules")).toBeInTheDocument();
+    expect(card.style.getPropertyValue("--header-colour")).toBe("#aa0000");
+    expect(card.style.getPropertyValue("--banner-colour")).toBe("#bb0000");
+    expect(card.querySelector(".custom-card-header")).toBeInTheDocument();
   });
 
-  it("renders enhancement card placeholder", () => {
+  it("renders enhancement card with header-colour and banner-colour CSS variables", () => {
     mockActiveCard.ref = { cardType: "enhancement", name: "Iron Will", faction_id: "f1" };
     mockDataSource.ref = {
       schema: makeSchema([enhancementCardType]),
-      data: [{ id: "f1", colours: { header: "#000", banner: "#111" } }],
+      data: [{ id: "f1", colours: { header: "#cc0000", banner: "#dd0000" } }],
     };
     render(<CustomCardDisplay />);
-    expect(screen.getByTestId("custom-enhancement-card")).toBeInTheDocument();
+    const card = screen.getByTestId("custom-enhancement-card");
+    expect(card).toBeInTheDocument();
+    expect(card.style.getPropertyValue("--header-colour")).toBe("#cc0000");
+    expect(card.style.getPropertyValue("--banner-colour")).toBe("#dd0000");
+    expect(card.querySelector(".custom-card-header")).toBeInTheDocument();
   });
 
-  it("renders stratagem card placeholder", () => {
+  it("renders stratagem card with header-colour and banner-colour CSS variables", () => {
     mockActiveCard.ref = { cardType: "stratagem", name: "Overwatch", faction_id: "f1" };
     mockDataSource.ref = {
       schema: makeSchema([stratagemCardType]),
-      data: [{ id: "f1", colours: { header: "#000", banner: "#111" } }],
+      data: [{ id: "f1", colours: { header: "#ee0000", banner: "#ff0000" } }],
     };
     render(<CustomCardDisplay />);
-    expect(screen.getByTestId("custom-stratagem-card")).toBeInTheDocument();
+    const card = screen.getByTestId("custom-stratagem-card");
+    expect(card).toBeInTheDocument();
+    expect(card.style.getPropertyValue("--header-colour")).toBe("#ee0000");
+    expect(card.style.getPropertyValue("--banner-colour")).toBe("#ff0000");
+    expect(card.querySelector(".custom-card-header")).toBeInTheDocument();
   });
 
   it("uses custom colours when card has useCustomColours enabled", () => {

@@ -202,6 +202,64 @@ describe("CustomUnitCard", () => {
     expect(statContainers).toHaveLength(1);
   });
 
+  it("renders CSS class structure for header-colour and banner-colour styling", () => {
+    const cardStyle = { "--header-colour": "#1a1a2e", "--banner-colour": "#16213e" };
+    const unit = makeUnit({
+      abilities: {
+        core: ["Deep Strike"],
+        unit: [{ name: "Oath of Moment", description: "Re-roll hits", showAbility: true }],
+      },
+    });
+    const cardTypeDef = makeCardTypeDef({
+      weaponTypes: {
+        label: "Weapon Types",
+        types: [
+          {
+            key: "ranged",
+            label: "Ranged Weapons",
+            hasKeywords: true,
+            hasProfiles: true,
+            columns: [{ key: "range", label: "Range", type: "string", required: true }],
+          },
+        ],
+      },
+      abilities: {
+        label: "Abilities",
+        categories: [
+          { key: "core", label: "Core", format: "name-only" },
+          { key: "unit", label: "Unit Abilities", format: "name-description" },
+        ],
+        hasInvulnerableSave: false,
+        hasDamagedAbility: false,
+      },
+    });
+    unit.ranged = [{ profiles: [{ active: true, name: "Bolt Rifle", range: '24"', keywords: [] }] }];
+
+    const { container } = render(<CustomUnitCard unit={unit} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />);
+
+    // Root element has both custom-card and custom-unit-card classes
+    const root = container.querySelector(".custom-card.custom-unit-card");
+    expect(root).toBeInTheDocument();
+    expect(root.style.getPropertyValue("--header-colour")).toBe("#1a1a2e");
+    expect(root.style.getPropertyValue("--banner-colour")).toBe("#16213e");
+
+    // Header structure for banner-colour background
+    expect(container.querySelector(".unit .header")).toBeInTheDocument();
+    expect(container.querySelector(".header .header_container")).toBeInTheDocument();
+
+    // Data container uses header-colour as border/background
+    expect(container.querySelector(".data_container .data")).toBeInTheDocument();
+
+    // Weapon heading uses header-colour background
+    expect(container.querySelector(".weapons .heading")).toBeInTheDocument();
+
+    // Abilities heading uses header-colour background
+    expect(container.querySelector(".abilities .heading")).toBeInTheDocument();
+
+    // Footer uses header-colour for borders
+    expect(container.querySelector(".footer")).toBeInTheDocument();
+  });
+
   it("handles missing schema gracefully", () => {
     const cardTypeDef = { key: "infantry", label: "Infantry", baseType: "unit" };
     render(<CustomUnitCard unit={makeUnit()} cardTypeDef={cardTypeDef} cardStyle={{}} />);
