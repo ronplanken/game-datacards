@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { CustomCardAbilities } from "./CustomCardAbilities";
 import { CustomCardStats } from "./CustomCardStats";
 import { CustomCardWeapons } from "./CustomCardWeapons";
 
@@ -76,7 +77,9 @@ export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle }) => {
             <div className="weapons">
               <CustomCardWeapons unit={unit} weaponTypes={schema.weaponTypes} />
             </div>
-            <div className="extra">{/* Abilities rendering delegated to CustomCardAbilities (next task) */}</div>
+            <div className="extra">
+              <CustomCardAbilities unit={unit} abilitiesSchema={schema.abilities} />
+            </div>
           </div>
         </div>
         <div className="footer">
