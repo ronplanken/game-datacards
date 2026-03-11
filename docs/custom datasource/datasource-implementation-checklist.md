@@ -258,10 +258,10 @@ Design quality:
 ### Verification
 - [x] `yarn lint` and `yarn prettier:fix` pass
 - [x] `yarn test:ci` passes
-- [ ] `yarn start` — navigate to `/datasources`, verify 3-panel layout renders
-- [ ] Panels resize correctly
-- [ ] Empty states display in all three panels
-- [ ] Navigation link shows active state on the datasources page
+- [x] `yarn start` — navigate to `/datasources`, verify 3-panel layout renders
+- [x] Panels resize correctly
+- [x] Empty states display in all three panels
+- [x] Navigation link shows active state on the datasources page
 
 ---
 
