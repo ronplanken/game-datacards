@@ -10,6 +10,7 @@ vi.mock("lucide-react", () => ({
   Swords: (props) => <svg data-testid="icon-swords" {...props} />,
   Sparkles: (props) => <svg data-testid="icon-sparkles" {...props} />,
   Tag: (props) => <svg data-testid="icon-tag" {...props} />,
+  Tags: (props) => <svg data-testid="icon-tags" {...props} />,
   List: (props) => <svg data-testid="icon-list" {...props} />,
   BookOpen: (props) => <svg data-testid="icon-book-open" {...props} />,
   Layers: (props) => <svg data-testid="icon-layers" {...props} />,

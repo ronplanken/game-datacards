@@ -288,7 +288,7 @@ Design quality:
 - [x] `StatsSchemaEditor` - editable field list (key, label, type, displayOrder), add/remove/reorder, `allowMultipleProfiles` toggle
 - [x] `WeaponsSchemaEditor` - tabbed per weapon type, editable column list per tab, add/remove weapon types, `hasKeywords`/`hasProfiles` toggles
 - [x] `AbilitiesSchemaEditor` - editable category list (key, label, format dropdown), `hasInvulnerableSave`/`hasDamagedAbility` toggles
-- [ ] `MetadataSchemaEditor` - toggles for `hasKeywords`, `hasFactionKeywords`, `hasPoints`, `pointsFormat` dropdown
+- [x] `MetadataSchemaEditor` - toggles for `hasKeywords`, `hasFactionKeywords`, `hasPoints`, `pointsFormat` dropdown
 - [ ] For `baseType: "rule"/"enhancement"/"stratagem"`: render `FieldsSchemaEditor` with type-specific sections (e.g. `rules` collection for rule, `keywords` collection for enhancement)
 - [ ] `FieldsSchemaEditor` - generic editable field list (key, label, type dropdown, required toggle), conditional enum options editor, add/remove/reorder
 - [ ] Wire into EditorRightPanel (replace empty state when datasource or card type is selected)
