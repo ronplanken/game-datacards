@@ -183,7 +183,7 @@ describe("CustomCardDisplay", () => {
     expect(screen.getByText("Core Rules")).toBeInTheDocument();
     expect(card.style.getPropertyValue("--header-colour")).toBe("#aa0000");
     expect(card.style.getPropertyValue("--banner-colour")).toBe("#bb0000");
-    expect(card.querySelector(".custom-card-header")).toBeInTheDocument();
+    expect(card.querySelector(".header")).toBeInTheDocument();
   });
 
   it("renders enhancement card with header-colour and banner-colour CSS variables", () => {
@@ -197,7 +197,7 @@ describe("CustomCardDisplay", () => {
     expect(card).toBeInTheDocument();
     expect(card.style.getPropertyValue("--header-colour")).toBe("#cc0000");
     expect(card.style.getPropertyValue("--banner-colour")).toBe("#dd0000");
-    expect(card.querySelector(".custom-card-header")).toBeInTheDocument();
+    expect(card.querySelector(".header")).toBeInTheDocument();
   });
 
   it("renders stratagem card with header-colour and banner-colour CSS variables", () => {
@@ -211,7 +211,7 @@ describe("CustomCardDisplay", () => {
     expect(card).toBeInTheDocument();
     expect(card.style.getPropertyValue("--header-colour")).toBe("#ee0000");
     expect(card.style.getPropertyValue("--banner-colour")).toBe("#ff0000");
-    expect(card.querySelector(".custom-card-header")).toBeInTheDocument();
+    expect(card.querySelector(".header")).toBeInTheDocument();
   });
 
   it("uses custom colours when card has useCustomColours enabled", () => {

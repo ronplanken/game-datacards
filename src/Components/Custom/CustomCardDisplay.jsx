@@ -1,6 +1,9 @@
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { CustomEnhancementCard } from "./CustomEnhancementCard";
+import { CustomRuleCard } from "./CustomRuleCard";
+import { CustomStratagemCard } from "./CustomStratagemCard";
 import { CustomUnitCard } from "./CustomUnitCard";
 
 /**
@@ -94,26 +97,11 @@ export const CustomCardDisplay = ({
       case "unit":
         return <CustomUnitCard unit={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
       case "rule":
-        return (
-          <div className="custom-card custom-rule-card" style={cardStyle} data-testid="custom-rule-card">
-            <div className="custom-card-header">{displayCard.name || "Untitled Rule"}</div>
-            <div className="custom-card-body">Rule card renderer (Phase 7)</div>
-          </div>
-        );
+        return <CustomRuleCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
       case "enhancement":
-        return (
-          <div className="custom-card custom-enhancement-card" style={cardStyle} data-testid="custom-enhancement-card">
-            <div className="custom-card-header">{displayCard.name || "Untitled Enhancement"}</div>
-            <div className="custom-card-body">Enhancement card renderer (Phase 7)</div>
-          </div>
-        );
+        return <CustomEnhancementCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
       case "stratagem":
-        return (
-          <div className="custom-card custom-stratagem-card" style={cardStyle} data-testid="custom-stratagem-card">
-            <div className="custom-card-header">{displayCard.name || "Untitled Stratagem"}</div>
-            <div className="custom-card-body">Stratagem card renderer (Phase 7)</div>
-          </div>
-        );
+        return <CustomStratagemCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
       default:
         return null;
     }

@@ -569,39 +569,301 @@
     }
   }
 
-  // Rule card styles
-  &.custom-rule-card {
-    .custom-card-header {
-      background-color: var(--header-colour);
-      color: var(--header-text-colour);
-      padding: 8px 16px;
-      text-transform: uppercase;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-  }
-
-  // Enhancement card styles
-  &.custom-enhancement-card {
-    .custom-card-header {
-      background-color: var(--header-colour);
-      color: var(--header-text-colour);
-      padding: 8px 16px;
-      text-transform: uppercase;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-  }
-
-  // Stratagem card styles
+  // Shared card structure for rule, enhancement, stratagem cards
+  // Mirrors the 40K card structure: border > side-bar + header-bar + header + type + content + containers
+  &.custom-rule-card,
+  &.custom-enhancement-card,
   &.custom-stratagem-card {
-    .custom-card-header {
-      background-color: var(--header-colour);
-      color: var(--header-text-colour);
-      padding: 8px 16px;
-      text-transform: uppercase;
-      font-size: 1.2rem;
-      font-weight: 600;
+    .border {
+      background-color: white;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+
+      .background-side-bar {
+        position: absolute;
+        top: 22px;
+        left: 22px;
+        height: calc(100% - 80px);
+        width: 15px;
+        background-color: var(--header-colour);
+      }
+
+      .background-header-bar {
+        position: absolute;
+        top: 32px;
+        left: 41px;
+        height: 4px;
+        width: calc(100% - 60px);
+        background-color: var(--header-colour);
+      }
+
+      .header {
+        padding-left: 4px;
+        position: absolute;
+        top: 10px;
+        left: 53px;
+        color: var(--header-colour);
+        width: calc(100% - 70px);
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .type {
+        padding-left: 4px;
+        position: absolute;
+        top: 36px;
+        left: 53px;
+        width: calc(100% - 70px);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        border-bottom: 1px dotted #aaadb0;
+        color: rgba(0, 0, 0, 0.65);
+      }
+
+      .content {
+        position: absolute;
+        top: 57px;
+        left: 53px;
+        width: calc(100% - 70px);
+        padding-left: 4px;
+        padding-right: 8px;
+        overflow: hidden;
+
+        .field {
+          padding-top: 4px;
+          line-height: 1.1rem;
+
+          .field-label {
+            text-transform: uppercase;
+            color: var(--header-colour);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding-right: 4px;
+          }
+
+          .field-value {
+            color: black;
+            font-size: 0.7rem;
+            font-weight: 400;
+
+            &.richtext {
+              display: block;
+              line-height: 1.2rem;
+            }
+          }
+        }
+
+        .section {
+          padding-top: 4px;
+          line-height: 1rem;
+
+          .title {
+            text-transform: uppercase;
+            color: var(--header-colour);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding-right: 4px;
+          }
+
+          .text {
+            color: black;
+            font-size: 0.7rem;
+            font-weight: 400;
+          }
+        }
+      }
+    }
+  }
+
+  // Rule card styles — wider card with auto-height for rule content
+  &.custom-rule-card {
+    .border {
+      width: 458px;
+      min-height: 320px;
+      height: auto;
+      border: 2px solid var(--header-colour);
+
+      .content {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: auto;
+        padding: 64px 16px 16px 57px;
+
+        .rules-collection {
+          margin-top: 8px;
+          border-top: 1px dotted #aaadb0;
+          padding-top: 4px;
+
+          .rules-heading {
+            text-transform: uppercase;
+            color: var(--header-colour);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding-bottom: 4px;
+          }
+
+          .rule-entry {
+            padding: 4px 0;
+            border-bottom: 1px dotted #d9d9d9;
+            line-height: 1.1rem;
+
+            .rule-title {
+              font-size: 0.75rem;
+              font-weight: 600;
+              color: black;
+              &::after {
+                content: ": ";
+              }
+            }
+
+            .rule-description {
+              font-size: 0.7rem;
+              font-weight: 400;
+              color: black;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Enhancement card styles — narrow card with cost display
+  &.custom-enhancement-card {
+    .border {
+      width: 260px;
+      height: 458px;
+      border: 2px solid var(--header-colour);
+
+      .content {
+        height: calc(458px - 148px);
+
+        .keywords-collection {
+          margin-top: 8px;
+          padding-top: 4px;
+          border-top: 1px dotted #aaadb0;
+          line-height: 1.1rem;
+
+          .keywords-label {
+            text-transform: uppercase;
+            color: var(--header-colour);
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding-right: 4px;
+          }
+
+          .keywords-value {
+            font-size: 0.65rem;
+            font-weight: 400;
+            color: black;
+            text-transform: capitalize;
+          }
+        }
+      }
+
+      .containers {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+
+        .cost-container {
+          height: 36px;
+          width: 36px;
+          border: 3px solid var(--header-colour);
+          background-color: var(--rows-colour);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          rotate: 45deg;
+
+          .value {
+            rotate: -45deg;
+            text-align: center;
+            font-weight: 600;
+            color: var(--header-colour);
+            font-size: 0.85rem;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+
+  // Stratagem card styles — narrow card with turn classification and CP cost
+  &.custom-stratagem-card {
+    --stratagem-colour: var(--header-colour);
+
+    &.own {
+      --stratagem-colour: var(--header-colour);
+    }
+    &.other {
+      --stratagem-colour: #8b0000;
+    }
+    &.either {
+      --stratagem-colour: #555555;
+    }
+
+    .border {
+      width: 260px;
+      height: 458px;
+      border: 2px solid var(--stratagem-colour);
+
+      .background-side-bar {
+        background-color: var(--stratagem-colour);
+      }
+
+      .background-header-bar {
+        background-color: var(--stratagem-colour);
+      }
+
+      .header {
+        color: var(--stratagem-colour);
+      }
+
+      .content {
+        height: calc(458px - 148px);
+
+        .section {
+          .title {
+            color: var(--stratagem-colour);
+          }
+        }
+      }
+
+      .containers {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 36px;
+        top: 16px;
+        left: 12px;
+
+        .cp-container {
+          height: 36px;
+          width: 36px;
+          border: 3px solid var(--stratagem-colour);
+          background-color: var(--rows-colour);
+          rotate: 45deg;
+          overflow: hidden;
+          line-height: 30px;
+
+          .value {
+            rotate: -45deg;
+            text-align: center;
+            font-weight: 600;
+            color: var(--stratagem-colour);
+            font-size: 0.85rem;
+            white-space: nowrap;
+          }
+        }
+      }
     }
   }
 }

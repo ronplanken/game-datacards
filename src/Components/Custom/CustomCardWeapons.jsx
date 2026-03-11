@@ -7,8 +7,9 @@ import { WeaponTypeIcon } from "../Icons/WeaponTypeIcon";
  * @param {Object} props.weapon - Weapon data with profiles array
  * @param {Array} props.columns - Column definitions from schema weaponType
  * @param {boolean} props.hasKeywords - Whether to show weapon keywords
+ * @param {string} props.columnTemplate - CSS grid-template-columns value matching the heading
  */
-const CustomWeaponProfiles = ({ weapon, columns, hasKeywords }) => {
+const CustomWeaponProfiles = ({ weapon, columns, hasKeywords, columnTemplate }) => {
   return (
     <>
       {weapon.profiles
@@ -18,7 +19,7 @@ const CustomWeaponProfiles = ({ weapon, columns, hasKeywords }) => {
             className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
             key={`weapon-profile-${index}`}
             data-name={profile.name}>
-            <div className="line">
+            <div className="line" style={{ gridTemplateColumns: columnTemplate }}>
               <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
                 <span>{profile.name}</span>
                 {hasKeywords && profile.keywords?.length > 0 && (
@@ -69,6 +70,7 @@ const CustomWeaponType = ({ weaponTypeDef, weapons }) => {
   const iconType = weaponTypeDef.key === "melee" ? "melee" : "ranged";
 
   // Grid columns: name (7fr) + dynamic columns (each 1fr, first gets 2fr for wider content like Range)
+  // This template is shared between heading and weapon lines for consistent column alignment
   const columnTemplate = `7fr ${columns.map((_, i) => (i === 0 ? "2fr" : "1fr")).join(" ")}`;
 
   return (
@@ -85,7 +87,13 @@ const CustomWeaponType = ({ weaponTypeDef, weapons }) => {
         ))}
       </div>
       {weapons?.map((weapon, index) => (
-        <CustomWeaponProfiles weapon={weapon} columns={columns} hasKeywords={hasKeywords} key={`weapon-${index}`} />
+        <CustomWeaponProfiles
+          weapon={weapon}
+          columns={columns}
+          hasKeywords={hasKeywords}
+          columnTemplate={columnTemplate}
+          key={`weapon-${index}`}
+        />
       ))}
     </div>
   );
