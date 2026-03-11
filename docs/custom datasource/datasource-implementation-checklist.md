@@ -219,25 +219,25 @@ Design quality:
 - [x] Import `DatasourceEditor.css` in the page component
 
 ### EditorLeftPanel
-- [ ] Container: `.designer-layer-panel` (full height, flex column, bg-primary, border-right)
-- [ ] Datasource selector section (top): `.designer-template-selector` padding with "New Datasource" button (`.designer-template-btn` — full width, 36px, accent bg, white, `Plus` icon from lucide-react) that opens the DatasourceWizard in `create` mode (Phase 3)
-- [ ] "Open Datasource" expand/collapse list (`.designer-btn`) showing available custom datasources
-- [ ] Active datasource info section (`.designer-template-info`): datasource name, version, base system, card type count
-- [ ] Panel header: `.designer-panel-header` with `.designer-panel-title` "Card Types"
-- [ ] Scrollable content: `.designer-panel-content` with datasource tree — datasource as parent item (clicking selects it and opens datasource-level schema editor in right panel), card types as children (clicking selects one and opens its field/attribute editor in right panel)
-- [ ] Card type icons by `baseType`: `Swords` for unit, `BookOpen` for rule, `Sparkles` for enhancement, `Zap` for stratagem
-- [ ] Tree items using `.designer-layer-item` pattern: lucide-react icon per baseType, label truncated with ellipsis, hover actions (delete using `Trash2` icon), selected state (accent border + accent-subtle bg)
-- [ ] "Add Card Type" button (`.designer-btn-sm`) below card type list, opens DatasourceWizard in `add-card-type` mode (Phase 3)
-- [ ] Empty state when no datasources: `.designer-empty-state` with `Database` icon, "No custom datasources yet" text, and "New Datasource" CTA button
+- [x] Container: `.designer-layer-panel` (full height, flex column, bg-primary, border-right)
+- [x] Datasource selector section (top): `.designer-template-selector` padding with "New Datasource" button (`.designer-template-btn` — full width, 36px, accent bg, white, `Plus` icon from lucide-react) that opens the DatasourceWizard in `create` mode (Phase 3)
+- [x] "Open Datasource" expand/collapse list (`.designer-btn`) showing available custom datasources
+- [x] Active datasource info section (`.designer-template-info`): datasource name, version, base system, card type count
+- [x] Panel header: `.designer-panel-header` with `.designer-panel-title` "Card Types"
+- [x] Scrollable content: `.designer-panel-content` with datasource tree — datasource as parent item (clicking selects it and opens datasource-level schema editor in right panel), card types as children (clicking selects one and opens its field/attribute editor in right panel)
+- [x] Card type icons by `baseType`: `Swords` for unit, `BookOpen` for rule, `Sparkles` for enhancement, `Zap` for stratagem
+- [x] Tree items using `.designer-layer-item` pattern: lucide-react icon per baseType, label truncated with ellipsis, hover actions (delete using `Trash2` icon), selected state (accent border + accent-subtle bg)
+- [x] "Add Card Type" button (`.designer-btn-sm`) below card type list, opens DatasourceWizard in `add-card-type` mode (Phase 3)
+- [x] Empty state when no datasources: `.designer-empty-state` with `Database` icon, "No custom datasources yet" text, and "New Datasource" CTA button
 
 ### EditorCenterPanel
-- [ ] Container: flex column, full height, `--designer-bg-deep` background
-- [ ] Empty state: `.designer-empty-state` centered with `FileText` icon and "Select a card type to view its schema" text
+- [x] Container: flex column, full height, `--designer-bg-deep` background
+- [x] Empty state: `.designer-empty-state` centered with `FileText` icon and "Select a card type to view its schema" text
 - [ ] (Wired to schema tree visualization in Phase 8)
 
 ### EditorRightPanel
-- [ ] Container: `.designer-properties-panel.props-panel` (full height, flex column, bg-primary, border-left, overflow hidden)
-- [ ] Empty state (nothing selected): `.props-empty` with icon (opacity 0.4) and "Select a datasource or card type" text (12px)
+- [x] Container: `.designer-properties-panel.props-panel` (full height, flex column, bg-primary, border-left, overflow hidden)
+- [x] Empty state (nothing selected): `.props-empty` with icon (opacity 0.4) and "Select a datasource or card type" text (12px)
 - [ ] When datasource parent selected: show datasource metadata editor using `Section` components — name, version, author, baseSystem (read-only summary)
 - [ ] When card type selected: show that card type's schema definition editor — the fields, stats, weapon columns, ability categories etc. that define the shape of cards of this type (editing the schema, not card data)
 - [ ] (Wired to SchemaDefinitionEditor in Phase 6)
@@ -247,8 +247,8 @@ Design quality:
 - [ ] Add nav link in `src/Components/AppHeader.jsx`: `<Link to="/datasources">Datasources</Link>` with `app-header-nav-item` class, active detection via `location.pathname.startsWith("/datasources")`, positioned after Viewer before Designer
 
 ### Tests
-- [ ] `DatasourceEditor.test.jsx`: route renders page, PanelGroup mounts with 3 panels
-- [ ] `EditorLeftPanel.test.jsx`: empty state renders, datasource list renders, New Datasource button present
+- [x] `DatasourceEditor.test.jsx`: route renders page, PanelGroup mounts with 3 panels
+- [x] `EditorLeftPanel.test.jsx`: empty state renders, datasource list renders, New Datasource button present
 
 ### Design quality
 - [ ] Run `/frontend-design` on all three panels, empty states, and shared components
