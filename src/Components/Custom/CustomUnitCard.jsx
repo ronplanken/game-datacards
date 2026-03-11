@@ -1,5 +1,5 @@
-import { ReactFitty } from "react-fitty";
 import styled from "styled-components";
+import { CustomCardStats } from "./CustomCardStats";
 
 const HeaderContainer = styled.div`
   &:before {
@@ -16,46 +16,6 @@ const HeaderContainer = styled.div`
     z-index: ${(props) => (props.imagezindex === "onTop" ? 100 : "auto")};
   }
 `;
-
-/**
- * Renders dynamic stat headers and values based on schema field definitions.
- * Unlike UnitStats which hardcodes M/T/SV/W/LD/OC, this reads from schema.stats.fields.
- */
-const CustomUnitStats = ({ stats, statFields }) => {
-  const sortedFields = [...(statFields || [])].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-
-  return (
-    <>
-      <div className="stats_container">
-        {sortedFields.map((field) => (
-          <div className="stat" key={field.key}>
-            <div className="caption">{field.label}</div>
-          </div>
-        ))}
-      </div>
-      {stats
-        ?.filter((stat) => stat.active)
-        ?.map((stat, index) => (
-          <div className="stats_container" key={`stat-line-${index}`}>
-            {sortedFields.map((field) => (
-              <div className="stat" key={`${field.key}-${index}`}>
-                <div className="value_container">
-                  <div className="value">{stat[field.key] || "-"}</div>
-                </div>
-              </div>
-            ))}
-            {stat.showName && (
-              <div className="name">
-                <ReactFitty maxSize={16} minSize={10}>
-                  {stat.name}
-                </ReactFitty>
-              </div>
-            )}
-          </div>
-        ))}
-    </>
-  );
-};
 
 /**
  * Renders the unit name header with optional image, points, and subname.
@@ -108,7 +68,7 @@ export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle }) => {
             imagePositionX={unit.imagePositionX}
             imagePositionY={unit.imagePositionY}
           />
-          <CustomUnitStats stats={unit.stats} statFields={statFields} />
+          <CustomCardStats stats={unit.stats} statFields={statFields} />
         </div>
         <div className="data_container">
           <div className="data">
