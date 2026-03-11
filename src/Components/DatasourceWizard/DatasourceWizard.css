@@ -1211,6 +1211,29 @@
 }
 
 /* ===========================================
+   STEP: UNIT METADATA
+   =========================================== */
+
+.dsw-unit-metadata-points-format {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 0 28px;
+}
+
+.dsw-unit-metadata-points-format .dsw-form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--wz-text-secondary);
+  white-space: nowrap;
+  margin: 0;
+}
+
+.dsw-unit-metadata-points-format .dsw-abilities-format-select {
+  width: 140px;
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {
