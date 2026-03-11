@@ -326,7 +326,7 @@ Design quality:
 - [x] CustomCardWeapons: render table per weapon type with schema-defined columns
 - [x] CustomCardAbilities: grouped by category with format from schema
 - [x] Support `--header-colour` / `--banner-colour` CSS variables
-- [ ] Check Mobile.js for a card source switch and add custom source rendering support so custom cards display correctly on mobile
+- [x] Check Mobile.js for a card source switch and add custom source rendering support so custom cards display correctly on mobile
 - [ ] Component tests
 
 Design quality:
