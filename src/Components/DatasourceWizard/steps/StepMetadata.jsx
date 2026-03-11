@@ -64,7 +64,7 @@ export const StepMetadata = ({ wizard }) => {
             placeholder="1.0.0"
             data-testid="dsw-metadata-version"
           />
-          <span className="dsw-form-hint">Semantic version number for tracking changes.</span>
+          <span className="dsw-form-hint">Version number for tracking changes (e.g. 1.0.0).</span>
         </div>
 
         <div className="dsw-form-field">
@@ -81,7 +81,7 @@ export const StepMetadata = ({ wizard }) => {
             placeholder="Your name or handle"
             data-testid="dsw-metadata-author"
           />
-          <span className="dsw-form-hint">Optional attribution for the datasource creator.</span>
+          <span className="dsw-form-hint">Optional. The person or group who created this datasource.</span>
         </div>
       </div>
     </div>

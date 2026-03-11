@@ -7,8 +7,8 @@ import { Plus, Trash2, ChevronUp, ChevronDown, ListOrdered, X } from "lucide-rea
 const FIELD_TYPE_OPTIONS = [
   { value: "string", label: "String" },
   { value: "richtext", label: "Rich Text" },
-  { value: "enum", label: "Enum" },
-  { value: "boolean", label: "Boolean" },
+  { value: "enum", label: "Choice List" },
+  { value: "boolean", label: "Yes / No" },
 ];
 
 /**
@@ -204,7 +204,8 @@ export const StepRules = ({ wizard }) => {
     <div className="dsw-step-rules" data-testid="dsw-step-rules">
       <h2 className="dsw-step-title">Rules Collection</h2>
       <p className="dsw-step-description">
-        Configure the nested rules collection for this card type. Each rule entry will have these fields.
+        Define the fields that each rule on this card type will have. Cards can contain one or more rules, each with
+        these fields.
       </p>
 
       <div className="dsw-rules-config" data-testid="dsw-rules-config">
@@ -231,6 +232,7 @@ export const StepRules = ({ wizard }) => {
             onChange={handleAllowMultipleToggle}
           />
           <span className="dsw-toggle-label">Allow Multiple Rules</span>
+          <span className="dsw-toggle-hint">Cards can contain more than one rule entry.</span>
         </label>
       </div>
 
@@ -339,7 +341,7 @@ export const StepRules = ({ wizard }) => {
             {field.type === "enum" && (
               <div className="dsw-fields-enum-options" data-testid={`dsw-rules-field-enum-options-${index}`}>
                 <div className="dsw-fields-enum-header">
-                  <span className="dsw-fields-enum-title">Enum Options ({(field.options || []).length})</span>
+                  <span className="dsw-fields-enum-title">Choice Options ({(field.options || []).length})</span>
                   <button
                     type="button"
                     className="dsw-btn dsw-btn--secondary dsw-btn--xs"
@@ -352,7 +354,7 @@ export const StepRules = ({ wizard }) => {
 
                 {(field.options || []).length === 0 && (
                   <div className="dsw-fields-enum-empty" data-testid={`dsw-rules-field-enum-empty-${index}`}>
-                    No options defined. Add options to constrain this field&apos;s values.
+                    No options defined yet. Add the allowed values for this field.
                   </div>
                 )}
 

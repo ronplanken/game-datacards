@@ -104,8 +104,8 @@ describe("StepMetadata", () => {
     render(<StepMetadata wizard={wizard} />);
 
     expect(screen.getByText(/descriptive name/i)).toBeInTheDocument();
-    expect(screen.getByText(/semantic version/i)).toBeInTheDocument();
-    expect(screen.getByText(/optional attribution/i)).toBeInTheDocument();
+    expect(screen.getByText(/version number for tracking changes/i)).toBeInTheDocument();
+    expect(screen.getByText(/person or group who created/i)).toBeInTheDocument();
   });
 
   it("has the correct test id on the root element", () => {

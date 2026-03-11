@@ -154,7 +154,7 @@ export const StepCardType = ({ wizard }) => {
                 placeholder="e.g. infantry, battle-rules"
                 data-testid="dsw-card-type-key"
               />
-              <span className="dsw-form-hint">A unique identifier for this card type within your datasource.</span>
+              <span className="dsw-form-hint">A short, unique ID used internally (e.g. infantry, battle-rules).</span>
             </div>
             <div className="dsw-form-field">
               <label className="dsw-form-label">Label</label>
@@ -166,7 +166,7 @@ export const StepCardType = ({ wizard }) => {
                 placeholder="e.g. Infantry, Battle Rules"
                 data-testid="dsw-card-type-label"
               />
-              <span className="dsw-form-hint">A human-readable name for this card type.</span>
+              <span className="dsw-form-hint">The display name shown in the UI for this card type.</span>
             </div>
           </div>
         </div>

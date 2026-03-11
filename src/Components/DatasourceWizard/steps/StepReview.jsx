@@ -192,7 +192,7 @@ export const StepReview = ({ wizard }) => {
               </ul>
             ) : (
               <p className="dsw-review-empty" data-testid="dsw-review-schema-empty">
-                No schema fields configured yet. You can add them after creation.
+                No fields configured yet. You can add them later in the editor.
               </p>
             )}
 
@@ -213,7 +213,9 @@ export const StepReview = ({ wizard }) => {
                   <span className="dsw-review-toggle-badge">Faction Keywords</span>
                 )}
                 {cardType.schema.metadata?.hasPoints && (
-                  <span className="dsw-review-toggle-badge">Points ({cardType.schema.metadata.pointsFormat})</span>
+                  <span className="dsw-review-toggle-badge">
+                    Points ({cardType.schema.metadata.pointsFormat === "per-model" ? "per model" : "per unit"})
+                  </span>
                 )}
               </div>
             )}
@@ -226,8 +228,8 @@ export const StepReview = ({ wizard }) => {
         <CheckCircle size={14} />
         <span>
           {isCreateMode
-            ? 'Click "Create Datasource" to finish setup.'
-            : 'Click "Add Card Type" to add this type to your datasource.'}
+            ? "Everything looks good. You can edit the schema further after creating the datasource."
+            : "Everything looks good. The new card type will be added to your datasource."}
         </span>
       </div>
     </div>

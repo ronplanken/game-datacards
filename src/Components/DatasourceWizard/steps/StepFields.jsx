@@ -7,8 +7,8 @@ import { Plus, Trash2, ChevronUp, ChevronDown, ListOrdered, X } from "lucide-rea
 const FIELD_TYPE_OPTIONS = [
   { value: "string", label: "String" },
   { value: "richtext", label: "Rich Text" },
-  { value: "enum", label: "Enum" },
-  { value: "boolean", label: "Boolean" },
+  { value: "enum", label: "Choice List" },
+  { value: "boolean", label: "Yes / No" },
 ];
 
 /**
@@ -182,7 +182,8 @@ export const StepFields = ({ wizard }) => {
     <div className="dsw-step-fields" data-testid="dsw-step-fields">
       <h2 className="dsw-step-title">Fields</h2>
       <p className="dsw-step-description">
-        Define the data fields for this card type. Each field becomes an editable property on cards of this type.
+        Define the fields for this card type. Each field represents a piece of information that cards of this type will
+        hold.
       </p>
 
       <div className="dsw-stats-fields" data-testid="dsw-fields-list">
@@ -293,7 +294,7 @@ export const StepFields = ({ wizard }) => {
             {field.type === "enum" && (
               <div className="dsw-fields-enum-options" data-testid={`dsw-fields-enum-options-${index}`}>
                 <div className="dsw-fields-enum-header">
-                  <span className="dsw-fields-enum-title">Enum Options ({(field.options || []).length})</span>
+                  <span className="dsw-fields-enum-title">Choice Options ({(field.options || []).length})</span>
                   <button
                     type="button"
                     className="dsw-btn dsw-btn--secondary dsw-btn--xs"
@@ -306,7 +307,7 @@ export const StepFields = ({ wizard }) => {
 
                 {(field.options || []).length === 0 && (
                   <div className="dsw-fields-enum-empty" data-testid={`dsw-fields-enum-empty-${index}`}>
-                    No options defined. Add options to constrain this field&apos;s values.
+                    No options defined yet. Add the allowed values for this field.
                   </div>
                 )}
 

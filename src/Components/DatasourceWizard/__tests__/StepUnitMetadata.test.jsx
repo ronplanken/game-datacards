@@ -248,8 +248,8 @@ describe("StepUnitMetadata", () => {
     const wizard = createMockWizard();
     render(<StepUnitMetadata wizard={wizard} />);
 
-    expect(screen.getByText(/Enable a keywords field/)).toBeInTheDocument();
-    expect(screen.getByText(/Enable a faction keywords field/)).toBeInTheDocument();
+    expect(screen.getByText(/Show keywords on the card/)).toBeInTheDocument();
+    expect(screen.getByText(/Show faction keywords on the card/)).toBeInTheDocument();
     expect(screen.getByText(/Enable a points cost field/)).toBeInTheDocument();
   });
 

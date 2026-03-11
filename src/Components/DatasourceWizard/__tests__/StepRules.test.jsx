@@ -24,7 +24,7 @@ describe("StepRules", () => {
     render(<StepRules wizard={wizard} />);
 
     expect(screen.getByText("Rules Collection")).toBeInTheDocument();
-    expect(screen.getByText(/Configure the nested rules collection/)).toBeInTheDocument();
+    expect(screen.getByText(/Define the fields that each rule/)).toBeInTheDocument();
   });
 
   it("has the correct test id on the root element", () => {
@@ -229,7 +229,7 @@ describe("StepRules", () => {
 
     // Field at index 2 is the enum "format" field
     expect(screen.getByTestId("dsw-rules-field-enum-options-2")).toBeInTheDocument();
-    expect(screen.getByText("Enum Options (3)")).toBeInTheDocument();
+    expect(screen.getByText("Choice Options (3)")).toBeInTheDocument();
     expect(screen.getByTestId("dsw-rules-field-enum-value-2-0")).toHaveValue("name-description");
     expect(screen.getByTestId("dsw-rules-field-enum-value-2-1")).toHaveValue("name-only");
     expect(screen.getByTestId("dsw-rules-field-enum-value-2-2")).toHaveValue("table");

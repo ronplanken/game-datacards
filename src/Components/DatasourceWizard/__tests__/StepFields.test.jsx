@@ -20,7 +20,7 @@ describe("StepFields", () => {
     render(<StepFields wizard={wizard} />);
 
     expect(screen.getByText("Fields")).toBeInTheDocument();
-    expect(screen.getByText(/Define the data fields/)).toBeInTheDocument();
+    expect(screen.getByText(/Define the fields for this card type/)).toBeInTheDocument();
   });
 
   it("has the correct test id on the root element", () => {
@@ -192,7 +192,7 @@ describe("StepFields", () => {
     render(<StepFields wizard={wizard} />);
 
     expect(screen.getByTestId("dsw-fields-enum-options-0")).toBeInTheDocument();
-    expect(screen.getByText("Enum Options (2)")).toBeInTheDocument();
+    expect(screen.getByText("Choice Options (2)")).toBeInTheDocument();
     expect(screen.getByTestId("dsw-fields-enum-value-0-0")).toHaveValue("command");
     expect(screen.getByTestId("dsw-fields-enum-value-0-1")).toHaveValue("fight");
   });

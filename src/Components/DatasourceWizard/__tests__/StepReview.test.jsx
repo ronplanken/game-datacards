@@ -141,7 +141,7 @@ describe("StepReview", () => {
       const wizard = createMockWizard();
       render(<StepReview wizard={wizard} />);
 
-      expect(screen.getByTestId("dsw-review-footer-note")).toHaveTextContent(/Create Datasource/);
+      expect(screen.getByTestId("dsw-review-footer-note")).toHaveTextContent(/Everything looks good/);
     });
   });
 
@@ -232,7 +232,7 @@ describe("StepReview", () => {
       });
       render(<StepReview wizard={wizard} />);
 
-      expect(screen.getByTestId("dsw-review-footer-note")).toHaveTextContent(/Add Card Type/);
+      expect(screen.getByTestId("dsw-review-footer-note")).toHaveTextContent(/Everything looks good/);
     });
   });
 
@@ -348,7 +348,7 @@ describe("StepReview", () => {
       render(<StepReview wizard={wizard} />);
 
       expect(screen.getByTestId("dsw-review-schema-empty")).toBeInTheDocument();
-      expect(screen.getByText(/No schema fields configured/)).toBeInTheDocument();
+      expect(screen.getByText(/No fields configured yet/)).toBeInTheDocument();
     });
   });
 
@@ -425,7 +425,7 @@ describe("StepReview", () => {
       expect(screen.getByText("Invulnerable Save")).toBeInTheDocument();
       expect(screen.getByText("Damaged Ability")).toBeInTheDocument();
       expect(screen.getByText("Keywords")).toBeInTheDocument();
-      expect(screen.getByText("Points (per-unit)")).toBeInTheDocument();
+      expect(screen.getByText(/Points \(per unit\)/)).toBeInTheDocument();
     });
   });
 

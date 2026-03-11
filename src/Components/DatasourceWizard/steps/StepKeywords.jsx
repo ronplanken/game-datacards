@@ -7,8 +7,8 @@ import { Plus, Trash2, ChevronUp, ChevronDown, ListOrdered, X } from "lucide-rea
 const FIELD_TYPE_OPTIONS = [
   { value: "string", label: "String" },
   { value: "richtext", label: "Rich Text" },
-  { value: "enum", label: "Enum" },
-  { value: "boolean", label: "Boolean" },
+  { value: "enum", label: "Choice List" },
+  { value: "boolean", label: "Yes / No" },
 ];
 
 /**
@@ -204,7 +204,8 @@ export const StepKeywords = ({ wizard }) => {
     <div className="dsw-step-keywords" data-testid="dsw-step-keywords">
       <h2 className="dsw-step-title">Keywords Collection</h2>
       <p className="dsw-step-description">
-        Configure the keywords collection for this card type. Each keyword entry will have these fields.
+        Define the fields that each keyword on this card type will have. Cards can contain one or more keywords, each
+        with these fields.
       </p>
 
       <div className="dsw-keywords-config" data-testid="dsw-keywords-config">
@@ -231,6 +232,7 @@ export const StepKeywords = ({ wizard }) => {
             onChange={handleAllowMultipleToggle}
           />
           <span className="dsw-toggle-label">Allow Multiple Keywords</span>
+          <span className="dsw-toggle-hint">Cards can contain more than one keyword entry.</span>
         </label>
       </div>
 
@@ -342,7 +344,7 @@ export const StepKeywords = ({ wizard }) => {
             {field.type === "enum" && (
               <div className="dsw-fields-enum-options" data-testid={`dsw-keywords-field-enum-options-${index}`}>
                 <div className="dsw-fields-enum-header">
-                  <span className="dsw-fields-enum-title">Enum Options ({(field.options || []).length})</span>
+                  <span className="dsw-fields-enum-title">Choice Options ({(field.options || []).length})</span>
                   <button
                     type="button"
                     className="dsw-btn dsw-btn--secondary dsw-btn--xs"
@@ -355,7 +357,7 @@ export const StepKeywords = ({ wizard }) => {
 
                 {(field.options || []).length === 0 && (
                   <div className="dsw-fields-enum-empty" data-testid={`dsw-keywords-field-enum-empty-${index}`}>
-                    No options defined. Add options to constrain this field&apos;s values.
+                    No options defined yet. Add the allowed values for this field.
                   </div>
                 )}
 

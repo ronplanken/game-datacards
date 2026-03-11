@@ -20,7 +20,7 @@ describe("StepKeywords", () => {
     render(<StepKeywords wizard={wizard} />);
 
     expect(screen.getByText("Keywords Collection")).toBeInTheDocument();
-    expect(screen.getByText(/Configure the keywords collection/)).toBeInTheDocument();
+    expect(screen.getByText(/Define the fields that each keyword/)).toBeInTheDocument();
   });
 
   it("has the correct test id on the root element", () => {
@@ -235,7 +235,7 @@ describe("StepKeywords", () => {
     render(<StepKeywords wizard={wizard} />);
 
     expect(screen.getByTestId("dsw-keywords-field-enum-options-0")).toBeInTheDocument();
-    expect(screen.getByText("Enum Options (2)")).toBeInTheDocument();
+    expect(screen.getByText("Choice Options (2)")).toBeInTheDocument();
     expect(screen.getByTestId("dsw-keywords-field-enum-value-0-0")).toHaveValue("core");
     expect(screen.getByTestId("dsw-keywords-field-enum-value-0-1")).toHaveValue("faction");
   });

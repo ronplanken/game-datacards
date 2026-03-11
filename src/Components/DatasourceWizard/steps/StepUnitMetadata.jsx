@@ -96,7 +96,7 @@ export const StepUnitMetadata = ({ wizard }) => {
               data-testid="dsw-unit-metadata-keywords-toggle"
             />
             <span className="dsw-toggle-label">Keywords</span>
-            <span className="dsw-toggle-hint">Enable a keywords field on the card for unit classification.</span>
+            <span className="dsw-toggle-hint">Show keywords on the card (e.g. Infantry, Character, Fly).</span>
           </label>
 
           <label className="dsw-toggle-row">
@@ -108,7 +108,7 @@ export const StepUnitMetadata = ({ wizard }) => {
               data-testid="dsw-unit-metadata-faction-keywords-toggle"
             />
             <span className="dsw-toggle-label">Faction Keywords</span>
-            <span className="dsw-toggle-hint">Enable a faction keywords field for army-specific tagging.</span>
+            <span className="dsw-toggle-hint">Show faction keywords on the card (e.g. Imperium, Aeldari).</span>
           </label>
 
           <label className="dsw-toggle-row">
