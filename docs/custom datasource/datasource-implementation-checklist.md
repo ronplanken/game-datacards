@@ -297,7 +297,7 @@ Design quality:
 Design quality:
 - [x] Run `/frontend-design` on all schema editors and form layouts
 - [x] Run `/clarify` to review field labels, section titles, toggle descriptions, and dropdown options
-- [ ] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
+- [x] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
 
 ---
 
