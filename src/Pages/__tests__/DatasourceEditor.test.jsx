@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 // Mock antd Layout
@@ -41,9 +41,13 @@ vi.mock("../../Components/AppHeader", () => ({
   AppHeader: (props) => <div data-testid="app-header" data-props={JSON.stringify(props)} />,
 }));
 
-// Mock panel components
+// Capture EditorLeftPanel props for interaction testing
+let capturedLeftPanelProps = {};
 vi.mock("../../Components/DatasourceEditor/EditorLeftPanel", () => ({
-  EditorLeftPanel: () => <div data-testid="left-panel">Left Panel</div>,
+  EditorLeftPanel: (props) => {
+    capturedLeftPanelProps = props;
+    return <div data-testid="left-panel">Left Panel</div>;
+  },
 }));
 vi.mock("../../Components/DatasourceEditor/EditorCenterPanel", () => ({
   EditorCenterPanel: () => <div data-testid="center-panel">Center Panel</div>,
@@ -52,10 +56,47 @@ vi.mock("../../Components/DatasourceEditor/EditorRightPanel", () => ({
   EditorRightPanel: () => <div data-testid="right-panel">Right Panel</div>,
 }));
 
+// Mock DatasourceWizard to capture props
+let capturedWizardProps = {};
+vi.mock("../../Components/DatasourceWizard", () => ({
+  DatasourceWizard: (props) => {
+    capturedWizardProps = props;
+    return props.open ? <div data-testid="datasource-wizard">Wizard</div> : null;
+  },
+}));
+
 // Mock CSS import
 vi.mock("../../Components/DatasourceEditor/DatasourceEditor.css", () => ({}));
 
+// Mock storage hooks
+const mockCreateCustomDatasource = vi.fn().mockResolvedValue({ success: true, id: "custom-new-123" });
+const mockGetCustomDatasourceData = vi.fn().mockResolvedValue({
+  id: "custom-new-123",
+  name: "New DS",
+  schema: { baseSystem: "blank", cardTypes: [] },
+});
+
+vi.mock("../../Hooks/useDataSourceStorage", () => ({
+  useDataSourceStorage: () => ({
+    createCustomDatasource: mockCreateCustomDatasource,
+    getCustomDatasourceData: mockGetCustomDatasourceData,
+  }),
+}));
+
 // Mock editor state hook
+const mockUpdateDatasource = vi.fn();
+const mockSetCreatedDatasource = vi.fn();
+const mockActiveDatasource = {
+  id: "custom-ds-1",
+  name: "Test DS",
+  version: "1.0.0",
+  schema: {
+    baseSystem: "40k-10e",
+    cardTypes: [{ key: "infantry", label: "Infantry", baseType: "unit", schema: {} }],
+  },
+};
+
+let editorStateOverrides = {};
 vi.mock("../../Components/DatasourceEditor/hooks/useDatasourceEditorState", () => ({
   useDatasourceEditorState: () => ({
     datasources: [],
@@ -65,8 +106,9 @@ vi.mock("../../Components/DatasourceEditor/hooks/useDatasourceEditorState", () =
     openDatasource: vi.fn(),
     selectDatasource: vi.fn(),
     selectCardType: vi.fn(),
-    updateDatasource: vi.fn(),
-    setCreatedDatasource: vi.fn(),
+    updateDatasource: mockUpdateDatasource,
+    setCreatedDatasource: mockSetCreatedDatasource,
+    ...editorStateOverrides,
   }),
 }));
 
@@ -80,6 +122,16 @@ const renderPage = () =>
   );
 
 describe("DatasourceEditorPage", () => {
+  beforeEach(() => {
+    capturedLeftPanelProps = {};
+    capturedWizardProps = {};
+    editorStateOverrides = {};
+    mockCreateCustomDatasource.mockClear();
+    mockGetCustomDatasourceData.mockClear();
+    mockUpdateDatasource.mockClear();
+    mockSetCreatedDatasource.mockClear();
+  });
+
   it("renders the page layout with correct class", () => {
     renderPage();
     expect(screen.getByTestId("layout")).toHaveClass("datasource-editor-layout");
@@ -129,5 +181,111 @@ describe("DatasourceEditorPage", () => {
     expect(screen.getByTestId("left-panel")).toBeInTheDocument();
     expect(screen.getByTestId("center-panel")).toBeInTheDocument();
     expect(screen.getByTestId("right-panel")).toBeInTheDocument();
+  });
+
+  describe("wizard integration", () => {
+    it("wizard is initially closed", () => {
+      renderPage();
+      expect(screen.queryByTestId("datasource-wizard")).not.toBeInTheDocument();
+      expect(capturedWizardProps.open).toBe(false);
+    });
+
+    it("passes onNewDatasource and onAddCardType to left panel", () => {
+      renderPage();
+      expect(capturedLeftPanelProps.onNewDatasource).toBeInstanceOf(Function);
+      expect(capturedLeftPanelProps.onAddCardType).toBeInstanceOf(Function);
+    });
+
+    it("opens wizard in create mode when onNewDatasource is called", () => {
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onNewDatasource();
+      });
+      expect(capturedWizardProps.open).toBe(true);
+      expect(capturedWizardProps.existingDatasource).toBeUndefined();
+    });
+
+    it("opens wizard in add-card-type mode when onAddCardType is called with active datasource", () => {
+      editorStateOverrides = { activeDatasource: mockActiveDatasource };
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onAddCardType();
+      });
+      expect(capturedWizardProps.open).toBe(true);
+      expect(capturedWizardProps.existingDatasource).toEqual(mockActiveDatasource);
+    });
+
+    it("does not open wizard for add-card-type when no active datasource", () => {
+      editorStateOverrides = { activeDatasource: null };
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onAddCardType();
+      });
+      expect(capturedWizardProps.open).toBe(false);
+    });
+
+    it("closes wizard when onClose is called", () => {
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onNewDatasource();
+      });
+      expect(capturedWizardProps.open).toBe(true);
+      act(() => {
+        capturedWizardProps.onClose();
+      });
+      expect(capturedWizardProps.open).toBe(false);
+    });
+
+    it("calls createCustomDatasource on create mode completion", async () => {
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onNewDatasource();
+      });
+
+      const wizardResult = {
+        name: "My DS",
+        version: "1.0.0",
+        author: "Tester",
+        schema: { version: "1.0.0", baseSystem: "blank", cardTypes: [] },
+      };
+
+      await act(async () => {
+        await capturedWizardProps.onComplete(wizardResult);
+      });
+
+      expect(mockCreateCustomDatasource).toHaveBeenCalledWith(
+        { name: "My DS", version: "1.0.0", author: "Tester" },
+        { version: "1.0.0", baseSystem: "blank", cardTypes: [] },
+      );
+      expect(mockGetCustomDatasourceData).toHaveBeenCalledWith("custom-new-123");
+      expect(mockSetCreatedDatasource).toHaveBeenCalled();
+    });
+
+    it("appends card type to active datasource on add-card-type completion", async () => {
+      editorStateOverrides = { activeDatasource: mockActiveDatasource, updateDatasource: mockUpdateDatasource };
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onAddCardType();
+      });
+
+      const newCardType = {
+        key: "battle-rules",
+        label: "Battle Rules",
+        baseType: "rule",
+        schema: { fields: [] },
+      };
+
+      await act(async () => {
+        await capturedWizardProps.onComplete(newCardType);
+      });
+
+      expect(mockUpdateDatasource).toHaveBeenCalledWith({
+        ...mockActiveDatasource,
+        schema: {
+          ...mockActiveDatasource.schema,
+          cardTypes: [...mockActiveDatasource.schema.cardTypes, newCardType],
+        },
+      });
+    });
   });
 });
