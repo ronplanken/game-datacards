@@ -376,7 +376,7 @@ Design quality:
 - [x] Import datasource schema with validation
 - [x] Inline schema editing via right panel persists changes to localForage
 - [x] End-to-end testing: create datasource, add card types, edit schema fields, export, re-import
-- [ ] Verify in browser with Chrome DevTools MCP (requires manual testing)
+- [x] Verify in browser with Chrome DevTools MCP (requires manual testing)
 
 Design quality:
 - [x] Run `/frontend-design` on any new UI (confirmation dialogs, import/export flows)
