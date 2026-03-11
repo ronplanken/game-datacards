@@ -15,6 +15,9 @@ vi.mock("lucide-react", () => ({
   Layers: (props) => <svg data-testid="icon-layers" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+  ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
+  Plus: (props) => <svg data-testid="icon-plus" {...props} />,
+  Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
 }));
 
 const mockDatasource = {
@@ -152,7 +155,7 @@ describe("SchemaDefinitionEditor", () => {
       expect(screen.getByText("Metadata")).toBeInTheDocument();
     });
 
-    it("shows stat field count", () => {
+    it("shows stat fields as editable inputs", () => {
       const unitCardType = mockDatasource.schema.cardTypes[0];
       render(
         <SchemaDefinitionEditor
@@ -161,10 +164,12 @@ describe("SchemaDefinitionEditor", () => {
           onUpdateDatasource={vi.fn()}
         />,
       );
-      expect(screen.getByText("2")).toBeInTheDocument(); // 2 stat fields
+      // Stat fields M and T should be rendered as editable inputs
+      expect(screen.getByDisplayValue("M")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("T")).toBeInTheDocument();
     });
 
-    it("shows multi-profile status", () => {
+    it("shows multi-profile checkbox", () => {
       const unitCardType = mockDatasource.schema.cardTypes[0];
       render(
         <SchemaDefinitionEditor
@@ -173,8 +178,9 @@ describe("SchemaDefinitionEditor", () => {
           onUpdateDatasource={vi.fn()}
         />,
       );
-      const yesElements = screen.getAllByText("Yes");
-      expect(yesElements.length).toBeGreaterThanOrEqual(1);
+      expect(screen.getByText("Allow multiple profiles")).toBeInTheDocument();
+      const checkboxes = screen.getAllByRole("checkbox");
+      expect(checkboxes.length).toBeGreaterThanOrEqual(1);
     });
   });
 

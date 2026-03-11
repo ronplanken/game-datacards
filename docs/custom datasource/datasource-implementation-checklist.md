@@ -285,7 +285,7 @@ Design quality:
 - [x] `SchemaDefinitionEditor` switches on selected item: datasource parent → `DatasourceMetadataEditor`, card type → sub-editor based on `baseType`
 - [x] `DatasourceMetadataEditor` - edit datasource name, version, author using `CompactInput`, baseSystem as read-only display
 - [x] For `baseType: "unit"`: render `Section` components for `StatsSchemaEditor`, `WeaponsSchemaEditor`, `AbilitiesSchemaEditor`, `MetadataSchemaEditor`
-- [ ] `StatsSchemaEditor` - editable field list (key, label, type, displayOrder), add/remove/reorder, `allowMultipleProfiles` toggle
+- [x] `StatsSchemaEditor` - editable field list (key, label, type, displayOrder), add/remove/reorder, `allowMultipleProfiles` toggle
 - [ ] `WeaponsSchemaEditor` - tabbed per weapon type, editable column list per tab, add/remove weapon types, `hasKeywords`/`hasProfiles` toggles
 - [ ] `AbilitiesSchemaEditor` - editable category list (key, label, format dropdown), `hasInvulnerableSave`/`hasDamagedAbility` toggles
 - [ ] `MetadataSchemaEditor` - toggles for `hasKeywords`, `hasFactionKeywords`, `hasPoints`, `pointsFormat` dropdown

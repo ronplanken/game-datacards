@@ -691,6 +691,52 @@
 }
 
 /* ===========================================
+   FIELD LIST EDITOR
+   =========================================== */
+
+.props-field-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.props-field-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px;
+  background: var(--designer-bg-secondary);
+  border: 1px solid var(--designer-border-subtle);
+  border-radius: var(--designer-radius-sm);
+  transition: border-color 0.15s ease;
+}
+
+.props-field-item:hover {
+  border-color: var(--designer-border);
+}
+
+.props-field-item-inputs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.props-field-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.props-field-item-actions .designer-layer-action-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ===========================================
    METADATA ROWS
    =========================================== */
 
