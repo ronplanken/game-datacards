@@ -41,6 +41,26 @@
   }
 }
 
+@keyframes designer-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes designer-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* ===========================================
    PAGE LAYOUT
    =========================================== */
@@ -210,6 +230,12 @@
   outline-offset: -1px;
 }
 
+.designer-layer-action-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+
 .designer-layer-action-btn.danger:hover {
   background: rgba(255, 77, 79, 0.08);
   color: var(--designer-error);
@@ -377,6 +403,18 @@
 .designer-btn-primary:hover {
   background: var(--designer-accent-hover);
   border-color: var(--designer-accent-hover);
+}
+
+.designer-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.designer-btn-primary:disabled {
+  background: var(--designer-accent);
+  border-color: var(--designer-accent);
+  opacity: 0.4;
 }
 
 .designer-btn-sm {
@@ -1290,7 +1328,7 @@ select.props-compact-field {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: designer-fade-in 0.15s ease-out;
+  animation: designer-overlay-in 0.15s ease-out;
 }
 
 .designer-confirm-dialog {
@@ -1300,7 +1338,7 @@ select.props-compact-field {
   width: 360px;
   max-width: 90vw;
   overflow: hidden;
-  animation: designer-fade-in 0.2s ease-out;
+  animation: designer-dialog-in 0.2s ease-out;
 }
 
 .designer-confirm-header {
@@ -1388,7 +1426,8 @@ select.props-compact-field {
   color: var(--designer-text-tertiary);
 }
 
-.designer-import-dropzone:hover {
+.designer-import-dropzone:hover,
+.designer-import-dropzone.drag-over {
   border-color: var(--designer-accent);
   background: var(--designer-accent-subtle);
 }

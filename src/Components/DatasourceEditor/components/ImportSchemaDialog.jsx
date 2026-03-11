@@ -11,6 +11,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
   const [parsed, setParsed] = useState(null);
   const [errors, setErrors] = useState([]);
   const [status, setStatus] = useState("idle"); // idle | valid | invalid
+  const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
   // Reset state when dialog opens/closes
@@ -20,6 +21,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
       setParsed(null);
       setErrors([]);
       setStatus("idle");
+      setDragOver(false);
     }
   }, [open]);
 
@@ -35,8 +37,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, onCancel]);
 
-  const handleFileChange = useCallback((e) => {
-    const selectedFile = e.target.files?.[0];
+  const processFile = useCallback((selectedFile) => {
     if (!selectedFile) return;
 
     setFile(selectedFile);
@@ -85,6 +86,41 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
     reader.readAsText(selectedFile);
   }, []);
 
+  const handleFileChange = useCallback(
+    (e) => {
+      processFile(e.target.files?.[0]);
+    },
+    [processFile],
+  );
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDragOver(false);
+      const droppedFile = e.dataTransfer?.files?.[0];
+      if (droppedFile && (droppedFile.type === "application/json" || droppedFile.name.endsWith(".json"))) {
+        processFile(droppedFile);
+      } else if (droppedFile) {
+        setErrors(["Please drop a JSON file"]);
+        setStatus("invalid");
+      }
+    },
+    [processFile],
+  );
+
   const handleImport = useCallback(() => {
     if (parsed && status === "valid") {
       onImport?.(parsed);
@@ -110,7 +146,12 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
             Select a datasource schema JSON file to import. The file will be validated before import.
           </p>
 
-          <div className="designer-import-dropzone" onClick={() => fileInputRef.current?.click()}>
+          <div
+            className={`designer-import-dropzone${dragOver ? " drag-over" : ""}`}
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}>
             <input
               ref={fileInputRef}
               type="file"
@@ -122,7 +163,7 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
             {!file && (
               <>
                 <FileText size={24} />
-                <span>Click to select a JSON file</span>
+                <span>Click or drag a JSON file here</span>
               </>
             )}
             {file && <span className="designer-import-filename">{file.name}</span>}

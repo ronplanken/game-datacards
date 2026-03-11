@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { AlertTriangle } from "lucide-react";
 
 export const ConfirmDialog = ({
@@ -10,6 +10,7 @@ export const ConfirmDialog = ({
   onConfirm,
   onCancel,
 }) => {
+  const dialogRef = useRef(null);
   const confirmRef = useRef(null);
 
   useEffect(() => {
@@ -18,22 +19,41 @@ export const ConfirmDialog = ({
     }
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const handleKeyDown = (e) => {
+  const handleKeyDown = useCallback(
+    (e) => {
       if (e.key === "Escape") {
         onCancel?.();
+        return;
       }
-    };
+      // Focus trap: Tab cycles between Cancel and Confirm buttons
+      if (e.key === "Tab" && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll("button:not([disabled])");
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [onCancel],
+  );
+
+  useEffect(() => {
+    if (!open) return;
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, onCancel]);
+  }, [open, handleKeyDown]);
 
   if (!open) return null;
 
   return (
     <div className="designer-confirm-overlay" onClick={onCancel} role="dialog" aria-modal="true" aria-label={title}>
-      <div className="designer-confirm-dialog" onClick={(e) => e.stopPropagation()}>
+      <div className="designer-confirm-dialog" ref={dialogRef} onClick={(e) => e.stopPropagation()}>
         <div className="designer-confirm-header">
           <AlertTriangle />
           <h3 className="designer-confirm-title">{title}</h3>

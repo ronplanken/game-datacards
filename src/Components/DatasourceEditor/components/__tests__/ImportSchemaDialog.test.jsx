@@ -53,7 +53,7 @@ describe("ImportSchemaDialog", () => {
 
   it("renders file selection prompt", () => {
     render(<ImportSchemaDialog open={true} onImport={vi.fn()} onCancel={vi.fn()} />);
-    expect(screen.getByText("Click to select a JSON file")).toBeInTheDocument();
+    expect(screen.getByText("Click or drag a JSON file here")).toBeInTheDocument();
   });
 
   it("has Import button disabled initially", () => {
@@ -157,7 +157,7 @@ describe("ImportSchemaDialog", () => {
     rerender(<ImportSchemaDialog open={true} onImport={vi.fn()} onCancel={vi.fn()} />);
 
     // Should be back to initial state
-    expect(screen.getByText("Click to select a JSON file")).toBeInTheDocument();
+    expect(screen.getByText("Click or drag a JSON file here")).toBeInTheDocument();
     expect(screen.getByText("Import")).toBeDisabled();
   });
 });

@@ -682,11 +682,12 @@
   }
 
   // Rule card styles — wider card with auto-height for rule content
+  // Uses --width/--height CSS variables set by component (matching 40K pattern)
   &.custom-rule-card {
     .border {
-      width: 458px;
+      width: calc(var(--width, 458px) - 2px);
       min-height: 320px;
-      height: auto;
+      height: var(--height, auto);
       border: 2px solid var(--header-colour);
 
       .content {
@@ -735,14 +736,15 @@
   }
 
   // Enhancement card styles — narrow card with cost display
+  // Uses --width/--height CSS variables set by component (matching 40K pattern)
   &.custom-enhancement-card {
     .border {
-      width: 260px;
-      height: 458px;
+      width: calc(var(--width, 260px) - 2px);
+      height: calc(var(--height, 458px) - 2px);
       border: 2px solid var(--header-colour);
 
       .content {
-        height: calc(458px - 148px);
+        height: calc(var(--height, 458px) - 148px);
 
         .keywords-collection {
           margin-top: 8px;
@@ -810,8 +812,8 @@
     }
 
     .border {
-      width: 260px;
-      height: 458px;
+      width: calc(var(--width, 260px) - 2px);
+      height: calc(var(--height, 458px) - 2px);
       border: 2px solid var(--stratagem-colour);
 
       .background-side-bar {
@@ -827,7 +829,7 @@
       }
 
       .content {
-        height: calc(458px - 148px);
+        height: calc(var(--height, 458px) - 148px);
 
         .section {
           .title {
