@@ -1271,3 +1271,76 @@ select.props-compact-field {
 .schema-tree-container::-webkit-scrollbar-thumb:hover {
   background: var(--designer-text-tertiary);
 }
+
+/* ===========================================
+   CONFIRMATION DIALOG
+   =========================================== */
+
+.designer-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: designer-fade-in 0.15s ease-out;
+}
+
+.designer-confirm-dialog {
+  background: var(--designer-bg-primary);
+  border-radius: var(--designer-radius-lg);
+  box-shadow: var(--designer-shadow-elevated);
+  width: 360px;
+  max-width: 90vw;
+  overflow: hidden;
+  animation: designer-fade-in 0.2s ease-out;
+}
+
+.designer-confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 12px;
+}
+
+.designer-confirm-header svg {
+  width: 20px;
+  height: 20px;
+  color: var(--designer-error);
+  flex-shrink: 0;
+}
+
+.designer-confirm-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--designer-text-primary);
+  margin: 0;
+}
+
+.designer-confirm-body {
+  padding: 0 20px 16px;
+  font-size: 13px;
+  color: var(--designer-text-secondary);
+  line-height: 1.5;
+}
+
+.designer-confirm-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--designer-border-subtle);
+  background: var(--designer-bg-secondary);
+}
+
+.designer-confirm-footer .designer-btn-danger {
+  background: var(--designer-error);
+  border-color: var(--designer-error);
+  color: white;
+}
+
+.designer-confirm-footer .designer-btn-danger:hover {
+  background: #ff7875;
+  border-color: #ff7875;
+}

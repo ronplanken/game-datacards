@@ -5,6 +5,7 @@ import { AppHeader } from "../Components/AppHeader";
 import { EditorLeftPanel } from "../Components/DatasourceEditor/EditorLeftPanel";
 import { EditorCenterPanel } from "../Components/DatasourceEditor/EditorCenterPanel";
 import { EditorRightPanel } from "../Components/DatasourceEditor/EditorRightPanel";
+import { ConfirmDialog } from "../Components/DatasourceEditor/components";
 import { DatasourceWizard } from "../Components/DatasourceWizard";
 import { useDatasourceEditorState } from "../Components/DatasourceEditor/hooks/useDatasourceEditorState";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -29,6 +30,9 @@ export const DatasourceEditorPage = () => {
   // Wizard state
   const [wizardOpen, setWizardOpen] = useState(false);
   const [wizardMode, setWizardMode] = useState(null); // "create" | "add-card-type"
+
+  // Delete confirmation state
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const handleNewDatasource = useCallback(() => {
     setWizardMode("create");
@@ -84,6 +88,31 @@ export const DatasourceEditorPage = () => {
     ],
   );
 
+  const handleDeleteCardType = useCallback((cardType) => {
+    setDeleteTarget(cardType);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteTarget || !activeDatasource) return;
+    const updatedDatasource = {
+      ...activeDatasource,
+      schema: {
+        ...activeDatasource.schema,
+        cardTypes: (activeDatasource.schema?.cardTypes || []).filter((ct) => ct.key !== deleteTarget.key),
+      },
+    };
+    await updateDatasource(updatedDatasource);
+    // If the deleted card type was selected, clear selection to datasource level
+    if (selectedItem?.type === "cardType" && selectedItem?.key === deleteTarget.key) {
+      selectDatasource(activeDatasource);
+    }
+    setDeleteTarget(null);
+  }, [deleteTarget, activeDatasource, updateDatasource, selectedItem, selectDatasource]);
+
+  const handleCancelDelete = useCallback(() => {
+    setDeleteTarget(null);
+  }, []);
+
   return (
     <Layout className="datasource-editor-layout">
       <AppHeader showModals={false} showNav={true} showActions={false} />
@@ -99,6 +128,7 @@ export const DatasourceEditorPage = () => {
               onOpenDatasource={openDatasource}
               onNewDatasource={handleNewDatasource}
               onAddCardType={handleAddCardType}
+              onDeleteCardType={handleDeleteCardType}
             />
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />
@@ -120,6 +150,14 @@ export const DatasourceEditorPage = () => {
         onClose={handleWizardClose}
         onComplete={handleWizardComplete}
         existingDatasource={wizardMode === "add-card-type" ? activeDatasource : undefined}
+      />
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete Card Type"
+        message={`Are you sure you want to delete "${deleteTarget?.label}"? This will remove the card type definition from this datasource.`}
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
       />
     </Layout>
   );

@@ -370,7 +370,7 @@ Design quality:
 - `src/Hooks/useDataSourceStorage.jsx` - Add `addCardType()`, `removeCardType()`, `updateSchema()` methods
 
 - [x] "Add Card Type" in left panel opens DatasourceWizard in `add-card-type` mode, appends result to schema
-- [ ] Delete card type via `.designer-layer-actions` hover icon (`Trash2`) with confirmation
+- [x] Delete card type via `.designer-layer-actions` hover icon (`Trash2`) with confirmation
 - [ ] Reorder card types via drag or move-up/move-down actions
 - [ ] Export datasource schema as JSON
 - [ ] Import datasource schema with validation
