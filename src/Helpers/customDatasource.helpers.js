@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 // Valid display formats that map to existing card renderers
-export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos"];
+export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos", "custom"];
 
 // Validation limits for security
 const MAX_NAME_LENGTH = 200;

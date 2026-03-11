@@ -176,6 +176,7 @@ describe("customDatasource.helpers - structures", () => {
       expect(VALID_DISPLAY_FORMATS).toContain("basic");
       expect(VALID_DISPLAY_FORMATS).toContain("necromunda");
       expect(VALID_DISPLAY_FORMATS).toContain("aos");
+      expect(VALID_DISPLAY_FORMATS).toContain("custom");
     });
   });
 });
