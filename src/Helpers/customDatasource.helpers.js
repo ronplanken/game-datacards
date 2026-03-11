@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { validateSchema } from "./customSchema.helpers";
 
 // Valid display formats that map to existing card renderers
 export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos", "custom"];
@@ -102,6 +103,20 @@ export const validateCustomDatasource = (data) => {
 
     if (totalCards > MAX_CARD_COUNT) {
       errors.push(`Too many cards (${totalCards}). Maximum allowed is ${MAX_CARD_COUNT}`);
+    }
+  }
+
+  // Validate optional schema property if present
+  if (data.schema !== undefined) {
+    if (!data.schema || typeof data.schema !== "object") {
+      errors.push("'schema' must be an object when provided");
+    } else {
+      const schemaResult = validateSchema(data.schema);
+      if (!schemaResult.valid) {
+        schemaResult.errors.forEach((err) => {
+          errors.push(`schema: ${err}`);
+        });
+      }
     }
   }
 

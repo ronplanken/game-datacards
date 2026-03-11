@@ -769,6 +769,117 @@ describe("customDatasource.helpers", () => {
       });
       expect(result.isValid).toBe(true);
     });
+
+    it("should accept datasource without schema property", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+      });
+      expect(result.isValid).toBe(true);
+    });
+
+    it("should accept datasource with valid schema property", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "blank",
+          cardTypes: [],
+        },
+      });
+      expect(result.isValid).toBe(true);
+    });
+
+    it("should reject datasource with non-object schema", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: "invalid",
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("'schema' must be an object when provided");
+    });
+
+    it("should reject datasource with null schema", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: null,
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("'schema' must be an object when provided");
+    });
+
+    it("should reject datasource with invalid schema structure", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "invalid-system",
+          cardTypes: [],
+        },
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.startsWith("schema:"))).toBe(true);
+    });
+
+    it("should reject datasource with schema missing cardTypes", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "blank",
+        },
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.includes("cardTypes"))).toBe(true);
+    });
+
+    it("should accept datasource with valid schema containing card types", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "40k-10e",
+          cardTypes: [
+            {
+              key: "stratagem",
+              label: "Stratagem",
+              baseType: "stratagem",
+              schema: {
+                fields: [{ key: "name", label: "Name", type: "string", required: true }],
+              },
+            },
+          ],
+        },
+      });
+      expect(result.isValid).toBe(true);
+    });
+
+    it("should report schema errors with 'schema:' prefix", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          baseSystem: "blank",
+          cardTypes: [],
+        },
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.startsWith("schema:"))).toBe(true);
+    });
   });
 
   describe("generateDatasourceFilename", () => {
