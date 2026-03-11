@@ -375,7 +375,7 @@ Design quality:
 - [x] Export datasource schema as JSON
 - [x] Import datasource schema with validation
 - [x] Inline schema editing via right panel persists changes to localForage
-- [ ] End-to-end testing: create datasource, add card types, edit schema fields, export, re-import
+- [x] End-to-end testing: create datasource, add card types, edit schema fields, export, re-import
 - [ ] Verify in browser with Chrome DevTools MCP (requires manual testing)
 
 Design quality:
