@@ -26,7 +26,7 @@ export const EditorRightPanel = ({ selectedItem = null, activeDatasource = null 
         </Section>
         <Section title="Card Types" icon={Layers} defaultOpen={true}>
           <div className="props-metadata-row">
-            <span className="props-metadata-label">Count</span>
+            <span className="props-metadata-label">Total</span>
             <span className="props-metadata-value">{activeDatasource.schema?.cardTypes?.length || 0}</span>
           </div>
         </Section>
@@ -39,7 +39,7 @@ export const EditorRightPanel = ({ selectedItem = null, activeDatasource = null 
     const cardType = selectedItem.data;
     return (
       <div className="props-body">
-        <Section title="Card Type Info" icon={Layers} defaultOpen={true}>
+        <Section title="Card Type Details" icon={Layers} defaultOpen={true}>
           <div className="props-metadata-row">
             <span className="props-metadata-label">Label</span>
             <span className="props-metadata-value">{cardType.label}</span>
@@ -71,7 +71,7 @@ export const EditorRightPanel = ({ selectedItem = null, activeDatasource = null 
         <div className="props-empty">
           <Settings size={32} />
           <p>Select a datasource or card type</p>
-          <p style={{ fontSize: 11, color: "var(--designer-text-muted)" }}>Properties will appear here</p>
+          <p style={{ fontSize: 11, color: "var(--designer-text-muted)" }}>Details and settings will appear here</p>
         </div>
       )}
       {selectedItem?.type === "datasource" && renderDatasourceMetadata()}

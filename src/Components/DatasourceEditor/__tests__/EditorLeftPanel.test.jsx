@@ -152,15 +152,15 @@ describe("EditorLeftPanel", () => {
       expect(onAddCardType).toHaveBeenCalledTimes(1);
     });
 
-    it("toggles datasource list on Open Datasource click", async () => {
+    it("toggles datasource list on Your Datasources click", async () => {
       const user = userEvent.setup();
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
 
       // Initially other datasource not visible
       expect(screen.queryByText("Other DS")).not.toBeInTheDocument();
 
-      // Click Open Datasource
-      await user.click(screen.getByText("Open Datasource"));
+      // Click Your Datasources
+      await user.click(screen.getByText("Your Datasources"));
 
       // Now other datasource visible
       expect(screen.getByText("Other DS")).toBeInTheDocument();

@@ -252,7 +252,7 @@ Design quality:
 
 ### Design quality
 - [x] Run `/frontend-design` on all three panels, empty states, and shared components
-- [ ] Run `/clarify` to review panel headers, empty state messages, button labels, and nav link text
+- [x] Run `/clarify` to review panel headers, empty state messages, button labels, and nav link text
 - [ ] Run `/normalize` to ensure consistency with game-datacards.eu and gdc-premium design system
 
 ### Verification

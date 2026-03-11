@@ -34,7 +34,7 @@ export const EditorLeftPanel = ({
         <div className="designer-empty-state" style={{ flex: 1 }}>
           <Database />
           <p>No custom datasources yet</p>
-          <p>Create one to define your own card formats</p>
+          <p>Define custom card types and field layouts</p>
           <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Create new datasource">
             <Plus size={14} />
             New Datasource
@@ -50,7 +50,7 @@ export const EditorLeftPanel = ({
     <div className="designer-layer-panel">
       {/* Datasource selector */}
       <div className="designer-template-selector">
-        <button className="designer-template-btn" onClick={onNewDatasource}>
+        <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Create new datasource">
           <Plus size={14} />
           New Datasource
         </button>
@@ -61,7 +61,7 @@ export const EditorLeftPanel = ({
         <div className="designer-datasource-toggle">
           <button className="designer-datasource-toggle-btn" onClick={() => setDatasourceListOpen(!datasourceListOpen)}>
             {datasourceListOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            Open Datasource
+            Your Datasources
           </button>
           {datasourceListOpen && (
             <div className="designer-layer-list designer-datasource-toggle-list">
@@ -153,7 +153,7 @@ export const EditorLeftPanel = ({
         {!activeDatasource && (
           <div className="designer-empty-state">
             <Database />
-            <p>Select a datasource to view its card types</p>
+            <p>Open a datasource from the list above</p>
           </div>
         )}
       </div>
