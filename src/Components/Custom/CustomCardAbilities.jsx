@@ -1,6 +1,3 @@
-import { InvulnShieldSvg } from "../Icons/InvulnShield";
-import { DamagedIcon } from "../Icons/WeaponTypeIcon";
-
 /**
  * Renders a single ability in "name-only" format (comma-separated list).
  *
@@ -45,49 +42,21 @@ const AbilityNameDescription = ({ abilities }) => {
 };
 
 /**
- * Renders the invulnerable save section with shield icon and value.
+ * Renders a "boolean" format ability category — a toggle/flag indicator.
+ * Shows or hides art/content on a datacard based on a boolean value.
  *
  * @param {Object} props
- * @param {Object} props.invul - Invulnerable save data (value, info, showInvulnerableSave, showInfo)
+ * @param {string} props.categoryLabel - The category heading
+ * @param {Array} props.abilities - Array of ability objects with name and optionally value fields
  */
-const CustomInvulSave = ({ invul }) => {
-  if (!invul?.showInvulnerableSave) return null;
+const AbilityBoolean = ({ categoryLabel, abilities }) => {
+  const visibleAbilities = abilities?.filter((a) => a.showAbility !== false) || [];
+  if (!visibleAbilities.length) return null;
 
   return (
-    <div className="invul_container">
-      <div className="invul">
-        <div className="title">Invulnerable save {invul.showInfo && "*"}</div>
-        <div className="value_container">
-          <InvulnShieldSvg fill="var(--banner-colour)" className="invul-shield-outer" />
-          <div className="value">
-            <InvulnShieldSvg fill="white" className="invul-shield-inner" />
-            <span className="value-text">{invul?.value}</span>
-          </div>
-        </div>
-      </div>
-      {invul?.info && invul.showInfo && <div className="info">{invul?.info}</div>}
-    </div>
-  );
-};
-
-/**
- * Renders the damaged ability section with icon, range, and description.
- *
- * @param {Object} props
- * @param {Object} props.damaged - Damaged ability data (range, description, showDamagedAbility, showDescription)
- */
-const CustomDamagedAbility = ({ damaged }) => {
-  if (!damaged?.showDamagedAbility) return null;
-
-  return (
-    <div className="damaged">
-      <div className="heading">
-        <div className="damaged-icon">
-          <DamagedIcon color="white" />
-        </div>
-        <div className="title">Damaged: {damaged?.range}</div>
-      </div>
-      {damaged.showDescription && <div className="description">{damaged?.description}</div>}
+    <div className="ability ability-boolean" data-name={categoryLabel}>
+      <span className="title">{categoryLabel}</span>
+      <span className="value">{visibleAbilities.map((a) => a.name || a.value).join(", ")}</span>
     </div>
   );
 };
@@ -101,18 +70,14 @@ const CustomDamagedAbility = ({ damaged }) => {
  * - "name-only": abilities shown as comma-separated list (e.g. Core: "Deep Strike, Scouts")
  * - "name-description": each ability shown with name and description block
  *
- * Also renders invulnerable save and damaged ability sections based on schema flags.
- *
  * @param {Object} props
  * @param {Object} props.unit - The card data containing abilities
- * @param {Object} props.abilitiesSchema - The abilities schema definition (categories, hasInvulnerableSave, hasDamagedAbility)
+ * @param {Object} props.abilitiesSchema - The abilities schema definition (categories)
  */
 export const CustomCardAbilities = ({ unit, abilitiesSchema }) => {
   if (!abilitiesSchema) return null;
 
   const categories = abilitiesSchema.categories || [];
-  const hasInvulnerableSave = abilitiesSchema.hasInvulnerableSave;
-  const hasDamagedAbility = abilitiesSchema.hasDamagedAbility;
 
   // Get abilities data from unit - support both flat array with category field and per-category objects
   const getAbilitiesForCategory = (categoryKey) => {
@@ -155,26 +120,21 @@ export const CustomCardAbilities = ({ unit, abilitiesSchema }) => {
             const showCategory = unit.showAbilities?.[category.key] !== false;
             if (!showCategory) return null;
 
-            if (category.format === "name-only") {
-              return (
-                <AbilityNameOnly
-                  categoryLabel={category.label}
-                  abilities={abilities}
-                  key={`category-${category.key}`}
-                />
-              );
-            }
-
             return (
               <div className="category-abilities" key={`category-${category.key}`} data-category={category.key}>
-                <AbilityNameDescription abilities={abilities} />
+                {category.header && <div className="category-header">{category.header}</div>}
+                {category.format === "name-only" && (
+                  <AbilityNameOnly categoryLabel={category.label} abilities={abilities} />
+                )}
+                {category.format === "boolean" && (
+                  <AbilityBoolean categoryLabel={category.label} abilities={abilities} />
+                )}
+                {category.format === "name-description" && <AbilityNameDescription abilities={abilities} />}
               </div>
             );
           })}
         </div>
       )}
-      {hasDamagedAbility && <CustomDamagedAbility damaged={unit.abilities?.damaged} />}
-      {hasInvulnerableSave && <CustomInvulSave invul={unit.abilities?.invul} />}
     </>
   );
 };

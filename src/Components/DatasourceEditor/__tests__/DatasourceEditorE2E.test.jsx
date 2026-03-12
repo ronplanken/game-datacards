@@ -145,8 +145,6 @@ describe("Datasource Editor E2E", () => {
           abilities: {
             label: "Abilities",
             categories: [{ key: "special", label: "Special Abilities", format: "name-description" }],
-            hasInvulnerableSave: false,
-            hasDamagedAbility: false,
           },
           metadata: {
             hasKeywords: true,
@@ -214,9 +212,6 @@ describe("Datasource Editor E2E", () => {
         ],
       });
 
-      // Edit: toggle invulnerable save
-      heroType.schema.abilities.hasInvulnerableSave = true;
-
       mockStore[dsId] = { ...stored };
 
       // Re-validate after edits
@@ -228,7 +223,6 @@ describe("Datasource Editor E2E", () => {
       expect(updatedHero.schema.stats.fields).toHaveLength(4);
       expect(updatedHero.schema.stats.allowMultipleProfiles).toBe(true);
       expect(updatedHero.schema.weaponTypes.types).toHaveLength(2);
-      expect(updatedHero.schema.abilities.hasInvulnerableSave).toBe(true);
 
       // Step 6: Export the datasource schema
       const exported = exportDatasourceSchema(mockStore[dsId]);
@@ -560,8 +554,8 @@ describe("Datasource Editor E2E", () => {
       expect(reimportedUnit.schema.stats.fields[6].key).toBe("inv");
 
       // Verify the custom ability category survived
-      expect(reimportedUnit.schema.abilities.categories).toHaveLength(4);
-      expect(reimportedUnit.schema.abilities.categories[3].key).toBe("psychic");
+      expect(reimportedUnit.schema.abilities.categories).toHaveLength(6);
+      expect(reimportedUnit.schema.abilities.categories[5].key).toBe("psychic");
 
       // Verify all other card types intact
       const reimportedRule = reimported.schema.cardTypes.find((ct) => ct.baseType === "rule");

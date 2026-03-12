@@ -2,6 +2,11 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { EditorLeftPanel } from "../EditorLeftPanel";
 
+// Mock Premium exports
+vi.mock("../../../Premium", () => ({
+  DatasourceSyncIcon: () => null,
+}));
+
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
   Database: (props) => <svg data-testid="icon-database" {...props} />,
@@ -13,7 +18,7 @@ vi.mock("lucide-react", () => ({
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
-  ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+  FolderOpen: (props) => <svg data-testid="icon-folder-open" {...props} />,
   Download: (props) => <svg data-testid="icon-download" {...props} />,
   Upload: (props) => <svg data-testid="icon-upload" {...props} />,
 }));
@@ -95,12 +100,12 @@ describe("EditorLeftPanel", () => {
 
     it("renders Export button when datasource is active", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Export")).toBeInTheDocument();
+      expect(screen.getByTitle("Export schema")).toBeInTheDocument();
     });
 
     it("renders Import button when datasource is active", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Import")).toBeInTheDocument();
+      expect(screen.getByTitle("Import schema")).toBeInTheDocument();
     });
   });
 
@@ -146,9 +151,13 @@ describe("EditorLeftPanel", () => {
           onDeleteCardType={onDeleteCardType}
         />,
       );
-      const deleteButtons = screen.getAllByTitle(/Delete/);
-      await user.click(deleteButtons[0]);
-      expect(onDeleteCardType).toHaveBeenCalledWith(mockDatasource.schema.cardTypes[0]);
+      const deleteButtons = screen.getAllByTitle(/^Delete /);
+      // Find the card type delete buttons (not the datasource delete button)
+      const cardTypeDeleteBtn = deleteButtons.find(
+        (btn) => btn.title.startsWith("Delete Infantry") || btn.title.startsWith("Delete Battle"),
+      );
+      await user.click(cardTypeDeleteBtn);
+      expect(onDeleteCardType).toHaveBeenCalled();
     });
 
     it("calls onAddCardType when Add Card Type button clicked", async () => {
@@ -175,7 +184,7 @@ describe("EditorLeftPanel", () => {
           onExportDatasource={onExportDatasource}
         />,
       );
-      await user.click(screen.getByText("Export"));
+      await user.click(screen.getByTitle("Export schema"));
       expect(onExportDatasource).toHaveBeenCalledWith(mockDatasource);
     });
 
@@ -189,19 +198,19 @@ describe("EditorLeftPanel", () => {
           onImportSchema={onImportSchema}
         />,
       );
-      await user.click(screen.getByText("Import"));
+      await user.click(screen.getByTitle("Import schema"));
       expect(onImportSchema).toHaveBeenCalledTimes(1);
     });
 
-    it("toggles datasource list on Your Datasources click", async () => {
+    it("toggles datasource list on Open Datasource click", async () => {
       const user = userEvent.setup();
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
 
       // Initially other datasource not visible
       expect(screen.queryByText("Other DS")).not.toBeInTheDocument();
 
-      // Click Your Datasources
-      await user.click(screen.getByText("Your Datasources"));
+      // Click Open Datasource
+      await user.click(screen.getByText("Open Datasource"));
 
       // Now other datasource visible
       expect(screen.getByText("Other DS")).toBeInTheDocument();

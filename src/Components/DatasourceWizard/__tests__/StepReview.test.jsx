@@ -37,8 +37,6 @@ const createMockWizard = (overrides = {}) => {
             abilities: {
               label: "Abilities",
               categories: [{ key: "core", label: "Core", format: "name-only" }],
-              hasInvulnerableSave: true,
-              hasDamagedAbility: false,
             },
             metadata: {
               hasKeywords: true,
@@ -353,13 +351,6 @@ describe("StepReview", () => {
   });
 
   describe("unit-specific toggles", () => {
-    it("shows invulnerable save badge when enabled", () => {
-      const wizard = createMockWizard();
-      render(<StepReview wizard={wizard} />);
-
-      expect(screen.getByText("Invulnerable Save")).toBeInTheDocument();
-    });
-
     it("shows keywords badge when enabled", () => {
       const wizard = createMockWizard();
       render(<StepReview wizard={wizard} />);
@@ -379,13 +370,6 @@ describe("StepReview", () => {
       render(<StepReview wizard={wizard} />);
 
       expect(screen.queryByText("Multiple Profiles")).not.toBeInTheDocument();
-    });
-
-    it("does not show damaged ability badge when disabled", () => {
-      const wizard = createMockWizard();
-      render(<StepReview wizard={wizard} />);
-
-      expect(screen.queryByText("Damaged Ability")).not.toBeInTheDocument();
     });
 
     it("does not show points badge when disabled", () => {
@@ -411,7 +395,7 @@ describe("StepReview", () => {
               schema: {
                 stats: { label: "Stats", allowMultipleProfiles: true, fields: [] },
                 weaponTypes: { label: "Weapons", allowMultiple: true, types: [] },
-                abilities: { label: "Abilities", categories: [], hasInvulnerableSave: true, hasDamagedAbility: true },
+                abilities: { label: "Abilities", categories: [] },
                 metadata: { hasKeywords: true, hasFactionKeywords: false, hasPoints: true, pointsFormat: "per-unit" },
               },
             },
@@ -422,8 +406,6 @@ describe("StepReview", () => {
       render(<StepReview wizard={wizard} />);
 
       expect(screen.getByText("Multiple Profiles")).toBeInTheDocument();
-      expect(screen.getByText("Invulnerable Save")).toBeInTheDocument();
-      expect(screen.getByText("Damaged Ability")).toBeInTheDocument();
       expect(screen.getByText("Keywords")).toBeInTheDocument();
       expect(screen.getByText(/Points \(per unit\)/)).toBeInTheDocument();
     });

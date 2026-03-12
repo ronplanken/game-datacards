@@ -202,12 +202,6 @@ export const StepReview = ({ wizard }) => {
                 {cardType.schema.stats?.allowMultipleProfiles && (
                   <span className="dsw-review-toggle-badge">Multiple Profiles</span>
                 )}
-                {cardType.schema.abilities?.hasInvulnerableSave && (
-                  <span className="dsw-review-toggle-badge">Invulnerable Save</span>
-                )}
-                {cardType.schema.abilities?.hasDamagedAbility && (
-                  <span className="dsw-review-toggle-badge">Damaged Ability</span>
-                )}
                 {cardType.schema.metadata?.hasKeywords && <span className="dsw-review-toggle-badge">Keywords</span>}
                 {cardType.schema.metadata?.hasFactionKeywords && (
                   <span className="dsw-review-toggle-badge">Faction Keywords</span>

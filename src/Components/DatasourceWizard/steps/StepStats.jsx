@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Plus, Trash2, ChevronUp, ChevronDown, BarChart3 } from "lucide-react";
+import { IconKey, IconTag } from "@tabler/icons-react";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 /**
  * Default stats structure for new wizard sessions.
@@ -193,22 +195,36 @@ export const StepStats = ({ wizard }) => {
             <span className="dsw-stats-field-order">{field.displayOrder}</span>
 
             <div className="dsw-stats-field-inputs">
-              <input
-                className="dsw-form-input dsw-stats-field-key"
-                type="text"
-                value={field.key}
-                onChange={(e) => handleFieldKeyChange(index, e.target.value)}
-                placeholder="key"
-                data-testid={`dsw-stats-field-key-${index}`}
-              />
-              <input
-                className="dsw-form-input dsw-stats-field-label"
-                type="text"
-                value={field.label}
-                onChange={(e) => handleFieldLabelChange(index, e.target.value)}
-                placeholder="Label"
-                data-testid={`dsw-stats-field-label-${index}`}
-              />
+              <div className="dsw-icon-input" style={{ flex: 1 }}>
+                <Tooltip content="Key" placement="top">
+                  <span className="dsw-icon-input-icon">
+                    <IconKey size={12} />
+                  </span>
+                </Tooltip>
+                <input
+                  className="dsw-form-input dsw-stats-field-key"
+                  type="text"
+                  value={field.key}
+                  onChange={(e) => handleFieldKeyChange(index, e.target.value)}
+                  placeholder="key"
+                  data-testid={`dsw-stats-field-key-${index}`}
+                />
+              </div>
+              <div className="dsw-icon-input" style={{ flex: 1 }}>
+                <Tooltip content="Label" placement="top">
+                  <span className="dsw-icon-input-icon">
+                    <IconTag size={12} />
+                  </span>
+                </Tooltip>
+                <input
+                  className="dsw-form-input dsw-stats-field-label"
+                  type="text"
+                  value={field.label}
+                  onChange={(e) => handleFieldLabelChange(index, e.target.value)}
+                  placeholder="Label"
+                  data-testid={`dsw-stats-field-label-${index}`}
+                />
+              </div>
             </div>
 
             <div className="dsw-stats-field-actions">

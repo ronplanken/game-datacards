@@ -1,6 +1,8 @@
 import React from "react";
 import { BarChart3, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { IconKey, IconTag, IconCategory } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 const FIELD_TYPES = [
   { value: "string", label: "Text" },
@@ -73,19 +75,27 @@ export const StatsSchemaEditor = ({ schema, onChange }) => {
           <div key={field.key + "-" + index} className="props-field-item">
             <div className="props-field-item-inputs">
               <CompactInput
-                label="Key"
+                label={<IconKey size={10} stroke={1.5} />}
+                ariaLabel="Key"
+                tooltip="Key"
                 type="text"
                 value={field.key}
                 onChange={(val) => updateField(index, "key", val)}
               />
               <CompactInput
-                label="Label"
+                label={<IconTag size={10} stroke={1.5} />}
+                ariaLabel="Label"
+                tooltip="Label"
                 type="text"
                 value={field.label}
                 onChange={(val) => updateField(index, "label", val)}
               />
               <div className="props-compact-input">
-                <span className="props-compact-label">Type</span>
+                <Tooltip content="Type" placement="top">
+                  <span className="props-compact-label">
+                    <IconCategory size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
                 <select
                   className="props-compact-field"
                   value={field.type}

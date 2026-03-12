@@ -16,7 +16,7 @@ export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
 export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "blank"];
 
 // Valid ability formats
-export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
+export const VALID_ABILITY_FORMATS = ["name-only", "name-description", "boolean"];
 
 // Valid points formats
 export const VALID_POINTS_FORMATS = ["per-model", "per-unit"];
@@ -39,7 +39,7 @@ export const SCHEMA_VERSION = "1.0.0";
  */
 
 /**
- * @typedef {"name-only" | "name-description"} AbilityFormat
+ * @typedef {"name-only" | "name-description" | "boolean"} AbilityFormat
  */
 
 /**
@@ -89,6 +89,7 @@ export const SCHEMA_VERSION = "1.0.0";
  * @property {string} key - Unique key (e.g. "core", "faction")
  * @property {string} label - Human-readable label
  * @property {AbilityFormat} format - Display format
+ * @property {string} [header] - Optional header text displayed above the category
  */
 
 /**
@@ -96,8 +97,6 @@ export const SCHEMA_VERSION = "1.0.0";
  * @typedef {Object} AbilitiesDefinition
  * @property {string} label - Section label
  * @property {AbilityCategoryDefinition[]} categories - Ability category definitions
- * @property {boolean} hasInvulnerableSave - Whether the card type supports invulnerable saves
- * @property {boolean} hasDamagedAbility - Whether the card type supports damaged abilities
  */
 
 /**
@@ -276,8 +275,6 @@ export const createAoSPreset = () => ({
         abilities: {
           label: "Abilities",
           categories: [{ key: "abilities", label: "Abilities", format: "name-description" }],
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
         metadata: {
           hasKeywords: true,
@@ -357,6 +354,51 @@ export const createAoSPreset = () => ({
     },
   ],
 });
+
+// --- Preset Step Defaults ---
+
+/**
+ * Returns pre-filled wizard step data for a given base system and card base type.
+ * Looks up the matching card type in the system preset and extracts the schema
+ * into the step data format the wizard expects.
+ *
+ * Returns null if no preset match exists (e.g. blank system, or a base type
+ * not defined in the preset).
+ *
+ * @param {BaseSystem} baseSystem - The selected base system
+ * @param {BaseType} baseType - The selected card base type
+ * @returns {Object<string, object>|null} Step data keyed by step ID, or null
+ */
+export const getPresetStepDefaults = (baseSystem, baseType) => {
+  if (baseSystem === "blank") return null;
+
+  const preset = baseSystem === "40k-10e" ? create40kPreset() : baseSystem === "aos" ? createAoSPreset() : null;
+  if (!preset) return null;
+
+  const cardType = preset.cardTypes.find((ct) => ct.baseType === baseType);
+  if (!cardType) return null;
+
+  const defaults = {
+    "card-type": { key: cardType.key, label: cardType.label },
+  };
+
+  if (baseType === "unit") {
+    defaults["stats"] = { stats: cardType.schema.stats };
+    defaults["weapons"] = { weaponTypes: cardType.schema.weaponTypes };
+    defaults["abilities"] = { abilities: cardType.schema.abilities };
+    defaults["unit-metadata"] = { metadata: cardType.schema.metadata };
+  } else {
+    defaults["fields"] = { fields: cardType.schema.fields };
+    if (cardType.schema.rules) {
+      defaults["rules"] = { rules: cardType.schema.rules };
+    }
+    if (cardType.schema.keywords) {
+      defaults["keywords"] = { keywords: cardType.schema.keywords };
+    }
+  }
+
+  return defaults;
+};
 
 // --- Preset: Blank ---
 
@@ -533,12 +575,6 @@ const validateUnitSchema = (schema, path) => {
   } else {
     if (!schema.abilities.label || typeof schema.abilities.label !== "string") {
       errors.push(`${path}.abilities: missing or invalid "label"`);
-    }
-    if (typeof schema.abilities.hasInvulnerableSave !== "boolean") {
-      errors.push(`${path}.abilities: "hasInvulnerableSave" must be a boolean`);
-    }
-    if (typeof schema.abilities.hasDamagedAbility !== "boolean") {
-      errors.push(`${path}.abilities: "hasDamagedAbility" must be a boolean`);
     }
     if (!Array.isArray(schema.abilities.categories)) {
       errors.push(`${path}.abilities.categories: must be an array`);
@@ -855,16 +891,6 @@ const migrateUnitCard = (card, oldSchema, newSchema) => {
     }
   }
 
-  // Invulnerable save
-  if (newSchema.abilities?.hasInvulnerableSave) {
-    result.invulnerableSave = card.invulnerableSave ?? null;
-  }
-
-  // Damaged ability
-  if (newSchema.abilities?.hasDamagedAbility) {
-    result.damagedAbility = card.damagedAbility ?? null;
-  }
-
   return result;
 };
 
@@ -978,10 +1004,10 @@ export const create40kPreset = () => ({
           categories: [
             { key: "core", label: "Core", format: "name-only" },
             { key: "faction", label: "Faction", format: "name-description" },
+            { key: "invulnerable_save", label: "Invulnerable Save", format: "boolean" },
             { key: "unit", label: "Unit Abilities", format: "name-description" },
+            { key: "damaged", label: "Damaged", format: "name-description", header: "Damaged" },
           ],
-          hasInvulnerableSave: true,
-          hasDamagedAbility: true,
         },
         metadata: {
           hasKeywords: true,

@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Plus, Trash2, ChevronUp, ChevronDown, Layers } from "lucide-react";
+import { IconKey, IconTag, IconTemplate, IconHeading } from "@tabler/icons-react";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 /**
  * Default abilities structure for new wizard sessions.
@@ -7,8 +9,6 @@ import { Plus, Trash2, ChevronUp, ChevronDown, Layers } from "lucide-react";
 const DEFAULT_ABILITIES = {
   label: "Abilities",
   categories: [],
-  hasInvulnerableSave: false,
-  hasDamagedAbility: false,
 };
 
 /**
@@ -17,6 +17,7 @@ const DEFAULT_ABILITIES = {
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name only" },
   { value: "name-description", label: "Name + Description" },
+  { value: "boolean", label: "Boolean" },
 ];
 
 /**
@@ -57,20 +58,6 @@ export const StepAbilities = ({ wizard }) => {
     },
     [wizard],
   );
-
-  const handleToggleInvulnerableSave = useCallback(() => {
-    updateAbilities((prev) => ({
-      ...prev,
-      hasInvulnerableSave: !prev.hasInvulnerableSave,
-    }));
-  }, [updateAbilities]);
-
-  const handleToggleDamagedAbility = useCallback(() => {
-    updateAbilities((prev) => ({
-      ...prev,
-      hasDamagedAbility: !prev.hasDamagedAbility,
-    }));
-  }, [updateAbilities]);
 
   const handleAddCategory = useCallback(() => {
     updateAbilities((prev) => {
@@ -125,6 +112,16 @@ export const StepAbilities = ({ wizard }) => {
     [updateAbilities],
   );
 
+  const handleCategoryHeaderChange = useCallback(
+    (index, value) => {
+      updateAbilities((prev) => {
+        const newCategories = prev.categories.map((c, i) => (i === index ? { ...c, header: value || undefined } : c));
+        return { ...prev, categories: newCategories };
+      });
+    },
+    [updateAbilities],
+  );
+
   const handleMoveUp = useCallback(
     (index) => {
       if (index === 0) return;
@@ -160,31 +157,6 @@ export const StepAbilities = ({ wizard }) => {
       <p className="dsw-step-description">
         Define ability categories and their display format. Each category groups related abilities on the card.
       </p>
-
-      <div className="dsw-abilities-toggles" data-testid="dsw-abilities-toggles">
-        <label className="dsw-toggle-row">
-          <input
-            type="checkbox"
-            className="dsw-toggle-checkbox"
-            checked={abilities.hasInvulnerableSave}
-            onChange={handleToggleInvulnerableSave}
-            data-testid="dsw-abilities-invuln-toggle"
-          />
-          <span className="dsw-toggle-label">Invulnerable Save</span>
-          <span className="dsw-toggle-hint">Enable an invulnerable save field on the card.</span>
-        </label>
-        <label className="dsw-toggle-row">
-          <input
-            type="checkbox"
-            className="dsw-toggle-checkbox"
-            checked={abilities.hasDamagedAbility}
-            onChange={handleToggleDamagedAbility}
-            data-testid="dsw-abilities-damaged-toggle"
-          />
-          <span className="dsw-toggle-label">Damaged Ability</span>
-          <span className="dsw-toggle-hint">Enable a damaged profile ability that activates at low wounds.</span>
-        </label>
-      </div>
 
       <div className="dsw-stats-fields" data-testid="dsw-abilities-category-list">
         <div className="dsw-stats-fields-header">
@@ -222,33 +194,69 @@ export const StepAbilities = ({ wizard }) => {
             <span className="dsw-stats-field-order">{index + 1}</span>
 
             <div className="dsw-stats-field-inputs">
-              <input
-                className="dsw-form-input dsw-stats-field-key"
-                type="text"
-                value={category.key}
-                onChange={(e) => handleCategoryKeyChange(index, e.target.value)}
-                placeholder="key"
-                data-testid={`dsw-abilities-category-key-${index}`}
-              />
-              <input
-                className="dsw-form-input dsw-stats-field-label"
-                type="text"
-                value={category.label}
-                onChange={(e) => handleCategoryLabelChange(index, e.target.value)}
-                placeholder="Label"
-                data-testid={`dsw-abilities-category-label-${index}`}
-              />
-              <select
-                className="dsw-form-input dsw-abilities-format-select"
-                value={category.format}
-                onChange={(e) => handleCategoryFormatChange(index, e.target.value)}
-                data-testid={`dsw-abilities-category-format-${index}`}>
-                {FORMAT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <div className="dsw-icon-input" style={{ flex: 1 }}>
+                <Tooltip content="Key" placement="top">
+                  <span className="dsw-icon-input-icon">
+                    <IconKey size={12} />
+                  </span>
+                </Tooltip>
+                <input
+                  className="dsw-form-input dsw-stats-field-key"
+                  type="text"
+                  value={category.key}
+                  onChange={(e) => handleCategoryKeyChange(index, e.target.value)}
+                  placeholder="key"
+                  data-testid={`dsw-abilities-category-key-${index}`}
+                />
+              </div>
+              <div className="dsw-icon-input" style={{ flex: 1 }}>
+                <Tooltip content="Label" placement="top">
+                  <span className="dsw-icon-input-icon">
+                    <IconTag size={12} />
+                  </span>
+                </Tooltip>
+                <input
+                  className="dsw-form-input dsw-stats-field-label"
+                  type="text"
+                  value={category.label}
+                  onChange={(e) => handleCategoryLabelChange(index, e.target.value)}
+                  placeholder="Label"
+                  data-testid={`dsw-abilities-category-label-${index}`}
+                />
+              </div>
+              <div className="dsw-icon-input" style={{ flex: "0 0 auto" }}>
+                <Tooltip content="Format" placement="top">
+                  <span className="dsw-icon-input-icon">
+                    <IconTemplate size={12} />
+                  </span>
+                </Tooltip>
+                <select
+                  className="dsw-form-input dsw-abilities-format-select"
+                  value={category.format}
+                  onChange={(e) => handleCategoryFormatChange(index, e.target.value)}
+                  data-testid={`dsw-abilities-category-format-${index}`}>
+                  {FORMAT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="dsw-icon-input" style={{ flex: "1 0 100%" }}>
+                <Tooltip content="Header" placement="top">
+                  <span className="dsw-icon-input-icon">
+                    <IconHeading size={12} />
+                  </span>
+                </Tooltip>
+                <input
+                  className="dsw-form-input dsw-abilities-header-input"
+                  type="text"
+                  value={category.header || ""}
+                  onChange={(e) => handleCategoryHeaderChange(index, e.target.value)}
+                  placeholder="Header (optional)"
+                  data-testid={`dsw-abilities-category-header-${index}`}
+                />
+              </div>
             </div>
 
             <div className="dsw-stats-field-actions">

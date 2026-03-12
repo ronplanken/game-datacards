@@ -30,7 +30,7 @@ describe("customSchema.helpers - constants", () => {
   });
 
   it("defines valid ability formats", () => {
-    expect(VALID_ABILITY_FORMATS).toEqual(["name-only", "name-description"]);
+    expect(VALID_ABILITY_FORMATS).toEqual(["name-only", "name-description", "boolean"]);
   });
 
   it("defines valid points formats", () => {
@@ -203,26 +203,31 @@ describe("customSchema.helpers - create40kPreset", () => {
       }
     });
 
-    it("has three ability categories", () => {
+    it("has five ability categories", () => {
       const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
-      expect(unit.schema.abilities.categories).toHaveLength(3);
-      expect(unit.schema.abilities.categories.map((c) => c.key)).toEqual(["core", "faction", "unit"]);
+      expect(unit.schema.abilities.categories).toHaveLength(5);
+      expect(unit.schema.abilities.categories.map((c) => c.key)).toEqual([
+        "core",
+        "faction",
+        "invulnerable_save",
+        "unit",
+        "damaged",
+      ]);
     });
 
-    it("core abilities use name-only format, others use name-description", () => {
+    it("ability categories use correct formats", () => {
       const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
       const core = unit.schema.abilities.categories.find((c) => c.key === "core");
       const faction = unit.schema.abilities.categories.find((c) => c.key === "faction");
+      const invuln = unit.schema.abilities.categories.find((c) => c.key === "invulnerable_save");
       const unitAb = unit.schema.abilities.categories.find((c) => c.key === "unit");
+      const damaged = unit.schema.abilities.categories.find((c) => c.key === "damaged");
       expect(core.format).toBe("name-only");
       expect(faction.format).toBe("name-description");
+      expect(invuln.format).toBe("boolean");
       expect(unitAb.format).toBe("name-description");
-    });
-
-    it("has invulnerable save and damaged ability enabled", () => {
-      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
-      expect(unit.schema.abilities.hasInvulnerableSave).toBe(true);
-      expect(unit.schema.abilities.hasDamagedAbility).toBe(true);
+      expect(damaged.format).toBe("name-description");
+      expect(damaged.header).toBe("Damaged");
     });
 
     it("has metadata with keywords, faction keywords, and per-model points", () => {
@@ -413,12 +418,6 @@ describe("customSchema.helpers - createAoSPreset", () => {
       });
     });
 
-    it("has no invulnerable save or damaged ability", () => {
-      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
-      expect(warscroll.schema.abilities.hasInvulnerableSave).toBe(false);
-      expect(warscroll.schema.abilities.hasDamagedAbility).toBe(false);
-    });
-
     it("has metadata with keywords, faction keywords, and per-unit points", () => {
       const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
       expect(warscroll.schema.metadata).toEqual({
@@ -531,8 +530,6 @@ describe("customSchema.helpers - validateSchema", () => {
       abilities: {
         label: "Abilities",
         categories: [{ key: "core", label: "Core", format: "name-only" }],
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
       metadata: {
         hasKeywords: true,
@@ -1248,8 +1245,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
           { key: "core", label: "Core", format: "name-only" },
           { key: "faction", label: "Faction", format: "name-description" },
         ],
-        hasInvulnerableSave: true,
-        hasDamagedAbility: false,
       },
       metadata: {
         hasKeywords: true,
@@ -1274,7 +1269,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: 100,
-        invulnerableSave: "4+",
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
@@ -1297,7 +1291,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: null,
-        invulnerableSave: "4+",
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
@@ -1328,7 +1321,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: null,
-        invulnerableSave: null,
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
@@ -1379,7 +1371,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: null,
-        invulnerableSave: null,
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
@@ -1397,7 +1388,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: null,
-        invulnerableSave: null,
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
@@ -1428,7 +1418,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: null,
-        invulnerableSave: null,
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
@@ -1451,7 +1440,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: null,
-        invulnerableSave: null,
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
@@ -1476,7 +1464,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: [],
         factionKeywords: [],
         points: null,
-        invulnerableSave: null,
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
@@ -1492,7 +1479,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: ["Infantry", "Imperium"],
         factionKeywords: ["Space Marines"],
         points: 90,
-        invulnerableSave: "4+",
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
@@ -1518,72 +1504,12 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: ["Infantry"],
         factionKeywords: ["Marines"],
         points: 100,
-        invulnerableSave: null,
       };
 
       const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
       expect(result).not.toHaveProperty("keywords");
       expect(result).not.toHaveProperty("factionKeywords");
       expect(result).not.toHaveProperty("points");
-    });
-
-    it("preserves invulnerableSave when enabled", () => {
-      const card = {
-        stats: [],
-        weapons: { ranged: [] },
-        abilities: [],
-        keywords: [],
-        factionKeywords: [],
-        points: null,
-        invulnerableSave: "4+",
-      };
-
-      const result = migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
-      expect(result.invulnerableSave).toBe("4+");
-    });
-
-    it("drops invulnerableSave when disabled", () => {
-      const newSchema = {
-        ...oldUnitSchema,
-        abilities: {
-          ...oldUnitSchema.abilities,
-          hasInvulnerableSave: false,
-        },
-      };
-      const card = {
-        stats: [],
-        weapons: { ranged: [] },
-        abilities: [],
-        keywords: [],
-        factionKeywords: [],
-        points: null,
-        invulnerableSave: "4+",
-      };
-
-      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
-      expect(result).not.toHaveProperty("invulnerableSave");
-    });
-
-    it("adds damagedAbility as null when newly enabled", () => {
-      const newSchema = {
-        ...oldUnitSchema,
-        abilities: {
-          ...oldUnitSchema.abilities,
-          hasDamagedAbility: true,
-        },
-      };
-      const card = {
-        stats: [],
-        weapons: { ranged: [] },
-        abilities: [],
-        keywords: [],
-        factionKeywords: [],
-        points: null,
-        invulnerableSave: null,
-      };
-
-      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
-      expect(result.damagedAbility).toBeNull();
     });
 
     it("does not mutate the original card", () => {
@@ -1594,7 +1520,6 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
         keywords: ["Infantry"],
         factionKeywords: ["Marines"],
         points: 90,
-        invulnerableSave: "4+",
       };
       const originalCard = JSON.parse(JSON.stringify(card));
 

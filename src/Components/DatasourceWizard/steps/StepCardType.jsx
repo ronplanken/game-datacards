@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { Circle, CheckCircle, Swords, BookOpen, Sparkles, Zap } from "lucide-react";
+import { IconKey, IconTag } from "@tabler/icons-react";
 import { WIZARD_MODES } from "../constants";
 
 /**
@@ -144,7 +145,7 @@ export const StepCardType = ({ wizard }) => {
           <div className="dsw-form-fields">
             <div className="dsw-form-field">
               <label className="dsw-form-label">
-                Key <span className="dsw-form-required">*</span>
+                <IconKey size={14} /> Key <span className="dsw-form-required">*</span>
               </label>
               <input
                 className="dsw-form-input"
@@ -157,7 +158,9 @@ export const StepCardType = ({ wizard }) => {
               <span className="dsw-form-hint">A short, unique ID used internally (e.g. infantry, battle-rules).</span>
             </div>
             <div className="dsw-form-field">
-              <label className="dsw-form-label">Label</label>
+              <label className="dsw-form-label">
+                <IconTag size={14} /> Label
+              </label>
               <input
                 className="dsw-form-input"
                 type="text"

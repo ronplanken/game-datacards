@@ -10,8 +10,6 @@ const make40kAbilitiesSchema = () => ({
     { key: "faction", label: "Faction", format: "name-only" },
     { key: "other", label: "Unit Abilities", format: "name-description" },
   ],
-  hasInvulnerableSave: true,
-  hasDamagedAbility: true,
 });
 
 describe("CustomCardAbilities", () => {
@@ -124,73 +122,6 @@ describe("CustomCardAbilities", () => {
     expect(screen.getByText("Fireball, Lightning")).toBeInTheDocument();
   });
 
-  it("renders invulnerable save when schema has hasInvulnerableSave and unit has invul data", () => {
-    const unit = {
-      abilities: {
-        core: ["Fearless"],
-        invul: { showInvulnerableSave: true, value: "4+", info: "Against ranged only", showInfo: true },
-      },
-    };
-    render(<CustomCardAbilities unit={unit} abilitiesSchema={make40kAbilitiesSchema()} />);
-
-    expect(screen.getByText("4+")).toBeInTheDocument();
-    expect(screen.getByText("Against ranged only")).toBeInTheDocument();
-  });
-
-  it("does not render invulnerable save when schema disables it", () => {
-    const schema = { ...make40kAbilitiesSchema(), hasInvulnerableSave: false };
-    const unit = {
-      abilities: {
-        invul: { showInvulnerableSave: true, value: "4+" },
-      },
-    };
-    render(<CustomCardAbilities unit={unit} abilitiesSchema={schema} />);
-
-    expect(screen.queryByText("4+")).not.toBeInTheDocument();
-  });
-
-  it("does not render invulnerable save when showInvulnerableSave is false on unit", () => {
-    const unit = {
-      abilities: {
-        core: ["Fearless"],
-        invul: { showInvulnerableSave: false, value: "4+" },
-      },
-    };
-    render(<CustomCardAbilities unit={unit} abilitiesSchema={make40kAbilitiesSchema()} />);
-
-    expect(screen.queryByText("Invulnerable save")).not.toBeInTheDocument();
-  });
-
-  it("renders damaged ability when schema has hasDamagedAbility and unit has damaged data", () => {
-    const unit = {
-      abilities: {
-        core: ["Fearless"],
-        damaged: {
-          showDamagedAbility: true,
-          range: "1-4 wounds remaining",
-          description: "Halve characteristics",
-          showDescription: true,
-        },
-      },
-    };
-    render(<CustomCardAbilities unit={unit} abilitiesSchema={make40kAbilitiesSchema()} />);
-
-    expect(screen.getByText("Damaged: 1-4 wounds remaining")).toBeInTheDocument();
-    expect(screen.getByText("Halve characteristics")).toBeInTheDocument();
-  });
-
-  it("does not render damaged ability when schema disables it", () => {
-    const schema = { ...make40kAbilitiesSchema(), hasDamagedAbility: false };
-    const unit = {
-      abilities: {
-        damaged: { showDamagedAbility: true, range: "1-4", description: "Half stats" },
-      },
-    };
-    render(<CustomCardAbilities unit={unit} abilitiesSchema={schema} />);
-
-    expect(screen.queryByText(/Damaged:/)).not.toBeInTheDocument();
-  });
-
   it("supports flat array abilities with category field", () => {
     const unit = {
       abilities: [
@@ -235,23 +166,5 @@ describe("CustomCardAbilities", () => {
     expect(screen.getByText("Core")).toBeInTheDocument();
     expect(screen.queryByText("Faction")).not.toBeInTheDocument();
     expect(screen.queryByText("Unit Abilities")).not.toBeInTheDocument();
-  });
-
-  it("hides damaged description when showDescription is false", () => {
-    const unit = {
-      abilities: {
-        core: ["Fearless"],
-        damaged: {
-          showDamagedAbility: true,
-          range: "1-4",
-          description: "Hidden damage info",
-          showDescription: false,
-        },
-      },
-    };
-    render(<CustomCardAbilities unit={unit} abilitiesSchema={make40kAbilitiesSchema()} />);
-
-    expect(screen.getByText("Damaged: 1-4")).toBeInTheDocument();
-    expect(screen.queryByText("Hidden damage info")).not.toBeInTheDocument();
   });
 });

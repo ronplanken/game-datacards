@@ -1,16 +1,18 @@
 import React from "react";
 import { Sparkles, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { IconKey, IconTag, IconTemplate, IconHeading } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name Only" },
   { value: "name-description", label: "Name + Description" },
+  { value: "boolean", label: "Boolean" },
 ];
 
 /**
  * Editor for ability category definitions.
- * Editable category list (key, label, format dropdown),
- * hasInvulnerableSave/hasDamagedAbility toggles.
+ * Editable category list (key, label, format dropdown, optional header).
  */
 export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
   const abilities = schema?.abilities;
@@ -53,42 +55,33 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
 
   return (
     <Section title="Abilities" icon={Sparkles} defaultOpen={true}>
-      <label className="props-checkbox">
-        <input
-          type="checkbox"
-          checked={!!abilities.hasInvulnerableSave}
-          onChange={() => updateAbilities({ hasInvulnerableSave: !abilities.hasInvulnerableSave })}
-        />
-        <span>Include invulnerable save</span>
-      </label>
-      <label className="props-checkbox">
-        <input
-          type="checkbox"
-          checked={!!abilities.hasDamagedAbility}
-          onChange={() => updateAbilities({ hasDamagedAbility: !abilities.hasDamagedAbility })}
-        />
-        <span>Include damaged ability</span>
-      </label>
-
       <div className="props-field-list">
         {categories.length === 0 && <div className="props-field-list-empty">No categories defined yet</div>}
         {categories.map((category, index) => (
           <div key={category.key + "-" + index} className="props-field-item">
             <div className="props-field-item-inputs">
               <CompactInput
-                label="Key"
+                label={<IconKey size={10} stroke={1.5} />}
+                ariaLabel="Key"
+                tooltip="Key"
                 type="text"
                 value={category.key}
                 onChange={(val) => updateCategory(index, "key", val)}
               />
               <CompactInput
-                label="Label"
+                label={<IconTag size={10} stroke={1.5} />}
+                ariaLabel="Label"
+                tooltip="Label"
                 type="text"
                 value={category.label}
                 onChange={(val) => updateCategory(index, "label", val)}
               />
               <div className="props-compact-input">
-                <span className="props-compact-label">Format</span>
+                <Tooltip content="Format" placement="top">
+                  <span className="props-compact-label">
+                    <IconTemplate size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
                 <select
                   className="props-compact-field"
                   value={category.format}
@@ -101,6 +94,14 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
                   ))}
                 </select>
               </div>
+              <CompactInput
+                label={<IconHeading size={10} stroke={1.5} />}
+                ariaLabel="Header"
+                tooltip="Header"
+                type="text"
+                value={category.header || ""}
+                onChange={(val) => updateCategory(index, "header", val || undefined)}
+              />
             </div>
             <div className="props-field-item-actions">
               <button

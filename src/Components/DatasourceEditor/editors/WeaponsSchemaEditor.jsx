@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Swords, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { IconKey, IconTag, IconCategory } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 const COLUMN_TYPES = [
   { value: "string", label: "Text" },
@@ -119,13 +121,17 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
       {activeType && (
         <div className="props-weapon-tab-content" role="tabpanel" aria-label={`${activeType.label} settings`}>
           <CompactInput
-            label="Key"
+            label={<IconKey size={10} stroke={1.5} />}
+            ariaLabel="Key"
+            tooltip="Key"
             type="text"
             value={activeType.key}
             onChange={(val) => updateType(activeTab, { key: val })}
           />
           <CompactInput
-            label="Label"
+            label={<IconTag size={10} stroke={1.5} />}
+            ariaLabel="Label"
+            tooltip="Label"
             type="text"
             value={activeType.label}
             onChange={(val) => updateType(activeTab, { label: val })}
@@ -160,19 +166,27 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
               <div key={col.key + "-" + colIndex} className="props-field-item">
                 <div className="props-field-item-inputs">
                   <CompactInput
-                    label="Key"
+                    label={<IconKey size={10} stroke={1.5} />}
+                    ariaLabel="Key"
+                    tooltip="Key"
                     type="text"
                     value={col.key}
                     onChange={(val) => updateColumn(activeTab, colIndex, "key", val)}
                   />
                   <CompactInput
-                    label="Label"
+                    label={<IconTag size={10} stroke={1.5} />}
+                    ariaLabel="Label"
+                    tooltip="Label"
                     type="text"
                     value={col.label}
                     onChange={(val) => updateColumn(activeTab, colIndex, "label", val)}
                   />
                   <div className="props-compact-input">
-                    <span className="props-compact-label">Type</span>
+                    <Tooltip content="Type" placement="top">
+                      <span className="props-compact-label">
+                        <IconCategory size={10} stroke={1.5} />
+                      </span>
+                    </Tooltip>
                     <select
                       className="props-compact-field"
                       value={col.type}

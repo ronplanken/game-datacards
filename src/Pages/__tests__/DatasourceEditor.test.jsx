@@ -66,19 +66,19 @@ vi.mock("../../Components/DatasourceWizard", () => ({
 }));
 
 // Mock ConfirmDialog and ImportSchemaDialog to capture props
-let capturedConfirmProps = {};
+let capturedConfirmPropsMap = {};
 let capturedImportProps = {};
 vi.mock("../../Components/DatasourceEditor/components", () => ({
   ConfirmDialog: (props) => {
-    capturedConfirmProps = props;
+    capturedConfirmPropsMap[props.title] = props;
     return props.open ? (
-      <div data-testid="confirm-dialog">
+      <div data-testid={`confirm-dialog-${props.title}`}>
         <span>{props.title}</span>
         <span>{props.message}</span>
-        <button data-testid="confirm-delete" onClick={props.onConfirm}>
+        <button data-testid={`confirm-delete-${props.title}`} onClick={props.onConfirm}>
           {props.confirmLabel}
         </button>
-        <button data-testid="cancel-delete" onClick={props.onCancel}>
+        <button data-testid={`cancel-delete-${props.title}`} onClick={props.onCancel}>
           {props.cancelLabel}
         </button>
       </div>
@@ -108,10 +108,12 @@ const mockGetCustomDatasourceData = vi.fn().mockResolvedValue({
   schema: { baseSystem: "blank", cardTypes: [] },
 });
 
+const mockRemoveCustomDatasource = vi.fn().mockResolvedValue();
 vi.mock("../../Hooks/useDataSourceStorage", () => ({
   useDataSourceStorage: () => ({
     createCustomDatasource: mockCreateCustomDatasource,
     getCustomDatasourceData: mockGetCustomDatasourceData,
+    removeCustomDatasource: mockRemoveCustomDatasource,
   }),
 }));
 
@@ -158,7 +160,7 @@ describe("DatasourceEditorPage", () => {
   beforeEach(() => {
     capturedLeftPanelProps = {};
     capturedWizardProps = {};
-    capturedConfirmProps = {};
+    capturedConfirmPropsMap = {};
     capturedImportProps = {};
     editorStateOverrides = {};
     mockCreateCustomDatasource.mockClear();
@@ -166,6 +168,7 @@ describe("DatasourceEditorPage", () => {
     mockUpdateDatasource.mockClear();
     mockSetCreatedDatasource.mockClear();
     mockSelectDatasource.mockClear();
+    mockRemoveCustomDatasource.mockClear();
   });
 
   it("renders the page layout with correct class", () => {
@@ -333,8 +336,8 @@ describe("DatasourceEditorPage", () => {
 
     it("confirmation dialog is initially closed", () => {
       renderPage();
-      expect(screen.queryByTestId("confirm-dialog")).not.toBeInTheDocument();
-      expect(capturedConfirmProps.open).toBe(false);
+      expect(screen.queryByTestId("confirm-dialog-Delete Card Type")).not.toBeInTheDocument();
+      expect(capturedConfirmPropsMap["Delete Card Type"].open).toBe(false);
     });
 
     it("opens confirmation dialog when onDeleteCardType is called", () => {
@@ -343,9 +346,10 @@ describe("DatasourceEditorPage", () => {
       act(() => {
         capturedLeftPanelProps.onDeleteCardType({ key: "infantry", label: "Infantry", baseType: "unit" });
       });
-      expect(capturedConfirmProps.open).toBe(true);
-      expect(capturedConfirmProps.title).toBe("Delete Card Type");
-      expect(capturedConfirmProps.message).toContain("Infantry");
+      const confirmProps = capturedConfirmPropsMap["Delete Card Type"];
+      expect(confirmProps.open).toBe(true);
+      expect(confirmProps.title).toBe("Delete Card Type");
+      expect(confirmProps.message).toContain("Infantry");
     });
 
     it("closes confirmation dialog when cancel is clicked", () => {
@@ -354,11 +358,11 @@ describe("DatasourceEditorPage", () => {
       act(() => {
         capturedLeftPanelProps.onDeleteCardType({ key: "infantry", label: "Infantry", baseType: "unit" });
       });
-      expect(capturedConfirmProps.open).toBe(true);
+      expect(capturedConfirmPropsMap["Delete Card Type"].open).toBe(true);
       act(() => {
-        capturedConfirmProps.onCancel();
+        capturedConfirmPropsMap["Delete Card Type"].onCancel();
       });
-      expect(capturedConfirmProps.open).toBe(false);
+      expect(capturedConfirmPropsMap["Delete Card Type"].open).toBe(false);
     });
 
     it("removes card type from datasource on confirm", async () => {
@@ -368,7 +372,7 @@ describe("DatasourceEditorPage", () => {
         capturedLeftPanelProps.onDeleteCardType({ key: "infantry", label: "Infantry", baseType: "unit" });
       });
       await act(async () => {
-        await capturedConfirmProps.onConfirm();
+        await capturedConfirmPropsMap["Delete Card Type"].onConfirm();
       });
       expect(mockUpdateDatasource).toHaveBeenCalledWith({
         ...mockActiveDatasource,
@@ -378,7 +382,7 @@ describe("DatasourceEditorPage", () => {
         },
       });
       // Dialog should close after deletion
-      expect(capturedConfirmProps.open).toBe(false);
+      expect(capturedConfirmPropsMap["Delete Card Type"].open).toBe(false);
     });
 
     it("selects datasource when the deleted card type was selected", async () => {
@@ -391,7 +395,7 @@ describe("DatasourceEditorPage", () => {
         capturedLeftPanelProps.onDeleteCardType({ key: "infantry", label: "Infantry", baseType: "unit" });
       });
       await act(async () => {
-        await capturedConfirmProps.onConfirm();
+        await capturedConfirmPropsMap["Delete Card Type"].onConfirm();
       });
       expect(mockSelectDatasource).toHaveBeenCalledWith(mockActiveDatasource);
     });
@@ -406,9 +410,57 @@ describe("DatasourceEditorPage", () => {
         capturedLeftPanelProps.onDeleteCardType({ key: "infantry", label: "Infantry", baseType: "unit" });
       });
       await act(async () => {
-        await capturedConfirmProps.onConfirm();
+        await capturedConfirmPropsMap["Delete Card Type"].onConfirm();
       });
       expect(mockSelectDatasource).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("delete datasource", () => {
+    it("passes onDeleteDatasource to left panel", () => {
+      renderPage();
+      expect(capturedLeftPanelProps.onDeleteDatasource).toBeInstanceOf(Function);
+    });
+
+    it("datasource delete dialog is initially closed", () => {
+      renderPage();
+      expect(screen.queryByTestId("confirm-dialog-Delete Datasource")).not.toBeInTheDocument();
+      expect(capturedConfirmPropsMap["Delete Datasource"].open).toBe(false);
+    });
+
+    it("opens datasource delete dialog when onDeleteDatasource is called", () => {
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onDeleteDatasource({ id: "custom-ds-1", name: "Test DS" });
+      });
+      const confirmProps = capturedConfirmPropsMap["Delete Datasource"];
+      expect(confirmProps.open).toBe(true);
+      expect(confirmProps.title).toBe("Delete Datasource");
+      expect(confirmProps.message).toContain("Test DS");
+    });
+
+    it("closes datasource delete dialog when cancel is clicked", () => {
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onDeleteDatasource({ id: "custom-ds-1", name: "Test DS" });
+      });
+      expect(capturedConfirmPropsMap["Delete Datasource"].open).toBe(true);
+      act(() => {
+        capturedConfirmPropsMap["Delete Datasource"].onCancel();
+      });
+      expect(capturedConfirmPropsMap["Delete Datasource"].open).toBe(false);
+    });
+
+    it("calls removeCustomDatasource on confirm", async () => {
+      renderPage();
+      act(() => {
+        capturedLeftPanelProps.onDeleteDatasource({ id: "custom-ds-1", name: "Test DS" });
+      });
+      await act(async () => {
+        await capturedConfirmPropsMap["Delete Datasource"].onConfirm();
+      });
+      expect(mockRemoveCustomDatasource).toHaveBeenCalledWith("custom-ds-1");
+      expect(capturedConfirmPropsMap["Delete Datasource"].open).toBe(false);
     });
   });
 });

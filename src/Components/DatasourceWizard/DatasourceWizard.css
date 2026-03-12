@@ -467,6 +467,26 @@
   color: var(--wz-text-dim);
 }
 
+.dsw-icon-input {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.dsw-icon-input .dsw-icon-input-icon {
+  position: absolute;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  color: var(--wz-text-dim);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dsw-icon-input .dsw-form-input {
+  padding-left: 30px;
+}
+
 .dsw-form-input:hover {
   border-color: rgba(255, 255, 255, 0.15);
 }
@@ -1114,6 +1134,7 @@
 
 .dsw-stats-field-inputs {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   flex: 1;
   min-width: 0;
@@ -1278,6 +1299,12 @@
   color-scheme: dark;
 }
 
+.dsw-abilities-header-input {
+  flex: 1 0 100% !important;
+  height: 32px !important;
+  font-size: 12px !important;
+}
+
 /* ===========================================
    COLLECTION CONFIG (StepRules, StepKeywords)
    =========================================== */
@@ -1309,7 +1336,7 @@
 .dsw-unit-metadata-points-format .dsw-form-label {
   font-size: 12px;
   font-weight: 500;
-  color: var(--wz-text-secondary);
+  color: var(--wz-text-muted);
   white-space: nowrap;
   margin: 0;
 }

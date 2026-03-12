@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Plus, Trash2, ChevronUp, ChevronDown, Crosshair } from "lucide-react";
+import { IconKey, IconTag } from "@tabler/icons-react";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 /**
  * Default weapon types structure for new wizard sessions.
@@ -394,22 +396,36 @@ export const StepWeapons = ({ wizard }) => {
                   <span className="dsw-stats-field-order">{colIndex + 1}</span>
 
                   <div className="dsw-stats-field-inputs">
-                    <input
-                      className="dsw-form-input dsw-stats-field-key"
-                      type="text"
-                      value={col.key}
-                      onChange={(e) => handleColumnKeyChange(activeTabIndex, colIndex, e.target.value)}
-                      placeholder="key"
-                      data-testid={`dsw-weapons-col-key-${colIndex}`}
-                    />
-                    <input
-                      className="dsw-form-input dsw-stats-field-label"
-                      type="text"
-                      value={col.label}
-                      onChange={(e) => handleColumnLabelChange(activeTabIndex, colIndex, e.target.value)}
-                      placeholder="Label"
-                      data-testid={`dsw-weapons-col-label-${colIndex}`}
-                    />
+                    <div className="dsw-icon-input" style={{ flex: 1 }}>
+                      <Tooltip content="Key" placement="top">
+                        <span className="dsw-icon-input-icon">
+                          <IconKey size={12} />
+                        </span>
+                      </Tooltip>
+                      <input
+                        className="dsw-form-input dsw-stats-field-key"
+                        type="text"
+                        value={col.key}
+                        onChange={(e) => handleColumnKeyChange(activeTabIndex, colIndex, e.target.value)}
+                        placeholder="key"
+                        data-testid={`dsw-weapons-col-key-${colIndex}`}
+                      />
+                    </div>
+                    <div className="dsw-icon-input" style={{ flex: 1 }}>
+                      <Tooltip content="Label" placement="top">
+                        <span className="dsw-icon-input-icon">
+                          <IconTag size={12} />
+                        </span>
+                      </Tooltip>
+                      <input
+                        className="dsw-form-input dsw-stats-field-label"
+                        type="text"
+                        value={col.label}
+                        onChange={(e) => handleColumnLabelChange(activeTabIndex, colIndex, e.target.value)}
+                        placeholder="Label"
+                        data-testid={`dsw-weapons-col-label-${colIndex}`}
+                      />
+                    </div>
                   </div>
 
                   <div className="dsw-stats-field-actions">

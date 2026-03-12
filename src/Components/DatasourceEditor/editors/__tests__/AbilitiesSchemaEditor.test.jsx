@@ -18,8 +18,6 @@ const mockSchema = {
       { key: "faction", label: "Faction", format: "name-description" },
       { key: "unit", label: "Unit Abilities", format: "name-description" },
     ],
-    hasInvulnerableSave: true,
-    hasDamagedAbility: false,
   },
 };
 
@@ -37,44 +35,6 @@ describe("AbilitiesSchemaEditor", () => {
   it("renders section with Abilities title", () => {
     render(<AbilitiesSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
     expect(screen.getByText("Abilities")).toBeInTheDocument();
-  });
-
-  it("renders hasInvulnerableSave checkbox checked when true", () => {
-    render(<AbilitiesSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    // First checkbox is invulnerable save
-    expect(checkboxes[0].checked).toBe(true);
-  });
-
-  it("renders hasDamagedAbility checkbox unchecked when false", () => {
-    render(<AbilitiesSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    // Second checkbox is damaged ability
-    expect(checkboxes[1].checked).toBe(false);
-  });
-
-  it("toggles hasInvulnerableSave on checkbox change", () => {
-    const onChange = vi.fn();
-    render(<AbilitiesSchemaEditor schema={mockSchema} onChange={onChange} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.click(checkboxes[0]);
-    expect(onChange).toHaveBeenCalledWith(
-      expect.objectContaining({
-        abilities: expect.objectContaining({ hasInvulnerableSave: false }),
-      }),
-    );
-  });
-
-  it("toggles hasDamagedAbility on checkbox change", () => {
-    const onChange = vi.fn();
-    render(<AbilitiesSchemaEditor schema={mockSchema} onChange={onChange} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.click(checkboxes[1]);
-    expect(onChange).toHaveBeenCalledWith(
-      expect.objectContaining({
-        abilities: expect.objectContaining({ hasDamagedAbility: true }),
-      }),
-    );
   });
 
   it("renders all category labels", () => {
@@ -160,7 +120,7 @@ describe("AbilitiesSchemaEditor", () => {
   it("adds first category with number 1 when categories are empty", () => {
     const onChange = vi.fn();
     const emptySchema = {
-      abilities: { label: "Abilities", categories: [], hasInvulnerableSave: false, hasDamagedAbility: false },
+      abilities: { label: "Abilities", categories: [] },
     };
     render(<AbilitiesSchemaEditor schema={emptySchema} onChange={onChange} />);
     fireEvent.click(screen.getByLabelText("Add category"));
@@ -223,8 +183,7 @@ describe("AbilitiesSchemaEditor", () => {
     const onChange = vi.fn();
     const schemaWithExtra = { ...mockSchema, stats: { fields: [] } };
     render(<AbilitiesSchemaEditor schema={schemaWithExtra} onChange={onChange} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.click(checkboxes[0]);
+    fireEvent.click(screen.getByLabelText("Add category"));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         stats: { fields: [] },

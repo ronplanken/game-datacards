@@ -1,6 +1,8 @@
 import React from "react";
 import { Tags } from "lucide-react";
+import { IconCategory } from "@tabler/icons-react";
 import { Section } from "../components";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 const POINTS_FORMAT_OPTIONS = [
   { value: "per-model", label: "Per Model" },
@@ -47,7 +49,11 @@ export const MetadataSchemaEditor = ({ schema, onChange }) => {
       </label>
       {metadata.hasPoints && (
         <div className="props-compact-input">
-          <span className="props-compact-label">Format</span>
+          <Tooltip content="Format" placement="top">
+            <span className="props-compact-label">
+              <IconCategory size={10} stroke={1.5} />
+            </span>
+          </Tooltip>
           <select
             className="props-compact-field"
             value={metadata.pointsFormat || "per-model"}

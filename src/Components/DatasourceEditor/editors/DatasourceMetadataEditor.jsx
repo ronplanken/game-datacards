@@ -1,5 +1,6 @@
 import React from "react";
 import { Database, Info } from "lucide-react";
+import { IconTag, IconNumber, IconUser } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 
 const BASE_SYSTEM_LABELS = {
@@ -27,19 +28,25 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
     <div className="props-body">
       <Section title="Datasource Info" icon={Database} defaultOpen={true}>
         <CompactInput
-          label="Name"
+          label={<IconTag size={10} stroke={1.5} />}
+          ariaLabel="Name"
+          tooltip="Name"
           type="text"
           value={datasource.name || ""}
           onChange={(val) => handleChange("name", val)}
         />
         <CompactInput
-          label="Version"
+          label={<IconNumber size={10} stroke={1.5} />}
+          ariaLabel="Version"
+          tooltip="Version"
           type="text"
           value={datasource.version || ""}
           onChange={(val) => handleChange("version", val)}
         />
         <CompactInput
-          label="Author"
+          label={<IconUser size={10} stroke={1.5} />}
+          ariaLabel="Author"
+          tooltip="Author"
           type="text"
           value={datasource.author || ""}
           onChange={(val) => handleChange("author", val)}

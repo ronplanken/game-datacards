@@ -57,8 +57,6 @@ const mockDatasource = {
           abilities: {
             label: "Abilities",
             categories: [{ key: "core", label: "Core", format: "name-only" }],
-            hasInvulnerableSave: false,
-            hasDamagedAbility: false,
           },
           metadata: {
             hasKeywords: true,
@@ -176,25 +174,6 @@ describe("SchemaEditorPersistence", () => {
       const updatedDS = onUpdate.mock.calls[0][0];
       const updatedInfantry = updatedDS.schema.cardTypes.find((ct) => ct.key === "infantry");
       expect(updatedInfantry.schema.stats.fields).toHaveLength(3);
-    });
-
-    it("toggling invulnerable save calls onUpdateDatasource", () => {
-      const onUpdate = vi.fn();
-      render(
-        <SchemaDefinitionEditor
-          selectedItem={unitSelectedItem}
-          activeDatasource={mockDatasource}
-          onUpdateDatasource={onUpdate}
-        />,
-      );
-
-      const checkbox = screen.getByLabelText("Include invulnerable save");
-      fireEvent.click(checkbox);
-
-      expect(onUpdate).toHaveBeenCalledTimes(1);
-      const updatedDS = onUpdate.mock.calls[0][0];
-      const updatedInfantry = updatedDS.schema.cardTypes.find((ct) => ct.key === "infantry");
-      expect(updatedInfantry.schema.abilities.hasInvulnerableSave).toBe(true);
     });
 
     it("toggling keywords calls onUpdateDatasource", () => {

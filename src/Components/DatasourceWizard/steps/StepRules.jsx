@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Plus, Trash2, ChevronUp, ChevronDown, ListOrdered, X } from "lucide-react";
+import { IconKey, IconTag, IconCategory } from "@tabler/icons-react";
+import { Tooltip } from "../../Tooltip/Tooltip";
 
 /**
  * Valid field type options for the type dropdown.
@@ -270,33 +272,54 @@ export const StepRules = ({ wizard }) => {
               <span className="dsw-stats-field-order">{index + 1}</span>
 
               <div className="dsw-stats-field-inputs">
-                <input
-                  className="dsw-form-input dsw-stats-field-key"
-                  type="text"
-                  value={field.key}
-                  onChange={(e) => handleFieldKeyChange(index, e.target.value)}
-                  placeholder="key"
-                  data-testid={`dsw-rules-field-key-${index}`}
-                />
-                <input
-                  className="dsw-form-input dsw-stats-field-label"
-                  type="text"
-                  value={field.label}
-                  onChange={(e) => handleFieldLabelChange(index, e.target.value)}
-                  placeholder="Label"
-                  data-testid={`dsw-rules-field-label-${index}`}
-                />
-                <select
-                  className="dsw-form-input dsw-fields-type-select"
-                  value={field.type}
-                  onChange={(e) => handleFieldTypeChange(index, e.target.value)}
-                  data-testid={`dsw-rules-field-type-${index}`}>
-                  {FIELD_TYPE_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="dsw-icon-input" style={{ flex: 1 }}>
+                  <Tooltip content="Key" placement="top">
+                    <span className="dsw-icon-input-icon">
+                      <IconKey size={12} />
+                    </span>
+                  </Tooltip>
+                  <input
+                    className="dsw-form-input dsw-stats-field-key"
+                    type="text"
+                    value={field.key}
+                    onChange={(e) => handleFieldKeyChange(index, e.target.value)}
+                    placeholder="key"
+                    data-testid={`dsw-rules-field-key-${index}`}
+                  />
+                </div>
+                <div className="dsw-icon-input" style={{ flex: 1 }}>
+                  <Tooltip content="Label" placement="top">
+                    <span className="dsw-icon-input-icon">
+                      <IconTag size={12} />
+                    </span>
+                  </Tooltip>
+                  <input
+                    className="dsw-form-input dsw-stats-field-label"
+                    type="text"
+                    value={field.label}
+                    onChange={(e) => handleFieldLabelChange(index, e.target.value)}
+                    placeholder="Label"
+                    data-testid={`dsw-rules-field-label-${index}`}
+                  />
+                </div>
+                <div className="dsw-icon-input" style={{ width: 120, flex: "0 0 auto" }}>
+                  <Tooltip content="Type" placement="top">
+                    <span className="dsw-icon-input-icon">
+                      <IconCategory size={12} />
+                    </span>
+                  </Tooltip>
+                  <select
+                    className="dsw-form-input dsw-fields-type-select"
+                    value={field.type}
+                    onChange={(e) => handleFieldTypeChange(index, e.target.value)}
+                    data-testid={`dsw-rules-field-type-${index}`}>
+                    {FIELD_TYPE_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <label className="dsw-fields-required-toggle" data-testid={`dsw-rules-field-required-${index}`}>
                   <input
                     type="checkbox"

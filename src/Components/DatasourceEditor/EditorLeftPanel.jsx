@@ -8,11 +8,13 @@ import {
   Zap,
   Trash2,
   ChevronDown,
-  ChevronRight,
+  FolderOpen,
   ChevronUp,
   Download,
   Upload,
 } from "lucide-react";
+import { DatasourceSyncIcon } from "../../Premium";
+import { ActiveItemToolbar } from "../shared/ActiveItemToolbar";
 
 const BASETYPE_ICONS = {
   unit: Swords,
@@ -40,6 +42,7 @@ export const EditorLeftPanel = ({
   onReorderCardTypes,
   onExportDatasource,
   onImportSchema,
+  onDeleteDatasource,
   onOpenDatasource,
 }) => {
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
@@ -66,34 +69,61 @@ export const EditorLeftPanel = ({
     <div className="designer-layer-panel">
       {/* Datasource selector */}
       <div className="designer-template-selector">
-        <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Create new datasource">
+        <button
+          className="designer-template-btn"
+          onClick={onNewDatasource}
+          aria-label="Create new datasource"
+          style={{ marginBottom: datasources.length > 0 ? 8 : 0 }}>
           <Plus size={14} />
           New Datasource
         </button>
-      </div>
 
-      {/* Open datasource list */}
-      {datasources.length > 0 && (
-        <div className="designer-datasource-toggle">
-          <button className="designer-datasource-toggle-btn" onClick={() => setDatasourceListOpen(!datasourceListOpen)}>
-            {datasourceListOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            Your Datasources
-          </button>
-          {datasourceListOpen && (
-            <div className="designer-layer-list designer-datasource-toggle-list">
-              {datasources.map((ds) => (
-                <button
-                  key={ds.id}
-                  className={`designer-layer-item ${activeDatasource?.id === ds.id ? "selected" : ""}`}
-                  onClick={() => onOpenDatasource?.(ds)}>
-                  <Database className="designer-layer-icon" />
-                  <span className="designer-layer-name">{ds.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+        {datasources.length > 0 && (
+          <>
+            <button
+              className="designer-btn"
+              style={{ width: "100%", justifyContent: "space-between" }}
+              onClick={() => setDatasourceListOpen(!datasourceListOpen)}>
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <FolderOpen size={14} />
+                Open Datasource
+              </span>
+              <ChevronDown
+                size={14}
+                style={{
+                  transition: "transform 0.2s ease",
+                  transform: datasourceListOpen ? "rotate(180deg)" : "rotate(0deg)",
+                }}
+              />
+            </button>
+            {datasourceListOpen && (
+              <div
+                className="designer-layer-list"
+                style={{
+                  marginTop: 8,
+                  maxHeight: 200,
+                  overflowY: "auto",
+                  background: "var(--designer-bg-secondary)",
+                  borderRadius: "var(--designer-radius-md)",
+                  padding: 4,
+                }}>
+                {datasources.map((ds) => (
+                  <button
+                    key={ds.id}
+                    className={`designer-layer-item ${activeDatasource?.id === ds.id ? "selected" : ""}`}
+                    onClick={() => {
+                      onOpenDatasource?.(ds);
+                      setDatasourceListOpen(false);
+                    }}>
+                    <Database className="designer-layer-icon" />
+                    <span className="designer-layer-name">{ds.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Active datasource info */}
       {activeDatasource && (
@@ -106,24 +136,23 @@ export const EditorLeftPanel = ({
             v{activeDatasource.version} &middot; {activeDatasource.schema?.baseSystem || "custom"} &middot;{" "}
             {cardTypes.length} card type{cardTypes.length !== 1 ? "s" : ""}
           </p>
-          <div className="designer-template-actions">
-            <button
-              className="designer-btn designer-btn-sm"
-              onClick={() => onExportDatasource?.(activeDatasource)}
-              title="Export schema as JSON"
-              aria-label="Export datasource schema">
-              <Download size={12} />
-              Export
-            </button>
-            <button
-              className="designer-btn designer-btn-sm"
-              onClick={() => onImportSchema?.()}
-              title="Import schema from JSON"
-              aria-label="Import datasource schema">
-              <Upload size={12} />
-              Import
-            </button>
-          </div>
+          <ActiveItemToolbar
+            groups={[
+              [
+                { icon: Download, onClick: () => onExportDatasource?.(activeDatasource), title: "Export schema" },
+                { icon: Upload, onClick: () => onImportSchema?.(), title: "Import schema" },
+              ],
+              [
+                {
+                  icon: Trash2,
+                  onClick: () => onDeleteDatasource?.(activeDatasource),
+                  title: "Delete datasource",
+                  danger: true,
+                },
+              ],
+            ]}>
+            <DatasourceSyncIcon datasource={activeDatasource} />
+          </ActiveItemToolbar>
         </div>
       )}
 

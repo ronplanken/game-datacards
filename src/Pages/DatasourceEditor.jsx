@@ -30,7 +30,7 @@ export const DatasourceEditorPage = () => {
     setCreatedDatasource,
   } = useDatasourceEditorState();
 
-  const { createCustomDatasource, getCustomDatasourceData } = useDataSourceStorage();
+  const { createCustomDatasource, getCustomDatasourceData, removeCustomDatasource } = useDataSourceStorage();
 
   // Wizard state
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -38,6 +38,7 @@ export const DatasourceEditorPage = () => {
 
   // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteDatasourceTarget, setDeleteDatasourceTarget] = useState(null);
 
   // Import dialog state
   const [importOpen, setImportOpen] = useState(false);
@@ -121,6 +122,20 @@ export const DatasourceEditorPage = () => {
     setDeleteTarget(null);
   }, []);
 
+  const handleDeleteDatasource = useCallback((datasource) => {
+    setDeleteDatasourceTarget(datasource);
+  }, []);
+
+  const handleConfirmDeleteDatasource = useCallback(async () => {
+    if (!deleteDatasourceTarget) return;
+    await removeCustomDatasource(deleteDatasourceTarget.id);
+    setDeleteDatasourceTarget(null);
+  }, [deleteDatasourceTarget, removeCustomDatasource]);
+
+  const handleCancelDeleteDatasource = useCallback(() => {
+    setDeleteDatasourceTarget(null);
+  }, []);
+
   const handleExportDatasource = useCallback((datasource) => {
     if (!datasource) return;
     const schemaExport = exportDatasourceSchema(datasource);
@@ -200,6 +215,7 @@ export const DatasourceEditorPage = () => {
               onReorderCardTypes={handleReorderCardTypes}
               onExportDatasource={handleExportDatasource}
               onImportSchema={handleOpenImport}
+              onDeleteDatasource={handleDeleteDatasource}
             />
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />
@@ -229,6 +245,14 @@ export const DatasourceEditorPage = () => {
         confirmLabel="Delete"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
+      />
+      <ConfirmDialog
+        open={!!deleteDatasourceTarget}
+        title="Delete Datasource"
+        message={`Are you sure you want to delete "${deleteDatasourceTarget?.name}"? This will permanently remove the datasource and all its data. This action cannot be undone.`}
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDeleteDatasource}
+        onCancel={handleCancelDeleteDatasource}
       />
       <ImportSchemaDialog open={importOpen} onImport={handleImportSchema} onCancel={handleCancelImport} />
     </Layout>

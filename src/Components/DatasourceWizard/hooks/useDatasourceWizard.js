@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { WIZARD_MODES, BASE_TYPES, getWizardMode, resolveSteps } from "../constants";
+import { getPresetStepDefaults } from "../../../Helpers/customSchema.helpers";
 
 /**
  * Step IDs that carry type-specific state and should be reset
@@ -126,7 +127,7 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
       if (newBaseType === baseType) return;
       if (existingBaseTypes.includes(newBaseType)) return;
 
-      // Reset type-specific data
+      // Reset type-specific data and seed with preset defaults
       setStepData((prev) => {
         const next = {};
         for (const key of Object.keys(prev)) {
@@ -134,6 +135,14 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
             next[key] = prev[key];
           }
         }
+
+        // Seed preset defaults based on selected base system
+        const baseSystem = prev["base-system"]?.baseSystem || existingDatasource?.schema?.baseSystem;
+        const presetDefaults = getPresetStepDefaults(baseSystem, newBaseType);
+        if (presetDefaults) {
+          Object.assign(next, presetDefaults);
+        }
+
         return next;
       });
 
@@ -212,8 +221,6 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
         abilities: stepData["abilities"]?.abilities || {
           label: "Abilities",
           categories: [],
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
         metadata: stepData["unit-metadata"]?.metadata || {
           hasKeywords: true,

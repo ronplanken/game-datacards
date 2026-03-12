@@ -30,82 +30,6 @@ describe("StepAbilities", () => {
     expect(screen.getByTestId("dsw-step-abilities")).toBeInTheDocument();
   });
 
-  it("renders invulnerable save toggle unchecked by default", () => {
-    const wizard = createMockWizard();
-    render(<StepAbilities wizard={wizard} />);
-
-    expect(screen.getByTestId("dsw-abilities-invuln-toggle")).not.toBeChecked();
-    expect(screen.getByText("Invulnerable Save")).toBeInTheDocument();
-  });
-
-  it("renders damaged ability toggle unchecked by default", () => {
-    const wizard = createMockWizard();
-    render(<StepAbilities wizard={wizard} />);
-
-    expect(screen.getByTestId("dsw-abilities-damaged-toggle")).not.toBeChecked();
-    expect(screen.getByText("Damaged Ability")).toBeInTheDocument();
-  });
-
-  it("shows invulnerable save toggle checked when enabled", () => {
-    const wizard = createMockWizard({
-      abilities: {
-        abilities: { label: "Abilities", categories: [], hasInvulnerableSave: true, hasDamagedAbility: false },
-      },
-    });
-    render(<StepAbilities wizard={wizard} />);
-
-    expect(screen.getByTestId("dsw-abilities-invuln-toggle")).toBeChecked();
-  });
-
-  it("shows damaged ability toggle checked when enabled", () => {
-    const wizard = createMockWizard({
-      abilities: {
-        abilities: { label: "Abilities", categories: [], hasInvulnerableSave: false, hasDamagedAbility: true },
-      },
-    });
-    render(<StepAbilities wizard={wizard} />);
-
-    expect(screen.getByTestId("dsw-abilities-damaged-toggle")).toBeChecked();
-  });
-
-  it("toggles invulnerable save when checkbox is clicked", () => {
-    const wizard = createMockWizard({
-      abilities: {
-        abilities: { label: "Abilities", categories: [], hasInvulnerableSave: false, hasDamagedAbility: false },
-      },
-    });
-    render(<StepAbilities wizard={wizard} />);
-
-    fireEvent.click(screen.getByTestId("dsw-abilities-invuln-toggle"));
-
-    expect(wizard.updateStepData).toHaveBeenCalledWith("abilities", expect.any(Function));
-
-    const updater = wizard.updateStepData.mock.calls[0][1];
-    const result = updater({
-      abilities: { label: "Abilities", categories: [], hasInvulnerableSave: false, hasDamagedAbility: false },
-    });
-    expect(result.abilities.hasInvulnerableSave).toBe(true);
-  });
-
-  it("toggles damaged ability when checkbox is clicked", () => {
-    const wizard = createMockWizard({
-      abilities: {
-        abilities: { label: "Abilities", categories: [], hasInvulnerableSave: false, hasDamagedAbility: false },
-      },
-    });
-    render(<StepAbilities wizard={wizard} />);
-
-    fireEvent.click(screen.getByTestId("dsw-abilities-damaged-toggle"));
-
-    expect(wizard.updateStepData).toHaveBeenCalledWith("abilities", expect.any(Function));
-
-    const updater = wizard.updateStepData.mock.calls[0][1];
-    const result = updater({
-      abilities: { label: "Abilities", categories: [], hasInvulnerableSave: false, hasDamagedAbility: false },
-    });
-    expect(result.abilities.hasDamagedAbility).toBe(true);
-  });
-
   it("shows empty state when no categories exist", () => {
     const wizard = createMockWizard();
     render(<StepAbilities wizard={wizard} />);
@@ -120,8 +44,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -140,8 +62,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -164,8 +84,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -180,8 +98,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: DEFAULT_CATEGORIES,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
 
@@ -196,8 +112,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -212,8 +126,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: DEFAULT_CATEGORIES,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
 
@@ -228,8 +140,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -246,8 +156,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: DEFAULT_CATEGORIES,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
     expect(result.abilities.categories[0].key).toBe("special");
@@ -260,8 +168,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -278,8 +184,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: DEFAULT_CATEGORIES,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
     expect(result.abilities.categories[0].label).toBe("Core Abilities");
@@ -292,8 +196,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -310,8 +212,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: DEFAULT_CATEGORIES,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
     expect(result.abilities.categories[0].format).toBe("name-description");
@@ -323,8 +223,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: [{ key: "core", label: "Core", format: "name-only" }],
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -332,9 +230,10 @@ describe("StepAbilities", () => {
 
     const select = screen.getByTestId("dsw-abilities-category-format-0");
     const options = select.querySelectorAll("option");
-    expect(options).toHaveLength(2);
+    expect(options).toHaveLength(3);
     expect(options[0].value).toBe("name-only");
     expect(options[1].value).toBe("name-description");
+    expect(options[2].value).toBe("boolean");
   });
 
   it("moves a category up when move up button is clicked", () => {
@@ -343,8 +242,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -359,8 +256,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: DEFAULT_CATEGORIES,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
 
@@ -374,8 +269,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -390,8 +283,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: DEFAULT_CATEGORIES,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
 
@@ -405,8 +296,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -421,8 +310,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -441,8 +328,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: duplicateCategories,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -458,8 +343,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -478,8 +361,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: categoriesWithCategory4,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
@@ -492,8 +373,6 @@ describe("StepAbilities", () => {
       abilities: {
         label: "Abilities",
         categories: categoriesWithCategory4,
-        hasInvulnerableSave: false,
-        hasDamagedAbility: false,
       },
     });
 
@@ -506,8 +385,6 @@ describe("StepAbilities", () => {
         abilities: {
           label: "Abilities",
           categories: DEFAULT_CATEGORIES,
-          hasInvulnerableSave: false,
-          hasDamagedAbility: false,
         },
       },
     });
