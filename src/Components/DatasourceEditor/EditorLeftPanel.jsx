@@ -14,7 +14,7 @@ import {
   Upload,
 } from "lucide-react";
 import { DatasourceSyncIcon } from "../../Premium";
-import { ActiveItemToolbar } from "../shared/ActiveItemToolbar";
+import { ActiveItemToolbar } from "../Shared/ActiveItemToolbar";
 
 const BASETYPE_ICONS = {
   unit: Swords,
