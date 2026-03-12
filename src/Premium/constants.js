@@ -89,6 +89,13 @@ export const TEMPLATE_PRESETS = {
     height: 700,
     targetFormat: "aos",
   },
+  "40k-datacard-desktop": {
+    name: "40K Datacard (Desktop)",
+    width: 1080,
+    height: 720,
+    targetFormat: "40k-10e",
+    useFactory: true,
+  },
   custom: {
     name: "Custom",
     width: 500,
