@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { validateSchema } from "./customSchema.helpers";
+import { validateSchema, getDefaultValueForType } from "./customSchema.helpers";
 
 // Valid display formats that map to existing card renderers
 export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos", "custom"];
@@ -431,6 +431,74 @@ export const downloadJsonFile = (data, filename) => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+/**
+ * Creates a blank card from a schema card type definition.
+ * Generates appropriate empty data structure based on baseType.
+ * @param {Object} cardTypeDef - The card type definition from schema.cardTypes
+ * @param {string} factionId - The faction ID to assign
+ * @param {string} datasourceId - The datasource ID (used as source)
+ * @returns {Object} A blank card conforming to the schema
+ */
+export const createBlankCardFromSchema = (cardTypeDef, factionId, datasourceId) => {
+  const card = {
+    id: uuidv4(),
+    name: `New ${cardTypeDef.label}`,
+    cardType: cardTypeDef.key,
+    faction_id: factionId,
+    source: datasourceId,
+  };
+
+  if (cardTypeDef.templateId) {
+    card.templateId = cardTypeDef.templateId;
+  }
+
+  const { baseType, schema } = cardTypeDef;
+
+  if (baseType === "unit") {
+    // Create one empty stat profile
+    const statProfile = {};
+    (schema.stats?.fields || []).forEach((field) => {
+      statProfile[field.key] = getDefaultValueForType(field);
+    });
+    card.stats = [statProfile];
+
+    // Create empty weapon arrays per weapon type
+    card.weapons = {};
+    (schema.weaponTypes?.types || []).forEach((wt) => {
+      card.weapons[wt.key] = [];
+    });
+
+    // Empty abilities
+    card.abilities = [];
+
+    // Metadata-driven arrays
+    if (schema.metadata?.hasKeywords) {
+      card.keywords = [];
+    }
+    if (schema.metadata?.hasFactionKeywords) {
+      card.factionKeywords = [];
+    }
+    if (schema.metadata?.hasPoints) {
+      card.points = null;
+    }
+  } else {
+    // Field-based types: rule, enhancement, stratagem
+    (schema.fields || []).forEach((field) => {
+      card[field.key] = getDefaultValueForType(field);
+    });
+
+    // Collections
+    if (schema.rules) {
+      card.rules = [];
+    }
+    if (schema.keywords) {
+      card.keywords = [];
+    }
+  }
+
+  return card;
 };
 
 /**

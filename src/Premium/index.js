@@ -230,7 +230,6 @@ export const SubscriptionBadge = () => null;
 // CUSTOM DATASOURCE COMPONENTS - All render null
 // =====================================================
 
-export const ConvertToDatasourceModal = () => null;
 export const CustomDatasourceModal = () => null;
 export const EditDatasourceMetadataModal = () => null;
 export const ExportDatasourceModal = () => null;
@@ -409,6 +408,16 @@ export const TEMPLATE_SORT_OPTIONS = [
   { value: "new", label: "Newest" },
   { value: "subscribers", label: "Most Subscribers" },
 ];
+
+// =====================================================
+// CUSTOM CARD EDITOR - Premium only
+// =====================================================
+
+/**
+ * Stub for CustomCardEditor - returns null (premium feature)
+ * Premium implementation provides schema-driven card editing
+ */
+export const CustomCardEditor = () => null;
 
 // =====================================================
 // COMMUNITY BROWSER COMPONENTS - Premium only

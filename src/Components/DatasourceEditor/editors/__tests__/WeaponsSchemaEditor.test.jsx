@@ -4,6 +4,7 @@ import { WeaponsSchemaEditor } from "../WeaponsSchemaEditor";
 vi.mock("lucide-react", () => ({
   Swords: (props) => <svg data-testid="icon-swords" {...props} />,
   Plus: (props) => <svg data-testid="icon-plus" {...props} />,
+  X: (props) => <svg data-testid="icon-x" {...props} />,
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
   ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
@@ -337,9 +338,10 @@ describe("WeaponsSchemaEditor", () => {
     expect(screen.getByLabelText("Add column")).toBeInTheDocument();
   });
 
-  it("renders with no weapon types and only Add Weapon Type button", () => {
+  it("renders with no weapon types and shows empty state with Add Weapon Type button", () => {
     const emptySchema = { weaponTypes: { label: "Weapon Types", types: [] } };
     render(<WeaponsSchemaEditor schema={emptySchema} onChange={vi.fn()} />);
+    expect(screen.getByText("No weapon types yet")).toBeInTheDocument();
     expect(screen.getByLabelText("Add weapon type")).toBeInTheDocument();
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
   });

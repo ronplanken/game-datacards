@@ -71,6 +71,16 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
   const { settings } = useSettingsStorage();
 
   const getDataSourceItems = () => {
+    // Custom datasource: read cards from selectedFaction arrays
+    if (settings.selectedDataSource?.startsWith("custom-")) {
+      const cards = selectedFaction?.[selectedContentType] || [];
+      const sorted = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      if (searchText) {
+        return sorted.filter((card) => card.name?.toLowerCase().includes(searchText.toLowerCase()));
+      }
+      return sorted;
+    }
+
     if (selectedContentType === "datasheets") {
       let filteredSheets = [];
       if (

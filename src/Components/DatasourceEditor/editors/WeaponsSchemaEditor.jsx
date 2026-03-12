@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Swords, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { Swords, Plus, X, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconCategory } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
@@ -13,8 +13,9 @@ const COLUMN_TYPES = [
 
 /**
  * Editor for weapon type definitions.
- * Tabbed interface per weapon type with editable column list per tab,
- * add/remove weapon types, hasKeywords/hasProfiles toggles.
+ * Connected-tab interface per weapon type with editable column list per tab,
+ * inline "+" tab to add weapon types, X to close tabs,
+ * hasKeywords/hasProfiles toggles.
  */
 export const WeaponsSchemaEditor = ({ schema, onChange }) => {
   const weaponTypes = schema?.weaponTypes;
@@ -91,7 +92,19 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
 
   return (
     <Section title="Weapon Types" icon={Swords} defaultOpen={true}>
-      {types.length === 0 && <div className="props-field-list-empty">No weapon types defined yet</div>}
+      {types.length === 0 && (
+        <div className="props-field-list-empty">
+          No weapon types yet
+          <button
+            className="designer-btn designer-btn-sm"
+            onClick={addWeaponType}
+            aria-label="Add weapon type"
+            style={{ marginTop: 8 }}>
+            <Plus size={14} />
+            Add Weapon Type
+          </button>
+        </div>
+      )}
       {types.length > 0 && (
         <div className="props-weapon-tabs" role="tablist" aria-label="Weapon types">
           {types.map((wt, index) => (
@@ -103,7 +116,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
               onClick={() => setActiveTab(index)}>
               <span className="props-weapon-tab-label">{wt.label}</span>
               <span
-                className="props-weapon-tab-remove"
+                className="props-weapon-tab-close"
                 role="button"
                 aria-label={`Remove ${wt.label}`}
                 title={`Remove ${wt.label}`}
@@ -111,10 +124,17 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
                   e.stopPropagation();
                   removeWeaponType(index);
                 }}>
-                <Trash2 size={10} />
+                <X size={10} />
               </span>
             </button>
           ))}
+          <button
+            className="props-weapon-tab-add"
+            onClick={addWeaponType}
+            aria-label="Add weapon type"
+            title="Add weapon type">
+            <Plus size={14} />
+          </button>
         </div>
       )}
 
@@ -159,9 +179,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
           </div>
 
           <div className="props-field-list">
-            {(activeType.columns || []).length === 0 && (
-              <div className="props-field-list-empty">No columns defined yet</div>
-            )}
+            {(activeType.columns || []).length === 0 && <div className="props-field-list-empty">No columns yet</div>}
             {(activeType.columns || []).map((col, colIndex) => (
               <div key={col.key + "-" + colIndex} className="props-field-item">
                 <div className="props-field-item-inputs">
@@ -237,17 +255,15 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
             ))}
           </div>
 
-          <button className="designer-btn designer-btn-sm" onClick={() => addColumn(activeTab)} aria-label="Add column">
+          <button
+            className="designer-btn designer-btn-sm designer-btn-dashed"
+            onClick={() => addColumn(activeTab)}
+            aria-label="Add column">
             <Plus size={14} />
             Add Column
           </button>
         </div>
       )}
-
-      <button className="designer-btn designer-btn-sm" onClick={addWeaponType} aria-label="Add weapon type">
-        <Plus size={14} />
-        Add Weapon Type
-      </button>
     </Section>
   );
 };

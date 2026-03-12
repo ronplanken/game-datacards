@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { ChevronRight, GripVertical, Trash2, Package, Share2, RefreshCw, Settings2, Cloud } from "lucide-react";
+import {
+  ChevronRight,
+  GripVertical,
+  Trash2,
+  Package,
+  Share2,
+  RefreshCw,
+  Settings2,
+  Cloud,
+  FolderOpen,
+} from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import {
@@ -32,6 +42,7 @@ export function TreeDatasource({
     updateCategory,
     updateDatasourceMetadata,
     updateDatasourceCloudState,
+    convertDatasourceToCategory,
   } = useCardStorage();
   const { user } = useAuth();
   const { deleteLocalDatasourceFromCloud } = useSync();
@@ -129,6 +140,24 @@ export function TreeDatasource({
     setIsEditMetadataModalOpen(true);
   };
 
+  const handleConvertToCategory = () => {
+    confirmDialog({
+      title: "Convert to category?",
+      content:
+        "Cards will be preserved but datasource metadata (ID, version, author, colours, publishing state) will be removed.",
+      saveText: "Convert",
+      handleSave: () => {
+        const result = convertDatasourceToCategory(datasource.uuid);
+        if (result.success) {
+          message.success("Datasource converted to category.");
+        } else {
+          message.error(result.error || "Failed to convert datasource.");
+        }
+      },
+      handleCancel: () => {},
+    });
+  };
+
   // Build context menu items based on datasource state
   const contextMenuItems = [
     // Cloud sync option (only show when user is logged in and datasource is uploaded)
@@ -183,6 +212,15 @@ export function TreeDatasource({
       key: "rename",
       label: "Rename",
       onClick: () => setIsRenameModalOpen(true),
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "convert-category",
+      label: "Convert to Category",
+      icon: <FolderOpen size={14} />,
+      onClick: handleConvertToCategory,
     },
     {
       type: "divider",

@@ -14,6 +14,7 @@ import {
   prepareDatasourceForImport,
   createRegistryEntry,
   compareVersions,
+  getTargetArray,
 } from "../Helpers/customDatasource.helpers";
 import { useSettingsStorage } from "./useSettingsStorage";
 
@@ -516,6 +517,83 @@ export const DataSourceStorageProviderComponent = (props) => {
     [settings, updateSettings],
   );
 
+  // Whether the currently selected datasource is a custom one
+  const isCustomDatasource = settings.selectedDataSource?.startsWith("custom-") || false;
+
+  /**
+   * Add a card to the current custom datasource
+   * @param {Object} card - The card to add (must have cardType)
+   * @returns {Promise<void>}
+   */
+  const addCardToDatasource = useCallback(
+    async (card) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(card.cardType);
+      const updatedFaction = {
+        ...selectedFaction,
+        [arrayName]: [...(selectedFaction[arrayName] || []), card],
+      };
+
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
+  /**
+   * Update an existing card in the current custom datasource
+   * @param {Object} card - The updated card (matched by id)
+   * @returns {Promise<void>}
+   */
+  const updateCardInDatasource = useCallback(
+    async (card) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(card.cardType);
+      const existingArray = selectedFaction[arrayName] || [];
+      const updatedArray = existingArray.map((c) => (c.id === card.id ? card : c));
+
+      const updatedFaction = { ...selectedFaction, [arrayName]: updatedArray };
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
+  /**
+   * Delete a card from the current custom datasource
+   * @param {string} cardId - The card ID to delete
+   * @param {string} cardType - The card type (to find correct array)
+   * @returns {Promise<void>}
+   */
+  const deleteCardFromDatasource = useCallback(
+    async (cardId, cardType) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(cardType);
+      const existingArray = selectedFaction[arrayName] || [];
+      const updatedArray = existingArray.filter((c) => c.id !== cardId);
+
+      const updatedFaction = { ...selectedFaction, [arrayName]: updatedArray };
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
   const context = {
     dataSource,
     setDataSource,
@@ -529,12 +607,16 @@ export const DataSourceStorageProviderComponent = (props) => {
     checkForUpdate,
     clearData,
     // Custom datasource functions
+    isCustomDatasource,
     createCustomDatasource,
     importCustomDatasource,
     removeCustomDatasource,
     checkCustomDatasourceUpdate,
     applyCustomDatasourceUpdate,
     getCustomDatasourceData,
+    addCardToDatasource,
+    updateCardInDatasource,
+    deleteCardFromDatasource,
   };
 
   return <DataSourceStorageContext.Provider value={context}>{props.children}</DataSourceStorageContext.Provider>;

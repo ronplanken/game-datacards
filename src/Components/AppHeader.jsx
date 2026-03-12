@@ -49,8 +49,8 @@ export const AppHeader = ({
   const isDesignerPage = location.pathname.startsWith("/designer");
   const isDatasourcesPage = location.pathname.startsWith("/datasources");
 
-  // Designer page should show all header actions like the Editor does
-  const effectiveShowActions = showActions || isDesignerPage;
+  // Designer and Datasources pages should show all header actions like the Editor does
+  const effectiveShowActions = showActions || isDesignerPage || isDatasourcesPage;
 
   return (
     <>

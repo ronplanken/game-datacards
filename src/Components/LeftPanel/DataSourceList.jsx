@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { Dropdown, List } from "antd";
 import classNames from "classnames";
-import { ChevronDown, ChevronRight, CirclePlus, CopyPlus } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import { ChevronDown, ChevronRight, CirclePlus, CopyPlus, Trash2, Copy } from "lucide-react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { ContextMenu } from "../TreeView/ContextMenu";
 import { buildCategoryMenuItems } from "../../util/menu-helper";
 
 export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSelectedTreeIndex, onAddToCategory }) => {
   const { settings, updateSettings } = useSettingsStorage();
+  const { isCustomDatasource, addCardToDatasource, deleteCardFromDatasource } = useDataSourceStorage();
   const {
     cardUpdated,
     activeCard,
@@ -86,37 +89,73 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
   };
   const [contextMenu, setContextMenu] = useState(null);
 
+  const handleDeleteCard = (card) => {
+    deleteCardFromDatasource(card.id, card.cardType);
+    if (activeCard?.id === card.id) {
+      setActiveCard(null);
+    }
+  };
+
+  const handleDuplicateCard = (card) => {
+    const duplicate = {
+      ...card,
+      id: uuidv4(),
+      name: `${card.name} Copy`,
+    };
+    addCardToDatasource(duplicate);
+  };
+
   const handleContextMenu = (e, card) => {
     e.preventDefault();
     e.stopPropagation();
     if (card.type === undefined) {
+      const items = [
+        {
+          key: "clicked-item",
+          label: <b>{card.name}</b>,
+          disabled: true,
+        },
+      ];
+
+      if (isCustomDatasource) {
+        items.push(
+          {
+            key: "duplicate-card",
+            label: "Duplicate card",
+            icon: <Copy size={14} />,
+            onClick: () => handleDuplicateCard(card),
+          },
+          {
+            key: "delete-card",
+            label: "Delete card",
+            icon: <Trash2 size={14} />,
+            onClick: () => handleDeleteCard(card),
+          },
+        );
+      }
+
+      items.push({
+        key: "add-single",
+        hasSubmenu: true,
+        label: (
+          <Dropdown
+            getPopupContainer={(node) => node}
+            placement="rightTop"
+            overlayStyle={{ minWidth: 200 }}
+            menu={{
+              items: buildCategoryMenuItems(categories),
+              onClick: (e) => handleAddCardToCategoryClick(card, e.key),
+            }}>
+            <div>Add item to...</div>
+          </Dropdown>
+        ),
+        icon: <CirclePlus size={14} />,
+      });
+
       setContextMenu({
         x: e.clientX,
         y: e.clientY,
-        items: [
-          {
-            key: "clicked-item",
-            label: <b>{card.name}</b>,
-            disabled: true,
-          },
-          {
-            key: "add-single",
-            hasSubmenu: true,
-            label: (
-              <Dropdown
-                getPopupContainer={(node) => node}
-                placement="rightTop"
-                overlayStyle={{ minWidth: 200 }}
-                menu={{
-                  items: buildCategoryMenuItems(categories),
-                  onClick: (e) => handleAddCardToCategoryClick(card, e.key),
-                }}>
-                <div>Add item to...</div>
-              </Dropdown>
-            ),
-            icon: <CirclePlus size={14} />,
-          },
-        ],
+        items,
       });
     } else if (card.type === "role") {
       setContextMenu({
@@ -274,7 +313,11 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
         dataSource={dataSource}
         style={{ overflowY: "auto", flex: 1, minHeight: 0 }}
         locale={{
-          emptyText: selectedFaction ? "No datasheets found" : "No faction selected",
+          emptyText: selectedFaction
+            ? isCustomDatasource
+              ? "No cards yet. Use the button above to create one."
+              : "No datasheets found"
+            : "No faction selected",
         }}
         renderItem={renderItem}
       />

@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { SchemaDefinitionEditor } from "../SchemaDefinitionEditor";
 
+// Mock Premium exports
+vi.mock("../../../Premium", () => ({
+  usePremiumFeatures: () => ({ hasCardDesigner: false }),
+  TemplateSelector: () => null,
+}));
+
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
   Settings: (props) => <svg data-testid="icon-settings" {...props} />,
@@ -19,6 +25,7 @@ vi.mock("lucide-react", () => ({
   ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
   Plus: (props) => <svg data-testid="icon-plus" {...props} />,
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
+  X: (props) => <svg data-testid="icon-x" {...props} />,
 }));
 
 const mockDatasource = {
@@ -241,6 +248,60 @@ describe("SchemaDefinitionEditor", () => {
       expect(screen.getAllByText("Fields").length).toBeGreaterThanOrEqual(1);
       expect(screen.queryByText("Rules Collection")).not.toBeInTheDocument();
       expect(screen.queryByText("Keywords Collection")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("card type settings section", () => {
+    it("renders Card Type section for unit baseType", () => {
+      const unitCardType = mockDatasource.schema.cardTypes[0];
+      render(
+        <SchemaDefinitionEditor
+          selectedItem={{ type: "cardType", key: "infantry", data: unitCardType }}
+          activeDatasource={mockDatasource}
+          onUpdateDatasource={vi.fn()}
+        />,
+      );
+      expect(screen.getByText("Card Type")).toBeInTheDocument();
+      expect(screen.getByLabelText("Card type name")).toHaveValue("Infantry");
+    });
+
+    it("renders Card Type section for rule baseType", () => {
+      const ruleCardType = mockDatasource.schema.cardTypes[1];
+      render(
+        <SchemaDefinitionEditor
+          selectedItem={{ type: "cardType", key: "battle-rules", data: ruleCardType }}
+          activeDatasource={mockDatasource}
+          onUpdateDatasource={vi.fn()}
+        />,
+      );
+      expect(screen.getByText("Card Type")).toBeInTheDocument();
+      expect(screen.getByLabelText("Card type name")).toHaveValue("Battle Rules");
+    });
+
+    it("renders Card Type section for enhancement baseType", () => {
+      const enhancementCardType = mockDatasource.schema.cardTypes[2];
+      render(
+        <SchemaDefinitionEditor
+          selectedItem={{ type: "cardType", key: "warlord-trait", data: enhancementCardType }}
+          activeDatasource={mockDatasource}
+          onUpdateDatasource={vi.fn()}
+        />,
+      );
+      expect(screen.getByText("Card Type")).toBeInTheDocument();
+      expect(screen.getByLabelText("Card type name")).toHaveValue("Warlord Trait");
+    });
+
+    it("renders Card Type section for stratagem baseType", () => {
+      const stratagemCardType = mockDatasource.schema.cardTypes[3];
+      render(
+        <SchemaDefinitionEditor
+          selectedItem={{ type: "cardType", key: "battle-tactic", data: stratagemCardType }}
+          activeDatasource={mockDatasource}
+          onUpdateDatasource={vi.fn()}
+        />,
+      );
+      expect(screen.getByText("Card Type")).toBeInTheDocument();
+      expect(screen.getByLabelText("Card type name")).toHaveValue("Battle Tactic");
     });
   });
 

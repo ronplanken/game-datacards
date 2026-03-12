@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { getTargetArray } from "../../Helpers/customDatasource.helpers";
 import "./ContentTypeSelector.css";
 
 const CONTENT_TYPES_40K = [
@@ -22,33 +23,54 @@ export const ContentTypeSelector = ({ selectedContentType, setSelectedContentTyp
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { selectedFaction, dataSource } = useDataSourceStorage();
+  const { selectedFaction, dataSource, isCustomDatasource } = useDataSourceStorage();
+
+  // Build content types from schema for custom datasources
+  const customContentTypes = isCustomDatasource
+    ? (dataSource?.schema?.cardTypes || []).map((ct) => ({
+        value: getTargetArray(ct.key),
+        label: ct.label + "s",
+        key: getTargetArray(ct.key),
+        cardTypeKey: ct.key,
+      }))
+    : [];
+
+  // Deduplicate custom content types (multiple card types may map to same array)
+  const uniqueCustomTypes = isCustomDatasource
+    ? customContentTypes.filter((ct, i, arr) => arr.findIndex((t) => t.value === ct.value) === i)
+    : [];
 
   // Determine which content types to use based on the first item's source
-  const isAoS = dataSource?.data?.[0]?.warscrolls !== undefined;
-  const CONTENT_TYPES = isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
+  const isAoS = !isCustomDatasource && dataSource?.data?.[0]?.warscrolls !== undefined;
+  const CONTENT_TYPES = isCustomDatasource ? uniqueCustomTypes : isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
 
-  // Reset content type when data source changes (e.g., 40K to AoS)
+  // Reset content type when data source changes (e.g., 40K to AoS, or to custom)
   useEffect(() => {
-    const defaultType = isAoS ? "warscrolls" : "datasheets";
-    if (selectedContentType !== defaultType && !CONTENT_TYPES.some((t) => t.value === selectedContentType)) {
+    const defaultType = isCustomDatasource ? uniqueCustomTypes[0]?.value : isAoS ? "warscrolls" : "datasheets";
+    if (
+      defaultType &&
+      selectedContentType !== defaultType &&
+      !CONTENT_TYPES.some((t) => t.value === selectedContentType)
+    ) {
       setSelectedContentType(defaultType);
     }
-  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES]);
+  }, [isAoS, isCustomDatasource, selectedContentType, setSelectedContentType, CONTENT_TYPES]);
 
-  // Get available content types based on faction data
-  const availableTypes = CONTENT_TYPES.filter((type) => {
-    if (type.key === "rules") {
-      // Rules have a different structure with army and detachment sub-arrays
-      const rules = selectedFaction?.rules;
-      return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
-    }
-    const data = selectedFaction?.[type.key];
-    return data && data.length > 0;
-  });
+  // For custom datasources, show all types regardless of whether cards exist
+  const availableTypes = isCustomDatasource
+    ? CONTENT_TYPES
+    : CONTENT_TYPES.filter((type) => {
+        if (type.key === "rules") {
+          // Rules have a different structure with army and detachment sub-arrays
+          const rules = selectedFaction?.rules;
+          return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
+        }
+        const data = selectedFaction?.[type.key];
+        return data && data.length > 0;
+      });
 
   // Get the label for the selected content type
-  const allContentTypes = [...CONTENT_TYPES_40K, ...CONTENT_TYPES_AOS];
+  const allContentTypes = [...CONTENT_TYPES_40K, ...CONTENT_TYPES_AOS, ...uniqueCustomTypes];
   const selectedLabel = allContentTypes.find((t) => t.value === selectedContentType)?.label || "Select a type";
 
   // Handle click outside to close dropdown

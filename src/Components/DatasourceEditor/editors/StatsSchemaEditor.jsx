@@ -1,5 +1,5 @@
 import React from "react";
-import { BarChart3, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { BarChart3, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconCategory } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
@@ -63,14 +63,14 @@ export const StatsSchemaEditor = ({ schema, onChange }) => {
   };
 
   return (
-    <Section title="Stats" icon={BarChart3} defaultOpen={true}>
+    <Section title="Stats" icon={BarChart3} defaultOpen={true} onAdd={addField} addLabel="Add stat">
       <label className="props-checkbox">
         <input type="checkbox" checked={!!stats.allowMultipleProfiles} onChange={toggleMultipleProfiles} />
         <span>Allow multiple profiles</span>
       </label>
 
       <div className="props-field-list">
-        {fields.length === 0 && <div className="props-field-list-empty">No stat fields defined yet</div>}
+        {fields.length === 0 && <div className="props-field-list-empty">No stat fields yet</div>}
         {fields.map((field, index) => (
           <div key={field.key + "-" + index} className="props-field-item">
             <div className="props-field-item-inputs">
@@ -137,11 +137,6 @@ export const StatsSchemaEditor = ({ schema, onChange }) => {
           </div>
         ))}
       </div>
-
-      <button className="designer-btn designer-btn-sm" onClick={addField} aria-label="Add stat">
-        <Plus size={14} />
-        Add Stat
-      </button>
     </Section>
   );
 };

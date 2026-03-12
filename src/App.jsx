@@ -20,6 +20,7 @@ import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { useAutoFitScale } from "./Hooks/useAutoFitScale";
+import { TemplateRenderer, CustomCardEditor } from "./Premium";
 import "./style.less";
 
 const { Content } = Layout;
@@ -141,6 +142,34 @@ function App() {
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
+                {activeCard?.source?.startsWith("custom-") && (
+                  <div
+                    style={{
+                      transform: `scale(var(--card-scaling-factor, 1))`,
+                      transformOrigin: "top center",
+                    }}>
+                    {activeCard.templateId ? (
+                      <TemplateRenderer templateId={activeCard.templateId} card={activeCard} />
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "48px 24px",
+                          color: "#888",
+                          textAlign: "center",
+                          gap: "8px",
+                          width: "100%",
+                          minHeight: "200px",
+                        }}>
+                        <h3 style={{ margin: 0, color: "#666" }}>{activeCard.name}</h3>
+                        <p style={{ margin: 0, fontSize: "13px" }}>Assign a template to this card type to preview</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </Row>
               <FloatingToolbar
                 activeCard={activeCard}
@@ -166,6 +195,7 @@ function App() {
                 {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "necromunda" && <NecromundaCardEditor />}
                 {activeCard?.source === "aos" && <AgeOfSigmarCardEditor />}
+                {activeCard?.source?.startsWith("custom-") && <CustomCardEditor />}
               </div>
             )}
           </Panel>

@@ -522,13 +522,19 @@
   border-bottom: none;
 }
 
+.props-section-header-row {
+  display: flex;
+  align-items: center;
+  background: var(--designer-bg-tertiary);
+}
+
 .props-section-header {
-  width: 100%;
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: var(--designer-bg-tertiary);
+  background: transparent;
   border: none;
   color: var(--designer-text-secondary);
   cursor: pointer;
@@ -541,6 +547,31 @@
 }
 
 .props-section-header:focus-visible {
+  outline: 2px solid var(--designer-accent);
+  outline-offset: -2px;
+}
+
+.props-section-header-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  border: none;
+  border-radius: var(--designer-radius-sm);
+  background: transparent;
+  color: var(--designer-text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.props-section-header-action:hover {
+  background: var(--designer-accent-subtle);
+  color: var(--designer-accent);
+}
+
+.props-section-header-action:focus-visible {
   outline: 2px solid var(--designer-accent);
   outline-offset: -2px;
 }
@@ -798,20 +829,22 @@ select.props-compact-field {
 
 .props-weapon-tabs {
   display: flex;
-  gap: 2px;
-  border-bottom: 1px solid var(--designer-border-subtle);
-  padding-bottom: 8px;
-  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 1px solid var(--designer-border);
+  padding: 0 4px;
 }
 
 .props-weapon-tab {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
-  background: var(--designer-bg-secondary);
-  border: 1px solid var(--designer-border-subtle);
-  border-radius: var(--designer-radius-sm);
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--designer-radius-sm) var(--designer-radius-sm) 0 0;
+  margin-bottom: -1px;
+  position: relative;
   color: var(--designer-text-secondary);
   font-size: 11px;
   font-weight: 500;
@@ -821,24 +854,25 @@ select.props-compact-field {
 
 .props-weapon-tab:hover {
   background: var(--designer-bg-tertiary);
-  border-color: var(--designer-border);
+  color: var(--designer-text-primary);
 }
 
 .props-weapon-tab.active {
-  background: var(--designer-accent-subtle);
-  border-color: var(--designer-accent);
+  background: var(--designer-bg-primary);
+  border-color: var(--designer-border);
   color: var(--designer-accent);
   font-weight: 600;
+  z-index: 1;
 }
 
 .props-weapon-tab-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 100px;
+  max-width: 120px;
 }
 
-.props-weapon-tab-remove {
+.props-weapon-tab-close {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -846,22 +880,60 @@ select.props-compact-field {
   height: 14px;
   border-radius: 2px;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: all 0.15s ease;
   color: var(--designer-text-tertiary);
 }
 
-.props-weapon-tab:hover .props-weapon-tab-remove {
+.props-weapon-tab.active .props-weapon-tab-close {
+  opacity: 0.6;
+}
+
+.props-weapon-tab:hover .props-weapon-tab-close {
   opacity: 1;
 }
 
-.props-weapon-tab-remove:hover {
+.props-weapon-tab-close:hover {
   color: var(--designer-error);
+  background: color-mix(in srgb, var(--designer-error) 12%, transparent);
+}
+
+.props-weapon-tab-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--designer-radius-sm) var(--designer-radius-sm) 0 0;
+  margin-bottom: -1px;
+  color: var(--designer-text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.props-weapon-tab-add:hover {
+  color: var(--designer-accent);
+  background: var(--designer-accent-subtle);
+  border-color: var(--designer-border-subtle);
 }
 
 .props-weapon-tab-content {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.designer-btn-dashed {
+  border-style: dashed;
+  background: transparent;
+  color: var(--designer-text-secondary);
+}
+
+.designer-btn-dashed:hover {
+  border-color: var(--designer-accent);
+  color: var(--designer-accent);
+  background: var(--designer-accent-subtle);
 }
 
 .props-field-list + .designer-btn {
@@ -915,6 +987,14 @@ select.props-compact-field {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 500;
+}
+
+/* ===========================================
+   CARD TYPE TEMPLATE SELECTOR
+   =========================================== */
+
+.props-card-type-template {
+  margin-top: 4px;
 }
 
 /* ===========================================

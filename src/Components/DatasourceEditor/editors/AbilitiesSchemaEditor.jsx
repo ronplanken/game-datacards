@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { Sparkles, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconTemplate, IconHeading } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
@@ -54,9 +54,9 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
   };
 
   return (
-    <Section title="Abilities" icon={Sparkles} defaultOpen={true}>
+    <Section title="Abilities" icon={Sparkles} defaultOpen={true} onAdd={addCategory} addLabel="Add category">
       <div className="props-field-list">
-        {categories.length === 0 && <div className="props-field-list-empty">No categories defined yet</div>}
+        {categories.length === 0 && <div className="props-field-list-empty">No categories yet</div>}
         {categories.map((category, index) => (
           <div key={category.key + "-" + index} className="props-field-item">
             <div className="props-field-item-inputs">
@@ -131,11 +131,6 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
           </div>
         ))}
       </div>
-
-      <button className="designer-btn designer-btn-sm" onClick={addCategory} aria-label="Add category">
-        <Plus size={14} />
-        Add Category
-      </button>
     </Section>
   );
 };

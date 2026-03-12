@@ -1,6 +1,12 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SchemaDefinitionEditor } from "../SchemaDefinitionEditor";
 
+// Mock Premium exports
+vi.mock("../../../Premium", () => ({
+  usePremiumFeatures: () => ({ hasCardDesigner: false }),
+  TemplateSelector: () => null,
+}));
+
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
   Settings: (props) => <svg data-testid="icon-settings" {...props} />,
@@ -19,6 +25,7 @@ vi.mock("lucide-react", () => ({
   ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
   Plus: (props) => <svg data-testid="icon-plus" {...props} />,
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
+  X: (props) => <svg data-testid="icon-x" {...props} />,
 }));
 
 const mockDatasource = {

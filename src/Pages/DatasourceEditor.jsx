@@ -198,7 +198,7 @@ export const DatasourceEditorPage = () => {
 
   return (
     <Layout className="datasource-editor-layout">
-      <AppHeader showModals={false} showNav={true} showActions={false} />
+      <AppHeader showModals={false} showNav={true} showActions={false} showSyncStatus={true} />
       <Content className="datasource-editor-content">
         <PanelGroup direction="horizontal" autoSaveId="datasourceEditorLayout">
           <Panel defaultSize={18} minSize={12} maxSize={30} order={1}>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Settings } from "lucide-react";
 import { DatasourceMetadataEditor } from "./editors/DatasourceMetadataEditor";
+import { CardTypeSettingsEditor } from "./editors/CardTypeSettingsEditor";
 import { StatsSchemaEditor } from "./editors/StatsSchemaEditor";
 import { WeaponsSchemaEditor } from "./editors/WeaponsSchemaEditor";
 import { AbilitiesSchemaEditor } from "./editors/AbilitiesSchemaEditor";
@@ -56,10 +57,30 @@ function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
     });
   };
 
+  const handleCardTypeFieldChange = (field, value) => {
+    if (!activeDatasource || !onUpdateDatasource) return;
+    const updatedCardTypes = activeDatasource.schema.cardTypes.map((ct) =>
+      ct.key === cardType.key ? { ...ct, [field]: value } : ct,
+    );
+    onUpdateDatasource({
+      ...activeDatasource,
+      schema: { ...activeDatasource.schema, cardTypes: updatedCardTypes },
+    });
+  };
+
+  const cardTypeSettings = (
+    <CardTypeSettingsEditor
+      cardType={cardType}
+      activeDatasource={activeDatasource}
+      onUpdateCardType={handleCardTypeFieldChange}
+    />
+  );
+
   switch (baseType) {
     case "unit":
       return (
         <div className="props-body">
+          {cardTypeSettings}
           <StatsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
           <WeaponsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
           <AbilitiesSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
@@ -70,6 +91,7 @@ function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
     case "rule":
       return (
         <div className="props-body">
+          {cardTypeSettings}
           <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="rule" />
         </div>
       );
@@ -77,6 +99,7 @@ function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
     case "enhancement":
       return (
         <div className="props-body">
+          {cardTypeSettings}
           <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="enhancement" />
         </div>
       );
@@ -84,6 +107,7 @@ function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
     case "stratagem":
       return (
         <div className="props-body">
+          {cardTypeSettings}
           <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="stratagem" />
         </div>
       );
