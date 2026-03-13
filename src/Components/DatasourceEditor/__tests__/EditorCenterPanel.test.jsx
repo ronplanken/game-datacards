@@ -1,6 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { EditorCenterPanel } from "../EditorCenterPanel";
 
+// Mock DatasourceCardPreview to avoid deep import chain
+vi.mock("../DatasourceCardPreview", () => ({
+  DatasourceCardPreview: ({ card }) => <div data-testid="card-preview">{card?.name || "Card Preview"}</div>,
+}));
+
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,

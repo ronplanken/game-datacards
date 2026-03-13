@@ -1,12 +1,15 @@
 import { FileText } from "lucide-react";
 import { SchemaTreeView } from "./SchemaTreeView";
+import { DatasourceCardPreview } from "./DatasourceCardPreview";
 
 export const EditorCenterPanel = ({ selectedItem, activeDatasource }) => {
   const hasSelection = selectedItem && activeDatasource;
 
   return (
     <div className="designer-center-panel">
-      {hasSelection ? (
+      {hasSelection && selectedItem.type === "card" ? (
+        <DatasourceCardPreview card={selectedItem.data} activeDatasource={activeDatasource} />
+      ) : hasSelection ? (
         <SchemaTreeView selectedItem={selectedItem} activeDatasource={activeDatasource} />
       ) : (
         <div className="designer-empty-state full-height">

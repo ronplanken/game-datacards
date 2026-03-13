@@ -384,6 +384,44 @@
   font-size: 12px;
 }
 
+/* Card type tab bar */
+.designer-card-type-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 8px 8px 8px;
+  flex-wrap: wrap;
+}
+
+.designer-card-type-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--designer-border);
+  border-radius: var(--designer-radius-sm);
+  background: transparent;
+  color: var(--designer-text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.designer-card-type-tab:hover {
+  background: var(--designer-bg-secondary);
+  color: var(--designer-text-primary);
+}
+
+.designer-card-type-tab.active {
+  background: var(--designer-accent);
+  color: white;
+  border-color: var(--designer-accent);
+}
+
+/* Card list */
+.designer-card-list {
+  padding: 0 8px;
+}
+
 /* ===========================================
    EMPTY STATES
    =========================================== */

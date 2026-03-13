@@ -83,8 +83,9 @@ describe("EditorLeftPanel", () => {
 
     it("renders card type items in tree", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Infantry")).toBeInTheDocument();
-      expect(screen.getByText("Battle Rules")).toBeInTheDocument();
+      // Card type labels appear in both the tree and the Cards tab bar
+      expect(screen.getAllByText("Infantry").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByText("Battle Rules").length).toBeGreaterThanOrEqual(1);
     });
 
     it("renders New Datasource button in selector", () => {
@@ -137,7 +138,9 @@ describe("EditorLeftPanel", () => {
           onSelectCardType={onSelectCardType}
         />,
       );
-      await user.click(screen.getByText("Infantry"));
+      // Click the card type item in the tree (first instance, in the Card Types section)
+      const infantryElements = screen.getAllByText("Infantry");
+      await user.click(infantryElements[0]);
       expect(onSelectCardType).toHaveBeenCalledWith(mockDatasource.schema.cardTypes[0]);
     });
 
@@ -224,7 +227,8 @@ describe("EditorLeftPanel", () => {
           selectedItem={{ type: "cardType", key: "infantry" }}
         />,
       );
-      const infantryItem = screen.getByText("Infantry").closest(".designer-layer-item");
+      // First instance is in the Card Types tree
+      const infantryItem = screen.getAllByText("Infantry")[0].closest(".designer-layer-item");
       expect(infantryItem).toHaveClass("selected");
     });
 

@@ -419,6 +419,21 @@ export const TEMPLATE_SORT_OPTIONS = [
  */
 export const CustomCardEditor = () => null;
 
+/**
+ * Stub for CardEditProvider - renders children only (premium feature)
+ */
+export const CardEditProvider = ({ children }) => children;
+
+/**
+ * Stub for CustomUnitEditor - returns null (premium feature)
+ */
+export const CustomUnitEditor = () => null;
+
+/**
+ * Stub for CustomFieldEditor - returns null (premium feature)
+ */
+export const CustomFieldEditor = () => null;
+
 // =====================================================
 // COMMUNITY BROWSER COMPONENTS - Premium only
 // =====================================================

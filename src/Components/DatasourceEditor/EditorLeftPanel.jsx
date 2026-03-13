@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { DatasourceSyncIcon } from "../../Premium";
 import { ActiveItemToolbar } from "../Shared/ActiveItemToolbar";
+import { getTargetArray } from "../../Helpers/customDatasource.helpers";
 
 const BASETYPE_ICONS = {
   unit: Swords,
@@ -36,6 +37,9 @@ export const EditorLeftPanel = ({
   selectedItem = null,
   onSelectDatasource,
   onSelectCardType,
+  onSelectCard,
+  onAddCard,
+  onDeleteCard,
   onNewDatasource,
   onAddCardType,
   onDeleteCardType,
@@ -46,6 +50,7 @@ export const EditorLeftPanel = ({
   onOpenDatasource,
 }) => {
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
+  const [activeCardTypeTab, setActiveCardTypeTab] = useState(null);
 
   if (!activeDatasource && datasources.length === 0) {
     return (
@@ -261,6 +266,111 @@ export const EditorLeftPanel = ({
             <p>Open a datasource from the list above</p>
           </div>
         )}
+      </div>
+
+      {/* Cards section */}
+      {activeDatasource && cardTypes.length > 0 && (
+        <>
+          <div className="designer-panel-header">
+            <h3 className="designer-panel-title">Cards</h3>
+          </div>
+          <div className="designer-panel-content">
+            <CardTypeTabBar
+              cardTypes={cardTypes}
+              activeTab={activeCardTypeTab || cardTypes[0]?.key}
+              onTabChange={setActiveCardTypeTab}
+            />
+            <CardList
+              activeDatasource={activeDatasource}
+              cardTypeKey={activeCardTypeTab || cardTypes[0]?.key}
+              cardTypes={cardTypes}
+              selectedItem={selectedItem}
+              onSelectCard={onSelectCard}
+              onDeleteCard={onDeleteCard}
+              onAddCard={onAddCard}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+const CardTypeTabBar = ({ cardTypes, activeTab, onTabChange }) => (
+  <div className="designer-card-type-tabs">
+    {cardTypes.map((ct) => {
+      const Icon = BASETYPE_ICONS[ct.baseType] || BookOpen;
+      return (
+        <button
+          key={ct.key}
+          className={`designer-card-type-tab ${activeTab === ct.key ? "active" : ""}`}
+          onClick={() => onTabChange(ct.key)}
+          title={ct.label}>
+          <Icon size={12} />
+          <span>{ct.label}</span>
+        </button>
+      );
+    })}
+  </div>
+);
+
+const CardList = ({
+  activeDatasource,
+  cardTypeKey,
+  cardTypes,
+  selectedItem,
+  onSelectCard,
+  onDeleteCard,
+  onAddCard,
+}) => {
+  const cardTypeDef = cardTypes.find((ct) => ct.key === cardTypeKey);
+  if (!cardTypeDef) return null;
+
+  const faction = activeDatasource.data?.[0];
+  if (!faction) return null;
+
+  const targetArray = getTargetArray(cardTypeKey);
+  const cards = (faction[targetArray] || []).filter((c) => c.cardType === cardTypeKey);
+
+  return (
+    <div className="designer-card-list">
+      {cards.map((card) => (
+        <div
+          key={card.id}
+          className={`designer-layer-item ${selectedItem?.type === "card" && selectedItem?.data?.id === card.id ? "selected" : ""}`}
+          role="button"
+          tabIndex={0}
+          onClick={() => onSelectCard?.(card)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSelectCard?.(card);
+            }
+          }}>
+          <span className="designer-layer-name">{card.name || "Unnamed"}</span>
+          <span className="designer-layer-actions">
+            <button
+              className="designer-layer-action-btn danger"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteCard?.(card.id, card.cardType);
+              }}
+              title="Delete card">
+              <Trash2 size={14} />
+            </button>
+          </span>
+        </div>
+      ))}
+      {cards.length === 0 && (
+        <div className="designer-empty-state" style={{ padding: "12px 0" }}>
+          <p style={{ fontSize: 12, opacity: 0.6 }}>No {cardTypeDef.label.toLowerCase()} cards yet</p>
+        </div>
+      )}
+      <div className="designer-add-card-type">
+        <button className="designer-btn designer-btn-sm" onClick={() => onAddCard?.(cardTypeDef)}>
+          <Plus size={12} />
+          Add {cardTypeDef.label}
+        </button>
       </div>
     </div>
   );

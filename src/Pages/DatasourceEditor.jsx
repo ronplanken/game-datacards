@@ -26,6 +26,10 @@ export const DatasourceEditorPage = () => {
     openDatasource,
     selectDatasource,
     selectCardType,
+    selectCard,
+    addCard,
+    updateCard,
+    deleteCard,
     updateDatasource,
     setCreatedDatasource,
   } = useDatasourceEditorState();
@@ -208,6 +212,9 @@ export const DatasourceEditorPage = () => {
               selectedItem={selectedItem}
               onSelectDatasource={selectDatasource}
               onSelectCardType={selectCardType}
+              onSelectCard={selectCard}
+              onAddCard={addCard}
+              onDeleteCard={deleteCard}
               onOpenDatasource={openDatasource}
               onNewDatasource={handleNewDatasource}
               onAddCardType={handleAddCardType}
@@ -228,6 +235,7 @@ export const DatasourceEditorPage = () => {
               selectedItem={selectedItem}
               activeDatasource={activeDatasource}
               onUpdateDatasource={updateDatasource}
+              onUpdateCard={updateCard}
             />
           </Panel>
         </PanelGroup>
