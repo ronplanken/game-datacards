@@ -36,11 +36,7 @@ export const CardTypeSettingsEditor = ({ cardType, activeDatasource, onUpdateCar
       </div>
       {hasCardDesigner && (
         <div className="props-card-type-template">
-          <TemplateSelector
-            value={cardType.templateId || null}
-            onChange={(id) => onUpdateCardType("templateId", id)}
-            targetFormat={activeDatasource?.schema?.baseSystem}
-          />
+          <TemplateSelector value={cardType.templateId || null} onChange={(id) => onUpdateCardType("templateId", id)} />
         </div>
       )}
     </Section>

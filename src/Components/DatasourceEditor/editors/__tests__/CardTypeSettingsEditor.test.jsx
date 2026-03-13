@@ -88,7 +88,7 @@ describe("CardTypeSettingsEditor", () => {
       <CardTypeSettingsEditor cardType={mockCardType} activeDatasource={mockDatasource} onUpdateCardType={onUpdate} />,
     );
     expect(screen.getByTestId("template-selector")).toBeInTheDocument();
-    expect(screen.getByTestId("template-selector")).toHaveAttribute("data-format", "40k-10e");
+    expect(screen.getByTestId("template-selector")).not.toHaveAttribute("data-format");
 
     fireEvent.click(screen.getByText("Select Template"));
     expect(onUpdate).toHaveBeenCalledWith("templateId", "template-uuid-1");
