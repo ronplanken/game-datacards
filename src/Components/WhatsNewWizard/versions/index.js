@@ -10,6 +10,7 @@ import v322Config from "./v3.2.2";
 import v330Config from "./v3.3.0";
 import v340Config from "./v3.4.0";
 import v341Config from "./v3.4.1";
+import v342Config from "./v3.4.2";
 
 /**
  * Registry of all version wizard configurations
@@ -32,6 +33,7 @@ export const VERSION_REGISTRY = [
   v330Config,
   v340Config,
   v341Config,
+  v342Config,
 ]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));

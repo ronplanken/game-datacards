@@ -20,27 +20,51 @@ function isRuleKeyword(keyword) {
   return RULE_KEYWORDS.some((rule) => kw.includes(rule));
 }
 
+function isPartOfPhrase(text, matchStart) {
+  if (matchStart > 0) {
+    const textBefore = text.slice(0, matchStart);
+    if (/[A-Z][a-z]+\s$/.test(textBefore)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function replaceKeywords(inputString) {
   if (!inputString) {
     return;
   }
+
+  // Step 1: Extract escaped keywords (\Word) and replace with placeholders
+  const escapeRegex = /\\([A-Za-z]\w*)/g;
+  const escapedSegments = [];
+  let processedString = inputString.replace(escapeRegex, (match, word) => {
+    const placeholder = `\x00ESC${escapedSegments.length}\x00`;
+    escapedSegments.push(word);
+    return placeholder;
+  });
+
   const bracketRegex = /\[(.*?)\]/g;
   const ruleRegex =
-    /(Stealth|\bLeader\b|Deep Strike|Infiltrators|Deadly Demise \d+|Firing Deck \d+|Deadly Demise D\d+|Scouts \d+"|Fights First|Lone Operative|Feel No Pain \d+\+)/g;
+    /(\bStealth\b|\bLeader\b|\bDeep Strike\b|\bInfiltrators\b|\bDeadly Demise \d*D?\d+(?:\+\d+)?\b|\bFiring Deck \d+\b|\bScouts \d+"|\bFights First\b|\bLone Operative\b|\bFeel No Pain \d+\+)/g;
   const weaponKeywordRegex =
-    /(Sustained Hits \d+|Lethal Hits|Devastating Wounds|Anti-.+? \d+\+|Torrent|Blast|Rapid Fire \d+|Twin-linked|Hazardous|Melta \d+|Lance|Ignores Cover|Indirect Fire|Precision|Extra Attacks|Psychic|One Shot|Linked Fire)/g;
+    /(\bSustained Hits \d+\b|\bLethal Hits\b|\bDevastating Wounds\b|\bAnti-.+? \d+\+|\bTorrent\b|\bBlast\b|\bRapid Fire \d+\b|\bTwin-linked\b|\bHazardous\b|\bMelta \d+\b|\bLance\b|\bIgnores Cover\b|\bIndirect Fire\b|\bPrecision\b|\bExtra Attacks\b|\bPsychic\b|\bOne Shot\b|\bLinked Fire\b)/g;
 
   // Collect all matches with their positions and types
   const allMatches = [];
   let m;
-  while ((m = bracketRegex.exec(inputString)) !== null) {
+  while ((m = bracketRegex.exec(processedString)) !== null) {
     allMatches.push({ type: "bracket", keyword: m[1], start: m.index, end: m.index + m[0].length });
   }
-  while ((m = ruleRegex.exec(inputString)) !== null) {
-    allMatches.push({ type: "rule", keyword: m[0], start: m.index, end: m.index + m[0].length });
+  while ((m = ruleRegex.exec(processedString)) !== null) {
+    if (!isPartOfPhrase(processedString, m.index)) {
+      allMatches.push({ type: "rule", keyword: m[0], start: m.index, end: m.index + m[0].length });
+    }
   }
-  while ((m = weaponKeywordRegex.exec(inputString)) !== null) {
-    allMatches.push({ type: "weapon", keyword: m[0], start: m.index, end: m.index + m[0].length });
+  while ((m = weaponKeywordRegex.exec(processedString)) !== null) {
+    if (!isPartOfPhrase(processedString, m.index)) {
+      allMatches.push({ type: "weapon", keyword: m[0], start: m.index, end: m.index + m[0].length });
+    }
   }
 
   // Sort by position, then prefer bracket matches over others at the same position
@@ -61,7 +85,7 @@ export function replaceKeywords(inputString) {
   let currentPos = 0;
 
   filteredMatches.forEach((match, index) => {
-    const textBefore = inputString.slice(currentPos, match.start);
+    const textBefore = processedString.slice(currentPos, match.start);
     // For bracket matches, check inner content to decide weapon vs rule style
     const useWeaponStyle = match.type === "weapon" || (match.type === "bracket" && !isRuleKeyword(match.keyword));
 
@@ -87,10 +111,20 @@ export function replaceKeywords(inputString) {
     currentPos = match.end;
   });
 
-  if (currentPos < inputString.length) {
-    components.push(inputString.slice(currentPos));
+  if (currentPos < processedString.length) {
+    components.push(processedString.slice(currentPos));
   }
+
+  // Restore escaped segments (render without backslash, no keyword styling)
+  const restorePlaceholders = (str) => {
+    if (typeof str !== "string") return str;
+    return escapedSegments.reduce((s, word, i) => s.replace(`\x00ESC${i}\x00`, word), str);
+  };
+
   return components.map((component, index) => {
+    if (typeof component === "string") {
+      component = restorePlaceholders(component);
+    }
     // Check if the component has children and if it's a string
 
     if (typeof component === "string") {
@@ -109,12 +143,13 @@ export function replaceKeywords(inputString) {
       }
       return <MarkdownSpanWrapDisplay content={component} key={index} />;
     } else if (React.isValidElement(component) && typeof component.props.children === "string") {
+      const restoredChildren = restorePlaceholders(component.props.children);
       // Replace "■" with newline components
-      if (component.props.children.includes("■")) {
-        const newChildren = component.props.children.split("■").map((segment, i) => (
+      if (restoredChildren.includes("■")) {
+        const newChildren = restoredChildren.split("■").map((segment, i) => (
           <React.Fragment key={i}>
             {<MarkdownSpanWrapDisplay content={segment} />}
-            {i !== component.props.children.split("■").length - 1 && (
+            {i !== restoredChildren.split("■").length - 1 && (
               <>
                 <br /> ■
               </>
@@ -126,17 +161,18 @@ export function replaceKeywords(inputString) {
         return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
       }
 
-      const newChildren = <MarkdownSpanWrapDisplay content={component.props.children} />;
+      const newChildren = <MarkdownSpanWrapDisplay content={restoredChildren} />;
       return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
     } else if (React.isValidElement(component) && component.props.children.length > 0) {
       // Loop over all children and check if they are strings
       const newChildren = component.props.children.map((child, i) => {
+        const restoredChild = restorePlaceholders(child);
         // Replace "■" with newline components
-        if (typeof child === "string" && child.includes("■")) {
-          return child.split("■").map((segment, j) => (
+        if (typeof restoredChild === "string" && restoredChild.includes("■")) {
+          return restoredChild.split("■").map((segment, j) => (
             <React.Fragment key={j}>
               {<MarkdownSpanWrapDisplay content={segment} />}
-              {j !== child.split("■").length - 1 && (
+              {j !== restoredChild.split("■").length - 1 && (
                 <>
                   <br /> ■
                 </>
@@ -145,8 +181,8 @@ export function replaceKeywords(inputString) {
           ));
         }
         // if it doesnt containt a newline character, return as a MarkDownSpanDisplay
-        if (typeof child === "string") {
-          return <MarkdownSpanWrapDisplay content={child} key={i} />;
+        if (typeof restoredChild === "string") {
+          return <MarkdownSpanWrapDisplay content={restoredChild} key={i} />;
         }
 
         // Return the component as is if it doesn't meet the criteria
