@@ -60,6 +60,7 @@ import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 import { DesignerHelp } from "./Pages/DesignerHelp";
+import { DatasourceHelp } from "./Pages/DatasourceHelp";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -357,6 +358,7 @@ const router = createBrowserRouter([
       { path: "designer/help", element: <DesignerHelpRoute /> },
       // Datasource editor (community feature)
       { path: "datasources", element: <DatasourceEditorPage /> },
+      { path: "datasources/help", element: <DatasourceHelp /> },
       // Legal pages
       { path: "terms", element: <TermsOfService /> },
       { path: "privacy", element: <PrivacyPolicy /> },

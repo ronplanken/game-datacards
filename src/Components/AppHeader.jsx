@@ -134,6 +134,20 @@ export const AppHeader = ({
               </>
             )}
 
+            {/* Datasource help button - only on datasources page */}
+            {isDatasourcesPage && (
+              <>
+                <span className="app-header-separator" />
+                <div className="app-header-group">
+                  <Tooltip content="Datasource Help" placement="bottom-end">
+                    <button className="app-header-icon-btn" onClick={() => navigate("/datasources/help")}>
+                      <HelpCircle size={18} />
+                    </button>
+                  </Tooltip>
+                </div>
+              </>
+            )}
+
             <span className="app-header-separator" />
 
             {/* Social group: Community + Discord */}
