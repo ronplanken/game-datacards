@@ -507,7 +507,7 @@ describe("Datasource Editor E2E", () => {
       // Modify schema: add custom fields, change settings
       const unitType = original.schema.cardTypes.find((ct) => ct.baseType === "unit");
       unitType.schema.stats.fields.push(
-        createFieldDefinition({ key: "inv", label: "INV", type: "string", displayOrder: 7 }),
+        createFieldDefinition({ key: "fnp", label: "FNP", type: "string", displayOrder: 8 }),
       );
       unitType.schema.abilities.categories.push({
         key: "psychic",
@@ -550,12 +550,12 @@ describe("Datasource Editor E2E", () => {
 
       // Verify the custom stat field survived round-trip
       const reimportedUnit = reimported.schema.cardTypes.find((ct) => ct.baseType === "unit");
-      expect(reimportedUnit.schema.stats.fields).toHaveLength(7);
-      expect(reimportedUnit.schema.stats.fields[6].key).toBe("inv");
+      expect(reimportedUnit.schema.stats.fields).toHaveLength(8);
+      expect(reimportedUnit.schema.stats.fields[7].key).toBe("fnp");
 
       // Verify the custom ability category survived
-      expect(reimportedUnit.schema.abilities.categories).toHaveLength(6);
-      expect(reimportedUnit.schema.abilities.categories[5].key).toBe("psychic");
+      expect(reimportedUnit.schema.abilities.categories).toHaveLength(5);
+      expect(reimportedUnit.schema.abilities.categories[4].key).toBe("psychic");
 
       // Verify all other card types intact
       const reimportedRule = reimported.schema.cardTypes.find((ct) => ct.baseType === "rule");

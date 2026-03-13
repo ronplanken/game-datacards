@@ -152,17 +152,17 @@ describe("customSchema.helpers - create40kPreset", () => {
   });
 
   describe("unit card type", () => {
-    it("has stats with 6 fields matching 40K stat line", () => {
+    it("has stats with 7 fields matching 40K stat line", () => {
       const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
-      expect(unit.schema.stats.fields).toHaveLength(6);
+      expect(unit.schema.stats.fields).toHaveLength(7);
       const keys = unit.schema.stats.fields.map((f) => f.key);
-      expect(keys).toEqual(["m", "t", "sv", "w", "ld", "oc"]);
+      expect(keys).toEqual(["m", "t", "sv", "w", "ld", "oc", "inv"]);
     });
 
     it("has stats with sequential displayOrder", () => {
       const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
       const orders = unit.schema.stats.fields.map((f) => f.displayOrder);
-      expect(orders).toEqual([1, 2, 3, 4, 5, 6]);
+      expect(orders).toEqual([1, 2, 3, 4, 5, 6, 7]);
     });
 
     it("allows multiple stat profiles", () => {
@@ -203,28 +203,20 @@ describe("customSchema.helpers - create40kPreset", () => {
       }
     });
 
-    it("has five ability categories", () => {
+    it("has four ability categories", () => {
       const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
-      expect(unit.schema.abilities.categories).toHaveLength(5);
-      expect(unit.schema.abilities.categories.map((c) => c.key)).toEqual([
-        "core",
-        "faction",
-        "invulnerable_save",
-        "unit",
-        "damaged",
-      ]);
+      expect(unit.schema.abilities.categories).toHaveLength(4);
+      expect(unit.schema.abilities.categories.map((c) => c.key)).toEqual(["core", "faction", "unit", "damaged"]);
     });
 
     it("ability categories use correct formats", () => {
       const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
       const core = unit.schema.abilities.categories.find((c) => c.key === "core");
       const faction = unit.schema.abilities.categories.find((c) => c.key === "faction");
-      const invuln = unit.schema.abilities.categories.find((c) => c.key === "invulnerable_save");
       const unitAb = unit.schema.abilities.categories.find((c) => c.key === "unit");
       const damaged = unit.schema.abilities.categories.find((c) => c.key === "damaged");
       expect(core.format).toBe("name-only");
       expect(faction.format).toBe("name-description");
-      expect(invuln.format).toBe("boolean");
       expect(unitAb.format).toBe("name-description");
       expect(damaged.format).toBe("name-description");
       expect(damaged.header).toBe("Damaged");
@@ -295,7 +287,7 @@ describe("customSchema.helpers - create40kPreset", () => {
     expect(a).not.toBe(b);
     expect(a.cardTypes).not.toBe(b.cardTypes);
     a.cardTypes[0].schema.stats.fields.push(createFieldDefinition({ key: "x", label: "X" }));
-    expect(b.cardTypes[0].schema.stats.fields).toHaveLength(6);
+    expect(b.cardTypes[0].schema.stats.fields).toHaveLength(7);
   });
 });
 

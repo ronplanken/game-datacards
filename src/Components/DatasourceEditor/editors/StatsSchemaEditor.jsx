@@ -109,6 +109,46 @@ export const StatsSchemaEditor = ({ schema, onChange }) => {
                 </select>
               </div>
             </div>
+            <div className="props-field-item-options">
+              <label className="props-checkbox props-checkbox--inline">
+                <input
+                  type="checkbox"
+                  checked={!!field.special}
+                  onChange={() => {
+                    const special = !field.special;
+                    const updated = { ...field, special };
+                    if (!special) {
+                      delete updated.specialColor;
+                      delete updated.hideWhenEmpty;
+                    }
+                    const newFields = fields.map((f, i) => (i === index ? updated : f));
+                    updateStats({ fields: newFields });
+                  }}
+                />
+                <span>Special</span>
+              </label>
+              {field.special && (
+                <>
+                  <label className="props-checkbox props-checkbox--inline">
+                    <input
+                      type="color"
+                      value={field.specialColor || "#5b21b6"}
+                      onChange={(e) => updateField(index, "specialColor", e.target.value)}
+                      style={{ width: 20, height: 20, padding: 0, border: "none", cursor: "pointer" }}
+                    />
+                    <span>Color</span>
+                  </label>
+                  <label className="props-checkbox props-checkbox--inline">
+                    <input
+                      type="checkbox"
+                      checked={!!field.hideWhenEmpty}
+                      onChange={() => updateField(index, "hideWhenEmpty", !field.hideWhenEmpty)}
+                    />
+                    <span>Hide when empty</span>
+                  </label>
+                </>
+              )}
+            </div>
             <div className="props-field-item-actions">
               <button
                 className="designer-layer-action-btn"

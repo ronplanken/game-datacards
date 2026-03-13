@@ -1,6 +1,15 @@
+import { useCallback } from "react";
 import { Col } from "antd";
+import { Layers } from "lucide-react";
 import { resolveCardType } from "../Custom/CustomCardDisplay";
-import { CardEditProvider, CustomUnitEditor, CustomFieldEditor } from "../../Premium";
+import {
+  CardEditProvider,
+  CustomUnitEditor,
+  CustomFieldEditor,
+  TemplateSelector,
+  usePremiumFeatures,
+} from "../../Premium";
+import { Section } from "./components";
 
 /**
  * Card editor wrapper for the Datasource Editor right panel.
@@ -12,6 +21,15 @@ export const DatasourceCardEditor = ({ card, activeDatasource, onUpdateCard }) =
 
   const schema = activeDatasource.schema;
   const { cardTypeDef, baseType } = resolveCardType(card, schema);
+  const { hasCardDesigner } = usePremiumFeatures();
+
+  const handleTemplateChange = useCallback(
+    (templateId) => {
+      if (!onUpdateCard) return;
+      onUpdateCard({ ...card, templateId: templateId || undefined });
+    },
+    [card, onUpdateCard],
+  );
 
   if (!cardTypeDef) {
     return (
@@ -36,9 +54,20 @@ export const DatasourceCardEditor = ({ card, activeDatasource, onUpdateCard }) =
 
   return (
     <CardEditProvider card={card} onUpdateCard={onUpdateCard}>
-      <Col span={24} className="card-editor">
-        {renderEditor()}
-      </Col>
+      <div className="props-body">
+        {hasCardDesigner && (
+          <Section title="Template" icon={Layers} defaultOpen={true}>
+            <TemplateSelector
+              value={card.templateId || null}
+              onChange={handleTemplateChange}
+              placeholder="Default (Native Renderer)"
+            />
+          </Section>
+        )}
+        <Col span={24} className="card-editor">
+          {renderEditor()}
+        </Col>
+      </div>
     </CardEditProvider>
   );
 };

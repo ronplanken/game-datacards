@@ -111,8 +111,10 @@
 }
 
 .designer-panel-header {
-  padding: 16px;
+  padding: 10px 16px;
+  background: var(--designer-bg-tertiary);
   border-bottom: 1px solid var(--designer-border-subtle);
+  border-left: 3px solid var(--designer-accent);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -120,12 +122,52 @@
 }
 
 .designer-panel-title {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--designer-text-secondary);
+  letter-spacing: 0.8px;
+  color: var(--designer-text-primary);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Header count badge */
+.designer-panel-title-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--designer-accent);
+  background: var(--designer-accent-subtle);
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Header action button */
+.designer-panel-header-action {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--designer-radius-sm);
+  color: var(--designer-text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.designer-panel-header-action:hover {
+  background: var(--designer-accent-subtle);
+  color: var(--designer-accent);
+}
+
+.designer-panel-header-action:focus-visible {
+  outline: 2px solid var(--designer-accent);
+  outline-offset: -1px;
 }
 
 .designer-panel-content {
@@ -288,6 +330,12 @@
   transition: background-color 0.15s ease;
 }
 
+.designer-template-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
 .designer-template-btn:hover {
   background: var(--designer-accent-hover);
 }
@@ -299,7 +347,12 @@
 
 /* Add card type footer */
 .designer-add-card-type {
-  padding: 8px 0 0 28px;
+  padding: 4px 0 0 0;
+}
+
+.designer-add-card-type .designer-btn {
+  width: 100%;
+  justify-content: center;
 }
 
 .designer-template-info {
@@ -384,37 +437,48 @@
   font-size: 12px;
 }
 
-/* Card type tab bar */
+/* Card type tab bar — segmented control */
 .designer-card-type-tabs {
   display: flex;
-  gap: 4px;
-  padding: 0 8px 8px 8px;
-  flex-wrap: wrap;
+  gap: 0;
+  background: var(--designer-bg-tertiary);
+  border-radius: var(--designer-radius-md);
+  padding: 2px;
+  margin: 0 8px 8px 8px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.designer-card-type-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .designer-card-type-tab {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   padding: 4px 8px;
-  border: 1px solid var(--designer-border);
-  border-radius: var(--designer-radius-sm);
+  border: none;
+  border-radius: 6px;
   background: transparent;
-  color: var(--designer-text-secondary);
+  color: var(--designer-text-tertiary);
   font-size: 11px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .designer-card-type-tab:hover {
-  background: var(--designer-bg-secondary);
   color: var(--designer-text-primary);
 }
 
 .designer-card-type-tab.active {
-  background: var(--designer-accent);
-  color: white;
-  border-color: var(--designer-accent);
+  background: var(--designer-bg-primary);
+  color: var(--designer-text-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 /* Card list */

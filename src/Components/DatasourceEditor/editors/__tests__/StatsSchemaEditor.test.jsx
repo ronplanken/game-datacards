@@ -40,21 +40,22 @@ describe("StatsSchemaEditor", () => {
 
   it("renders allowMultipleProfiles checkbox checked when true", () => {
     render(<StatsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    const checkbox = screen.getByRole("checkbox");
-    expect(checkbox.checked).toBe(true);
+    const checkboxes = screen.getAllByRole("checkbox");
+    // First checkbox is allowMultipleProfiles
+    expect(checkboxes[0].checked).toBe(true);
   });
 
   it("renders allowMultipleProfiles checkbox unchecked when false", () => {
     const schema = { stats: { ...mockSchema.stats, allowMultipleProfiles: false } };
     render(<StatsSchemaEditor schema={schema} onChange={vi.fn()} />);
-    const checkbox = screen.getByRole("checkbox");
-    expect(checkbox.checked).toBe(false);
+    const checkboxes = screen.getAllByRole("checkbox");
+    expect(checkboxes[0].checked).toBe(false);
   });
 
   it("toggles allowMultipleProfiles on checkbox change", () => {
     const onChange = vi.fn();
     render(<StatsSchemaEditor schema={mockSchema} onChange={onChange} />);
-    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getAllByRole("checkbox")[0]);
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         stats: expect.objectContaining({ allowMultipleProfiles: false }),
@@ -208,7 +209,7 @@ describe("StatsSchemaEditor", () => {
     const onChange = vi.fn();
     const schemaWithExtra = { ...mockSchema, weaponTypes: { types: [] } };
     render(<StatsSchemaEditor schema={schemaWithExtra} onChange={onChange} />);
-    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getAllByRole("checkbox")[0]);
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         weaponTypes: { types: [] },

@@ -5,6 +5,7 @@ import { CustomEnhancementCard } from "./CustomEnhancementCard";
 import { CustomRuleCard } from "./CustomRuleCard";
 import { CustomStratagemCard } from "./CustomStratagemCard";
 import { CustomUnitCard } from "./CustomUnitCard";
+import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -91,8 +92,16 @@ export const CustomCardDisplay = ({
     );
   }
 
-  // Render based on display mode (normal, print, viewer)
+  // Try native renderer first, then fall back to Custom* components
+  const NativeComponent = resolveDatasourceRenderer(schema.baseSystem, baseType);
+
   const renderCard = () => {
+    if (NativeComponent) {
+      return (
+        <NativeComponent card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} faction={cardFaction} />
+      );
+    }
+
     switch (baseType) {
       case "unit":
         return <CustomUnitCard unit={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
@@ -107,6 +116,9 @@ export const CustomCardDisplay = ({
     }
   };
 
+  // Use the appropriate CSS scope class based on whether native renderer is used
+  const scopeClass = NativeComponent ? null : "data-custom";
+
   return (
     <>
       {!type && activeCard && (
@@ -117,7 +129,7 @@ export const CustomCardDisplay = ({
       {!type && card && renderCard()}
       {type === "print" && card && (
         <div
-          className="data-custom"
+          className={scopeClass}
           style={{
             zoom: cardScaling / 100,
             "--card-scaling-factor": 1,
@@ -127,7 +139,7 @@ export const CustomCardDisplay = ({
       )}
       {type === "viewer" && (
         <div
-          className="data-custom"
+          className={scopeClass}
           style={{
             transformOrigin: "0% 0%",
             ...(cardScaling && { transform: `scale(${cardScaling / 100})` }),

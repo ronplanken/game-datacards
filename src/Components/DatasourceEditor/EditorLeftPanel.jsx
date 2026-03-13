@@ -163,7 +163,15 @@ export const EditorLeftPanel = ({
 
       {/* Card types header */}
       <div className="designer-panel-header">
-        <h3 className="designer-panel-title">Card Types</h3>
+        <h3 className="designer-panel-title">
+          Card Types
+          {activeDatasource && <span className="designer-panel-title-count">{cardTypes.length}</span>}
+        </h3>
+        {activeDatasource && (
+          <button className="designer-panel-header-action" onClick={onAddCardType} title="Add card type">
+            <Plus size={14} />
+          </button>
+        )}
       </div>
 
       {/* Card type tree */}
@@ -249,14 +257,6 @@ export const EditorLeftPanel = ({
                 );
               })}
             </div>
-
-            {/* Add card type button */}
-            <div className="designer-add-card-type">
-              <button className="designer-btn designer-btn-sm" onClick={onAddCardType}>
-                <Plus size={12} />
-                Add Card Type
-              </button>
-            </div>
           </div>
         )}
 
@@ -272,7 +272,22 @@ export const EditorLeftPanel = ({
       {activeDatasource && cardTypes.length > 0 && (
         <>
           <div className="designer-panel-header">
-            <h3 className="designer-panel-title">Cards</h3>
+            <h3 className="designer-panel-title">
+              Cards
+              <CardCountBadge
+                activeDatasource={activeDatasource}
+                cardTypeKey={activeCardTypeTab || cardTypes[0]?.key}
+              />
+            </h3>
+            <button
+              className="designer-panel-header-action"
+              onClick={() => {
+                const ct = cardTypes.find((c) => c.key === (activeCardTypeTab || cardTypes[0]?.key));
+                if (ct) onAddCard?.(ct);
+              }}
+              title={`Add ${cardTypes.find((c) => c.key === (activeCardTypeTab || cardTypes[0]?.key))?.label || "card"}`}>
+              <Plus size={14} />
+            </button>
           </div>
           <div className="designer-panel-content">
             <CardTypeTabBar
@@ -294,6 +309,14 @@ export const EditorLeftPanel = ({
       )}
     </div>
   );
+};
+
+const CardCountBadge = ({ activeDatasource, cardTypeKey }) => {
+  const faction = activeDatasource?.data?.[0];
+  if (!faction || !cardTypeKey) return null;
+  const targetArray = getTargetArray(cardTypeKey);
+  const count = (faction[targetArray] || []).filter((c) => c.cardType === cardTypeKey).length;
+  return <span className="designer-panel-title-count">{count}</span>;
 };
 
 const CardTypeTabBar = ({ cardTypes, activeTab, onTabChange }) => (
@@ -366,12 +389,6 @@ const CardList = ({
           <p style={{ fontSize: 12, opacity: 0.6 }}>No {cardTypeDef.label.toLowerCase()} cards yet</p>
         </div>
       )}
-      <div className="designer-add-card-type">
-        <button className="designer-btn designer-btn-sm" onClick={() => onAddCard?.(cardTypeDef)}>
-          <Plus size={12} />
-          Add {cardTypeDef.label}
-        </button>
-      </div>
     </div>
   );
 };

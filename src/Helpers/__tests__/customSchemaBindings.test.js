@@ -39,12 +39,12 @@ describe("customSchemaBindings", () => {
       it("includes Stats group with profiles for allowMultipleProfiles=true", () => {
         const stats = result.groups.find((g) => g.name === "Stat Profiles");
         expect(stats).toBeDefined();
-        // 40k has allowMultipleProfiles=true, so 2 profiles x 6 fields = 12 bindings
-        expect(stats.bindings.length).toBe(12);
+        // 40k has allowMultipleProfiles=true, so 2 profiles x 7 fields = 14 bindings
+        expect(stats.bindings.length).toBe(14);
         expect(stats.bindings[0].path).toBe("stats[0].m");
         expect(stats.bindings[0].label).toBe("Profile 1 M");
-        expect(stats.bindings[6].path).toBe("stats[1].m");
-        expect(stats.bindings[6].label).toBe("Profile 2 M");
+        expect(stats.bindings[7].path).toBe("stats[1].m");
+        expect(stats.bindings[7].label).toBe("Profile 2 M");
       });
 
       it("includes weapon groups per weapon type", () => {
@@ -166,7 +166,7 @@ describe("customSchemaBindings", () => {
         const stats = result.find((s) => s.path === "stats");
         expect(stats).toBeDefined();
         expect(stats.label).toBe("Stat Profiles");
-        expect(stats.itemFields).toEqual(["m", "t", "sv", "w", "ld", "oc"]);
+        expect(stats.itemFields).toEqual(["m", "t", "sv", "w", "ld", "oc", "inv"]);
       });
 
       it("includes weapon type array sources", () => {

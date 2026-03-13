@@ -20,7 +20,7 @@ describe("createBlankCardFromSchema", () => {
 
       // Stats: one profile with all fields defaulted
       expect(card.stats).toHaveLength(1);
-      expect(card.stats[0]).toEqual({ m: "", t: "", sv: "", w: "", ld: "", oc: "" });
+      expect(card.stats[0]).toEqual({ m: "", t: "", sv: "", w: "", ld: "", oc: "", inv: "" });
 
       // Weapons: empty arrays per weapon type
       expect(card.weapons.ranged).toEqual([]);

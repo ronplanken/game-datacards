@@ -39,6 +39,7 @@ export const DatasourceEditorPage = () => {
   // Wizard state
   const [wizardOpen, setWizardOpen] = useState(false);
   const [wizardMode, setWizardMode] = useState(null); // "create" | "add-card-type"
+  const [wizardKey, setWizardKey] = useState(0);
 
   // Delete confirmation state
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -49,12 +50,14 @@ export const DatasourceEditorPage = () => {
 
   const handleNewDatasource = useCallback(() => {
     setWizardMode("create");
+    setWizardKey((k) => k + 1);
     setWizardOpen(true);
   }, []);
 
   const handleAddCardType = useCallback(() => {
     if (!activeDatasource) return;
     setWizardMode("add-card-type");
+    setWizardKey((k) => k + 1);
     setWizardOpen(true);
   }, [activeDatasource]);
 
@@ -241,6 +244,7 @@ export const DatasourceEditorPage = () => {
         </PanelGroup>
       </Content>
       <DatasourceWizard
+        key={wizardKey}
         open={wizardOpen}
         onClose={handleWizardClose}
         onComplete={handleWizardComplete}

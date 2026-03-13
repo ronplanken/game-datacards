@@ -96,7 +96,7 @@ describe("EditorLeftPanel", () => {
 
     it("renders Add Card Type button", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Add Card Type")).toBeInTheDocument();
+      expect(screen.getByTitle("Add card type")).toBeInTheDocument();
     });
 
     it("renders Export button when datasource is active", () => {
@@ -173,7 +173,7 @@ describe("EditorLeftPanel", () => {
           onAddCardType={onAddCardType}
         />,
       );
-      await user.click(screen.getByText("Add Card Type"));
+      await user.click(screen.getByTitle("Add card type"));
       expect(onAddCardType).toHaveBeenCalledTimes(1);
     });
 

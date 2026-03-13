@@ -110,6 +110,45 @@ export const StepStats = ({ wizard }) => {
     [updateStats],
   );
 
+  const handleToggleSpecial = useCallback(
+    (index) => {
+      updateStats((prev) => {
+        const newFields = prev.fields.map((f, i) => {
+          if (i !== index) return f;
+          const special = !f.special;
+          const updated = { ...f, special };
+          if (!special) {
+            delete updated.specialColor;
+            delete updated.hideWhenEmpty;
+          }
+          return updated;
+        });
+        return { ...prev, fields: newFields };
+      });
+    },
+    [updateStats],
+  );
+
+  const handleSpecialColorChange = useCallback(
+    (index, value) => {
+      updateStats((prev) => {
+        const newFields = prev.fields.map((f, i) => (i === index ? { ...f, specialColor: value } : f));
+        return { ...prev, fields: newFields };
+      });
+    },
+    [updateStats],
+  );
+
+  const handleToggleHideWhenEmpty = useCallback(
+    (index) => {
+      updateStats((prev) => {
+        const newFields = prev.fields.map((f, i) => (i === index ? { ...f, hideWhenEmpty: !f.hideWhenEmpty } : f));
+        return { ...prev, fields: newFields };
+      });
+    },
+    [updateStats],
+  );
+
   const handleMoveUp = useCallback(
     (index) => {
       if (index === 0) return;
@@ -225,6 +264,43 @@ export const StepStats = ({ wizard }) => {
                   data-testid={`dsw-stats-field-label-${index}`}
                 />
               </div>
+            </div>
+
+            <div className="dsw-stats-field-options">
+              <label className="dsw-toggle-row dsw-toggle-row--inline">
+                <input
+                  type="checkbox"
+                  className="dsw-toggle-checkbox"
+                  checked={!!field.special}
+                  onChange={() => handleToggleSpecial(index)}
+                  data-testid={`dsw-stats-special-${index}`}
+                />
+                <span className="dsw-toggle-label">Special</span>
+              </label>
+              {field.special && (
+                <>
+                  <label className="dsw-toggle-row dsw-toggle-row--inline">
+                    <input
+                      type="color"
+                      value={field.specialColor || "#5b21b6"}
+                      onChange={(e) => handleSpecialColorChange(index, e.target.value)}
+                      data-testid={`dsw-stats-special-color-${index}`}
+                      style={{ width: 24, height: 24, padding: 0, border: "none", cursor: "pointer" }}
+                    />
+                    <span className="dsw-toggle-label">Color</span>
+                  </label>
+                  <label className="dsw-toggle-row dsw-toggle-row--inline">
+                    <input
+                      type="checkbox"
+                      className="dsw-toggle-checkbox"
+                      checked={!!field.hideWhenEmpty}
+                      onChange={() => handleToggleHideWhenEmpty(index)}
+                      data-testid={`dsw-stats-hide-empty-${index}`}
+                    />
+                    <span className="dsw-toggle-label">Hide when empty</span>
+                  </label>
+                </>
+              )}
             </div>
 
             <div className="dsw-stats-field-actions">

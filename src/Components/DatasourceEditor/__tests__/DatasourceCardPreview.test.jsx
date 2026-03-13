@@ -8,6 +8,30 @@ vi.mock("react-fitty", () => ({
   ReactFitty: ({ children }) => <span>{children}</span>,
 }));
 
+// Mock IndexedDB images (used by native renderers)
+vi.mock("../../../Hooks/useIndexedDBImages", () => ({
+  useIndexedDBImages: () => ({
+    getImageUrl: vi.fn(),
+    getFactionSymbolUrl: vi.fn(),
+    isReady: false,
+  }),
+}));
+
+// Mock antd (used by native unit card sub-components and toolbar)
+vi.mock("antd", () => ({
+  Button: ({ children, ...props }) => <button {...props}>{children}</button>,
+  Popover: ({ children }) => <>{children}</>,
+  Grid: { useBreakpoint: () => ({}) },
+  Col: ({ children, ...props }) => <div {...props}>{children}</div>,
+  Menu: ({ items }) => <div data-testid="zoom-menu">{items?.length} items</div>,
+  Dropdown: ({ children }) => <>{children}</>,
+}));
+
+// Mock useAutoFitScale
+vi.mock("../../../Hooks/useAutoFitScale", () => ({
+  useAutoFitScale: () => ({ autoScale: 1, cardDimensions: { width: 460, height: 620 } }),
+}));
+
 // Track TemplateRenderer calls
 const mockTemplateRenderer = vi.fn(() => <div data-testid="template-renderer" />);
 vi.mock("../../../Premium", () => ({
@@ -100,7 +124,7 @@ describe("DatasourceCardPreview", () => {
     expect(screen.getByTestId("template-renderer")).toBeTruthy();
   });
 
-  it("renders Custom unit card when no templateId and baseType is unit", () => {
+  it("renders native 40K unit card when no templateId and baseType is unit with 40k-10e system", () => {
     const card = {
       id: "c1",
       cardType: "unit",
@@ -115,11 +139,12 @@ describe("DatasourceCardPreview", () => {
 
     // TemplateRenderer should NOT have been called
     expect(mockTemplateRenderer).not.toHaveBeenCalled();
-    // Should render the custom unit card
-    expect(container.querySelector(".custom-unit-card")).toBeTruthy();
+    // Should render the native 40K unit card (not Custom)
+    expect(container.querySelector(".data-40k-10e")).toBeTruthy();
+    expect(screen.getByTestId("ds-40k-unit")).toBeTruthy();
   });
 
-  it("renders Custom stratagem card when no templateId and baseType is stratagem", () => {
+  it("renders native 40K stratagem card when no templateId and baseType is stratagem", () => {
     const card = {
       id: "c1",
       cardType: "stratagem",
@@ -131,7 +156,8 @@ describe("DatasourceCardPreview", () => {
     const { container } = render(<DatasourceCardPreview card={card} activeDatasource={ds} />);
 
     expect(mockTemplateRenderer).not.toHaveBeenCalled();
-    expect(container.querySelector(".custom-stratagem-card")).toBeTruthy();
+    expect(container.querySelector(".data-40k-10e")).toBeTruthy();
+    expect(screen.getByTestId("ds-40k-stratagem")).toBeTruthy();
   });
 
   it("uses template rendering for AoS-based datasource when templateId present", () => {
@@ -152,17 +178,35 @@ describe("DatasourceCardPreview", () => {
     );
   });
 
-  it("falls back to Custom card for AoS-based datasource without templateId", () => {
+  it("renders native AoS warscroll card when no templateId and baseType is unit with aos system", () => {
     const card = {
       id: "c1",
       cardType: "unit",
       faction_id: "faction-1",
       name: "Warscroll Unit",
-      stats: [],
+      stats: {},
       weapons: {},
       abilities: [],
     };
     const ds = makeDatasource([unitCardType], "aos");
+    const { container } = render(<DatasourceCardPreview card={card} activeDatasource={ds} />);
+
+    expect(mockTemplateRenderer).not.toHaveBeenCalled();
+    expect(container.querySelector(".data-aos")).toBeTruthy();
+    expect(screen.getByTestId("ds-aos-warscroll")).toBeTruthy();
+  });
+
+  it("falls back to Custom card for unknown base system without templateId", () => {
+    const card = {
+      id: "c1",
+      cardType: "unit",
+      faction_id: "faction-1",
+      name: "Custom Unit",
+      stats: [],
+      weapons: {},
+      abilities: [],
+    };
+    const ds = makeDatasource([unitCardType], "blank");
     const { container } = render(<DatasourceCardPreview card={card} activeDatasource={ds} />);
 
     expect(mockTemplateRenderer).not.toHaveBeenCalled();

@@ -186,11 +186,24 @@ export const SCHEMA_VERSION = "1.0.0";
  * @param {string[]} [overrides.options] - Enum options
  * @returns {FieldDefinition}
  */
-export const createFieldDefinition = ({ key, label, type = "string", required, displayOrder, options }) => {
+export const createFieldDefinition = ({
+  key,
+  label,
+  type = "string",
+  required,
+  displayOrder,
+  options,
+  special,
+  specialColor,
+  hideWhenEmpty,
+}) => {
   const field = { key, label, type };
   if (displayOrder !== undefined) field.displayOrder = displayOrder;
   if (required !== undefined) field.required = required;
   if (type === "enum" && options) field.options = [...options];
+  if (special !== undefined) field.special = special;
+  if (specialColor !== undefined) field.specialColor = specialColor;
+  if (hideWhenEmpty !== undefined) field.hideWhenEmpty = hideWhenEmpty;
   return field;
 };
 
@@ -963,6 +976,15 @@ export const create40kPreset = () => ({
             createFieldDefinition({ key: "w", label: "W", type: "string", displayOrder: 4 }),
             createFieldDefinition({ key: "ld", label: "LD", type: "string", displayOrder: 5 }),
             createFieldDefinition({ key: "oc", label: "OC", type: "string", displayOrder: 6 }),
+            createFieldDefinition({
+              key: "inv",
+              label: "INV",
+              type: "string",
+              displayOrder: 7,
+              special: true,
+              specialColor: "#5b21b6",
+              hideWhenEmpty: true,
+            }),
           ],
         },
         weaponTypes: {
@@ -1004,7 +1026,6 @@ export const create40kPreset = () => ({
           categories: [
             { key: "core", label: "Core", format: "name-only" },
             { key: "faction", label: "Faction", format: "name-description" },
-            { key: "invulnerable_save", label: "Invulnerable Save", format: "boolean" },
             { key: "unit", label: "Unit Abilities", format: "name-description" },
             { key: "damaged", label: "Damaged", format: "name-description", header: "Damaged" },
           ],
