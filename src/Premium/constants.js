@@ -22,7 +22,7 @@ export const SUBSCRIPTION_LIMITS = {
     categories: 2, // Cloud categories (premium feature)
     datasources: 1,
     templates: 2,
-    canUploadDatasources: false,
+    canUploadDatasources: true,
     canAccessShares: true, // Can view shared content
   },
   premium: {
