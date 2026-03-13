@@ -38,7 +38,7 @@ export function UnitLoadout() {
                 updateActiveCard(() => {
                   return {
                     ...activeCard,
-                    loadout: value,
+                    loadout: value || "",
                   };
                 });
               }}
