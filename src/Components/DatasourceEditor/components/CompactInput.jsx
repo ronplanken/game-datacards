@@ -11,6 +11,7 @@ export const CompactInput = ({
   tooltip,
   value,
   onChange,
+  onBlur,
   type = "number",
   suffix,
   min,
@@ -26,6 +27,7 @@ export const CompactInput = ({
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur ? (e) => onBlur(e.target.value) : undefined}
       min={min}
       max={max}
       step={step}

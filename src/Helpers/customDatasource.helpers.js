@@ -473,6 +473,14 @@ export const createBlankCardFromSchema = (cardTypeDef, factionId, datasourceId) 
     // Empty abilities
     card.abilities = [];
 
+    // Sections
+    if (schema.sections?.sections) {
+      card.sections = {};
+      schema.sections.sections.forEach((section) => {
+        card.sections[section.key] = [];
+      });
+    }
+
     // Metadata-driven arrays
     if (schema.metadata?.hasKeywords) {
       card.keywords = [];

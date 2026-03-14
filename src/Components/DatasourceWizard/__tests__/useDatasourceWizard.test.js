@@ -68,6 +68,7 @@ describe("useDatasourceWizard", () => {
         "stats",
         "weapons",
         "abilities",
+        "sections",
         "unit-metadata",
         "review",
       ]);
@@ -96,7 +97,7 @@ describe("useDatasourceWizard", () => {
       act(() => result.current.changeBaseType("unit"));
 
       const ids = result.current.steps.map((s) => s.id);
-      expect(ids).toEqual(["card-type", "stats", "weapons", "abilities", "unit-metadata", "review"]);
+      expect(ids).toEqual(["card-type", "stats", "weapons", "abilities", "sections", "unit-metadata", "review"]);
     });
   });
 

@@ -27,7 +27,6 @@ const FieldList = ({ fields, onUpdate, fieldLabel = "field" }) => {
       key: `${fieldLabel}_${nextNum}`,
       label: `${fieldLabel.charAt(0).toUpperCase() + fieldLabel.slice(1)} ${nextNum}`,
       type: "string",
-      required: false,
     };
     onUpdate([...fields, newField]);
   };
@@ -87,22 +86,21 @@ const FieldList = ({ fields, onUpdate, fieldLabel = "field" }) => {
                   ))}
                 </select>
               </div>
-              <label className="props-checkbox">
-                <input
-                  type="checkbox"
-                  checked={!!field.required}
-                  onChange={() => updateField(index, "required", !field.required)}
-                />
-                <span>Required</span>
-              </label>
               {field.type === "enum" && (
                 <CompactInput
                   label={<IconList size={10} stroke={1.5} />}
                   ariaLabel="Options"
-                  tooltip="Options"
+                  tooltip="Options (comma-separated)"
                   type="text"
                   value={(field.options || []).join(", ")}
                   onChange={(val) =>
+                    updateField(
+                      index,
+                      "options",
+                      val.split(",").map((s) => s.trim()),
+                    )
+                  }
+                  onBlur={(val) =>
                     updateField(
                       index,
                       "options",

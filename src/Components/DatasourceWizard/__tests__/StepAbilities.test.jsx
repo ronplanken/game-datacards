@@ -230,10 +230,9 @@ describe("StepAbilities", () => {
 
     const select = screen.getByTestId("dsw-abilities-category-format-0");
     const options = select.querySelectorAll("option");
-    expect(options).toHaveLength(3);
+    expect(options).toHaveLength(2);
     expect(options[0].value).toBe("name-only");
     expect(options[1].value).toBe("name-description");
-    expect(options[2].value).toBe("boolean");
   });
 
   it("moves a category up when move up button is clicked", () => {

@@ -291,27 +291,12 @@ describe("WeaponsSchemaEditor", () => {
     );
   });
 
-  it("toggles column required flag", () => {
+  it("does not render required checkboxes for columns", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
     const checkboxes = screen.getAllByRole("checkbox");
-    // Find the first Required checkbox (after hasKeywords and hasProfiles)
-    const requiredCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("Required") && cb.checked,
-    );
-    fireEvent.click(requiredCheckbox);
-    expect(onChange).toHaveBeenCalledWith(
-      expect.objectContaining({
-        weaponTypes: expect.objectContaining({
-          types: expect.arrayContaining([
-            expect.objectContaining({
-              key: "ranged",
-              columns: expect.arrayContaining([expect.objectContaining({ key: "range", required: false })]),
-            }),
-          ]),
-        }),
-      }),
-    );
+    const requiredCheckbox = checkboxes.find((cb) => cb.closest("label")?.textContent?.includes("Required"));
+    expect(requiredCheckbox).toBeUndefined();
   });
 
   it("preserves other schema properties when updating weapon types", () => {

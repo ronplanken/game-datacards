@@ -55,6 +55,7 @@ import { DatasourceEditorPage } from "./Pages/DatasourceEditor";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
 import { DesignerBetaModal } from "./Components/DesignerBetaModal";
+import { DatasourceBetaModal } from "./Components/DatasourceBetaModal";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
@@ -161,6 +162,23 @@ const DesignerHelpRoute = () => {
   if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
 
   return <DesignerHelp />;
+};
+
+// Datasource editor route with beta disclaimer
+const DatasourceRoute = () => {
+  const { settings, updateSettings } = useSettingsStorage();
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <DatasourceEditorPage />
+      <DatasourceBetaModal
+        visible={!settings.datasourceBetaAccepted}
+        onAccept={() => updateSettings({ ...settings, datasourceBetaAccepted: true })}
+        onDecline={() => navigate("/")}
+      />
+    </>
+  );
 };
 
 // Component to handle checkout success redirect
@@ -357,7 +375,7 @@ const router = createBrowserRouter([
       { path: "designer", element: <DesignerRoute /> },
       { path: "designer/help", element: <DesignerHelpRoute /> },
       // Datasource editor (community feature)
-      { path: "datasources", element: <DatasourceEditorPage /> },
+      { path: "datasources", element: <DatasourceRoute /> },
       { path: "datasources/help", element: <DatasourceHelp /> },
       // Legal pages
       { path: "terms", element: <TermsOfService /> },

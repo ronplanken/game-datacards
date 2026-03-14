@@ -81,6 +81,7 @@ export const AppHeader = ({
                 </Link>
                 <Link to="/datasources" className={`app-header-nav-item ${isDatasourcesPage ? "active" : ""}`}>
                   Datasources
+                  <span className="app-header-beta-badge">beta</span>
                 </Link>
                 {designerEnabled && isAuthenticated && (
                   <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>

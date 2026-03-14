@@ -13,6 +13,7 @@ import {
   Sparkles,
   Zap,
   Database,
+  LayoutList,
 } from "lucide-react";
 
 const BASETYPE_ICONS = {
@@ -94,7 +95,6 @@ const FieldNode = ({ field, depth }) => {
         <span className="schema-tree-field-key">{field.key}</span>
         {field.label && field.label !== field.key && <span className="schema-tree-field-label">{field.label}</span>}
         <span className={badgeClass}>{field.type}</span>
-        {field.required && <span className="schema-tree-required">required</span>}
       </button>
       {open && hasOptions && (
         <div className="schema-tree-children">
@@ -207,6 +207,27 @@ const UnitSchemaTree = ({ schema }) => {
               </div>
             </div>
           )}
+        </TreeNode>
+      )}
+
+      {/* Sections */}
+      {schema.sections && (
+        <TreeNode
+          label={schema.sections.label || "Sections"}
+          icon={LayoutList}
+          defaultOpen={true}
+          badge={`${schema.sections.sections?.length || 0}`}
+          depth={0}>
+          {schema.sections.sections?.map((section) => (
+            <div key={section.key} className="schema-tree-node">
+              <div className="schema-tree-node-header schema-tree-field" style={{ paddingLeft: 12 + 1 * 16 }}>
+                <span className="schema-tree-chevron-spacer" />
+                <span className="schema-tree-field-key">{section.key}</span>
+                {section.label && <span className="schema-tree-field-label">{section.label}</span>}
+                <span className="schema-type-badge string">{section.format}</span>
+              </div>
+            </div>
+          ))}
         </TreeNode>
       )}
 

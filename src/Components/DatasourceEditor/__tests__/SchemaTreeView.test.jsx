@@ -255,10 +255,9 @@ describe("SchemaTreeView", () => {
       expect(screen.getByText("Multiple entries allowed")).toBeInTheDocument();
     });
 
-    it("shows required indicators", () => {
+    it("does not show required indicators (removed feature)", () => {
       render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
-      const requiredIndicators = screen.getAllByText("required");
-      expect(requiredIndicators.length).toBeGreaterThanOrEqual(1);
+      expect(screen.queryByText("required")).not.toBeInTheDocument();
     });
 
     it("shows type badges for fields", () => {

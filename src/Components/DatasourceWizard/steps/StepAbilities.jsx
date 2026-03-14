@@ -17,7 +17,6 @@ const DEFAULT_ABILITIES = {
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name only" },
   { value: "name-description", label: "Name + Description" },
-  { value: "boolean", label: "Boolean" },
 ];
 
 /**

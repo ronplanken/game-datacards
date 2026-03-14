@@ -17,19 +17,36 @@ const cardTypeDef = {
     stats: {
       label: "Stats",
       fields: [
-        { key: "move", label: "Move" },
-        { key: "save", label: "Save" },
-        { key: "control", label: "Control" },
-        { key: "health", label: "Health" },
+        { key: "move", label: "Move", position: "left" },
+        { key: "save", label: "Save", position: "left", color: "#3a5228" },
+        { key: "control", label: "Control", position: "left" },
+        { key: "health", label: "Health", position: "left" },
+        { key: "ward", label: "Ward", position: "right" },
       ],
     },
     weaponTypes: {
       label: "Weapons",
-      types: [],
+      types: [
+        {
+          key: "melee",
+          label: "Melee Weapons",
+          hasKeywords: true,
+          hasProfiles: false,
+          columns: [
+            { key: "attacks", label: "Atk", type: "string" },
+            { key: "hit", label: "Hit", type: "string" },
+            { key: "damage", label: "Dmg", type: "string" },
+          ],
+        },
+      ],
     },
     abilities: {
       label: "Abilities",
-      categories: [],
+      categories: [{ key: "abilities", label: "Abilities", format: "name-description" }],
+    },
+    sections: {
+      label: "Sections",
+      sections: [{ key: "notes", label: "Notes", format: "list" }],
     },
     metadata: {
       hasKeywords: true,
@@ -67,32 +84,36 @@ describe("DsAosWarscrollCard", () => {
     expect(screen.getByText("Liberators")).toBeTruthy();
   });
 
-  it("uses stat wheel when schema has native AoS stat keys", () => {
+  it("renders left stats as schema-driven badges", () => {
+    const card = { name: "Liberators", stats: { move: '5"', save: "3+", control: "1", health: "2" } };
+    render(<DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />);
+    expect(screen.getByTestId("ds-aos-left-stats")).toBeTruthy();
+    expect(screen.getByText('5"')).toBeTruthy();
+    expect(screen.getByText("3+")).toBeTruthy();
+  });
+
+  it("renders right stats in header when values are present", () => {
+    const card = { name: "Liberators", stats: { move: '5"', save: "3+", control: "1", health: "2", ward: "6+" } };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />,
+    );
+    const headerBadges = container.querySelector(".warscroll-header .desktop-badges");
+    expect(headerBadges).toBeTruthy();
+    const wardBadge = Array.from(headerBadges.querySelectorAll(".stat-badge")).find(
+      (b) => b.querySelector(".badge-label")?.textContent === "Ward",
+    );
+    expect(wardBadge).toBeTruthy();
+    expect(wardBadge.querySelector(".badge-value").textContent).toBe("6+");
+  });
+
+  it("does not render right stat badges when values are empty", () => {
     const card = { name: "Liberators", stats: { move: '5"', save: "3+", control: "1", health: "2" } };
     const { container } = render(
       <DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />,
     );
-    expect(container.querySelector(".stat-wheel-wrapper")).toBeTruthy();
-  });
-
-  it("uses stat badges when schema has non-standard stat keys", () => {
-    const nonStandardCardTypeDef = {
-      ...cardTypeDef,
-      schema: {
-        ...cardTypeDef.schema,
-        stats: {
-          fields: [
-            { key: "speed", label: "Speed" },
-            { key: "armor", label: "Armor" },
-          ],
-        },
-      },
-    };
-    const card = { name: "Unit", stats: { speed: "5", armor: "3+" } };
-    const { container } = render(
-      <DsAosWarscrollCard card={card} cardTypeDef={nonStandardCardTypeDef} cardStyle={{}} faction={faction} />,
-    );
-    expect(container.querySelector(".stat-badges-wrapper")).toBeTruthy();
+    const headerBadges = container.querySelector(".warscroll-header .desktop-badges");
+    expect(headerBadges).toBeTruthy();
+    expect(headerBadges.querySelectorAll(".stat-badge").length).toBe(0);
   });
 
   it("applies grand alliance class", () => {
@@ -113,5 +134,63 @@ describe("DsAosWarscrollCard", () => {
     const card = { name: "Test", stats: {} };
     render(<DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />);
     expect(screen.getByTestId("ds-aos-warscroll")).toBeTruthy();
+  });
+
+  it("renders schema-driven weapons from profiles", () => {
+    const card = {
+      name: "Test",
+      stats: {},
+      weapons: {
+        melee: [
+          {
+            active: true,
+            profiles: [{ name: "Warhammer", attacks: "3", hit: "3+", damage: "2", active: true }],
+          },
+        ],
+      },
+    };
+    render(<DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />);
+    expect(screen.getByTestId("ds-aos-weapons-melee")).toBeTruthy();
+    expect(screen.getByText("Warhammer")).toBeTruthy();
+    expect(screen.getByText("Melee Weapons")).toBeTruthy();
+    expect(screen.getByText("3")).toBeTruthy();
+  });
+
+  it("renders schema-driven abilities with description", () => {
+    const card = {
+      name: "Test",
+      stats: {},
+      abilities: {
+        abilities: [{ name: "Sigmarite Shields", description: "Add 1 to save rolls.", showAbility: true }],
+      },
+    };
+    render(<DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />);
+    expect(screen.getByTestId("ds-aos-abilities")).toBeTruthy();
+    expect(screen.getByText("Sigmarite Shields")).toBeTruthy();
+    expect(screen.getByText("Add 1 to save rolls.")).toBeTruthy();
+  });
+
+  it("renders sections in ability-style blocks", () => {
+    const card = {
+      name: "Test",
+      stats: {},
+      sections: {
+        notes: ["Note 1", "Note 2"],
+      },
+    };
+    render(<DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />);
+    expect(screen.getByTestId("ds-aos-sections")).toBeTruthy();
+    expect(screen.getByText("Notes")).toBeTruthy();
+    expect(screen.getByText("Note 1")).toBeTruthy();
+  });
+
+  it("applies custom color to stat badge", () => {
+    const card = { name: "Test", stats: { save: "3+" } };
+    render(<DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} />);
+    // The save badge should have green background from field.color
+    const badges = screen.getByTestId("ds-aos-left-stats").querySelectorAll(".core-stat-badge");
+    const saveBadge = Array.from(badges).find((b) => b.querySelector(".badge-label")?.textContent === "Save");
+    expect(saveBadge).toBeTruthy();
+    expect(saveBadge.style.background).toBeTruthy();
   });
 });

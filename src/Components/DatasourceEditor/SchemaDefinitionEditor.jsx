@@ -5,6 +5,7 @@ import { CardTypeSettingsEditor } from "./editors/CardTypeSettingsEditor";
 import { StatsSchemaEditor } from "./editors/StatsSchemaEditor";
 import { WeaponsSchemaEditor } from "./editors/WeaponsSchemaEditor";
 import { AbilitiesSchemaEditor } from "./editors/AbilitiesSchemaEditor";
+import { SectionsSchemaEditor } from "./editors/SectionsSchemaEditor";
 import { MetadataSchemaEditor } from "./editors/MetadataSchemaEditor";
 import { FieldsSchemaEditor } from "./editors/FieldsSchemaEditor";
 
@@ -45,6 +46,7 @@ export const SchemaDefinitionEditor = ({ selectedItem = null, activeDatasource =
 
 function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
   const { baseType } = cardType;
+  const baseSystem = activeDatasource?.schema?.baseSystem;
 
   const handleCardTypeSchemaChange = (updatedSchema) => {
     if (!activeDatasource || !onUpdateDatasource) return;
@@ -81,9 +83,14 @@ function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
       return (
         <div className="props-body">
           {cardTypeSettings}
-          <StatsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
+          <StatsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseSystem={baseSystem} />
           <WeaponsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
-          <AbilitiesSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
+          <AbilitiesSchemaEditor
+            schema={cardType.schema}
+            onChange={handleCardTypeSchemaChange}
+            baseSystem={baseSystem}
+          />
+          <SectionsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
           <MetadataSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
         </div>
       );

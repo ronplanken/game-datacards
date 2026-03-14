@@ -16,7 +16,10 @@ export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
 export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "blank"];
 
 // Valid ability formats
-export const VALID_ABILITY_FORMATS = ["name-only", "name-description", "boolean"];
+export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
+
+// Valid section formats
+export const VALID_SECTION_FORMATS = ["list", "richtext"];
 
 // Valid points formats
 export const VALID_POINTS_FORMATS = ["per-model", "per-unit"];
@@ -39,7 +42,7 @@ export const SCHEMA_VERSION = "1.0.0";
  */
 
 /**
- * @typedef {"name-only" | "name-description" | "boolean"} AbilityFormat
+ * @typedef {"name-only" | "name-description"} AbilityFormat
  */
 
 /**
@@ -53,8 +56,26 @@ export const SCHEMA_VERSION = "1.0.0";
  * @property {string} label - Human-readable label
  * @property {FieldType} type - Data type of the field
  * @property {number} [displayOrder] - Order for display (used in stat fields)
- * @property {boolean} [required] - Whether the field is required
  * @property {string[]} [options] - Valid options when type is "enum"
+ * @property {string} [onValue] - Display value when boolean field is true
+ * @property {string} [offValue] - Display value when boolean field is false
+ * @property {"left" | "right"} [position] - Which side of the header stats render on (AoS)
+ * @property {string} [color] - Background color hex for the stat badge (AoS)
+ */
+
+/**
+ * A single section definition within the sections schema.
+ * @typedef {Object} SectionDefinition
+ * @property {string} key - Unique key for the section
+ * @property {string} label - Human-readable label
+ * @property {"list" | "richtext"} format - Display format for the section
+ */
+
+/**
+ * Sections definition for unit card types.
+ * @typedef {Object} SectionsDefinition
+ * @property {string} label - Section group label
+ * @property {SectionDefinition[]} sections - Section definitions
  */
 
 /**
@@ -90,6 +111,8 @@ export const SCHEMA_VERSION = "1.0.0";
  * @property {string} label - Human-readable label
  * @property {AbilityFormat} format - Display format
  * @property {string} [header] - Optional header text displayed above the category
+ * @property {boolean} [hasColor] - Whether abilities in this category support per-ability strip color (AoS)
+ * @property {boolean} [hasPhase] - Whether abilities in this category support per-ability phase text (AoS)
  */
 
 /**
@@ -114,6 +137,7 @@ export const SCHEMA_VERSION = "1.0.0";
  * @property {StatsDefinition} stats - Stat profile definitions
  * @property {WeaponTypesDefinition} weaponTypes - Weapon type and column definitions
  * @property {AbilitiesDefinition} abilities - Ability category definitions
+ * @property {SectionsDefinition} [sections] - Optional sections definitions
  * @property {UnitMetadataDefinition} metadata - Metadata flag definitions
  */
 
@@ -181,29 +205,38 @@ export const SCHEMA_VERSION = "1.0.0";
  * @param {string} overrides.key - Unique key
  * @param {string} overrides.label - Display label
  * @param {FieldType} [overrides.type="string"] - Field type
- * @param {boolean} [overrides.required] - Whether required
  * @param {number} [overrides.displayOrder] - Display order
  * @param {string[]} [overrides.options] - Enum options
+ * @param {string} [overrides.onValue] - Display value when boolean is true
+ * @param {string} [overrides.offValue] - Display value when boolean is false
+ * @param {"left" | "right"} [overrides.position] - Stat badge position (AoS)
+ * @param {string} [overrides.color] - Stat badge background color hex (AoS)
  * @returns {FieldDefinition}
  */
 export const createFieldDefinition = ({
   key,
   label,
   type = "string",
-  required,
   displayOrder,
   options,
   special,
   specialColor,
   hideWhenEmpty,
+  onValue,
+  offValue,
+  position,
+  color,
 }) => {
   const field = { key, label, type };
   if (displayOrder !== undefined) field.displayOrder = displayOrder;
-  if (required !== undefined) field.required = required;
   if (type === "enum" && options) field.options = [...options];
   if (special !== undefined) field.special = special;
   if (specialColor !== undefined) field.specialColor = specialColor;
   if (hideWhenEmpty !== undefined) field.hideWhenEmpty = hideWhenEmpty;
+  if (type === "boolean" && onValue !== undefined) field.onValue = onValue;
+  if (type === "boolean" && offValue !== undefined) field.offValue = offValue;
+  if (position !== undefined) field.position = position;
+  if (color !== undefined) field.color = color;
   return field;
 };
 
@@ -243,13 +276,44 @@ export const createAoSPreset = () => ({
           label: "Characteristics",
           allowMultipleProfiles: false,
           fields: [
-            createFieldDefinition({ key: "move", label: "Move", type: "string", displayOrder: 1 }),
-            createFieldDefinition({ key: "save", label: "Save", type: "string", displayOrder: 2 }),
-            createFieldDefinition({ key: "control", label: "Control", type: "string", displayOrder: 3 }),
-            createFieldDefinition({ key: "health", label: "Health", type: "string", displayOrder: 4 }),
-            createFieldDefinition({ key: "ward", label: "Ward", type: "string", displayOrder: 5 }),
-            createFieldDefinition({ key: "wizard", label: "Wizard", type: "string", displayOrder: 6 }),
-            createFieldDefinition({ key: "priest", label: "Priest", type: "string", displayOrder: 7 }),
+            createFieldDefinition({ key: "move", label: "Move", type: "string", displayOrder: 1, position: "left" }),
+            createFieldDefinition({
+              key: "save",
+              label: "Save",
+              type: "string",
+              displayOrder: 2,
+              position: "left",
+              color: "#3a5228",
+            }),
+            createFieldDefinition({
+              key: "control",
+              label: "Control",
+              type: "string",
+              displayOrder: 3,
+              position: "left",
+            }),
+            createFieldDefinition({
+              key: "health",
+              label: "Health",
+              type: "string",
+              displayOrder: 4,
+              position: "left",
+            }),
+            createFieldDefinition({ key: "ward", label: "Ward", type: "string", displayOrder: 5, position: "right" }),
+            createFieldDefinition({
+              key: "wizard",
+              label: "Wizard",
+              type: "string",
+              displayOrder: 6,
+              position: "right",
+            }),
+            createFieldDefinition({
+              key: "priest",
+              label: "Priest",
+              type: "string",
+              displayOrder: 7,
+              position: "right",
+            }),
           ],
         },
         weaponTypes: {
@@ -262,12 +326,12 @@ export const createAoSPreset = () => ({
               hasKeywords: true,
               hasProfiles: false,
               columns: [
-                createFieldDefinition({ key: "range", label: "Range", type: "string", required: true }),
-                createFieldDefinition({ key: "attacks", label: "Atk", type: "string", required: true }),
-                createFieldDefinition({ key: "hit", label: "Hit", type: "string", required: true }),
-                createFieldDefinition({ key: "wound", label: "Wnd", type: "string", required: true }),
-                createFieldDefinition({ key: "rend", label: "Rend", type: "string", required: true }),
-                createFieldDefinition({ key: "damage", label: "Dmg", type: "string", required: true }),
+                createFieldDefinition({ key: "range", label: "Range", type: "string" }),
+                createFieldDefinition({ key: "attacks", label: "Atk", type: "string" }),
+                createFieldDefinition({ key: "hit", label: "Hit", type: "string" }),
+                createFieldDefinition({ key: "wound", label: "Wnd", type: "string" }),
+                createFieldDefinition({ key: "rend", label: "Rend", type: "string" }),
+                createFieldDefinition({ key: "damage", label: "Dmg", type: "string" }),
               ],
             },
             {
@@ -276,11 +340,11 @@ export const createAoSPreset = () => ({
               hasKeywords: true,
               hasProfiles: false,
               columns: [
-                createFieldDefinition({ key: "attacks", label: "Atk", type: "string", required: true }),
-                createFieldDefinition({ key: "hit", label: "Hit", type: "string", required: true }),
-                createFieldDefinition({ key: "wound", label: "Wnd", type: "string", required: true }),
-                createFieldDefinition({ key: "rend", label: "Rend", type: "string", required: true }),
-                createFieldDefinition({ key: "damage", label: "Dmg", type: "string", required: true }),
+                createFieldDefinition({ key: "attacks", label: "Atk", type: "string" }),
+                createFieldDefinition({ key: "hit", label: "Hit", type: "string" }),
+                createFieldDefinition({ key: "wound", label: "Wnd", type: "string" }),
+                createFieldDefinition({ key: "rend", label: "Rend", type: "string" }),
+                createFieldDefinition({ key: "damage", label: "Dmg", type: "string" }),
               ],
             },
           ],
@@ -288,6 +352,13 @@ export const createAoSPreset = () => ({
         abilities: {
           label: "Abilities",
           categories: [{ key: "abilities", label: "Abilities", format: "name-description" }],
+        },
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "unit-composition", label: "Unit Composition", format: "list" },
+          ],
         },
         metadata: {
           hasKeywords: true,
@@ -303,8 +374,8 @@ export const createAoSPreset = () => ({
       baseType: "rule",
       schema: {
         fields: [
-          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
-          createFieldDefinition({ key: "castingValue", label: "Casting Value", type: "string", required: false }),
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "castingValue", label: "Casting Value", type: "string" }),
           createFieldDefinition({
             key: "type",
             label: "Type",
@@ -317,8 +388,8 @@ export const createAoSPreset = () => ({
           label: "Effects",
           allowMultiple: false,
           fields: [
-            createFieldDefinition({ key: "declare", label: "Declare", type: "richtext", required: false }),
-            createFieldDefinition({ key: "effect", label: "Effect", type: "richtext", required: true }),
+            createFieldDefinition({ key: "declare", label: "Declare", type: "richtext" }),
+            createFieldDefinition({ key: "effect", label: "Effect", type: "richtext" }),
           ],
         }),
       },
@@ -329,8 +400,8 @@ export const createAoSPreset = () => ({
       baseType: "enhancement",
       schema: {
         fields: [
-          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
-          createFieldDefinition({ key: "cost", label: "Cost", type: "string", required: false }),
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string" }),
           createFieldDefinition({
             key: "type",
             label: "Type",
@@ -338,12 +409,12 @@ export const createAoSPreset = () => ({
             required: true,
             options: ["heroic-trait", "artefact", "prayer", "spell-lore"],
           }),
-          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
         ],
         keywords: createCollectionDefinition({
           label: "Keywords",
           allowMultiple: true,
-          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string", required: true })],
+          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string" })],
         }),
       },
     },
@@ -353,7 +424,7 @@ export const createAoSPreset = () => ({
       baseType: "stratagem",
       schema: {
         fields: [
-          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
           createFieldDefinition({
             key: "type",
             label: "Type",
@@ -361,7 +432,7 @@ export const createAoSPreset = () => ({
             required: true,
             options: ["battle-tactic", "grand-strategy"],
           }),
-          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
         ],
       },
     },
@@ -399,6 +470,9 @@ export const getPresetStepDefaults = (baseSystem, baseType) => {
     defaults["stats"] = { stats: cardType.schema.stats };
     defaults["weapons"] = { weaponTypes: cardType.schema.weaponTypes };
     defaults["abilities"] = { abilities: cardType.schema.abilities };
+    if (cardType.schema.sections) {
+      defaults["sections"] = { sections: cardType.schema.sections };
+    }
     defaults["unit-metadata"] = { metadata: cardType.schema.metadata };
   } else {
     defaults["fields"] = { fields: cardType.schema.fields };
@@ -464,8 +538,17 @@ const validateFieldDefinition = (field, path) => {
   if (field.displayOrder !== undefined && typeof field.displayOrder !== "number") {
     errors.push(`${path}: "displayOrder" must be a number`);
   }
-  if (field.required !== undefined && typeof field.required !== "boolean") {
-    errors.push(`${path}: "required" must be a boolean`);
+  if (field.onValue !== undefined && typeof field.onValue !== "string") {
+    errors.push(`${path}: "onValue" must be a string`);
+  }
+  if (field.offValue !== undefined && typeof field.offValue !== "string") {
+    errors.push(`${path}: "offValue" must be a string`);
+  }
+  if (field.position !== undefined && field.position !== "left" && field.position !== "right") {
+    errors.push(`${path}: "position" must be "left" or "right"`);
+  }
+  if (field.color !== undefined && typeof field.color !== "string") {
+    errors.push(`${path}: "color" must be a string`);
   }
   return errors;
 };
@@ -610,6 +693,12 @@ const validateUnitSchema = (schema, path) => {
             `${catPath}: invalid "format" "${cat.format}" (must be one of ${VALID_ABILITY_FORMATS.join(", ")})`,
           );
         }
+        if (cat.hasColor !== undefined && typeof cat.hasColor !== "boolean") {
+          errors.push(`${catPath}: "hasColor" must be a boolean`);
+        }
+        if (cat.hasPhase !== undefined && typeof cat.hasPhase !== "boolean") {
+          errors.push(`${catPath}: "hasPhase" must be a boolean`);
+        }
         if (cat.key) {
           if (catKeys.has(cat.key)) {
             errors.push(`${catPath}: duplicate category key "${cat.key}"`);
@@ -617,6 +706,46 @@ const validateUnitSchema = (schema, path) => {
           catKeys.add(cat.key);
         }
       });
+    }
+  }
+
+  // Sections (optional)
+  if (schema.sections !== undefined) {
+    if (!schema.sections || typeof schema.sections !== "object") {
+      errors.push(`${path}.sections: must be an object`);
+    } else {
+      if (!schema.sections.label || typeof schema.sections.label !== "string") {
+        errors.push(`${path}.sections: missing or invalid "label"`);
+      }
+      if (!Array.isArray(schema.sections.sections)) {
+        errors.push(`${path}.sections.sections: must be an array`);
+      } else {
+        const sectionKeys = new Set();
+        schema.sections.sections.forEach((section, i) => {
+          const sPath = `${path}.sections.sections[${i}]`;
+          if (!section || typeof section !== "object") {
+            errors.push(`${sPath}: must be an object`);
+            return;
+          }
+          if (!section.key || typeof section.key !== "string") {
+            errors.push(`${sPath}: missing or invalid "key"`);
+          }
+          if (!section.label || typeof section.label !== "string") {
+            errors.push(`${sPath}: missing or invalid "label"`);
+          }
+          if (!VALID_SECTION_FORMATS.includes(section.format)) {
+            errors.push(
+              `${sPath}: invalid "format" "${section.format}" (must be one of ${VALID_SECTION_FORMATS.join(", ")})`,
+            );
+          }
+          if (section.key) {
+            if (sectionKeys.has(section.key)) {
+              errors.push(`${sPath}: duplicate section key "${section.key}"`);
+            }
+            sectionKeys.add(section.key);
+          }
+        });
+      }
     }
   }
 
@@ -891,6 +1020,19 @@ const migrateUnitCard = (card, oldSchema, newSchema) => {
       : [];
   }
 
+  // Migrate sections
+  if (newSchema.sections?.sections) {
+    const newSectionKeys = new Set(newSchema.sections.sections.map((s) => s.key));
+    result.sections = {};
+    for (const section of newSchema.sections.sections) {
+      if (card.sections && section.key in card.sections) {
+        result.sections[section.key] = card.sections[section.key];
+      } else {
+        result.sections[section.key] = [];
+      }
+    }
+  }
+
   // Migrate metadata-driven fields
   if (newSchema.metadata) {
     if (newSchema.metadata.hasKeywords) {
@@ -997,12 +1139,12 @@ export const create40kPreset = () => ({
               hasKeywords: true,
               hasProfiles: true,
               columns: [
-                createFieldDefinition({ key: "range", label: "Range", type: "string", required: true }),
-                createFieldDefinition({ key: "a", label: "A", type: "string", required: true }),
-                createFieldDefinition({ key: "bs", label: "BS", type: "string", required: true }),
-                createFieldDefinition({ key: "s", label: "S", type: "string", required: true }),
-                createFieldDefinition({ key: "ap", label: "AP", type: "string", required: true }),
-                createFieldDefinition({ key: "d", label: "D", type: "string", required: true }),
+                createFieldDefinition({ key: "range", label: "Range", type: "string" }),
+                createFieldDefinition({ key: "a", label: "A", type: "string" }),
+                createFieldDefinition({ key: "bs", label: "BS", type: "string" }),
+                createFieldDefinition({ key: "s", label: "S", type: "string" }),
+                createFieldDefinition({ key: "ap", label: "AP", type: "string" }),
+                createFieldDefinition({ key: "d", label: "D", type: "string" }),
               ],
             },
             {
@@ -1011,12 +1153,12 @@ export const create40kPreset = () => ({
               hasKeywords: true,
               hasProfiles: true,
               columns: [
-                createFieldDefinition({ key: "range", label: "Range", type: "string", required: true }),
-                createFieldDefinition({ key: "a", label: "A", type: "string", required: true }),
-                createFieldDefinition({ key: "ws", label: "WS", type: "string", required: true }),
-                createFieldDefinition({ key: "s", label: "S", type: "string", required: true }),
-                createFieldDefinition({ key: "ap", label: "AP", type: "string", required: true }),
-                createFieldDefinition({ key: "d", label: "D", type: "string", required: true }),
+                createFieldDefinition({ key: "range", label: "Range", type: "string" }),
+                createFieldDefinition({ key: "a", label: "A", type: "string" }),
+                createFieldDefinition({ key: "ws", label: "WS", type: "string" }),
+                createFieldDefinition({ key: "s", label: "S", type: "string" }),
+                createFieldDefinition({ key: "ap", label: "AP", type: "string" }),
+                createFieldDefinition({ key: "d", label: "D", type: "string" }),
               ],
             },
           ],
@@ -1028,6 +1170,14 @@ export const create40kPreset = () => ({
             { key: "faction", label: "Faction", format: "name-description" },
             { key: "unit", label: "Unit Abilities", format: "name-description" },
             { key: "damaged", label: "Damaged", format: "name-description", header: "Damaged" },
+          ],
+        },
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "unit-composition", label: "Unit Composition", format: "list" },
+            { key: "loadout", label: "Loadout", format: "richtext" },
           ],
         },
         metadata: {
@@ -1044,16 +1194,16 @@ export const create40kPreset = () => ({
       baseType: "rule",
       schema: {
         fields: [
-          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
-          createFieldDefinition({ key: "ruleType", label: "Rule Type", type: "string", required: true }),
-          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: false }),
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "ruleType", label: "Rule Type", type: "string" }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
         ],
         rules: createCollectionDefinition({
           label: "Rules",
           allowMultiple: true,
           fields: [
-            createFieldDefinition({ key: "title", label: "Title", type: "string", required: true }),
-            createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+            createFieldDefinition({ key: "title", label: "Title", type: "string" }),
+            createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
             createFieldDefinition({
               key: "format",
               label: "Format",
@@ -1070,14 +1220,14 @@ export const create40kPreset = () => ({
       baseType: "enhancement",
       schema: {
         fields: [
-          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
-          createFieldDefinition({ key: "cost", label: "Cost", type: "string", required: true }),
-          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string" }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
         ],
         keywords: createCollectionDefinition({
           label: "Keywords",
           allowMultiple: true,
-          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string", required: true })],
+          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string" })],
         }),
       },
     },
@@ -1087,8 +1237,8 @@ export const create40kPreset = () => ({
       baseType: "stratagem",
       schema: {
         fields: [
-          createFieldDefinition({ key: "name", label: "Name", type: "string", required: true }),
-          createFieldDefinition({ key: "cost", label: "Cost", type: "string", required: true }),
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string" }),
           createFieldDefinition({
             key: "phase",
             label: "Phase",
@@ -1096,8 +1246,8 @@ export const create40kPreset = () => ({
             required: true,
             options: ["command", "movement", "shooting", "charge", "fight", "any"],
           }),
-          createFieldDefinition({ key: "type", label: "Stratagem Type", type: "string", required: true }),
-          createFieldDefinition({ key: "description", label: "Description", type: "richtext", required: true }),
+          createFieldDefinition({ key: "type", label: "Stratagem Type", type: "string" }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
         ],
       },
     },

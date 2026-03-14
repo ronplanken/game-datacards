@@ -10,6 +10,7 @@ const TYPE_SPECIFIC_STEP_IDS = new Set([
   "stats",
   "weapons",
   "abilities",
+  "sections",
   "unit-metadata",
   "fields",
   "rules",
@@ -222,6 +223,7 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
           label: "Abilities",
           categories: [],
         },
+        ...(stepData["sections"]?.sections ? { sections: stepData["sections"].sections } : {}),
         metadata: stepData["unit-metadata"]?.metadata || {
           hasKeywords: true,
           hasFactionKeywords: true,

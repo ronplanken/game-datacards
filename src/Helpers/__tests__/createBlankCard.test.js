@@ -149,6 +149,29 @@ describe("createBlankCardFromSchema", () => {
     });
   });
 
+  describe("sections initialization", () => {
+    it("initializes card.sections with empty arrays per section key when schema has sections", () => {
+      const preset = create40kPreset();
+      const unitType = preset.cardTypes.find((ct) => ct.baseType === "unit");
+      const card = createBlankCardFromSchema(unitType, factionId, datasourceId);
+
+      expect(card.sections).toBeDefined();
+      expect(card.sections["wargear-options"]).toEqual([]);
+      expect(card.sections["unit-composition"]).toEqual([]);
+      expect(card.sections["loadout"]).toEqual([]);
+    });
+
+    it("initializes card.sections for AoS warscroll", () => {
+      const preset = createAoSPreset();
+      const warscrollType = preset.cardTypes.find((ct) => ct.baseType === "unit");
+      const card = createBlankCardFromSchema(warscrollType, factionId, datasourceId);
+
+      expect(card.sections).toBeDefined();
+      expect(card.sections["wargear-options"]).toEqual([]);
+      expect(card.sections["unit-composition"]).toEqual([]);
+    });
+  });
+
   describe("unique IDs", () => {
     it("generates unique IDs for each card", () => {
       const preset = create40kPreset();

@@ -92,7 +92,7 @@ export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle }) => {
           </div>
           <div className="data_container">
             <div className="data">
-              <Ds40kUnitWeapons unit={card} weaponTypes={schema.weaponTypes} />
+              <Ds40kUnitWeapons unit={card} weaponTypes={schema.weaponTypes} sectionsSchema={schema.sections} />
               <Ds40kUnitExtra unit={card} abilitiesSchema={schema.abilities} />
             </div>
           </div>

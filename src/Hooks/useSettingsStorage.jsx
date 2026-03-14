@@ -37,6 +37,7 @@ const defaultSettings = {
   useFancyFonts: true,
   showGenericManifestations: false,
   designerBetaAccepted: false,
+  datasourceBetaAccepted: false,
   aosStatDisplayMode: "wheel", // "wheel" | "badges"
   // Custom datasources registry - stores metadata for user-imported datasources
   // Full data is stored in localForage with key pattern: custom-{uuid}

@@ -18,6 +18,7 @@ const sections = [
   { key: "stats-and-profiles", label: "Stats and Profiles" },
   { key: "weapons", label: "Weapons" },
   { key: "abilities", label: "Abilities" },
+  { key: "sections", label: "Sections" },
   { key: "working-with-cards", label: "Working with Cards" },
   { key: "card-preview", label: "Card Preview" },
   { key: "import-and-export", label: "Import and Export" },
@@ -197,9 +198,14 @@ export const DatasourceHelp = () => {
                   </li>
                   <li>
                     <Text strong>Type</Text> — What kind of data the field holds: text, rich text, dropdown list, or
-                    true/false toggle.
+                    true/false toggle. Stats and weapon columns support text, enum, and boolean types (not rich text).
                   </li>
                 </ul>
+                <Paragraph>
+                  <Text strong>Enum fields</Text> show a comma-separated options input where you define the allowed
+                  values. <Text strong>Boolean fields</Text> let you set custom on/off display values (e.g.,{" "}
+                  {'"Yes"/"No"'} or {'"Active"/"Inactive"'}). If not set, they default to {'"Yes"'} and {'"No"'}.
+                </Paragraph>
               </Typography>
             </section>
 
@@ -249,7 +255,7 @@ export const DatasourceHelp = () => {
                   Set up ability categories for your unit cards. You might have Core Abilities, Faction Abilities, and
                   Wargear — or any categories your game system needs.
                 </Paragraph>
-                <Paragraph>Each category can display its abilities in one of three formats:</Paragraph>
+                <Paragraph>Each category can display its abilities in one of two formats:</Paragraph>
                 <ul className="designer-help-list">
                   <li>
                     <Text strong>Name only</Text> — Just the ability name (e.g., {'"Deadly Demise D3"'}).
@@ -257,12 +263,34 @@ export const DatasourceHelp = () => {
                   <li>
                     <Text strong>Name and description</Text> — The ability name with a rules description below it.
                   </li>
-                  <li>
-                    <Text strong>Toggle</Text> — A true/false flag, useful for traits like {'"Leader"'} or{" "}
-                    {'"Deep Strike."'}
-                  </li>
                 </ul>
                 <Paragraph>Add a header label to give each category a visible title on the card.</Paragraph>
+              </Typography>
+            </section>
+
+            {/* Sections */}
+            <section data-section="sections">
+              <Typography>
+                <Title level={2}>Sections</Title>
+                <Paragraph>
+                  Sections let you add content blocks to unit cards for things like Wargear Options, Unit Composition,
+                  or Loadout. Each section appears as a titled block on the card.
+                </Paragraph>
+                <Paragraph>Each section has a display format:</Paragraph>
+                <ul className="designer-help-list">
+                  <li>
+                    <Text strong>List</Text> — Renders the section data as a list of items, similar to how wargear
+                    options are displayed on official datacards.
+                  </li>
+                  <li>
+                    <Text strong>Rich text</Text> — Renders the section data as free-form text content, suitable for
+                    longer descriptions.
+                  </li>
+                </ul>
+                <Paragraph>
+                  Sections are optional. The 40K preset includes Wargear Options, Unit Composition, and Loadout sections
+                  by default. Add, remove, or reorder them to match your game system.
+                </Paragraph>
               </Typography>
             </section>
 

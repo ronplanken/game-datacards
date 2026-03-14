@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { Swords, Plus, X, Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { IconKey, IconTag, IconCategory } from "@tabler/icons-react";
+import { IconKey, IconTag, IconCategory, IconList } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 
 const COLUMN_TYPES = [
   { value: "string", label: "Text" },
-  { value: "richtext", label: "Rich Text" },
   { value: "enum", label: "Enum" },
   { value: "boolean", label: "Boolean" },
 ];
@@ -68,7 +67,6 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
       key: `col_${nextNum}`,
       label: `Column ${nextNum}`,
       type: "string",
-      required: false,
     };
     updateType(typeIndex, { columns: [...columns, newCol] });
   };
@@ -217,14 +215,54 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
                       ))}
                     </select>
                   </div>
-                  <label className="props-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={!!col.required}
-                      onChange={() => updateColumn(activeTab, colIndex, "required", !col.required)}
+                  {col.type === "enum" && (
+                    <CompactInput
+                      label={<IconList size={10} stroke={1.5} />}
+                      ariaLabel="Options"
+                      tooltip="Options (comma-separated)"
+                      type="text"
+                      value={(col.options || []).join(", ")}
+                      onChange={(val) =>
+                        updateColumn(
+                          activeTab,
+                          colIndex,
+                          "options",
+                          val.split(",").map((s) => s.trim()),
+                        )
+                      }
+                      onBlur={(val) =>
+                        updateColumn(
+                          activeTab,
+                          colIndex,
+                          "options",
+                          val
+                            .split(",")
+                            .map((s) => s.trim())
+                            .filter(Boolean),
+                        )
+                      }
                     />
-                    <span>Required</span>
-                  </label>
+                  )}
+                  {col.type === "boolean" && (
+                    <>
+                      <CompactInput
+                        label="On"
+                        ariaLabel="On value"
+                        tooltip="Display value when true"
+                        type="text"
+                        value={col.onValue || ""}
+                        onChange={(val) => updateColumn(activeTab, colIndex, "onValue", val || undefined)}
+                      />
+                      <CompactInput
+                        label="Off"
+                        ariaLabel="Off value"
+                        tooltip="Display value when false"
+                        type="text"
+                        value={col.offValue || ""}
+                        onChange={(val) => updateColumn(activeTab, colIndex, "offValue", val || undefined)}
+                      />
+                    </>
+                  )}
                 </div>
                 <div className="props-field-item-actions">
                   <button

@@ -1,6 +1,7 @@
 import { UnitWeapon } from "../../../Warhammer40k-10e/UnitCard/UnitWeapon";
 import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
 import { WeaponTypeIcon } from "../../../Icons/WeaponTypeIcon";
+import { Ds40kUnitSections } from "./Ds40kUnitSections";
 
 /**
  * Schema-driven weapon type section using native 40K CSS structure.
@@ -76,11 +77,19 @@ const Ds40kWeaponProfiles = ({ weapon, columns }) => {
                   </span>
                 )}
               </div>
-              {columns.map((col) => (
-                <div className="value center" key={col.key}>
-                  {profile[col.key] || "-"}
-                </div>
-              ))}
+              {columns.map((col) => {
+                const displayValue =
+                  col.type === "boolean"
+                    ? profile[col.key]
+                      ? col.onValue || "Yes"
+                      : col.offValue || "No"
+                    : profile[col.key] || "-";
+                return (
+                  <div className="value center" key={col.key}>
+                    {displayValue}
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -95,8 +104,9 @@ const Ds40kWeaponProfiles = ({ weapon, columns }) => {
  * @param {Object} props
  * @param {Object} props.unit - The card data
  * @param {Object} props.weaponTypes - The weaponTypes schema definition
+ * @param {Object} [props.sectionsSchema] - The sections schema definition
  */
-export const Ds40kUnitWeapons = ({ unit, weaponTypes }) => {
+export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema }) => {
   if (!weaponTypes?.types?.length) {
     return null;
   }
@@ -113,6 +123,7 @@ export const Ds40kUnitWeapons = ({ unit, weaponTypes }) => {
 
         return <Ds40kWeaponType weaponTypeDef={weaponTypeDef} weapons={weapons} key={weaponTypeDef.key} />;
       })}
+      {sectionsSchema && <Ds40kUnitSections unit={unit} sectionsSchema={sectionsSchema} />}
     </div>
   );
 };

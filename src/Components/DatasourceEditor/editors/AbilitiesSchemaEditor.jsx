@@ -7,14 +7,13 @@ import { Tooltip } from "../../Tooltip/Tooltip";
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name Only" },
   { value: "name-description", label: "Name + Description" },
-  { value: "boolean", label: "Boolean" },
 ];
 
 /**
  * Editor for ability category definitions.
  * Editable category list (key, label, format dropdown, optional header).
  */
-export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
+export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const abilities = schema?.abilities;
   if (!abilities) return null;
 
@@ -102,6 +101,28 @@ export const AbilitiesSchemaEditor = ({ schema, onChange }) => {
                 value={category.header || ""}
                 onChange={(val) => updateCategory(index, "header", val || undefined)}
               />
+              {baseSystem !== "40k-10e" && (
+                <>
+                  <label className="props-checkbox props-checkbox--inline">
+                    <input
+                      type="checkbox"
+                      checked={!!category.hasPhase}
+                      onChange={() => updateCategory(index, "hasPhase", !category.hasPhase)}
+                      aria-label="Enable phase text"
+                    />
+                    <span>Phase</span>
+                  </label>
+                  <label className="props-checkbox props-checkbox--inline">
+                    <input
+                      type="checkbox"
+                      checked={!!category.hasColor}
+                      onChange={() => updateCategory(index, "hasColor", !category.hasColor)}
+                      aria-label="Enable strip color"
+                    />
+                    <span>Color</span>
+                  </label>
+                </>
+              )}
             </div>
             <div className="props-field-item-actions">
               <button

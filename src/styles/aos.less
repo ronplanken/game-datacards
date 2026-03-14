@@ -1587,6 +1587,78 @@
 
 // ============================================
 // PRINT MEDIA QUERIES
+// ============================================
+// DATASOURCE EDITOR - AOS STAT GRIDS
+// ============================================
+.data-aos {
+  // Left stats: columns of 2, fills top-to-bottom then grows rightward
+  .ds-aos-left-grid {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 4px;
+    max-height: calc(2 * 52px + 1 * 4px); // 2 badges tall (52px each + gap)
+  }
+
+  // Right stats: columns of 3, fills top-to-bottom then grows leftward
+  .ds-aos-right-grid {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 4px;
+    max-height: calc(3 * 38px + 2 * 4px); // 3 badges tall (38px each + gaps)
+    direction: rtl;
+
+    > * {
+      direction: ltr;
+    }
+  }
+}
+
+// ============================================
+// DATASOURCE EDITOR - AOS HEADER OVERRIDE
+// ============================================
+// Datasource cards render left stats in a separate div above the header,
+// so the 150px left padding (for the native stat wheel overlay) is not needed.
+.data-aos.ds-warscroll {
+  .warscroll-header {
+    padding-left: 20px;
+  }
+
+  .warscroll-faction-banner,
+  .warscroll-unit-name {
+    padding-right: 0;
+  }
+
+  // Schema-driven weapon tables have variable column counts.
+  // Uses CSS variable --ds-weapon-columns (set by DsAosWeapons) so all
+  // weapon types share the same column width regardless of column count.
+  .weapon-row {
+    grid-template-columns: 200px repeat(var(--ds-weapon-columns), 1fr);
+  }
+}
+
+
+// ============================================
+// DATASOURCE EDITOR - AOS SECTIONS
+// ============================================
+.data-aos {
+  .ds-aos-section-list {
+    margin: 4px 0 4px 16px;
+    padding: 0;
+    list-style-type: disc;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-dark);
+
+    li {
+      margin-bottom: 2px;
+    }
+  }
+}
+
 // Remove SVG filter backgrounds that don't render in PDF
 // ============================================
 @media print {

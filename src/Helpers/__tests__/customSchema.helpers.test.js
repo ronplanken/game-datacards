@@ -5,6 +5,7 @@ import {
   VALID_BASE_SYSTEMS,
   VALID_ABILITY_FORMATS,
   VALID_POINTS_FORMATS,
+  VALID_SECTION_FORMATS,
   SCHEMA_VERSION,
   createFieldDefinition,
   createCollectionDefinition,
@@ -30,7 +31,11 @@ describe("customSchema.helpers - constants", () => {
   });
 
   it("defines valid ability formats", () => {
-    expect(VALID_ABILITY_FORMATS).toEqual(["name-only", "name-description", "boolean"]);
+    expect(VALID_ABILITY_FORMATS).toEqual(["name-only", "name-description"]);
+  });
+
+  it("defines valid section formats", () => {
+    expect(VALID_SECTION_FORMATS).toEqual(["list", "richtext"]);
   });
 
   it("defines valid points formats", () => {
@@ -58,9 +63,9 @@ describe("customSchema.helpers - createFieldDefinition", () => {
     expect(field).toEqual({ key: "m", label: "M", type: "string", displayOrder: 1 });
   });
 
-  it("creates a field with required flag", () => {
+  it("ignores required flag (removed feature)", () => {
     const field = createFieldDefinition({ key: "name", label: "Name", required: true });
-    expect(field).toEqual({ key: "name", label: "Name", type: "string", required: true });
+    expect(field).toEqual({ key: "name", label: "Name", type: "string" });
   });
 
   it("creates an enum field with options", () => {
@@ -92,9 +97,26 @@ describe("customSchema.helpers - createFieldDefinition", () => {
     expect(field).not.toHaveProperty("required");
   });
 
-  it("includes required: false when explicitly set", () => {
+  it("does not include required even when explicitly set", () => {
     const field = createFieldDefinition({ key: "k", label: "K", required: false });
-    expect(field.required).toBe(false);
+    expect(field).not.toHaveProperty("required");
+  });
+
+  it("creates a boolean field with onValue and offValue", () => {
+    const field = createFieldDefinition({
+      key: "active",
+      label: "Active",
+      type: "boolean",
+      onValue: "Yes",
+      offValue: "No",
+    });
+    expect(field).toEqual({ key: "active", label: "Active", type: "boolean", onValue: "Yes", offValue: "No" });
+  });
+
+  it("does not include onValue/offValue for non-boolean types", () => {
+    const field = createFieldDefinition({ key: "name", label: "Name", type: "string", onValue: "Yes", offValue: "No" });
+    expect(field.onValue).toBeUndefined();
+    expect(field.offValue).toBeUndefined();
   });
 });
 
@@ -110,10 +132,10 @@ describe("customSchema.helpers - createCollectionDefinition", () => {
   });
 
   it("creates a collection with fields", () => {
-    const fields = [createFieldDefinition({ key: "title", label: "Title", required: true })];
+    const fields = [createFieldDefinition({ key: "title", label: "Title" })];
     const collection = createCollectionDefinition({ label: "Rules", fields });
     expect(collection.fields).toHaveLength(1);
-    expect(collection.fields[0]).toEqual({ key: "title", label: "Title", type: "string", required: true });
+    expect(collection.fields[0]).toEqual({ key: "title", label: "Title", type: "string" });
   });
 
   it("does not mutate the provided fields array", () => {
@@ -194,11 +216,11 @@ describe("customSchema.helpers - create40kPreset", () => {
       expect(melee.hasProfiles).toBe(true);
     });
 
-    it("all weapon columns are required", () => {
+    it("weapon columns do not have required property", () => {
       const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
       for (const wt of unit.schema.weaponTypes.types) {
         for (const col of wt.columns) {
-          expect(col.required).toBe(true);
+          expect(col).not.toHaveProperty("required");
         }
       }
     });
@@ -230,6 +252,25 @@ describe("customSchema.helpers - create40kPreset", () => {
         hasPoints: true,
         pointsFormat: "per-model",
       });
+    });
+
+    it("has sections with wargear-options, unit-composition, and loadout", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(unit.schema.sections).toBeDefined();
+      expect(unit.schema.sections.label).toBe("Sections");
+      expect(unit.schema.sections.sections).toHaveLength(3);
+      const sectionKeys = unit.schema.sections.sections.map((s) => s.key);
+      expect(sectionKeys).toEqual(["wargear-options", "unit-composition", "loadout"]);
+    });
+
+    it("sections use correct formats", () => {
+      const unit = create40kPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      const wargear = unit.schema.sections.sections.find((s) => s.key === "wargear-options");
+      const composition = unit.schema.sections.sections.find((s) => s.key === "unit-composition");
+      const loadout = unit.schema.sections.sections.find((s) => s.key === "loadout");
+      expect(wargear.format).toBe("list");
+      expect(composition.format).toBe("list");
+      expect(loadout.format).toBe("richtext");
     });
   });
 
@@ -276,7 +317,6 @@ describe("customSchema.helpers - create40kPreset", () => {
       const stratagem = create40kPreset().cardTypes.find((ct) => ct.baseType === "stratagem");
       const phase = stratagem.schema.fields.find((f) => f.key === "phase");
       expect(phase.type).toBe("enum");
-      expect(phase.required).toBe(true);
       expect(phase.options).toEqual(["command", "movement", "shooting", "charge", "fight", "any"]);
     });
   });
@@ -391,11 +431,11 @@ describe("customSchema.helpers - createAoSPreset", () => {
       expect(melee.hasProfiles).toBe(false);
     });
 
-    it("all weapon columns are required", () => {
+    it("weapon columns do not have required property", () => {
       const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
       for (const wt of warscroll.schema.weaponTypes.types) {
         for (const col of wt.columns) {
-          expect(col.required).toBe(true);
+          expect(col).not.toHaveProperty("required");
         }
       }
     });
@@ -418,6 +458,15 @@ describe("customSchema.helpers - createAoSPreset", () => {
         hasPoints: true,
         pointsFormat: "per-unit",
       });
+    });
+
+    it("has sections with wargear-options and unit-composition", () => {
+      const warscroll = createAoSPreset().cardTypes.find((ct) => ct.baseType === "unit");
+      expect(warscroll.schema.sections).toBeDefined();
+      expect(warscroll.schema.sections.label).toBe("Sections");
+      expect(warscroll.schema.sections.sections).toHaveLength(2);
+      const sectionKeys = warscroll.schema.sections.sections.map((s) => s.key);
+      expect(sectionKeys).toEqual(["wargear-options", "unit-composition"]);
     });
   });
 
@@ -473,7 +522,6 @@ describe("customSchema.helpers - createAoSPreset", () => {
       const tactic = createAoSPreset().cardTypes.find((ct) => ct.baseType === "stratagem");
       const typeField = tactic.schema.fields.find((f) => f.key === "type");
       expect(typeField.type).toBe("enum");
-      expect(typeField.required).toBe(true);
       expect(typeField.options).toEqual(["battle-tactic", "grand-strategy"]);
     });
   });
@@ -772,6 +820,78 @@ describe("customSchema.helpers - validateSchema", () => {
       expect(result.valid).toBe(false);
       expect(result.errors.some((e) => e.includes("pointsFormat"))).toBe(true);
     });
+
+    it("validates a unit with sections", () => {
+      const ct = validUnitCardType();
+      ct.schema.sections = {
+        label: "Sections",
+        sections: [{ key: "wargear", label: "Wargear", format: "list" }],
+      };
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toEqual([]);
+    });
+
+    it("rejects sections with invalid format", () => {
+      const ct = validUnitCardType();
+      ct.schema.sections = {
+        label: "Sections",
+        sections: [{ key: "wargear", label: "Wargear", format: "invalid-format" }],
+      };
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("format"))).toBe(true);
+    });
+
+    it("rejects sections with missing label", () => {
+      const ct = validUnitCardType();
+      ct.schema.sections = {
+        label: "Sections",
+        sections: [{ key: "wargear", format: "list" }],
+      };
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("label"))).toBe(true);
+    });
+
+    it("rejects sections with missing key", () => {
+      const ct = validUnitCardType();
+      ct.schema.sections = {
+        label: "Sections",
+        sections: [{ label: "Wargear", format: "list" }],
+      };
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("key"))).toBe(true);
+    });
+
+    it("rejects duplicate section keys", () => {
+      const ct = validUnitCardType();
+      ct.schema.sections = {
+        label: "Sections",
+        sections: [
+          { key: "wargear", label: "Wargear", format: "list" },
+          { key: "wargear", label: "Wargear 2", format: "richtext" },
+        ],
+      };
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("duplicate section key"))).toBe(true);
+    });
+
+    it("rejects sections with missing sections array", () => {
+      const ct = validUnitCardType();
+      ct.schema.sections = { label: "Sections" };
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("sections.sections"))).toBe(true);
+    });
   });
 
   describe("rule schema validation", () => {
@@ -882,13 +1002,38 @@ describe("customSchema.helpers - validateSchema", () => {
       expect(result.errors.some((e) => e.includes("displayOrder"))).toBe(true);
     });
 
-    it("rejects field with non-boolean required", () => {
+    it("accepts field with required property (ignored but not rejected)", () => {
       const ct = validStratagemCardType();
       ct.schema.fields = [{ key: "name", label: "Name", type: "string", required: "yes" }];
       const schema = { ...minimalValidSchema(), cardTypes: [ct] };
       const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it("rejects field with non-string onValue", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "active", label: "Active", type: "boolean", onValue: 123 }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes("required"))).toBe(true);
+      expect(result.errors.some((e) => e.includes("onValue"))).toBe(true);
+    });
+
+    it("rejects field with non-string offValue", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "active", label: "Active", type: "boolean", offValue: true }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("offValue"))).toBe(true);
+    });
+
+    it("validates field with valid onValue and offValue", () => {
+      const ct = validStratagemCardType();
+      ct.schema.fields = [{ key: "active", label: "Active", type: "boolean", onValue: "Yes", offValue: "No" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
     });
   });
 
@@ -1517,6 +1662,102 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
 
       migrateCardToSchema(card, oldUnitSchema, oldUnitSchema);
       expect(card).toEqual(originalCard);
+    });
+
+    it("initializes empty sections when sections are added to schema", () => {
+      const newSchema = {
+        ...oldUnitSchema,
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "loadout", label: "Loadout", format: "richtext" },
+          ],
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+      };
+
+      const result = migrateCardToSchema(card, oldUnitSchema, newSchema);
+      expect(result.sections).toEqual({
+        "wargear-options": [],
+        loadout: [],
+      });
+    });
+
+    it("preserves existing section data during migration", () => {
+      const schemaWithSections = {
+        ...oldUnitSchema,
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "loadout", label: "Loadout", format: "richtext" },
+          ],
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        sections: {
+          "wargear-options": ["Option A", "Option B"],
+          loadout: ["Default loadout"],
+        },
+      };
+
+      const result = migrateCardToSchema(card, schemaWithSections, schemaWithSections);
+      expect(result.sections["wargear-options"]).toEqual(["Option A", "Option B"]);
+      expect(result.sections.loadout).toEqual(["Default loadout"]);
+    });
+
+    it("drops sections that are removed and adds new ones", () => {
+      const oldSchemaWithSections = {
+        ...oldUnitSchema,
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "old-section", label: "Old Section", format: "list" },
+          ],
+        },
+      };
+      const newSchemaWithSections = {
+        ...oldUnitSchema,
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "new-section", label: "New Section", format: "richtext" },
+          ],
+        },
+      };
+      const card = {
+        stats: [],
+        weapons: { ranged: [] },
+        abilities: [],
+        keywords: [],
+        factionKeywords: [],
+        points: null,
+        sections: {
+          "wargear-options": ["Option A"],
+          "old-section": ["Old data"],
+        },
+      };
+
+      const result = migrateCardToSchema(card, oldSchemaWithSections, newSchemaWithSections);
+      expect(result.sections["wargear-options"]).toEqual(["Option A"]);
+      expect(result.sections["new-section"]).toEqual([]);
+      expect(result.sections["old-section"]).toBeUndefined();
     });
   });
 });

@@ -43,14 +43,22 @@ export const Ds40kUnitStats = ({ stats, statFields }) => {
         ?.filter((stat) => stat.active !== false)
         ?.map((stat, index) => (
           <div className="stats_container" key={`stat-line-${index}`}>
-            {visibleFields.map((field) => (
-              <UnitStat
-                key={`${field.key}-${index}`}
-                value={stat[field.key] || "-"}
-                showDamagedMarker={field.key === "w" && stat.showDamagedMarker}
-                specialColor={field.special ? field.specialColor : undefined}
-              />
-            ))}
+            {visibleFields.map((field) => {
+              const displayValue =
+                field.type === "boolean"
+                  ? stat[field.key]
+                    ? field.onValue || "Yes"
+                    : field.offValue || "No"
+                  : stat[field.key] || "-";
+              return (
+                <UnitStat
+                  key={`${field.key}-${index}`}
+                  value={displayValue}
+                  showDamagedMarker={field.key === "w" && stat.showDamagedMarker}
+                  specialColor={field.special ? field.specialColor : undefined}
+                />
+              );
+            })}
             {stat.showName && (
               <div className="name">
                 <ReactFitty maxSize={16} minSize={10}>

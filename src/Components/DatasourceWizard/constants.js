@@ -77,6 +77,7 @@ export const TYPE_SPECIFIC_STEPS = Object.freeze({
     { id: "stats", title: "Stats", required: true },
     { id: "weapons", title: "Weapons", required: true },
     { id: "abilities", title: "Abilities", required: true },
+    { id: "sections", title: "Sections", required: false },
     { id: "unit-metadata", title: "Unit Metadata", required: false },
   ]),
   [BASE_TYPES.RULE]: Object.freeze([

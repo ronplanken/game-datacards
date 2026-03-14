@@ -190,17 +190,11 @@ describe("FieldsSchemaEditor", () => {
       );
     });
 
-    it("toggles required flag on checkbox change", () => {
-      const onChange = vi.fn();
-      render(<FieldsSchemaEditor schema={stratagemSchema} onChange={onChange} baseType="stratagem" />);
-      const requiredCheckboxes = screen.getAllByRole("checkbox");
-      const firstRequired = requiredCheckboxes.find((cb) => cb.closest("label")?.textContent?.includes("Required"));
-      fireEvent.click(firstRequired);
-      expect(onChange).toHaveBeenCalledWith(
-        expect.objectContaining({
-          fields: expect.arrayContaining([expect.objectContaining({ key: "name", required: false })]),
-        }),
-      );
+    it("does not render required checkboxes", () => {
+      render(<FieldsSchemaEditor schema={stratagemSchema} onChange={vi.fn()} baseType="stratagem" />);
+      const checkboxes = screen.queryAllByRole("checkbox");
+      const requiredCheckbox = checkboxes.find((cb) => cb.closest("label")?.textContent?.includes("Required"));
+      expect(requiredCheckbox).toBeUndefined();
     });
 
     it("adds a new field", () => {
@@ -214,7 +208,7 @@ describe("FieldsSchemaEditor", () => {
             expect.objectContaining({ key: "name" }),
             expect.objectContaining({ key: "cost" }),
             expect.objectContaining({ key: "phase" }),
-            expect.objectContaining({ key: "field_4", type: "string", required: false }),
+            expect.objectContaining({ key: "field_4", type: "string" }),
           ]),
         }),
       );

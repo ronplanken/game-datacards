@@ -108,9 +108,9 @@ describe("DatasourceWizard constants", () => {
       expect(TYPE_SPECIFIC_STEPS).toHaveProperty("stratagem");
     });
 
-    it("unit has stats -> weapons -> abilities -> unit-metadata", () => {
+    it("unit has stats -> weapons -> abilities -> sections -> unit-metadata", () => {
       const ids = TYPE_SPECIFIC_STEPS.unit.map((s) => s.id);
-      expect(ids).toEqual(["stats", "weapons", "abilities", "unit-metadata"]);
+      expect(ids).toEqual(["stats", "weapons", "abilities", "sections", "unit-metadata"]);
     });
 
     it("rule has fields -> rules", () => {
@@ -168,6 +168,7 @@ describe("DatasourceWizard constants", () => {
           "stats",
           "weapons",
           "abilities",
+          "sections",
           "unit-metadata",
           "review",
         ]);
@@ -202,7 +203,7 @@ describe("DatasourceWizard constants", () => {
       it("includes unit-specific steps without creation prefix", () => {
         const steps = resolveSteps(WIZARD_MODES.ADD_CARD_TYPE, "unit");
         const ids = steps.map((s) => s.id);
-        expect(ids).toEqual(["card-type", "stats", "weapons", "abilities", "unit-metadata", "review"]);
+        expect(ids).toEqual(["card-type", "stats", "weapons", "abilities", "sections", "unit-metadata", "review"]);
       });
 
       it("includes rule-specific steps without creation prefix", () => {
