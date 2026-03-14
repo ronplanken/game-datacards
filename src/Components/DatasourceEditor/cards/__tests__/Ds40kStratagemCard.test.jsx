@@ -110,4 +110,18 @@ describe("Ds40kStratagemCard", () => {
     render(<Ds40kStratagemCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
     expect(screen.getByTestId("ds-40k-stratagem")).toBeTruthy();
   });
+
+  it("adds shared-stratagem class when isMobile is true", () => {
+    const card = { name: "Mobile Strat" };
+    const { container } = render(<Ds40kStratagemCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile />);
+    expect(container.querySelector(".shared-stratagem")).toBeTruthy();
+  });
+
+  it("does not add shared-stratagem class when isMobile is false", () => {
+    const card = { name: "Desktop Strat" };
+    const { container } = render(
+      <Ds40kStratagemCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile={false} />,
+    );
+    expect(container.querySelector(".shared-stratagem")).toBeNull();
+  });
 });

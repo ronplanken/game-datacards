@@ -46,7 +46,7 @@ export const DsAosLeftStats = ({ stats, statFields, grandAlliance }) => {
  * When `inline` is true, renders badges as a fragment (for embedding
  * inside an existing container like DsAosHeader's desktop-badges div).
  */
-export const DsAosRightStats = ({ stats, statFields, grandAlliance, inline }) => {
+export const DsAosRightStats = ({ stats, statFields, grandAlliance, inline, flat }) => {
   const rightFields = (statFields || []).filter((f) => f.position === "right");
 
   if (rightFields.length === 0) return null;
@@ -68,6 +68,10 @@ export const DsAosRightStats = ({ stats, statFields, grandAlliance, inline }) =>
       </div>
     );
   });
+
+  if (flat) {
+    return <>{badges}</>;
+  }
 
   if (inline) {
     return <div className="ds-aos-right-grid">{badges}</div>;

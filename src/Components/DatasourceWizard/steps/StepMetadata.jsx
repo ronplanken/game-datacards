@@ -1,9 +1,10 @@
 import React, { useCallback } from "react";
-import { FileText, User, Tag } from "lucide-react";
+import { FileText, User, Tag, Palette } from "lucide-react";
+import { DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
 
 /**
  * StepMetadata - Datasource metadata input step (create mode only).
- * Captures name, version, and author for the new datasource.
+ * Captures name, version, author, and card colours for the new datasource.
  *
  * @param {Object} props
  * @param {Object} props.wizard - Wizard state from useDatasourceWizard
@@ -13,6 +14,8 @@ export const StepMetadata = ({ wizard }) => {
   const name = data.name || "";
   const version = data.version || "1.0.0";
   const author = data.author || "";
+  const mainColour = data.mainColour || DEFAULT_DATASOURCE_COLOURS.header;
+  const accentColour = data.accentColour || DEFAULT_DATASOURCE_COLOURS.banner;
 
   const updateField = useCallback(
     (field, value) => {
@@ -82,6 +85,40 @@ export const StepMetadata = ({ wizard }) => {
             data-testid="dsw-metadata-author"
           />
           <span className="dsw-form-hint">Optional. The person or group who created this datasource.</span>
+        </div>
+
+        <div className="dsw-form-row">
+          <div className="dsw-form-field">
+            <label className="dsw-form-label" htmlFor="dsw-metadata-main-colour">
+              <Palette size={14} />
+              Main Colour
+            </label>
+            <input
+              id="dsw-metadata-main-colour"
+              type="color"
+              className="dsw-form-colour"
+              value={mainColour}
+              onChange={(e) => updateField("mainColour", e.target.value)}
+              data-testid="dsw-metadata-main-colour"
+            />
+            <span className="dsw-form-hint">Card header background colour.</span>
+          </div>
+
+          <div className="dsw-form-field">
+            <label className="dsw-form-label" htmlFor="dsw-metadata-accent-colour">
+              <Palette size={14} />
+              Accent Colour
+            </label>
+            <input
+              id="dsw-metadata-accent-colour"
+              type="color"
+              className="dsw-form-colour"
+              value={accentColour}
+              onChange={(e) => updateField("accentColour", e.target.value)}
+              data-testid="dsw-metadata-accent-colour"
+            />
+            <span className="dsw-form-hint">Card banner and accent colour.</span>
+          </div>
         </div>
       </div>
     </div>

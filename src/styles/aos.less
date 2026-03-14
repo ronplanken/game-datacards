@@ -816,6 +816,17 @@
       filter: none;
     }
 
+    // Datasource left stats: override column-wrap to single horizontal row
+    .ds-aos-left-grid {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      max-height: none;
+    }
+
     .stat-badges-row {
       display: flex;
       justify-content: center;
@@ -1638,8 +1649,21 @@
   .weapon-row {
     grid-template-columns: 200px repeat(var(--ds-weapon-columns), 1fr);
   }
+
 }
 
+
+// ============================================
+// DATASOURCE EDITOR - AOS ABILITIES & SECTIONS SPACING
+// ============================================
+.data-aos {
+  .ds-aos-abilities-list,
+  .ds-aos-sections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
 
 // ============================================
 // DATASOURCE EDITOR - AOS SECTIONS

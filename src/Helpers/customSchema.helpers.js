@@ -27,6 +27,9 @@ export const VALID_POINTS_FORMATS = ["per-model", "per-unit"];
 // Schema version
 export const SCHEMA_VERSION = "1.0.0";
 
+// Default colours for custom datasources
+export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", banner: "#16213e" });
+
 // --- JSDoc Type Definitions ---
 
 /**

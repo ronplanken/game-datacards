@@ -1674,6 +1674,55 @@ describe("gwAppImport.helpers", () => {
       const result = filterCardWeapons(card, ["Bolter"]);
       expect(result.showWeapons.meleeWeapons).toBe(false);
     });
+
+    it("should match weapons with arrow prefix from Listforge", () => {
+      const card = {
+        meleeWeapons: [
+          {
+            profiles: [
+              { name: "Hellforged weapons - strike", active: true },
+              { name: "Hellforged weapons - sweep", active: true },
+            ],
+          },
+        ],
+        rangedWeapons: [{ profiles: [{ name: "Infernal cannon", active: true }] }],
+        showWeapons: { rangedWeapons: true, meleeWeapons: true },
+      };
+      const result = filterCardWeapons(card, [
+        "➤ Hellforged weapons - strike",
+        "➤ Hellforged weapons - sweep",
+        "Infernal cannon",
+      ]);
+      expect(result.meleeWeapons[0].profiles[0].active).toBe(true);
+      expect(result.meleeWeapons[0].profiles[1].active).toBe(true);
+      expect(result.rangedWeapons[0].profiles[0].active).toBe(true);
+    });
+
+    it("should fuzzy match weapons with minor name differences", () => {
+      const card = {
+        meleeWeapons: [
+          {
+            profiles: [
+              { name: "Plague knives", active: true },
+              { name: "Power fist", active: true },
+            ],
+          },
+        ],
+        showWeapons: { meleeWeapons: true },
+      };
+      // Import has slightly different name (e.g. singular vs plural)
+      const result = filterCardWeapons(card, ["Plague knife"]);
+      expect(result.meleeWeapons[0].profiles[0].active).toBe(true);
+    });
+
+    it("should not fuzzy match completely different weapon names", () => {
+      const card = {
+        rangedWeapons: [{ profiles: [{ name: "Bolter", active: true }] }],
+        showWeapons: { rangedWeapons: true },
+      };
+      const result = filterCardWeapons(card, ["Chainsword"]);
+      expect(result.rangedWeapons[0].profiles[0].active).toBe(false);
+    });
   });
 
   describe("parseGwAppText - extended", () => {

@@ -131,5 +131,9 @@ export const DsAosAbilities = ({ card, abilitiesSchema, grandAlliance }) => {
 
   if (renderedAbilities.length === 0) return null;
 
-  return <div data-testid="ds-aos-abilities">{renderedAbilities}</div>;
+  return (
+    <div data-testid="ds-aos-abilities" className="ds-aos-abilities-list">
+      {renderedAbilities}
+    </div>
+  );
 };

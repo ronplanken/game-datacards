@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { StepMetadata } from "../steps/StepMetadata";
+import { DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
 
 const createMockWizard = (stepData = {}) => ({
   stepData,
@@ -113,5 +114,69 @@ describe("StepMetadata", () => {
     render(<StepMetadata wizard={wizard} />);
 
     expect(screen.getByTestId("dsw-step-metadata")).toBeInTheDocument();
+  });
+
+  it("renders main colour and accent colour inputs", () => {
+    const wizard = createMockWizard();
+    render(<StepMetadata wizard={wizard} />);
+
+    expect(screen.getByTestId("dsw-metadata-main-colour")).toBeInTheDocument();
+    expect(screen.getByTestId("dsw-metadata-accent-colour")).toBeInTheDocument();
+  });
+
+  it("shows default colours when no data exists", () => {
+    const wizard = createMockWizard();
+    render(<StepMetadata wizard={wizard} />);
+
+    expect(screen.getByTestId("dsw-metadata-main-colour")).toHaveValue(DEFAULT_DATASOURCE_COLOURS.header);
+    expect(screen.getByTestId("dsw-metadata-accent-colour")).toHaveValue(DEFAULT_DATASOURCE_COLOURS.banner);
+  });
+
+  it("displays existing colour values from step data", () => {
+    const wizard = createMockWizard({
+      metadata: { name: "Test", mainColour: "#ff0000", accentColour: "#00ff00" },
+    });
+    render(<StepMetadata wizard={wizard} />);
+
+    expect(screen.getByTestId("dsw-metadata-main-colour")).toHaveValue("#ff0000");
+    expect(screen.getByTestId("dsw-metadata-accent-colour")).toHaveValue("#00ff00");
+  });
+
+  it("calls updateStepData with mainColour when main colour input changes", () => {
+    const wizard = createMockWizard();
+    render(<StepMetadata wizard={wizard} />);
+
+    fireEvent.change(screen.getByTestId("dsw-metadata-main-colour"), {
+      target: { value: "#abcdef" },
+    });
+
+    expect(wizard.updateStepData).toHaveBeenCalledWith("metadata", expect.any(Function));
+
+    const updater = wizard.updateStepData.mock.calls[0][1];
+    const result = updater({ name: "Existing" });
+    expect(result).toEqual({ name: "Existing", mainColour: "#abcdef" });
+  });
+
+  it("calls updateStepData with accentColour when accent colour input changes", () => {
+    const wizard = createMockWizard();
+    render(<StepMetadata wizard={wizard} />);
+
+    fireEvent.change(screen.getByTestId("dsw-metadata-accent-colour"), {
+      target: { value: "#123456" },
+    });
+
+    expect(wizard.updateStepData).toHaveBeenCalledWith("metadata", expect.any(Function));
+
+    const updater = wizard.updateStepData.mock.calls[0][1];
+    const result = updater({});
+    expect(result).toEqual({ accentColour: "#123456" });
+  });
+
+  it("renders colour hint text", () => {
+    const wizard = createMockWizard();
+    render(<StepMetadata wizard={wizard} />);
+
+    expect(screen.getByText(/card header background colour/i)).toBeInTheDocument();
+    expect(screen.getByText(/card banner and accent colour/i)).toBeInTheDocument();
   });
 });

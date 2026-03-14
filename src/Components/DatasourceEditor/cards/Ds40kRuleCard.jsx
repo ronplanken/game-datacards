@@ -50,7 +50,7 @@ const RuleContentRenderer = ({ rules }) => (
  * @param {Object} props.cardTypeDef - The card type definition from the schema
  * @param {Object} props.cardStyle - CSS variable overrides
  */
-export const Ds40kRuleCard = ({ card, cardTypeDef, cardStyle }) => {
+export const Ds40kRuleCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
   const schema = cardTypeDef?.schema || {};
   const fields = schema.fields || [];
 
@@ -73,6 +73,7 @@ export const Ds40kRuleCard = ({ card, cardTypeDef, cardStyle }) => {
   return (
     <div className="data-40k-10e" data-testid="ds-40k-rule">
       <div
+        className={isMobile ? "shared-rule" : ""}
         style={{
           "--width": `${card.styling?.width ?? 460}px`,
           "--height": useAutoHeight ? "auto" : `${card.styling?.height ?? 620}px`,

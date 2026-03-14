@@ -797,6 +797,124 @@
     }
   }
 
+  // Mobile responsive overrides for viewer mode
+  &.custom-card-mobile {
+    &.custom-unit-card {
+      .unit {
+        width: 100%;
+        height: auto;
+        transform: none;
+
+        .header {
+          width: 100%;
+          height: auto;
+          padding: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          grid-template-rows: unset;
+          grid-template-columns: unset;
+          grid-template-areas: unset;
+
+          &::after {
+            display: none;
+          }
+
+          .header_container {
+            padding-top: 0;
+            padding-left: 0;
+
+            .name_container {
+              flex-wrap: wrap;
+
+              .name {
+                font-size: 1.4rem;
+                line-height: 1.8rem;
+              }
+              .subname {
+                font-size: 0.9rem;
+              }
+            }
+          }
+
+          .stats_container {
+            padding-left: 0;
+            gap: 8px;
+            flex-wrap: wrap;
+
+            .name {
+              width: auto;
+              font-size: 0.85rem;
+            }
+
+            .stat {
+              .caption {
+                width: 34px;
+                font-size: 0.75rem;
+              }
+              .value_container {
+                height: 34px;
+                width: 34px;
+
+                .value {
+                  height: 30px;
+                  width: 30px;
+                  font-size: 1.1rem;
+                }
+              }
+            }
+          }
+        }
+
+        .data_container {
+          width: 100%;
+          height: auto;
+          clip-path: none;
+
+          .data {
+            width: 100%;
+            height: auto;
+            clip-path: none;
+            grid-template-columns: 1fr;
+
+            .weapons {
+              height: auto;
+              border-right: none;
+              border-bottom: 2px solid var(--header-colour);
+            }
+          }
+        }
+
+        .footer {
+          width: calc(100% - 32px);
+          position: relative;
+          bottom: auto;
+          margin: 0 16px 16px;
+          grid-template-columns: 1fr;
+          height: auto;
+
+          .keywords,
+          .factions {
+            padding: 8px 16px;
+          }
+
+          .keywords {
+            border-right: none;
+            border-bottom: 2px solid var(--header-colour);
+            padding-right: 16px;
+          }
+        }
+      }
+    }
+
+    &.custom-rule-card,
+    &.custom-enhancement-card,
+    &.custom-stratagem-card {
+      max-width: 100vw;
+      margin: 0 auto;
+    }
+  }
+
   // Stratagem card styles — narrow card with turn classification and CP cost
   &.custom-stratagem-card {
     --stratagem-colour: var(--header-colour);

@@ -97,4 +97,20 @@ describe("Ds40kEnhancementCard", () => {
     const { container } = render(<Ds40kEnhancementCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
     expect(container.querySelector(".keywords")).toBeNull();
   });
+
+  it("adds shared-enhancement class when isMobile is true", () => {
+    const card = { name: "Mobile Enh" };
+    const { container } = render(
+      <Ds40kEnhancementCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile />,
+    );
+    expect(container.querySelector(".shared-enhancement")).toBeTruthy();
+  });
+
+  it("does not add shared-enhancement class when isMobile is false", () => {
+    const card = { name: "Desktop Enh" };
+    const { container } = render(
+      <Ds40kEnhancementCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile={false} />,
+    );
+    expect(container.querySelector(".shared-enhancement")).toBeNull();
+  });
 });

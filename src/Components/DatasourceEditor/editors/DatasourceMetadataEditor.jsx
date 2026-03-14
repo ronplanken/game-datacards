@@ -1,7 +1,8 @@
 import React from "react";
-import { Database, Info } from "lucide-react";
+import { Database, Info, Palette } from "lucide-react";
 import { IconTag, IconNumber, IconUser } from "@tabler/icons-react";
-import { Section, CompactInput } from "../components";
+import { Section, CompactInput, ColorInput } from "../components";
+import { DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
 
 const BASE_SYSTEM_LABELS = {
   "40k-10e": "Warhammer 40K 10th Edition",
@@ -10,7 +11,7 @@ const BASE_SYSTEM_LABELS = {
 };
 
 /**
- * Editor for datasource-level metadata: name, version, author.
+ * Editor for datasource-level metadata: name, version, author, colours.
  * BaseSystem is displayed as read-only since it determines the schema presets.
  */
 export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => {
@@ -20,6 +21,23 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
     if (!onUpdateDatasource) return;
     onUpdateDatasource({ ...datasource, [field]: value });
   };
+
+  const handleColourChange = (colourKey, value) => {
+    if (!onUpdateDatasource) return;
+    const currentColours = datasource.schema?.colours || {};
+    const updatedColours = { ...currentColours, [colourKey]: value };
+    onUpdateDatasource({
+      ...datasource,
+      schema: { ...datasource.schema, colours: updatedColours },
+      data: datasource.data?.map((faction) => ({
+        ...faction,
+        colours: { ...faction.colours, [colourKey]: value },
+      })),
+    });
+  };
+
+  const headerColour = datasource.schema?.colours?.header || DEFAULT_DATASOURCE_COLOURS.header;
+  const bannerColour = datasource.schema?.colours?.banner || DEFAULT_DATASOURCE_COLOURS.banner;
 
   const baseSystemLabel =
     BASE_SYSTEM_LABELS[datasource.schema?.baseSystem] || datasource.schema?.baseSystem || "Custom";
@@ -51,6 +69,20 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
           value={datasource.author || ""}
           onChange={(val) => handleChange("author", val)}
         />
+      </Section>
+      <Section title="Colours" icon={Palette} defaultOpen={true}>
+        <div className="props-compact-field">
+          <label className="props-compact-label" title="Main Colour">
+            Main
+          </label>
+          <ColorInput value={headerColour} onChange={(val) => handleColourChange("header", val)} />
+        </div>
+        <div className="props-compact-field">
+          <label className="props-compact-label" title="Accent Colour">
+            Accent
+          </label>
+          <ColorInput value={bannerColour} onChange={(val) => handleColourChange("banner", val)} />
+        </div>
       </Section>
       <Section title="System" icon={Info} defaultOpen={true}>
         <div className="props-metadata-row">

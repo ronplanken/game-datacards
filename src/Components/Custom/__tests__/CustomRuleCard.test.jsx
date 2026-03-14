@@ -115,4 +115,16 @@ describe("CustomRuleCard", () => {
     expect(el.style.getPropertyValue("--width")).toBe("500px");
     expect(el.style.getPropertyValue("--height")).toBe("600px");
   });
+
+  it("adds custom-card-mobile class when isMobile is true", () => {
+    render(<CustomRuleCard card={makeCard()} cardTypeDef={ruleCardTypeDef} cardStyle={{}} isMobile />);
+    const card = screen.getByTestId("custom-rule-card");
+    expect(card.classList.contains("custom-card-mobile")).toBe(true);
+  });
+
+  it("does not add custom-card-mobile class when isMobile is false", () => {
+    render(<CustomRuleCard card={makeCard()} cardTypeDef={ruleCardTypeDef} cardStyle={{}} isMobile={false} />);
+    const card = screen.getByTestId("custom-rule-card");
+    expect(card.classList.contains("custom-card-mobile")).toBe(false);
+  });
 });

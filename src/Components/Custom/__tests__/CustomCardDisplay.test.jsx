@@ -273,7 +273,7 @@ describe("CustomCardDisplay", () => {
     expect(wrapper.style.zoom).toBe("0.8");
   });
 
-  it("renders in viewer mode with transform scaling", () => {
+  it("renders in viewer mode without transform scaling (mobile-friendly)", () => {
     mockActiveCard.ref = { cardType: "infantry", name: "Viewer Unit", faction_id: "f1" };
     mockDataSource.ref = {
       schema: makeSchema([unitCardType]),
@@ -282,7 +282,34 @@ describe("CustomCardDisplay", () => {
     const { container } = render(<CustomCardDisplay type="viewer" cardScaling={75} />);
     const wrapper = container.querySelector(".data-custom");
     expect(wrapper).toBeInTheDocument();
-    expect(wrapper.style.transform).toBe("scale(0.75)");
+    expect(wrapper.style.transform).toBe("");
+  });
+
+  it("passes isMobile to custom card components in viewer mode", () => {
+    mockActiveCard.ref = { cardType: "infantry", name: "Mobile Unit", faction_id: "f1" };
+    mockDataSource.ref = {
+      schema: makeSchema([unitCardType]),
+      data: [{ id: "f1", colours: { header: "#000", banner: "#111" } }],
+    };
+    render(<CustomCardDisplay type="viewer" />);
+    const card = screen.getByTestId("custom-unit-card");
+    expect(card.classList.contains("custom-card-mobile")).toBe(true);
+  });
+
+  it("does not pass isMobile in print mode", () => {
+    mockDataSource.ref = {
+      schema: makeSchema([unitCardType]),
+      data: [{ id: "f1", colours: { header: "#000", banner: "#111" } }],
+    };
+    render(
+      <CustomCardDisplay
+        type="print"
+        card={{ cardType: "infantry", name: "Print Unit", faction_id: "f1" }}
+        cardScaling={100}
+      />,
+    );
+    const card = screen.getByTestId("custom-unit-card");
+    expect(card.classList.contains("custom-card-mobile")).toBe(false);
   });
 
   it("handles legacy DataCard cardType for unit rendering", () => {

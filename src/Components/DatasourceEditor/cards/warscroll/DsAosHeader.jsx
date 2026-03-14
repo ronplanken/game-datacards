@@ -18,6 +18,7 @@ export const DsAosHeader = ({
   imagePositionX,
   imagePositionY,
   imageScale,
+  isMobile = false,
 }) => {
   const opacity = (imageOpacity ?? 30) / 100;
   const posX = imagePositionX || 0;
@@ -39,16 +40,18 @@ export const DsAosHeader = ({
         />
       )}
 
-      {/* Points Badge and right-position stat badges */}
-      <div className="desktop-badges">
-        {card.points && (
-          <div className="points-badge">
-            <span className="points-value">{card.points}</span>
-            <span className="points-label">PTS</span>
-          </div>
-        )}
-        <DsAosRightStats stats={stats} statFields={statFields} grandAlliance={grandAlliance} inline />
-      </div>
+      {/* Points Badge and right-position stat badges - desktop only */}
+      {!isMobile && (
+        <div className="desktop-badges">
+          {card.points && (
+            <div className="points-badge">
+              <span className="points-value">{card.points}</span>
+              <span className="points-label">PTS</span>
+            </div>
+          )}
+          <DsAosRightStats stats={stats} statFields={statFields} grandAlliance={grandAlliance} inline />
+        </div>
+      )}
 
       {/* Header Content */}
       <div className="header-content">
@@ -58,6 +61,19 @@ export const DsAosHeader = ({
         <h1 className="warscroll-unit-name">{card.name || "Untitled Warscroll"}</h1>
         {card.subname && <div className="warscroll-subtitle">{card.subname}</div>}
       </div>
+
+      {/* Mobile Badges Row - below unit name */}
+      {isMobile && (
+        <div className="mobile-badges-row">
+          <DsAosRightStats stats={stats} statFields={statFields} grandAlliance={grandAlliance} flat />
+          {card.points && (
+            <div className="points-badge">
+              <span className="points-value">{card.points}</span>
+              <span className="points-label">PTS</span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

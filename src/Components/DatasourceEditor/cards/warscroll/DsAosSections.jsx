@@ -44,5 +44,9 @@ export const DsAosSections = ({ card, sectionsSchema, grandAlliance }) => {
 
   if (renderedSections.length === 0) return null;
 
-  return <div data-testid="ds-aos-sections">{renderedSections}</div>;
+  return (
+    <div data-testid="ds-aos-sections" className="ds-aos-sections-list">
+      {renderedSections}
+    </div>
+  );
 };

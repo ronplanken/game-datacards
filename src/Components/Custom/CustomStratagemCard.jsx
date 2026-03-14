@@ -12,7 +12,7 @@ import { ReactFitty } from "react-fitty";
  * @param {Object} props.cardTypeDef - The card type definition from the schema
  * @param {Object} props.cardStyle - CSS variable overrides (--header-colour, --banner-colour)
  */
-export const CustomStratagemCard = ({ card, cardTypeDef, cardStyle }) => {
+export const CustomStratagemCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
   const schema = cardTypeDef?.schema || {};
   const fields = schema.fields || [];
 
@@ -39,7 +39,7 @@ export const CustomStratagemCard = ({ card, cardTypeDef, cardStyle }) => {
 
   return (
     <div
-      className={`custom-card custom-stratagem-card ${turnClass}`}
+      className={`custom-card custom-stratagem-card ${turnClass}${isMobile ? " custom-card-mobile" : ""}`}
       style={{
         "--width": `${card.styling?.width ?? 260}px`,
         "--height": `${card.styling?.height ?? 458}px`,

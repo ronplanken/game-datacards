@@ -7,6 +7,7 @@ import {
   VALID_POINTS_FORMATS,
   VALID_SECTION_FORMATS,
   SCHEMA_VERSION,
+  DEFAULT_DATASOURCE_COLOURS,
   createFieldDefinition,
   createCollectionDefinition,
   createBlankPreset,
@@ -44,6 +45,14 @@ describe("customSchema.helpers - constants", () => {
 
   it("defines schema version", () => {
     expect(SCHEMA_VERSION).toBe("1.0.0");
+  });
+
+  it("defines default datasource colours", () => {
+    expect(DEFAULT_DATASOURCE_COLOURS).toEqual({ header: "#1a1a2e", banner: "#16213e" });
+  });
+
+  it("DEFAULT_DATASOURCE_COLOURS is frozen", () => {
+    expect(Object.isFrozen(DEFAULT_DATASOURCE_COLOURS)).toBe(true);
   });
 });
 

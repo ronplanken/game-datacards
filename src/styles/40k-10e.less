@@ -4065,6 +4065,33 @@
     }
   }
 
+  // Datasource unit cards: override hardcoded 6-column grid so extra stats wrap
+  .viewer.ds-unit {
+    .unit .header .stats_container {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-areas: unset;
+      padding-top: 4px;
+
+      .name {
+        grid-column: 1 / -1;
+      }
+
+      .stat .caption {
+        height: auto;
+        line-height: 1;
+      }
+
+      .stat:nth-child(1),
+      .stat:nth-child(2),
+      .stat:nth-child(3),
+      .stat:nth-child(4),
+      .stat:nth-child(5),
+      .stat:nth-child(6) {
+        grid-area: unset;
+      }
+    }
+  }
+
   .center {
     text-align: center;
   }

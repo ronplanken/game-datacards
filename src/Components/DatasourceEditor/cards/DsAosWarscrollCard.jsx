@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
 import { WarscrollKeywords } from "../../AgeOfSigmar/WarscrollCard/WarscrollKeywords";
 import { DsAosLeftStats } from "./warscroll/DsAosStatBadges";
 import { DsAosHeader } from "./warscroll/DsAosHeader";
@@ -48,7 +49,7 @@ const buildAosStats = (card, statFields) => {
  * @param {Object} props.cardStyle - CSS variable overrides
  * @param {Object} props.faction - The faction data
  */
-export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction }) => {
+export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMobile, onBack }) => {
   const schema = cardTypeDef?.schema || {};
   const statFields = schema.stats?.fields || [];
   const { getImageUrl, isReady } = useIndexedDBImages();
@@ -90,9 +91,17 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction }) =>
   const stats = buildAosStats(card, statFields);
 
   return (
-    <div className={`data-aos ds-warscroll ${grandAlliance}`} data-testid="ds-aos-warscroll" style={cardStyle}>
+    <div
+      className={`data-aos ds-warscroll ${grandAlliance}${isMobile ? " aos-mobile-wrapper" : ""}`}
+      data-testid="ds-aos-warscroll"
+      style={cardStyle}>
       <div className="warscroll">
         <div className="stat-display-area">
+          {isMobile && onBack && (
+            <button className="warscroll-back-button" onClick={onBack} type="button">
+              <ArrowLeft size={20} />
+            </button>
+          )}
           <DsAosLeftStats stats={stats} statFields={statFields} grandAlliance={grandAlliance} />
         </div>
 
@@ -107,6 +116,7 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction }) =>
           imagePositionX={card.imagePositionX}
           imagePositionY={card.imagePositionY}
           imageScale={card.imageScale}
+          isMobile={isMobile}
         />
 
         <div className="warscroll-body">
@@ -123,6 +133,7 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction }) =>
                   weaponTypeDef={wt}
                   grandAlliance={grandAlliance}
                   maxColumns={maxColumns}
+                  isMobile={isMobile}
                 />
               );
             });

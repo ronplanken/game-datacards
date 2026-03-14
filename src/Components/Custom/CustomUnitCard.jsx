@@ -53,12 +53,15 @@ const CustomUnitName = ({ name, subname, points, externalImage, imageZIndex, ima
  * @param {Object} props.cardTypeDef - The card type definition from the schema
  * @param {Object} props.cardStyle - CSS variable overrides (--header-colour, --banner-colour)
  */
-export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle }) => {
+export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle, isMobile }) => {
   const schema = cardTypeDef?.schema || {};
   const statFields = schema.stats?.fields || [];
 
   return (
-    <div className="custom-card custom-unit-card" style={cardStyle} data-testid="custom-unit-card">
+    <div
+      className={`custom-card custom-unit-card${isMobile ? " custom-card-mobile" : ""}`}
+      style={cardStyle}
+      data-testid="custom-unit-card">
       <div className="unit front" data-name={unit.name}>
         <div className="header">
           <CustomUnitName

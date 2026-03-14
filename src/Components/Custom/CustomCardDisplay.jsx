@@ -6,6 +6,7 @@ import { CustomRuleCard } from "./CustomRuleCard";
 import { CustomStratagemCard } from "./CustomStratagemCard";
 import { CustomUnitCard } from "./CustomUnitCard";
 import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
+import { TemplateRenderer } from "../../Premium";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -55,6 +56,7 @@ export const CustomCardDisplay = ({
   printPadding,
   side = "front",
   backgrounds = "standard",
+  onBack,
 }) => {
   const { activeCard } = useCardStorage();
   const { dataSource } = useDataSourceStorage();
@@ -92,25 +94,55 @@ export const CustomCardDisplay = ({
     );
   }
 
+  // If the card has a template, render via TemplateRenderer
+  if (displayCard.templateId) {
+    return (
+      <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
+        <TemplateRenderer templateId={displayCard.templateId} card={displayCard} faction={cardFaction} />
+      </Col>
+    );
+  }
+
   // Try native renderer first, then fall back to Custom* components
   const NativeComponent = resolveDatasourceRenderer(schema.baseSystem, baseType);
+  const isMobile = type === "viewer";
 
   const renderCard = () => {
     if (NativeComponent) {
       return (
-        <NativeComponent card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} faction={cardFaction} />
+        <NativeComponent
+          card={displayCard}
+          cardTypeDef={cardTypeDef}
+          cardStyle={cardStyle}
+          faction={cardFaction}
+          isMobile={isMobile}
+          onBack={isMobile ? onBack : undefined}
+        />
       );
     }
 
     switch (baseType) {
       case "unit":
-        return <CustomUnitCard unit={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
+        return (
+          <CustomUnitCard unit={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} isMobile={isMobile} />
+        );
       case "rule":
-        return <CustomRuleCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
+        return (
+          <CustomRuleCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} isMobile={isMobile} />
+        );
       case "enhancement":
-        return <CustomEnhancementCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
+        return (
+          <CustomEnhancementCard
+            card={displayCard}
+            cardTypeDef={cardTypeDef}
+            cardStyle={cardStyle}
+            isMobile={isMobile}
+          />
+        );
       case "stratagem":
-        return <CustomStratagemCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} />;
+        return (
+          <CustomStratagemCard card={displayCard} cardTypeDef={cardTypeDef} cardStyle={cardStyle} isMobile={isMobile} />
+        );
       default:
         return null;
     }
@@ -137,16 +169,7 @@ export const CustomCardDisplay = ({
           {renderCard()}
         </div>
       )}
-      {type === "viewer" && (
-        <div
-          className={scopeClass}
-          style={{
-            transformOrigin: "0% 0%",
-            ...(cardScaling && { transform: `scale(${cardScaling / 100})` }),
-          }}>
-          {renderCard()}
-        </div>
-      )}
+      {type === "viewer" && <div className={scopeClass}>{renderCard()}</div>}
     </>
   );
 };

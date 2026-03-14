@@ -16,6 +16,7 @@ import {
   compareVersions,
   getTargetArray,
 } from "../Helpers/customDatasource.helpers";
+import { DEFAULT_DATASOURCE_COLOURS } from "../Helpers/customSchema.helpers";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
@@ -50,9 +51,9 @@ export const DataSourceStorageProviderComponent = (props) => {
     const index = settings.selectedFactionIndex?.[ds];
     // Handle migration from old format (number) to new format (object)
     if (typeof settings.selectedFactionIndex === "number") {
-      return settings.selectedFactionIndex;
+      return Math.max(0, settings.selectedFactionIndex);
     }
-    return typeof index === "number" ? index : 0;
+    return typeof index === "number" && index >= 0 ? index : 0;
   };
 
   useEffect(() => {
@@ -463,8 +464,8 @@ export const DataSourceStorageProviderComponent = (props) => {
         id: `${storageId}-default`,
         name: metadata.name,
         colours: {
-          header: "#1a1a2e",
-          banner: "#16213e",
+          header: schema.colours?.header || DEFAULT_DATASOURCE_COLOURS.header,
+          banner: schema.colours?.banner || DEFAULT_DATASOURCE_COLOURS.banner,
         },
       };
 
@@ -480,6 +481,7 @@ export const DataSourceStorageProviderComponent = (props) => {
           version: schema.version || "1.0.0",
           baseSystem: schema.baseSystem || "blank",
           cardTypes: schema.cardTypes || [],
+          ...(schema.colours ? { colours: schema.colours } : {}),
         },
         data: [defaultFaction],
       };

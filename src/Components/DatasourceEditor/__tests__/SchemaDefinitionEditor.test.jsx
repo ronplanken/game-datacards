@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { SchemaDefinitionEditor } from "../SchemaDefinitionEditor";
 
 // Mock Premium exports
@@ -27,6 +27,7 @@ vi.mock("lucide-react", () => ({
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
   X: (props) => <svg data-testid="icon-x" {...props} />,
   LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
+  Palette: (props) => <svg data-testid="icon-palette" {...props} />,
 }));
 
 const mockDatasource = {
@@ -138,6 +139,58 @@ describe("SchemaDefinitionEditor", () => {
       expect(screen.getByLabelText("Name")).toHaveValue("Test Datasource");
       expect(screen.getByLabelText("Version")).toHaveValue("1.0.0");
       expect(screen.getByLabelText("Author")).toHaveValue("Test Author");
+    });
+
+    it("renders Colours section with default colours when datasource has no schema colours", () => {
+      render(
+        <SchemaDefinitionEditor
+          selectedItem={{ type: "datasource" }}
+          activeDatasource={mockDatasource}
+          onUpdateDatasource={vi.fn()}
+        />,
+      );
+      expect(screen.getByText("Colours")).toBeInTheDocument();
+      expect(screen.getByText("Main")).toBeInTheDocument();
+      expect(screen.getByText("Accent")).toBeInTheDocument();
+    });
+
+    it("renders Colours section with existing schema colours", () => {
+      const dsWithColours = {
+        ...mockDatasource,
+        schema: { ...mockDatasource.schema, colours: { header: "#ff0000", banner: "#00ff00" } },
+      };
+      render(
+        <SchemaDefinitionEditor
+          selectedItem={{ type: "datasource" }}
+          activeDatasource={dsWithColours}
+          onUpdateDatasource={vi.fn()}
+        />,
+      );
+      expect(screen.getAllByDisplayValue("#ff0000").length).toBeGreaterThanOrEqual(1);
+      expect(screen.getAllByDisplayValue("#00ff00").length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("calls onUpdateDatasource with updated colours when colour changes", () => {
+      const onUpdate = vi.fn();
+      render(
+        <SchemaDefinitionEditor
+          selectedItem={{ type: "datasource" }}
+          activeDatasource={mockDatasource}
+          onUpdateDatasource={onUpdate}
+        />,
+      );
+      // Find the Main colour text input (not the hidden color input)
+      const mainColourInputs = screen.getAllByDisplayValue("#1a1a2e");
+      const mainColourInput = mainColourInputs.find((el) => el.type === "text");
+      fireEvent.change(mainColourInput, { target: { value: "#abcdef" } });
+
+      expect(onUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          schema: expect.objectContaining({
+            colours: expect.objectContaining({ header: "#abcdef" }),
+          }),
+        }),
+      );
     });
 
     it("renders nothing for datasource when activeDatasource is null", () => {

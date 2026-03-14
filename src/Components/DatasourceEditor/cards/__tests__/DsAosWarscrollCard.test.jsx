@@ -193,4 +193,109 @@ describe("DsAosWarscrollCard", () => {
     expect(saveBadge).toBeTruthy();
     expect(saveBadge.style.background).toBeTruthy();
   });
+
+  it("adds aos-mobile-wrapper class when isMobile is true", () => {
+    const card = { name: "Mobile Warscroll", stats: {} };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} isMobile />,
+    );
+    expect(container.querySelector(".data-aos.aos-mobile-wrapper")).toBeTruthy();
+  });
+
+  it("renders weapon cards in mobile layout when isMobile is true", () => {
+    const card = {
+      name: "Mobile Weapons",
+      stats: {},
+      weapons: {
+        melee: [
+          {
+            active: true,
+            profiles: [
+              { name: "Grandhammer", attacks: "2", hit: "4+", damage: "3", active: true, keywords: ["Crit(Mortal)"] },
+            ],
+          },
+        ],
+      },
+    };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} isMobile />,
+    );
+    expect(container.querySelector(".weapon-card")).toBeTruthy();
+    expect(container.querySelector(".weapon-card-name").textContent).toBe("Grandhammer");
+    expect(container.querySelector(".weapon-card-stats")).toBeTruthy();
+    expect(container.querySelectorAll(".weapon-card-stat").length).toBe(3);
+    expect(container.querySelector(".weapon-card-abilities")).toBeTruthy();
+    expect(container.querySelector(".weapon-ability-badge").textContent).toBe("Crit(Mortal)");
+  });
+
+  it("renders weapon table in desktop layout when isMobile is false", () => {
+    const card = {
+      name: "Desktop Weapons",
+      stats: {},
+      weapons: {
+        melee: [
+          {
+            active: true,
+            profiles: [{ name: "Warblade", attacks: "3", hit: "3+", damage: "1", active: true }],
+          },
+        ],
+      },
+    };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} isMobile={false} />,
+    );
+    expect(container.querySelector(".weapon-card")).toBeNull();
+    expect(container.querySelector(".weapon-row.header-row")).toBeTruthy();
+  });
+
+  it("does not add aos-mobile-wrapper class when isMobile is false", () => {
+    const card = { name: "Desktop Warscroll", stats: {} };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} isMobile={false} />,
+    );
+    expect(container.querySelector(".data-aos.aos-mobile-wrapper")).toBeNull();
+  });
+
+  it("renders back button when isMobile and onBack are provided", () => {
+    const onBack = vi.fn();
+    const card = { name: "Mobile Back", stats: {} };
+    const { container } = render(
+      <DsAosWarscrollCard
+        card={card}
+        cardTypeDef={cardTypeDef}
+        cardStyle={{}}
+        faction={faction}
+        isMobile
+        onBack={onBack}
+      />,
+    );
+    const backButton = container.querySelector(".warscroll-back-button");
+    expect(backButton).toBeTruthy();
+    backButton.click();
+    expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it("does not render back button when isMobile is false", () => {
+    const onBack = vi.fn();
+    const card = { name: "Desktop No Back", stats: {} };
+    const { container } = render(
+      <DsAosWarscrollCard
+        card={card}
+        cardTypeDef={cardTypeDef}
+        cardStyle={{}}
+        faction={faction}
+        isMobile={false}
+        onBack={onBack}
+      />,
+    );
+    expect(container.querySelector(".warscroll-back-button")).toBeNull();
+  });
+
+  it("does not render back button when onBack is not provided", () => {
+    const card = { name: "No Back", stats: {} };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} faction={faction} isMobile />,
+    );
+    expect(container.querySelector(".warscroll-back-button")).toBeNull();
+  });
 });

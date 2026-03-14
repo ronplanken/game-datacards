@@ -13,7 +13,7 @@ import { ReactFitty } from "react-fitty";
  * @param {Object} props.cardTypeDef - The card type definition from the schema
  * @param {Object} props.cardStyle - CSS variable overrides (--header-colour, --banner-colour)
  */
-export const CustomRuleCard = ({ card, cardTypeDef, cardStyle }) => {
+export const CustomRuleCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
   const schema = cardTypeDef?.schema || {};
   const fields = schema.fields || [];
   const rulesSchema = schema.rules;
@@ -40,7 +40,7 @@ export const CustomRuleCard = ({ card, cardTypeDef, cardStyle }) => {
 
   return (
     <div
-      className="custom-card custom-rule-card"
+      className={`custom-card custom-rule-card${isMobile ? " custom-card-mobile" : ""}`}
       style={{
         "--width": `${card.styling?.width ?? 458}px`,
         "--height": useAutoHeight ? "auto" : `${card.styling?.height ?? 320}px`,

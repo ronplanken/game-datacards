@@ -502,6 +502,25 @@
   line-height: 1.4;
 }
 
+.dsw-form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.dsw-form-row > .dsw-form-field {
+  flex: 1;
+}
+
+.dsw-form-colour {
+  width: 48px;
+  height: 36px;
+  padding: 2px;
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius-xs);
+  background: var(--wz-bg-card);
+  cursor: pointer;
+}
+
 /* ===========================================
    BASE SYSTEM SELECTION GRID
    =========================================== */

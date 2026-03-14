@@ -121,4 +121,32 @@ describe("Ds40kUnitCard", () => {
     render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
     expect(screen.getByTestId("ds-40k-unit")).toBeTruthy();
   });
+
+  it("adds viewer class to wrapper when isMobile is true", () => {
+    const card = { name: "Mobile Unit", stats: [], abilities: [] };
+    const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile />);
+    expect(container.querySelector(".unit-card-front-wrapper.viewer")).toBeTruthy();
+  });
+
+  it("does not add viewer class when isMobile is false", () => {
+    const card = { name: "Desktop Unit", stats: [], abilities: [] };
+    const { container } = render(
+      <Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile={false} />,
+    );
+    const wrapper = container.querySelector(".unit-card-front-wrapper");
+    expect(wrapper).toBeTruthy();
+    expect(wrapper.classList.contains("viewer")).toBe(false);
+  });
+
+  it("always has ds-unit class on wrapper", () => {
+    const card = { name: "DS Unit", stats: [], abilities: [] };
+    const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
+    expect(container.querySelector(".unit-card-front-wrapper.ds-unit")).toBeTruthy();
+  });
+
+  it("has both ds-unit and viewer classes when isMobile is true", () => {
+    const card = { name: "Mobile DS Unit", stats: [], abilities: [] };
+    const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile />);
+    expect(container.querySelector(".unit-card-front-wrapper.ds-unit.viewer")).toBeTruthy();
+  });
 });

@@ -20,13 +20,14 @@ import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { useAutoFitScale } from "./Hooks/useAutoFitScale";
-import { TemplateRenderer, CustomCardEditor } from "./Premium";
+import { CustomCardEditor } from "./Premium";
+import { CustomCardDisplay } from "./Components/Custom/CustomCardDisplay";
 import "./style.less";
 
 const { Content } = Layout;
 
 function App() {
-  const { dataSource } = useDataSourceStorage();
+  const { dataSource, isCustomDatasource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
   const [selectedTreeIndex, setSelectedTreeIndex] = useState(null);
@@ -133,7 +134,7 @@ function App() {
                   ? activeCard.customHeaderColour
                   : cardFaction?.colours?.header,
               }}
-              className={`data-${activeCard?.source}`}>
+              className={`${isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`}`}>
               <Row style={{ overflow: "hidden", justifyContent: "center", flex: "1 0 auto" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "40k-10e" && (
@@ -142,34 +143,7 @@ function App() {
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
-                {activeCard?.source?.startsWith("custom-") && (
-                  <div
-                    style={{
-                      transform: `scale(var(--card-scaling-factor, 1))`,
-                      transformOrigin: "top center",
-                    }}>
-                    {activeCard.templateId ? (
-                      <TemplateRenderer templateId={activeCard.templateId} card={activeCard} />
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: "48px 24px",
-                          color: "#888",
-                          textAlign: "center",
-                          gap: "8px",
-                          width: "100%",
-                          minHeight: "200px",
-                        }}>
-                        <h3 style={{ margin: 0, color: "#666" }}>{activeCard.name}</h3>
-                        <p style={{ margin: 0, fontSize: "13px" }}>Assign a template to this card type to preview</p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                {activeCard?.source?.startsWith("custom-") && <CustomCardDisplay />}
               </Row>
               <FloatingToolbar
                 activeCard={activeCard}
@@ -189,7 +163,9 @@ function App() {
           <PanelResizeHandle className="vertical-resizer" />
           <Panel defaultSize={20} order={3}>
             {activeCard && (
-              <div style={{ overflowY: "auto", height: "calc(100vh - 64px)" }} className={`data-${activeCard?.source}`}>
+              <div
+                style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
+                className={`${isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`}`}>
                 {activeCard?.source === "40k" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "40k-10e" && <Warhammer40K10eCardEditor />}
                 {activeCard?.source === "basic" && <Warhammer40KCardEditor />}

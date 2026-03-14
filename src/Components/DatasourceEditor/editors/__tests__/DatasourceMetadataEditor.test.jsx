@@ -4,6 +4,7 @@ import { DatasourceMetadataEditor } from "../DatasourceMetadataEditor";
 vi.mock("lucide-react", () => ({
   Database: (props) => <svg data-testid="icon-database" {...props} />,
   Info: (props) => <svg data-testid="icon-info" {...props} />,
+  Palette: (props) => <svg data-testid="icon-palette" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
 }));
@@ -104,6 +105,55 @@ describe("DatasourceMetadataEditor", () => {
   it("renders section headers", () => {
     render(<DatasourceMetadataEditor datasource={mockDatasource} onUpdateDatasource={vi.fn()} />);
     expect(screen.getByText("Datasource Info")).toBeInTheDocument();
+    expect(screen.getByText("Colours")).toBeInTheDocument();
     expect(screen.getByText("System")).toBeInTheDocument();
+  });
+
+  it("renders Main and Accent colour labels", () => {
+    render(<DatasourceMetadataEditor datasource={mockDatasource} onUpdateDatasource={vi.fn()} />);
+    expect(screen.getByText("Main")).toBeInTheDocument();
+    expect(screen.getByText("Accent")).toBeInTheDocument();
+  });
+
+  it("shows default colours when schema has no colours", () => {
+    render(<DatasourceMetadataEditor datasource={mockDatasource} onUpdateDatasource={vi.fn()} />);
+    expect(screen.getAllByDisplayValue("#1a1a2e").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByDisplayValue("#16213e").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("shows existing schema colours", () => {
+    const dsWithColours = {
+      ...mockDatasource,
+      schema: { ...mockDatasource.schema, colours: { header: "#ff0000", banner: "#00ff00" } },
+    };
+    render(<DatasourceMetadataEditor datasource={dsWithColours} onUpdateDatasource={vi.fn()} />);
+    expect(screen.getAllByDisplayValue("#ff0000").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByDisplayValue("#00ff00").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("calls onUpdateDatasource with updated schema colours and faction colours on colour change", () => {
+    const onUpdate = vi.fn();
+    const dsWithData = {
+      ...mockDatasource,
+      data: [{ id: "f1", name: "Faction 1", colours: { header: "#1a1a2e", banner: "#16213e" } }],
+    };
+    render(<DatasourceMetadataEditor datasource={dsWithData} onUpdateDatasource={onUpdate} />);
+    // Target the text input (not the hidden color input) by finding the one with type="text"
+    const mainColourInputs = screen.getAllByDisplayValue("#1a1a2e");
+    const mainColourInput = mainColourInputs.find((el) => el.type === "text");
+    fireEvent.change(mainColourInput, { target: { value: "#abcdef" } });
+
+    expect(onUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        schema: expect.objectContaining({
+          colours: expect.objectContaining({ header: "#abcdef" }),
+        }),
+        data: [
+          expect.objectContaining({
+            colours: expect.objectContaining({ header: "#abcdef" }),
+          }),
+        ],
+      }),
+    );
   });
 });

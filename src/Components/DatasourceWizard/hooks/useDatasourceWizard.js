@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { WIZARD_MODES, BASE_TYPES, getWizardMode, resolveSteps } from "../constants";
-import { getPresetStepDefaults } from "../../../Helpers/customSchema.helpers";
+import { getPresetStepDefaults, DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
 
 /**
  * Step IDs that carry type-specific state and should be reset
@@ -265,6 +265,10 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
         version: "1.0.0",
         baseSystem: baseSystemData.baseSystem || "blank",
         cardTypes: [cardTypeEntry],
+        colours: {
+          header: metadata.mainColour || DEFAULT_DATASOURCE_COLOURS.header,
+          banner: metadata.accentColour || DEFAULT_DATASOURCE_COLOURS.banner,
+        },
       },
     };
   }, [mode, baseType, stepData]);

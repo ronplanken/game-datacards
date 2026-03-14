@@ -124,4 +124,18 @@ describe("Ds40kRuleCard", () => {
     expect(screen.getByText("Visible")).toBeTruthy();
     expect(screen.queryByText("Hidden")).toBeNull();
   });
+
+  it("adds shared-rule class when isMobile is true", () => {
+    const card = { name: "Mobile Rule" };
+    const { container } = render(<Ds40kRuleCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile />);
+    expect(container.querySelector(".shared-rule")).toBeTruthy();
+  });
+
+  it("does not add shared-rule class when isMobile is false", () => {
+    const card = { name: "Desktop Rule" };
+    const { container } = render(
+      <Ds40kRuleCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile={false} />,
+    );
+    expect(container.querySelector(".shared-rule")).toBeNull();
+  });
 });

@@ -122,4 +122,18 @@ describe("CustomStratagemCard", () => {
     expect(el.style.getPropertyValue("--width")).toBe("300px");
     expect(el.style.getPropertyValue("--height")).toBe("500px");
   });
+
+  it("adds custom-card-mobile class when isMobile is true", () => {
+    render(<CustomStratagemCard card={makeCard()} cardTypeDef={stratagemCardTypeDef} cardStyle={{}} isMobile />);
+    const card = screen.getByTestId("custom-stratagem-card");
+    expect(card.classList.contains("custom-card-mobile")).toBe(true);
+  });
+
+  it("does not add custom-card-mobile class when isMobile is false", () => {
+    render(
+      <CustomStratagemCard card={makeCard()} cardTypeDef={stratagemCardTypeDef} cardStyle={{}} isMobile={false} />,
+    );
+    const card = screen.getByTestId("custom-stratagem-card");
+    expect(card.classList.contains("custom-card-mobile")).toBe(false);
+  });
 });

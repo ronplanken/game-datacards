@@ -13,7 +13,7 @@ import { PhaseIcon } from "../../Icons/PhaseIcon";
  * @param {Object} props.cardTypeDef - The card type definition from the schema
  * @param {Object} props.cardStyle - CSS variable overrides
  */
-export const Ds40kStratagemCard = ({ card, cardTypeDef, cardStyle }) => {
+export const Ds40kStratagemCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
   const schema = cardTypeDef?.schema || {};
   const fields = schema.fields || [];
 
@@ -49,6 +49,7 @@ export const Ds40kStratagemCard = ({ card, cardTypeDef, cardStyle }) => {
   return (
     <div className="data-40k-10e" data-testid="ds-40k-stratagem">
       <div
+        className={isMobile ? "shared-stratagem" : ""}
         style={{
           "--width": `${card.styling?.width ?? 260}px`,
           "--height": `${card.styling?.height ?? 458}px`,

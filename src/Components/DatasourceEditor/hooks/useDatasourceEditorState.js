@@ -1,7 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
-import { createBlankCardFromSchema, getTargetArray } from "../../../Helpers/customDatasource.helpers";
+import {
+  createBlankCardFromSchema,
+  getTargetArray,
+  countDatasourceCards,
+} from "../../../Helpers/customDatasource.helpers";
 
 const CARD_ARRAY_NAMES = [
   "datasheets",
@@ -55,7 +59,7 @@ function findCardInDatasource(datasource, cardId) {
  * Persists selection state in a session cookie.
  */
 export function useDatasourceEditorState() {
-  const { settings } = useSettingsStorage();
+  const { settings, updateSettings } = useSettingsStorage();
   const { getCustomDatasourceData } = useDataSourceStorage();
 
   const [activeDatasource, setActiveDatasource] = useState(null);
@@ -123,6 +127,19 @@ export function useDatasourceEditorState() {
         }
       }
 
+      // Sync card count to registry so settings/selector stay accurate
+      const newCount = countDatasourceCards(updatedDatasource);
+      const currentRegistry = settings.customDatasources || [];
+      const entry = currentRegistry.find((ds) => ds.id === updatedDatasource.id);
+      if (entry && entry.cardCount !== newCount) {
+        updateSettings({
+          ...settings,
+          customDatasources: currentRegistry.map((ds) =>
+            ds.id === updatedDatasource.id ? { ...ds, cardCount: newCount } : ds,
+          ),
+        });
+      }
+
       // Persist to localForage
       try {
         const localForage = (await import("localforage")).default;
@@ -132,7 +149,7 @@ export function useDatasourceEditorState() {
         // Storage failure is non-fatal for the editor session
       }
     },
-    [selectedItem],
+    [selectedItem, settings, updateSettings],
   );
 
   /**

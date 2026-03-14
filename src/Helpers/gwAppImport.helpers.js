@@ -655,6 +655,7 @@ const normalizeWeaponName = (name) => {
   return name
     .toLowerCase()
     .trim()
+    .replace(/^➤\s*/, "") // "➤ Hellforged weapons - strike" -> "Hellforged weapons - strike"
     .replace(/^\d+x\s+/i, "") // "2x Storm bolter" -> "Storm bolter"
     .replace(/\s+x\d+$/i, "") // "Storm bolter x2" -> "Storm bolter"
     .trim();
@@ -694,6 +695,31 @@ const doesWeaponMatch = (importedWeapon, profileName) => {
   return false;
 };
 
+// Fuzzy match threshold for weapon names (tighter than unit matching to avoid false positives)
+const WEAPON_FUZZY_THRESHOLD = 0.3;
+
+/**
+ * Check if a datasheet weapon profile matches any imported weapon, using fuzzy search as fallback.
+ * Tries deterministic matching first (exact, variant, parent), then falls back to Fuse.js fuzzy match.
+ * @param {string} profileName - Weapon profile name from the datasheet
+ * @param {string[]} importedWeapons - Array of imported weapon names
+ * @param {Fuse|null} weaponFuse - Pre-built Fuse index over normalized imported weapon names
+ * @returns {boolean} True if the profile matches any imported weapon
+ */
+const doesWeaponMatchAny = (profileName, importedWeapons, weaponFuse) => {
+  // Try deterministic matching first
+  if (importedWeapons.some((w) => doesWeaponMatch(w, profileName))) return true;
+
+  // Fallback: fuzzy match against imported weapon names
+  if (weaponFuse) {
+    const normalizedProfile = normalizeDashes(normalizeWeaponName(profileName));
+    const results = weaponFuse.search(normalizedProfile);
+    if (results.length > 0 && results[0].score <= WEAPON_FUZZY_THRESHOLD) return true;
+  }
+
+  return false;
+};
+
 /**
  * Filter weapons on a card based on imported weapon list
  * Sets active: false on weapon profiles NOT in the import list
@@ -709,6 +735,14 @@ export const filterCardWeapons = (card, importedWeapons) => {
     return card;
   }
 
+  // Build a Fuse index over normalized imported weapon names for fuzzy fallback
+  const normalizedImports = importedWeapons.map((w) => ({ name: normalizeDashes(normalizeWeaponName(w)) }));
+  const weaponFuse = new Fuse(normalizedImports, {
+    keys: ["name"],
+    threshold: WEAPON_FUZZY_THRESHOLD,
+    includeScore: true,
+  });
+
   const filteredCard = { ...card };
   filteredCard.showWeapons = { ...card.showWeapons };
 
@@ -718,7 +752,7 @@ export const filterCardWeapons = (card, importedWeapons) => {
       ...weapon,
       profiles: weapon.profiles?.map((profile) => ({
         ...profile,
-        active: importedWeapons.some((w) => doesWeaponMatch(w, profile.name)),
+        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse),
       })),
     }));
 
@@ -737,7 +771,7 @@ export const filterCardWeapons = (card, importedWeapons) => {
       ...weapon,
       profiles: weapon.profiles?.map((profile) => ({
         ...profile,
-        active: importedWeapons.some((w) => doesWeaponMatch(w, profile.name)),
+        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse),
       })),
     }));
 

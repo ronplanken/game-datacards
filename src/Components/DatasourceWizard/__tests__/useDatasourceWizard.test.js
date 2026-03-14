@@ -550,6 +550,38 @@ describe("useDatasourceWizard", () => {
         expect(assembled.schema.cardTypes[0].schema.fields).toEqual([]);
       });
 
+      it("includes default colours in schema when no colours are set", () => {
+        const { result } = renderHook(() => useDatasourceWizard());
+        act(() => {
+          result.current.updateStepData("metadata", { name: "Test" });
+          result.current.changeBaseType("stratagem");
+        });
+
+        const assembled = result.current.assembleResult();
+        expect(assembled.schema.colours).toEqual({
+          header: "#1a1a2e",
+          banner: "#16213e",
+        });
+      });
+
+      it("includes custom colours in schema when colours are set", () => {
+        const { result } = renderHook(() => useDatasourceWizard());
+        act(() => {
+          result.current.updateStepData("metadata", {
+            name: "Test",
+            mainColour: "#ff0000",
+            accentColour: "#00ff00",
+          });
+          result.current.changeBaseType("stratagem");
+        });
+
+        const assembled = result.current.assembleResult();
+        expect(assembled.schema.colours).toEqual({
+          header: "#ff0000",
+          banner: "#00ff00",
+        });
+      });
+
       it("assembles unit card type with all sub-objects", () => {
         const { result } = renderHook(() => useDatasourceWizard());
 
