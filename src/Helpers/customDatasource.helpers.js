@@ -294,9 +294,14 @@ export const prepareDatasourceForImport = (datasource, sourceType, sourceUrl = n
   return {
     ...datasource,
     id: storageId,
+    uuid: uuidv4(),
     sourceType,
     sourceUrl,
     lastCheckedForUpdate: sourceType === "url" ? new Date().toISOString() : undefined,
+    syncEnabled: false,
+    syncStatus: "local",
+    lastSyncedAt: null,
+    syncError: null,
   };
 };
 

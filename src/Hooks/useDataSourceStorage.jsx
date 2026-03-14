@@ -472,11 +472,16 @@ export const DataSourceStorageProviderComponent = (props) => {
       // Build the datasource object
       const datasource = {
         id: storageId,
+        uuid: uuidv4(),
         name: metadata.name,
         version: metadata.version || "1.0.0",
         author: metadata.author || null,
         lastUpdated: now,
         sourceType: "local",
+        syncEnabled: false,
+        syncStatus: "local",
+        lastSyncedAt: null,
+        syncError: null,
         schema: {
           version: schema.version || "1.0.0",
           baseSystem: schema.baseSystem || "blank",

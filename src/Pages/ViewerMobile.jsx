@@ -324,10 +324,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                 )}
                 {/* Faction overview */}
                 {/* eslint-disable-next-line prettier/prettier */}
-                {!activeCard &&
-                  selectedFaction &&
-                  !showUnits &&
-                  !activeExtraView && (
+                {!activeCard && selectedFaction && !showUnits && !activeExtraView && (
                   <React.Suspense fallback={null}>
                     <config.FactionComponent />
                   </React.Suspense>
