@@ -57,7 +57,23 @@
       "mcp__chrome-devtools__hover",
       "mcp__chrome-devtools__fill",
       "mcp__chrome-devtools__resize_page",
-      "Bash(git diff:*)"
+      "Bash(git diff:*)",
+      "Bash(yarn start:*)",
+      "Bash(yarn link:*)",
+      "Bash(which supabase:*)",
+      "Bash(supabase start:*)",
+      "Bash(supabase stop:*)",
+      "Bash(supabase status:*)",
+      "Bash(supabase --version 2>&1)",
+      "Bash(yarn vitest:*)",
+      "Bash(lsof -ti:3000 2>/dev/null | xargs kill -9 2>/dev/null; echo \"done\")",
+      "Bash(cd /Users/ronplanken/Documents/Warhammer/gdc-premium && npx vitest run src/Components/CustomCardEditor/__tests__/CustomCardEditor.test.jsx 2>&1 | tail -40)",
+      "Bash(cd /Users/ronplanken/Documents/Warhammer/gdc-premium && npx vitest run src/Components/Auth/__tests__/AccountSettingsModal.test.jsx 2>&1 | tail -15)",
+      "Bash(cd /Users/ronplanken/Documents/Warhammer/gdc-premium && npx vitest run src/Components/CustomCardEditor/__tests__/CustomCardEditor.test.jsx 2>&1 | tail -30)",
+      "Bash(git rebase:*)",
+      "Bash(wc -l /Users/ronplanken/Documents/Warhammer/game-datacards/.claude/worktrees/ralph/src/Components/DatasourceEditor/editors/*.jsx | tail -1)",
+      "Bash(pbpaste:*)",
+      "Bash(node:*)"
     ]
   }
 }

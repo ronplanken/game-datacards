@@ -51,14 +51,18 @@ import { Print } from "./Pages/Print";
 import { Shared } from "./Pages/Shared";
 import { TermsOfService } from "./Pages/TermsOfService";
 import { PrivacyPolicy } from "./Pages/PrivacyPolicy";
+import { DatasourceEditorPage } from "./Pages/DatasourceEditor";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
 import { DesignerBetaModal } from "./Components/DesignerBetaModal";
+import { DatasourceBetaModal } from "./Components/DatasourceBetaModal";
 import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
+import { LocalDatasourceMigrationNotice } from "./Components/LocalDatasourceMigrationNotice";
 import { DesignerHelp } from "./Pages/DesignerHelp";
+import { DatasourceHelp } from "./Pages/DatasourceHelp";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -159,6 +163,23 @@ const DesignerHelpRoute = () => {
   if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
 
   return <DesignerHelp />;
+};
+
+// Datasource editor route with beta disclaimer
+const DatasourceRoute = () => {
+  const { settings, updateSettings } = useSettingsStorage();
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <DatasourceEditorPage />
+      <DatasourceBetaModal
+        visible={!settings.datasourceBetaAccepted}
+        onAccept={() => updateSettings({ ...settings, datasourceBetaAccepted: true })}
+        onDecline={() => navigate("/")}
+      />
+    </>
+  );
 };
 
 // Component to handle checkout success redirect
@@ -329,6 +350,7 @@ const RootLayout = () => (
                           <CheckoutSuccessHandler />
                           <ListForgeUrlHandler />
                           <SyncConflictHandler />
+                          <LocalDatasourceMigrationNotice />
                         </CloudCategoriesProvider>
                       </SyncProvider>
                     </TemplateStorageProvider>
@@ -354,6 +376,9 @@ const router = createBrowserRouter([
       // Designer routes (premium only)
       { path: "designer", element: <DesignerRoute /> },
       { path: "designer/help", element: <DesignerHelpRoute /> },
+      // Datasource editor (community feature)
+      { path: "datasources", element: <DatasourceRoute /> },
+      { path: "datasources/help", element: <DatasourceHelp /> },
       // Legal pages
       { path: "terms", element: <TermsOfService /> },
       { path: "privacy", element: <PrivacyPolicy /> },

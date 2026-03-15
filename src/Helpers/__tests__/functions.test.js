@@ -769,6 +769,117 @@ describe("customDatasource.helpers", () => {
       });
       expect(result.isValid).toBe(true);
     });
+
+    it("should accept datasource without schema property", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+      });
+      expect(result.isValid).toBe(true);
+    });
+
+    it("should accept datasource with valid schema property", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "blank",
+          cardTypes: [],
+        },
+      });
+      expect(result.isValid).toBe(true);
+    });
+
+    it("should reject datasource with non-object schema", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: "invalid",
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("'schema' must be an object when provided");
+    });
+
+    it("should reject datasource with null schema", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: null,
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain("'schema' must be an object when provided");
+    });
+
+    it("should reject datasource with invalid schema structure", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "invalid-system",
+          cardTypes: [],
+        },
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.startsWith("schema:"))).toBe(true);
+    });
+
+    it("should reject datasource with schema missing cardTypes", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "blank",
+        },
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.includes("cardTypes"))).toBe(true);
+    });
+
+    it("should accept datasource with valid schema containing card types", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          version: "1.0.0",
+          baseSystem: "40k-10e",
+          cardTypes: [
+            {
+              key: "stratagem",
+              label: "Stratagem",
+              baseType: "stratagem",
+              schema: {
+                fields: [{ key: "name", label: "Name", type: "string", required: true }],
+              },
+            },
+          ],
+        },
+      });
+      expect(result.isValid).toBe(true);
+    });
+
+    it("should report schema errors with 'schema:' prefix", () => {
+      const result = validateCustomDatasource({
+        name: "Test",
+        version: "1.0",
+        data: [{ id: "test", name: "Test", colours: { header: "#000", banner: "#fff" } }],
+        schema: {
+          baseSystem: "blank",
+          cardTypes: [],
+        },
+      });
+      expect(result.isValid).toBe(false);
+      expect(result.errors.some((e) => e.startsWith("schema:"))).toBe(true);
+    });
   });
 
   describe("generateDatasourceFilename", () => {
@@ -1562,6 +1673,55 @@ describe("gwAppImport.helpers", () => {
       };
       const result = filterCardWeapons(card, ["Bolter"]);
       expect(result.showWeapons.meleeWeapons).toBe(false);
+    });
+
+    it("should match weapons with arrow prefix from Listforge", () => {
+      const card = {
+        meleeWeapons: [
+          {
+            profiles: [
+              { name: "Hellforged weapons - strike", active: true },
+              { name: "Hellforged weapons - sweep", active: true },
+            ],
+          },
+        ],
+        rangedWeapons: [{ profiles: [{ name: "Infernal cannon", active: true }] }],
+        showWeapons: { rangedWeapons: true, meleeWeapons: true },
+      };
+      const result = filterCardWeapons(card, [
+        "➤ Hellforged weapons - strike",
+        "➤ Hellforged weapons - sweep",
+        "Infernal cannon",
+      ]);
+      expect(result.meleeWeapons[0].profiles[0].active).toBe(true);
+      expect(result.meleeWeapons[0].profiles[1].active).toBe(true);
+      expect(result.rangedWeapons[0].profiles[0].active).toBe(true);
+    });
+
+    it("should fuzzy match weapons with minor name differences", () => {
+      const card = {
+        meleeWeapons: [
+          {
+            profiles: [
+              { name: "Plague knives", active: true },
+              { name: "Power fist", active: true },
+            ],
+          },
+        ],
+        showWeapons: { meleeWeapons: true },
+      };
+      // Import has slightly different name (e.g. singular vs plural)
+      const result = filterCardWeapons(card, ["Plague knife"]);
+      expect(result.meleeWeapons[0].profiles[0].active).toBe(true);
+    });
+
+    it("should not fuzzy match completely different weapon names", () => {
+      const card = {
+        rangedWeapons: [{ profiles: [{ name: "Bolter", active: true }] }],
+        showWeapons: { rangedWeapons: true },
+      };
+      const result = filterCardWeapons(card, ["Chainsword"]);
+      expect(result.rangedWeapons[0].profiles[0].active).toBe(false);
     });
   });
 

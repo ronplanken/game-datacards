@@ -91,7 +91,7 @@ export const extractWeaponsFromSelection = (selection) => {
   if (Array.isArray(selection.profiles)) {
     for (const profile of selection.profiles) {
       if (profile.typeName && /weapons?/i.test(profile.typeName) && !profile.hidden) {
-        weapons.push(profile.name);
+        weapons.push(profile.name.replace(/^➤\s*/, ""));
       }
     }
   }
@@ -472,7 +472,7 @@ export const extractWeaponProfilesFromSelection = (selection) => {
               : [];
 
           const weaponProfile = {
-            name: profile.name,
+            name: profile.name.replace(/^➤\s*/, ""),
             active: true,
             range: getCharacteristic(chars, "Range"),
             attacks: getCharacteristic(chars, "A"),

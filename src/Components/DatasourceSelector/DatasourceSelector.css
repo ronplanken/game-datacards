@@ -1,7 +1,9 @@
-/* DatasourceSelector.css - Matching WelcomeWizard aesthetic */
+/* DatasourceSelector.css - Dark theme datasource dropdown */
+
+@import "../../styles/dropdown-tokens.css";
 
 /* ===========================================
-   DESIGN TOKENS
+   DESIGN TOKENS (button - always in dark header)
    =========================================== */
 .ds-selector-btn {
   --ds-primary: #1677ff;
@@ -119,31 +121,44 @@
 }
 
 /* ===========================================
-   DROPDOWN MENU
+   DROPDOWN MENU (dark theme)
    =========================================== */
 .ds-dropdown {
-  /* Re-define variables for portal-rendered dropdown */
-  --ds-primary: #1677ff;
-  --ds-primary-light: #4096ff;
-  --ds-text-main: #1f2937;
-  --ds-text-muted: #6b7280;
-  --ds-text-dim: #9ca3af;
-  --ds-border: #e5e7eb;
-  --ds-radius: 10px;
-
   position: fixed;
   min-width: 240px;
   max-width: 320px;
-  background: #ffffff;
-  border: 1px solid var(--ds-border);
-  border-radius: var(--ds-radius);
-  box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.15),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
-  padding: 12px 0;
+  max-height: calc(100vh - 70px);
+  background: var(--menu-bg);
+  border: 1px solid var(--menu-border-gold);
+  border-radius: var(--menu-radius-sm);
+  box-shadow: var(--menu-shadow);
+  padding: 0;
   pointer-events: auto;
-  animation: dsFadeSlideIn 0.2s ease-out;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: dsFadeSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top left;
+}
+
+/* ===========================================
+   DROPDOWN HEADER (gold line separator)
+   =========================================== */
+.ds-dropdown-header {
+  position: relative;
+  padding: 10px 16px;
+  background: var(--menu-navy);
+}
+
+.ds-dropdown-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--menu-gold), transparent);
+  opacity: 0.4;
 }
 
 /* ===========================================
@@ -152,22 +167,23 @@
 .ds-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 12px 16px;
+  padding: 8px 16px;
   background: transparent;
   border: none;
-  color: var(--ds-text-main);
-  font-size: 14px;
+  color: var(--menu-text-main);
+  font-size: 13px;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
+  font-family: inherit;
 }
 
 .ds-dropdown-item:hover {
-  background: #f3f4f6;
+  background: var(--menu-bg-hover);
 }
 
 .ds-dropdown-item:disabled {
@@ -176,21 +192,23 @@
 }
 
 .ds-dropdown-item.selected {
-  background: #e0edff;
-  color: var(--ds-text-main);
+  background: var(--menu-bg-item);
+  border-left: 2px solid var(--menu-gold);
+  padding-left: 14px;
 }
 
 .ds-dropdown-item svg {
   flex-shrink: 0;
-  color: var(--ds-text-dim);
+  color: var(--menu-text-dim);
+  transition: color 0.15s ease;
 }
 
 .ds-dropdown-item:hover svg {
-  color: var(--ds-text-muted);
+  color: var(--menu-text-muted);
 }
 
 .ds-dropdown-item.selected svg {
-  color: var(--ds-primary);
+  color: var(--menu-gold);
 }
 
 .ds-dropdown-item-text {
@@ -206,18 +224,20 @@
 
 .ds-dropdown-check {
   flex-shrink: 0;
-  color: var(--ds-primary);
+  color: var(--menu-gold) !important;
 }
 
 /* ===========================================
    SPECIAL ITEMS
    =========================================== */
+
+/* Check for updates */
 .ds-dropdown-update {
-  color: var(--ds-text-muted);
+  color: var(--menu-text-muted);
 }
 
 .ds-dropdown-update:hover {
-  color: var(--ds-text-main);
+  color: var(--menu-text-main);
 }
 
 .ds-dropdown-update svg.spinning {
@@ -225,57 +245,61 @@
 }
 
 .ds-dropdown-update.needs-update {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
 }
 
 .ds-dropdown-update.needs-update:hover {
-  background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+  background: rgba(245, 158, 11, 0.18);
 }
 
 .ds-dropdown-update.needs-update svg {
-  color: #d97706;
+  color: #fbbf24;
 }
 
+/* Add external datasource */
 .ds-dropdown-add {
-  color: var(--ds-text-muted);
+  color: var(--menu-text-muted);
 }
 
 .ds-dropdown-add svg {
-  color: var(--ds-text-dim);
+  color: var(--menu-text-dim);
 }
 
 .ds-dropdown-add:hover {
-  background: #f3f4f6;
-  color: var(--ds-text-main);
+  color: var(--menu-text-main);
 }
 
 .ds-dropdown-add:hover svg {
-  color: var(--ds-text-muted);
+  color: var(--menu-text-muted);
 }
 
-/* Browse community button */
+/* Browse community button - gold accent */
 .ds-dropdown-browse {
-  color: var(--ds-primary);
+  color: var(--menu-gold-light);
 }
 
 .ds-dropdown-browse svg {
-  color: var(--ds-primary);
+  color: var(--menu-gold);
 }
 
 .ds-dropdown-browse:hover {
-  background: #e0edff;
-  color: var(--ds-primary);
+  background: rgba(201, 162, 39, 0.12);
+  color: var(--menu-gold-light);
+}
+
+.ds-dropdown-browse:hover svg {
+  color: var(--menu-gold-light);
 }
 
 /* Subscribed datasource icon */
 .ds-subscribed-icon {
-  color: #10b981 !important;
+  color: #4ade80 !important;
 }
 
 /* Local datasource icon */
 .ds-local-ds-icon {
-  color: #722ed1 !important;
+  color: #a78bfa !important;
 }
 
 /* Published badge */
@@ -284,8 +308,8 @@
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(82, 196, 26, 0.15);
-  color: #52c41a;
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-left: auto;
@@ -301,18 +325,44 @@
 
 .ds-dropdown-section-title {
   display: block;
-  padding: 12px 16px 8px;
-  font-size: 11px;
+  padding: 10px 16px 6px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--ds-text-dim);
+  color: var(--menu-text-dim);
 }
 
 .ds-dropdown-divider {
   height: 1px;
-  background: var(--ds-border);
-  margin: 8px 16px;
+  background: var(--menu-border);
+  margin: 4px 12px;
+}
+
+/* ===========================================
+   DROPDOWN SCROLLBAR
+   =========================================== */
+.ds-dropdown-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.ds-dropdown-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ds-dropdown-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ds-dropdown-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.ds-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 /* ===========================================
@@ -321,11 +371,11 @@
 @keyframes dsFadeSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-8px) scale(0.96);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -341,7 +391,6 @@
 /* ===========================================
    FACTION THEMING
    =========================================== */
-
 .ds-selector-btn[data-type="40k"] {
   border-color: rgba(220, 38, 38, 0.25);
 }
@@ -357,10 +406,28 @@
 /* ===========================================
    FOCUS-VISIBLE
    =========================================== */
-
 .ds-selector-btn:focus-visible {
   outline: 2px solid rgba(22, 119, 255, 0.7);
   outline-offset: 2px;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .ds-dropdown,
+  .ds-dropdown-item,
+  .ds-selector-chevron {
+    transition: none;
+  }
+
+  .ds-update-dot {
+    animation: none;
+  }
+
+  .ds-selector-btn.has-unread svg {
+    animation: none;
+  }
 }
 
 /* ===========================================

@@ -13,18 +13,11 @@ import { MobileSearchDropdown } from "../Components/Viewer/MobileSearchDropdown"
 import { MobileSearchFactionFilter } from "../Components/Viewer/MobileSearchFactionFilter";
 import { MobileNav } from "../Components/Viewer/MobileNav";
 import { MobileMenu } from "../Components/Viewer/MobileMenu";
-import { MobileFaction } from "../Components/Viewer/MobileFaction";
-import { MobileFactionUnits } from "../Components/Viewer/MobileFactionUnits";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemSelector";
 import { MobileGameSystemSettings } from "../Components/Viewer/MobileGameSystemSettings";
-import {
-  MobileAoSFaction,
-  MobileAoSFactionUnits,
-  MobileAoSManifestationLores,
-  MobileAoSSpellLores,
-} from "../Components/Viewer/AoS";
+import { resolveMobileConfig } from "../Components/Viewer/mobileDatasourceConfig";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
@@ -33,11 +26,6 @@ import { MobileAccountSheet, MobileAccountSettingsSheet, MobileSyncSheet } from 
 const MobileSharedListsModal = React.lazy(() =>
   import("../Premium").then((mod) => ({ default: mod.MobileSharedListsModal })),
 );
-
-import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
-import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
-import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
-import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
 
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
@@ -55,15 +43,19 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const screens = useBreakpoint();
   const navigate = useNavigate();
 
-  const { dataSource, selectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction, getCustomDatasourceData } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
+  // Resolve config for current datasource
+  const config = resolveMobileConfig(settings.selectedDataSource, dataSource);
 
   // Get last selected faction from settings (even when not currently viewing it)
   const getFactionIndex = () => {
     if (typeof settings.selectedFactionIndex === "object") {
-      return settings.selectedFactionIndex?.[settings.selectedDataSource] ?? 0;
+      const idx = settings.selectedFactionIndex?.[settings.selectedDataSource] ?? 0;
+      return idx >= 0 ? idx : 0;
     }
-    return settings.selectedFactionIndex ?? 0;
+    const idx = settings.selectedFactionIndex ?? 0;
+    return idx >= 0 ? idx : 0;
   };
   const lastFaction = dataSource?.data?.[getFactionIndex()];
 
@@ -72,6 +64,25 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
     typeof settings.hasFactionSelected === "object"
       ? (settings.hasFactionSelected?.[settings.selectedDataSource] ?? false)
       : false;
+  // Load live banner colours for custom/subscribed datasources from localForage
+  const [datasourceColours, setDatasourceColours] = useState({});
+  useEffect(() => {
+    const loadColours = async () => {
+      const entries = settings.customDatasources || [];
+      if (entries.length === 0) return;
+
+      const colours = {};
+      for (const entry of entries) {
+        const data = await getCustomDatasourceData(entry.id);
+        if (data) {
+          colours[entry.id] = data.schema?.colours?.banner || data.data?.[0]?.colours?.banner || null;
+        }
+      }
+      setDatasourceColours(colours);
+    };
+    loadColours();
+  }, [settings.customDatasources, getCustomDatasourceData]);
+
   // Always force double-sided cards on mobile (no swap button exists)
   useEffect(() => {
     if (settings.showCardsAsDoubleSided !== true) {
@@ -86,13 +97,10 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   // Initialize navigation hook to sync URL with state
   useViewerNavigation();
 
-  // Check if we're in AoS mode
-  const isAoS = settings.selectedDataSource === "aos";
-
-  // Scroll-reveal header for AoS only
+  // Scroll-reveal header (config-driven)
   const { showHeader, headerReady, scrollContainerRef } = useScrollRevealHeader({
-    enabled: !!activeCard && activeCard.source === "aos",
-    targetSelector: ".warscroll-unit-name",
+    enabled: !!activeCard && config.useScrollRevealHeader,
+    targetSelector: config.scrollRevealTargetSelector,
     topOffset: 64,
   });
 
@@ -125,11 +133,11 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
   // Handle game system selection
   const handleGameSystemSelect = (system) => {
-    if (system === "aos") {
-      // Show settings screen for AoS before finalizing
+    // Check if this system has a settings screen (e.g. AoS)
+    const selectedConfig = resolveMobileConfig(system, dataSource);
+    if (selectedConfig.GameSystemSettingsScreen) {
       setPendingGameSystem(system);
     } else {
-      // For other systems, proceed directly
       updateSettings({
         ...settings,
         selectedDataSource: system,
@@ -167,31 +175,27 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
   // If no game system selected, show selector
   if (!gameSystemSelected) {
-    return <MobileGameSystemSelector onSelect={handleGameSystemSelect} />;
+    const customDatasources = settings.customDatasources || [];
+    const subscribedDatasources = customDatasources.filter((ds) => ds.isSubscribed);
+    return (
+      <MobileGameSystemSelector
+        onSelect={handleGameSystemSelect}
+        customDatasources={customDatasources}
+        subscribedDatasources={subscribedDatasources}
+        datasourceColours={datasourceColours}
+      />
+    );
   }
 
   // Get faction colors
   const cardFaction = dataSource?.data?.find((faction) => faction.id === activeCard?.faction_id);
 
-  // Render card based on source
-  const renderCard = (type) => {
-    if (!activeCard) return null;
-
-    switch (activeCard.source) {
-      case "40k-10e":
-        return <Warhammer40K10eCardDisplay type={type} />;
-      case "40k":
-        return <Warhammer40KCardDisplay />;
-      case "basic":
-        return <Warhammer40KCardDisplay />;
-      case "necromunda":
-        return <NecromundaCardDisplay />;
-      case "aos":
-        return <AgeOfSigmarCardDisplay type={type} onBack={type === "viewer" ? handleBackFromCard : undefined} />;
-      default:
-        return null;
-    }
-  };
+  // Check which extra route views are active
+  const activeExtraView = config.extraRouteViews.find((view) => {
+    if (view.prop === "showManifestationLores") return showManifestationLores;
+    if (view.prop === "showSpellLores") return showSpellLores;
+    return false;
+  });
 
   // Handle search focus/blur
   const handleSearchFocus = () => {
@@ -262,8 +266,8 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
           <Row>
             <Col ref={parent} span={24}>
-              {/* AoS: Sticky header (visible after scroll, only render after ready) */}
-              {activeCard && isAoS && headerReady && (
+              {/* Scroll-reveal header (config-driven) */}
+              {activeCard && config.useScrollRevealHeader && headerReady && (
                 <div
                   className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
                     showHeader ? "visible" : "hidden"
@@ -290,9 +294,9 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                   backgroundColor: "#d8d8da",
                   paddingBottom: "64px",
                 }}
-                className={`data-${activeCard?.source}`}>
-                {/* Back button header for non-AoS cards (original sticky behavior) */}
-                {activeCard && !isAoS && (
+                className={config.cssClass}>
+                {/* Back button header for non-scroll-reveal cards */}
+                {activeCard && !config.useScrollRevealHeader && (
                   <div className="mobile-card-header">
                     <button className="mobile-card-back" onClick={handleBackFromCard} type="button">
                       <ArrowLeft size={20} />
@@ -300,7 +304,11 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                     <h1 className="mobile-card-title">{activeCard.name}</h1>
                   </div>
                 )}
-                <Row style={{ overflow: "hidden" }}>{renderCard("viewer")}</Row>
+                <Row style={{ overflow: "hidden" }}>
+                  <React.Suspense fallback={null}>
+                    {config.renderCard("viewer", { onBack: handleBackFromCard })}
+                  </React.Suspense>
+                </Row>
                 {!activeCard && !selectedFaction && !showUnits && (
                   <MobileWelcome
                     recentSearches={recentSearches}
@@ -310,16 +318,21 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                     onBrowseFactions={() => setShowFactionSelector(true)}
                   />
                 )}
+                {/* Faction overview */}
                 {/* eslint-disable-next-line prettier/prettier */}
-                {!activeCard &&
-                  selectedFaction &&
-                  !showUnits &&
-                  !showManifestationLores &&
-                  !showSpellLores &&
-                  (isAoS ? <MobileAoSFaction /> : <MobileFaction />)}
-                {showUnits && (isAoS ? <MobileAoSFactionUnits /> : <MobileFactionUnits />)}
-                {showManifestationLores && isAoS && <MobileAoSManifestationLores />}
-                {showSpellLores && isAoS && <MobileAoSSpellLores />}
+                {!activeCard && selectedFaction && !showUnits && !activeExtraView && (
+                  <React.Suspense fallback={null}>
+                    <config.FactionComponent />
+                  </React.Suspense>
+                )}
+                {/* Units list */}
+                {showUnits && (
+                  <React.Suspense fallback={null}>
+                    <config.FactionUnitsComponent />
+                  </React.Suspense>
+                )}
+                {/* Extra route views (manifestation lores, spell lores, etc.) */}
+                {activeExtraView && <activeExtraView.Component />}
               </div>
 
               <MobileNav
@@ -382,8 +395,10 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
               top: "0px",
               left: "0px",
             }}
-            className={`data-${activeCard?.source}`}>
-            <Row style={{ overflow: "hidden" }}>{renderCard()}</Row>
+            className={config.cssClass}>
+            <Row style={{ overflow: "hidden" }}>
+              <React.Suspense fallback={null}>{config.renderCard()}</React.Suspense>
+            </Row>
           </div>
           <div
             ref={viewerCardRef}
@@ -397,8 +412,12 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
               top: "0px",
               left: "0px",
             }}
-            className={`data-${activeCard?.source}`}>
-            <Row style={{ overflow: "hidden" }}>{renderCard("viewer")}</Row>
+            className={config.cssClass}>
+            <Row style={{ overflow: "hidden" }}>
+              <React.Suspense fallback={null}>
+                {config.renderCard("viewer", { onBack: handleBackFromCard })}
+              </React.Suspense>
+            </Row>
           </div>
         </Content>
       </Layout>

@@ -1,4 +1,6 @@
-/* MobileNotifications.css - Mobile notification bottom sheet content */
+/* MobileNotifications.css - Mobile notification bottom sheet content (dark theme) */
+
+@import "../../styles/dropdown-tokens.css";
 
 .mobile-notifications {
   padding: 0 0 20px;
@@ -11,7 +13,7 @@
   display: flex;
   justify-content: flex-end;
   padding: 0 20px 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--menu-border);
 }
 
 .mobile-notifications-mark-read {
@@ -20,14 +22,16 @@
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #3b82f6;
+  color: var(--menu-text-muted);
   cursor: pointer;
   border-radius: 8px;
   font-family: inherit;
+  transition: all 0.15s ease;
 }
 
 .mobile-notifications-mark-read:active {
-  background: #eff6ff;
+  background: var(--menu-bg-hover);
+  color: var(--menu-text-main);
 }
 
 /* ===========================================
@@ -39,12 +43,13 @@
   align-items: center;
   justify-content: center;
   padding: 48px 20px;
-  color: #9ca3af;
+  color: var(--menu-text-dim);
 }
 
 .mobile-notifications-empty p {
   margin: 12px 0 0;
   font-size: 14px;
+  color: var(--menu-text-muted);
 }
 
 /* ===========================================
@@ -60,7 +65,7 @@
    =========================================== */
 .mobile-notification-item {
   padding: 16px 20px;
-  border-bottom: 1px solid #f5f5f5;
+  border-bottom: 1px solid var(--menu-border);
 }
 
 .mobile-notification-item:last-child {
@@ -68,7 +73,9 @@
 }
 
 .mobile-notification-item--unread {
-  background: #f0f7ff;
+  background: var(--menu-bg-item);
+  border-left: 2px solid var(--menu-gold);
+  padding-left: 18px;
 }
 
 .mobile-notification-item-header {
@@ -81,7 +88,7 @@
 .mobile-notification-item-title {
   font-size: 15px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--menu-text-main);
 }
 
 .mobile-notification-item-badge {
@@ -91,19 +98,19 @@
   letter-spacing: 0.5px;
   padding: 2px 6px;
   border-radius: 4px;
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(201, 162, 39, 0.2);
+  color: var(--menu-gold-light);
 }
 
 .mobile-notification-item-body {
   margin: 0 0 8px;
   font-size: 14px;
   line-height: 1.5;
-  color: #6b7280;
+  color: var(--menu-text-muted);
 }
 
 /* ===========================================
-   SEVERITY BADGES
+   SEVERITY BADGES (dark variants)
    =========================================== */
 .mobile-notification-item-severity {
   font-size: 10px;
@@ -115,23 +122,23 @@
 }
 
 .mobile-notification-item-severity--info {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
 }
 
 .mobile-notification-item-severity--warning {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
 }
 
 .mobile-notification-item-severity--error {
-  background: #fee2e2;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
 }
 
 .mobile-notification-item-severity--success {
-  background: #d1fae5;
-  color: #065f46;
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
 }
 
 /* ===========================================
@@ -142,7 +149,7 @@
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--menu-text-dim);
 }
 
 .mobile-notification-item-author {
@@ -150,10 +157,10 @@
 }
 
 .mobile-notification-item-author::after {
-  content: "·";
+  content: "\00b7";
   margin-left: 8px;
 }
 
 .mobile-notification-item-time {
-  color: #9ca3af;
+  color: var(--menu-text-dim);
 }

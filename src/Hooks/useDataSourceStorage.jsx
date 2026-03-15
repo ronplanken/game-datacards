@@ -1,5 +1,6 @@
 import localForage from "localforage";
 import React, { useEffect, useCallback } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   get40KData,
   get40k10eData,
@@ -13,7 +14,9 @@ import {
   prepareDatasourceForImport,
   createRegistryEntry,
   compareVersions,
+  getTargetArray,
 } from "../Helpers/customDatasource.helpers";
+import { DEFAULT_DATASOURCE_COLOURS } from "../Helpers/customSchema.helpers";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
@@ -48,9 +51,9 @@ export const DataSourceStorageProviderComponent = (props) => {
     const index = settings.selectedFactionIndex?.[ds];
     // Handle migration from old format (number) to new format (object)
     if (typeof settings.selectedFactionIndex === "number") {
-      return settings.selectedFactionIndex;
+      return Math.max(0, settings.selectedFactionIndex);
     }
-    return typeof index === "number" ? index : 0;
+    return typeof index === "number" && index >= 0 ? index : 0;
   };
 
   useEffect(() => {
@@ -290,11 +293,34 @@ export const DataSourceStorageProviderComponent = (props) => {
   );
 
   /**
+   * Register a custom datasource in the settings registry (e.g. after cloud import)
+   * @param {string} id - The datasource storage ID
+   * @param {string} name - The datasource name
+   * @param {string} cloudId - The cloud database row ID
+   */
+  const registerCustomDatasource = useCallback(
+    (id, name, cloudId) => {
+      const registry = settings.customDatasources || [];
+      if (!registry.some((ds) => ds.id === id)) {
+        updateSettings({
+          ...settings,
+          customDatasources: [...registry, { id, name, cloudId }],
+        });
+      }
+    },
+    [settings, updateSettings],
+  );
+
+  /**
    * Remove a custom datasource
    * @param {string} datasourceId - The datasource ID to remove
+   * @returns {Promise<{cloudId?: string, syncEnabled?: boolean}>} Metadata for caller to handle cloud cleanup
    */
   const removeCustomDatasource = useCallback(
     async (datasourceId) => {
+      const datasource = await dataStore.getItem(datasourceId);
+      const registryEntry = (settings.customDatasources || []).find((ds) => ds.id === datasourceId);
+
       // Remove from localForage
       await dataStore.removeItem(datasourceId);
 
@@ -318,6 +344,12 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
       }
+
+      // Return metadata for caller to handle cloud cleanup
+      return {
+        cloudId: registryEntry?.cloudId || datasource?.cloudId,
+        syncEnabled: datasource?.syncEnabled,
+      };
     },
     [settings, updateSettings],
   );
@@ -437,6 +469,214 @@ export const DataSourceStorageProviderComponent = (props) => {
     return await dataStore.getItem(datasourceId);
   }, []);
 
+  /**
+   * Update sync-related fields on an editor datasource in localForage
+   * @param {string} datasourceId - The datasource storage ID (e.g. "custom-xxx")
+   * @param {Object} syncFields - Fields to merge (syncEnabled, syncStatus, lastSyncedAt, syncError, cloudId, editVersion, isUploaded, isPublished, shareCode, publishedVersion)
+   * @returns {Promise<Object|null>} The updated datasource, or null if not found
+   */
+  const updateDatasourceSyncState = useCallback(
+    async (datasourceId, syncFields) => {
+      const datasource = await dataStore.getItem(datasourceId);
+      // If item doesn't exist, store the syncFields as a complete new entry (for cloud import)
+      const updated = datasource ? { ...datasource, ...syncFields } : { id: datasourceId, ...syncFields };
+      await dataStore.setItem(datasourceId, updated);
+
+      // Bump trigger counter on any sync status change so auto-sync and stats effects re-run
+      // Uses functional update to avoid stale closure when called multiple times rapidly
+      if (syncFields.syncStatus) {
+        updateSettings((prev) => ({
+          ...prev,
+          datasourceSyncTrigger: (prev.datasourceSyncTrigger || 0) + 1,
+        }));
+      }
+
+      return updated;
+    },
+    [updateSettings],
+  );
+
+  /**
+   * Load all custom datasources from localForage
+   * @returns {Promise<Object[]>} Array of full datasource objects
+   */
+  const getAllCustomDatasources = useCallback(async () => {
+    const registry = settings.customDatasources || [];
+    const results = [];
+    for (const entry of registry) {
+      const data = await dataStore.getItem(entry.id);
+      if (data) results.push(data);
+    }
+    return results;
+  }, [settings.customDatasources]);
+
+  /**
+   * Create a new custom datasource from wizard output
+   * @param {Object} metadata - Datasource metadata { name, version, author }
+   * @param {Object} schema - The schema definition from the wizard
+   * @returns {Promise<{success: boolean, id?: string, error?: string}>}
+   */
+  const createCustomDatasource = useCallback(
+    async (metadata, schema) => {
+      if (!metadata?.name || typeof metadata.name !== "string" || metadata.name.trim() === "") {
+        return { success: false, error: "Datasource name is required" };
+      }
+
+      if (!schema || typeof schema !== "object") {
+        return { success: false, error: "Schema is required" };
+      }
+
+      const storageId = `custom-${uuidv4()}`;
+      const now = new Date().toISOString();
+
+      // Create default faction with datasource name
+      const defaultFaction = {
+        id: `${storageId}-default`,
+        name: metadata.name,
+        colours: {
+          header: schema.colours?.header || DEFAULT_DATASOURCE_COLOURS.header,
+          banner: schema.colours?.banner || DEFAULT_DATASOURCE_COLOURS.banner,
+        },
+      };
+
+      // Build the datasource object
+      const datasource = {
+        id: storageId,
+        uuid: uuidv4(),
+        name: metadata.name,
+        version: metadata.version || "1.0.0",
+        author: metadata.author || null,
+        lastUpdated: now,
+        sourceType: "local",
+        syncEnabled: false,
+        syncStatus: "local",
+        lastSyncedAt: null,
+        syncError: null,
+        cloudId: null,
+        editVersion: 0,
+        isUploaded: false,
+        isPublished: false,
+        shareCode: null,
+        publishedVersion: null,
+        schema: {
+          version: schema.version || "1.0.0",
+          baseSystem: schema.baseSystem || "blank",
+          cardTypes: schema.cardTypes || [],
+          ...(schema.colours ? { colours: schema.colours } : {}),
+        },
+        data: [defaultFaction],
+      };
+
+      // Store in localForage
+      await dataStore.setItem(storageId, datasource);
+
+      // Create registry entry and update settings
+      const registryEntry = {
+        id: storageId,
+        name: datasource.name,
+        cardCount: 0,
+        sourceType: "local",
+        sourceUrl: null,
+        version: datasource.version,
+        author: datasource.author,
+        lastUpdated: now,
+        lastCheckedForUpdate: null,
+      };
+
+      const currentCustomDatasources = settings.customDatasources || [];
+
+      updateSettings({
+        ...settings,
+        customDatasources: [...currentCustomDatasources, registryEntry],
+        selectedDataSource: storageId,
+      });
+
+      // Switch active datasource to the new one
+      setDataSource(datasource);
+      setSelectedFaction(defaultFaction);
+
+      return { success: true, id: storageId };
+    },
+    [settings, updateSettings],
+  );
+
+  // Whether the currently selected datasource is a custom one
+  const isCustomDatasource = settings.selectedDataSource?.startsWith("custom-") || false;
+
+  /**
+   * Add a card to the current custom datasource
+   * @param {Object} card - The card to add (must have cardType)
+   * @returns {Promise<void>}
+   */
+  const addCardToDatasource = useCallback(
+    async (card) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(card.cardType);
+      const updatedFaction = {
+        ...selectedFaction,
+        [arrayName]: [...(selectedFaction[arrayName] || []), card],
+      };
+
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
+  /**
+   * Update an existing card in the current custom datasource
+   * @param {Object} card - The updated card (matched by id)
+   * @returns {Promise<void>}
+   */
+  const updateCardInDatasource = useCallback(
+    async (card) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(card.cardType);
+      const existingArray = selectedFaction[arrayName] || [];
+      const updatedArray = existingArray.map((c) => (c.id === card.id ? card : c));
+
+      const updatedFaction = { ...selectedFaction, [arrayName]: updatedArray };
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
+  /**
+   * Delete a card from the current custom datasource
+   * @param {string} cardId - The card ID to delete
+   * @param {string} cardType - The card type (to find correct array)
+   * @returns {Promise<void>}
+   */
+  const deleteCardFromDatasource = useCallback(
+    async (cardId, cardType) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(cardType);
+      const existingArray = selectedFaction[arrayName] || [];
+      const updatedArray = existingArray.filter((c) => c.id !== cardId);
+
+      const updatedFaction = { ...selectedFaction, [arrayName]: updatedArray };
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
   const context = {
     dataSource,
     setDataSource,
@@ -450,11 +690,19 @@ export const DataSourceStorageProviderComponent = (props) => {
     checkForUpdate,
     clearData,
     // Custom datasource functions
+    isCustomDatasource,
+    createCustomDatasource,
     importCustomDatasource,
+    registerCustomDatasource,
     removeCustomDatasource,
     checkCustomDatasourceUpdate,
     applyCustomDatasourceUpdate,
     getCustomDatasourceData,
+    updateDatasourceSyncState,
+    getAllCustomDatasources,
+    addCardToDatasource,
+    updateCardInDatasource,
+    deleteCardFromDatasource,
   };
 
   return <DataSourceStorageContext.Provider value={context}>{props.children}</DataSourceStorageContext.Provider>;

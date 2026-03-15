@@ -2,12 +2,16 @@ import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
+import { CustomCardDisplay } from "../Custom/CustomCardDisplay";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 
 /**
  * CardRenderer - Abstracts card rendering logic for print page.
  * Handles different card sources and applies appropriate display component.
  */
 export const CardRenderer = ({ card, cardScaling, printSide, backgrounds, forcePrintSide }) => {
+  const { isCustomDatasource } = useDataSourceStorage();
+
   if (!card) return null;
 
   const effectiveSide = !card.print_side || forcePrintSide ? printSide : card.print_side;
@@ -37,6 +41,9 @@ export const CardRenderer = ({ card, cardScaling, printSide, backgrounds, forceP
       return <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />;
 
     default:
+      if (isCustomDatasource) {
+        return <CustomCardDisplay card={card} type="print" cardScaling={cardScaling} />;
+      }
       // Fallback for unknown sources - try 40k display
       return <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />;
   }

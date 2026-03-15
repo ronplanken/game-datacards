@@ -74,6 +74,7 @@ export const useSync = () => ({
   syncAllDatasources: () => Promise.resolve({ success: false }),
   syncDatasourcesFromCloud: () => Promise.resolve({ success: false, imported: 0 }),
   deleteLocalDatasourceFromCloud: () => Promise.resolve({ success: false }),
+  disableDatasourceSync: () => Promise.resolve({ success: false }),
   // Template Sync Actions
   uploadTemplate: () => Promise.resolve({ success: false }),
   downloadTemplates: () => Promise.resolve({ success: false, data: [] }),
@@ -117,7 +118,8 @@ export const useSubscription = () => ({
   getRemainingQuota: () => Infinity, // Unlimited local categories
   isOverQuota: () => false,
   // Actions - all no-ops
-  startCheckout: () => Promise.resolve({ success: false }),
+  startCheckout: (/* productId, discountCode */) => Promise.resolve({ success: false }),
+  checkDiscountCode: () => Promise.resolve({ valid: false }),
   openCustomerPortal: () => Promise.resolve({ success: false }),
   refreshSubscription: () => Promise.resolve(),
   fetchUsage: () => Promise.resolve(),
@@ -157,6 +159,9 @@ export const useProducts = () => ({
   loading: false,
   error: null,
   getTierByProductId: () => null,
+  getDiscountForProduct: () => null,
+  getActivePromoCode: () => null,
+  formatDiscountedPrice: () => null,
 });
 
 // =====================================================
@@ -230,7 +235,6 @@ export const SubscriptionBadge = () => null;
 // CUSTOM DATASOURCE COMPONENTS - All render null
 // =====================================================
 
-export const ConvertToDatasourceModal = () => null;
 export const CustomDatasourceModal = () => null;
 export const EditDatasourceMetadataModal = () => null;
 export const ExportDatasourceModal = () => null;
@@ -374,7 +378,6 @@ export const useTemplateSharing = () => ({
   fetchMySubscriptions: () => Promise.resolve([]),
   subscribeToTemplate: () => Promise.resolve({ success: false }),
   unsubscribeFromTemplate: () => Promise.resolve({ success: false }),
-  checkForUpdates: () => Promise.resolve([]),
   // Publishing
   myTemplates: [],
   isLoadingMine: false,
@@ -389,26 +392,37 @@ export const useTemplateSharing = () => ({
 });
 
 /**
- * Game system options constant for templates
+ * Game system options constant for templates (re-exported from shared helpers)
  */
-export const TEMPLATE_GAME_SYSTEMS = [
-  { value: "40k-10e", label: "Warhammer 40k (10th Edition)" },
-  { value: "40k", label: "Warhammer 40k (Legacy)" },
-  { value: "aos", label: "Age of Sigmar" },
-  { value: "necromunda", label: "Necromunda" },
-  { value: "horus-heresy", label: "Horus Heresy" },
-  { value: "basic", label: "Basic/Generic" },
-  { value: "other", label: "Other" },
-];
+export {
+  GAME_SYSTEMS as TEMPLATE_GAME_SYSTEMS,
+  SORT_OPTIONS as TEMPLATE_SORT_OPTIONS,
+} from "../Helpers/sharing.helpers";
+
+// =====================================================
+// CUSTOM CARD EDITOR - Premium only
+// =====================================================
 
 /**
- * Sort options constant for templates
+ * Stub for CustomCardEditor - returns null (premium feature)
+ * Premium implementation provides schema-driven card editing
  */
-export const TEMPLATE_SORT_OPTIONS = [
-  { value: "popular", label: "Most Popular" },
-  { value: "new", label: "Newest" },
-  { value: "subscribers", label: "Most Subscribers" },
-];
+export const CustomCardEditor = () => null;
+
+/**
+ * Stub for CardEditProvider - renders children only (premium feature)
+ */
+export const CardEditProvider = ({ children }) => children;
+
+/**
+ * Stub for CustomUnitEditor - returns null (premium feature)
+ */
+export const CustomUnitEditor = () => null;
+
+/**
+ * Stub for CustomFieldEditor - returns null (premium feature)
+ */
+export const CustomFieldEditor = () => null;
 
 // =====================================================
 // COMMUNITY BROWSER COMPONENTS - Premium only

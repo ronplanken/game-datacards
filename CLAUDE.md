@@ -9,7 +9,9 @@ This is a React 18.3 application built with Vite 7 for fast development and buil
 - Vite 7 with LESS support
 - Ant Design 4.x for UI components
 - Styled Components 6.x for styling
-- Firebase and Supabase for backend services
+- Supabase (self-hosted on Coolify) for backend services
+- TanStack React Query 4.x for server state
+- Fabric.js 7.x / Konva 10.x for canvas rendering (Card Designer)
 - Vitest for testing
 
 ## Documentation
@@ -98,22 +100,28 @@ The app has a dual-mode architecture: a community version with local-only featur
 | Datacard rendering | Yes | Yes |
 | Local storage | Yes | Yes |
 | Printing | Yes | Yes |
+| Datasource Editor | Yes | Yes |
 | User accounts/auth | No | Yes |
 | Cloud sync | No | Yes |
 | Subscription/payments | No | Yes |
-| Custom datasources | No | Yes |
+| Cloud datasource publishing | No | Yes |
+| Community browser | No | Yes |
 | 2FA | No | Yes |
 | Card Designer | No | Yes |
+| Template sharing | No | Yes |
+| Category sharing (owned) | No | Yes |
 
 ### Subscription Tiers
 
-| Tier | Categories | Datasources | Price |
-|------|-----------|-------------|-------|
-| Free | 2 | 0 | - |
-| Premium | 50 | 2 | €3.99/month |
-| Creator | 250 | 10 | €7.99/month |
-| Lifetime | 999 | 99 | Non-purchasable |
-| Admin | 999 | 99 | Non-purchasable |
+| Tier | Categories | Datasources | Templates | Price |
+|------|-----------|-------------|-----------|-------|
+| Free | 2 | 0 | 2 | - |
+| Premium | 50 | 2 | 4 | €3.99/month |
+| Creator | 250 | 10 | 10 | €7.99/month |
+| Lifetime | 999 | 99 | 99 | Non-purchasable |
+| Admin | 999 | 99 | 99 | Non-purchasable |
+
+Tier limits are enforced both client-side (`src/Premium/constants.js`) and server-side via PostgreSQL triggers (see migrations 008, 013, 014).
 
 ### Location
 
@@ -125,16 +133,12 @@ The app has a dual-mode architecture: a community version with local-only featur
 
 The `src/Premium/index.js` file exports stub implementations:
 
-- **Providers** (`AuthProvider`, `SyncProvider`, etc.) - Simply render children, no functionality
-- **Hooks** (`useAuth`, `useSync`, `useSubscription`) - Return safe defaults (e.g., `user: null`, `isAuthenticated: false`)
-- **Components** (`LoginModal`, `AccountButton`, `DesignerPage`, etc.) - Return `null`
+- **Providers** (`AuthProvider`, `SyncProvider`, `SubscriptionProvider`, `CloudCategoriesProvider`, `TemplateStorageProvider`, `TemplateSharingProvider`, `CardEditProvider`) - Simply render children, no functionality
+- **Hooks** (`useAuth`, `useSync`, `useSubscription`, `useCloudCategories`, `usePremiumFeatures`, `useProducts`, `useTemplateStorage`, `useTemplateSharing`, `useDataBinding`, `useTemplateRenderer`) - Return safe defaults
+- **Components** (auth modals, sync indicators, designer pages, community browser, checkout, sharing) - Return `null`
+- **Constants** (`SUBSCRIPTION_LIMITS`, `TEMPLATE_PRESETS`, `TEMPLATE_GAME_SYSTEMS`, `TEMPLATE_SORT_OPTIONS`) - Shared between community and premium
 
-When building with `VITE_USE_PREMIUM_PACKAGE=true`, Vite aliases resolve `./Premium` imports to `@gdc/premium` instead of the stubs. This is configured in `vite.config.js`:
-
-```js
-// Relative paths ending in /Premium get aliased to @gdc/premium
-{ find: /^(\.\.?\/)+Premium$/, replacement: "@gdc/premium" }
-```
+When building with `VITE_USE_PREMIUM_PACKAGE=true`, Vite aliases resolve `./Premium` imports to `@gdc/premium` instead of the stubs. This is configured in `vite.config.js` via a custom `premiumPackageResolver` plugin.
 
 ### Premium Documentation
 
@@ -155,6 +159,124 @@ To work with premium features locally:
 3. Run `yarn link @gdc/premium` in this project
 4. Use `yarn start:premium` to run with premium enabled
 
+### Editing the Premium Package
+
+The `gdc-premium` package lives at `../gdc-premium` and is fully editable. You can add, update, and modify any code in the premium package directly alongside this repository. Changes to premium providers, hooks, components, and features should be made in the premium package source, not in the community stubs. The stubs in `src/Premium/index.js` only need updating when new exports are added to the premium package.
+
+## Datasource Editor
+
+The Datasource Editor (`/datasources`) is a community feature for creating custom card data structures. It provides a three-panel workspace:
+
+- **Left Panel** - Datasource management, card type hierarchy, add/delete/reorder cards
+- **Center Panel** - Live card preview with zoom toolbar (25-200%, auto-fit), schema tree view
+- **Right Panel** - Schema definition editors, card data editor, metadata editor
+
+### Base Systems
+
+Datasources are created for a specific base system that determines rendering and available field types:
+- `40k-10e` - Warhammer 40K 10th Edition (units, stratagems, enhancements, rules)
+- `aos` - Age of Sigmar (warscrolls)
+- `blank` / `custom` - Custom card format with fallback renderers
+
+### Card Types and Schema Editors
+
+| Card Type | Schema Editors | Storage Array |
+|-----------|---------------|---------------|
+| Unit | Stats, Weapons, Abilities, Metadata | datasheets |
+| Stratagem | Fields | stratagems |
+| Enhancement | Fields + Keywords | enhancements |
+| Rule | Fields + Rules | rules |
+
+Specialized editors: `StatsSchemaEditor`, `WeaponsSchemaEditor`, `AbilitiesSchemaEditor`, `MetadataSchemaEditor`, `FieldsSchemaEditor`, `CardTypeSettingsEditor`.
+
+### Datasource Wizard
+
+Two-mode wizard (`src/Components/DatasourceWizard/`) for creating datasources ("create" mode) or adding card types to existing ones ("add-card-type" mode). Steps are dynamically filtered based on base system and card type selection.
+
+### Key Datasource Files
+
+| Feature | Path |
+|---------|------|
+| Editor Page | `src/Pages/DatasourceEditor.jsx` |
+| Help Page | `src/Pages/DatasourceHelp.jsx` |
+| Editor Components | `src/Components/DatasourceEditor/` |
+| Card Renderers | `src/Components/DatasourceEditor/cards/` |
+| Wizard | `src/Components/DatasourceWizard/` |
+| State Hook | `src/Components/DatasourceEditor/hooks/useDatasourceEditorState.js` |
+| Helpers & Validation | `src/Helpers/customDatasource.helpers.js` |
+| Tree Integration | `src/Components/TreeView/TreeDatasource.jsx` |
+
+### Datasource Validation Limits
+
+- Max 200 char names, 50 char versions
+- Max 10 factions, 2000 total cards
+- Schema export/import via JSON
+
+## Card Designer (Premium)
+
+The Card Designer (`/designer`) is a premium-only canvas-based template editor for creating custom card layouts. It requires authentication and the `VITE_FEATURE_DESIGNER_ENABLED` feature flag.
+
+- **DesignerPage** - Main canvas editor with layer panel, floating toolbar, properties panel
+- **TemplateRenderer** - Renders templates with data binding (`{{field}}` syntax)
+- **Template Presets** - Predefined canvas sizes for 40K, AoS, and custom formats
+- **Repeater Frames** - Iterate over arrays (e.g., weapons, abilities)
+- **Help Page** - 12-section guide at `/designer/help`
+
+Templates can be published to the community browser, subscribed to by other users, and synced to cloud storage.
+
+## Supabase Database
+
+Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem.
+
+### Tables
+
+| Table | Purpose |
+|-------|---------|
+| user_profiles | Subscription management, payment info |
+| user_categories | Cloud-synced category storage |
+| user_datasources | Custom datasource sync with edit/published workflow |
+| user_templates | Designer template sync |
+| datasource_subscriptions | Track datasource subscriptions |
+| template_subscriptions | Track template subscriptions |
+| category_shares | Publicly shared categories |
+| sync_metadata | Conflict resolution tracking |
+
+### Migration Overview
+
+| # | Name | Purpose |
+|---|------|---------|
+| 001 | initial_schema | Core tables, user profiles, categories, datasources, shares |
+| 002 | rls_policies | Row Level Security on all tables |
+| 003 | indexes | Performance indexes for queries |
+| 004 | creem_integration | Switch payment provider from Polar to Creem |
+| 005 | tier_support | Premium/Creator tier distinction |
+| 006 | fix_user_categories_trigger | Fix timestamp trigger bug |
+| 007 | realtime_setup | Enable real-time sync with device tracking |
+| 008 | subscription_limit_enforcement | Server-side tier limit enforcement via triggers |
+| 009 | datasource_sharing | Datasource publishing and subscriber tracking |
+| 010 | datasource_rpc | RPC functions for browse, subscribe, publish |
+| 011 | local_datasource_support | Edit/publish workflow with conflict detection |
+| 012 | soft_delete_datasources | Soft delete for datasources |
+| 013 | lifetime_admin_tiers | Lifetime and admin tiers (never expire) |
+| 014 | user_templates | Designer template cloud sync with tier limits |
+| 015 | template_publishing | Template sharing, subscriptions, community browser |
+| 016 | fix_search_path | Security hardening for search-path hijacking |
+| 017 | fix_rls_initplan | RLS performance optimization |
+| 018 | category_sharing | Enhanced category sharing with owned shares |
+
+### Feature Flags
+
+Feature flags (set in `.env`, all default to `true` if omitted):
+
+| Flag | Feature |
+|------|---------|
+| `VITE_FEATURE_AUTH_ENABLED` | User authentication |
+| `VITE_FEATURE_SYNC_ENABLED` | Cloud sync |
+| `VITE_FEATURE_2FA_ENABLED` | Two-factor authentication |
+| `VITE_FEATURE_PAID_TIER_ENABLED` | Subscription payments |
+| `VITE_FEATURE_DESIGNER_ENABLED` | Card Designer |
+| `VITE_FEATURE_COMMUNITY_BROWSER_ENABLED` | Community browser |
+
 ## CI/CD Pipeline
 
 - **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 20)
@@ -173,7 +295,11 @@ When setting up Cloudflare Pages, use these build settings:
 
 ### Environment Variables
 
-See `.env.example` for a complete list of all environment variables and their descriptions.
+See `.env.example` for a complete list of all environment variables and their descriptions. Key variable groups:
+- **Supabase**: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (self-hosted on Coolify)
+- **Datasource URLs**: `VITE_DATASOURCE_9TH_URL`, `VITE_DATASOURCE_10TH_URL`, `VITE_DATASOURCE_AOS_URL`, etc.
+- **Premium**: `VITE_USE_PREMIUM_PACKAGE` (build-time toggle)
+- **Feature flags**: See Feature Flags section above
 
 ## Code Quality
 

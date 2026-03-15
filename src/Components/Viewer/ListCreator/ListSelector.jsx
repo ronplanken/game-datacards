@@ -3,6 +3,7 @@ import { Check, Pencil, Trash2, Plus, X, Cloud, Loader2 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
 import { useCloudCategories, useAuth, usePremiumFeatures } from "../../../Premium";
 import { MobileModal } from "../Mobile/MobileModal";
+import { deleteConfirmDialog } from "../../DeleteConfirmModal";
 import "./ListSelector.css";
 
 // Inline edit input component
@@ -209,9 +210,11 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
   };
 
   const handleDelete = (index) => {
-    if (window.confirm(`Delete "${lists[index].name}"? This cannot be undone.`)) {
-      deleteList(index);
-    }
+    deleteConfirmDialog({
+      title: `Delete "${lists[index].name}"?`,
+      content: "This list will be permanently deleted.",
+      onConfirm: () => deleteList(index),
+    });
   };
 
   // Check if a cloud category is currently selected

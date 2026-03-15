@@ -1,20 +1,13 @@
-import { Download, Hash, Copy, FileJson, Gamepad2, Database, X } from "lucide-react";
-import { Button, Input } from "antd";
+import { Download, Copy, FileJson, Gamepad2, X } from "lucide-react";
+import { Button } from "antd";
 import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
-import {
-  createDatasourceExport,
-  generateDatasourceFilename,
-  generateIdFromName,
-  countCardsByType,
-  formatCardBreakdown,
-} from "../../Helpers/customDatasource.helpers";
 import { useUmami } from "../../Hooks/useUmami";
 import "./ImportExport.css";
 
@@ -42,88 +35,9 @@ export const Exporter = () => {
   const [jsonPreview, setJsonPreview] = useState("");
   const [gwAppPreview, setGwAppPreview] = useState("");
 
-  // Datasource export state
-  const [dsName, setDsName] = useState("");
-  const [dsId, setDsId] = useState("");
-  const [dsVersion, setDsVersion] = useState("1.0.0");
-  const [dsAuthor, setDsAuthor] = useState("");
-  const [dsHeaderColor, setDsHeaderColor] = useState("#1a1a1a");
-  const [dsBannerColor, setDsBannerColor] = useState("#4a4a4a");
-
-  // Initialize datasource form when modal opens or category changes
-  useEffect(() => {
-    if (isModalVisible && activeCategory) {
-      setDsName(activeCategory.name || "");
-      setDsId(generateIdFromName(activeCategory.name || ""));
-      setDsVersion("1.0.0");
-      setDsAuthor("");
-      setDsHeaderColor("#1a1a1a");
-      setDsBannerColor("#4a4a4a");
-    }
-  }, [isModalVisible, activeCategory]);
-
-  // Auto-generate ID when name changes
-  useEffect(() => {
-    if (dsName) {
-      setDsId(generateIdFromName(dsName));
-    }
-  }, [dsName]);
-
   const handleClose = () => {
     setIsModalVisible(false);
     setActiveTab("json");
-  };
-
-  // Get all cards for datasource export
-  const allCategoryCards = useMemo(() => {
-    return getAllCategoryCards(activeCategory, cardStorage.categories);
-  }, [activeCategory, cardStorage.categories]);
-
-  const { counts: cardCounts, total: cardTotal } = useMemo(
-    () => countCardsByType(allCategoryCards),
-    [allCategoryCards],
-  );
-  const cardBreakdown = useMemo(() => formatCardBreakdown(cardCounts), [cardCounts]);
-
-  const isDatasourceValid = dsName.trim() && dsVersion.trim();
-
-  const handleExportDatasource = () => {
-    if (!isDatasourceValid) return;
-
-    try {
-      const datasource = createDatasourceExport({
-        name: dsName.trim(),
-        id: dsId.trim() || generateIdFromName(dsName),
-        version: dsVersion.trim(),
-        author: dsAuthor.trim() || undefined,
-        cards: allCategoryCards,
-        factionName: activeCategory.name,
-        colours: {
-          header: dsHeaderColor,
-          banner: dsBannerColor,
-        },
-      });
-
-      const json = JSON.stringify(datasource, null, 2);
-      const blob = new Blob([json], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const filename = generateDatasourceFilename(dsName);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      trackEvent("export-datasource");
-      message.success(`Datasource exported as ${filename}`);
-      handleClose();
-    } catch (error) {
-      message.error("Failed to export datasource");
-      console.error("Export error:", error);
-    }
   };
 
   // Generate JSON export string
@@ -360,12 +274,6 @@ export const Exporter = () => {
                       <span>GW 40k App</span>
                     </div>
                   </Tooltip>
-                  <div
-                    className={`import-export-nav-item ${activeTab === "datasource" ? "active" : ""}`}
-                    onClick={() => setActiveTab("datasource")}>
-                    <Database size={16} className="import-export-nav-icon" />
-                    <span>Datasource</span>
-                  </div>
                 </nav>
 
                 {/* Content */}
@@ -400,101 +308,6 @@ export const Exporter = () => {
                         </button>
                       </div>
                     </>
-                  )}
-                  {activeTab === "datasource" && (
-                    <div className="ie-datasource-tab">
-                      <p className="import-export-description">
-                        Export this category as a standalone datasource that can be imported and shared with others.
-                      </p>
-                      <div className="ie-ds-summary">
-                        <span className="ie-ds-category">
-                          Category: <strong>{activeCategory?.name}</strong>
-                        </span>
-                        <span className="ie-ds-count">
-                          {cardTotal} card{cardTotal !== 1 ? "s" : ""}
-                          {cardBreakdown && ` (${cardBreakdown})`}
-                        </span>
-                      </div>
-                      <div className="ie-ds-form">
-                        <div className="ie-ds-field">
-                          <label className="ie-ds-label">
-                            Datasource Name <span className="ie-ds-required">*</span>
-                          </label>
-                          <Input
-                            value={dsName}
-                            onChange={(e) => setDsName(e.target.value)}
-                            placeholder="My Custom Army"
-                            size="small"
-                          />
-                        </div>
-                        <div className="ie-ds-row">
-                          <div className="ie-ds-field ie-ds-half">
-                            <label className="ie-ds-label">
-                              Version <span className="ie-ds-required">*</span>
-                            </label>
-                            <Input
-                              value={dsVersion}
-                              onChange={(e) => setDsVersion(e.target.value)}
-                              placeholder="1.0.0"
-                              size="small"
-                            />
-                          </div>
-                          <div className="ie-ds-field ie-ds-half">
-                            <label className="ie-ds-label">Author</label>
-                            <Input
-                              value={dsAuthor}
-                              onChange={(e) => setDsAuthor(e.target.value)}
-                              placeholder="Your name"
-                              size="small"
-                            />
-                          </div>
-                        </div>
-                        <div className="ie-ds-field">
-                          <label className="ie-ds-label">Datasource ID</label>
-                          <Input
-                            value={dsId}
-                            onChange={(e) => setDsId(e.target.value)}
-                            placeholder="my-custom-army"
-                            size="small"
-                            prefix={<Hash size={14} style={{ color: "rgba(0,0,0,0.45)" }} />}
-                          />
-                          <span className="ie-ds-help">Used for linking updates to this datasource</span>
-                        </div>
-                        <div className="ie-ds-field">
-                          <label className="ie-ds-label">Faction Colors</label>
-                          <div className="ie-ds-color-row">
-                            <div className="ie-ds-color-picker">
-                              <span className="ie-ds-color-label">Header</span>
-                              <div className="ie-ds-color-input-wrapper">
-                                <input
-                                  type="color"
-                                  value={dsHeaderColor}
-                                  onChange={(e) => setDsHeaderColor(e.target.value)}
-                                  className="ie-ds-color-input"
-                                />
-                                <span className="ie-ds-color-value">{dsHeaderColor}</span>
-                              </div>
-                            </div>
-                            <div className="ie-ds-color-picker">
-                              <span className="ie-ds-color-label">Banner</span>
-                              <div className="ie-ds-color-input-wrapper">
-                                <input
-                                  type="color"
-                                  value={dsBannerColor}
-                                  onChange={(e) => setDsBannerColor(e.target.value)}
-                                  className="ie-ds-color-input"
-                                />
-                                <span className="ie-ds-color-value">{dsBannerColor}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <button className="ie-action-btn" onClick={handleExportDatasource} disabled={!isDatasourceValid}>
-                        <Download size={14} />
-                        Export Datasource JSON
-                      </button>
-                    </div>
                   )}
                 </div>
               </div>

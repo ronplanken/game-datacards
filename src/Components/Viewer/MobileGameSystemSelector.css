@@ -148,6 +148,36 @@
 }
 
 /* ===========================================
+   SECTION TITLES
+   =========================================== */
+
+.gss-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 8px 4px 4px;
+  margin-top: 4px;
+}
+
+/* ===========================================
+   CUSTOM / SUBSCRIBED OPTIONS
+   =========================================== */
+
+.gss-option-custom:hover,
+.gss-option-custom:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.gss-option-custom:hover .gss-option-arrow,
+.gss-option-custom:focus .gss-option-arrow {
+  color: rgba(255, 255, 255, 0.5);
+  transform: translateX(2px);
+}
+
+/* ===========================================
    ENTRANCE ANIMATIONS
    =========================================== */
 @keyframes gssFadeScale {
@@ -202,6 +232,14 @@
 
 .gss-option-aos {
   animation-delay: 0.35s;
+}
+
+.gss-option-custom {
+  animation-delay: 0.45s;
+}
+
+.gss-section-title {
+  animation: gssFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
 }
 
 /* Press feedback with spring bounce-back */

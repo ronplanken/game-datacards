@@ -47,9 +47,10 @@ export const AppHeader = ({
   const isEditorPage = location.pathname === "/" || location.pathname === "";
   const isViewerPage = location.pathname.startsWith("/viewer");
   const isDesignerPage = location.pathname.startsWith("/designer");
+  const isDatasourcesPage = location.pathname.startsWith("/datasources");
 
-  // Designer page should show all header actions like the Editor does
-  const effectiveShowActions = showActions || isDesignerPage;
+  // Designer and Datasources pages should show all header actions like the Editor does
+  const effectiveShowActions = showActions || isDesignerPage || isDatasourcesPage;
 
   return (
     <>
@@ -77,6 +78,10 @@ export const AppHeader = ({
                 </Link>
                 <Link to="/viewer" className={`app-header-nav-item ${isViewerPage ? "active" : ""}`}>
                   Viewer
+                </Link>
+                <Link to="/datasources" className={`app-header-nav-item ${isDatasourcesPage ? "active" : ""}`}>
+                  Datasources
+                  <span className="app-header-beta-badge">beta</span>
                 </Link>
                 {designerEnabled && isAuthenticated && (
                   <Link to="/designer" className={`app-header-nav-item ${isDesignerPage ? "active" : ""}`}>
@@ -123,6 +128,20 @@ export const AppHeader = ({
                 <div className="app-header-group">
                   <Tooltip content="Designer Help" placement="bottom-end">
                     <button className="app-header-icon-btn" onClick={() => navigate("/designer/help")}>
+                      <HelpCircle size={18} />
+                    </button>
+                  </Tooltip>
+                </div>
+              </>
+            )}
+
+            {/* Datasource help button - only on datasources page */}
+            {isDatasourcesPage && (
+              <>
+                <span className="app-header-separator" />
+                <div className="app-header-group">
+                  <Tooltip content="Datasource Help" placement="bottom-end">
+                    <button className="app-header-icon-btn" onClick={() => navigate("/datasources/help")}>
                       <HelpCircle size={18} />
                     </button>
                   </Tooltip>

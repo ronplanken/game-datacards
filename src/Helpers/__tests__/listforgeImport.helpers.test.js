@@ -419,6 +419,25 @@ describe("listforgeImport.helpers", () => {
       };
       expect(extractWeaponsFromSelection(selection)).toContain("Plasma gun");
     });
+
+    it("should strip arrow prefix from weapon names", () => {
+      const selection = {
+        name: "Daemon Prince",
+        type: "model",
+        selections: [
+          {
+            name: "Hellforged weapons",
+            type: "upgrade",
+            profiles: [
+              { name: "➤ Hellforged weapons - strike", typeName: "Melee Weapons", hidden: false },
+              { name: "➤ Hellforged weapons - sweep", typeName: "Melee Weapons", hidden: false },
+            ],
+          },
+        ],
+      };
+      const weapons = extractWeaponsFromSelection(selection);
+      expect(weapons).toEqual(["Hellforged weapons - strike", "Hellforged weapons - sweep"]);
+    });
   });
 
   // ============================================
@@ -1575,6 +1594,57 @@ describe("listforgeImport.helpers", () => {
       expect(result.rangedWeapons[0].profiles).toHaveLength(1);
       expect(result.meleeWeapons).toHaveLength(1);
       expect(result.meleeWeapons[0].profiles).toHaveLength(1);
+    });
+
+    it("should strip arrow prefix from weapon profile names", () => {
+      const selection = {
+        name: "Daemon Prince",
+        type: "model",
+        profiles: [],
+        selections: [
+          {
+            name: "Hellforged weapons",
+            type: "upgrade",
+            profiles: [
+              {
+                name: "➤ Hellforged weapons - strike",
+                typeName: "Melee Weapons",
+                hidden: false,
+                characteristics: [
+                  { name: "Range", $text: "Melee" },
+                  { name: "A", $text: "7" },
+                  { name: "WS", $text: "2+" },
+                  { name: "S", $text: "8" },
+                  { name: "AP", $text: "-2" },
+                  { name: "D", $text: "3" },
+                  { name: "Keywords", $text: "-" },
+                ],
+              },
+              {
+                name: "➤ Hellforged weapons - sweep",
+                typeName: "Melee Weapons",
+                hidden: false,
+                characteristics: [
+                  { name: "Range", $text: "Melee" },
+                  { name: "A", $text: "14" },
+                  { name: "WS", $text: "2+" },
+                  { name: "S", $text: "6" },
+                  { name: "AP", $text: "-1" },
+                  { name: "D", $text: "1" },
+                  { name: "Keywords", $text: "-" },
+                ],
+              },
+            ],
+            selections: [],
+          },
+        ],
+      };
+
+      const result = extractWeaponProfilesFromSelection(selection);
+      expect(result.meleeWeapons).toHaveLength(1);
+      expect(result.meleeWeapons[0].profiles).toHaveLength(2);
+      expect(result.meleeWeapons[0].profiles[0].name).toBe("Hellforged weapons - strike");
+      expect(result.meleeWeapons[0].profiles[1].name).toBe("Hellforged weapons - sweep");
     });
   });
 

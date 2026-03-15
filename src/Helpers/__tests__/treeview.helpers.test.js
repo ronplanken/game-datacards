@@ -1,4 +1,4 @@
-import { reorder, reorderWithSubCategories, reorderSubCategories, reorderDatasourceItems } from "../treeview.helpers";
+import { reorder, reorderWithSubCategories, reorderSubCategories } from "../treeview.helpers";
 
 describe("treeview.helpers", () => {
   describe("reorder", () => {
@@ -166,37 +166,6 @@ describe("treeview.helpers", () => {
       expect(movedSub.parentId).toBe("parent");
       expect(movedSub.cards).toHaveLength(1);
       expect(movedSub.closed).toBe(true);
-    });
-  });
-
-  describe("reorderDatasourceItems", () => {
-    it("should reorder datasources without affecting categories", () => {
-      const categories = [
-        { uuid: "ds-1", name: "DS 1", type: "local-datasource", cards: [] },
-        { uuid: "ds-2", name: "DS 2", type: "local-datasource", cards: [] },
-        { uuid: "cat-1", name: "Cat 1", type: "category", cards: [] },
-      ];
-
-      const result = reorderDatasourceItems(categories, 0, 1);
-
-      // Datasources reordered
-      expect(result[0].uuid).toBe("ds-2");
-      expect(result[1].uuid).toBe("ds-1");
-      // Category unchanged
-      expect(result[2].uuid).toBe("cat-1");
-      expect(result[2].type).toBe("category");
-    });
-
-    it("should be a no-op for a single datasource", () => {
-      const categories = [
-        { uuid: "ds-1", name: "DS 1", type: "local-datasource", cards: [] },
-        { uuid: "cat-1", name: "Cat 1", type: "category", cards: [] },
-      ];
-
-      const result = reorderDatasourceItems(categories, 0, 0);
-
-      expect(result[0].uuid).toBe("ds-1");
-      expect(result[1].uuid).toBe("cat-1");
     });
   });
 });

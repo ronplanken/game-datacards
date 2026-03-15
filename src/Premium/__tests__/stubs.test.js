@@ -158,7 +158,6 @@ describe("useTemplateSharing stub", () => {
     expect(await sharing.fetchMySubscriptions()).toEqual([]);
     expect(await sharing.subscribeToTemplate("test")).toEqual({ success: false });
     expect(await sharing.unsubscribeFromTemplate("test")).toEqual({ success: false });
-    expect(await sharing.checkForUpdates()).toEqual([]);
   });
 
   it("should return publishing state", () => {

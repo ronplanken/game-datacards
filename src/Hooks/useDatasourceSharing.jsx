@@ -3,10 +3,20 @@ import { message } from "../Components/Toast/message";
 import localForage from "localforage";
 import { supabase } from "../config/supabase";
 import { useSettingsStorage } from "./useSettingsStorage";
-import { validateCustomDatasource, createRegistryEntry } from "../Helpers/customDatasource.helpers";
+import { validateCustomDatasource } from "../Helpers/customDatasource.helpers";
+import { useBrowseState } from "./useBrowseState";
+import {
+  GAME_SYSTEMS as _GAME_SYSTEMS,
+  SORT_OPTIONS as _SORT_OPTIONS,
+  createFetchFunction,
+  createPublishFunction,
+  createUnpublishFunction,
+  createPushUpdateFunction,
+} from "../Helpers/sharing.helpers";
 
-// Debounce delay for update checks (ms)
-const UPDATE_CHECK_DEBOUNCE = 30000;
+// Re-export constants for existing consumers
+export const GAME_SYSTEMS = _GAME_SYSTEMS;
+export const SORT_OPTIONS = _SORT_OPTIONS;
 
 // Create localForage instance for datasource data
 var dataStore = localForage.createInstance({
@@ -16,37 +26,12 @@ var dataStore = localForage.createInstance({
 // Create context for datasource sharing state
 const DatasourceSharingContext = createContext(null);
 
-// Game system options
-export const GAME_SYSTEMS = [
-  { value: "40k-10e", label: "Warhammer 40k (10th Edition)" },
-  { value: "40k", label: "Warhammer 40k (Legacy)" },
-  { value: "aos", label: "Age of Sigmar" },
-  { value: "necromunda", label: "Necromunda" },
-  { value: "horus-heresy", label: "Horus Heresy" },
-  { value: "basic", label: "Basic/Generic" },
-  { value: "other", label: "Other" },
-];
-
-// Sort options
-export const SORT_OPTIONS = [
-  { value: "popular", label: "Most Popular" },
-  { value: "new", label: "Newest" },
-  { value: "subscribers", label: "Most Subscribers" },
-];
+// Polling interval for subscription updates (ms)
+const SUBSCRIPTION_POLL_INTERVAL = 30000;
 
 // Provider component
 export function DatasourceSharingProvider({ children, user = null, canPerformAction = () => true }) {
   const { settings, updateSettings } = useSettingsStorage();
-
-  // Browse state
-  const [publicDatasources, setPublicDatasources] = useState([]);
-  const [isLoadingPublic, setIsLoadingPublic] = useState(false);
-  const [browseFilters, setBrowseFilters] = useState({
-    gameSystem: null,
-    search: "",
-    sortBy: "popular",
-  });
-  const [pagination, setPagination] = useState({ offset: 0, hasMore: true });
 
   // Subscriptions state
   const [subscriptions, setSubscriptions] = useState([]);
@@ -60,139 +45,69 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
   // Upload/publish state
   const [isUploading, setIsUploading] = useState(false);
 
-  // Refs
-  const updateCheckTimeoutRef = useRef(null);
-  const lastUpdateCheckRef = useRef(null);
+  // Polling ref
+  const pollIntervalRef = useRef(null);
+
+  // Browse state via composable hook
+  const {
+    publicItems: publicDatasources,
+    isLoadingPublic,
+    browseFilters,
+    setBrowseFilters,
+    pagination,
+    browsePublic: browsePublicDatasources,
+    getFeatured: getFeaturedDatasources,
+    getByShareCode: getDatasourceByShareCode,
+    updatePublicItem,
+  } = useBrowseState({
+    supabase,
+    browseRpc: "browse_public_datasources",
+    featuredRpc: "get_featured_datasources",
+    shareCodeRpc: "get_datasource_by_share_code",
+    entityLabel: "datasources",
+  });
 
   // ============================================
-  // BROWSING FUNCTIONS
+  // RPC WRAPPERS (via factory functions)
   // ============================================
 
-  /**
-   * Browse public datasources with filters and pagination
-   */
-  const browsePublicDatasources = useCallback(
-    async (filters = {}, reset = false) => {
-      setIsLoadingPublic(true);
-
-      const mergedFilters = { ...browseFilters, ...filters };
-      const offset = reset ? 0 : pagination.offset;
-
-      try {
-        const { data, error } = await supabase.rpc("browse_public_datasources", {
-          p_game_system: mergedFilters.gameSystem || null,
-          p_search_query: mergedFilters.search || null,
-          p_sort_by: mergedFilters.sortBy || "popular",
-          p_limit: 20,
-          p_offset: offset,
-        });
-
-        if (error) {
-          console.error("Browse datasources error:", error);
-          message.error("Failed to load datasources");
-          return [];
-        }
-
-        const results = data || [];
-
-        if (reset) {
-          setPublicDatasources(results);
-          setPagination({ offset: results.length, hasMore: results.length === 20 });
-        } else {
-          setPublicDatasources((prev) => [...prev, ...results]);
-          setPagination((prev) => ({
-            offset: prev.offset + results.length,
-            hasMore: results.length === 20,
-          }));
-        }
-
-        setBrowseFilters(mergedFilters);
-        return results;
-      } catch (err) {
-        console.error("Browse datasources exception:", err);
-        message.error("Failed to load datasources");
-        return [];
-      } finally {
-        setIsLoadingPublic(false);
-      }
-    },
-    [browseFilters, pagination.offset],
+  const fetchMySubscriptionsRpc = useCallback(
+    () => createFetchFunction(supabase, "get_my_subscriptions", "subscriptions")(),
+    [],
   );
-
-  /**
-   * Get featured datasources
-   */
-  const getFeaturedDatasources = useCallback(async () => {
-    try {
-      const { data, error } = await supabase.rpc("get_featured_datasources", {
-        p_limit: 6,
-      });
-
-      if (error) {
-        console.error("Get featured error:", error);
-        return [];
-      }
-
-      return data || [];
-    } catch (err) {
-      console.error("Get featured exception:", err);
-      return [];
-    }
-  }, []);
-
-  /**
-   * Get datasource by share code
-   */
-  const getDatasourceByShareCode = useCallback(async (shareCode) => {
-    try {
-      const { data, error } = await supabase.rpc("get_datasource_by_share_code", {
-        p_share_code: shareCode,
-      });
-
-      if (error) {
-        console.error("Get by share code error:", error);
-        return null;
-      }
-
-      return data?.[0] || null;
-    } catch (err) {
-      console.error("Get by share code exception:", err);
-      return null;
-    }
-  }, []);
+  const fetchMyDatasourcesRpc = useCallback(
+    () => createFetchFunction(supabase, "get_my_datasources", "my datasources")(),
+    [],
+  );
+  const publishDatasourceRpc = useCallback(
+    (id, opts) => createPublishFunction(supabase, "publish_datasource", "datasource")(id, opts),
+    [],
+  );
+  const unpublishDatasourceRpc = useCallback(
+    (id) => createUnpublishFunction(supabase, "unpublish_datasource", "datasource")(id),
+    [],
+  );
+  const pushDatasourceUpdateRpc = useCallback(
+    (id) => createPushUpdateFunction(supabase, "push_datasource_update", "datasource")(id),
+    [],
+  );
 
   // ============================================
   // SUBSCRIPTION FUNCTIONS
   // ============================================
 
-  /**
-   * Fetch user's subscriptions
-   */
   const fetchMySubscriptions = useCallback(async () => {
     if (!user) return [];
-
     setIsLoadingSubscriptions(true);
     try {
-      const { data, error } = await supabase.rpc("get_my_subscriptions");
-
-      if (error) {
-        console.error("Get subscriptions error:", error);
-        return [];
-      }
-
-      setSubscriptions(data || []);
-      return data || [];
-    } catch (err) {
-      console.error("Get subscriptions exception:", err);
-      return [];
+      const data = await fetchMySubscriptionsRpc();
+      setSubscriptions(data);
+      return data;
     } finally {
       setIsLoadingSubscriptions(false);
     }
-  }, [user]);
+  }, [user, fetchMySubscriptionsRpc]);
 
-  /**
-   * Subscribe to a public datasource
-   */
   const subscribeToDatasource = useCallback(
     async (datasourceId) => {
       if (!user) {
@@ -201,7 +116,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
       }
 
       try {
-        // Call RPC to create subscription
         const { data: result, error } = await supabase.rpc("subscribe_to_datasource", {
           p_datasource_id: datasourceId,
         });
@@ -230,16 +144,9 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           return { success: false, error: "Failed to download" };
         }
 
-        // Import to local storage as read-only
         await importFromSubscription(datasource);
-
-        // Refresh subscriptions list
         await fetchMySubscriptions();
-
-        // Update browse list to show subscribed state
-        setPublicDatasources((prev) =>
-          prev.map((ds) => (ds.id === datasourceId ? { ...ds, is_subscribed: true } : ds)),
-        );
+        updatePublicItem(datasourceId, { is_subscribed: true });
 
         message.success(`Subscribed to "${datasource.name}"`);
         return { success: true };
@@ -249,12 +156,9 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMySubscriptions],
+    [user, fetchMySubscriptions, updatePublicItem],
   );
 
-  /**
-   * Unsubscribe from a datasource
-   */
   const unsubscribeFromDatasource = useCallback(
     async (datasourceId, removeLocal = true) => {
       if (!user) {
@@ -272,20 +176,12 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           return { success: false, error: error.message };
         }
 
-        // Remove from local storage if requested
         if (removeLocal) {
           await removeSubscribedDatasource(datasourceId);
         }
 
-        // Refresh subscriptions list
         await fetchMySubscriptions();
-
-        // Update browse list
-        setPublicDatasources((prev) =>
-          prev.map((ds) => (ds.id === datasourceId ? { ...ds, is_subscribed: false } : ds)),
-        );
-
-        // Remove from available updates
+        updatePublicItem(datasourceId, { is_subscribed: false });
         setAvailableUpdates((prev) => prev.filter((u) => u.datasource_id !== datasourceId));
 
         message.success("Unsubscribed successfully");
@@ -296,41 +192,14 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         return { success: false, error: err.message };
       }
     },
-    [user, fetchMySubscriptions],
+    [user, fetchMySubscriptions, updatePublicItem],
   );
 
-  /**
-   * Check for available updates on subscriptions
-   */
-  const checkForUpdates = useCallback(async () => {
-    if (!user) return [];
-
-    try {
-      const { data, error } = await supabase.rpc("get_subscription_updates");
-
-      if (error) {
-        console.error("Check updates error:", error);
-        return [];
-      }
-
-      setAvailableUpdates(data || []);
-      lastUpdateCheckRef.current = Date.now();
-      return data || [];
-    } catch (err) {
-      console.error("Check updates exception:", err);
-      return [];
-    }
-  }, [user]);
-
-  /**
-   * Sync a single subscription to get the latest version
-   */
   const syncSubscription = useCallback(
     async (subscriptionId, datasourceId) => {
       if (!user) return { success: false };
 
       try {
-        // Download latest data
         const { data: datasource, error: fetchError } = await supabase
           .from("user_datasources")
           .select("*")
@@ -342,10 +211,8 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           return { success: false, error: "Failed to fetch" };
         }
 
-        // Update local storage
         await updateSubscribedDatasource(datasource);
 
-        // Mark as synced in database
         const { error: markError } = await supabase.rpc("mark_subscription_synced", {
           p_subscription_id: subscriptionId,
           p_version: datasource.version_number,
@@ -355,10 +222,7 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           console.error("Mark synced error:", markError);
         }
 
-        // Remove from available updates
         setAvailableUpdates((prev) => prev.filter((u) => u.subscription_id !== subscriptionId));
-
-        // Refresh subscriptions
         await fetchMySubscriptions();
 
         message.success(`Updated "${datasource.name}"`);
@@ -371,9 +235,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     [user, fetchMySubscriptions],
   );
 
-  /**
-   * Sync all subscriptions with available updates
-   */
   const syncAllSubscriptions = useCallback(async () => {
     for (const update of availableUpdates) {
       await syncSubscription(update.subscription_id, update.datasource_id);
@@ -384,34 +245,19 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
   // LOCAL STORAGE FUNCTIONS
   // ============================================
 
-  /**
-   * Import a subscribed datasource as read-only
-   */
   const importFromSubscription = useCallback(
     async (subscriptionData) => {
       const { id, name, data, version, version_number, author_name, user_id } = subscriptionData;
 
-      // Generate local ID for storage
       const localId = `subscribed-${id}`;
-
-      // Prepare datasource with subscription metadata
-      // data.data is always an array of factions (standard format)
-      const prepared = {
-        ...data,
-        id: localId,
-      };
-
-      // Store in localForage
+      const prepared = { ...data, id: localId };
       await dataStore.setItem(localId, prepared);
 
-      // Count cards in the datasource
-      // data.data is an array of factions, each faction has cards/datasheets/units
       const cardCount = (data.data || []).reduce((sum, faction) => {
         const cards = faction?.datasheets?.length || faction?.units?.length || faction?.cards?.length || 0;
         return sum + cards;
       }, 0);
 
-      // Create registry entry with subscription info
       const registryEntry = {
         id: localId,
         name,
@@ -420,7 +266,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         version,
         author: author_name,
         lastUpdated: new Date().toISOString(),
-        // Subscription-specific fields
         cloudId: id,
         isSubscribed: true,
         authorId: user_id,
@@ -429,10 +274,7 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         isReadOnly: true,
       };
 
-      // Update settings with new datasource
       const currentCustomDatasources = settings.customDatasources || [];
-
-      // Check if already exists (update instead of add)
       const existingIndex = currentCustomDatasources.findIndex((ds) => ds.cloudId === id);
       let updatedDatasources;
 
@@ -443,25 +285,16 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         updatedDatasources = [...currentCustomDatasources, registryEntry];
       }
 
-      updateSettings({
-        ...settings,
-        customDatasources: updatedDatasources,
-      });
+      updateSettings({ ...settings, customDatasources: updatedDatasources });
     },
     [settings, updateSettings],
   );
 
-  /**
-   * Update a subscribed datasource with new version
-   */
   const updateSubscribedDatasource = useCallback(
     async (subscriptionData) => {
       const localId = `subscribed-${subscriptionData.id}`;
-
-      // Update localForage
       await dataStore.setItem(localId, { ...subscriptionData.data, id: localId });
 
-      // Update registry entry
       const updated = (settings.customDatasources || []).map((ds) =>
         ds.cloudId === subscriptionData.id
           ? {
@@ -478,31 +311,22 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     [settings, updateSettings],
   );
 
-  /**
-   * Remove a subscribed datasource from local storage
-   */
   const removeSubscribedDatasource = useCallback(
     async (cloudId) => {
       const entry = (settings.customDatasources || []).find((ds) => ds.cloudId === cloudId);
       if (!entry) return;
 
-      // Remove from localForage
       await dataStore.removeItem(entry.id);
 
-      // Remove from registry
       updateSettings({
         ...settings,
         customDatasources: (settings.customDatasources || []).filter((ds) => ds.cloudId !== cloudId),
-        // If this was selected, switch to basic
         selectedDataSource: settings.selectedDataSource === entry.id ? "basic" : settings.selectedDataSource,
       });
     },
     [settings, updateSettings],
   );
 
-  /**
-   * Get all subscribed datasources
-   */
   const getSubscribedDatasources = useCallback(() => {
     return (settings.customDatasources || []).filter((ds) => ds.isSubscribed);
   }, [settings.customDatasources]);
@@ -511,34 +335,18 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
   // PUBLISHING FUNCTIONS
   // ============================================
 
-  /**
-   * Fetch user's own uploaded/published datasources
-   */
   const fetchMyDatasources = useCallback(async () => {
     if (!user) return [];
-
     setIsLoadingMine(true);
     try {
-      const { data, error } = await supabase.rpc("get_my_datasources");
-
-      if (error) {
-        console.error("Get my datasources error:", error);
-        return [];
-      }
-
-      setMyDatasources(data || []);
-      return data || [];
-    } catch (err) {
-      console.error("Get my datasources exception:", err);
-      return [];
+      const data = await fetchMyDatasourcesRpc();
+      setMyDatasources(data);
+      return data;
     } finally {
       setIsLoadingMine(false);
     }
-  }, [user]);
+  }, [user, fetchMyDatasourcesRpc]);
 
-  /**
-   * Upload a local datasource to the cloud
-   */
   const uploadDatasource = useCallback(
     async (datasourceData, metadata) => {
       if (!user) {
@@ -546,13 +354,11 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         return { success: false, error: "Not authenticated" };
       }
 
-      // Check tier permissions
       if (!canPerformAction("upload_datasource")) {
         message.error("Upgrade your subscription to upload datasources");
         return { success: false, error: "Subscription required" };
       }
 
-      // Validate datasource
       const validation = validateCustomDatasource(datasourceData);
       if (!validation.isValid) {
         message.error(`Invalid datasource: ${validation.errors.join(", ")}`);
@@ -563,20 +369,14 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
       try {
         const { name, version, authorName, displayFormat } = metadata;
 
-        const { data, error } = await supabase
-          .from("user_datasources")
-          .insert({
-            user_id: user.id,
-            datasource_id: datasourceData.id || `ds-${Date.now()}`,
-            name,
-            data: datasourceData,
-            version: version || "1.0.0",
-            author_name: authorName || user.email?.split("@")[0] || "Anonymous",
-            display_format: displayFormat,
-            is_public: false,
-          })
-          .select()
-          .single();
+        const { data, error } = await supabase.rpc("upsert_datasource", {
+          p_datasource_id: datasourceData.id || `ds-${Date.now()}`,
+          p_name: name,
+          p_data: datasourceData,
+          p_version: version || "1.0.0",
+          p_author_name: authorName || user.email?.split("@")[0] || "Anonymous",
+          p_display_format: displayFormat,
+        });
 
         if (error) {
           console.error("Upload error:", error);
@@ -584,23 +384,23 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           return { success: false, error: error.message };
         }
 
-        // Update local registry with cloudId
+        if (!data?.success) {
+          message.error(data?.error || "Failed to upload datasource");
+          return { success: false, error: data?.error };
+        }
+
         const updatedDatasources = (settings.customDatasources || []).map((ds) =>
-          ds.id === datasourceData.id
-            ? {
-                ...ds,
-                cloudId: data.id,
-                isUploaded: true,
-              }
-            : ds,
+          ds.id === datasourceData.id ? { ...ds, cloudId: data.id, isUploaded: true } : ds,
         );
 
         updateSettings({ ...settings, customDatasources: updatedDatasources });
-
-        // Refresh my datasources
         await fetchMyDatasources();
 
-        message.success("Datasource uploaded to cloud");
+        if (data.restored) {
+          message.success("Datasource restored from cloud");
+        } else {
+          message.success("Datasource uploaded to cloud");
+        }
         return { success: true, cloudId: data.id };
       } catch (err) {
         console.error("Upload exception:", err);
@@ -613,91 +413,35 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     [user, canPerformAction, settings, updateSettings, fetchMyDatasources],
   );
 
-  /**
-   * Publish an uploaded datasource (make public)
-   */
   const publishDatasource = useCallback(
     async (datasourceDbId, options = {}) => {
-      if (!user) {
-        return { success: false, error: "Not authenticated" };
-      }
-
-      try {
-        const { description, gameSystem } = options;
-
-        const { data: result, error } = await supabase.rpc("publish_datasource", {
-          p_datasource_db_id: datasourceDbId,
-          p_description: description || null,
-          p_game_system: gameSystem || null,
-        });
-
-        if (error) {
-          console.error("Publish error:", error);
-          message.error("Failed to publish datasource");
-          return { success: false, error: error.message };
-        }
-
-        if (!result?.success) {
-          message.error(result?.error || "Failed to publish");
-          return { success: false, error: result?.error };
-        }
-
-        // Refresh my datasources
+      if (!user) return { success: false, error: "Not authenticated" };
+      const result = await publishDatasourceRpc(datasourceDbId, options);
+      if (result.success) {
         await fetchMyDatasources();
-
-        message.success("Datasource published! Share code: " + result.share_code);
-        return { success: true, shareCode: result.share_code };
-      } catch (err) {
-        console.error("Publish exception:", err);
-        message.error("Failed to publish datasource");
-        return { success: false, error: err.message };
+        message.success("Datasource published! Share code: " + result.shareCode);
       }
+      return result;
     },
-    [user, fetchMyDatasources],
+    [user, publishDatasourceRpc, fetchMyDatasources],
   );
 
-  /**
-   * Unpublish a datasource (make private)
-   */
   const unpublishDatasource = useCallback(
     async (datasourceDbId) => {
-      if (!user) {
-        return { success: false, error: "Not authenticated" };
-      }
-
-      try {
-        const { data: result, error } = await supabase.rpc("unpublish_datasource", {
-          p_datasource_db_id: datasourceDbId,
-        });
-
-        if (error) {
-          console.error("Unpublish error:", error);
-          message.error("Failed to unpublish");
-          return { success: false, error: error.message };
-        }
-
-        // Refresh my datasources
+      if (!user) return { success: false, error: "Not authenticated" };
+      const result = await unpublishDatasourceRpc(datasourceDbId);
+      if (result.success) {
         await fetchMyDatasources();
-
         message.success("Datasource is now private");
-        return { success: true };
-      } catch (err) {
-        console.error("Unpublish exception:", err);
-        message.error("Failed to unpublish");
-        return { success: false, error: err.message };
       }
+      return result;
     },
-    [user, fetchMyDatasources],
+    [user, unpublishDatasourceRpc, fetchMyDatasources],
   );
 
-  /**
-   * Update a published datasource (increments version)
-   */
   const updatePublishedDatasource = useCallback(
     async (datasourceDbId, newData) => {
-      if (!user) {
-        return { success: false, error: "Not authenticated" };
-      }
+      if (!user) return { success: false, error: "Not authenticated" };
 
       try {
         const { data: result, error } = await supabase.rpc("update_published_datasource", {
@@ -717,9 +461,7 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           return { success: false, error: result?.error };
         }
 
-        // Refresh my datasources
         await fetchMyDatasources();
-
         message.success("Datasource updated");
         return { success: true, newVersion: result.new_version_number };
       } catch (err) {
@@ -731,20 +473,13 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     [user, fetchMyDatasources],
   );
 
-  /**
-   * Publish a local datasource (copy edit_data to published_data, make public)
-   * Used for datasources that were created in the treeview and uploaded via useSync
-   */
   const publishLocalDatasource = useCallback(
     async (cloudId, options = {}) => {
-      if (!user) {
-        return { success: false, error: "Not authenticated" };
-      }
+      if (!user) return { success: false, error: "Not authenticated" };
 
       try {
         const { description, gameSystem } = options;
 
-        // Call RPC function that copies edit_data to published_data
         const { data: result, error } = await supabase.rpc("publish_local_datasource", {
           p_datasource_db_id: cloudId,
           p_description: description || null,
@@ -762,15 +497,9 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           return { success: false, error: result?.error };
         }
 
-        // Refresh my datasources list
         await fetchMyDatasources();
-
         message.success("Datasource published! Share code: " + result.share_code);
-        return {
-          success: true,
-          shareCode: result.share_code,
-          versionNumber: result.version_number,
-        };
+        return { success: true, shareCode: result.share_code, versionNumber: result.version_number };
       } catch (err) {
         console.error("Publish local datasource exception:", err);
         message.error("Failed to publish datasource");
@@ -780,65 +509,27 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     [user, fetchMyDatasources],
   );
 
-  /**
-   * Push update to subscribers (copy edit_data to published_data, increment version)
-   * Used after making changes to a published local datasource
-   */
   const pushDatasourceUpdate = useCallback(
     async (cloudId) => {
-      if (!user) {
-        return { success: false, error: "Not authenticated" };
-      }
-
-      try {
-        // Call RPC function that copies edit_data to published_data and increments version
-        const { data: result, error } = await supabase.rpc("push_datasource_update", {
-          p_datasource_db_id: cloudId,
-        });
-
-        if (error) {
-          console.error("Push update error:", error);
-          message.error("Failed to push update");
-          return { success: false, error: error.message };
-        }
-
-        if (!result?.success) {
-          message.error(result?.error || "Failed to push update");
-          return { success: false, error: result?.error };
-        }
-
-        // Refresh my datasources list
+      if (!user) return { success: false, error: "Not authenticated" };
+      const result = await pushDatasourceUpdateRpc(cloudId);
+      if (result.success) {
         await fetchMyDatasources();
-
-        message.success(`Update pushed (version ${result.new_version_number})`);
-        return {
-          success: true,
-          newVersionNumber: result.new_version_number,
-        };
-      } catch (err) {
-        console.error("Push update exception:", err);
-        message.error("Failed to push update");
-        return { success: false, error: err.message };
+        message.success(`Update pushed (version ${result.newVersionNumber})`);
       }
+      return result;
     },
-    [user, fetchMyDatasources],
+    [user, pushDatasourceUpdateRpc, fetchMyDatasources],
   );
 
-  /**
-   * Delete a datasource from cloud
-   */
   const deleteDatasource = useCallback(
     async (datasourceDbId) => {
-      if (!user) {
-        return { success: false, error: "Not authenticated" };
-      }
+      if (!user) return { success: false, error: "Not authenticated" };
 
       try {
-        const { error } = await supabase
-          .from("user_datasources")
-          .delete()
-          .eq("id", datasourceDbId)
-          .eq("user_id", user.id);
+        const { data, error } = await supabase.rpc("delete_local_datasource", {
+          p_datasource_db_id: datasourceDbId,
+        });
 
         if (error) {
           console.error("Delete datasource error:", error);
@@ -846,14 +537,16 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
           return { success: false, error: error.message };
         }
 
-        // Remove cloudId from local registry
+        if (!data?.success) {
+          message.error(data?.error || "Failed to delete datasource");
+          return { success: false, error: data?.error };
+        }
+
         const updatedDatasources = (settings.customDatasources || []).map((ds) =>
           ds.cloudId === datasourceDbId ? { ...ds, cloudId: null, isUploaded: false } : ds,
         );
 
         updateSettings({ ...settings, customDatasources: updatedDatasources });
-
-        // Refresh my datasources
         await fetchMyDatasources();
 
         message.success("Datasource deleted from cloud");
@@ -868,74 +561,46 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
   );
 
   // ============================================
-  // REALTIME SUBSCRIPTIONS
+  // POLLING FOR SUBSCRIPTION UPDATES
   // ============================================
 
-  /**
-   * Handle realtime updates for subscribed datasources
-   */
-  const handleRealtimeUpdate = useCallback(
-    (payload) => {
-      const { eventType, new: newRecord } = payload;
+  const checkForUpdates = useCallback(async () => {
+    if (!user) return;
 
-      if (eventType !== "UPDATE") return;
+    try {
+      const { data, error } = await supabase.rpc("get_subscription_updates");
 
-      // Check if this is a datasource we're subscribed to
-      const subscription = subscriptions.find((s) => s.datasource_id === newRecord.id);
-      if (!subscription) return;
-
-      // Check if there's a new version
-      if (newRecord.version_number > subscription.subscribed_version) {
-        // Add to available updates
-        setAvailableUpdates((prev) => {
-          if (prev.some((u) => u.datasource_id === newRecord.id)) return prev;
-          return [
-            ...prev,
-            {
-              subscription_id: subscription.subscription_id,
-              datasource_id: newRecord.id,
-              datasource_name: newRecord.name,
-              current_version: newRecord.version_number,
-              subscribed_version: subscription.subscribed_version,
-              updated_at: newRecord.updated_at,
-            },
-          ];
-        });
+      if (error) {
+        console.error("Check subscription updates error:", error);
+        return;
       }
-    },
-    [subscriptions],
-  );
 
-  // Subscribe to realtime changes for subscribed datasources
-  useEffect(() => {
-    if (!user || subscriptions.length === 0) return;
+      const updates = data || [];
 
-    const subscribedIds = subscriptions.map((s) => s.datasource_id);
-    if (subscribedIds.length === 0) return;
+      // Detect removals: subscribed datasources missing from results
+      const subscribedLocal = getSubscribedDatasources();
+      const returnedIds = new Set(updates.map((u) => u.datasource_id));
 
-    // Create channel for datasource updates
-    const channel = supabase
-      .channel(`datasource-updates-${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "user_datasources",
-        },
-        (payload) => {
-          // Filter to only subscribed datasources
-          if (subscribedIds.includes(payload.new?.id)) {
-            handleRealtimeUpdate(payload);
+      for (const local of subscribedLocal) {
+        if (local.cloudId && !returnedIds.has(local.cloudId)) {
+          // Check if still in subscriptions list - if not, it was removed/unpublished
+          const stillSubscribed = subscriptions.some((s) => s.datasource_id === local.cloudId);
+          if (stillSubscribed) {
+            // The datasource was deleted or unpublished by author
+            setSubscriptions((prev) => prev.filter((s) => s.datasource_id !== local.cloudId));
+            setAvailableUpdates((prev) => prev.filter((u) => u.datasource_id !== local.cloudId));
+            message.warning(`Subscribed datasource "${local.name}" was removed by its author`);
           }
-        },
-      )
-      .subscribe();
+        }
+      }
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user, subscriptions, handleRealtimeUpdate]);
+      // Set available updates
+      const newUpdates = updates.filter((u) => u.has_update);
+      setAvailableUpdates(newUpdates);
+    } catch (err) {
+      console.error("Check subscription updates exception:", err);
+    }
+  }, [user, subscriptions, getSubscribedDatasources]);
 
   // ============================================
   // EFFECTS
@@ -946,36 +611,36 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     if (user) {
       fetchMySubscriptions();
       fetchMyDatasources();
-      // Debounced update check
-      updateCheckTimeoutRef.current = setTimeout(() => {
-        checkForUpdates();
-      }, 1000);
     } else {
       setSubscriptions([]);
       setMyDatasources([]);
       setAvailableUpdates([]);
     }
-
-    return () => {
-      if (updateCheckTimeoutRef.current) {
-        clearTimeout(updateCheckTimeoutRef.current);
-      }
-    };
   }, [user]);
 
-  // Periodic update check
+  // Poll for subscription updates every 30 seconds
   useEffect(() => {
-    if (!user) return;
-
-    const interval = setInterval(() => {
-      // Only check if enough time has passed
-      if (!lastUpdateCheckRef.current || Date.now() - lastUpdateCheckRef.current > UPDATE_CHECK_DEBOUNCE) {
-        checkForUpdates();
+    if (!user || subscriptions.length === 0) {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
       }
-    }, UPDATE_CHECK_DEBOUNCE);
+      return;
+    }
 
-    return () => clearInterval(interval);
-  }, [user, checkForUpdates]);
+    // Initial check
+    checkForUpdates();
+
+    // Set up polling interval
+    pollIntervalRef.current = setInterval(checkForUpdates, SUBSCRIPTION_POLL_INTERVAL);
+
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, [user, subscriptions.length, checkForUpdates]);
 
   // ============================================
   // CONTEXT VALUE
@@ -999,7 +664,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     fetchMySubscriptions,
     subscribeToDatasource,
     unsubscribeFromDatasource,
-    checkForUpdates,
     syncSubscription,
     syncAllSubscriptions,
     getSubscribedDatasources,
@@ -1030,7 +694,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
 export function useDatasourceSharing() {
   const context = useContext(DatasourceSharingContext);
   if (!context) {
-    // Return safe defaults if used outside provider
     return {
       publicDatasources: [],
       isLoadingPublic: false,
@@ -1046,7 +709,6 @@ export function useDatasourceSharing() {
       fetchMySubscriptions: () => Promise.resolve([]),
       subscribeToDatasource: () => Promise.resolve({ success: false }),
       unsubscribeFromDatasource: () => Promise.resolve({ success: false }),
-      checkForUpdates: () => Promise.resolve([]),
       syncSubscription: () => Promise.resolve({ success: false }),
       syncAllSubscriptions: () => Promise.resolve(),
       getSubscribedDatasources: () => [],

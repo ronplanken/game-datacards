@@ -1,20 +1,4 @@
-import {
-  Trash2,
-  File,
-  Inbox,
-  Upload,
-  Link,
-  Download,
-  CheckCircle,
-  AlertCircle,
-  Settings,
-  X,
-  Users,
-  FileJson,
-  Gamepad2,
-  Database,
-  Swords,
-} from "lucide-react";
+import { Trash2, File, Inbox, Upload, X, Users, FileJson, Gamepad2, Swords } from "lucide-react";
 import { Button } from "antd";
 import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
@@ -26,7 +10,6 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { v4 as uuidv4 } from "uuid";
-import { validateCustomDatasource, countDatasourceCards } from "../../Helpers/customDatasource.helpers";
 import { useUmami } from "../../Hooks/useUmami";
 import { GwAppTab } from "./tabs/GwAppTab";
 import { ListForgeTab } from "./tabs/ListForgeTab";
@@ -48,26 +31,12 @@ export const Importer = () => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Datasource tab state
-  const [dsUrl, setDsUrl] = useState("");
-  const [dsFetching, setDsFetching] = useState(false);
-  const [dsUrlError, setDsUrlError] = useState(null);
-  const [dsFileInfo, setDsFileInfo] = useState(null);
-  const [dsFileError, setDsFileError] = useState(null);
-  const [dsPreview, setDsPreview] = useState(null);
-  const [dsDragging, setDsDragging] = useState(false);
-  const dsFileInputRef = useRef(null);
-
-  // Post-import state
-  const [showActivationPrompt, setShowActivationPrompt] = useState(false);
-  const [importedDatasource, setImportedDatasource] = useState(null);
-
   // Footer slot for tab-rendered buttons
   const [footerNode, setFooterNode] = useState(null);
 
   const { importCategory } = useCardStorage();
-  const { importCustomDatasource, dataSource } = useDataSourceStorage();
-  const { settings, updateSettings } = useSettingsStorage();
+  const { dataSource } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
   const { trackEvent } = useUmami();
 
   // Consume ListForge URL payload from router state.
@@ -89,14 +58,6 @@ export const Importer = () => {
     setUploadFile(null);
     setFileInfo(null);
     setFileError(false);
-    // Reset Datasource state
-    setDsUrl("");
-    setDsUrlError(null);
-    setDsFileInfo(null);
-    setDsFileError(null);
-    setDsPreview(null);
-    setShowActivationPrompt(false);
-    setImportedDatasource(null);
     setUrlPayload(null);
   };
 
@@ -211,150 +172,6 @@ export const Importer = () => {
     }
   };
 
-  // ===========================================
-  // Datasource Tab Handlers
-  // ===========================================
-
-  const handleFetchUrl = async () => {
-    if (!dsUrl.trim()) {
-      setDsUrlError("Please enter a URL");
-      return;
-    }
-
-    setDsFetching(true);
-    setDsUrlError(null);
-    setDsPreview(null);
-    setDsFileInfo(null);
-    setDsFileError(null);
-
-    try {
-      const response = await fetch(dsUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const validation = validateCustomDatasource(data);
-
-      if (!validation.isValid) {
-        setDsUrlError(validation.errors.join(", "));
-        return;
-      }
-
-      setDsPreview({ data, sourceType: "url", sourceUrl: dsUrl });
-    } catch (error) {
-      setDsUrlError(error.message || "Failed to fetch datasource");
-    } finally {
-      setDsFetching(false);
-    }
-  };
-
-  const processDsFile = (file) => {
-    setDsFileError(null);
-    setDsFileInfo(null);
-    setDsPreview(null);
-    setDsUrlError(null);
-
-    if (!file.name.endsWith(".json")) {
-      setDsFileError("Only .json files are supported");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const data = JSON.parse(event.target.result);
-        const validation = validateCustomDatasource(data);
-
-        if (!validation.isValid) {
-          setDsFileError(validation.errors.join(", "));
-          setDsFileInfo({ name: file.name, size: file.size, valid: false });
-          return;
-        }
-
-        setDsFileInfo({ name: file.name, size: file.size, valid: true });
-        setDsPreview({ data, sourceType: "local" });
-      } catch (e) {
-        setDsFileError("Invalid JSON file");
-        setDsFileInfo({ name: file.name, size: file.size, valid: false });
-      }
-    };
-    reader.readAsText(file);
-  };
-
-  const handleDsFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      processDsFile(file);
-    }
-  };
-
-  const handleDsDrop = (e) => {
-    e.preventDefault();
-    setDsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      processDsFile(file);
-    }
-  };
-
-  const handleDsDragOver = (e) => {
-    e.preventDefault();
-    setDsDragging(true);
-  };
-
-  const handleDsDragLeave = () => {
-    setDsDragging(false);
-  };
-
-  const handleClearDsFile = () => {
-    setDsFileInfo(null);
-    setDsFileError(null);
-    setDsPreview(null);
-    setDsUrl("");
-    setDsUrlError(null);
-    if (dsFileInputRef.current) {
-      dsFileInputRef.current.value = "";
-    }
-  };
-
-  const handleImportDatasource = async () => {
-    if (!dsPreview) return;
-
-    const result = await importCustomDatasource(
-      dsPreview.data,
-      dsPreview.sourceType,
-      dsPreview.sourceType === "url" ? dsPreview.sourceUrl : undefined,
-    );
-
-    if (result.success) {
-      trackEvent("import-datasource", { sourceType: dsPreview.sourceType });
-      setImportedDatasource({
-        id: result.id,
-        name: dsPreview.data.name,
-      });
-      setShowActivationPrompt(true);
-    } else {
-      message.error(result.error || "Failed to import datasource");
-    }
-  };
-
-  const handleActivateDatasource = () => {
-    if (importedDatasource) {
-      updateSettings({
-        ...settings,
-        selectedDataSource: importedDatasource.id,
-      });
-      message.success(`Switched to "${importedDatasource.name}"`);
-    }
-    handleClose();
-  };
-
-  const handleKeepCurrent = () => {
-    message.success(`Datasource "${importedDatasource?.name}" imported successfully`);
-    handleClose();
-  };
-
   return (
     <>
       {isModalVisible &&
@@ -399,12 +216,6 @@ export const Importer = () => {
                       <span>List Forge</span>
                     </div>
                   </Tooltip>
-                  <div
-                    className={`import-export-nav-item ${activeTab === "datasource" ? "active" : ""}`}
-                    onClick={() => setActiveTab("datasource")}>
-                    <Database size={16} className="import-export-nav-icon" />
-                    <span>Datasource</span>
-                  </div>
                 </nav>
 
                 {/* Content */}
@@ -473,179 +284,25 @@ export const Importer = () => {
                       initialData={urlPayload}
                     />
                   )}
-
-                  {/* Datasource Tab */}
-                  {activeTab === "datasource" && !showActivationPrompt && (
-                    <div className="ie-datasource-import">
-                      <input
-                        type="file"
-                        ref={dsFileInputRef}
-                        accept=".json"
-                        onChange={handleDsFileSelect}
-                        style={{ display: "none" }}
-                      />
-
-                      {/* Show inputs only when no preview exists */}
-                      {!dsPreview && (
-                        <>
-                          <p className="import-export-description">
-                            Import a custom datasource from a URL or local file. Datasources provide card data for
-                            custom factions or game systems.
-                          </p>
-
-                          {/* URL Input */}
-                          <div className="ie-ds-url-section">
-                            <div className="ie-ds-url-group">
-                              <div className="ie-ds-url-input-wrapper">
-                                <Link size={14} className="ie-ds-url-icon" />
-                                <input
-                                  type="text"
-                                  className="ie-ds-url-input"
-                                  placeholder="https://example.com/datasource.json"
-                                  value={dsUrl}
-                                  onChange={(e) => setDsUrl(e.target.value)}
-                                  onKeyDown={(e) => e.key === "Enter" && handleFetchUrl()}
-                                />
-                              </div>
-                              <button
-                                className="ie-ds-fetch-btn"
-                                onClick={handleFetchUrl}
-                                disabled={dsFetching || !dsUrl.trim()}>
-                                {dsFetching ? <span className="ie-loading-spinner" /> : <Download size={14} />}
-                                Fetch
-                              </button>
-                            </div>
-                            {dsUrlError && (
-                              <div className="ie-ds-error">
-                                <AlertCircle size={14} />
-                                <span>{dsUrlError}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Divider */}
-                          <div className="ie-import-divider">
-                            <span>or</span>
-                          </div>
-
-                          {/* File Upload */}
-                          <div
-                            className={`import-dropzone ${dsDragging ? "dragging" : ""}`}
-                            onClick={() => dsFileInputRef.current?.click()}
-                            onDrop={handleDsDrop}
-                            onDragOver={handleDsDragOver}
-                            onDragLeave={handleDsDragLeave}>
-                            <div className="import-dropzone-icon">
-                              <Inbox size={24} />
-                            </div>
-                            <p className="import-dropzone-text">Click or drag a file to upload</p>
-                            <p className="import-dropzone-hint">Only .json datasource files</p>
-                          </div>
-
-                          {dsFileError && <p className="import-file-error-text">{dsFileError}</p>}
-                        </>
-                      )}
-
-                      {/* Show file info and preview when data is loaded */}
-                      {dsPreview && (
-                        <div className="ie-ds-file-selected">
-                          <div className={`ie-ds-file-item success`}>
-                            <span className="ie-ds-file-icon">
-                              <CheckCircle size={16} />
-                            </span>
-                            <div className="ie-ds-file-details">
-                              <span className="ie-ds-file-name">{dsFileInfo?.name || dsPreview.data.name}</span>
-                              <span className="ie-ds-file-meta">
-                                {dsPreview.sourceType === "url" ? "External URL" : "Local File"}
-                              </span>
-                            </div>
-                            <button className="ie-ds-file-remove" onClick={handleClearDsFile} title="Remove">
-                              <X size={14} />
-                            </button>
-                          </div>
-
-                          <div className="ie-ds-preview">
-                            <div className="ie-ds-preview-header">
-                              <CheckCircle size={16} className="ie-ds-preview-icon" />
-                              <span>Ready to import</span>
-                            </div>
-                            <div className="ie-ds-preview-details">
-                              <div className="ie-ds-preview-item">
-                                <span className="ie-ds-preview-label">Name</span>
-                                <span className="ie-ds-preview-value">{dsPreview.data.name}</span>
-                              </div>
-                              <div className="ie-ds-preview-item">
-                                <span className="ie-ds-preview-label">Version</span>
-                                <span className="ie-ds-preview-value">{dsPreview.data.version}</span>
-                              </div>
-                              <div className="ie-ds-preview-item">
-                                <span className="ie-ds-preview-label">Cards</span>
-                                <span className="ie-ds-preview-value">{countDatasourceCards(dsPreview.data)}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Activation Prompt */}
-                  {activeTab === "datasource" && showActivationPrompt && (
-                    <div className="ie-ds-activation">
-                      <div className="ie-ds-activation-icon">
-                        <CheckCircle size={48} />
-                      </div>
-                      <h3 className="ie-ds-activation-title">Datasource Imported</h3>
-                      <p className="ie-ds-activation-name">&quot;{importedDatasource?.name}&quot;</p>
-                      <p className="ie-ds-activation-text">Would you like to switch to this datasource now?</p>
-                      <div className="ie-ds-activation-buttons">
-                        <button className="ie-btn" onClick={handleKeepCurrent}>
-                          Keep Current
-                        </button>
-                        <button className="ie-btn-primary" onClick={handleActivateDatasource}>
-                          Switch Now
-                        </button>
-                      </div>
-                      <a
-                        href="#"
-                        className="ie-ds-settings-link"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleClose();
-                        }}>
-                        <Settings size={12} />
-                        Manage datasources in Settings
-                      </a>
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="import-export-modal-footer">
-                {!showActivationPrompt && (
-                  <>
-                    <button className="ie-btn" onClick={handleClose}>
-                      Cancel
-                    </button>
-                    {activeTab === "json" && (
-                      <button className="ie-btn-primary" onClick={handleImport} disabled={!uploadFile}>
-                        Import
-                      </button>
-                    )}
-                    {/* GW App and List Forge footer buttons are rendered via portal by their tab components */}
-                    <div ref={setFooterNode} style={{ display: "contents" }} />
-                    {activeTab === "datasource" && (
-                      <button className="ie-btn-primary" onClick={handleImportDatasource} disabled={!dsPreview}>
-                        Import Datasource
-                      </button>
-                    )}
-                  </>
+                <button className="ie-btn" onClick={handleClose}>
+                  Cancel
+                </button>
+                {activeTab === "json" && (
+                  <button className="ie-btn-primary" onClick={handleImport} disabled={!uploadFile}>
+                    Import
+                  </button>
                 )}
+                {/* GW App and List Forge footer buttons are rendered via portal by their tab components */}
+                <div ref={setFooterNode} style={{ display: "contents" }} />
               </div>
             </div>
           </div>,
           modalRoot,
         )}
-      <Tooltip content="Import cards, lists, or datasources" placement="bottom-start">
+      <Tooltip content="Import cards or lists" placement="bottom-start">
         <Button
           type="text"
           icon={<Upload size={16} />}
