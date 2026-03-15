@@ -67,7 +67,7 @@ export const NotificationBell = () => {
   };
 
   return (
-    <div className="notification-bell-container" ref={containerRef}>
+    <div className="notification-bell-container dark-dropdown" ref={containerRef}>
       <button
         className={`app-header-icon-btn notification-bell-btn ${unreadCount > 0 ? "has-unread" : ""}`}
         onClick={() => setIsOpen(!isOpen)}>
@@ -75,49 +75,47 @@ export const NotificationBell = () => {
         {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>}
       </button>
 
-      {isOpen && (
-        <div className="notification-dropdown">
-          <div className="notification-dropdown-header">
-            <h4>Notifications</h4>
-            {unreadCount > 0 && (
-              <button className="notification-mark-read-btn" onClick={markAllRead}>
-                Mark all read
-              </button>
-            )}
-          </div>
-          <div className="notification-dropdown-body">
-            {messages.length === 0 ? (
-              <div className="notification-empty">
-                <Bell size={32} strokeWidth={1.5} />
-                <p>No notifications</p>
-              </div>
-            ) : (
-              messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`notification-item ${
-                    msg.id > settings.serviceMessage ? "notification-item--unread" : ""
-                  }`}>
-                  <div className="notification-item-header">
-                    <span className="notification-item-title">{msg.title}</span>
-                    {msg.severity && (
-                      <span className={`notification-item-severity notification-item-severity--${msg.severity}`}>
-                        {msg.severity}
-                      </span>
-                    )}
-                    {msg.id > settings.serviceMessage && <span className="notification-item-badge">New</span>}
-                  </div>
-                  <p className="notification-item-body">{msg.body}</p>
-                  <div className="notification-item-meta">
-                    {msg.author && <span className="notification-item-author">{msg.author}</span>}
-                    {msg.timestamp && <span className="notification-item-time">{formatTimestamp(msg.timestamp)}</span>}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+      <div className={`notification-dropdown ${isOpen ? "notification-dropdown--open" : ""}`}>
+        <div className="notification-dropdown-header">
+          <h4>Notifications</h4>
+          {unreadCount > 0 && (
+            <button className="notification-mark-read-btn" onClick={markAllRead}>
+              Mark all read
+            </button>
+          )}
         </div>
-      )}
+        <div className="notification-dropdown-body">
+          {messages.length === 0 ? (
+            <div className="notification-empty">
+              <Bell size={32} strokeWidth={1.5} />
+              <p>You&apos;re all caught up</p>
+            </div>
+          ) : (
+            messages.map((msg, index) => (
+              <div
+                key={msg.id}
+                className={`notification-item ${
+                  msg.id > settings.serviceMessage ? "notification-item--unread" : ""
+                } ${isOpen && index < 5 ? "notification-item--animate" : ""}`}>
+                <div className="notification-item-header">
+                  <span className="notification-item-title">{msg.title}</span>
+                  {msg.severity && (
+                    <span className={`notification-item-severity notification-item-severity--${msg.severity}`}>
+                      {msg.severity}
+                    </span>
+                  )}
+                  {msg.id > settings.serviceMessage && <span className="notification-item-badge">New</span>}
+                </div>
+                <p className="notification-item-body">{msg.body}</p>
+                <div className="notification-item-meta">
+                  {msg.author && <span className="notification-item-author">{msg.author}</span>}
+                  {msg.timestamp && <span className="notification-item-time">{formatTimestamp(msg.timestamp)}</span>}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };
