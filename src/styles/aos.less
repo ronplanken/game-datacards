@@ -27,6 +27,20 @@
   --stat-wheel-gold: #8c7335;
   --stat-wheel-green: #3a5228;
   --card-scaling-factor: 1;
+  --header-title-colour: #ffffff;
+  --header-subtitle-colour: #aebdc4;
+  --phase-combat: #8b3a3a;
+  --phase-start: #3a3a3a;
+  --phase-hero: #c9b44c;
+  --phase-movement: #a8a8a8;
+  --phase-shooting: #1e6a7a;
+  --phase-charge: #d4883a;
+  --phase-end: #5c3a6a;
+  --phase-passive: #d1d1d1;
+  --keywords-bg: #d6d3c9;
+  --keywords-badge-bg: #9c8a5a;
+  --wheel-bg: #111;
+  --wheel-quadrant: #050505;
 
   font-family: "Cormorant Garamond", Georgia, serif;
   -webkit-font-smoothing: antialiased;
@@ -109,6 +123,31 @@
     transform-box: fill-box;
     transform-origin: center;
     transform: rotate(-90deg);
+  }
+
+  .wheel-ring {
+    fill: var(--wheel-bg);
+    stroke: var(--stat-wheel-gold);
+    stroke-width: 3;
+  }
+
+  .wheel-quadrant {
+    fill: var(--wheel-quadrant);
+    stroke: none;
+  }
+
+  .wheel-quadrant-save {
+    fill: var(--stat-wheel-green);
+    stroke: none;
+  }
+
+  .wheel-divider {
+    stroke: var(--stat-wheel-gold);
+    stroke-width: 2.5;
+  }
+
+  .wheel-spike {
+    fill: var(--stat-wheel-gold);
   }
 
   // ============================================
@@ -280,7 +319,7 @@
     font-family: "Cinzel", serif;
     font-size: 11px;
     letter-spacing: 3px;
-    color: #aebdc4;
+    color: var(--header-subtitle-colour);
     text-align: center;
     margin-bottom: 5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
@@ -295,7 +334,7 @@
     text-align: center;
     line-height: 0.9;
     letter-spacing: 1px;
-    color: #fff;
+    color: var(--header-title-colour);
     text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
     padding-right: 60px;
   }
@@ -305,7 +344,7 @@
     font-size: 14px;
     font-weight: 500;
     font-style: italic;
-    color: #aebdc4;
+    color: var(--header-subtitle-colour);
     text-align: center;
     margin-top: 5px;
   }
@@ -461,44 +500,44 @@
 
     // Phase colors based on AoS turn phases
     &.phase-passive {
-      background-color: #d1d1d1;
+      background-color: var(--phase-passive);
     }
 
     &.phase-start {
-      background-color: #3a3a3a;
+      background-color: var(--phase-start);
       .ability-name {
         color: #fff;
       }
     }
 
     &.phase-hero {
-      background-color: #c9b44c;
+      background-color: var(--phase-hero);
     }
 
     &.phase-movement {
-      background-color: #a8a8a8;
+      background-color: var(--phase-movement);
     }
 
     &.phase-shooting {
-      background-color: #1e6a7a;
+      background-color: var(--phase-shooting);
       .ability-name {
         color: #fff;
       }
     }
 
     &.phase-charge {
-      background-color: #d4883a;
+      background-color: var(--phase-charge);
     }
 
     &.phase-combat {
-      background-color: #8b3a3a;
+      background-color: var(--phase-combat);
       .ability-name {
         color: #fff;
       }
     }
 
     &.phase-end {
-      background-color: #5c3a6a;
+      background-color: var(--phase-end);
       .ability-name {
         color: #fff;
       }
@@ -618,31 +657,31 @@
   // Phase-specific keywords label backgrounds
   .ability-box {
     &:has(.phase-passive) .ability-keywords-label {
-      background-color: #d1d1d1;
+      background-color: var(--phase-passive);
     }
     &:has(.phase-start) .ability-keywords-label {
-      background-color: #3a3a3a;
+      background-color: var(--phase-start);
       color: #fff;
     }
     &:has(.phase-hero) .ability-keywords-label {
-      background-color: #c9b44c;
+      background-color: var(--phase-hero);
     }
     &:has(.phase-movement) .ability-keywords-label {
-      background-color: #a8a8a8;
+      background-color: var(--phase-movement);
     }
     &:has(.phase-shooting) .ability-keywords-label {
-      background-color: #1e6a7a;
+      background-color: var(--phase-shooting);
       color: #fff;
     }
     &:has(.phase-charge) .ability-keywords-label {
-      background-color: #d4883a;
+      background-color: var(--phase-charge);
     }
     &:has(.phase-combat) .ability-keywords-label {
-      background-color: #8b3a3a;
+      background-color: var(--phase-combat);
       color: #fff;
     }
     &:has(.phase-end) .ability-keywords-label {
-      background-color: #5c3a6a;
+      background-color: var(--phase-end);
       color: #fff;
     }
   }
@@ -652,14 +691,14 @@
   // ============================================
   .keywords-footer {
     display: flex;
-    background-color: #d6d3c9;
+    background-color: var(--keywords-bg);
     border-top: 2px solid #555;
     margin-top: auto;
     min-height: 36px;
   }
 
   .keywords-badge {
-    background-color: #9c8a5a;
+    background-color: var(--keywords-badge-bg);
     color: white;
     font-family: "Cinzel", serif;
     font-size: 10px;

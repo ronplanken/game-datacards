@@ -38,6 +38,7 @@
     "lint-staged": "^15.0.0",
     "localforage": "^1.10.0",
     "lucide-react": "^0.560.0",
+    "modern-screenshot": "^4.6.8",
     "moment": "^2.30.0",
     "nanoid": "^5.1.6",
     "node-fetch": "^3.3.0",

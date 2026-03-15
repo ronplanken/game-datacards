@@ -10348,6 +10348,11 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
+modern-screenshot@^4.6.8:
+  version "4.6.8"
+  resolved "https://registry.yarnpkg.com/modern-screenshot/-/modern-screenshot-4.6.8.tgz#68f9037c64c1744b9900c88c827c802aa8309589"
+  integrity sha512-GJkv/yWPOJTlxj1LZDU2k474cDyOWL+LVaqTdDWQwQ5d8zIuTz1892+1cV9V0ZpK6HYZFo/+BNLBbierO9d2TA==
+
 moment@^2.24.0, moment@^2.29.2, moment@^2.30.0:
   version "2.30.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
