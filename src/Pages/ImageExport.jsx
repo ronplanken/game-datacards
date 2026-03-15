@@ -1,5 +1,5 @@
 import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Spin } from "antd";
-import html2canvas from "html2canvas";
+import { domToBlob } from "modern-screenshot";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
@@ -12,21 +12,6 @@ import JSZip from "jszip";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { buildUniqueFilenames } from "../Helpers/export.helpers";
-
-const canvasToBlob = (canvas) => new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), "image/png"));
-
-// html2canvas doesn't support inline SVG data URLs in background-image.
-// Strip them from the cloned DOM, keeping any CSS gradients intact.
-const stripSvgBackgrounds = (clonedDoc) => {
-  clonedDoc.querySelectorAll("*").forEach((el) => {
-    const bg = el.style.backgroundImage || getComputedStyle(el).backgroundImage;
-    if (bg && bg.includes('url("data:image/svg+xml')) {
-      const layers = bg.split(/,(?=\s*(?:url|linear-gradient|radial-gradient|repeating-))/);
-      const filtered = layers.filter((layer) => !layer.includes("data:image/svg+xml"));
-      el.style.backgroundImage = filtered.length > 0 ? filtered.join(",") : "none";
-    }
-  });
-};
 
 // Helper to get all cards from a category including sub-categories
 const getAllCategoryCards = (category, allCategories) => {
@@ -65,18 +50,12 @@ export const ImageExport = () => {
     await sleep(100);
 
     const uniqueNames = buildUniqueFilenames(allCards);
-    const html2canvasOpts = {
-      scale: pixelScaling,
-      useCORS: true,
-      logging: false,
-      onclone: (clonedDoc) => stripSvgBackgrounds(clonedDoc),
-    };
+    const screenshotOpts = { scale: pixelScaling };
 
     for (let index = 0; index < cardsFrontRef.current.length; index++) {
       const card = cardsFrontRef.current[index];
       if (!card) continue;
-      const canvas = await html2canvas(card, html2canvasOpts);
-      const blob = await canvasToBlob(canvas);
+      const blob = await domToBlob(card, screenshotOpts);
       const hasBack = cardsBackRef.current[index] != null;
       const suffix =
         !hasBack || allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false
@@ -89,8 +68,7 @@ export const ImageExport = () => {
       for (let index = 0; index < cardsBackRef.current.length; index++) {
         const card = cardsBackRef.current[index];
         if (!card) continue;
-        const canvas = await html2canvas(card, html2canvasOpts);
-        const blob = await canvasToBlob(canvas);
+        const blob = await domToBlob(card, screenshotOpts);
         zip.file(`${category.name}/${uniqueNames[index]}-back.png`, blob);
       }
     }

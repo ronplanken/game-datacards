@@ -41,7 +41,9 @@ export const CardRenderer = ({ card, cardScaling, printSide, backgrounds, forceP
       return <NecromundaCardDisplay card={card} type="print" cardScaling={cardScaling} />;
 
     default:
-      if (isCustomDatasource) {
+      // Cards from custom datasources have a source that doesn't match any known system.
+      // Check both the global isCustomDatasource flag and the card's own source.
+      if (isCustomDatasource || card?.source) {
         return <CustomCardDisplay card={card} type="print" cardScaling={cardScaling} />;
       }
       // Fallback for unknown sources - try 40k display
