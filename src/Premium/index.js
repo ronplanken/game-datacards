@@ -159,6 +159,9 @@ export const useProducts = () => ({
   loading: false,
   error: null,
   getTierByProductId: () => null,
+  getDiscountForProduct: () => null,
+  getActivePromoCode: () => null,
+  formatDiscountedPrice: () => null,
 });
 
 // =====================================================
