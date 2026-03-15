@@ -1,20 +1,32 @@
 import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Spin } from "antd";
-import { toBlob } from "html-to-image";
+import html2canvas from "html2canvas";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import "../Components/Print/Print.css";
 import { AppHeader } from "../Components/AppHeader";
-import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
-import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
-import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
-import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
+import { CardRenderer } from "../Components/Print/CardRenderer";
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 import JSZip from "jszip";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { buildUniqueFilenames } from "../Helpers/export.helpers";
+
+const canvasToBlob = (canvas) => new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), "image/png"));
+
+// html2canvas doesn't support inline SVG data URLs in background-image.
+// Strip them from the cloned DOM, keeping any CSS gradients intact.
+const stripSvgBackgrounds = (clonedDoc) => {
+  clonedDoc.querySelectorAll("*").forEach((el) => {
+    const bg = el.style.backgroundImage || getComputedStyle(el).backgroundImage;
+    if (bg && bg.includes('url("data:image/svg+xml')) {
+      const layers = bg.split(/,(?=\s*(?:url|linear-gradient|radial-gradient|repeating-))/);
+      const filtered = layers.filter((layer) => !layer.includes("data:image/svg+xml"));
+      el.style.backgroundImage = filtered.length > 0 ? filtered.join(",") : "none";
+    }
+  });
+};
 
 // Helper to get all cards from a category including sub-categories
 const getAllCategoryCards = (category, allCategories) => {
@@ -52,30 +64,35 @@ export const ImageExport = () => {
     overlayRef.current.style.display = "inline-flex";
     await sleep(100);
 
-    // skipFonts: true works around a bug in html-to-image where the font embedding code
-    // calls .trim() on undefined font-family values, causing "can't access property 'trim'" errors.
-    // Fonts still render correctly since they're already loaded in the browser when the DOM is captured.
     const uniqueNames = buildUniqueFilenames(allCards);
+    const html2canvasOpts = {
+      scale: pixelScaling,
+      useCORS: true,
+      logging: false,
+      onclone: (clonedDoc) => stripSvgBackgrounds(clonedDoc),
+    };
 
-    const files = cardsFrontRef?.current?.map(async (card, index) => {
-      const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
-      return data;
-    });
-
-    files?.forEach(async (file, index) => {
+    for (let index = 0; index < cardsFrontRef.current.length; index++) {
+      const card = cardsFrontRef.current[index];
+      if (!card) continue;
+      const canvas = await html2canvas(card, html2canvasOpts);
+      const blob = await canvasToBlob(canvas);
+      const hasBack = cardsBackRef.current[index] != null;
       const suffix =
-        allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png";
-      zip.file(`${category.name}/${uniqueNames[index]}${suffix}`, file);
-    });
-    if (settings.showCardsAsDoubleSided !== true) {
-      const backFiles = cardsBackRef?.current?.map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling, skipFonts: true });
-        return data;
-      });
+        !hasBack || allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false
+          ? ".png"
+          : "-front.png";
+      zip.file(`${category.name}/${uniqueNames[index]}${suffix}`, blob);
+    }
 
-      backFiles?.forEach(async (file, index) => {
-        zip.file(`${category.name}/${uniqueNames[index]}-back.png`, file);
-      });
+    if (settings.showCardsAsDoubleSided !== true) {
+      for (let index = 0; index < cardsBackRef.current.length; index++) {
+        const card = cardsBackRef.current[index];
+        if (!card) continue;
+        const canvas = await html2canvas(card, html2canvasOpts);
+        const blob = await canvasToBlob(canvas);
+        zip.file(`${category.name}/${uniqueNames[index]}-back.png`, blob);
+      }
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
@@ -186,38 +203,18 @@ export const ImageExport = () => {
                         <Row>
                           <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
                             <div ref={(el) => (cardsFrontRef.current[index] = el)}>
-                              {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
-                              {card?.source === "40k-10e" && (
-                                <Warhammer40K10eCardDisplay
-                                  card={card}
-                                  type="print"
-                                  side={"front"}
-                                  backgrounds={backgrounds}
-                                  cardScaling={100}
-                                />
-                              )}
-                              {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
-                              {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
-                              {(card?.source === "aos" || card?.cardType === "warscroll") && (
-                                <AgeOfSigmarCardDisplay
-                                  card={card}
-                                  type="print"
-                                  cardScaling={100}
-                                  backgrounds={backgrounds}
-                                />
-                              )}
+                              <CardRenderer card={card} cardScaling={100} printSide="front" backgrounds={backgrounds} />
                             </div>
                             {card?.source === "40k-10e" &&
                               settings.showCardsAsDoubleSided !== true &&
                               card?.cardType === "DataCard" &&
                               card?.variant !== "full" && (
                                 <div ref={(el) => (cardsBackRef.current[index] = el)}>
-                                  <Warhammer40K10eCardDisplay
+                                  <CardRenderer
                                     card={card}
-                                    type="print"
-                                    side={"back"}
-                                    backgrounds={backgrounds}
                                     cardScaling={100}
+                                    printSide="back"
+                                    backgrounds={backgrounds}
                                   />
                                 </div>
                               )}

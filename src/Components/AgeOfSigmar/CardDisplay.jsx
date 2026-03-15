@@ -6,6 +6,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { WarscrollCard } from "./WarscrollCard";
 import { SpellCard } from "./SpellCard";
 import { TemplateRenderer } from "../../Premium";
+import { AOS_COLOURS } from "../../Helpers/printcolours";
 
 export const AgeOfSigmarCardDisplay = ({
   type,
@@ -25,6 +26,9 @@ export const AgeOfSigmarCardDisplay = ({
 
   // Get Grand Alliance for theming
   const grandAlliance = cardFaction?.grandAlliance?.toLowerCase() || "order";
+
+  // Get background variant overrides for print/export mode
+  const bgOverrides = AOS_COLOURS[backgrounds] || {};
 
   // Get colors - use custom colors if enabled, otherwise faction colors
   const headerColour = displayCard?.useCustomColours
@@ -192,6 +196,7 @@ export const AgeOfSigmarCardDisplay = ({
           style={{
             zoom: cardScaling / 100,
             "--card-scaling-factor": 1,
+            ...bgOverrides,
             ...(displayCard?.useCustomColours && {
               "--bg-header": headerColour,
               "--banner-colour": bannerColour,
@@ -213,6 +218,7 @@ export const AgeOfSigmarCardDisplay = ({
           style={{
             zoom: cardScaling / 100,
             "--card-scaling-factor": 1,
+            ...bgOverrides,
             ...(displayCard?.useCustomColours && {
               "--bg-header": headerColour,
               "--banner-colour": bannerColour,
