@@ -1,16 +1,15 @@
-import { Settings, Database, Trash2, Printer, History, Plus, Package, Cloud, Globe } from "lucide-react";
+import { Settings, Database, Trash2, Printer, History, Plus } from "lucide-react";
 import { Popconfirm } from "antd";
 import { message } from "./Toast/message";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback, useState } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
-import { useCardStorage } from "../Hooks/useCardStorage";
 import { useAuth, useSubscription, useSync } from "../Premium";
 import { useUmami } from "../Hooks/useUmami";
 import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
 import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
-import { CustomDatasourceModal, EditDatasourceMetadataModal } from "../Premium";
+import { CustomDatasourceModal } from "../Premium";
 import { PublishDatasourceModal } from "./DatasourcePublish";
 import { confirmDialog } from "./ConfirmChangesModal";
 import "./SettingsModal.css";
@@ -42,12 +41,9 @@ export const SettingsModal = () => {
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [publishingDatasourceId, setPublishingDatasourceId] = useState(null);
   const [uploadingDatasourceId, setUploadingDatasourceId] = useState(null);
-  const [isEditMetadataModalOpen, setIsEditMetadataModalOpen] = useState(false);
-  const [editingDatasource, setEditingDatasource] = useState(null);
 
   const { settings, updateSettings } = useSettingsStorage();
   const { trackEvent } = useUmami();
-  const { getLocalDatasources, updateDatasourceCloudState } = useCardStorage();
   const {
     dataSource,
     checkForUpdate,
@@ -312,112 +308,6 @@ export const SettingsModal = () => {
                         );
                       })()}
                     </div>
-
-                    {/* Local Datasources Section */}
-                    {getLocalDatasources().length > 0 && (
-                      <div className="datasource-section">
-                        <h3 className="datasource-section-title">Local Datasources</h3>
-                        <p className="datasource-section-description">
-                          Datasources you created from your card categories. Upload to cloud to share with others.
-                        </p>
-                        {getLocalDatasources().map((ds) => {
-                          const isActive = settings.selectedDataSource === `local-ds-${ds.uuid}`;
-                          return (
-                            <div key={ds.uuid} className={`local-datasource-card ${isActive ? "active" : ""}`}>
-                              <div className="local-datasource-header">
-                                <Package size={16} className="local-datasource-icon" />
-                                <span className="local-datasource-name">{ds.name}</span>
-                                {ds.isPublished && (
-                                  <span className="local-datasource-badge published">
-                                    <Globe size={10} /> Published
-                                  </span>
-                                )}
-                                {ds.isUploaded && !ds.isPublished && (
-                                  <span className="local-datasource-badge uploaded">
-                                    <Cloud size={10} /> Uploaded
-                                  </span>
-                                )}
-                              </div>
-                              <div className="local-datasource-meta">
-                                <span>v{ds.version || "1.0.0"}</span>
-                                {ds.author && <span>by {ds.author}</span>}
-                                <span>{ds.cards?.length || 0} cards</span>
-                              </div>
-                              <div className="local-datasource-actions">
-                                {!isActive && (
-                                  <button
-                                    className="local-datasource-btn"
-                                    onClick={() =>
-                                      updateSettings({
-                                        ...settings,
-                                        selectedDataSource: `local-ds-${ds.uuid}`,
-                                      })
-                                    }>
-                                    Select
-                                  </button>
-                                )}
-                                <button
-                                  className="local-datasource-btn"
-                                  onClick={() => {
-                                    setEditingDatasource(ds);
-                                    setIsEditMetadataModalOpen(true);
-                                  }}>
-                                  Edit
-                                </button>
-                                {user && canUpload && !ds.isUploaded && (
-                                  <button
-                                    className="local-datasource-btn primary"
-                                    onClick={() => {
-                                      updateDatasourceCloudState(ds.uuid, {
-                                        syncEnabled: true,
-                                        syncStatus: "pending",
-                                      });
-                                      message.info("Uploading datasource...");
-                                    }}>
-                                    Upload
-                                  </button>
-                                )}
-                                {user && ds.isUploaded && !ds.isPublished && (
-                                  <button
-                                    className="local-datasource-btn primary"
-                                    onClick={async () => {
-                                      const result = await publishLocalDatasource(ds.cloudId, {});
-                                      if (result.success) {
-                                        updateDatasourceCloudState(ds.uuid, {
-                                          isPublished: true,
-                                          shareCode: result.shareCode,
-                                          publishedVersion: result.versionNumber,
-                                        });
-                                      }
-                                    }}>
-                                    Publish
-                                  </button>
-                                )}
-                                {user && ds.isPublished && (
-                                  <button
-                                    className="local-datasource-btn"
-                                    onClick={async () => {
-                                      const result = await pushDatasourceUpdate(ds.cloudId);
-                                      if (result.success) {
-                                        updateDatasourceCloudState(ds.uuid, {
-                                          publishedVersion: result.newVersionNumber,
-                                        });
-                                      }
-                                    }}>
-                                    Push Update
-                                  </button>
-                                )}
-                              </div>
-                              {ds.shareCode && (
-                                <div className="local-datasource-share">
-                                  Share code: <code>{ds.shareCode}</code>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
 
                     {/* Custom Datasources Section */}
                     <div className="datasource-section">
@@ -877,6 +767,15 @@ export const SettingsModal = () => {
 
             {/* Footer */}
             <div className="settings-modal-footer">
+              <div className="settings-footer-links">
+                <a href="/terms" target="_blank" rel="noopener noreferrer">
+                  Terms of Service
+                </a>
+                <span className="settings-footer-separator">·</span>
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>
+              </div>
               <button className="close-btn" onClick={() => setIsModalVisible(false)}>
                 Close
               </button>
@@ -899,15 +798,6 @@ export const SettingsModal = () => {
       <CustomDatasourceModal
         isOpen={isCustomDatasourceModalOpen}
         onClose={() => setIsCustomDatasourceModalOpen(false)}
-      />
-
-      <EditDatasourceMetadataModal
-        isOpen={isEditMetadataModalOpen}
-        onClose={() => {
-          setIsEditMetadataModalOpen(false);
-          setEditingDatasource(null);
-        }}
-        datasource={editingDatasource}
       />
 
       <PublishDatasourceModal

@@ -60,6 +60,7 @@ import { WelcomeWizard } from "./Components/WelcomeWizard";
 import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
+import { LocalDatasourceMigrationNotice } from "./Components/LocalDatasourceMigrationNotice";
 import { DesignerHelp } from "./Pages/DesignerHelp";
 import { DatasourceHelp } from "./Pages/DatasourceHelp";
 import { Col, Grid, Result, Row, Typography } from "antd";
@@ -349,6 +350,7 @@ const RootLayout = () => (
                           <CheckoutSuccessHandler />
                           <ListForgeUrlHandler />
                           <SyncConflictHandler />
+                          <LocalDatasourceMigrationNotice />
                         </CloudCategoriesProvider>
                       </SyncProvider>
                     </TemplateStorageProvider>

@@ -1,11 +1,10 @@
-import { Database, ChevronDown, RefreshCw, Plus, Globe, FileText, Check, Link, Users, Package } from "lucide-react";
+import { Database, ChevronDown, RefreshCw, Plus, Globe, FileText, Check, Link, Users } from "lucide-react";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { compare } from "compare-versions";
 import moment from "moment";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { useCardStorage } from "../../Hooks/useCardStorage";
 import { CustomDatasourceModal, CommunityBrowserModal } from "../../Premium";
 import { useFeatureFlags } from "../../Hooks/useFeatureFlags";
 import "./DatasourceSelector.css";
@@ -30,11 +29,7 @@ export const DatasourceSelector = () => {
 
   const { settings, updateSettings } = useSettingsStorage();
   const { dataSource, checkForUpdate } = useDataSourceStorage();
-  const { getLocalDatasources } = useCardStorage();
   const { communityBrowserEnabled } = useFeatureFlags();
-
-  // Get local datasources from card storage
-  const localDatasources = getLocalDatasources();
 
   // Separate custom datasources into subscribed and non-subscribed
   const customDatasources = settings.customDatasources || [];
@@ -74,10 +69,6 @@ export const DatasourceSelector = () => {
     // Check built-in datasources
     const builtIn = BUILT_IN_DATASOURCES.find((ds) => ds.id === currentId);
     if (builtIn) return builtIn.title;
-
-    // Check local datasources (from card storage)
-    const localDs = localDatasources.find((ds) => `local-ds-${ds.uuid}` === currentId);
-    if (localDs) return localDs.name;
 
     // Check custom datasources
     const customDs = settings.customDatasources?.find((ds) => ds.id === currentId);
@@ -162,9 +153,8 @@ export const DatasourceSelector = () => {
   };
   const factionType = getFactionType();
 
-  // Check if current datasource is a local, custom, or subscribed datasource (they have their own sync)
-  const isCustomOrLocalDatasource =
-    currentId.startsWith("local-ds-") || currentId.startsWith("custom-") || currentId.startsWith("subscribed-");
+  // Check if current datasource is a custom or subscribed datasource (they have their own sync)
+  const isCustomOrLocalDatasource = currentId.startsWith("custom-") || currentId.startsWith("subscribed-");
 
   return (
     <>
@@ -211,27 +201,6 @@ export const DatasourceSelector = () => {
                   </button>
                 ))}
               </div>
-
-              {/* Local datasources (editable in treeview) */}
-              {localDatasources.length > 0 && (
-                <>
-                  <div className="ds-dropdown-divider" />
-                  <div className="ds-dropdown-section">
-                    <span className="ds-dropdown-section-title">Local Datasources</span>
-                    {localDatasources.map((ds) => (
-                      <button
-                        key={ds.uuid}
-                        className={`ds-dropdown-item ${currentId === `local-ds-${ds.uuid}` ? "selected" : ""}`}
-                        onClick={() => handleSelectDatasource(`local-ds-${ds.uuid}`)}>
-                        <Package size={14} className="ds-dropdown-item-icon ds-local-ds-icon" />
-                        <span className="ds-dropdown-item-text">{ds.name}</span>
-                        {ds.isPublished && <span className="ds-published-badge">Published</span>}
-                        {currentId === `local-ds-${ds.uuid}` && <Check size={16} className="ds-dropdown-check" />}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
 
               {/* Subscribed datasources */}
               {subscribedDatasources.length > 0 && (

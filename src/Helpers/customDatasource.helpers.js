@@ -302,6 +302,12 @@ export const prepareDatasourceForImport = (datasource, sourceType, sourceUrl = n
     syncStatus: "local",
     lastSyncedAt: null,
     syncError: null,
+    cloudId: null,
+    editVersion: 0,
+    isUploaded: false,
+    isPublished: false,
+    shareCode: null,
+    publishedVersion: null,
   };
 };
 

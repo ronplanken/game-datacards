@@ -6,18 +6,10 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { getBackgroundColor, getMinHeight, move, reorder } from "../../Helpers/treeview.helpers";
 
 export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
-  const {
-    cardStorage,
-    updateCategory,
-    getSubCategories,
-    getLocalDatasources,
-    reorderCategories,
-    reorderDatasources,
-    reorderChildCategories,
-  } = useCardStorage();
+  const { cardStorage, updateCategory, getSubCategories, reorderCategories, reorderChildCategories } = useCardStorage();
 
-  // Get local datasources (type === "local-datasource")
-  const localDatasources = getLocalDatasources();
+  // Get local datasources (type === "local-datasource") — legacy, shown as static list
+  const localDatasources = cardStorage.categories.filter((cat) => cat.type === "local-datasource");
 
   // Get only top-level categories (no parentId and not local-datasource)
   const topLevelCategories = cardStorage.categories.filter((cat) => !cat.parentId && cat.type !== "local-datasource");
@@ -34,14 +26,6 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
     if (type === "CATEGORY") {
       if (source.index !== destination.index) {
         reorderCategories(source.index, destination.index);
-      }
-      return;
-    }
-
-    // Datasource-level reorder
-    if (type === "DATASOURCE") {
-      if (source.index !== destination.index) {
-        reorderDatasources(source.index, destination.index);
       }
       return;
     }
@@ -147,58 +131,38 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
         background: "white",
       }}>
       <DragDropContext onDragEnd={handleDragEnd}>
-        {/* Render local datasources in a droppable for reordering */}
-        <Droppable droppableId="datasource-list" type="DATASOURCE">
-          {(dsListProvided) => (
-            <div ref={dsListProvided.innerRef} {...dsListProvided.droppableProps}>
-              {localDatasources.map((datasource, dsIndex) => (
-                <Draggable
-                  key={`ds-drag-${datasource.uuid}`}
-                  draggableId={`ds-drag-${datasource.uuid}`}
-                  index={dsIndex}>
-                  {(dsDragProvided, dsDragSnapshot) => (
-                    <div
-                      ref={dsDragProvided.innerRef}
-                      {...dsDragProvided.draggableProps}
-                      className={dsDragSnapshot.isDragging ? "category-dragging" : ""}>
-                      <Droppable droppableId={datasource.uuid} type="CARD">
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            style={{
-                              minHeight: getMinHeight(snapshot),
-                              backgroundColor: dsDragSnapshot.isDragging ? "transparent" : getBackgroundColor(snapshot),
-                            }}>
-                            <TreeDatasource
-                              datasource={datasource}
-                              selectedTreeIndex={selectedTreeIndex}
-                              setSelectedTreeIndex={setSelectedTreeIndex}
-                              dragHandleProps={dsDragProvided.dragHandleProps}>
-                              {datasource.cards?.map((card, cardIndex) => (
-                                <TreeItem
-                                  card={card}
-                                  category={datasource}
-                                  selectedTreeIndex={selectedTreeIndex}
-                                  setSelectedTreeIndex={setSelectedTreeIndex}
-                                  index={cardIndex}
-                                  key={`${datasource.uuid}-item-${cardIndex}`}
-                                  isInDatasource
-                                />
-                              ))}
-                            </TreeDatasource>
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {dsListProvided.placeholder}
-            </div>
-          )}
-        </Droppable>
+        {/* Render legacy local datasources as a static list (no drag-and-drop) */}
+        {localDatasources.map((datasource) => (
+          <Droppable key={datasource.uuid} droppableId={datasource.uuid} type="CARD">
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                style={{
+                  minHeight: getMinHeight(snapshot),
+                  backgroundColor: getBackgroundColor(snapshot),
+                }}>
+                <TreeDatasource
+                  datasource={datasource}
+                  selectedTreeIndex={selectedTreeIndex}
+                  setSelectedTreeIndex={setSelectedTreeIndex}>
+                  {datasource.cards?.map((card, cardIndex) => (
+                    <TreeItem
+                      card={card}
+                      category={datasource}
+                      selectedTreeIndex={selectedTreeIndex}
+                      setSelectedTreeIndex={setSelectedTreeIndex}
+                      index={cardIndex}
+                      key={`${datasource.uuid}-item-${cardIndex}`}
+                      isInDatasource
+                    />
+                  ))}
+                </TreeDatasource>
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        ))}
 
         {/* Render regular categories in a droppable for reordering */}
         <Droppable droppableId="category-list" type="CATEGORY">

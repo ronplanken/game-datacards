@@ -3,7 +3,7 @@ import clone from "just-clone";
 import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { parseStorageJson } from "../Helpers/cardstorage.helpers";
-import { reorderWithSubCategories, reorderSubCategories, reorderDatasourceItems } from "../Helpers/treeview.helpers";
+import { reorderWithSubCategories, reorderSubCategories } from "../Helpers/treeview.helpers";
 
 const CardStorageContext = React.createContext(undefined);
 
@@ -16,21 +16,6 @@ const defaultSyncFields = {
   cloudVersion: null,
   syncError: null,
   syncedToUserId: null, // Track which user this category is synced to
-};
-
-// Default fields for local datasources
-const defaultDatasourceFields = {
-  datasourceId: null, // User-defined ID
-  version: "1.0.0",
-  author: null,
-  displayFormat: null,
-  colours: { header: "#1a1a1a", banner: "#4a4a4a" },
-  // Cloud/publishing state
-  cloudId: null, // Database UUID if uploaded
-  isUploaded: false,
-  isPublished: false,
-  shareCode: null,
-  publishedVersion: null,
 };
 
 export function useCardStorage() {
@@ -463,46 +448,10 @@ export const CardStorageProviderComponent = (props) => {
   };
 
   // =====================================================
-  // Local Datasource Functions
+  // Local Datasource Functions (legacy — kept for migration)
   // =====================================================
 
-  // Get all local datasources
-  const getLocalDatasources = () => {
-    return cardStorage.categories.filter((cat) => cat.type === "local-datasource");
-  };
-
-  // Update metadata for a local datasource
-  const updateDatasourceMetadata = (datasourceUuid, metadata) => {
-    setCardStorage((prevStorage) => {
-      const newStorage = clone(prevStorage);
-      const dsIndex = newStorage.categories.findIndex(
-        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource",
-      );
-      if (dsIndex === -1) return prevStorage;
-
-      const ds = newStorage.categories[dsIndex];
-      newStorage.categories[dsIndex] = {
-        ...ds,
-        name: metadata.name !== undefined ? metadata.name : ds.name,
-        datasourceId: metadata.id !== undefined ? metadata.id : ds.datasourceId,
-        version: metadata.version !== undefined ? metadata.version : ds.version,
-        author: metadata.author !== undefined ? metadata.author : ds.author,
-        displayFormat: metadata.displayFormat !== undefined ? metadata.displayFormat : ds.displayFormat,
-        colours: metadata.colours !== undefined ? metadata.colours : ds.colours,
-        // Mark as pending if sync is enabled
-        ...(ds.syncEnabled
-          ? {
-              localVersion: (ds.localVersion || 1) + 1,
-              syncStatus: "pending",
-              syncError: null,
-            }
-          : {}),
-      };
-      return newStorage;
-    });
-  };
-
-  // Remove a local datasource
+  // Remove a local datasource (kept for TreeDatasource delete + migration cleanup)
   const removeLocalDatasource = (datasourceUuid) => {
     setCardStorage((prevStorage) => {
       const newStorage = clone(prevStorage);
@@ -511,23 +460,6 @@ export const CardStorageProviderComponent = (props) => {
         ...newStorage,
         categories: newCategories,
       };
-    });
-  };
-
-  // Update cloud/publishing state for a local datasource
-  const updateDatasourceCloudState = (datasourceUuid, cloudState) => {
-    setCardStorage((prevStorage) => {
-      const newStorage = clone(prevStorage);
-      const dsIndex = newStorage.categories.findIndex(
-        (cat) => cat.uuid === datasourceUuid && cat.type === "local-datasource",
-      );
-      if (dsIndex === -1) return prevStorage;
-
-      newStorage.categories[dsIndex] = {
-        ...newStorage.categories[dsIndex],
-        ...cloudState,
-      };
-      return newStorage;
     });
   };
 
@@ -574,13 +506,6 @@ export const CardStorageProviderComponent = (props) => {
     }));
   };
 
-  const reorderDatasources = (startIndex, endIndex) => {
-    setCardStorage((prev) => ({
-      ...prev,
-      categories: reorderDatasourceItems(clone(prev.categories), startIndex, endIndex),
-    }));
-  };
-
   const reorderChildCategories = (parentUuid, startIndex, endIndex) => {
     setCardStorage((prev) => ({
       ...prev,
@@ -614,13 +539,9 @@ export const CardStorageProviderComponent = (props) => {
     bulkUpdateCategories,
     // Reorder functions
     reorderCategories,
-    reorderDatasources,
     reorderChildCategories,
-    // Local datasource functions
-    getLocalDatasources,
-    updateDatasourceMetadata,
+    // Local datasource functions (legacy — kept for migration)
     removeLocalDatasource,
-    updateDatasourceCloudState,
     convertDatasourceToCategory,
   };
 

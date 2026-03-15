@@ -44,7 +44,7 @@ export const reorderWithSubCategories = (categories, startIndex, endIndex) => {
   const topLevel = categories.filter((cat) => !cat.parentId && cat.type !== "local-datasource");
   const reordered = reorder(topLevel, startIndex, endIndex);
 
-  // Rebuild: datasources first, then reordered categories with sub-categories inline
+  // Rebuild: legacy datasources first (if any), then reordered categories with sub-categories inline
   const datasources = categories.filter((cat) => cat.type === "local-datasource");
   const result = [...datasources];
   reordered.forEach((cat) => {
@@ -66,13 +66,6 @@ export const reorderSubCategories = (categories, parentUuid, startIndex, endInde
     }
     return cat;
   });
-};
-
-export const reorderDatasourceItems = (categories, startIndex, endIndex) => {
-  const datasources = categories.filter((cat) => cat.type === "local-datasource");
-  const nonDatasources = categories.filter((cat) => cat.type !== "local-datasource");
-  const reordered = reorder(datasources, startIndex, endIndex);
-  return [...reordered, ...nonDatasources];
 };
 
 export const getListFactionId = (card, faction) => {

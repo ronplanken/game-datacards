@@ -55,20 +55,6 @@ describe("MobileGameSystemSelector", () => {
     expect(screen.getByText("My Custom DS")).toBeTruthy();
   });
 
-  it("renders local datasources in Your Datasources section", () => {
-    const localDatasources = [{ uuid: "local-uuid", name: "Local Datasource", colours: { banner: "#00ff00" } }];
-    render(<MobileGameSystemSelector onSelect={mockOnSelect} localDatasources={localDatasources} />);
-    expect(screen.getByText("Your Datasources")).toBeTruthy();
-    expect(screen.getByText("Local Datasource")).toBeTruthy();
-  });
-
-  it("calls onSelect with local-ds- prefix for local datasources", () => {
-    const localDatasources = [{ uuid: "local-uuid", name: "Local Datasource", colours: { banner: "#00ff00" } }];
-    render(<MobileGameSystemSelector onSelect={mockOnSelect} localDatasources={localDatasources} />);
-    fireEvent.click(screen.getByText("Local Datasource"));
-    expect(mockOnSelect).toHaveBeenCalledWith("local-ds-local-uuid");
-  });
-
   it("renders subscribed datasources in Subscribed section", () => {
     const subscribedDatasources = [{ id: "subscribed-abc", name: "Sub DS", isSubscribed: true }];
     const datasourceColours = { "subscribed-abc": "#0000ff" };

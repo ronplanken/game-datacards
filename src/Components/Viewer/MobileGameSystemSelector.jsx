@@ -6,21 +6,17 @@ export const MobileGameSystemSelector = ({
   onSelect,
   customDatasources = [],
   subscribedDatasources = [],
-  localDatasources = [],
   datasourceColours = {},
 }) => {
   // Separate owned custom datasources (non-subscribed)
   const ownedDatasources = customDatasources.filter((ds) => !ds.isSubscribed);
 
-  // Combine local + owned custom into "Your Datasources"
-  const yourDatasources = [
-    ...localDatasources.map((ds) => ({
-      id: `local-ds-${ds.uuid}`,
-      name: ds.name,
-      colour: ds.colours?.banner || null,
-    })),
-    ...ownedDatasources.map((ds) => ({ id: ds.id, name: ds.name, colour: datasourceColours[ds.id] || null })),
-  ];
+  // Custom datasources as "Your Datasources"
+  const yourDatasources = ownedDatasources.map((ds) => ({
+    id: ds.id,
+    name: ds.name,
+    colour: datasourceColours[ds.id] || null,
+  }));
 
   // Subscribed datasources from custom list
   const subscribed = subscribedDatasources.map((ds) => ({

@@ -45,8 +45,6 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
   const { dataSource, selectedFaction, getCustomDatasourceData } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
-  const { getLocalDatasources } = useCardStorage();
-
   // Resolve config for current datasource
   const config = resolveMobileConfig(settings.selectedDataSource, dataSource);
 
@@ -179,13 +177,11 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   if (!gameSystemSelected) {
     const customDatasources = settings.customDatasources || [];
     const subscribedDatasources = customDatasources.filter((ds) => ds.isSubscribed);
-    const localDatasources = getLocalDatasources();
     return (
       <MobileGameSystemSelector
         onSelect={handleGameSystemSelect}
         customDatasources={customDatasources}
         subscribedDatasources={subscribedDatasources}
-        localDatasources={localDatasources}
         datasourceColours={datasourceColours}
       />
     );
