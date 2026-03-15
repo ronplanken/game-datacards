@@ -387,26 +387,12 @@ export const useTemplateSharing = () => ({
 });
 
 /**
- * Game system options constant for templates
+ * Game system options constant for templates (re-exported from shared helpers)
  */
-export const TEMPLATE_GAME_SYSTEMS = [
-  { value: "40k-10e", label: "Warhammer 40k (10th Edition)" },
-  { value: "40k", label: "Warhammer 40k (Legacy)" },
-  { value: "aos", label: "Age of Sigmar" },
-  { value: "necromunda", label: "Necromunda" },
-  { value: "horus-heresy", label: "Horus Heresy" },
-  { value: "basic", label: "Basic/Generic" },
-  { value: "other", label: "Other" },
-];
-
-/**
- * Sort options constant for templates
- */
-export const TEMPLATE_SORT_OPTIONS = [
-  { value: "popular", label: "Most Popular" },
-  { value: "new", label: "Newest" },
-  { value: "subscribers", label: "Most Subscribers" },
-];
+export {
+  GAME_SYSTEMS as TEMPLATE_GAME_SYSTEMS,
+  SORT_OPTIONS as TEMPLATE_SORT_OPTIONS,
+} from "../Helpers/sharing.helpers";
 
 // =====================================================
 // CUSTOM CARD EDITOR - Premium only
