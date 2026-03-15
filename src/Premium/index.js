@@ -74,6 +74,7 @@ export const useSync = () => ({
   syncAllDatasources: () => Promise.resolve({ success: false }),
   syncDatasourcesFromCloud: () => Promise.resolve({ success: false, imported: 0 }),
   deleteLocalDatasourceFromCloud: () => Promise.resolve({ success: false }),
+  disableDatasourceSync: () => Promise.resolve({ success: false }),
   // Template Sync Actions
   uploadTemplate: () => Promise.resolve({ success: false }),
   downloadTemplates: () => Promise.resolve({ success: false, data: [] }),
@@ -117,7 +118,8 @@ export const useSubscription = () => ({
   getRemainingQuota: () => Infinity, // Unlimited local categories
   isOverQuota: () => false,
   // Actions - all no-ops
-  startCheckout: () => Promise.resolve({ success: false }),
+  startCheckout: (/* productId, discountCode */) => Promise.resolve({ success: false }),
+  checkDiscountCode: () => Promise.resolve({ valid: false }),
   openCustomerPortal: () => Promise.resolve({ success: false }),
   refreshSubscription: () => Promise.resolve(),
   fetchUsage: () => Promise.resolve(),

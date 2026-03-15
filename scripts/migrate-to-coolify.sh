@@ -169,17 +169,38 @@ elif [ "${FUNCTIONS_VOLUME_PATH:-}" = "skip" ]; then
 else
   log_info "Deploying edge functions to $COOLIFY_SSH:$FUNCTIONS_VOLUME_PATH"
   echo ""
+
+  # Deploy _shared/ utilities first (imported by all functions)
+  SHARED_DIR="$FUNCTIONS_SRC/_shared"
+  if [ -d "$SHARED_DIR" ]; then
+    echo "Shared utilities:"
+    for shared_file in "$SHARED_DIR"/*.ts; do
+      echo "  - _shared/$(basename "$shared_file")"
+    done
+  fi
+
   echo "Functions to deploy:"
   for func_dir in "$FUNCTIONS_SRC"/*/; do
     func_name=$(basename "$func_dir")
+    [ "$func_name" = "_shared" ] && continue
     echo "  - $func_name/index.ts"
   done
   echo ""
 
   read -rp "Deploy edge functions via SCP? (y/N): " CONFIRM_FUNCTIONS
   if [[ "$CONFIRM_FUNCTIONS" =~ ^[Yy]$ ]]; then
+    # Deploy _shared/ directory first
+    if [ -d "$SHARED_DIR" ]; then
+      log_info "Deploying _shared/ utilities..."
+      ssh "$COOLIFY_SSH" "mkdir -p $FUNCTIONS_VOLUME_PATH/_shared"
+      scp "$SHARED_DIR"/*.ts "$COOLIFY_SSH:$FUNCTIONS_VOLUME_PATH/_shared/"
+      log_ok "_shared/ deployed ($(ls -1 "$SHARED_DIR"/*.ts | wc -l | tr -d ' ') files)"
+    fi
+
+    # Deploy each function
     for func_dir in "$FUNCTIONS_SRC"/*/; do
       func_name=$(basename "$func_dir")
+      [ "$func_name" = "_shared" ] && continue
       log_info "Deploying $func_name..."
       ssh "$COOLIFY_SSH" "mkdir -p $FUNCTIONS_VOLUME_PATH/$func_name"
       scp "$func_dir/index.ts" "$COOLIFY_SSH:$FUNCTIONS_VOLUME_PATH/$func_name/index.ts"

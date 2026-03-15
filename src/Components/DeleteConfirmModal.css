@@ -140,3 +140,33 @@
     opacity: 1;
   }
 }
+
+/* ===========================================
+   MOBILE
+   =========================================== */
+
+@media (max-width: 480px) {
+  .delete-modal {
+    width: calc(100vw - 32px);
+    max-width: none;
+  }
+
+  .delete-modal-header {
+    padding: 16px;
+  }
+
+  .delete-modal-body {
+    padding: 16px;
+  }
+
+  .delete-modal-footer {
+    padding: 12px 16px;
+  }
+
+  .delete-modal-btn {
+    height: 44px;
+    padding: 8px 20px;
+    font-size: 16px;
+    flex: 1;
+  }
+}

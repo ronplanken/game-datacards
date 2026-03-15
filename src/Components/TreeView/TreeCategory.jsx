@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus, Cloud } from "lucide-react";
+import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useAuth, useSync, CategorySyncIcon, SyncClaimModal } from "../../Premium";
+import { useSync, CategorySyncIcon } from "../../Premium";
 import { useUmami } from "../../Hooks/useUmami";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
@@ -31,15 +31,12 @@ export function TreeCategory({
     addSubCategory,
     getSubCategories,
   } = useCardStorage();
-  const { user } = useAuth();
-  const { enableSync, disableSync, deleteFromCloud } = useSync();
+  const { deleteFromCloud } = useSync();
   const { trackEvent } = useUmami();
 
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
-  const [claimModalOpen, setClaimModalOpen] = useState(false);
-  const [claimCategoryName, setClaimCategoryName] = useState("");
 
   const handleRename = (newName) => {
     renameCategory(category.uuid, newName);
@@ -93,37 +90,6 @@ export function TreeCategory({
     });
   };
 
-  const handleToggleSync = async () => {
-    if (category.syncEnabled) {
-      // Ask if they want to delete from cloud too
-      deleteConfirmDialog({
-        title: "Disable cloud sync?",
-        content: "Also delete from the cloud, or keep the cloud backup?",
-        confirmText: "Delete from cloud",
-        cancelText: "Keep in cloud",
-        onConfirm: () => disableSync(category.uuid, true),
-        onCancel: () => disableSync(category.uuid, false),
-      });
-    } else {
-      const result = await enableSync(category.uuid);
-
-      // Check if this category was previously synced to a different user
-      if (result.requiresConfirmation) {
-        setClaimCategoryName(result.categoryName);
-        setClaimModalOpen(true);
-      }
-    }
-  };
-
-  const handleClaimConfirm = async () => {
-    setClaimModalOpen(false);
-    await enableSync(category.uuid, true);
-  };
-
-  const handleClaimCancel = () => {
-    setClaimModalOpen(false);
-  };
-
   // Can add sub-category if: type is "category" AND not already a sub-category
   const canAddSubCategory = category.type === "category" && !isSubCategory;
 
@@ -131,20 +97,6 @@ export function TreeCategory({
   const topLevelCategoryCount = cardStorage.categories.filter((cat) => !cat.parentId).length;
 
   const contextMenuItems = [
-    // Cloud sync option (only show when user is logged in)
-    ...(user
-      ? [
-          {
-            key: "toggle-sync",
-            label: category.syncEnabled ? "Disable Cloud Sync" : "Enable Cloud Sync",
-            icon: <Cloud size={14} />,
-            onClick: handleToggleSync,
-          },
-          {
-            type: "divider",
-          },
-        ]
-      : []),
     // Add sub-category option (only for regular categories, not sub-categories)
     ...(canAddSubCategory
       ? [
@@ -268,13 +220,6 @@ export function TreeCategory({
         initialValue=""
         onConfirm={handleAddSubCategory}
         onCancel={() => setIsSubCategoryModalOpen(false)}
-      />
-
-      <SyncClaimModal
-        isOpen={claimModalOpen}
-        categoryName={claimCategoryName}
-        onConfirm={handleClaimConfirm}
-        onCancel={handleClaimCancel}
       />
     </>
   );
