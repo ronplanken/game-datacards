@@ -1,8 +1,7 @@
-import { Sparkles, LayoutDashboard, Layers, RefreshCw, Heart } from "lucide-react";
+import { Sparkles, LayoutDashboard, Layers, Heart } from "lucide-react";
 import { StepWelcome } from "./StepWelcome";
 import { StepWorkspace } from "./StepWorkspace";
 import { StepCardTypes } from "./StepCardTypes";
-import { StepMigration } from "./StepMigration";
 import { StepThankYou } from "./StepThankYou";
 
 /**
@@ -31,12 +30,6 @@ export const VERSION_CONFIG = {
       title: "Card Types & Fields",
       icon: Layers,
       component: StepCardTypes,
-    },
-    {
-      key: "3.5.0-migration",
-      title: "Existing Datasources",
-      icon: RefreshCw,
-      component: StepMigration,
     },
     {
       key: "3.5.0-thankyou",

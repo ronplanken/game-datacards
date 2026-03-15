@@ -10,8 +10,8 @@ describe("Desktop WhatsNewWizard v3.5.0 config", () => {
     expect(VERSION_CONFIG.releaseName).toBe("Datasource Editor");
   });
 
-  it("has 5 steps", () => {
-    expect(VERSION_CONFIG.steps).toHaveLength(5);
+  it("has 4 steps", () => {
+    expect(VERSION_CONFIG.steps).toHaveLength(4);
   });
 
   it("has unique keys for all steps", () => {
@@ -42,6 +42,6 @@ describe("Desktop WhatsNewWizard v3.5.0 config", () => {
 
   it("has steps in the correct order", () => {
     const titles = VERSION_CONFIG.steps.map((s) => s.title);
-    expect(titles).toEqual(["Welcome", "The Workspace", "Card Types & Fields", "Existing Datasources", "Thank You"]);
+    expect(titles).toEqual(["Welcome", "The Workspace", "Card Types & Fields", "Thank You"]);
   });
 });

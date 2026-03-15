@@ -1,5 +1,5 @@
 import React from "react";
-import { Database, LayoutDashboard, Layers, RefreshCw } from "lucide-react";
+import { Database, LayoutDashboard, Layers } from "lucide-react";
 
 /**
  * StepDatasourceEditor - Single step for mobile v3.5.0 Datasource Editor
@@ -42,12 +42,12 @@ export const StepDatasourceEditor = () => (
 
       <div className="mwnw-feature-item">
         <div className="mwnw-feature-item-icon">
-          <RefreshCw size={20} />
+          <Database size={20} />
         </div>
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Existing Datasources</span>
           <span className="mwnw-feature-item-desc">
-            Previously imported datasources can be converted to categories or re-imported in the new editor
+            Previously imported or created datasources can be converted back to regular categories
           </span>
         </div>
       </div>
