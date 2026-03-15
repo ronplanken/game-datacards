@@ -373,7 +373,6 @@ export const useTemplateSharing = () => ({
   fetchMySubscriptions: () => Promise.resolve([]),
   subscribeToTemplate: () => Promise.resolve({ success: false }),
   unsubscribeFromTemplate: () => Promise.resolve({ success: false }),
-  checkForUpdates: () => Promise.resolve([]),
   // Publishing
   myTemplates: [],
   isLoadingMine: false,
