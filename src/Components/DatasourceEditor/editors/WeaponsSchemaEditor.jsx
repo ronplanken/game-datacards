@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { nanoid } from "nanoid";
 import { Swords, Plus, X, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconCategory, IconList } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "./editorUtils";
 
 const COLUMN_TYPES = [
   { value: "string", label: "Text" },
@@ -20,7 +22,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
   const weaponTypes = schema?.weaponTypes;
   if (!weaponTypes) return null;
 
-  const types = weaponTypes.types || [];
+  const types = ensureIds(weaponTypes.types);
   const [activeTab, setActiveTab] = useState(0);
 
   const updateWeaponTypes = (updatedTypes) => {
@@ -35,6 +37,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
   const addWeaponType = () => {
     const nextNum = types.length + 1;
     const newType = {
+      _id: nanoid(),
       key: `weapon_type_${nextNum}`,
       label: `Weapon Type ${nextNum}`,
       hasKeywords: false,
@@ -64,6 +67,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
     const columns = types[typeIndex].columns || [];
     const nextNum = columns.length + 1;
     const newCol = {
+      _id: nanoid(),
       key: `col_${nextNum}`,
       label: `Column ${nextNum}`,
       type: "string",
@@ -86,7 +90,8 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
     updateType(typeIndex, { columns });
   };
 
-  const activeType = types[activeTab];
+  const rawActiveType = types[activeTab];
+  const activeType = rawActiveType ? { ...rawActiveType, columns: ensureIds(rawActiveType.columns) } : undefined;
 
   return (
     <Section title="Weapon Types" icon={Swords} defaultOpen={true}>
@@ -107,7 +112,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
         <div className="props-weapon-tabs" role="tablist" aria-label="Weapon types">
           {types.map((wt, index) => (
             <button
-              key={wt.key + "-" + index}
+              key={wt._id}
               role="tab"
               aria-selected={activeTab === index}
               className={`props-weapon-tab${activeTab === index ? " active" : ""}`}
@@ -179,7 +184,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
           <div className="props-field-list">
             {(activeType.columns || []).length === 0 && <div className="props-field-list-empty">No columns yet</div>}
             {(activeType.columns || []).map((col, colIndex) => (
-              <div key={col.key + "-" + colIndex} className="props-field-item">
+              <div key={col._id} className="props-field-item">
                 <div className="props-field-item-inputs">
                   <CompactInput
                     label={<IconKey size={10} stroke={1.5} />}

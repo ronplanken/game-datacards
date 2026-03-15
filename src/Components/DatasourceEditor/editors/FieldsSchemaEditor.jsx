@@ -1,8 +1,10 @@
 import React from "react";
+import { nanoid } from "nanoid";
 import { List, BookOpen, Tag, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconCategory, IconList } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "./editorUtils";
 
 const FIELD_TYPES = [
   { value: "string", label: "Text" },
@@ -15,7 +17,8 @@ const FIELD_TYPES = [
  * Reusable field list renderer with add/remove/reorder and type selection.
  * Used for top-level fields and collection fields.
  */
-const FieldList = ({ fields, onUpdate, fieldLabel = "field" }) => {
+const FieldList = ({ fields: rawFields, onUpdate, fieldLabel = "field" }) => {
+  const fields = ensureIds(rawFields);
   const updateField = (index, key, value) => {
     const updated = fields.map((f, i) => (i === index ? { ...f, [key]: value } : f));
     onUpdate(updated);
@@ -24,6 +27,7 @@ const FieldList = ({ fields, onUpdate, fieldLabel = "field" }) => {
   const addField = () => {
     const nextNum = fields.length + 1;
     const newField = {
+      _id: nanoid(),
       key: `${fieldLabel}_${nextNum}`,
       label: `${fieldLabel.charAt(0).toUpperCase() + fieldLabel.slice(1)} ${nextNum}`,
       type: "string",
@@ -50,7 +54,7 @@ const FieldList = ({ fields, onUpdate, fieldLabel = "field" }) => {
       <div className="props-field-list">
         {fields.length === 0 && <div className="props-field-list-empty">No fields defined yet</div>}
         {fields.map((field, index) => (
-          <div key={field.key + "-" + index} className="props-field-item">
+          <div key={field._id} className="props-field-item">
             <div className="props-field-item-inputs">
               <CompactInput
                 label={<IconKey size={10} stroke={1.5} />}

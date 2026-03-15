@@ -1,8 +1,10 @@
 import React from "react";
+import { nanoid } from "nanoid";
 import { LayoutList, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconTemplate } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "./editorUtils";
 
 const FORMAT_OPTIONS = [
   { value: "list", label: "List" },
@@ -15,7 +17,7 @@ const FORMAT_OPTIONS = [
  */
 export const SectionsSchemaEditor = ({ schema, onChange }) => {
   const sectionsData = schema?.sections;
-  const sections = sectionsData?.sections || [];
+  const sections = ensureIds(sectionsData?.sections);
 
   const updateSections = (updatedSections) => {
     onChange({
@@ -36,6 +38,7 @@ export const SectionsSchemaEditor = ({ schema, onChange }) => {
   const addSection = () => {
     const nextNum = sections.length + 1;
     const newSection = {
+      _id: nanoid(),
       key: `section_${nextNum}`,
       label: `Section ${nextNum}`,
       format: "list",
@@ -62,7 +65,7 @@ export const SectionsSchemaEditor = ({ schema, onChange }) => {
       <div className="props-field-list">
         {sections.length === 0 && <div className="props-field-list-empty">No sections yet</div>}
         {sections.map((section, index) => (
-          <div key={section.key + "-" + index} className="props-field-item">
+          <div key={section._id} className="props-field-item">
             <div className="props-field-item-inputs">
               <CompactInput
                 label={<IconKey size={10} stroke={1.5} />}

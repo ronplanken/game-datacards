@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo } from "react";
+import { nanoid } from "nanoid";
 import { Plus, Trash2, ChevronUp, ChevronDown, Layers } from "lucide-react";
 import { IconKey, IconTag, IconTemplate, IconHeading } from "@tabler/icons-react";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "../../DatasourceEditor/editors/editorUtils";
 
 /**
  * Default abilities structure for new wizard sessions.
@@ -45,7 +47,7 @@ const generateUniqueKey = (existingCategories) => {
 export const StepAbilities = ({ wizard }) => {
   const data = wizard.stepData["abilities"] || {};
   const abilities = data.abilities || DEFAULT_ABILITIES;
-  const categories = abilities.categories || [];
+  const categories = ensureIds(abilities.categories);
 
   const updateAbilities = useCallback(
     (updater) => {
@@ -63,6 +65,7 @@ export const StepAbilities = ({ wizard }) => {
       const currentCategories = prev.categories || [];
       const newKey = generateUniqueKey(currentCategories);
       const newCategory = {
+        _id: nanoid(),
         key: newKey,
         label: `Category ${currentCategories.length + 1}`,
         format: "name-description",
@@ -186,10 +189,7 @@ export const StepAbilities = ({ wizard }) => {
         )}
 
         {categories.map((category, index) => (
-          <div
-            className="dsw-stats-field-row"
-            key={`${category.key}-${index}`}
-            data-testid={`dsw-abilities-category-${index}`}>
+          <div className="dsw-stats-field-row" key={category._id} data-testid={`dsw-abilities-category-${index}`}>
             <span className="dsw-stats-field-order">{index + 1}</span>
 
             <div className="dsw-stats-field-inputs">

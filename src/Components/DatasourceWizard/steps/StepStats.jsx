@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo } from "react";
+import { nanoid } from "nanoid";
 import { Plus, Trash2, ChevronUp, ChevronDown, BarChart3 } from "lucide-react";
 import { IconKey, IconTag } from "@tabler/icons-react";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "../../DatasourceEditor/editors/editorUtils";
 
 /**
  * Default stats structure for new wizard sessions.
@@ -46,7 +48,7 @@ const reindexDisplayOrder = (fields) => fields.map((f, i) => ({ ...f, displayOrd
 export const StepStats = ({ wizard }) => {
   const data = wizard.stepData["stats"] || {};
   const stats = data.stats || DEFAULT_STATS;
-  const fields = stats.fields || [];
+  const fields = ensureIds(stats.fields);
 
   const updateStats = useCallback(
     (updater) => {
@@ -71,6 +73,7 @@ export const StepStats = ({ wizard }) => {
       const currentFields = prev.fields || [];
       const newKey = generateUniqueKey(currentFields);
       const newField = {
+        _id: nanoid(),
         key: newKey,
         label: newKey.toUpperCase(),
         type: "string",
@@ -230,7 +233,7 @@ export const StepStats = ({ wizard }) => {
         )}
 
         {fields.map((field, index) => (
-          <div className="dsw-stats-field-row" key={`${field.key}-${index}`} data-testid={`dsw-stats-field-${index}`}>
+          <div className="dsw-stats-field-row" key={field._id} data-testid={`dsw-stats-field-${index}`}>
             <span className="dsw-stats-field-order">{field.displayOrder}</span>
 
             <div className="dsw-stats-field-inputs">

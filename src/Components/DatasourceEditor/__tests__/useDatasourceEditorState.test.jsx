@@ -31,10 +31,12 @@ vi.mock("../../../Hooks/useSettingsStorage", () => ({
 
 // Mock datasource storage
 const mockGetCustomDatasourceData = vi.fn();
+const mockUpdateDatasourceSyncState = vi.fn((id, fields) => Promise.resolve({ id, ...fields }));
 
 vi.mock("../../../Hooks/useDataSourceStorage", () => ({
   useDataSourceStorage: () => ({
     getCustomDatasourceData: mockGetCustomDatasourceData,
+    updateDatasourceSyncState: mockUpdateDatasourceSyncState,
   }),
 }));
 
@@ -238,7 +240,7 @@ describe("useDatasourceEditorState", () => {
         await result.current.updateDatasource(updated);
       });
 
-      expect(mockSetItem).toHaveBeenCalledWith("custom-1", updated);
+      expect(mockUpdateDatasourceSyncState).toHaveBeenCalledWith("custom-1", updated);
     });
 
     it("updateDatasource persists schema changes to localForage", async () => {
@@ -271,7 +273,7 @@ describe("useDatasourceEditorState", () => {
         await result.current.updateDatasource(updatedDatasource);
       });
 
-      expect(mockSetItem).toHaveBeenCalledWith("custom-1", updatedDatasource);
+      expect(mockUpdateDatasourceSyncState).toHaveBeenCalledWith("custom-1", updatedDatasource);
       expect(result.current.activeDatasource.schema.cardTypes[0].schema.stats.fields).toHaveLength(1);
     });
 
@@ -288,20 +290,20 @@ describe("useDatasourceEditorState", () => {
         await result.current.updateDatasource(updated);
       });
 
-      expect(mockSetItem).toHaveBeenCalledWith(
+      expect(mockUpdateDatasourceSyncState).toHaveBeenCalledWith(
         "custom-1",
         expect.objectContaining({ name: "New Name", version: "2.0.0", author: "New Author" }),
       );
     });
 
-    it("updateDatasource handles localForage errors gracefully", async () => {
+    it("updateDatasource handles storage errors gracefully", async () => {
       const { result } = renderHook(() => useDatasourceEditorState());
 
       await act(async () => {
         await result.current.openDatasource({ id: "custom-1" });
       });
 
-      mockSetItem.mockRejectedValueOnce(new Error("Storage quota exceeded"));
+      mockUpdateDatasourceSyncState.mockRejectedValueOnce(new Error("Storage quota exceeded"));
 
       const updated = { ...fullDatasource, name: "Should Still Update State" };
 
@@ -321,7 +323,7 @@ describe("useDatasourceEditorState", () => {
         await result.current.openDatasource({ id: "custom-1" });
       });
 
-      mockSetItem.mockClear();
+      mockUpdateDatasourceSyncState.mockClear();
 
       await act(async () => {
         await result.current.updateDatasource({ ...fullDatasource, name: "Update 1" });
@@ -330,8 +332,11 @@ describe("useDatasourceEditorState", () => {
         await result.current.updateDatasource({ ...fullDatasource, name: "Update 2" });
       });
 
-      expect(mockSetItem).toHaveBeenCalledTimes(2);
-      expect(mockSetItem).toHaveBeenLastCalledWith("custom-1", expect.objectContaining({ name: "Update 2" }));
+      expect(mockUpdateDatasourceSyncState).toHaveBeenCalledTimes(2);
+      expect(mockUpdateDatasourceSyncState).toHaveBeenLastCalledWith(
+        "custom-1",
+        expect.objectContaining({ name: "Update 2" }),
+      );
     });
   });
 

@@ -60,7 +60,7 @@ function findCardInDatasource(datasource, cardId) {
  */
 export function useDatasourceEditorState() {
   const { settings, updateSettings } = useSettingsStorage();
-  const { getCustomDatasourceData } = useDataSourceStorage();
+  const { getCustomDatasourceData, updateDatasourceSyncState } = useDataSourceStorage();
 
   const [activeDatasource, setActiveDatasource] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -149,16 +149,14 @@ export function useDatasourceEditorState() {
         });
       }
 
-      // Persist to localForage
+      // Persist to localForage (and bump sync trigger if sync-enabled)
       try {
-        const localForage = (await import("localforage")).default;
-        const dataStore = localForage.createInstance({ name: "data" });
-        await dataStore.setItem(updatedDatasource.id, updatedDatasource);
+        await updateDatasourceSyncState(updatedDatasource.id, updatedDatasource);
       } catch {
         // Storage failure is non-fatal for the editor session
       }
     },
-    [selectedItem, settings, updateSettings],
+    [selectedItem, settings, updateSettings, updateDatasourceSyncState],
   );
 
   /**
@@ -274,6 +272,30 @@ export function useDatasourceEditorState() {
       clearSelection();
     }
   }, [datasources, activeDatasource]);
+
+  // Refresh activeDatasource sync fields when trigger changes (e.g. after sync completes)
+  useEffect(() => {
+    if (!activeDatasource) return;
+    let cancelled = false;
+    getCustomDatasourceData(activeDatasource.id).then((data) => {
+      if (cancelled || !data) return;
+      // Only update sync-related fields to avoid overwriting in-progress edits
+      if (data.syncStatus !== activeDatasource.syncStatus || data.lastSyncedAt !== activeDatasource.lastSyncedAt) {
+        setActiveDatasource((prev) => ({
+          ...prev,
+          syncStatus: data.syncStatus,
+          syncError: data.syncError,
+          lastSyncedAt: data.lastSyncedAt,
+          editVersion: data.editVersion,
+          isUploaded: data.isUploaded,
+          cloudId: data.cloudId,
+        }));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [settings.datasourceSyncTrigger]);
 
   // Restore selection from session cookie on mount
   useEffect(() => {

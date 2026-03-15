@@ -77,9 +77,17 @@ export const SettingsStorageProviderComponent = (props) => {
     }
   });
 
-  const updateSettings = (newSettings) => {
-    setLocalSettings(newSettings);
-    localStorage.setItem("settings", JSON.stringify(newSettings));
+  const updateSettings = (newSettingsOrFn) => {
+    if (typeof newSettingsOrFn === "function") {
+      setLocalSettings((prev) => {
+        const next = newSettingsOrFn(prev);
+        localStorage.setItem("settings", JSON.stringify(next));
+        return next;
+      });
+    } else {
+      setLocalSettings(newSettingsOrFn);
+      localStorage.setItem("settings", JSON.stringify(newSettingsOrFn));
+    }
   };
 
   const context = {

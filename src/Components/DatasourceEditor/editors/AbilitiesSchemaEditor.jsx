@@ -1,8 +1,10 @@
 import React from "react";
+import { nanoid } from "nanoid";
 import { Sparkles, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconTemplate, IconHeading } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "./editorUtils";
 
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name Only" },
@@ -17,7 +19,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const abilities = schema?.abilities;
   if (!abilities) return null;
 
-  const categories = abilities.categories || [];
+  const categories = ensureIds(abilities.categories);
 
   const updateAbilities = (updates) => {
     onChange({ ...schema, abilities: { ...abilities, ...updates } });
@@ -31,6 +33,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const addCategory = () => {
     const nextNum = categories.length + 1;
     const newCategory = {
+      _id: nanoid(),
       key: `category_${nextNum}`,
       label: `Category ${nextNum}`,
       format: "name-description",
@@ -57,7 +60,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
       <div className="props-field-list">
         {categories.length === 0 && <div className="props-field-list-empty">No categories yet</div>}
         {categories.map((category, index) => (
-          <div key={category.key + "-" + index} className="props-field-item">
+          <div key={category._id} className="props-field-item">
             <div className="props-field-item-inputs">
               <CompactInput
                 label={<IconKey size={10} stroke={1.5} />}

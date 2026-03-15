@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo } from "react";
+import { nanoid } from "nanoid";
 import { Plus, Trash2, ChevronUp, ChevronDown, LayoutList } from "lucide-react";
 import { IconKey, IconTag, IconTemplate } from "@tabler/icons-react";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "../../DatasourceEditor/editors/editorUtils";
 
 const DEFAULT_SECTIONS = {
   label: "Sections",
@@ -29,7 +31,7 @@ const generateUniqueKey = (existingSections) => {
 export const StepSections = ({ wizard }) => {
   const data = wizard.stepData["sections"] || {};
   const sectionsData = data.sections || DEFAULT_SECTIONS;
-  const sections = sectionsData.sections || [];
+  const sections = ensureIds(sectionsData.sections);
 
   const updateSections = useCallback(
     (updater) => {
@@ -48,7 +50,7 @@ export const StepSections = ({ wizard }) => {
       const newKey = generateUniqueKey(current);
       return {
         ...prev,
-        sections: [...current, { key: newKey, label: `Section ${current.length + 1}`, format: "list" }],
+        sections: [...current, { _id: nanoid(), key: newKey, label: `Section ${current.length + 1}`, format: "list" }],
       };
     });
   }, [updateSections]);
@@ -138,10 +140,7 @@ export const StepSections = ({ wizard }) => {
         )}
 
         {sections.map((section, index) => (
-          <div
-            className="dsw-stats-field-row"
-            key={`${section.key}-${index}`}
-            data-testid={`dsw-sections-item-${index}`}>
+          <div className="dsw-stats-field-row" key={section._id} data-testid={`dsw-sections-item-${index}`}>
             <span className="dsw-stats-field-order">{index + 1}</span>
 
             <div className="dsw-stats-field-inputs">

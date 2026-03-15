@@ -482,17 +482,18 @@ export const DataSourceStorageProviderComponent = (props) => {
       const updated = datasource ? { ...datasource, ...syncFields } : { id: datasourceId, ...syncFields };
       await dataStore.setItem(datasourceId, updated);
 
-      // Bump trigger counter when a datasource becomes pending, so auto-sync can detect it
-      if (syncFields.syncStatus === "pending") {
-        updateSettings({
-          ...settings,
-          datasourceSyncTrigger: (settings.datasourceSyncTrigger || 0) + 1,
-        });
+      // Bump trigger counter on any sync status change so auto-sync and stats effects re-run
+      // Uses functional update to avoid stale closure when called multiple times rapidly
+      if (syncFields.syncStatus) {
+        updateSettings((prev) => ({
+          ...prev,
+          datasourceSyncTrigger: (prev.datasourceSyncTrigger || 0) + 1,
+        }));
       }
 
       return updated;
     },
-    [settings, updateSettings],
+    [updateSettings],
   );
 
   /**

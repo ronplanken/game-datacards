@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { nanoid } from "nanoid";
 import { Plus, Trash2, ChevronUp, ChevronDown, Crosshair } from "lucide-react";
 import { IconKey, IconTag } from "@tabler/icons-react";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "../../DatasourceEditor/editors/editorUtils";
 
 /**
  * Default weapon types structure for new wizard sessions.
@@ -53,7 +55,7 @@ const generateUniqueColumnKey = (existingColumns) => {
 export const StepWeapons = ({ wizard }) => {
   const data = wizard.stepData["weapons"] || {};
   const weaponTypes = data.weaponTypes || DEFAULT_WEAPON_TYPES;
-  const types = weaponTypes.types || [];
+  const types = ensureIds(weaponTypes.types);
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
@@ -73,6 +75,7 @@ export const StepWeapons = ({ wizard }) => {
       const currentTypes = prev.types || [];
       const newKey = generateUniqueTypeKey(currentTypes);
       const newType = {
+        _id: nanoid(),
         key: newKey,
         label: `Weapon Type ${currentTypes.length + 1}`,
         hasKeywords: false,
@@ -147,6 +150,7 @@ export const StepWeapons = ({ wizard }) => {
           const currentColumns = t.columns || [];
           const newKey = generateUniqueColumnKey(currentColumns);
           const newColumn = {
+            _id: nanoid(),
             key: newKey,
             label: newKey.toUpperCase(),
             type: "string",
@@ -233,7 +237,8 @@ export const StepWeapons = ({ wizard }) => {
     [updateWeaponTypes],
   );
 
-  const activeType = types[activeTabIndex] || null;
+  const rawActiveType = types[activeTabIndex] || null;
+  const activeType = rawActiveType ? { ...rawActiveType, columns: ensureIds(rawActiveType.columns) } : null;
 
   const hasTypeKeyConflict = useMemo(() => {
     const keys = types.map((t) => t.key).filter(Boolean);
@@ -257,7 +262,7 @@ export const StepWeapons = ({ wizard }) => {
         <div className="dsw-weapons-tab-bar">
           {types.map((type, index) => (
             <button
-              key={`${type.key}-${index}`}
+              key={type._id}
               type="button"
               className={`dsw-weapons-tab ${index === activeTabIndex ? "dsw-weapons-tab--active" : ""}`}
               onClick={() => setActiveTabIndex(index)}
@@ -389,10 +394,7 @@ export const StepWeapons = ({ wizard }) => {
               )}
 
               {(activeType.columns || []).map((col, colIndex) => (
-                <div
-                  className="dsw-stats-field-row"
-                  key={`${col.key}-${colIndex}`}
-                  data-testid={`dsw-weapons-col-${colIndex}`}>
+                <div className="dsw-stats-field-row" key={col._id} data-testid={`dsw-weapons-col-${colIndex}`}>
                   <span className="dsw-stats-field-order">{colIndex + 1}</span>
 
                   <div className="dsw-stats-field-inputs">

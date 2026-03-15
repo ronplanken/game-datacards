@@ -1,7 +1,9 @@
 import React, { useCallback, useMemo } from "react";
+import { nanoid } from "nanoid";
 import { Plus, Trash2, ChevronUp, ChevronDown, ListOrdered, X } from "lucide-react";
 import { IconKey, IconTag, IconCategory } from "@tabler/icons-react";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "../../DatasourceEditor/editors/editorUtils";
 
 /**
  * Valid field type options for the type dropdown.
@@ -38,7 +40,7 @@ const generateUniqueKey = (existingFields) => {
  */
 export const StepFields = ({ wizard }) => {
   const data = wizard.stepData["fields"] || {};
-  const fields = data.fields || [];
+  const fields = ensureIds(data.fields);
 
   const updateFields = useCallback(
     (updater) => {
@@ -55,6 +57,7 @@ export const StepFields = ({ wizard }) => {
     updateFields((prev) => {
       const newKey = generateUniqueKey(prev);
       const newField = {
+        _id: nanoid(),
         key: newKey,
         label: `Field ${prev.length + 1}`,
         type: "string",
@@ -217,10 +220,7 @@ export const StepFields = ({ wizard }) => {
         )}
 
         {fields.map((field, index) => (
-          <div
-            className="dsw-fields-field-item"
-            key={`${field.key}-${index}`}
-            data-testid={`dsw-fields-field-${index}`}>
+          <div className="dsw-fields-field-item" key={field._id} data-testid={`dsw-fields-field-${index}`}>
             <div className="dsw-stats-field-row">
               <span className="dsw-stats-field-order">{index + 1}</span>
 

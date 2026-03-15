@@ -1,8 +1,10 @@
 import React from "react";
+import { nanoid } from "nanoid";
 import { BarChart3, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { IconKey, IconTag, IconCategory, IconList, IconArrowsHorizontal, IconPalette } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { ensureIds } from "./editorUtils";
 
 const FIELD_TYPES = [
   { value: "string", label: "Text" },
@@ -18,7 +20,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const stats = schema?.stats;
   if (!stats) return null;
 
-  const fields = stats.fields || [];
+  const fields = ensureIds(stats.fields);
 
   const updateStats = (updatedStats) => {
     onChange({ ...schema, stats: { ...stats, ...updatedStats } });
@@ -32,6 +34,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const addField = () => {
     const nextOrder = fields.length > 0 ? Math.max(...fields.map((f) => f.displayOrder || 0)) + 1 : 1;
     const newField = {
+      _id: nanoid(),
       key: `stat_${nextOrder}`,
       label: `Stat ${nextOrder}`,
       type: "string",
@@ -71,7 +74,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
       <div className="props-field-list">
         {fields.length === 0 && <div className="props-field-list-empty">No stat fields yet</div>}
         {fields.map((field, index) => (
-          <div key={field.key + "-" + index} className="props-field-item">
+          <div key={field._id} className="props-field-item">
             <div className="props-field-item-inputs">
               <CompactInput
                 label={<IconKey size={10} stroke={1.5} />}
