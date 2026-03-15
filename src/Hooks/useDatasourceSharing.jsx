@@ -1,12 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef, useContext, createContext } from "react";
+import React, { useState, useEffect, useCallback, useContext, createContext } from "react";
 import { message } from "../Components/Toast/message";
 import localForage from "localforage";
 import { supabase } from "../config/supabase";
 import { useSettingsStorage } from "./useSettingsStorage";
 import { validateCustomDatasource, createRegistryEntry } from "../Helpers/customDatasource.helpers";
-
-// Debounce delay for update checks (ms)
-const UPDATE_CHECK_DEBOUNCE = 30000;
 
 // Create localForage instance for datasource data
 var dataStore = localForage.createInstance({
@@ -59,10 +56,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
 
   // Upload/publish state
   const [isUploading, setIsUploading] = useState(false);
-
-  // Refs
-  const updateCheckTimeoutRef = useRef(null);
-  const lastUpdateCheckRef = useRef(null);
 
   // ============================================
   // BROWSING FUNCTIONS
@@ -298,29 +291,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     },
     [user, fetchMySubscriptions],
   );
-
-  /**
-   * Check for available updates on subscriptions
-   */
-  const checkForUpdates = useCallback(async () => {
-    if (!user) return [];
-
-    try {
-      const { data, error } = await supabase.rpc("get_subscription_updates");
-
-      if (error) {
-        console.error("Check updates error:", error);
-        return [];
-      }
-
-      setAvailableUpdates(data || []);
-      lastUpdateCheckRef.current = Date.now();
-      return data || [];
-    } catch (err) {
-      console.error("Check updates exception:", err);
-      return [];
-    }
-  }, [user]);
 
   /**
    * Sync a single subscription to get the latest version
@@ -563,25 +533,24 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
       try {
         const { name, version, authorName, displayFormat } = metadata;
 
-        const { data, error } = await supabase
-          .from("user_datasources")
-          .insert({
-            user_id: user.id,
-            datasource_id: datasourceData.id || `ds-${Date.now()}`,
-            name,
-            data: datasourceData,
-            version: version || "1.0.0",
-            author_name: authorName || user.email?.split("@")[0] || "Anonymous",
-            display_format: displayFormat,
-            is_public: false,
-          })
-          .select()
-          .single();
+        const { data, error } = await supabase.rpc("upsert_datasource", {
+          p_datasource_id: datasourceData.id || `ds-${Date.now()}`,
+          p_name: name,
+          p_data: datasourceData,
+          p_version: version || "1.0.0",
+          p_author_name: authorName || user.email?.split("@")[0] || "Anonymous",
+          p_display_format: displayFormat,
+        });
 
         if (error) {
           console.error("Upload error:", error);
           message.error("Failed to upload datasource");
           return { success: false, error: error.message };
+        }
+
+        if (!data?.success) {
+          message.error(data?.error || "Failed to upload datasource");
+          return { success: false, error: data?.error };
         }
 
         // Update local registry with cloudId
@@ -600,7 +569,11 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         // Refresh my datasources
         await fetchMyDatasources();
 
-        message.success("Datasource uploaded to cloud");
+        if (data.restored) {
+          message.success("Datasource restored from cloud");
+        } else {
+          message.success("Datasource uploaded to cloud");
+        }
         return { success: true, cloudId: data.id };
       } catch (err) {
         console.error("Upload exception:", err);
@@ -834,16 +807,19 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
       }
 
       try {
-        const { error } = await supabase
-          .from("user_datasources")
-          .delete()
-          .eq("id", datasourceDbId)
-          .eq("user_id", user.id);
+        const { data, error } = await supabase.rpc("delete_local_datasource", {
+          p_datasource_db_id: datasourceDbId,
+        });
 
         if (error) {
           console.error("Delete datasource error:", error);
           message.error("Failed to delete datasource");
           return { success: false, error: error.message };
+        }
+
+        if (!data?.success) {
+          message.error(data?.error || "Failed to delete datasource");
+          return { success: false, error: data?.error };
         }
 
         // Remove cloudId from local registry
@@ -872,13 +848,40 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
   // ============================================
 
   /**
+   * Handle realtime deletion/unpublish for subscribed datasources
+   */
+  const handleRealtimeDeletion = useCallback((record) => {
+    if (!record) return;
+    const recordId = record.id;
+
+    // Remove from subscriptions state
+    setSubscriptions((prev) => prev.filter((s) => s.datasource_id !== recordId));
+
+    // Remove from available updates
+    setAvailableUpdates((prev) => prev.filter((u) => u.datasource_id !== recordId));
+
+    message.warning(`Subscribed datasource "${record.name || "Unknown"}" was removed by its author`);
+  }, []);
+
+  /**
    * Handle realtime updates for subscribed datasources
    */
   const handleRealtimeUpdate = useCallback(
     (payload) => {
-      const { eventType, new: newRecord } = payload;
+      const { eventType, new: newRecord, old: oldRecord } = payload;
+
+      if (eventType === "DELETE") {
+        handleRealtimeDeletion(oldRecord);
+        return;
+      }
 
       if (eventType !== "UPDATE") return;
+
+      // Check for soft-delete or unpublish
+      if (newRecord.deleted || !newRecord.is_public) {
+        handleRealtimeDeletion(newRecord);
+        return;
+      }
 
       // Check if this is a datasource we're subscribed to
       const subscription = subscriptions.find((s) => s.datasource_id === newRecord.id);
@@ -903,7 +906,7 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         });
       }
     },
-    [subscriptions],
+    [subscriptions, handleRealtimeDeletion],
   );
 
   // Subscribe to realtime changes for subscribed datasources
@@ -913,19 +916,19 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     const subscribedIds = subscriptions.map((s) => s.datasource_id);
     if (subscribedIds.length === 0) return;
 
-    // Create channel for datasource updates
+    // Create channel for datasource updates - listen for all event types
     const channel = supabase
       .channel(`datasource-updates-${user.id}`)
       .on(
         "postgres_changes",
         {
-          event: "UPDATE",
+          event: "*",
           schema: "public",
           table: "user_datasources",
         },
         (payload) => {
-          // Filter to only subscribed datasources
-          if (subscribedIds.includes(payload.new?.id)) {
+          const recordId = payload.new?.id || payload.old?.id;
+          if (subscribedIds.includes(recordId)) {
             handleRealtimeUpdate(payload);
           }
         },
@@ -946,36 +949,12 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     if (user) {
       fetchMySubscriptions();
       fetchMyDatasources();
-      // Debounced update check
-      updateCheckTimeoutRef.current = setTimeout(() => {
-        checkForUpdates();
-      }, 1000);
     } else {
       setSubscriptions([]);
       setMyDatasources([]);
       setAvailableUpdates([]);
     }
-
-    return () => {
-      if (updateCheckTimeoutRef.current) {
-        clearTimeout(updateCheckTimeoutRef.current);
-      }
-    };
   }, [user]);
-
-  // Periodic update check
-  useEffect(() => {
-    if (!user) return;
-
-    const interval = setInterval(() => {
-      // Only check if enough time has passed
-      if (!lastUpdateCheckRef.current || Date.now() - lastUpdateCheckRef.current > UPDATE_CHECK_DEBOUNCE) {
-        checkForUpdates();
-      }
-    }, UPDATE_CHECK_DEBOUNCE);
-
-    return () => clearInterval(interval);
-  }, [user, checkForUpdates]);
 
   // ============================================
   // CONTEXT VALUE
@@ -999,7 +978,6 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
     fetchMySubscriptions,
     subscribeToDatasource,
     unsubscribeFromDatasource,
-    checkForUpdates,
     syncSubscription,
     syncAllSubscriptions,
     getSubscribedDatasources,
@@ -1046,7 +1024,6 @@ export function useDatasourceSharing() {
       fetchMySubscriptions: () => Promise.resolve([]),
       subscribeToDatasource: () => Promise.resolve({ success: false }),
       unsubscribeFromDatasource: () => Promise.resolve({ success: false }),
-      checkForUpdates: () => Promise.resolve([]),
       syncSubscription: () => Promise.resolve({ success: false }),
       syncAllSubscriptions: () => Promise.resolve(),
       getSubscribedDatasources: () => [],

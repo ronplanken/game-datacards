@@ -293,11 +293,34 @@ export const DataSourceStorageProviderComponent = (props) => {
   );
 
   /**
+   * Register a custom datasource in the settings registry (e.g. after cloud import)
+   * @param {string} id - The datasource storage ID
+   * @param {string} name - The datasource name
+   * @param {string} cloudId - The cloud database row ID
+   */
+  const registerCustomDatasource = useCallback(
+    (id, name, cloudId) => {
+      const registry = settings.customDatasources || [];
+      if (!registry.some((ds) => ds.id === id)) {
+        updateSettings({
+          ...settings,
+          customDatasources: [...registry, { id, name, cloudId }],
+        });
+      }
+    },
+    [settings, updateSettings],
+  );
+
+  /**
    * Remove a custom datasource
    * @param {string} datasourceId - The datasource ID to remove
+   * @returns {Promise<{cloudId?: string, syncEnabled?: boolean}>} Metadata for caller to handle cloud cleanup
    */
   const removeCustomDatasource = useCallback(
     async (datasourceId) => {
+      const datasource = await dataStore.getItem(datasourceId);
+      const registryEntry = (settings.customDatasources || []).find((ds) => ds.id === datasourceId);
+
       // Remove from localForage
       await dataStore.removeItem(datasourceId);
 
@@ -321,6 +344,12 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(basicData);
         setSelectedFaction(basicData.data[0]);
       }
+
+      // Return metadata for caller to handle cloud cleanup
+      return {
+        cloudId: registryEntry?.cloudId || datasource?.cloudId,
+        syncEnabled: datasource?.syncEnabled,
+      };
     },
     [settings, updateSettings],
   );
@@ -441,6 +470,46 @@ export const DataSourceStorageProviderComponent = (props) => {
   }, []);
 
   /**
+   * Update sync-related fields on an editor datasource in localForage
+   * @param {string} datasourceId - The datasource storage ID (e.g. "custom-xxx")
+   * @param {Object} syncFields - Fields to merge (syncEnabled, syncStatus, lastSyncedAt, syncError, cloudId, editVersion, isUploaded, isPublished, shareCode, publishedVersion)
+   * @returns {Promise<Object|null>} The updated datasource, or null if not found
+   */
+  const updateDatasourceSyncState = useCallback(
+    async (datasourceId, syncFields) => {
+      const datasource = await dataStore.getItem(datasourceId);
+      // If item doesn't exist, store the syncFields as a complete new entry (for cloud import)
+      const updated = datasource ? { ...datasource, ...syncFields } : { id: datasourceId, ...syncFields };
+      await dataStore.setItem(datasourceId, updated);
+
+      // Bump trigger counter when a datasource becomes pending, so auto-sync can detect it
+      if (syncFields.syncStatus === "pending") {
+        updateSettings({
+          ...settings,
+          datasourceSyncTrigger: (settings.datasourceSyncTrigger || 0) + 1,
+        });
+      }
+
+      return updated;
+    },
+    [settings, updateSettings],
+  );
+
+  /**
+   * Load all custom datasources from localForage
+   * @returns {Promise<Object[]>} Array of full datasource objects
+   */
+  const getAllCustomDatasources = useCallback(async () => {
+    const registry = settings.customDatasources || [];
+    const results = [];
+    for (const entry of registry) {
+      const data = await dataStore.getItem(entry.id);
+      if (data) results.push(data);
+    }
+    return results;
+  }, [settings.customDatasources]);
+
+  /**
    * Create a new custom datasource from wizard output
    * @param {Object} metadata - Datasource metadata { name, version, author }
    * @param {Object} schema - The schema definition from the wizard
@@ -482,6 +551,12 @@ export const DataSourceStorageProviderComponent = (props) => {
         syncStatus: "local",
         lastSyncedAt: null,
         syncError: null,
+        cloudId: null,
+        editVersion: 0,
+        isUploaded: false,
+        isPublished: false,
+        shareCode: null,
+        publishedVersion: null,
         schema: {
           version: schema.version || "1.0.0",
           baseSystem: schema.baseSystem || "blank",
@@ -617,10 +692,13 @@ export const DataSourceStorageProviderComponent = (props) => {
     isCustomDatasource,
     createCustomDatasource,
     importCustomDatasource,
+    registerCustomDatasource,
     removeCustomDatasource,
     checkCustomDatasourceUpdate,
     applyCustomDatasourceUpdate,
     getCustomDatasourceData,
+    updateDatasourceSyncState,
+    getAllCustomDatasources,
     addCardToDatasource,
     updateCardInDatasource,
     deleteCardFromDatasource,

@@ -9,6 +9,7 @@ import { ConfirmDialog, ImportSchemaDialog } from "../Components/DatasourceEdito
 import { DatasourceWizard } from "../Components/DatasourceWizard";
 import { useDatasourceEditorState } from "../Components/DatasourceEditor/hooks/useDatasourceEditorState";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
+import { useSync } from "../Premium";
 import {
   exportDatasourceSchema,
   downloadJsonFile,
@@ -35,6 +36,7 @@ export const DatasourceEditorPage = () => {
   } = useDatasourceEditorState();
 
   const { createCustomDatasource, getCustomDatasourceData, removeCustomDatasource } = useDataSourceStorage();
+  const { deleteLocalDatasourceFromCloud } = useSync();
 
   // Wizard state
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -135,9 +137,13 @@ export const DatasourceEditorPage = () => {
 
   const handleConfirmDeleteDatasource = useCallback(async () => {
     if (!deleteDatasourceTarget) return;
-    await removeCustomDatasource(deleteDatasourceTarget.id);
+    const result = await removeCustomDatasource(deleteDatasourceTarget.id);
+    // If the datasource was synced to cloud, trigger cloud cleanup
+    if (result?.cloudId && result?.syncEnabled) {
+      deleteLocalDatasourceFromCloud({ cloudId: result.cloudId });
+    }
     setDeleteDatasourceTarget(null);
-  }, [deleteDatasourceTarget, removeCustomDatasource]);
+  }, [deleteDatasourceTarget, removeCustomDatasource, deleteLocalDatasourceFromCloud]);
 
   const handleCancelDeleteDatasource = useCallback(() => {
     setDeleteDatasourceTarget(null);

@@ -117,6 +117,15 @@ export function useDatasourceEditorState() {
    */
   const updateDatasource = useCallback(
     async (updatedDatasource) => {
+      // If sync is enabled, mark as pending and bump editVersion so auto-sync picks it up
+      if (updatedDatasource.syncEnabled) {
+        updatedDatasource = {
+          ...updatedDatasource,
+          syncStatus: "pending",
+          syncError: null,
+          editVersion: (updatedDatasource.editVersion || 0) + 1,
+        };
+      }
       setActiveDatasource(updatedDatasource);
 
       // Keep selectedItem.data in sync if a card type is selected
@@ -127,15 +136,15 @@ export function useDatasourceEditorState() {
         }
       }
 
-      // Sync card count to registry so settings/selector stay accurate
+      // Sync card count and name to registry so settings/selector stay accurate
       const newCount = countDatasourceCards(updatedDatasource);
       const currentRegistry = settings.customDatasources || [];
       const entry = currentRegistry.find((ds) => ds.id === updatedDatasource.id);
-      if (entry && entry.cardCount !== newCount) {
+      if (entry && (entry.cardCount !== newCount || entry.name !== updatedDatasource.name)) {
         updateSettings({
           ...settings,
           customDatasources: currentRegistry.map((ds) =>
-            ds.id === updatedDatasource.id ? { ...ds, cardCount: newCount } : ds,
+            ds.id === updatedDatasource.id ? { ...ds, cardCount: newCount, name: updatedDatasource.name } : ds,
           ),
         });
       }
