@@ -99,14 +99,18 @@ describe("EditorLeftPanel", () => {
       expect(screen.getByTitle("Add card type")).toBeInTheDocument();
     });
 
-    it("renders Export button when datasource is active", () => {
+    it("renders disabled Export button when datasource is active", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
-      expect(screen.getByTitle("Export schema")).toBeInTheDocument();
+      const btn = screen.getByTitle("Export schema (coming soon)");
+      expect(btn).toBeInTheDocument();
+      expect(btn).toBeDisabled();
     });
 
-    it("renders Import button when datasource is active", () => {
+    it("renders disabled Import button when datasource is active", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
-      expect(screen.getByTitle("Import schema")).toBeInTheDocument();
+      const btn = screen.getByTitle("Import schema (coming soon)");
+      expect(btn).toBeInTheDocument();
+      expect(btn).toBeDisabled();
     });
   });
 
@@ -177,7 +181,7 @@ describe("EditorLeftPanel", () => {
       expect(onAddCardType).toHaveBeenCalledTimes(1);
     });
 
-    it("calls onExportDatasource when Export button clicked", async () => {
+    it("does not call onExportDatasource when disabled Export button clicked", async () => {
       const user = userEvent.setup();
       const onExportDatasource = vi.fn();
       render(
@@ -187,11 +191,11 @@ describe("EditorLeftPanel", () => {
           onExportDatasource={onExportDatasource}
         />,
       );
-      await user.click(screen.getByTitle("Export schema"));
-      expect(onExportDatasource).toHaveBeenCalledWith(mockDatasource);
+      await user.click(screen.getByTitle("Export schema (coming soon)"));
+      expect(onExportDatasource).not.toHaveBeenCalled();
     });
 
-    it("calls onImportSchema when Import button clicked", async () => {
+    it("does not call onImportSchema when disabled Import button clicked", async () => {
       const user = userEvent.setup();
       const onImportSchema = vi.fn();
       render(
@@ -201,8 +205,8 @@ describe("EditorLeftPanel", () => {
           onImportSchema={onImportSchema}
         />,
       );
-      await user.click(screen.getByTitle("Import schema"));
-      expect(onImportSchema).toHaveBeenCalledTimes(1);
+      await user.click(screen.getByTitle("Import schema (coming soon)"));
+      expect(onImportSchema).not.toHaveBeenCalled();
     });
 
     it("toggles datasource list on Open Datasource click", async () => {

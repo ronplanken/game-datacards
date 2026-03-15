@@ -144,8 +144,18 @@ export const EditorLeftPanel = ({
           <ActiveItemToolbar
             groups={[
               [
-                { icon: Download, onClick: () => onExportDatasource?.(activeDatasource), title: "Export schema" },
-                { icon: Upload, onClick: () => onImportSchema?.(), title: "Import schema" },
+                {
+                  icon: Download,
+                  onClick: () => onExportDatasource?.(activeDatasource),
+                  title: "Export schema (coming soon)",
+                  disabled: true,
+                },
+                {
+                  icon: Upload,
+                  onClick: () => onImportSchema?.(),
+                  title: "Import schema (coming soon)",
+                  disabled: true,
+                },
               ],
               [
                 {
