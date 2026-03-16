@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { WarscrollKeywords } from "../../AgeOfSigmar/WarscrollCard/WarscrollKeywords";
-import { DsAosLeftStats } from "./warscroll/DsAosStatBadges";
+import { DsAosLeftStats, DsAosBelowStats } from "./warscroll/DsAosStatBadges";
 import { DsAosHeader } from "./warscroll/DsAosHeader";
 import { DsAosWeapons } from "./warscroll/DsAosWeapons";
 import { DsAosAbilities } from "./warscroll/DsAosAbilities";
@@ -111,6 +111,7 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMo
           grandAlliance={grandAlliance}
           stats={stats}
           statFields={statFields}
+          metadata={schema.metadata}
           imageUrl={localImageUrl || card.imageUrl || card.externalImage}
           imageOpacity={card.imageOpacity}
           imagePositionX={card.imagePositionX}
@@ -118,6 +119,8 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMo
           imageScale={card.imageScale}
           isMobile={isMobile}
         />
+
+        <DsAosBelowStats stats={stats} statFields={statFields} />
 
         <div className="warscroll-body">
           {(() => {

@@ -33,17 +33,107 @@ const getAbilitiesForCategory = (abilities, categoryKey) => {
 };
 
 /**
+ * Maps layout value to CSS class.
+ */
+const LAYOUT_CLASS = {
+  full: "ds-aos-abilities-layout-full",
+  half: "ds-aos-abilities-layout-half",
+  third: "ds-aos-abilities-layout-third",
+  quarter: "ds-aos-abilities-layout-quarter",
+};
+
+/**
+ * Renders a single ability item.
+ */
+const AbilityItem = ({ ability, category, grandAlliance, itemKey }) => {
+  if (typeof ability === "string") {
+    return (
+      <div className={`ability-wrapper ${grandAlliance}`} key={itemKey}>
+        {category.header && (
+          <div className="ability-phase-tag">
+            <span>{category.header.toUpperCase()}</span>
+          </div>
+        )}
+        <div className={`ability-box ${grandAlliance}`}>
+          <div className="ability-strip">
+            <span className="ability-name">{ability}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!ability || ability.showAbility === false) return null;
+
+  const tagText = getTagText(ability, category);
+  const stripStyle = ability.color ? { backgroundColor: ability.color } : undefined;
+  const isNameOnly = category.format === "name-only";
+
+  return (
+    <div className={`ability-wrapper ${grandAlliance}`} key={itemKey}>
+      {tagText && (
+        <div className="ability-phase-tag">
+          <span>{tagText}</span>
+        </div>
+      )}
+
+      <div className={`ability-box ${grandAlliance}`}>
+        <div className="ability-strip" style={stripStyle}>
+          <span className="ability-name">{ability.name}</span>
+          {ability.castingValue && <span className="ability-casting-badge">{ability.castingValue}+</span>}
+          {ability.chantValue && <span className="ability-chant-badge">{ability.chantValue}+</span>}
+        </div>
+
+        {!isNameOnly && (
+          <div className="ability-text">
+            {ability.declare && (
+              <p className="ability-declare">
+                <MarkdownDisplay content={`**Declare:** ${ability.declare}`} />
+              </p>
+            )}
+            {ability.effect && (
+              <p className="ability-effect">
+                <MarkdownDisplay content={`**Effect:** ${ability.effect}`} />
+              </p>
+            )}
+            {!ability.declare && !ability.effect && ability.description && (
+              <MarkdownDisplay content={ability.description} />
+            )}
+            {!ability.declare && !ability.effect && !ability.description && ability.lore && (
+              <MarkdownDisplay content={ability.lore} />
+            )}
+          </div>
+        )}
+
+        {ability.keywords && ability.keywords.length > 0 && (
+          <div className="ability-keywords-bar">
+            <span className="ability-keywords-label">Keywords</span>
+            <span className="ability-keywords-list">{ability.keywords.join(", ")}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/**
  * Schema-driven abilities renderer for AoS warscrolls.
  * Supports both custom datasource abilities (with description) and
  * native-style abilities (with phase/declare/effect/castingValue/chantValue).
  * Phase tag and strip color use per-ability phase with fallback to category settings.
+ *
+ * Each category supports a `layout` property:
+ * - "full" (default): One ability per row
+ * - "half": Two abilities per row (50%)
+ * - "third": Three per row (33%)
+ * - "quarter": Four per row (25%)
  */
 export const DsAosAbilities = ({ card, abilitiesSchema, grandAlliance }) => {
   const categories = abilitiesSchema?.categories || [];
 
   if (categories.length === 0) return null;
 
-  const renderedAbilities = [];
+  const renderedGroups = [];
 
   categories.forEach((category) => {
     const abilities = getAbilitiesForCategory(card.abilities, category.key);
@@ -52,88 +142,38 @@ export const DsAosAbilities = ({ card, abilitiesSchema, grandAlliance }) => {
     const showCategory = card.showAbilities?.[category.key] !== false;
     if (!showCategory) return;
 
-    abilities.forEach((ability, index) => {
-      if (typeof ability === "string") {
-        // name-only format
-        renderedAbilities.push(
-          <div className={`ability-wrapper ${grandAlliance}`} key={`${category.key}-${index}`}>
-            {category.header && (
-              <div className="ability-phase-tag">
-                <span>{category.header.toUpperCase()}</span>
-              </div>
-            )}
-            <div className={`ability-box ${grandAlliance}`}>
-              <div className="ability-strip">
-                <span className="ability-name">{ability}</span>
-              </div>
-            </div>
-          </div>,
-        );
-        return;
-      }
+    const items = abilities
+      .map((ability, index) => (
+        <AbilityItem
+          key={`${category.key}-${index}`}
+          ability={ability}
+          category={category}
+          grandAlliance={grandAlliance}
+          itemKey={`${category.key}-${index}`}
+        />
+      ))
+      .filter(Boolean);
 
-      if (!ability || ability.showAbility === false) return;
+    if (items.length === 0) return;
 
-      const tagText = getTagText(ability, category);
-      // Per-ability color on the name strip only (set in card data, enabled by category.hasColor)
-      const stripStyle = ability.color ? { backgroundColor: ability.color } : undefined;
+    const layout = category.layout || "full";
+    const layoutClass = LAYOUT_CLASS[layout] || LAYOUT_CLASS.full;
 
-      renderedAbilities.push(
-        <div className={`ability-wrapper ${grandAlliance}`} key={`${category.key}-${index}`}>
-          {/* Phase Tag */}
-          {tagText && (
-            <div className="ability-phase-tag">
-              <span>{tagText}</span>
-            </div>
-          )}
-
-          {/* Ability Card */}
-          <div className={`ability-box ${grandAlliance}`}>
-            {/* Strip Header with optional per-ability color */}
-            <div className="ability-strip" style={stripStyle}>
-              <span className="ability-name">{ability.name}</span>
-              {ability.castingValue && <span className="ability-casting-badge">{ability.castingValue}+</span>}
-              {ability.chantValue && <span className="ability-chant-badge">{ability.chantValue}+</span>}
-            </div>
-
-            {/* Ability Text — supports description, declare/effect, and lore */}
-            <div className="ability-text">
-              {ability.declare && (
-                <p className="ability-declare">
-                  <MarkdownDisplay content={`**Declare:** ${ability.declare}`} />
-                </p>
-              )}
-              {ability.effect && (
-                <p className="ability-effect">
-                  <MarkdownDisplay content={`**Effect:** ${ability.effect}`} />
-                </p>
-              )}
-              {!ability.declare && !ability.effect && ability.description && (
-                <MarkdownDisplay content={ability.description} />
-              )}
-              {!ability.declare && !ability.effect && !ability.description && ability.lore && (
-                <MarkdownDisplay content={ability.lore} />
-              )}
-            </div>
-
-            {/* Keywords Bar */}
-            {ability.keywords && ability.keywords.length > 0 && (
-              <div className="ability-keywords-bar">
-                <span className="ability-keywords-label">Keywords</span>
-                <span className="ability-keywords-list">{ability.keywords.join(", ")}</span>
-              </div>
-            )}
-          </div>
-        </div>,
-      );
-    });
+    renderedGroups.push(
+      <div
+        key={category.key}
+        className={`ds-aos-abilities-group ${layoutClass}`}
+        data-testid={`abilities-group-${category.key}`}>
+        {items}
+      </div>,
+    );
   });
 
-  if (renderedAbilities.length === 0) return null;
+  if (renderedGroups.length === 0) return null;
 
   return (
     <div data-testid="ds-aos-abilities" className="ds-aos-abilities-list">
-      {renderedAbilities}
+      {renderedGroups}
     </div>
   );
 };

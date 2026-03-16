@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import { nanoid } from "nanoid";
 import { Swords, Plus, X, Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { IconKey, IconTag, IconCategory, IconList } from "@tabler/icons-react";
+import {
+  IconKey,
+  IconTag,
+  IconCategory,
+  IconList,
+  IconTags,
+  IconLayersSubtract,
+  IconLayoutRows,
+  IconEye,
+  IconPalette,
+} from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
@@ -160,22 +170,24 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
             onChange={(val) => updateType(activeTab, { label: val })}
           />
 
-          <label className="props-checkbox">
-            <input
-              type="checkbox"
-              checked={!!activeType.hasKeywords}
-              onChange={() => updateType(activeTab, { hasKeywords: !activeType.hasKeywords })}
+          <div className="props-compact-row-2col">
+            <CompactInput
+              label={<IconTags size={10} stroke={1.5} />}
+              ariaLabel="Weapon keywords"
+              tooltip="Enable weapon keywords"
+              type="toggle"
+              value={!!activeType.hasKeywords}
+              onChange={(val) => updateType(activeTab, { hasKeywords: val })}
             />
-            <span>Enable weapon keywords</span>
-          </label>
-          <label className="props-checkbox">
-            <input
-              type="checkbox"
-              checked={!!activeType.hasProfiles}
-              onChange={() => updateType(activeTab, { hasProfiles: !activeType.hasProfiles })}
+            <CompactInput
+              label={<IconLayersSubtract size={10} stroke={1.5} />}
+              ariaLabel="Weapon profiles"
+              tooltip="Enable weapon profiles"
+              type="toggle"
+              value={!!activeType.hasProfiles}
+              onChange={(val) => updateType(activeTab, { hasProfiles: val })}
             />
-            <span>Enable weapon profiles</span>
-          </label>
+          </div>
 
           <div className="props-field-list-header">
             <span className="props-field-list-title">Columns</span>
@@ -220,6 +232,66 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
                       ))}
                     </select>
                   </div>
+                  <div className="props-compact-input">
+                    <Tooltip content="Display" placement="top">
+                      <span className="props-compact-label">
+                        <IconLayoutRows size={10} stroke={1.5} />
+                      </span>
+                    </Tooltip>
+                    <select
+                      className="props-compact-field"
+                      value={col.display || "column"}
+                      onChange={(e) =>
+                        updateColumn(
+                          activeTab,
+                          colIndex,
+                          "display",
+                          e.target.value === "column" ? undefined : e.target.value,
+                        )
+                      }
+                      aria-label="Column display">
+                      <option value="column">Column</option>
+                      <option value="row">Row</option>
+                    </select>
+                  </div>
+                  {col.display === "row" && (
+                    <div className="props-tree-children">
+                      <div className="props-tree-child">
+                        <CompactInput
+                          label={<IconEye size={10} stroke={1.5} />}
+                          ariaLabel="Display label"
+                          tooltip="Show label before row values"
+                          type="toggle"
+                          value={col.displayLabel !== false}
+                          onChange={(val) => updateColumn(activeTab, colIndex, "displayLabel", val ? undefined : false)}
+                        />
+                      </div>
+                      <div className="props-tree-child">
+                        <div className="props-compact-input">
+                          <Tooltip content="Visual style" placement="top">
+                            <span className="props-compact-label">
+                              <IconPalette size={10} stroke={1.5} />
+                            </span>
+                          </Tooltip>
+                          <select
+                            className="props-compact-field"
+                            value={col.visual || "text"}
+                            onChange={(e) =>
+                              updateColumn(
+                                activeTab,
+                                colIndex,
+                                "visual",
+                                e.target.value === "text" ? undefined : e.target.value,
+                              )
+                            }
+                            aria-label="Visual style">
+                            <option value="text">Text</option>
+                            <option value="badge">Badge</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {col.type === "enum" && (
                     <CompactInput
                       label={<IconList size={10} stroke={1.5} />}

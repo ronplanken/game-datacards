@@ -1,7 +1,18 @@
 import React from "react";
 import { nanoid } from "nanoid";
 import { BarChart3, Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { IconKey, IconTag, IconCategory, IconList, IconArrowsHorizontal, IconPalette } from "@tabler/icons-react";
+import {
+  IconKey,
+  IconTag,
+  IconCategory,
+  IconList,
+  IconArrowsHorizontal,
+  IconPalette,
+  IconSparkles,
+  IconEyeOff,
+  IconCopy,
+  IconLayoutBottombar,
+} from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
@@ -66,10 +77,14 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
 
   return (
     <Section title="Stats" icon={BarChart3} defaultOpen={true} onAdd={addField} addLabel="Add stat">
-      <label className="props-checkbox">
-        <input type="checkbox" checked={!!stats.allowMultipleProfiles} onChange={toggleMultipleProfiles} />
-        <span>Allow multiple profiles</span>
-      </label>
+      <CompactInput
+        label={<IconCopy size={10} stroke={1.5} />}
+        ariaLabel="Multiple profiles"
+        tooltip="Allow multiple stat profiles"
+        type="toggle"
+        value={!!stats.allowMultipleProfiles}
+        onChange={(val) => updateStats({ allowMultipleProfiles: val })}
+      />
 
       <div className="props-field-list">
         {fields.length === 0 && <div className="props-field-list-empty">No stat fields yet</div>}
@@ -92,112 +107,26 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                 value={field.label}
                 onChange={(val) => updateField(index, "label", val)}
               />
-              <div className="props-compact-input">
-                <Tooltip content="Type" placement="top">
-                  <span className="props-compact-label">
-                    <IconCategory size={10} stroke={1.5} />
-                  </span>
-                </Tooltip>
-                <select
-                  className="props-compact-field"
-                  value={field.type}
-                  onChange={(e) => updateField(index, "type", e.target.value)}
-                  aria-label="Type">
-                  {FIELD_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {field.type === "enum" && (
-                <CompactInput
-                  label={<IconList size={10} stroke={1.5} />}
-                  ariaLabel="Options"
-                  tooltip="Options (comma-separated)"
-                  type="text"
-                  value={(field.options || []).join(", ")}
-                  onChange={(val) =>
-                    updateField(
-                      index,
-                      "options",
-                      val.split(",").map((s) => s.trim()),
-                    )
-                  }
-                  onBlur={(val) =>
-                    updateField(
-                      index,
-                      "options",
-                      val
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean),
-                    )
-                  }
-                />
-              )}
-              {field.type === "boolean" && (
-                <>
-                  <CompactInput
-                    label="On"
-                    ariaLabel="On value"
-                    tooltip="Display value when true"
-                    type="text"
-                    value={field.onValue || ""}
-                    onChange={(val) => updateField(index, "onValue", val || undefined)}
-                  />
-                  <CompactInput
-                    label="Off"
-                    ariaLabel="Off value"
-                    tooltip="Display value when false"
-                    type="text"
-                    value={field.offValue || ""}
-                    onChange={(val) => updateField(index, "offValue", val || undefined)}
-                  />
-                </>
-              )}
-            </div>
-            <div className="props-field-item-options">
-              <label className="props-checkbox props-checkbox--inline">
-                <input
-                  type="checkbox"
-                  checked={!!field.special}
-                  onChange={() => {
-                    const special = !field.special;
-                    const updated = { ...field, special };
-                    if (!special) {
-                      delete updated.specialColor;
-                      delete updated.hideWhenEmpty;
-                    }
-                    const newFields = fields.map((f, i) => (i === index ? updated : f));
-                    updateStats({ fields: newFields });
-                  }}
-                />
-                <span>Special</span>
-              </label>
-              {field.special && (
-                <>
-                  <label className="props-checkbox props-checkbox--inline">
-                    <input
-                      type="color"
-                      value={field.specialColor || "#5b21b6"}
-                      onChange={(e) => updateField(index, "specialColor", e.target.value)}
-                      style={{ width: 20, height: 20, padding: 0, border: "none", cursor: "pointer" }}
-                    />
-                    <span>Color</span>
-                  </label>
-                  <label className="props-checkbox props-checkbox--inline">
-                    <input
-                      type="checkbox"
-                      checked={!!field.hideWhenEmpty}
-                      onChange={() => updateField(index, "hideWhenEmpty", !field.hideWhenEmpty)}
-                    />
-                    <span>Hide when empty</span>
-                  </label>
-                </>
-              )}
-              {baseSystem !== "40k-10e" && (
-                <>
+              <div className="props-compact-row-2col">
+                <div className="props-compact-input">
+                  <Tooltip content="Type" placement="top">
+                    <span className="props-compact-label">
+                      <IconCategory size={10} stroke={1.5} />
+                    </span>
+                  </Tooltip>
+                  <select
+                    className="props-compact-field"
+                    value={field.type}
+                    onChange={(e) => updateField(index, "type", e.target.value)}
+                    aria-label="Type">
+                    {FIELD_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {baseSystem !== "40k-10e" && (
                   <div className="props-compact-input">
                     <Tooltip content="Position" placement="top">
                       <span className="props-compact-label">
@@ -211,21 +140,141 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                       aria-label="Position">
                       <option value="left">Left</option>
                       <option value="right">Right</option>
+                      <option value="above">Above</option>
+                      <option value="below">Below</option>
                     </select>
                   </div>
-                  <label className="props-checkbox props-checkbox--inline">
-                    <input
+                )}
+              </div>
+              {(field.type === "enum" ||
+                field.type === "boolean" ||
+                (field.type === "string" && baseSystem !== "40k-10e")) && (
+                <div className="props-tree-children">
+                  {field.type === "enum" && (
+                    <div className="props-tree-child">
+                      <CompactInput
+                        label={<IconList size={10} stroke={1.5} />}
+                        ariaLabel="Options"
+                        tooltip="Options (comma-separated)"
+                        type="text"
+                        value={(field.options || []).join(", ")}
+                        onChange={(val) =>
+                          updateField(
+                            index,
+                            "options",
+                            val.split(",").map((s) => s.trim()),
+                          )
+                        }
+                        onBlur={(val) =>
+                          updateField(
+                            index,
+                            "options",
+                            val
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean),
+                          )
+                        }
+                      />
+                    </div>
+                  )}
+                  {field.type === "boolean" && (
+                    <>
+                      <div className="props-tree-child">
+                        <CompactInput
+                          label="On"
+                          ariaLabel="On value"
+                          tooltip="Display value when true"
+                          type="text"
+                          value={field.onValue || ""}
+                          onChange={(val) => updateField(index, "onValue", val || undefined)}
+                        />
+                      </div>
+                      <div className="props-tree-child">
+                        <CompactInput
+                          label="Off"
+                          ariaLabel="Off value"
+                          tooltip="Display value when false"
+                          type="text"
+                          value={field.offValue || ""}
+                          onChange={(val) => updateField(index, "offValue", val || undefined)}
+                        />
+                      </div>
+                    </>
+                  )}
+                  {field.type === "string" && baseSystem !== "40k-10e" && (
+                    <div className="props-tree-child">
+                      <div className="props-compact-input">
+                        <Tooltip content="Width" placement="top">
+                          <span className="props-compact-label">
+                            <IconLayoutBottombar size={10} stroke={1.5} />
+                          </span>
+                        </Tooltip>
+                        <select
+                          className="props-compact-field"
+                          value={field.width || "fixed"}
+                          onChange={(e) =>
+                            updateField(index, "width", e.target.value === "fixed" ? undefined : e.target.value)
+                          }
+                          aria-label="Width">
+                          <option value="fixed">Fixed</option>
+                          <option value="fit">Fit Content</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              {baseSystem !== "40k-10e" && (
+                <CompactInput
+                  label={<IconPalette size={10} stroke={1.5} />}
+                  ariaLabel="Badge color"
+                  tooltip="Badge color"
+                  type="color"
+                  value={field.color || "#111111"}
+                  onChange={(val) => updateField(index, "color", val === "#111111" ? undefined : val)}
+                />
+              )}
+              <CompactInput
+                label={<IconSparkles size={10} stroke={1.5} />}
+                ariaLabel="Special"
+                tooltip="Special stat styling"
+                type="toggle"
+                value={!!field.special}
+                onChange={(val) => {
+                  const special = val;
+                  const updated = { ...field, special };
+                  if (!special) {
+                    delete updated.specialColor;
+                    delete updated.hideWhenEmpty;
+                  }
+                  const newFields = fields.map((f, i) => (i === index ? updated : f));
+                  updateStats({ fields: newFields });
+                }}
+              />
+              {field.special && (
+                <div className="props-tree-children">
+                  <div className="props-tree-child">
+                    <CompactInput
+                      label={<IconPalette size={10} stroke={1.5} />}
+                      ariaLabel="Special color"
+                      tooltip="Special color"
                       type="color"
-                      value={field.color || "#111111"}
-                      onChange={(e) =>
-                        updateField(index, "color", e.target.value === "#111111" ? undefined : e.target.value)
-                      }
-                      style={{ width: 20, height: 20, padding: 0, border: "none", cursor: "pointer" }}
-                      aria-label="Badge color"
+                      value={field.specialColor || "#5b21b6"}
+                      onChange={(val) => updateField(index, "specialColor", val)}
                     />
-                    <span>Badge</span>
-                  </label>
-                </>
+                  </div>
+                  <div className="props-tree-child">
+                    <CompactInput
+                      label={<IconEyeOff size={10} stroke={1.5} />}
+                      ariaLabel="Hide when empty"
+                      tooltip="Hide when empty"
+                      type="toggle"
+                      value={!!field.hideWhenEmpty}
+                      onChange={(val) => updateField(index, "hideWhenEmpty", val)}
+                    />
+                  </div>
+                </div>
               )}
             </div>
             <div className="props-field-item-actions">

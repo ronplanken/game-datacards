@@ -18,6 +18,15 @@ export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "blank"];
 // Valid ability formats
 export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
 
+// Valid column display modes (for weapon columns)
+export const VALID_COLUMN_DISPLAY_MODES = ["column", "row"];
+
+// Valid column visual modes (for row-display columns)
+export const VALID_COLUMN_VISUAL_MODES = ["text", "badge"];
+
+// Valid ability layout modes
+export const VALID_ABILITY_LAYOUTS = ["full", "half", "third", "quarter"];
+
 // Valid section formats
 export const VALID_SECTION_FORMATS = ["list", "richtext"];
 
@@ -220,6 +229,9 @@ export const createFieldDefinition = ({
   key,
   label,
   type = "string",
+  display,
+  displayLabel,
+  visual,
   displayOrder,
   options,
   special,
@@ -231,6 +243,9 @@ export const createFieldDefinition = ({
   color,
 }) => {
   const field = { key, label, type };
+  if (display !== undefined) field.display = display;
+  if (displayLabel !== undefined) field.displayLabel = displayLabel;
+  if (visual !== undefined) field.visual = visual;
   if (displayOrder !== undefined) field.displayOrder = displayOrder;
   if (type === "enum" && options) field.options = [...options];
   if (special !== undefined) field.special = special;
@@ -553,6 +568,17 @@ const validateFieldDefinition = (field, path) => {
   if (field.color !== undefined && typeof field.color !== "string") {
     errors.push(`${path}: "color" must be a string`);
   }
+  if (field.display !== undefined && !VALID_COLUMN_DISPLAY_MODES.includes(field.display)) {
+    errors.push(
+      `${path}: invalid "display" "${field.display}" (must be one of ${VALID_COLUMN_DISPLAY_MODES.join(", ")})`,
+    );
+  }
+  if (field.displayLabel !== undefined && typeof field.displayLabel !== "boolean") {
+    errors.push(`${path}: "displayLabel" must be a boolean`);
+  }
+  if (field.visual !== undefined && !VALID_COLUMN_VISUAL_MODES.includes(field.visual)) {
+    errors.push(`${path}: invalid "visual" "${field.visual}" (must be one of ${VALID_COLUMN_VISUAL_MODES.join(", ")})`);
+  }
   return errors;
 };
 
@@ -694,6 +720,11 @@ const validateUnitSchema = (schema, path) => {
         if (!VALID_ABILITY_FORMATS.includes(cat.format)) {
           errors.push(
             `${catPath}: invalid "format" "${cat.format}" (must be one of ${VALID_ABILITY_FORMATS.join(", ")})`,
+          );
+        }
+        if (cat.layout !== undefined && !VALID_ABILITY_LAYOUTS.includes(cat.layout)) {
+          errors.push(
+            `${catPath}: invalid "layout" "${cat.layout}" (must be one of ${VALID_ABILITY_LAYOUTS.join(", ")})`,
           );
         }
         if (cat.hasColor !== undefined && typeof cat.hasColor !== "boolean") {

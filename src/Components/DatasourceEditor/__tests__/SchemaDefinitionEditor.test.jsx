@@ -150,8 +150,8 @@ describe("SchemaDefinitionEditor", () => {
         />,
       );
       expect(screen.getByText("Colours")).toBeInTheDocument();
-      expect(screen.getByText("Main")).toBeInTheDocument();
-      expect(screen.getByText("Accent")).toBeInTheDocument();
+      expect(screen.getByLabelText("Main colour")).toBeInTheDocument();
+      expect(screen.getByLabelText("Accent colour")).toBeInTheDocument();
     });
 
     it("renders Colours section with existing schema colours", () => {
@@ -240,7 +240,7 @@ describe("SchemaDefinitionEditor", () => {
           onUpdateDatasource={vi.fn()}
         />,
       );
-      expect(screen.getByText("Allow multiple profiles")).toBeInTheDocument();
+      expect(screen.getByLabelText("Multiple profiles")).toBeInTheDocument();
       const checkboxes = screen.getAllByRole("checkbox");
       expect(checkboxes.length).toBeGreaterThanOrEqual(1);
     });

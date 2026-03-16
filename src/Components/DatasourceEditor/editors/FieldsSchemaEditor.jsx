@@ -1,7 +1,7 @@
 import React from "react";
 import { nanoid } from "nanoid";
 import { List, BookOpen, Tag, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { IconKey, IconTag, IconCategory, IconList } from "@tabler/icons-react";
+import { IconKey, IconTag, IconCategory, IconList, IconCopy } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
@@ -187,14 +187,14 @@ export const FieldsSchemaEditor = ({ schema, onChange, baseType }) => {
 
       {baseType === "rule" && schema.rules && (
         <Section title="Rules Collection" icon={BookOpen} defaultOpen={true}>
-          <label className="props-checkbox">
-            <input
-              type="checkbox"
-              checked={!!schema.rules.allowMultiple}
-              onChange={() => updateRulesCollection({ allowMultiple: !schema.rules.allowMultiple })}
-            />
-            <span>Allow multiple rules</span>
-          </label>
+          <CompactInput
+            label={<IconCopy size={10} stroke={1.5} />}
+            ariaLabel="Allow multiple rules"
+            tooltip="Allow multiple rules"
+            type="toggle"
+            value={!!schema.rules.allowMultiple}
+            onChange={(val) => updateRulesCollection({ allowMultiple: val })}
+          />
           <FieldList
             fields={schema.rules.fields || []}
             onUpdate={(updatedFields) => updateRulesCollection({ fields: updatedFields })}
@@ -205,14 +205,14 @@ export const FieldsSchemaEditor = ({ schema, onChange, baseType }) => {
 
       {baseType === "enhancement" && schema.keywords && (
         <Section title="Keywords Collection" icon={Tag} defaultOpen={true}>
-          <label className="props-checkbox">
-            <input
-              type="checkbox"
-              checked={!!schema.keywords.allowMultiple}
-              onChange={() => updateKeywordsCollection({ allowMultiple: !schema.keywords.allowMultiple })}
-            />
-            <span>Allow multiple keywords</span>
-          </label>
+          <CompactInput
+            label={<IconCopy size={10} stroke={1.5} />}
+            ariaLabel="Allow multiple keywords"
+            tooltip="Allow multiple keywords"
+            type="toggle"
+            value={!!schema.keywords.allowMultiple}
+            onChange={(val) => updateKeywordsCollection({ allowMultiple: val })}
+          />
           <FieldList
             fields={schema.keywords.fields || []}
             onUpdate={(updatedFields) => updateKeywordsCollection({ fields: updatedFields })}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Database, Info, Palette } from "lucide-react";
-import { IconTag, IconNumber, IconUser } from "@tabler/icons-react";
-import { Section, CompactInput, ColorInput } from "../components";
+import { IconTag, IconNumber, IconUser, IconPalette } from "@tabler/icons-react";
+import { Section, CompactInput } from "../components";
 import { DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
 
 const BASE_SYSTEM_LABELS = {
@@ -19,7 +19,14 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
 
   const handleChange = (field, value) => {
     if (!onUpdateDatasource) return;
-    onUpdateDatasource({ ...datasource, [field]: value });
+    const updated = { ...datasource, [field]: value };
+    if (field === "name") {
+      updated.data = datasource.data?.map((faction) => ({
+        ...faction,
+        name: value,
+      }));
+    }
+    onUpdateDatasource(updated);
   };
 
   const handleColourChange = (colourKey, value) => {
@@ -71,18 +78,22 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
         />
       </Section>
       <Section title="Colours" icon={Palette} defaultOpen={true}>
-        <div className="props-compact-field">
-          <label className="props-compact-label" title="Main Colour">
-            Main
-          </label>
-          <ColorInput value={headerColour} onChange={(val) => handleColourChange("header", val)} />
-        </div>
-        <div className="props-compact-field">
-          <label className="props-compact-label" title="Accent Colour">
-            Accent
-          </label>
-          <ColorInput value={bannerColour} onChange={(val) => handleColourChange("banner", val)} />
-        </div>
+        <CompactInput
+          label={<IconPalette size={10} stroke={1.5} />}
+          ariaLabel="Main colour"
+          tooltip="Main colour"
+          type="color"
+          value={headerColour}
+          onChange={(val) => handleColourChange("header", val)}
+        />
+        <CompactInput
+          label={<IconPalette size={10} stroke={1.5} />}
+          ariaLabel="Accent colour"
+          tooltip="Accent colour"
+          type="color"
+          value={bannerColour}
+          onChange={(val) => handleColourChange("banner", val)}
+        />
       </Section>
       <Section title="System" icon={Info} defaultOpen={true}>
         <div className="props-metadata-row">

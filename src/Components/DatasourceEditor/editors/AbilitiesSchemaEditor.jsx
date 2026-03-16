@@ -1,7 +1,7 @@
 import React from "react";
 import { nanoid } from "nanoid";
 import { Sparkles, Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { IconKey, IconTag, IconTemplate, IconHeading } from "@tabler/icons-react";
+import { IconKey, IconTag, IconTemplate, IconHeading, IconClock, IconPalette, IconColumns } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
@@ -96,6 +96,25 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
                   ))}
                 </select>
               </div>
+              <div className="props-compact-input">
+                <Tooltip content="Layout" placement="top">
+                  <span className="props-compact-label">
+                    <IconColumns size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
+                <select
+                  className="props-compact-field"
+                  value={category.layout || "full"}
+                  onChange={(e) =>
+                    updateCategory(index, "layout", e.target.value === "full" ? undefined : e.target.value)
+                  }
+                  aria-label="Layout">
+                  <option value="full">Full Width</option>
+                  <option value="half">50%</option>
+                  <option value="third">33%</option>
+                  <option value="quarter">25%</option>
+                </select>
+              </div>
               <CompactInput
                 label={<IconHeading size={10} stroke={1.5} />}
                 ariaLabel="Header"
@@ -105,26 +124,24 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
                 onChange={(val) => updateCategory(index, "header", val || undefined)}
               />
               {baseSystem !== "40k-10e" && (
-                <>
-                  <label className="props-checkbox props-checkbox--inline">
-                    <input
-                      type="checkbox"
-                      checked={!!category.hasPhase}
-                      onChange={() => updateCategory(index, "hasPhase", !category.hasPhase)}
-                      aria-label="Enable phase text"
-                    />
-                    <span>Phase</span>
-                  </label>
-                  <label className="props-checkbox props-checkbox--inline">
-                    <input
-                      type="checkbox"
-                      checked={!!category.hasColor}
-                      onChange={() => updateCategory(index, "hasColor", !category.hasColor)}
-                      aria-label="Enable strip color"
-                    />
-                    <span>Color</span>
-                  </label>
-                </>
+                <div className="props-compact-row-2col">
+                  <CompactInput
+                    label={<IconClock size={10} stroke={1.5} />}
+                    ariaLabel="Phase"
+                    tooltip="Enable phase text per ability"
+                    type="toggle"
+                    value={!!category.hasPhase}
+                    onChange={(val) => updateCategory(index, "hasPhase", val)}
+                  />
+                  <CompactInput
+                    label={<IconPalette size={10} stroke={1.5} />}
+                    ariaLabel="Banner color"
+                    tooltip="Enable per-ability banner color"
+                    type="toggle"
+                    value={!!category.hasColor}
+                    onChange={(val) => updateCategory(index, "hasColor", val)}
+                  />
+                </div>
               )}
             </div>
             <div className="props-field-item-actions">

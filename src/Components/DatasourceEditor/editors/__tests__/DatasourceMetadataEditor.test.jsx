@@ -70,7 +70,30 @@ describe("DatasourceMetadataEditor", () => {
     render(<DatasourceMetadataEditor datasource={mockDatasource} onUpdateDatasource={onUpdate} />);
     const nameInput = screen.getByLabelText("Name");
     fireEvent.change(nameInput, { target: { value: "New Name" } });
-    expect(onUpdate).toHaveBeenCalledWith({ ...mockDatasource, name: "New Name" });
+    expect(onUpdate).toHaveBeenCalledWith(expect.objectContaining({ name: "New Name" }));
+  });
+
+  it("propagates name change to all factions in data array", () => {
+    const onUpdate = vi.fn();
+    const dsWithFactions = {
+      ...mockDatasource,
+      data: [
+        { id: "f1", name: "Old Name", colours: {} },
+        { id: "f2", name: "Old Name", colours: {} },
+      ],
+    };
+    render(<DatasourceMetadataEditor datasource={dsWithFactions} onUpdateDatasource={onUpdate} />);
+    const nameInput = screen.getByLabelText("Name");
+    fireEvent.change(nameInput, { target: { value: "New Name" } });
+    expect(onUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "New Name",
+        data: [
+          expect.objectContaining({ id: "f1", name: "New Name" }),
+          expect.objectContaining({ id: "f2", name: "New Name" }),
+        ],
+      }),
+    );
   });
 
   it("calls onUpdateDatasource with updated version on change", () => {
@@ -109,10 +132,10 @@ describe("DatasourceMetadataEditor", () => {
     expect(screen.getByText("System")).toBeInTheDocument();
   });
 
-  it("renders Main and Accent colour labels", () => {
+  it("renders Main and Accent colour inputs", () => {
     render(<DatasourceMetadataEditor datasource={mockDatasource} onUpdateDatasource={vi.fn()} />);
-    expect(screen.getByText("Main")).toBeInTheDocument();
-    expect(screen.getByText("Accent")).toBeInTheDocument();
+    expect(screen.getByLabelText("Main colour")).toBeInTheDocument();
+    expect(screen.getByLabelText("Accent colour")).toBeInTheDocument();
   });
 
   it("shows default colours when schema has no colours", () => {
@@ -138,9 +161,7 @@ describe("DatasourceMetadataEditor", () => {
       data: [{ id: "f1", name: "Faction 1", colours: { header: "#1a1a2e", banner: "#16213e" } }],
     };
     render(<DatasourceMetadataEditor datasource={dsWithData} onUpdateDatasource={onUpdate} />);
-    // Target the text input (not the hidden color input) by finding the one with type="text"
-    const mainColourInputs = screen.getAllByDisplayValue("#1a1a2e");
-    const mainColourInput = mainColourInputs.find((el) => el.type === "text");
+    const mainColourInput = screen.getByLabelText("Main colour");
     fireEvent.change(mainColourInput, { target: { value: "#abcdef" } });
 
     expect(onUpdate).toHaveBeenCalledWith(

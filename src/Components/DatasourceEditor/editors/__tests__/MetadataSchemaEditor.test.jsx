@@ -32,11 +32,11 @@ describe("MetadataSchemaEditor", () => {
     expect(screen.getByText("Card Options")).toBeInTheDocument();
   });
 
-  it("renders all three checkboxes", () => {
+  it("renders all three toggle inputs", () => {
     render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    expect(screen.getByText("Include keywords")).toBeInTheDocument();
-    expect(screen.getByText("Include faction keywords")).toBeInTheDocument();
-    expect(screen.getByText("Include points cost")).toBeInTheDocument();
+    expect(screen.getByLabelText("Keywords")).toBeInTheDocument();
+    expect(screen.getByLabelText("Faction keywords")).toBeInTheDocument();
+    expect(screen.getByLabelText("Points cost")).toBeInTheDocument();
   });
 
   it("renders hasKeywords checkbox checked when true", () => {

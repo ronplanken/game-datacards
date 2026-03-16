@@ -767,6 +767,110 @@ select.props-compact-field {
   -moz-appearance: textfield;
 }
 
+.props-compact-swatch {
+  width: 22px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-left: 4px;
+  padding: 0;
+  border: 1px solid var(--designer-border);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.props-compact-swatch:hover {
+  border-color: var(--designer-accent);
+}
+
+.props-compact-row-2col {
+  display: flex;
+  gap: 4px;
+}
+
+.props-compact-row-2col > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.props-compact-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.props-compact-toggle input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--designer-accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.props-compact-toggle-text {
+  font-size: 11px;
+  color: var(--designer-text-primary);
+  user-select: none;
+}
+
+.props-tree-children {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 20px;
+  position: relative;
+}
+
+/* Vertical trunk line */
+.props-tree-children::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px solid var(--designer-border);
+}
+
+/* Each child gets a horizontal branch via a wrapper-level pseudo-element */
+.props-tree-child {
+  position: relative;
+}
+
+.props-tree-child::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 10px;
+  border-bottom: 1px solid var(--designer-border);
+}
+
+/* Last child: clip the trunk at center and round the corner */
+.props-tree-child:last-child::before {
+  left: -10px;
+  top: 0;
+  height: 50%;
+  width: 10px;
+  border-bottom: 1px solid var(--designer-border);
+  border-left: 1px solid var(--designer-border);
+  border-bottom-left-radius: 4px;
+}
+
+/* Hide trunk below last child */
+.props-tree-child:last-child::after {
+  content: "";
+  position: absolute;
+  left: -11px;
+  top: calc(50% + 1px);
+  bottom: -4px;
+  width: 2px;
+  background: var(--designer-bg-secondary);
+}
+
 .props-compact-suffix {
   padding: 0 6px;
   color: var(--designer-text-muted);

@@ -9,10 +9,11 @@ import { useAuth, useSubscription, useSync } from "../Premium";
 import { useUmami } from "../Hooks/useUmami";
 import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
 import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
-import { CustomDatasourceModal } from "../Premium";
+import { ImportDatasourceModal } from "./SettingsModal/ImportDatasourceModal";
 import { PublishDatasourceModal } from "./DatasourcePublish";
 import { confirmDialog } from "./ConfirmChangesModal";
 import "./SettingsModal.css";
+import "./DatasourceEditor/DatasourceEditor.css";
 
 // Format ISO date string to localized date/time
 const formatDate = (isoString) => {
@@ -49,6 +50,7 @@ export const SettingsModal = () => {
     checkForUpdate,
     clearData,
     removeCustomDatasource,
+    importCustomDatasource,
     checkCustomDatasourceUpdate,
     applyCustomDatasourceUpdate,
     getCustomDatasourceData,
@@ -161,6 +163,16 @@ export const SettingsModal = () => {
     }
     setIsPublishModalOpen(false);
     setPublishingDatasourceId(null);
+  };
+
+  const handleImportDatasource = async (datasourceData) => {
+    const result = await importCustomDatasource(datasourceData, "local");
+    if (result.success) {
+      message.success("Datasource imported successfully");
+      setIsCustomDatasourceModalOpen(false);
+    } else {
+      message.error(result.error || "Failed to import datasource");
+    }
   };
 
   // Handle escape key
@@ -795,9 +807,10 @@ export const SettingsModal = () => {
         </button>
       </Tooltip>
 
-      <CustomDatasourceModal
+      <ImportDatasourceModal
         isOpen={isCustomDatasourceModalOpen}
         onClose={() => setIsCustomDatasourceModalOpen(false)}
+        onImport={handleImportDatasource}
       />
 
       <PublishDatasourceModal

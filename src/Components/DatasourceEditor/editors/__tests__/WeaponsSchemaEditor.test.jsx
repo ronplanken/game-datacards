@@ -85,32 +85,20 @@ describe("WeaponsSchemaEditor", () => {
     expect(screen.getByDisplayValue("WS")).toBeInTheDocument();
   });
 
-  it("renders hasKeywords checkbox checked when true", () => {
+  it("renders hasKeywords toggle checked when true", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    const hasKeywordsCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("Enable weapon keywords") && cb.checked,
-    );
-    expect(hasKeywordsCheckbox).toBeTruthy();
+    expect(screen.getByLabelText("Weapon keywords").checked).toBe(true);
   });
 
-  it("renders hasProfiles checkbox checked when true", () => {
+  it("renders hasProfiles toggle checked when true", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    const hasProfilesCheckbox = checkboxes.find(
-      (cb) => cb.closest("label")?.textContent?.includes("Enable weapon profiles") && cb.checked,
-    );
-    expect(hasProfilesCheckbox).toBeTruthy();
+    expect(screen.getByLabelText("Weapon profiles").checked).toBe(true);
   });
 
   it("toggles hasKeywords on checkbox change", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    const hasKeywordsCheckbox = checkboxes.find((cb) =>
-      cb.closest("label")?.textContent?.includes("Enable weapon keywords"),
-    );
-    fireEvent.click(hasKeywordsCheckbox);
+    fireEvent.click(screen.getByLabelText("Weapon keywords"));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         weaponTypes: expect.objectContaining({
@@ -123,11 +111,7 @@ describe("WeaponsSchemaEditor", () => {
   it("toggles hasProfiles on checkbox change", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
-    const checkboxes = screen.getAllByRole("checkbox");
-    const hasProfilesCheckbox = checkboxes.find((cb) =>
-      cb.closest("label")?.textContent?.includes("Enable weapon profiles"),
-    );
-    fireEvent.click(hasProfilesCheckbox);
+    fireEvent.click(screen.getByLabelText("Weapon profiles"));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         weaponTypes: expect.objectContaining({
@@ -346,5 +330,94 @@ describe("WeaponsSchemaEditor", () => {
         }),
       }),
     );
+  });
+
+  it("renders column display select for each column", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    const displaySelects = screen.getAllByLabelText("Column display");
+    expect(displaySelects.length).toBe(3); // 3 columns in ranged
+    expect(displaySelects[0].value).toBe("column");
+  });
+
+  it("updates column display to row", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const displaySelects = screen.getAllByLabelText("Column display");
+    fireEvent.change(displaySelects[0], { target: { value: "row" } });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({
+              key: "ranged",
+              columns: expect.arrayContaining([expect.objectContaining({ key: "range", display: "row" })]),
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("clears column display when set back to column", () => {
+    const schemaWithRowDisplay = {
+      weaponTypes: {
+        label: "Weapon Types",
+        types: [
+          {
+            key: "ranged",
+            label: "Ranged",
+            hasKeywords: false,
+            hasProfiles: false,
+            columns: [{ key: "kw", label: "Keywords", type: "string", display: "row" }],
+          },
+        ],
+      },
+    };
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={schemaWithRowDisplay} onChange={onChange} />);
+    const displaySelect = screen.getByLabelText("Column display");
+    expect(displaySelect.value).toBe("row");
+    fireEvent.change(displaySelect, { target: { value: "column" } });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({
+              columns: expect.arrayContaining([expect.objectContaining({ key: "kw", display: undefined })]),
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("shows displayLabel and visual inputs only when display is row", () => {
+    const schemaWithRowDisplay = {
+      weaponTypes: {
+        label: "Weapon Types",
+        types: [
+          {
+            key: "ranged",
+            label: "Ranged",
+            hasKeywords: false,
+            hasProfiles: false,
+            columns: [
+              { key: "atk", label: "Atk", type: "string" },
+              { key: "kw", label: "Keywords", type: "string", display: "row" },
+            ],
+          },
+        ],
+      },
+    };
+    render(<WeaponsSchemaEditor schema={schemaWithRowDisplay} onChange={vi.fn()} />);
+    // Display label and visual should be present for the row column
+    expect(screen.getByLabelText("Display label")).toBeInTheDocument();
+    expect(screen.getByLabelText("Visual style")).toBeInTheDocument();
+  });
+
+  it("does not show displayLabel and visual inputs when display is column", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expect(screen.queryByLabelText("Display label")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Visual style")).not.toBeInTheDocument();
   });
 });

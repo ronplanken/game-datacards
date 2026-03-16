@@ -2,32 +2,36 @@
 
 ## Overview
 
-A custom datasource defines the structure and format of cards for a game system. It does **not** contain card data itself -- it describes the **shape** of the data that cards of each type will hold.
+The schema defines the **shape** of cards in a custom datasource -- what card types exist, what fields they have, and how they are displayed. It does not contain card data itself.
 
-## Root Schema
+For the full datasource JSON format (including card data and faction structure), see [custom-datasource-format.md](../custom-datasource-format.md).
+
+## Schema Object
+
+The `schema` property sits inside a datasource's top-level structure.
 
 ```js
 {
-  name: string,            // e.g. "Warhammer 40K 10th Edition"
-  version: string,         // e.g. "1.2.0"
-  id: string,              // unique identifier
-  author: string,
-  lastUpdated: string,     // ISO 8601 date
-  schema: {
-    version: "1.0.0",
-    baseSystem: "40k-10e" | "aos" | "blank",
-    colours: {
-      header: string,      // hex colour for card headers (default: "#1a1a2e")
-      banner: string,      // hex colour for card banners (default: "#16213e")
-    },
-    cardTypes: [CardTypeDefinition],
+  version: "1.0.0",
+  baseSystem: "40k-10e" | "aos" | "blank",
+  colours: {
+    header: string,      // hex colour for card headers (default: "#1a1a2e")
+    banner: string,      // hex colour for card banners (default: "#16213e")
   },
+  cardTypes: [CardTypeDefinition],
 }
 ```
 
-### Datasource Colours
+| Field        | Type   | Description |
+|--------------|--------|-------------|
+| `version`    | string | Schema version string. |
+| `baseSystem` | string | Determines available editor features and default presets. |
+| `colours`    | object | Default faction colours, propagated to each faction's `colours` object. |
+| `cardTypes`  | array  | Card type definitions (see below). |
 
-Colours are defined at the schema level and automatically propagated to every faction's `colours` object when edited. They control the visual theming of card headers and banners. The `DatasourceMetadataEditor` exposes these as "Main" (header) and "Accent" (banner) colour pickers.
+### Colours
+
+Colours control the visual theming of card headers and banners. The Datasource Editor exposes these as "Main" (header) and "Accent" (banner) colour pickers. Changes propagate to every faction's `colours` object automatically. Similarly, renaming the datasource propagates the new name to every faction.
 
 ## Discriminated Union: `cardTypes`
 
@@ -44,14 +48,16 @@ Every `CardTypeDefinition` shares these common fields:
 
 ```js
 {
-  key: string,       // unique key within this datasource, e.g. "infantry"
+  key: string,       // unique key within this datasource, e.g. "unit"
   label: string,     // human-readable label, e.g. "Infantry"
   baseType: string,  // discriminator: "unit" | "rule" | "enhancement" | "stratagem"
   schema: object,    // shape depends on baseType (see below)
 }
 ```
 
-The `schema` object is **not** freeform. Its allowed structure is strictly determined by `baseType`. Consumers of this schema (editors, renderers, validators) should switch on `baseType` to determine how to interpret `schema`.
+The `key` becomes the `cardType` value on each card. It must match an entry in the card type to array mapping (see [custom-datasource-format.md](../custom-datasource-format.md#card-type-to-array-mapping)) so cards are placed in the correct faction array. For example, use `key: "rule"` for a card type with `baseType: "rule"`.
+
+The `schema` object is **not** freeform. Its structure is determined by `baseType`. Editors, renderers, and validators switch on `baseType` to interpret it.
 
 ---
 
@@ -75,6 +81,10 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
         { key: "w", label: "W", type: "string", displayOrder: 4 },
         { key: "ld", label: "LD", type: "string", displayOrder: 5 },
         { key: "oc", label: "OC", type: "string", displayOrder: 6 },
+        // AoS example: position, color, width, special
+        // { key: "type", label: "Type", type: "string", displayOrder: 7,
+        //   position: "above", color: "#374151", width: "fit",
+        //   special: true, specialColor: "#374151", hideWhenEmpty: false },
       ],
     },
     weaponTypes: {
@@ -93,6 +103,8 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
             { key: "s", label: "S", type: "string" },
             { key: "ap", label: "AP", type: "string" },
             { key: "d", label: "D", type: "string" },
+            // display: "row" example — renders as a badge row instead of a table column
+            // { key: "abilities", label: "Abilities", type: "string", display: "row" },
           ],
         },
         {
@@ -133,6 +145,8 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
       hasFactionKeywords: true,
       hasPoints: true,
       pointsFormat: "per-model" | "per-unit",
+      bannerType: "faction" | "custom" | "hidden",
+      bannerCustomText: "WARSCROLL",
     },
   },
 }
@@ -146,7 +160,43 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
 | `weaponTypes` | Defines weapon categories, each with their own column definitions.      |
 | `abilities`   | Defines ability groupings and their display format.                     |
 | `sections`    | Defines optional content sections (e.g. transport, lore) with format.   |
-| `metadata`    | Flags for keywords, faction keywords, and points configuration.         |
+| `metadata`    | Flags for keywords, faction keywords, points, and banner configuration. |
+
+### Weapon type properties
+
+Each weapon type in the `weaponTypes.types` array supports these properties:
+
+| Property      | Type    | Description                                                          |
+|---------------|---------|----------------------------------------------------------------------|
+| `key`         | string  | Unique identifier for this weapon type.                              |
+| `label`       | string  | Display label shown as the section banner.                           |
+| `hasKeywords` | boolean | Enables keyword tags on individual weapons.                          |
+| `hasProfiles` | boolean | Enables multiple profiles per weapon (e.g. standard and overcharge). |
+| `columns`     | array   | Column definitions for the weapon table.                             |
+
+### Weapon column properties
+
+Each column in a weapon type's `columns` array supports the standard field properties (`key`, `label`, `type`, `options`, `onValue`, `offValue`) plus:
+
+| Property       | Type    | Description                                                                    |
+|----------------|---------|--------------------------------------------------------------------------------|
+| `display`      | string  | `"column"` (default) or `"row"`. Controls how this column is rendered.         |
+| `displayLabel` | boolean | Only applies when `display` is `"row"`. When `false`, hides the label before the row values. Defaults to `true` (label shown). |
+| `visual`       | string  | Only applies when `display` is `"row"`. `"text"` (default) or `"badge"`.       |
+
+**Display values:**
+
+| Value    | Description                                                                  |
+|----------|------------------------------------------------------------------------------|
+| `column` | Default. Rendered as a table column in the header and each weapon row.       |
+| `row`    | Rendered as a full-width row below the table columns. Useful for keywords, special rules, or other list-like data on a weapon profile. |
+
+**Visual values (row display only):**
+
+| Value   | Description                                                    |
+|---------|----------------------------------------------------------------|
+| `text`  | Default. Values are rendered as comma-separated plain text.    |
+| `badge` | Values are rendered as styled badges.                          |
 
 ### Stat field properties
 
@@ -171,8 +221,18 @@ When `baseSystem` is not `"40k-10e"` (i.e. AoS or blank), stat fields gain addit
 
 | Property   | Type   | Description                                                    |
 |------------|--------|----------------------------------------------------------------|
-| `position` | string | `"left"` or `"right"` — controls which side of the card the stat badge appears on. |
+| `position` | string | `"left"`, `"right"`, `"above"`, or `"below"` — controls where the stat badge appears on the card. |
 | `color`    | string | Hex colour for the stat badge background.                      |
+| `width`    | string | `"fixed"` (default) or `"fit"` — when `"fit"`, the badge expands to fit its content instead of using a fixed width. Only applies to `type: "string"` fields. |
+
+**Position values:**
+
+| Position | Renders                                                                 |
+|----------|-------------------------------------------------------------------------|
+| `left`   | Default. Stat badges in the top-left overlay grid.                      |
+| `right`  | Header badges in the top-right corner (only shown when value is set).   |
+| `above`  | Centered row inside the header, above the unit name. Pushes the name down. |
+| `below`  | Centered row between the header and the card body.                      |
 
 ### Ability category properties
 
@@ -182,8 +242,18 @@ Each ability category supports these properties:
 |-----------|---------|----------------------------------------------------------------------|
 | `key`     | string  | Unique identifier for this category.                                 |
 | `label`   | string  | Display label.                                                       |
-| `format`  | string  | `"name-only"` or `"name-description"`.                               |
+| `format`  | string  | `"name-only"` or `"name-description"`. When `"name-only"`, the ability text body is not rendered (AoS). |
+| `layout`  | string  | `"full"` (default), `"half"`, `"third"`, or `"quarter"`. Controls how many abilities appear per row. |
 | `header`  | string  | Optional header text displayed above the category.                   |
+
+**Layout values:**
+
+| Value     | Description                                        |
+|-----------|----------------------------------------------------|
+| `full`    | Default. One ability per row (full width).          |
+| `half`    | Two abilities per row (50% width each).             |
+| `third`   | Three abilities per row (33% width each).           |
+| `quarter` | Four abilities per row (25% width each).            |
 
 #### AoS-specific ability properties
 
@@ -191,8 +261,8 @@ When `baseSystem` is not `"40k-10e"`, ability categories gain additional toggles
 
 | Property   | Type    | Description                                                  |
 |------------|---------|--------------------------------------------------------------|
-| `hasPhase` | boolean | Enables a phase text field on each ability in this category. |
-| `hasColor` | boolean | Enables a colour strip on each ability in this category.     |
+| `hasPhase` | boolean | Enables a phase text field on each ability in this category. Phase text appears as a tag above the ability. |
+| `hasColor` | boolean | Enables a per-ability banner colour on the ability name strip. When set, each ability can define a `color` hex value. |
 
 ### Sections
 
@@ -203,6 +273,25 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `key`    | string | Unique identifier for this section.                  |
 | `label`  | string | Display label.                                       |
 | `format` | string | `"list"` (bullet list of items) or `"richtext"` (freeform HTML/markup). |
+
+### Metadata properties
+
+| Property           | Type   | Description                                                              |
+|--------------------|--------|--------------------------------------------------------------------------|
+| `hasKeywords`      | boolean | Include a keywords bar at the bottom of the card.                       |
+| `hasFactionKeywords` | boolean | Include a faction keywords bar at the bottom of the card.            |
+| `hasPoints`        | boolean | Include a points cost field on the card.                                |
+| `pointsFormat`     | string  | `"per-model"` or `"per-unit"`. Only applies when `hasPoints` is true.  |
+| `bannerType`       | string  | Controls the header banner text. Only applies when `baseSystem` is not `"40k-10e"`. |
+| `bannerCustomText` | string  | Custom banner text. Only applies when `bannerType` is `"custom"`.       |
+
+#### Banner type values (AoS / non-40k only)
+
+| Value    | Description                                                          |
+|----------|----------------------------------------------------------------------|
+| `faction` | Default. Shows "• FACTION NAME WARSCROLL •" in the header banner.  |
+| `custom` | Shows the text defined in `bannerCustomText`.                        |
+| `hidden` | Hides the banner entirely.                                           |
 
 ---
 

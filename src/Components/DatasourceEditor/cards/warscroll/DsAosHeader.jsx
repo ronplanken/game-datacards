@@ -1,5 +1,15 @@
 import React from "react";
-import { DsAosRightStats } from "./DsAosStatBadges";
+import { DsAosRightStats, DsAosAboveStats } from "./DsAosStatBadges";
+
+const resolvePoints = (points) => {
+  if (points == null) return null;
+  if (typeof points === "number" || typeof points === "string") return points;
+  if (Array.isArray(points)) {
+    const active = points.find((p) => p.active) || points[0];
+    return active?.cost ?? null;
+  }
+  return null;
+};
 
 /**
  * Schema-driven AoS warscroll header.
@@ -13,6 +23,7 @@ export const DsAosHeader = ({
   grandAlliance,
   stats,
   statFields,
+  metadata,
   imageUrl,
   imageOpacity,
   imagePositionX,
@@ -25,8 +36,11 @@ export const DsAosHeader = ({
   const posY = imagePositionY || 0;
   const scale = (imageScale ?? 100) / 100;
 
+  const hasAboveStats = (statFields || []).some((f) => f.position === "above");
+  const headerClassName = `warscroll-header${hasAboveStats ? " has-above-stats" : ""}`;
+
   return (
-    <div className="warscroll-header">
+    <div className={headerClassName}>
       {/* Background Image */}
       {imageUrl && (
         <div
@@ -43,9 +57,9 @@ export const DsAosHeader = ({
       {/* Points Badge and right-position stat badges - desktop only */}
       {!isMobile && (
         <div className="desktop-badges">
-          {card.points && (
+          {resolvePoints(card.points) != null && (
             <div className="points-badge">
-              <span className="points-value">{card.points}</span>
+              <span className="points-value">{resolvePoints(card.points)}</span>
               <span className="points-label">PTS</span>
             </div>
           )}
@@ -53,11 +67,22 @@ export const DsAosHeader = ({
         </div>
       )}
 
+      {/* Above stats - rendered above the name, pushes name down */}
+      <DsAosAboveStats stats={stats} statFields={statFields} />
+
       {/* Header Content */}
       <div className="header-content">
-        <div className="warscroll-faction-banner">
-          • {faction?.name?.toUpperCase() || card.factions?.[0]?.toUpperCase()} WARSCROLL •
-        </div>
+        {(() => {
+          const bannerType = metadata?.bannerType || "faction";
+          if (bannerType === "hidden") return null;
+          let bannerText;
+          if (bannerType === "custom") {
+            bannerText = metadata?.bannerCustomText;
+          } else {
+            bannerText = `• ${faction?.name?.toUpperCase() || card.factions?.[0]?.toUpperCase()} WARSCROLL •`;
+          }
+          return bannerText ? <div className="warscroll-faction-banner">{bannerText}</div> : null;
+        })()}
         <h1 className="warscroll-unit-name">{card.name || "Untitled Warscroll"}</h1>
         {card.subname && <div className="warscroll-subtitle">{card.subname}</div>}
       </div>
@@ -66,9 +91,9 @@ export const DsAosHeader = ({
       {isMobile && (
         <div className="mobile-badges-row">
           <DsAosRightStats stats={stats} statFields={statFields} grandAlliance={grandAlliance} flat />
-          {card.points && (
+          {resolvePoints(card.points) != null && (
             <div className="points-badge">
-              <span className="points-value">{card.points}</span>
+              <span className="points-value">{resolvePoints(card.points)}</span>
               <span className="points-label">PTS</span>
             </div>
           )}

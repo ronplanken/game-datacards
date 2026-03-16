@@ -8,6 +8,7 @@ import { AbilitiesSchemaEditor } from "./editors/AbilitiesSchemaEditor";
 import { SectionsSchemaEditor } from "./editors/SectionsSchemaEditor";
 import { MetadataSchemaEditor } from "./editors/MetadataSchemaEditor";
 import { FieldsSchemaEditor } from "./editors/FieldsSchemaEditor";
+import { useSectionState, SectionStateContext } from "./hooks/useSectionState";
 
 /**
  * Router component that renders the correct schema editor based on the selected item.
@@ -38,13 +39,20 @@ export const SchemaDefinitionEditor = ({ selectedItem = null, activeDatasource =
     const cardType = selectedItem.data;
     if (!cardType) return null;
 
-    return renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource);
+    return (
+      <CardTypeEditorWithSections
+        cardType={cardType}
+        activeDatasource={activeDatasource}
+        onUpdateDatasource={onUpdateDatasource}
+      />
+    );
   }
 
   return null;
 };
 
-function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
+const CardTypeEditorWithSections = ({ cardType, activeDatasource, onUpdateDatasource }) => {
+  const sectionState = useSectionState(cardType.key);
   const { baseType } = cardType;
   const baseSystem = activeDatasource?.schema?.baseSystem;
 
@@ -78,48 +86,56 @@ function renderCardTypeEditor(cardType, activeDatasource, onUpdateDatasource) {
     />
   );
 
-  switch (baseType) {
-    case "unit":
-      return (
-        <div className="props-body">
-          {cardTypeSettings}
-          <StatsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseSystem={baseSystem} />
-          <WeaponsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
-          <AbilitiesSchemaEditor
-            schema={cardType.schema}
-            onChange={handleCardTypeSchemaChange}
-            baseSystem={baseSystem}
-          />
-          <SectionsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
-          <MetadataSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
-        </div>
-      );
+  const content = (() => {
+    switch (baseType) {
+      case "unit":
+        return (
+          <div className="props-body">
+            {cardTypeSettings}
+            <StatsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseSystem={baseSystem} />
+            <WeaponsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
+            <AbilitiesSchemaEditor
+              schema={cardType.schema}
+              onChange={handleCardTypeSchemaChange}
+              baseSystem={baseSystem}
+            />
+            <SectionsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
+            <MetadataSchemaEditor
+              schema={cardType.schema}
+              onChange={handleCardTypeSchemaChange}
+              baseSystem={baseSystem}
+            />
+          </div>
+        );
 
-    case "rule":
-      return (
-        <div className="props-body">
-          {cardTypeSettings}
-          <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="rule" />
-        </div>
-      );
+      case "rule":
+        return (
+          <div className="props-body">
+            {cardTypeSettings}
+            <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="rule" />
+          </div>
+        );
 
-    case "enhancement":
-      return (
-        <div className="props-body">
-          {cardTypeSettings}
-          <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="enhancement" />
-        </div>
-      );
+      case "enhancement":
+        return (
+          <div className="props-body">
+            {cardTypeSettings}
+            <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="enhancement" />
+          </div>
+        );
 
-    case "stratagem":
-      return (
-        <div className="props-body">
-          {cardTypeSettings}
-          <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="stratagem" />
-        </div>
-      );
+      case "stratagem":
+        return (
+          <div className="props-body">
+            {cardTypeSettings}
+            <FieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseType="stratagem" />
+          </div>
+        );
 
-    default:
-      return null;
-  }
-}
+      default:
+        return null;
+    }
+  })();
+
+  return <SectionStateContext.Provider value={sectionState}>{content}</SectionStateContext.Provider>;
+};

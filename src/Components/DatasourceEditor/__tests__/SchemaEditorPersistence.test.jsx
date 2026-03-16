@@ -157,7 +157,7 @@ describe("SchemaEditorPersistence", () => {
         />,
       );
 
-      const checkbox = screen.getByLabelText("Allow multiple profiles");
+      const checkbox = screen.getByLabelText("Multiple profiles");
       fireEvent.click(checkbox);
 
       expect(onUpdate).toHaveBeenCalledTimes(1);
@@ -195,7 +195,7 @@ describe("SchemaEditorPersistence", () => {
         />,
       );
 
-      const checkbox = screen.getByLabelText("Include keywords");
+      const checkbox = screen.getByLabelText("Keywords");
       fireEvent.click(checkbox);
 
       expect(onUpdate).toHaveBeenCalledTimes(1);
@@ -214,7 +214,7 @@ describe("SchemaEditorPersistence", () => {
         />,
       );
 
-      const checkbox = screen.getByLabelText("Allow multiple profiles");
+      const checkbox = screen.getByLabelText("Multiple profiles");
       fireEvent.click(checkbox);
 
       const updatedDS = onUpdate.mock.calls[0][0];
