@@ -117,13 +117,13 @@ export function useDatasourceEditorState() {
    */
   const updateDatasource = useCallback(
     async (updatedDatasource) => {
-      // If sync is enabled, mark as pending and bump editVersion so auto-sync picks it up
+      // If sync is enabled, mark as pending so auto-sync picks it up
+      // editVersion is only incremented when the sync actually happens (in useSync)
       if (updatedDatasource.syncEnabled) {
         updatedDatasource = {
           ...updatedDatasource,
           syncStatus: "pending",
           syncError: null,
-          editVersion: (updatedDatasource.editVersion || 0) + 1,
         };
       }
       setActiveDatasource(updatedDatasource);

@@ -145,6 +145,26 @@ export const DataSourceStorageProviderComponent = (props) => {
     fetch();
   }, [settings.selectedDataSource]);
 
+  // Reload active custom/subscribed datasource when sync writes new data to localForage
+  useEffect(() => {
+    if (!settings.datasourceSyncTrigger) return;
+    if (
+      !settings.selectedDataSource?.startsWith("custom-") &&
+      !settings.selectedDataSource?.startsWith("subscribed-")
+    ) {
+      return;
+    }
+    const reload = async () => {
+      const storedData = await dataStore.getItem(settings.selectedDataSource);
+      if (storedData) {
+        const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
+        setDataSource(storedData);
+        setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
+      }
+    };
+    reload();
+  }, [settings.datasourceSyncTrigger]);
+
   /**
    * Check for updates and refresh the currently selected datasource
    * Fetches fresh data from the source and updates local storage
@@ -301,7 +321,15 @@ export const DataSourceStorageProviderComponent = (props) => {
   const registerCustomDatasource = useCallback(
     (id, name, cloudId) => {
       const registry = settings.customDatasources || [];
-      if (!registry.some((ds) => ds.id === id)) {
+      const existing = registry.find((ds) => ds.id === id);
+      if (existing) {
+        if (existing.name !== name || existing.cloudId !== cloudId) {
+          updateSettings({
+            ...settings,
+            customDatasources: registry.map((ds) => (ds.id === id ? { ...ds, name, cloudId } : ds)),
+          });
+        }
+      } else {
         updateSettings({
           ...settings,
           customDatasources: [...registry, { id, name, cloudId }],

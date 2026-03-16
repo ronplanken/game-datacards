@@ -20,6 +20,7 @@ import {
   CloudCategoriesProvider,
   CheckoutSuccessModal,
   SyncConflictHandler,
+  DatasourceConflictHandler,
   MobileLoginPage,
   MobileSignupPage,
   MobilePasswordResetPage,
@@ -350,6 +351,7 @@ const RootLayout = () => (
                           <CheckoutSuccessHandler />
                           <ListForgeUrlHandler />
                           <SyncConflictHandler />
+                          <DatasourceConflictHandler />
                           <LocalDatasourceMigrationNotice />
                         </CloudCategoriesProvider>
                       </SyncProvider>
