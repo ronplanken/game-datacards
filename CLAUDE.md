@@ -19,6 +19,7 @@ This is a React 18.3 application built with Vite 7 for fast development and buil
 For detailed documentation on card data formats, import features, components, and infrastructure, see `docs/INDEX.md` for a full index of available docs.
 
 - **When implementing a major feature or working on data/file formats**, add a new doc file in `docs/` with YAML frontmatter (title, description, category, tags, related, file_locations) and a table of contents. Then update `docs/INDEX.md` to include the new file in the appropriate category.
+- **When changing datasource schema structure** (field types, card type schemas, editor properties, colours, sections, abilities, or metadata), update `docs/custom datasource/datasource-schema-architecture.md` to reflect the changes. This file is the canonical reference for the custom datasource schema format.
 
 ## Development Rules
 
