@@ -147,6 +147,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
   // Reload active custom/subscribed datasource when sync writes new data to localForage
   useEffect(() => {
+    if (!settings.datasourceSyncTrigger) return;
     if (
       !settings.selectedDataSource?.startsWith("custom-") &&
       !settings.selectedDataSource?.startsWith("subscribed-")
