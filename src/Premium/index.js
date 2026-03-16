@@ -218,6 +218,8 @@ export const TemplatePublishIcon = () => null;
 export const SyncClaimModal = () => null;
 export const SyncConflictModal = () => null;
 export const SyncConflictHandler = () => null;
+export const DatasourceConflictModal = () => null;
+export const DatasourceConflictHandler = () => null;
 export const SyncStatusIndicator = () => null;
 export const ListSyncButton = () => null;
 
