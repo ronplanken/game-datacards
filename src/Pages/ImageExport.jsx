@@ -50,7 +50,15 @@ export const ImageExport = () => {
     await sleep(100);
 
     const uniqueNames = buildUniqueFilenames(allCards);
-    const screenshotOpts = { scale: pixelScaling };
+    const screenshotOpts = {
+      scale: pixelScaling,
+      onCloneEachNode: (cloned) => {
+        if (cloned instanceof HTMLElement && cloned.classList?.contains("value") && !cloned.previousElementSibling) {
+          cloned.style.overflow = "hidden";
+          cloned.style.minWidth = "0";
+        }
+      },
+    };
 
     for (let index = 0; index < cardsFrontRef.current.length; index++) {
       const card = cardsFrontRef.current[index];
