@@ -20,7 +20,7 @@ const CustomWeaponProfiles = ({ weapon, columns, hasKeywords, columnTemplate }) 
             key={`weapon-profile-${index}`}
             data-name={profile.name}>
             <div className="line" style={{ gridTemplateColumns: columnTemplate }}>
-              <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
+              <div className="value">
                 <span>{profile.name}</span>
                 {hasKeywords && profile.keywords?.length > 0 && (
                   <span style={{ paddingLeft: "4px" }}>
