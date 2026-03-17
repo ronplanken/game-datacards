@@ -280,9 +280,14 @@ export function useDatasourceEditorState() {
     getCustomDatasourceData(activeDatasource.id).then((data) => {
       if (cancelled || !data) return;
       // Only update sync-related fields to avoid overwriting in-progress edits
-      if (data.syncStatus !== activeDatasource.syncStatus || data.lastSyncedAt !== activeDatasource.lastSyncedAt) {
+      if (
+        data.syncStatus !== activeDatasource.syncStatus ||
+        data.lastSyncedAt !== activeDatasource.lastSyncedAt ||
+        data.syncEnabled !== activeDatasource.syncEnabled
+      ) {
         setActiveDatasource((prev) => ({
           ...prev,
+          syncEnabled: data.syncEnabled,
           syncStatus: data.syncStatus,
           syncError: data.syncError,
           lastSyncedAt: data.lastSyncedAt,
