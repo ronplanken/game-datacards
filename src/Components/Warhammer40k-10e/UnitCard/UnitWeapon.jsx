@@ -17,7 +17,7 @@ export const UnitWeapon = ({ weapon }) => {
             key={`weapon-line-${index}`}
             data-name={line.name}>
             <div className="line">
-              <div className="value">
+              <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
                 <span>{line.name}</span>
                 {line.keywords?.length > 0 && !screens.xs && (
                   <span style={{ paddingLeft: "4px" }}>

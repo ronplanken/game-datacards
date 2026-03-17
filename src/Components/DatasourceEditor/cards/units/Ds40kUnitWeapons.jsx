@@ -69,7 +69,7 @@ const Ds40kWeaponProfiles = ({ weapon, columns }) => {
             key={`weapon-profile-${index}`}
             data-name={profile.name}>
             <div className="line">
-              <div className="value">
+              <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
                 <span>{profile.name}</span>
                 {profile.keywords?.length > 0 && (
                   <span style={{ paddingLeft: "4px" }}>
