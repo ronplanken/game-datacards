@@ -30,6 +30,23 @@ function svgCleanupPlugin() {
   };
 }
 
+// 7fr 2fr repeat(5,1fr) = 14fr total → convert to percentages for SVG foreignObject
+const GRID_PERCENT_COLUMNS = "50% 14.29% 7.14% 7.14% 7.14% 7.14% 7.15%";
+
+function gridFixPlugin() {
+  return {
+    name: "grid-fix",
+    afterClone(context) {
+      const weaponGrids = context.clone.querySelectorAll(
+        ".ranged .heading, .ranged .line, .melee .heading, .melee .line",
+      );
+      for (const el of weaponGrids) {
+        el.style.gridTemplateColumns = GRID_PERCENT_COLUMNS;
+      }
+    },
+  };
+}
+
 function captureSvgPlugin(ref) {
   return {
     name: "capture-svg",
@@ -61,7 +78,7 @@ function buildOptions(scale, extraPlugins = []) {
   return {
     scale,
     embedFonts: true,
-    plugins: [svgCleanupPlugin(), ...extraPlugins],
+    plugins: [svgCleanupPlugin(), gridFixPlugin(), ...extraPlugins],
   };
 }
 

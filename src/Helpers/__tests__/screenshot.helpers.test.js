@@ -39,10 +39,7 @@ describe("screenshot.helpers", () => {
 
       await captureToBlob(mockElement, { scale: 2.5 });
 
-      expect(mockToBlob).toHaveBeenCalledWith(
-        mockElement,
-        expect.objectContaining({ type: "png", scale: 2.5 }),
-      );
+      expect(mockToBlob).toHaveBeenCalledWith(mockElement, expect.objectContaining({ type: "png", scale: 2.5 }));
     });
 
     it("passes svgCleanup and captureSvg plugins", async () => {
@@ -51,9 +48,10 @@ describe("screenshot.helpers", () => {
       await captureToBlob(mockElement);
 
       const opts = mockToBlob.mock.calls[0][1];
-      expect(opts.plugins).toHaveLength(2);
+      expect(opts.plugins).toHaveLength(3);
       expect(opts.plugins[0].name).toBe("svg-cleanup");
-      expect(opts.plugins[1].name).toBe("capture-svg");
+      expect(opts.plugins[1].name).toBe("grid-fix");
+      expect(opts.plugins[2].name).toBe("capture-svg");
     });
 
     it("throws when snapdom fails and no svgString was captured", async () => {
