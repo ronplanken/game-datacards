@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { mockToCanvas } = vi.hoisted(() => ({
-  mockToCanvas: vi.fn(),
+const { mockToBlob, mockToPng } = vi.hoisted(() => ({
+  mockToBlob: vi.fn(),
+  mockToPng: vi.fn(),
 }));
 vi.mock("@zumer/snapdom", () => ({
   snapdom: {
-    toCanvas: mockToCanvas,
+    toBlob: mockToBlob,
+    toPng: mockToPng,
   },
 }));
 
@@ -20,43 +22,32 @@ describe("screenshot.helpers", () => {
   });
 
   describe("captureToBlob", () => {
-    it("calls snapdom.toCanvas with default scale 1.5", async () => {
-      const mockCanvas = {
-        toBlob: vi.fn((cb) => cb(mockBlob)),
-      };
-      mockToCanvas.mockResolvedValue(mockCanvas);
+    it("calls snapdom.toBlob with type png and default scale 1.5", async () => {
+      mockToBlob.mockResolvedValue(mockBlob);
 
       const result = await captureToBlob(mockElement);
 
-      expect(mockToCanvas).toHaveBeenCalledWith(mockElement, { scale: 1.5 });
-      expect(mockCanvas.toBlob).toHaveBeenCalledWith(expect.any(Function), "image/png");
+      expect(mockToBlob).toHaveBeenCalledWith(mockElement, { type: "png", scale: 1.5 });
       expect(result).toBe(mockBlob);
     });
 
-    it("calls snapdom.toCanvas with custom scale", async () => {
-      const mockCanvas = {
-        toBlob: vi.fn((cb) => cb(mockBlob)),
-      };
-      mockToCanvas.mockResolvedValue(mockCanvas);
+    it("calls snapdom.toBlob with custom scale", async () => {
+      mockToBlob.mockResolvedValue(mockBlob);
 
       await captureToBlob(mockElement, { scale: 2.5 });
 
-      expect(mockToCanvas).toHaveBeenCalledWith(mockElement, { scale: 2.5 });
+      expect(mockToBlob).toHaveBeenCalledWith(mockElement, { type: "png", scale: 2.5 });
     });
   });
 
   describe("captureToDataUrl", () => {
-    it("calls snapdom.toCanvas with scale 1 and returns data URL", async () => {
+    it("calls snapdom.toPng with scale 1 and returns src data URL", async () => {
       const mockDataUrl = "data:image/png;base64,abc123";
-      const mockCanvas = {
-        toDataURL: vi.fn(() => mockDataUrl),
-      };
-      mockToCanvas.mockResolvedValue(mockCanvas);
+      mockToPng.mockResolvedValue({ src: mockDataUrl });
 
       const result = await captureToDataUrl(mockElement);
 
-      expect(mockToCanvas).toHaveBeenCalledWith(mockElement, { scale: 1 });
-      expect(mockCanvas.toDataURL).toHaveBeenCalledWith("image/png");
+      expect(mockToPng).toHaveBeenCalledWith(mockElement, { scale: 1 });
       expect(result).toBe(mockDataUrl);
     });
   });
