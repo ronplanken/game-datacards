@@ -1,5 +1,5 @@
 import { message } from "../Components/Toast/message";
-import { toBlob, toPng } from "html-to-image";
+import { captureToBlob, captureToDataUrl } from "../Helpers/screenshot.helpers";
 import { useCallback } from "react";
 import { useCardStorage } from "./useCardStorage";
 import { useUmami } from "./useUmami";
@@ -27,7 +27,7 @@ export const useMobileSharing = () => {
       overlayRef.current.style.display = "block";
 
       if (navigator.share) {
-        toBlob(divRef.current, { cacheBust: false })
+        captureToBlob(divRef.current)
           .then((data) => {
             const fileData = {
               files: [
@@ -52,7 +52,7 @@ export const useMobileSharing = () => {
             message.error(err);
           });
       } else {
-        toPng(divRef.current, { cacheBust: false })
+        captureToDataUrl(divRef.current)
           .then((data) => {
             divRef.current.style.display = "none";
             overlayRef.current.style.display = "none";

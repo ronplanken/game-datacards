@@ -1,7 +1,7 @@
 import { Square, CheckSquare } from "lucide-react";
 import { Badge, Button, Col, Grid, Image, Layout, Row, Select, Space, Spin, Typography } from "antd";
 import { Content, Header } from "antd/lib/layout/layout";
-import { toBlob } from "html-to-image";
+import { captureToBlob } from "../Helpers/screenshot.helpers";
 import { useEffect, useRef, useState } from "react";
 import "../App.css";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
@@ -133,7 +133,7 @@ export const ImageGenerator = () => {
         const datasheetNames = buildUniqueFilenames(factionData.datasheets || []);
 
         const files = cardsFrontRef?.current?.[faction]?.map(async (card, index) => {
-          const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+          const data = await captureToBlob(card, { scale: 1.5 });
           return data;
         });
 
@@ -142,7 +142,7 @@ export const ImageGenerator = () => {
         });
         if (settings.showCardsAsDoubleSided !== true) {
           const backFiles = cardsBackRef?.current?.[faction]?.map(async (card, index) => {
-            const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+            const data = await captureToBlob(card, { scale: 1.5 });
             return data;
           });
 
@@ -155,7 +155,7 @@ export const ImageGenerator = () => {
         const stratagemNames = buildUniqueFilenames(factionData.stratagems || []);
 
         const stratagems = cardsStratagems?.current?.[faction]?.map(async (card, index) => {
-          const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+          const data = await captureToBlob(card, { scale: 1.5 });
           return data;
         });
 
@@ -170,7 +170,7 @@ export const ImageGenerator = () => {
       const basicStratagemNames = buildUniqueFilenames(dataSource.data[0]?.basicStratagems || []);
 
       const basicStrats = basicStratagems?.current?.map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: 1.5 });
+        const data = await captureToBlob(card, { scale: 1.5 });
         return data;
       });
 
