@@ -1,10 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { mockHtml2canvas } = vi.hoisted(() => ({
-  mockHtml2canvas: vi.fn(),
+const { mockToBlob, mockToPng } = vi.hoisted(() => ({
+  mockToBlob: vi.fn(),
+  mockToPng: vi.fn(),
 }));
-vi.mock("html2canvas", () => ({
-  default: mockHtml2canvas,
+vi.mock("@zumer/snapdom", () => ({
+  snapdom: {
+    toBlob: mockToBlob,
+    toPng: mockToPng,
+  },
 }));
 
 import { captureToBlob, captureToDataUrl } from "../screenshot.helpers";
@@ -18,41 +22,60 @@ describe("screenshot.helpers", () => {
   });
 
   describe("captureToBlob", () => {
-    it("calls html2canvas with default scale 1.5 and returns PNG blob", async () => {
-      const mockCanvas = { toBlob: vi.fn((cb) => cb(mockBlob)) };
-      mockHtml2canvas.mockResolvedValue(mockCanvas);
+    it("calls snapdom.toBlob with type png and default scale 1.5", async () => {
+      mockToBlob.mockResolvedValue(mockBlob);
 
       const result = await captureToBlob(mockElement);
 
-      expect(mockHtml2canvas).toHaveBeenCalledWith(
+      expect(mockToBlob).toHaveBeenCalledWith(
         mockElement,
-        expect.objectContaining({ scale: 1.5, useCORS: true, logging: false }),
+        expect.objectContaining({ type: "png", scale: 1.5, embedFonts: true }),
       );
-      expect(mockCanvas.toBlob).toHaveBeenCalledWith(expect.any(Function), "image/png");
       expect(result).toBe(mockBlob);
     });
 
-    it("calls html2canvas with custom scale", async () => {
-      const mockCanvas = { toBlob: vi.fn((cb) => cb(mockBlob)) };
-      mockHtml2canvas.mockResolvedValue(mockCanvas);
+    it("calls snapdom.toBlob with custom scale", async () => {
+      mockToBlob.mockResolvedValue(mockBlob);
 
       await captureToBlob(mockElement, { scale: 2.5 });
 
-      expect(mockHtml2canvas).toHaveBeenCalledWith(mockElement, expect.objectContaining({ scale: 2.5 }));
+      expect(mockToBlob).toHaveBeenCalledWith(mockElement, expect.objectContaining({ type: "png", scale: 2.5 }));
+    });
+
+    it("passes svgCleanup, gridFix, and captureSvg plugins", async () => {
+      mockToBlob.mockResolvedValue(mockBlob);
+
+      await captureToBlob(mockElement);
+
+      const opts = mockToBlob.mock.calls[0][1];
+      expect(opts.plugins).toHaveLength(3);
+      expect(opts.plugins[0].name).toBe("svg-cleanup");
+      expect(opts.plugins[1].name).toBe("grid-fix");
+      expect(opts.plugins[2].name).toBe("capture-svg");
+    });
+
+    it("throws when snapdom fails and no svgString was captured", async () => {
+      mockToBlob.mockRejectedValue(new DOMException("Invalid encoded image data"));
+
+      await expect(captureToBlob(mockElement)).rejects.toThrow("Failed to capture element as image");
     });
   });
 
   describe("captureToDataUrl", () => {
-    it("calls html2canvas with scale 1 and returns data URL", async () => {
+    it("calls snapdom.toPng with scale 1 and returns src data URL", async () => {
       const mockDataUrl = "data:image/png;base64,abc123";
-      const mockCanvas = { toDataURL: vi.fn(() => mockDataUrl) };
-      mockHtml2canvas.mockResolvedValue(mockCanvas);
+      mockToPng.mockResolvedValue({ src: mockDataUrl });
 
       const result = await captureToDataUrl(mockElement);
 
-      expect(mockHtml2canvas).toHaveBeenCalledWith(mockElement, expect.objectContaining({ scale: 1 }));
-      expect(mockCanvas.toDataURL).toHaveBeenCalledWith("image/png");
+      expect(mockToPng).toHaveBeenCalledWith(mockElement, expect.objectContaining({ scale: 1, embedFonts: true }));
       expect(result).toBe(mockDataUrl);
+    });
+
+    it("throws when snapdom fails and no svgString was captured", async () => {
+      mockToPng.mockRejectedValue(new DOMException("Invalid encoded image data"));
+
+      await expect(captureToDataUrl(mockElement)).rejects.toThrow("Failed to capture element as image");
     });
   });
 });
