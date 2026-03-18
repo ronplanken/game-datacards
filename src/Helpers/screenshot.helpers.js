@@ -30,16 +30,65 @@ function svgCleanupPlugin() {
   };
 }
 
-const defaultOptions = {
-  embedFonts: true,
-  plugins: [svgCleanupPlugin()],
-};
+function captureSvgPlugin(ref) {
+  return {
+    name: "capture-svg",
+    afterRender(context) {
+      ref.svgString = context.svgString;
+    },
+  };
+}
+
+async function rasterizeSvgToCanvas(svgString) {
+  const blob = new Blob([svgString], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(blob);
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    return canvas;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+function buildOptions(scale, extraPlugins = []) {
+  return {
+    scale,
+    embedFonts: true,
+    plugins: [svgCleanupPlugin(), ...extraPlugins],
+  };
+}
 
 export const captureToBlob = async (element, { scale = 1.5 } = {}) => {
-  return snapdom.toBlob(element, { ...defaultOptions, type: "png", scale });
+  const ref = {};
+  const options = buildOptions(scale, [captureSvgPlugin(ref)]);
+
+  try {
+    return await snapdom.toBlob(element, { ...options, type: "png" });
+  } catch {
+    // Data URL too large for browser — fall back to Blob URL rasterization
+    if (!ref.svgString) throw new Error("Failed to capture element as image");
+    const canvas = await rasterizeSvgToCanvas(ref.svgString);
+    return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  }
 };
 
 export const captureToDataUrl = async (element) => {
-  const img = await snapdom.toPng(element, { ...defaultOptions, scale: 1 });
-  return img.src;
+  const ref = {};
+  const options = buildOptions(1, [captureSvgPlugin(ref)]);
+
+  try {
+    const img = await snapdom.toPng(element, options);
+    return img.src;
+  } catch {
+    if (!ref.svgString) throw new Error("Failed to capture element as image");
+    const canvas = await rasterizeSvgToCanvas(ref.svgString);
+    return canvas.toDataURL("image/png");
+  }
 };

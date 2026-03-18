@@ -27,7 +27,10 @@ describe("screenshot.helpers", () => {
 
       const result = await captureToBlob(mockElement);
 
-      expect(mockToBlob).toHaveBeenCalledWith(mockElement, { type: "png", scale: 1.5 });
+      expect(mockToBlob).toHaveBeenCalledWith(
+        mockElement,
+        expect.objectContaining({ type: "png", scale: 1.5, embedFonts: true }),
+      );
       expect(result).toBe(mockBlob);
     });
 
@@ -36,7 +39,27 @@ describe("screenshot.helpers", () => {
 
       await captureToBlob(mockElement, { scale: 2.5 });
 
-      expect(mockToBlob).toHaveBeenCalledWith(mockElement, { type: "png", scale: 2.5 });
+      expect(mockToBlob).toHaveBeenCalledWith(
+        mockElement,
+        expect.objectContaining({ type: "png", scale: 2.5 }),
+      );
+    });
+
+    it("passes svgCleanup and captureSvg plugins", async () => {
+      mockToBlob.mockResolvedValue(mockBlob);
+
+      await captureToBlob(mockElement);
+
+      const opts = mockToBlob.mock.calls[0][1];
+      expect(opts.plugins).toHaveLength(2);
+      expect(opts.plugins[0].name).toBe("svg-cleanup");
+      expect(opts.plugins[1].name).toBe("capture-svg");
+    });
+
+    it("throws when snapdom fails and no svgString was captured", async () => {
+      mockToBlob.mockRejectedValue(new DOMException("Invalid encoded image data"));
+
+      await expect(captureToBlob(mockElement)).rejects.toThrow("Failed to capture element as image");
     });
   });
 
@@ -47,8 +70,14 @@ describe("screenshot.helpers", () => {
 
       const result = await captureToDataUrl(mockElement);
 
-      expect(mockToPng).toHaveBeenCalledWith(mockElement, { scale: 1 });
+      expect(mockToPng).toHaveBeenCalledWith(mockElement, expect.objectContaining({ scale: 1, embedFonts: true }));
       expect(result).toBe(mockDataUrl);
+    });
+
+    it("throws when snapdom fails and no svgString was captured", async () => {
+      mockToPng.mockRejectedValue(new DOMException("Invalid encoded image data"));
+
+      await expect(captureToDataUrl(mockElement)).rejects.toThrow("Failed to capture element as image");
     });
   });
 });
