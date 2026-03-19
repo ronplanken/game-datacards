@@ -47,6 +47,23 @@ function gridFixPlugin() {
   };
 }
 
+function weaponNameFixPlugin() {
+  return {
+    name: "weapon-name-fix",
+    afterClone(context) {
+      const lines = context.clone.querySelectorAll(".ranged .line, .melee .line");
+      for (const line of lines) {
+        const firstValue = line.querySelector(".value");
+        if (!firstValue) continue;
+        const nameSpan = firstValue.children[0];
+        if (!nameSpan || nameSpan.tagName !== "SPAN" || nameSpan.children.length > 0) continue;
+        const text = document.createTextNode(nameSpan.textContent);
+        firstValue.replaceChild(text, nameSpan);
+      }
+    },
+  };
+}
+
 function captureSvgPlugin(ref) {
   return {
     name: "capture-svg",
@@ -78,7 +95,7 @@ function buildOptions(scale, extraPlugins = []) {
   return {
     scale,
     embedFonts: true,
-    plugins: [svgCleanupPlugin(), gridFixPlugin(), ...extraPlugins],
+    plugins: [svgCleanupPlugin(), gridFixPlugin(), weaponNameFixPlugin(), ...extraPlugins],
   };
 }
 
