@@ -17,7 +17,7 @@ function svgCleanupPlugin() {
             svg.removeAttribute(attr.name);
           }
         }
-        for (const el of [...svg.querySelectorAll("metadata, defs")]) {
+        for (const el of [...svg.querySelectorAll("metadata")]) {
           el.remove();
         }
         for (const el of [...svg.children]) {
@@ -34,7 +34,7 @@ function spanUnwrapPlugin() {
   return {
     name: "span-unwrap",
     afterClone(context) {
-      // Weapon name spans in grid rows
+      // Weapon name spans in 40k-10e grid rows
       const lines = context.clone.querySelectorAll(".ranged .line, .melee .line");
       for (const line of lines) {
         const firstValue = line.querySelector(".value");
@@ -54,7 +54,7 @@ function spanUnwrapPlugin() {
 function unwrapLeadingSpan(parent) {
   const span = parent.children[0];
   if (!span || span.tagName !== "SPAN" || span.children.length > 0) return;
-  parent.replaceChild(document.createTextNode(span.textContent), span);
+  parent.replaceChild(parent.ownerDocument.createTextNode(span.textContent), span);
 }
 
 function captureSvgPlugin(ref) {
@@ -98,23 +98,24 @@ export const captureToBlob = async (element, { scale = 1.5 } = {}) => {
 
   try {
     return await snapdom.toBlob(element, { ...options, type: "png" });
-  } catch {
-    // Data URL too large for browser — fall back to Blob URL rasterization
-    if (!ref.svgString) throw new Error("Failed to capture element as image");
+  } catch (err) {
+    if (!ref.svgString) throw err;
     const canvas = await rasterizeSvgToCanvas(ref.svgString);
-    return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    return new Promise((resolve, reject) =>
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("toBlob returned null"))), "image/png"),
+    );
   }
 };
 
-export const captureToDataUrl = async (element) => {
+export const captureToDataUrl = async (element, { scale = 1 } = {}) => {
   const ref = {};
-  const options = buildOptions(1, [captureSvgPlugin(ref)]);
+  const options = buildOptions(scale, [captureSvgPlugin(ref)]);
 
   try {
     const img = await snapdom.toPng(element, options);
     return img.src;
-  } catch {
-    if (!ref.svgString) throw new Error("Failed to capture element as image");
+  } catch (err) {
+    if (!ref.svgString) throw err;
     const canvas = await rasterizeSvgToCanvas(ref.svgString);
     return canvas.toDataURL("image/png");
   }

@@ -29,12 +29,11 @@ const renderLoadout = (unit) =>
   );
 
 describe("UnitLoadout", () => {
-  it("renders markdown text content", () => {
-    const unit = { loadout: "**Bolt rifle** and grenades" };
+  it("renders plain text unchanged when no legacy pattern", () => {
+    const unit = { loadout: "Bolt rifle and grenades" };
     renderLoadout(unit);
 
-    expect(screen.getByText("Bolt rifle")).toBeInTheDocument();
-    expect(screen.getByText(/and grenades/)).toBeInTheDocument();
+    expect(screen.getByText("Bolt rifle and grenades")).toBeInTheDocument();
   });
 
   it("renders markdown bold text", () => {

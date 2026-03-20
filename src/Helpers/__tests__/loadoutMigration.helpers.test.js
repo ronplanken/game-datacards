@@ -13,6 +13,10 @@ describe("migrateLoadoutToMarkdown", () => {
     expect(migrateLoadoutToMarkdown(md)).toBe(md);
   });
 
+  it("passes plain text without colons through unchanged", () => {
+    expect(migrateLoadoutToMarkdown("Bolt rifle and grenades")).toBe("Bolt rifle and grenades");
+  });
+
   it("converts single colon-delimited entry", () => {
     expect(migrateLoadoutToMarkdown("Every model is equipped with: bolt rifle.")).toBe(
       "**Every model is equipped with:** bolt rifle.",
@@ -25,22 +29,21 @@ describe("migrateLoadoutToMarkdown", () => {
     expect(migrateLoadoutToMarkdown(input)).toBe(expected);
   });
 
-  it("handles entries without colons", () => {
-    const input = "Bolt rifle. Grenades. Combat knife.";
-    const expected = "Bolt rifle.\nGrenades.\nCombat knife.";
-    expect(migrateLoadoutToMarkdown(input)).toBe(expected);
-  });
-
   it("handles mix of colon and non-colon entries", () => {
     const input = "Every model is equipped with: bolt rifle. Grenades.";
     const expected = "**Every model is equipped with:** bolt rifle.\nGrenades.";
     expect(migrateLoadoutToMarkdown(input)).toBe(expected);
   });
 
-  it("strips escaped newlines from legacy data", () => {
+  it("strips escaped newline literals from legacy data", () => {
     const input = "Every model is equipped with: bolt rifle.\\nLeader has: plasma pistol.";
     const expected = "**Every model is equipped with:** bolt rifle.\n**Leader has:** plasma pistol.";
     expect(migrateLoadoutToMarkdown(input)).toBe(expected);
+  });
+
+  it("preserves real newlines in non-legacy text", () => {
+    const input = "Line one\nLine two";
+    expect(migrateLoadoutToMarkdown(input)).toBe("Line one\nLine two");
   });
 
   it("handles trailing period without extra empty line", () => {

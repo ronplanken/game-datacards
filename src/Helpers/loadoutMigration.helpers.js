@@ -4,13 +4,16 @@
  * Old format: "Every model is equipped with: bolt rifle. Leader has: plasma pistol."
  * New format: "**Every model is equipped with:** bolt rifle.\n**Leader has:** plasma pistol."
  *
- * Skips text that already contains markdown bold syntax.
+ * Only transforms text that matches the legacy pattern (colon-delimited segments
+ * separated by periods). Plain text and markdown content pass through unchanged.
  */
 export function migrateLoadoutToMarkdown(loadout) {
   if (!loadout) return loadout;
   if (loadout.includes("**")) return loadout;
+  if (!loadout.includes(":")) return loadout;
 
-  const sanitized = loadout.replace(/\\n|\n/g, "");
+  // Strip escaped newline literals (\n as two chars) from legacy data
+  const sanitized = loadout.replace(/\\n/g, "");
   const segments = sanitized.split(".").filter((s) => s.trim());
 
   if (segments.length === 0) return loadout;
