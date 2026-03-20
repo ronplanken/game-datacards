@@ -68,7 +68,7 @@ export const Print = () => {
 
   return (
     <Layout>
-      <AppHeader showModals={false} pageTitle="Print" showNav={false} showActions={false} className="no-print" />
+      <AppHeader pageTitle="Print" showNav={false} showActions={false} className="no-print" />
       <Layout>
         <Sider width={220} className="no-print small-form print-sider">
           {/* Header */}

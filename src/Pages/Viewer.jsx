@@ -111,7 +111,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
 
   return (
     <Layout>
-      <AppHeader showModals={true} />
+      <AppHeader />
 
       <Content style={{ height: "calc(100vh - 64px)" }}>
         <PanelGroup direction="horizontal" autoSaveId="viewerDesktopLayout">

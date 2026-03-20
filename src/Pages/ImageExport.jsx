@@ -85,13 +85,7 @@ export const ImageExport = () => {
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
     return (
       <Layout>
-        <AppHeader
-          showModals={false}
-          pageTitle="Image Export"
-          showNav={false}
-          showActions={false}
-          className="no-print"
-        />
+        <AppHeader pageTitle="Image Export" showNav={false} showActions={false} className="no-print" />
         <Layout>
           <div
             ref={overlayRef}

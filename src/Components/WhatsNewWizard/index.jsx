@@ -4,7 +4,6 @@ import { WizardHeader, WizardSidebar, WizardFooter, MobileProgress } from "./com
 import { useVersionWizard } from "./hooks/useVersionWizard";
 import "./WhatsNewWizard.css";
 
-// Re-export for backwards compatibility with WhatsNew.jsx
 export { getMajorWizardVersion } from "./versions";
 
 const modalRoot = document.getElementById("modal-root");

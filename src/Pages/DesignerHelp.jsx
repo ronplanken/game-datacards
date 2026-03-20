@@ -67,7 +67,7 @@ export const DesignerHelp = () => {
 
   return (
     <>
-      <AppHeader showModals={false} showActions={false} pageTitle="Designer Help" />
+      <AppHeader showActions={false} pageTitle="Designer Help" />
       <Layout className="designer-help-layout">
         <Sider className="designer-help-sider" width={260}>
           <div className="designer-help-sider-header">
