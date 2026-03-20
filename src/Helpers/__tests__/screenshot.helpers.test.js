@@ -50,7 +50,7 @@ describe("screenshot.helpers", () => {
       const opts = mockToBlob.mock.calls[0][1];
       expect(opts.plugins).toHaveLength(3);
       expect(opts.plugins[0].name).toBe("svg-cleanup");
-      expect(opts.plugins[1].name).toBe("weapon-name-fix");
+      expect(opts.plugins[1].name).toBe("span-unwrap");
       expect(opts.plugins[2].name).toBe("capture-svg");
     });
 

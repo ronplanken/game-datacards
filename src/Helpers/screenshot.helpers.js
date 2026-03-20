@@ -30,21 +30,31 @@ function svgCleanupPlugin() {
   };
 }
 
-function weaponNameFixPlugin() {
+function spanUnwrapPlugin() {
   return {
-    name: "weapon-name-fix",
+    name: "span-unwrap",
     afterClone(context) {
+      // Weapon name spans in grid rows
       const lines = context.clone.querySelectorAll(".ranged .line, .melee .line");
       for (const line of lines) {
         const firstValue = line.querySelector(".value");
         if (!firstValue) continue;
-        const nameSpan = firstValue.children[0];
-        if (!nameSpan || nameSpan.tagName !== "SPAN" || nameSpan.children.length > 0) continue;
-        const text = document.createTextNode(nameSpan.textContent);
-        firstValue.replaceChild(text, nameSpan);
+        unwrapLeadingSpan(firstValue);
+      }
+
+      // AoS phase indicator badges
+      const phaseTags = context.clone.querySelectorAll(".ability-phase-tag");
+      for (const tag of phaseTags) {
+        unwrapLeadingSpan(tag);
       }
     },
   };
+}
+
+function unwrapLeadingSpan(parent) {
+  const span = parent.children[0];
+  if (!span || span.tagName !== "SPAN" || span.children.length > 0) return;
+  parent.replaceChild(document.createTextNode(span.textContent), span);
 }
 
 function captureSvgPlugin(ref) {
@@ -78,7 +88,7 @@ function buildOptions(scale, extraPlugins = []) {
   return {
     scale,
     embedFonts: true,
-    plugins: [svgCleanupPlugin(), weaponNameFixPlugin(), ...extraPlugins],
+    plugins: [svgCleanupPlugin(), spanUnwrapPlugin(), ...extraPlugins],
   };
 }
 
