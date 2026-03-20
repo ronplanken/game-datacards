@@ -249,6 +249,12 @@ export const MySharedListsModal = () => null;
 export const MobileSharedListsModal = () => null;
 
 // =====================================================
+// SUPPORT COMPONENTS - All render null
+// =====================================================
+
+export const SupportModal = () => null;
+
+// =====================================================
 // WELCOME WIZARD COMPONENTS - All render null
 // =====================================================
 
