@@ -32,6 +32,10 @@ BEGIN
     RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
   END IF;
 
+  -- Advisory lock serializes concurrent sync calls for the same (user, category)
+  -- Prevents race between SELECT and INSERT that causes unique_violation
+  PERFORM pg_advisory_xact_lock(hashtext(v_user_id::text || ':' || p_uuid));
+
   SELECT * INTO v_existing
   FROM public.user_categories
   WHERE user_id = v_user_id AND uuid = p_uuid;
