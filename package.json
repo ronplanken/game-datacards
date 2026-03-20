@@ -79,6 +79,7 @@
     "start:premium": "VITE_USE_PREMIUM_PACKAGE=true vite",
     "build": "vite build",
     "build:premium": "VITE_USE_PREMIUM_PACKAGE=true vite build",
+    "build:premium:ci": "./scripts/build-premium.sh",
     "build:beta": "vite build --mode beta",
     "preview": "vite preview",
     "test": "vitest",
