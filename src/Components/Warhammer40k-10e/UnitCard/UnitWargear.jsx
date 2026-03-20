@@ -12,34 +12,36 @@ export const UnitWargear = ({ unit }) => {
               if (wargear.includes(" *")) {
                 const lines = wargear.split(" *");
                 explanations.push(...lines.slice(1));
+                const starParts = wargear.split("◦");
+                const starSubItems = starParts.slice(1);
                 return (
                   <div className="item" key={`wargear-${index}`}>
                     <span className="description">
-                      {wargear.split("◦")[0]}
-                      <ul style={{ listStyle: "none", padding: "0" }}>
-                        {wargear
-                          .split("◦")
-                          .filter((item, index) => index !== 0)
-                          .map((line) => (
+                      {starParts[0]}
+                      {starSubItems.length > 0 && (
+                        <ul style={{ listStyle: "none", padding: "0" }}>
+                          {starSubItems.map((line) => (
                             <li key={line}>{line?.trim()}</li>
                           ))}
-                      </ul>
+                        </ul>
+                      )}
                     </span>
                   </div>
                 );
               }
+              const parts = wargear.split("◦");
+              const subItems = parts.slice(1);
               return (
                 <div className="item" key={`wargear-${index}`}>
                   <span className="description">
-                    {wargear.split("◦")[0]}
-                    <ul style={{ columns: wargear?.split("◦")?.length > 4 ? "2" : "1" }}>
-                      {wargear
-                        .split("◦")
-                        .filter((item, index) => index !== 0)
-                        .map((line) => (
+                    {parts[0]}
+                    {subItems.length > 0 && (
+                      <ul style={{ columns: subItems.length > 4 ? "2" : "1" }}>
+                        {subItems.map((line) => (
                           <li key={line}>{line?.trim()}</li>
                         ))}
-                    </ul>
+                      </ul>
+                    )}
                   </span>
                 </div>
               );

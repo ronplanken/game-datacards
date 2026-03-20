@@ -442,7 +442,28 @@ export const SettingsModal = () => {
                 {activeTab === "changelog" && (
                   <div className="changelog-container">
                     <div className="changelog-timeline">
-                      <ChangelogEntry version="Version 3.5.1" date="20-03-2026" defaultExpanded={true}>
+                      <ChangelogEntry version="Version 3.5.2" date="20-03-2026" defaultExpanded={true}>
+                        <h4 className="changelog-section-title">Fixed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Custom Card Images</strong>
+                            Images added through the Styling tab now show up in exported PNGs. Previously they were
+                            visible in the browser but missing from the export.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Weapon Stats and Phase Badges</strong>
+                            Weapon stat rows no longer show extra whitespace or broken layouts in exports, especially on
+                            Windows. AoS phase badges are also fixed.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Loadout Text</strong>
+                            Cards created in an earlier version no longer show garbled separators in the loadout
+                            section.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.5.1" date="20-03-2026">
                         <h4 className="changelog-section-title">Added</h4>
                         <ul className="changelog-list">
                           <li className="changelog-list-item">

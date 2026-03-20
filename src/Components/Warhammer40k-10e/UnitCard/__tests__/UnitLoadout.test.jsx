@@ -29,7 +29,7 @@ const renderLoadout = (unit) =>
   );
 
 describe("UnitLoadout", () => {
-  it("renders markdown text content", () => {
+  it("renders plain text unchanged when no legacy pattern", () => {
     const unit = { loadout: "Bolt rifle and grenades" };
     renderLoadout(unit);
 
@@ -45,7 +45,7 @@ describe("UnitLoadout", () => {
   });
 
   it("renders markdown unordered list", () => {
-    const unit = { loadout: "- Bolt rifle\n- Grenades\n- Combat knife" };
+    const unit = { loadout: "**List:**\n- Bolt rifle\n- Grenades\n- Combat knife" };
     const { container } = renderLoadout(unit);
 
     const listItems = container.querySelectorAll("li");
@@ -56,7 +56,7 @@ describe("UnitLoadout", () => {
   });
 
   it("renders markdown ordered list", () => {
-    const unit = { loadout: "1. First item\n2. Second item\n3. Third item" };
+    const unit = { loadout: "**Steps:**\n1. First item\n2. Second item\n3. Third item" };
     const { container } = renderLoadout(unit);
 
     const listItems = container.querySelectorAll("li");
@@ -65,11 +65,22 @@ describe("UnitLoadout", () => {
   });
 
   it("renders markdown horizontal rule", () => {
-    const unit = { loadout: "Section one\n\n---\n\nSection two" };
+    const unit = { loadout: "**Section one**\n\n---\n\n**Section two**" };
     const { container } = renderLoadout(unit);
 
     const hr = container.querySelector("hr");
     expect(hr).toBeInTheDocument();
+  });
+
+  it("migrates legacy period-delimited loadout with bold prefix", () => {
+    const unit = { loadout: "Every model is equipped with: bolt rifle. Leader has: plasma pistol." };
+    renderLoadout(unit);
+
+    expect(screen.getByText("Every model is equipped with:")).toBeInTheDocument();
+    expect(screen.getByText("Every model is equipped with:").tagName).toBe("STRONG");
+    expect(screen.getByText(/bolt rifle/)).toBeInTheDocument();
+    expect(screen.getByText("Leader has:")).toBeInTheDocument();
+    expect(screen.getByText("Leader has:").tagName).toBe("STRONG");
   });
 
   it("renders no loadout for empty string", () => {

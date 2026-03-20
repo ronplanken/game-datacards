@@ -1,5 +1,5 @@
 import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Spin } from "antd";
-import { domToBlob } from "modern-screenshot";
+import { captureToBlob } from "../Helpers/screenshot.helpers";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
@@ -50,12 +50,10 @@ export const ImageExport = () => {
     await sleep(100);
 
     const uniqueNames = buildUniqueFilenames(allCards);
-    const screenshotOpts = { scale: pixelScaling };
-
     for (let index = 0; index < cardsFrontRef.current.length; index++) {
       const card = cardsFrontRef.current[index];
       if (!card) continue;
-      const blob = await domToBlob(card, screenshotOpts);
+      const blob = await captureToBlob(card, { scale: pixelScaling });
       const hasBack = cardsBackRef.current[index] != null;
       const suffix =
         !hasBack || allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false
@@ -68,7 +66,7 @@ export const ImageExport = () => {
       for (let index = 0; index < cardsBackRef.current.length; index++) {
         const card = cardsBackRef.current[index];
         if (!card) continue;
-        const blob = await domToBlob(card, screenshotOpts);
+        const blob = await captureToBlob(card, { scale: pixelScaling });
         zip.file(`${category.name}/${uniqueNames[index]}-back.png`, blob);
       }
     }

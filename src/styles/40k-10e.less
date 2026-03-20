@@ -117,9 +117,6 @@
     justify-content: center;
     align-items: center;
 
-    @media print {
-      transform-origin: 0 0;
-    }
     each(@factions, {
         &.@{value}::before {
           content: " ";
@@ -282,10 +279,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    @media print {
-      transform-origin: 0 0;
-    }
 
     each(@factions, {
       &.@{value}::before {
@@ -559,10 +552,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    @media print {
-      transform-origin: 0 0;
-    }
 
     each(@factions, {
       &.@{value}::before {
@@ -845,6 +834,14 @@
   }
 }
 
+@media print {
+  .shared-stratagem,
+  .shared-enhancement,
+  .shared-rule {
+    transform-origin: 0 0;
+  }
+}
+
 .data-40k-10e {
   page-break-inside: avoid;
 
@@ -973,10 +970,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-
-      @media print {
-        transform-origin: 0 0;
-      }
 
       each(@factions, {
         &.@{value}::before {
@@ -1139,10 +1132,6 @@
       justify-content: center;
       align-items: center;
 
-      @media print {
-        transform-origin: 0 0;
-      }
-
       each(@factions, {
         &.@{value}::before {
           content: " ";
@@ -1298,10 +1287,6 @@
 
       &.auto-height {
         height: auto;
-      }
-
-      @media print {
-        transform-origin: 0 0;
       }
 
       each(@factions, {
@@ -1536,6 +1521,14 @@
           }
         }
       }
+    }
+  }
+
+  @media print {
+    .stratagem,
+    .enhancement,
+    .rule-card {
+      transform-origin: 0 0;
     }
   }
 
