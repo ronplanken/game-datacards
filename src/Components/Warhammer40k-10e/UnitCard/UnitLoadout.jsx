@@ -3,6 +3,7 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { confirmDialog } from "../../ConfirmChangesModal";
 import { MarkdownSpanWrapDisplay } from "../../MarkdownSpanWrapDisplay";
+import { migrateLoadoutToMarkdown } from "../../../Helpers/loadoutMigration.helpers";
 
 // Helper to normalize entry to object format (handles legacy string format)
 const normalizeEntry = (entry) => {
@@ -109,7 +110,7 @@ export const UnitLoadout = ({ unit }) => {
         {unit.showLoadout !== false && unit?.loadout && (
           <div className="loadout">
             <div className="description">
-              <MarkdownSpanWrapDisplay content={unit.loadout} />
+              <MarkdownSpanWrapDisplay content={migrateLoadoutToMarkdown(unit.loadout)} />
             </div>
           </div>
         )}
