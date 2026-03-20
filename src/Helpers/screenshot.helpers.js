@@ -30,23 +30,6 @@ function svgCleanupPlugin() {
   };
 }
 
-function gridFixPlugin() {
-  return {
-    name: "grid-fix",
-    afterClone(context) {
-      const selector = ".ranged .heading, .ranged .line, .melee .heading, .melee .line";
-      const originals = context.element.querySelectorAll(selector);
-      const clones = context.clone.querySelectorAll(selector);
-
-      for (let i = 0; i < clones.length; i++) {
-        if (originals[i]) {
-          clones[i].style.gridTemplateColumns = getComputedStyle(originals[i]).gridTemplateColumns;
-        }
-      }
-    },
-  };
-}
-
 function weaponNameFixPlugin() {
   return {
     name: "weapon-name-fix",
@@ -95,7 +78,7 @@ function buildOptions(scale, extraPlugins = []) {
   return {
     scale,
     embedFonts: true,
-    plugins: [svgCleanupPlugin(), gridFixPlugin(), weaponNameFixPlugin(), ...extraPlugins],
+    plugins: [svgCleanupPlugin(), weaponNameFixPlugin(), ...extraPlugins],
   };
 }
 
