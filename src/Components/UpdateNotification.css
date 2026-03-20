@@ -7,56 +7,88 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 10px 20px;
-  background: rgba(30, 30, 30, 0.85);
+  gap: 14px;
+  padding: 12px 24px;
+  background: rgba(30, 27, 75, 0.95);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #fff;
   font-size: 14px;
-  animation: update-slide-down 0.3s ease-out;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: update-slide-down 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes update-slide-down {
   from {
     transform: translateY(-100%);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
   }
   to {
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
 .update-notification__message {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.update-notification__icon {
+.update-notification__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #60a5fa;
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.6);
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  animation: update-pulse 2s ease-in-out infinite;
+}
+
+@keyframes update-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(96, 165, 250, 0.6);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 16px rgba(96, 165, 250, 0.4);
+  }
 }
 
 .update-notification__refresh {
-  padding: 4px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 5px 16px;
+  border: none;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: #60a5fa;
+  color: #0f172a;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .update-notification__refresh:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #93c5fd;
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.4);
+}
+
+.update-notification__refresh:active {
+  transform: scale(0.97);
 }
 
 .update-notification__dismiss {
   padding: 4px;
   border: none;
   background: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.4);
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
@@ -69,8 +101,22 @@
 
 @media (max-width: 480px) {
   .update-notification {
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 13px;
-    gap: 8px;
+    gap: 10px;
+  }
+
+  .update-notification__refresh {
+    padding: 4px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .update-notification {
+    animation: none;
+  }
+
+  .update-notification__dot {
+    animation: none;
   }
 }

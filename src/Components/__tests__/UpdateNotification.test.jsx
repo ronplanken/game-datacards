@@ -32,13 +32,13 @@ describe("UpdateNotification", () => {
     mockUpdateAvailable = true;
     render(<UpdateNotification />);
     expect(screen.getByText("A new version is available")).toBeInTheDocument();
-    expect(screen.getByText("Refresh")).toBeInTheDocument();
+    expect(screen.getByText("Update")).toBeInTheDocument();
   });
 
-  it("calls reload when Refresh is clicked", () => {
+  it("calls reload when Update is clicked", () => {
     mockUpdateAvailable = true;
     render(<UpdateNotification />);
-    fireEvent.click(screen.getByText("Refresh"));
+    fireEvent.click(screen.getByText("Update"));
     expect(mockReload).toHaveBeenCalledTimes(1);
   });
 
