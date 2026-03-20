@@ -275,9 +275,5 @@ export const KeywordTooltip = ({ keyword }) => {
       </Tooltip>
     );
   }
-  return (
-    <span>
-      <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
-    </span>
-  );
+  return <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>;
 };
