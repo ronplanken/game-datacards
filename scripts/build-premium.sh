@@ -39,16 +39,16 @@ branch_exists() {
 
 if [ "$CANDIDATE_REF" != "main" ] && branch_exists "$CANDIDATE_REF"; then
   REF="$CANDIDATE_REF"
-  echo "Using matching branch: $REF"
+  echo "==> [premium] Using matching branch: $REF" >&2
 else
   REF="main"
   if [ "$CANDIDATE_REF" != "main" ]; then
-    echo "Branch '$CANDIDATE_REF' not found in gdc-premium, falling back to main"
+    echo "==> [premium] Branch '$CANDIDATE_REF' not found in gdc-premium, falling back to main" >&2
   fi
 fi
 
-echo "Installing @gdc/premium from $REF..."
+echo "==> [premium] Installing @gdc/premium from $REF..." >&2
 yarn add "@gdc/premium@https://${GITHUB_TOKEN}@${REPO}#${REF}"
 
-echo "Building premium..."
+echo "==> [premium] Building..." >&2
 VITE_USE_PREMIUM_PACKAGE=true vite build
