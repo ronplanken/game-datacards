@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 
 const packageJson = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
+const buildId = Date.now().toString(36);
 
 const usePremiumPackage = process.env.VITE_USE_PREMIUM_PACKAGE === "true";
 const mainAppSrc = path.resolve(__dirname, "src");
@@ -26,6 +27,25 @@ function getPremiumPackagePath() {
 }
 
 const premiumPackagePath = getPremiumPackagePath();
+
+// Plugin to write version.json to build output and serve it during dev
+function versionJsonPlugin() {
+  const versionData = JSON.stringify({ version: packageJson.version, buildId });
+
+  return {
+    name: "version-json",
+    configureServer(server) {
+      server.middlewares.use("/version.json", (_req, res) => {
+        res.setHeader("Content-Type", "application/json");
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.end(versionData);
+      });
+    },
+    writeBundle({ dir }) {
+      fs.writeFileSync(path.resolve(dir, "version.json"), versionData);
+    },
+  };
+}
 
 // Plugin to resolve imports from gdc-premium to main app's src and node_modules
 function premiumPackageResolver() {
@@ -90,6 +110,7 @@ export default defineConfig({
       include: ["stream", "timers", "buffer", "util", "events"],
       globals: { process: true, Buffer: true },
     }),
+    versionJsonPlugin(),
     ...(usePremiumPackage ? [premiumPackageResolver()] : []),
   ],
   resolve: {
@@ -125,5 +146,6 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_VERSION": JSON.stringify(packageJson.version),
+    "import.meta.env.VITE_BUILD_ID": JSON.stringify(buildId),
   },
 });

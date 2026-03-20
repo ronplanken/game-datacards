@@ -66,7 +66,7 @@ export const DatasourceHelp = () => {
 
   return (
     <>
-      <AppHeader showModals={false} showActions={false} pageTitle="Datasource Help" />
+      <AppHeader showActions={false} pageTitle="Datasource Help" />
       <Layout className="designer-help-layout">
         <Sider className="designer-help-sider" width={260}>
           <div className="designer-help-sider-header">

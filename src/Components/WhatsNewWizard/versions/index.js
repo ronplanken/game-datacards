@@ -61,7 +61,6 @@ export const getLatestWizardVersion = () => VERSION_REGISTRY[VERSION_REGISTRY.le
 
 /**
  * Helper to find the applicable major version for the current app version
- * Used by WhatsNew.jsx for backwards compatibility
  *
  * @param {string} currentVersion - Current app version
  * @returns {string|undefined} The highest version that applies

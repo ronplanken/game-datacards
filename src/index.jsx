@@ -62,6 +62,7 @@ import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
 import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 import { LocalDatasourceMigrationNotice } from "./Components/LocalDatasourceMigrationNotice";
+import { UpdateNotification } from "./Components/UpdateNotification";
 import { DesignerHelp } from "./Pages/DesignerHelp";
 import { DatasourceHelp } from "./Pages/DatasourceHelp";
 import { Col, Grid, Result, Row, Typography } from "antd";
@@ -353,6 +354,7 @@ const RootLayout = () => (
                           <SyncConflictHandler />
                           <DatasourceConflictHandler />
                           <LocalDatasourceMigrationNotice />
+                          <UpdateNotification />
                         </CloudCategoriesProvider>
                       </SyncProvider>
                     </TemplateStorageProvider>

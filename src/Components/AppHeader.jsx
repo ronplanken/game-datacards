@@ -20,14 +20,12 @@ import { DatasourceSelector } from "./DatasourceSelector";
 import { NotificationBell } from "./NotificationBell";
 import { SettingsModal } from "./SettingsModal";
 import { ShareModal } from "./ShareModal";
-import { WhatsNew } from "./WhatsNew";
 import "./AppHeader.css";
 
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
 export const AppHeader = ({
-  showModals = true,
   pageTitle = null,
   showNav = true,
   showActions = true,
@@ -54,7 +52,6 @@ export const AppHeader = ({
 
   return (
     <>
-      {showModals && <WhatsNew />}
       <Header className={`app-header ${className}`}>
         <div className="app-header-content">
           {/* Left section - Logo and Navigation */}

@@ -180,7 +180,6 @@ describe("DatasourceEditorPage", () => {
     renderPage();
     const header = screen.getByTestId("app-header");
     const props = JSON.parse(header.dataset.props);
-    expect(props.showModals).toBe(false);
     expect(props.showNav).toBe(true);
     expect(props.showActions).toBe(false);
   });
