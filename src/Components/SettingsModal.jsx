@@ -442,7 +442,90 @@ export const SettingsModal = () => {
                 {activeTab === "changelog" && (
                   <div className="changelog-container">
                     <div className="changelog-timeline">
-                      <ChangelogEntry version="Version 3.3.0" date="01-03-2026" defaultExpanded={true}>
+                      <ChangelogEntry version="Version 3.5.1" date="20-03-2026" defaultExpanded={true}>
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Update Notification</strong>
+                            The app now detects new deployments and shows a banner prompting you to refresh. No more
+                            stale builds after a deploy.
+                          </li>
+                        </ul>
+                        <h4 className="changelog-section-title">Removed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>What&apos;s New Modal</strong>
+                            The old What&apos;s New popup has been removed. Version announcements now use the
+                            What&apos;s New wizard exclusively.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.5.0" date="15-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Datasource Editor</strong>
+                            Build custom card structures for any game system. Define your own stats, weapons, abilities,
+                            and fields, then fill in cards that match your exact format.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Three-Panel Workspace</strong>
+                            Browse datasources and cards on the left, see a live preview in the centre, and edit
+                            properties on the right.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Multiple Card Types</strong>
+                            Each datasource supports units, rules, enhancements, and stratagems with configurable field
+                            types.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Import &amp; Export</strong>
+                            Share datasources as JSON files or import from others to get started quickly.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.4.2" date="13-03-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Keyword Highlighting</strong>
+                            Smarter word-boundary detection prevents words like &quot;Blaster&quot; from being
+                            highlighted because they contain &quot;Blast&quot;. Ability names are no longer incorrectly
+                            highlighted either.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Per-Word Escape</strong>
+                            Add a backslash before any word in ability text (e.g. \Blast) to prevent it from being
+                            highlighted.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.4.1" date="10-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>AoS Custom Templates</strong>
+                            Custom templates now work with Age of Sigmar warscrolls and spell cards. Design layouts in
+                            the Card Designer and apply them to any AoS card.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.4.0" date="05-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Card Designer (Beta)</strong>
+                            Design your own datacards from scratch. Add text, images, shapes, and frames, then connect
+                            everything to real game data so cards fill in automatically. Requires a user account.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.3.0" date="01-03-2026">
                         <h4 className="changelog-section-title">Added</h4>
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
@@ -462,6 +545,56 @@ export const SettingsModal = () => {
                         </ul>
                       </ChangelogEntry>
 
+                      <ChangelogEntry version="Version 3.2.2" date="27-02-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Sharing, Rebuilt</strong>
+                            Sharing has been rebuilt from the ground up. One-click sharing, a manage panel for your
+                            shared links, and a new backend for better speed and reliability.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.2.1" date="25-02-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Drag-and-Drop Reordering</strong>
+                            Categories, subcategories, and datasources can now be reordered by dragging them into
+                            position.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Refreshed Desktop Styling</strong>
+                            The desktop toolbar and unit configuration modal have been redesigned with a cleaner look.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Mobile List Sync</strong>
+                            Mobile lists now stay in sync with your desktop configuration automatically.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.2.0" date="23-02-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>User Accounts</strong>
+                            Create a free account to unlock cloud sync and keep your datacards safe across devices.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Cloud Sync</strong>
+                            Back up your cards and access them from any device. Toggle the cloud icon on a category to
+                            enable syncing. Changes sync automatically in the background.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Conflict Resolution</strong>
+                            If the same category is edited on different devices, a dialog lets you choose which version
+                            to keep, or save both as separate categories.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
                       <ChangelogEntry version="Version 3.1.3" date="13-02-2026">
                         <h4 className="changelog-section-title">Fixes</h4>
                         <ul className="changelog-list">
@@ -470,6 +603,62 @@ export const SettingsModal = () => {
                             Weapon keywords (e.g. Sustained Hits, Hazardous, Assault) in ability descriptions now render
                             with the correct green weapon style and tooltip. Rule keywords (e.g. Feel No Pain, Lone
                             Operative) use the black rule style.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.2" date="21-01-2026">
+                        <h4 className="changelog-section-title">Fixed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Stratagem Image Export</strong>
+                            Fixed an issue where phase icons on stratagem cards were not appearing in image exports.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.1" date="13-01-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Chapter Detachments</strong>
+                            Reorganised the datasource to separate Space Marine chapters and their unique detachments
+                            (Ultramarines, Imperial Fists, Iron Hands, Raven Guard, Salamanders, White Scars, and
+                            Deathwatch).
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.0" date="30-12-2025">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Custom Datasources</strong>
+                            Load card data from external URLs or local files. Custom datasources check for updates
+                            automatically so your data stays current.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Quick Add</strong>
+                            Add units directly from the datasource list to a category with a single click.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>GW App Import</strong>
+                            Import army lists from the official Games Workshop app.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Rule Card Editor</strong>
+                            Create custom rule cards for army and detachment rules.
+                          </li>
+                        </ul>
+                        <h4 className="changelog-section-title">Fixed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>MacOS PDF Export</strong>
+                            Fixed PDF generation issues on MacOS devices.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Age of Sigmar Printing</strong>
+                            Resolved layout issues when printing AoS warscrolls.
                           </li>
                         </ul>
                       </ChangelogEntry>

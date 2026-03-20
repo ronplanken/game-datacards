@@ -10,8 +10,7 @@ export const UpdateNotification = () => {
   return (
     <div className="update-notification" role="alert">
       <span className="update-notification__message">
-        <span className="update-notification__dot" />
-        A new version is available
+        <span className="update-notification__dot" />A new version is available
       </span>
       <button className="update-notification__refresh" onClick={reload}>
         Update
