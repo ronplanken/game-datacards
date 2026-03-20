@@ -48,10 +48,11 @@ describe("screenshot.helpers", () => {
       await captureToBlob(mockElement);
 
       const opts = mockToBlob.mock.calls[0][1];
-      expect(opts.plugins).toHaveLength(3);
+      expect(opts.plugins).toHaveLength(4);
       expect(opts.plugins[0].name).toBe("svg-cleanup");
       expect(opts.plugins[1].name).toBe("span-unwrap");
-      expect(opts.plugins[2].name).toBe("capture-svg");
+      expect(opts.plugins[2].name).toBe("blob-url-fix");
+      expect(opts.plugins[3].name).toBe("capture-svg");
     });
 
     it("re-throws original error when no svgString was captured", async () => {
@@ -168,6 +169,106 @@ describe("screenshot.helpers", () => {
       });
 
       await captureToBlob(mockElement);
+    });
+  });
+
+  describe("blobUrlPlugin", () => {
+    it("converts blob: imageurl attributes to data URLs", async () => {
+      const fakeDataUrl = "data:image/png;base64,AAAA";
+      const fakeBlobData = new Blob(["img"], { type: "image/png" });
+
+      // Mock fetch to return our fake blob
+      const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue({
+        blob: () => Promise.resolve(fakeBlobData),
+      });
+
+      // Mock FileReader to return a known data URL
+      const origFileReader = globalThis.FileReader;
+      globalThis.FileReader = class {
+        readAsDataURL() {
+          setTimeout(() => this.onloadend(), 0);
+        }
+        get result() {
+          return fakeDataUrl;
+        }
+      };
+
+      mockToBlob.mockImplementation(async (_el, opts) => {
+        const doc = document.implementation.createHTMLDocument();
+
+        // Original element has a child with a blob: imageurl
+        const original = doc.createElement("div");
+        original.innerHTML = `<div imageurl="blob:https://example.com/abc123"></div>`;
+
+        // Clone starts as a copy of the original
+        const clone = doc.createElement("div");
+        clone.innerHTML = `<div imageurl="blob:https://example.com/abc123"></div>`;
+
+        const context = { element: original, clone };
+        for (const plugin of opts.plugins) {
+          if (plugin.afterClone) await plugin.afterClone(context);
+        }
+
+        // The clone's imageurl should now be a data URL
+        expect(clone.querySelector("[imageurl]").getAttribute("imageurl")).toBe(fakeDataUrl);
+        return mockBlob;
+      });
+
+      await captureToBlob(mockElement);
+
+      fetchSpy.mockRestore();
+      globalThis.FileReader = origFileReader;
+    });
+
+    it("leaves non-blob imageurl attributes unchanged", async () => {
+      mockToBlob.mockImplementation(async (_el, opts) => {
+        const doc = document.implementation.createHTMLDocument();
+        const httpUrl = "https://example.com/image.png";
+
+        const original = doc.createElement("div");
+        original.innerHTML = `<div imageurl="${httpUrl}"></div>`;
+
+        const clone = doc.createElement("div");
+        clone.innerHTML = `<div imageurl="${httpUrl}"></div>`;
+
+        const context = { element: original, clone };
+        for (const plugin of opts.plugins) {
+          if (plugin.afterClone) await plugin.afterClone(context);
+        }
+
+        // Should remain unchanged — not a blob URL
+        expect(clone.querySelector("[imageurl]").getAttribute("imageurl")).toBe(httpUrl);
+        return mockBlob;
+      });
+
+      await captureToBlob(mockElement);
+    });
+
+    it("silently skips when blob fetch fails", async () => {
+      const fetchSpy = vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("Network error"));
+
+      mockToBlob.mockImplementation(async (_el, opts) => {
+        const doc = document.implementation.createHTMLDocument();
+
+        const original = doc.createElement("div");
+        original.innerHTML = `<div imageurl="blob:https://example.com/expired"></div>`;
+
+        const clone = doc.createElement("div");
+        clone.innerHTML = `<div imageurl="blob:https://example.com/expired"></div>`;
+
+        const context = { element: original, clone };
+        for (const plugin of opts.plugins) {
+          if (plugin.afterClone) await plugin.afterClone(context);
+        }
+
+        // Should remain as the original blob URL (graceful failure)
+        expect(clone.querySelector("[imageurl]").getAttribute("imageurl")).toBe("blob:https://example.com/expired");
+        return mockBlob;
+      });
+
+      await captureToBlob(mockElement);
+
+      fetchSpy.mockRestore();
     });
   });
 });

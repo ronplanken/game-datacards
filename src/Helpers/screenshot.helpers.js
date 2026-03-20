@@ -57,6 +57,38 @@ function unwrapLeadingSpan(parent) {
   parent.replaceChild(parent.ownerDocument.createTextNode(span.textContent), span);
 }
 
+async function blobToDataUrl(blobUrl) {
+  const response = await fetch(blobUrl);
+  const blob = await response.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function blobUrlPlugin() {
+  return {
+    name: "blob-url-fix",
+    async afterClone(context) {
+      const originals = context.element.querySelectorAll("[imageurl]");
+      const clones = context.clone.querySelectorAll("[imageurl]");
+
+      for (let i = 0; i < clones.length; i++) {
+        const blobUrl = originals[i]?.getAttribute("imageurl");
+        if (!blobUrl?.startsWith("blob:")) continue;
+        try {
+          const dataUrl = await blobToDataUrl(blobUrl);
+          clones[i].setAttribute("imageurl", dataUrl);
+        } catch {
+          // Image couldn't be converted — leave as-is (will be missing)
+        }
+      }
+    },
+  };
+}
+
 function captureSvgPlugin(ref) {
   return {
     name: "capture-svg",
@@ -88,7 +120,7 @@ function buildOptions(scale, extraPlugins = []) {
   return {
     scale,
     embedFonts: true,
-    plugins: [svgCleanupPlugin(), spanUnwrapPlugin(), ...extraPlugins],
+    plugins: [svgCleanupPlugin(), spanUnwrapPlugin(), blobUrlPlugin(), ...extraPlugins],
   };
 }
 
