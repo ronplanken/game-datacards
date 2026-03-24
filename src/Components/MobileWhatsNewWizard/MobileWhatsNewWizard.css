@@ -323,6 +323,55 @@
   margin-left: 6px;
 }
 
+.mwnw-feature-item-price-original {
+  text-decoration: line-through;
+  opacity: 0.5;
+  margin-right: 2px;
+}
+
+.mwnw-sub-price-skeleton {
+  display: inline-block;
+  width: 55px;
+  height: 13px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: mwnwSkeletonShimmer 1.5s infinite;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+@keyframes mwnwSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.mwnw-sub-promo-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #86efac;
+}
+
+.mwnw-sub-promo-banner svg {
+  flex-shrink: 0;
+  color: #22c55e;
+}
+
 /* ============================================
    THANK YOU STEP
    ============================================ */
