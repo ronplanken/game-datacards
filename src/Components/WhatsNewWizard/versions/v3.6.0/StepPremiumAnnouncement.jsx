@@ -1,20 +1,23 @@
 import React from "react";
-import { Crown, Heart, Check, Folder, Database } from "lucide-react";
+import { Check, Crown, Star, Cloud, Upload, Layers, Share2, Zap } from "lucide-react";
 import { SUBSCRIPTION_LIMITS } from "../../../../Premium";
 
 /**
  * StepPremiumAnnouncement - Announces premium accounts to existing users
  *
+ * Matches the look and feel of the WelcomeWizard StepSubscription:
+ * green free-tier box + side-by-side paid tier cards.
+ *
  * @returns {JSX.Element} Premium announcement step content
  */
 export const StepPremiumAnnouncement = () => (
-  <div className="wnw-feature-content">
+  <div className="wnw-step-subscription">
     <div className="wnw-feature-header">
       <div className="wnw-feature-icon">
         <Crown size={28} />
       </div>
       <div>
-        <h2 className="wnw-feature-title">Premium Accounts</h2>
+        <h2 className="wnw-feature-title">Free Forever, Premium Optional</h2>
       </div>
     </div>
     <p className="wnw-feature-description">
@@ -23,37 +26,70 @@ export const StepPremiumAnnouncement = () => (
       completely free.
     </p>
 
-    <div className="wnw-feature-highlights">
-      <div className="wnw-highlight-item">
-        <div className="wnw-highlight-dot" />
-        <div>
-          <strong>Free Forever</strong>
-          <p>
-            Everything you use today stays free. Unlimited local storage, full card editing, printing, exporting, and{" "}
-            {SUBSCRIPTION_LIMITS.free.categories} cloud-synced categories.
-          </p>
-        </div>
+    {/* Free tier emphasis */}
+    <div className="wnw-sub-free-box">
+      <div className="wnw-sub-free-header">
+        <Check className="wnw-sub-free-check" size={20} />
+        <span>All core features are completely free</span>
       </div>
-      <div className="wnw-highlight-item">
-        <div className="wnw-highlight-dot" />
-        <div>
-          <strong>Premium &mdash; &euro;3.99/mo</strong>
-          <p>
-            Sync up to {SUBSCRIPTION_LIMITS.premium.categories} categories to cloud,{" "}
-            {SUBSCRIPTION_LIMITS.premium.datasources} custom datasources, and {SUBSCRIPTION_LIMITS.premium.templates}{" "}
-            designer templates.
-          </p>
+      <p className="wnw-sub-free-text">
+        Create unlimited cards, categories, and use all import/export features without signing up or paying anything.
+      </p>
+    </div>
+
+    {/* Paid tiers */}
+    <div className="wnw-sub-tiers">
+      <div className="wnw-sub-tier wnw-sub-tier--premium">
+        <div className="wnw-sub-tier-header">
+          <Crown size={18} className="wnw-sub-tier-icon" />
+          <span className="wnw-sub-tier-name">Premium</span>
+          <span className="wnw-sub-tier-price">&euro;3.99/mo</span>
         </div>
+        <ul className="wnw-sub-tier-features">
+          <li>
+            <Cloud size={14} />
+            <span>{SUBSCRIPTION_LIMITS.premium.categories} cloud-backed categories</span>
+          </li>
+          <li>
+            <Upload size={14} />
+            <span>{SUBSCRIPTION_LIMITS.premium.datasources} custom datasources</span>
+          </li>
+          <li>
+            <Layers size={14} />
+            <span>{SUBSCRIPTION_LIMITS.premium.templates} cloud templates</span>
+          </li>
+          <li>
+            <Share2 size={14} />
+            <span>Community sharing</span>
+          </li>
+        </ul>
       </div>
-      <div className="wnw-highlight-item">
-        <div className="wnw-highlight-dot" />
-        <div>
-          <strong>Creator &mdash; &euro;7.99/mo</strong>
-          <p>
-            Sync up to {SUBSCRIPTION_LIMITS.creator.categories} categories, {SUBSCRIPTION_LIMITS.creator.datasources}{" "}
-            custom datasources, and {SUBSCRIPTION_LIMITS.creator.templates} designer templates.
-          </p>
+
+      <div className="wnw-sub-tier wnw-sub-tier--creator">
+        <div className="wnw-sub-tier-badge">Popular</div>
+        <div className="wnw-sub-tier-header">
+          <Star size={18} className="wnw-sub-tier-icon" />
+          <span className="wnw-sub-tier-name">Creator</span>
+          <span className="wnw-sub-tier-price">&euro;7.99/mo</span>
         </div>
+        <ul className="wnw-sub-tier-features">
+          <li>
+            <Cloud size={14} />
+            <span>{SUBSCRIPTION_LIMITS.creator.categories} cloud-backed categories</span>
+          </li>
+          <li>
+            <Upload size={14} />
+            <span>{SUBSCRIPTION_LIMITS.creator.datasources} custom datasources</span>
+          </li>
+          <li>
+            <Layers size={14} />
+            <span>{SUBSCRIPTION_LIMITS.creator.templates} cloud templates</span>
+          </li>
+          <li>
+            <Zap size={14} />
+            <span>Priority feature requests</span>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

@@ -262,6 +262,68 @@
 }
 
 /* ============================================
+   SUBSCRIPTION / PREMIUM ANNOUNCEMENT
+   ============================================ */
+.mwnw-sub-free-box {
+  background: rgba(82, 196, 26, 0.08);
+  border: 1px solid rgba(82, 196, 26, 0.3);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.mwnw-sub-free-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #52c41a;
+  margin-bottom: 6px;
+}
+
+.mwnw-sub-free-header svg {
+  flex-shrink: 0;
+}
+
+.mwnw-sub-free-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.mwnw-feature-item--premium {
+  border-color: rgba(250, 173, 20, 0.3);
+}
+
+.mwnw-feature-item--creator {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.mwnw-feature-item-icon--free {
+  background: rgba(82, 196, 26, 0.12);
+}
+
+.mwnw-feature-item-icon--free svg {
+  color: #52c41a;
+}
+
+.mwnw-feature-item-icon--premium svg {
+  color: #faad14;
+}
+
+.mwnw-feature-item-icon--creator svg {
+  color: #f59e0b;
+}
+
+.mwnw-feature-item-price {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 6px;
+}
+
+/* ============================================
    THANK YOU STEP
    ============================================ */
 .mwnw-thankyou {
