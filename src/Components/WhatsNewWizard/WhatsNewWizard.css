@@ -525,6 +525,191 @@
 }
 
 /* ===========================================
+   SUBSCRIPTION / PREMIUM ANNOUNCEMENT STEP
+   =========================================== */
+.wnw-step-subscription {
+  animation: wnwFadeSlideIn 0.35s ease-out;
+}
+
+.wnw-sub-free-box {
+  background: rgba(82, 196, 26, 0.08);
+  border: 1px solid rgba(82, 196, 26, 0.3);
+  border-radius: var(--wnw-radius-sm);
+  padding: 16px 20px;
+  margin: 0 0 20px;
+}
+
+.wnw-sub-free-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #52c41a;
+  margin-bottom: 8px;
+}
+
+.wnw-sub-free-check {
+  flex-shrink: 0;
+}
+
+.wnw-sub-free-text {
+  font-size: 13px;
+  color: var(--wnw-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.wnw-sub-tiers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.wnw-sub-tier {
+  position: relative;
+  background: var(--wnw-bg-card);
+  border: 1px solid var(--wnw-border);
+  border-radius: var(--wnw-radius-sm);
+  padding: 16px;
+  animation: wnwFadeSlideIn 0.4s ease-out backwards;
+}
+
+.wnw-sub-tier--premium {
+  border-color: rgba(250, 173, 20, 0.3);
+}
+
+.wnw-sub-tier--creator {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.wnw-sub-tier-badge {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  background: #f59e0b;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.wnw-sub-tier-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.wnw-sub-tier-icon {
+  color: #faad14;
+}
+
+.wnw-sub-tier--creator .wnw-sub-tier-icon {
+  color: #f59e0b;
+}
+
+.wnw-sub-tier-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--wnw-text-main);
+}
+
+.wnw-sub-tier-price {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wnw-text-muted);
+}
+
+.wnw-sub-tier-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wnw-sub-tier-features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--wnw-text-muted);
+}
+
+.wnw-sub-tier-features li svg {
+  color: var(--wnw-blue-light);
+  flex-shrink: 0;
+}
+
+.wnw-sub-tier-price-skeleton {
+  display: inline-block;
+  margin-left: auto;
+  width: 70px;
+  height: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: wnw-skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+@keyframes wnw-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.wnw-sub-tier-price-original {
+  text-decoration: line-through;
+  opacity: 0.5;
+  margin-right: 4px;
+}
+
+.wnw-sub-tier-discount-badge {
+  display: inline-block;
+  background: #22c55e;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.wnw-sub-promo-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: var(--wnw-radius-xs);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #86efac;
+}
+
+.wnw-sub-promo-banner svg {
+  flex-shrink: 0;
+  color: #22c55e;
+}
+
+/* ===========================================
    THANK YOU STEP
    =========================================== */
 .wnw-thankyou-content {
@@ -830,6 +1015,10 @@
     padding: 16px;
   }
 
+  .wnw-sub-tiers {
+    grid-template-columns: 1fr;
+  }
+
   .wnw-footer {
     padding: 18px 20px 32px;
     flex-direction: column-reverse;
@@ -866,7 +1055,9 @@
   .wnw-step-content,
   .wnw-highlight-item,
   .wnw-btn,
-  .wnw-welcome-badge svg {
+  .wnw-welcome-badge svg,
+  .wnw-step-subscription,
+  .wnw-sub-tier {
     animation: none;
     transition: none;
   }
