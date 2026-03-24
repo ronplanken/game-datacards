@@ -8,6 +8,19 @@ const FALLBACK_PRICES = {
   creator: "€7.99/mo",
 };
 
+// Format a fixed discount amount using Intl for correct currency symbol
+const formatFixedDiscount = (amount, currency) => {
+  try {
+    return new Intl.NumberFormat("en-IE", {
+      style: "currency",
+      currency: currency || "EUR",
+      minimumFractionDigits: 2,
+    }).format(amount / 100);
+  } catch {
+    return `€${(amount / 100).toFixed(2)}`;
+  }
+};
+
 /**
  * Small skeleton loader for price display
  */
@@ -83,7 +96,7 @@ export const StepPremiumAnnouncement = () => {
             {activePromo.type === "percentage" && activePromo.percentage
               ? `${activePromo.percentage}% off`
               : activePromo.type === "fixed" && activePromo.amount
-                ? `€${(activePromo.amount / 100).toFixed(2)} off`
+                ? `${formatFixedDiscount(activePromo.amount, products?.tiers?.premium?.prices?.month?.currency)} off`
                 : "Discount available"}{" "}
             with code <strong>{activePromo.code}</strong>
           </span>

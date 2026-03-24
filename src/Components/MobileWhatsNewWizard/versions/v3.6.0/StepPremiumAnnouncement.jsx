@@ -1,11 +1,24 @@
 import React from "react";
-import { Crown, Star, Check, Cloud, Upload, Layers, Share2, Zap, Tag } from "lucide-react";
+import { Crown, Star, Check, Tag } from "lucide-react";
 import { SUBSCRIPTION_LIMITS, useProducts } from "../../../../Premium";
 
 // Fallback prices if API fails
 const FALLBACK_PRICES = {
   premium: "€3.99/mo",
   creator: "€7.99/mo",
+};
+
+// Format a fixed discount amount using Intl for correct currency symbol
+const formatFixedDiscount = (amount, currency) => {
+  try {
+    return new Intl.NumberFormat("en-IE", {
+      style: "currency",
+      currency: currency || "EUR",
+      minimumFractionDigits: 2,
+    }).format(amount / 100);
+  } catch {
+    return `€${(amount / 100).toFixed(2)}`;
+  }
 };
 
 /**
@@ -75,7 +88,7 @@ export const StepPremiumAnnouncement = () => {
             {activePromo.type === "percentage" && activePromo.percentage
               ? `${activePromo.percentage}% off`
               : activePromo.type === "fixed" && activePromo.amount
-                ? `€${(activePromo.amount / 100).toFixed(2)} off`
+                ? `${formatFixedDiscount(activePromo.amount, products?.tiers?.premium?.prices?.month?.currency)} off`
                 : "Discount available"}{" "}
             with code <strong>{activePromo.code}</strong>
           </span>
