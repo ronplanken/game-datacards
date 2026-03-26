@@ -2,6 +2,56 @@
 // Fetches SVG and renders inline to fix MacOS print-to-PDF rendering issues
 import React, { useState, useEffect } from "react";
 
+// Sanitize fetched SVG to prevent XSS and strip rendering artifacts
+const DANGEROUS_ELEMENTS = ["script", "foreignobject"];
+const BLOAT_ELEMENTS = ["metadata"];
+const STRIP_NS_ATTRS = ["xmlns:dc", "xmlns:cc", "xmlns:rdf", "xmlns:sodipodi", "xmlns:inkscape"];
+
+const sanitizeSvg = (raw) => {
+  const stripped = raw
+    .replace(/<\?xml[^?]*\?>/gi, "")
+    .replace(/<!DOCTYPE[^[>]*\[[\s\S]*?\]>/gi, "")
+    .replace(/<!DOCTYPE[^>]*>/gi, "");
+
+  const doc = new DOMParser().parseFromString(stripped, "image/svg+xml");
+  const svg = doc.querySelector("svg");
+  if (!svg) return "";
+
+  const all = svg.querySelectorAll("*");
+  for (const el of all) {
+    const tag = el.tagName.toLowerCase();
+    if (DANGEROUS_ELEMENTS.includes(tag) || BLOAT_ELEMENTS.includes(tag) || tag.includes("namedview")) {
+      el.remove();
+      continue;
+    }
+    for (const attr of [...el.attributes]) {
+      if (
+        attr.name.startsWith("on") ||
+        attr.name.startsWith("inkscape:") ||
+        attr.name.startsWith("sodipodi:") ||
+        STRIP_NS_ATTRS.includes(attr.name)
+      ) {
+        el.removeAttribute(attr.name);
+      }
+      if (
+        (attr.name === "href" || attr.name === "xlink:href") &&
+        attr.value.trim().toLowerCase().startsWith("javascript:")
+      ) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  }
+
+  for (const ns of STRIP_NS_ATTRS) svg.removeAttribute(ns);
+  for (const attr of [...svg.attributes]) {
+    if (attr.name.startsWith("inkscape:") || attr.name.startsWith("sodipodi:")) {
+      svg.removeAttribute(attr.name);
+    }
+  }
+
+  return svg.outerHTML;
+};
+
 // Cache for fetched SVG content to avoid re-fetching
 const svgCache = new Map();
 
@@ -27,9 +77,9 @@ export const FactionIcon = ({ factionId, className = "", style = {} }) => {
         return response.text();
       })
       .then((svgText) => {
-        // Cache the result
-        svgCache.set(url, svgText);
-        setSvgContent(svgText);
+        const cleaned = sanitizeSvg(svgText);
+        svgCache.set(url, cleaned);
+        setSvgContent(cleaned);
       })
       .catch(() => {
         setError(true);
