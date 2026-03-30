@@ -27,26 +27,31 @@ $$ LANGUAGE plpgsql SECURITY DEFINER STABLE SET search_path = public;
 -- These SELECT policies OR-combine with existing per-user policies.
 -- They do NOT replace or weaken existing policies.
 
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.user_profiles;
 CREATE POLICY "Admins can view all profiles"
   ON public.user_profiles
   FOR SELECT
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can view all categories" ON public.user_categories;
 CREATE POLICY "Admins can view all categories"
   ON public.user_categories
   FOR SELECT
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can view all datasources" ON public.user_datasources;
 CREATE POLICY "Admins can view all datasources"
   ON public.user_datasources
   FOR SELECT
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can view all templates" ON public.user_templates;
 CREATE POLICY "Admins can view all templates"
   ON public.user_templates
   FOR SELECT
   USING (public.is_admin());
 
+DROP POLICY IF EXISTS "Admins can view all sync metadata" ON public.sync_metadata;
 CREATE POLICY "Admins can view all sync metadata"
   ON public.sync_metadata
   FOR SELECT
@@ -56,7 +61,7 @@ CREATE POLICY "Admins can view all sync metadata"
 -- 3. Audit log table
 -- =====================================================
 
-CREATE TABLE public.admin_audit_log (
+CREATE TABLE IF NOT EXISTS public.admin_audit_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   admin_id UUID NOT NULL REFERENCES auth.users(id),
   action TEXT NOT NULL,
@@ -69,13 +74,14 @@ ALTER TABLE public.admin_audit_log ENABLE ROW LEVEL SECURITY;
 
 -- Only admins can read audit logs. No direct INSERT/UPDATE/DELETE policies;
 -- inserts happen inside SECURITY DEFINER RPC functions only.
+DROP POLICY IF EXISTS "Admins can view audit logs" ON public.admin_audit_log;
 CREATE POLICY "Admins can view audit logs"
   ON public.admin_audit_log
   FOR SELECT
   USING (public.is_admin());
 
-CREATE INDEX idx_admin_audit_log_created_at ON public.admin_audit_log(created_at DESC);
-CREATE INDEX idx_admin_audit_log_admin_id ON public.admin_audit_log(admin_id);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_log_created_at ON public.admin_audit_log(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_admin_audit_log_admin_id ON public.admin_audit_log(admin_id);
 
 -- =====================================================
 -- 4. Admin RPC functions
@@ -106,7 +112,9 @@ BEGIN
   INTO v_total
   FROM public.user_profiles p
   WHERE (p_search IS NULL OR p.email ILIKE '%' || p_search || '%')
-    AND (p_tier_filter IS NULL OR p.subscription_tier = p_tier_filter)
+    AND (p_tier_filter IS NULL
+      OR (p_tier_filter = 'paid' AND p.subscription_tier != 'free')
+      OR (p_tier_filter != 'paid' AND p.subscription_tier = p_tier_filter))
     AND (p_status_filter IS NULL OR p.subscription_status = p_status_filter);
 
   -- Fetch paginated results with usage counts.
@@ -137,7 +145,9 @@ BEGIN
     p.email
     FROM public.user_profiles p
     WHERE (p_search IS NULL OR p.email ILIKE '%' || p_search || '%')
-      AND (p_tier_filter IS NULL OR p.subscription_tier = p_tier_filter)
+      AND (p_tier_filter IS NULL
+        OR (p_tier_filter = 'paid' AND p.subscription_tier != 'free')
+        OR (p_tier_filter != 'paid' AND p.subscription_tier = p_tier_filter))
       AND (p_status_filter IS NULL OR p.subscription_status = p_status_filter)
     ORDER BY
       CASE WHEN p_sort_by = 'created_at' AND p_sort_dir = 'desc' THEN p.created_at END DESC NULLS LAST,
@@ -313,19 +323,19 @@ BEGIN
     'users', jsonb_build_object(
       'total', (SELECT COUNT(*) FROM public.user_profiles),
       'by_tier', (
-        SELECT jsonb_object_agg(tier, cnt)
+        SELECT COALESCE(jsonb_object_agg(tier, cnt), '{}'::jsonb)
         FROM (
-          SELECT subscription_tier AS tier, COUNT(*) AS cnt
+          SELECT COALESCE(subscription_tier, 'unknown') AS tier, COUNT(*) AS cnt
           FROM public.user_profiles
-          GROUP BY subscription_tier
+          GROUP BY COALESCE(subscription_tier, 'unknown')
         ) t
       ),
       'by_status', (
-        SELECT jsonb_object_agg(status, cnt)
+        SELECT COALESCE(jsonb_object_agg(status, cnt), '{}'::jsonb)
         FROM (
-          SELECT subscription_status AS status, COUNT(*) AS cnt
+          SELECT COALESCE(subscription_status, 'unknown') AS status, COUNT(*) AS cnt
           FROM public.user_profiles
-          GROUP BY subscription_status
+          GROUP BY COALESCE(subscription_status, 'unknown')
         ) s
       ),
       'recent_signups_7d', (
