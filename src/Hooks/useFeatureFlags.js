@@ -11,5 +11,6 @@ export const useFeatureFlags = () => {
     syncEnabled: import.meta.env.VITE_FEATURE_SYNC_ENABLED !== "false",
     twoFactorEnabled: import.meta.env.VITE_FEATURE_2FA_ENABLED !== "false",
     paidTierEnabled: import.meta.env.VITE_FEATURE_PAID_TIER_ENABLED !== "false",
+    adminEnabled: import.meta.env.VITE_FEATURE_ADMIN_ENABLED !== "false",
   };
 };

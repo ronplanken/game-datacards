@@ -29,7 +29,9 @@ import {
   useAuth,
   useSubscription,
   DesignerPage,
+  AdminPage,
   usePremiumFeatures,
+  useAdmin,
   TemplateStorageProvider,
 } from "./Premium";
 import { useFeatureFlags } from "./Hooks/useFeatureFlags";
@@ -165,6 +167,17 @@ const DesignerHelpRoute = () => {
   if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
 
   return <DesignerHelp />;
+};
+
+// Admin route - requires admin tier, auth, and feature flag
+const AdminRoute = () => {
+  const { isAdmin } = useAdmin();
+  const { adminEnabled } = useFeatureFlags();
+  const { isAuthenticated } = useAuth();
+
+  if (!adminEnabled || !isAuthenticated || !isAdmin) return null;
+
+  return <AdminPage />;
 };
 
 // Datasource editor route with beta disclaimer
@@ -380,6 +393,9 @@ const router = createBrowserRouter([
       // Designer routes (premium only)
       { path: "designer", element: <DesignerRoute /> },
       { path: "designer/help", element: <DesignerHelpRoute /> },
+      // Admin routes (admin tier only)
+      { path: "admin", element: <AdminRoute /> },
+      { path: "admin/:tab", element: <AdminRoute /> },
       // Datasource editor (community feature)
       { path: "datasources", element: <DatasourceRoute /> },
       { path: "datasources/help", element: <DatasourceHelp /> },

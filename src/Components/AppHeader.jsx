@@ -8,6 +8,7 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import {
   useAuth,
   usePremiumFeatures,
+  useAdmin,
   AccountButton,
   SyncStatusIndicator,
   DatasourceUpdateBadge,
@@ -37,7 +38,8 @@ export const AppHeader = ({
   const location = useLocation();
   const { user, isAuthenticated } = useAuth();
   const { hasDatasourceBrowser } = usePremiumFeatures();
-  const { designerEnabled, communityBrowserEnabled } = useFeatureFlags();
+  const { isAdmin } = useAdmin();
+  const { designerEnabled, communityBrowserEnabled, adminEnabled } = useFeatureFlags();
 
   const { activeCategory } = useCardStorage();
   const [showBrowseModal, setShowBrowseModal] = useState(false);
@@ -46,6 +48,7 @@ export const AppHeader = ({
   const isViewerPage = location.pathname.startsWith("/viewer");
   const isDesignerPage = location.pathname.startsWith("/designer");
   const isDatasourcesPage = location.pathname.startsWith("/datasources");
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   // Designer and Datasources pages should show all header actions like the Editor does
   const effectiveShowActions = showActions || isDesignerPage || isDatasourcesPage;
@@ -93,6 +96,11 @@ export const AppHeader = ({
                       <span className="app-header-beta-badge">beta</span>
                     </span>
                   </Tooltip>
+                )}
+                {adminEnabled && isAdmin && (
+                  <Link to="/admin" className={`app-header-nav-item ${isAdminPage ? "active" : ""}`}>
+                    Admin
+                  </Link>
                 )}
               </nav>
             )}

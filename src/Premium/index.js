@@ -433,6 +433,33 @@ export const CustomUnitEditor = () => null;
 export const CustomFieldEditor = () => null;
 
 // =====================================================
+// ADMIN COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for AdminPage - returns null (route hidden in community version)
+ */
+export const AdminPage = () => null;
+
+/**
+ * Stub for useAdmin - admin features disabled in public version
+ */
+export const useAdmin = () => ({
+  isAdmin: false,
+  users: [],
+  stats: null,
+  loading: false,
+  listUsers: () => Promise.resolve({ data: [], total: 0 }),
+  getUserDetail: () => Promise.resolve(null),
+  updateUserTier: () => Promise.resolve({ success: false }),
+  updateUserStatus: () => Promise.resolve({ success: false }),
+  getPlatformStats: () => Promise.resolve(null),
+  sendEmail: () => Promise.resolve({ success: false }),
+  auditLog: [],
+  fetchAuditLog: () => Promise.resolve({ data: [], total: 0 }),
+});
+
+// =====================================================
 // COMMUNITY BROWSER COMPONENTS - Premium only
 // =====================================================
 
