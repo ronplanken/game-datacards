@@ -5,7 +5,7 @@ import { X, Plus } from "lucide-react";
  * Tag chip editor with add/remove.
  * Tags display as chips with X to remove, plus an inline add input.
  */
-export const EditorTagInput = ({ label, tags = [], onChange, placeholder = "Add..." }) => {
+export const EditorTagInput = ({ label, tags = [], onChange, placeholder = "Type and press Enter" }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [newTag, setNewTag] = useState("");
 

@@ -57,7 +57,7 @@ export const LeaderInfoSection = ({ card, config, label, icon, replaceCard }) =>
             label="Extra Info"
             value={leads.extra}
             onChange={handleExtraChange}
-            placeholder="Additional leader info"
+            placeholder="e.g. This unit can also lead..."
             multiline
           />
         </div>

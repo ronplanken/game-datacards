@@ -44,7 +44,7 @@ export const PrimarchSection = ({ card, label, icon, replaceCard }) => {
   };
 
   const handleAddGroup = () => {
-    updatePrimarch([...primarch, { name: "New Primarch Ability", showAbility: true, abilities: [] }]);
+    updatePrimarch([...primarch, { name: "Ability Group", showAbility: true, abilities: [] }]);
   };
 
   const handleRemoveGroup = (groupIndex) => {
@@ -67,7 +67,7 @@ export const PrimarchSection = ({ card, label, icon, replaceCard }) => {
             </button>
           </div>
           <EditorToggle
-            label="Show"
+            label="Show on card"
             checked={group.showAbility !== false}
             onChange={(value) => handleUpdateGroup(groupIndex, "showAbility", value)}
           />

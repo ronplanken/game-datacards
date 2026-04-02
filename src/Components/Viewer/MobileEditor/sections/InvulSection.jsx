@@ -19,10 +19,10 @@ export const InvulSection = ({ card, label, icon, updateField }) => {
           label="Info"
           value={invul.info}
           onChange={(value) => updateField("abilities.invul.info", value)}
-          placeholder="Additional info"
+          placeholder="e.g. Ranged attacks only"
         />
         <EditorToggle
-          label="Show Invulnerable Save"
+          label="Show on card"
           checked={invul.showInvulnerableSave !== false}
           onChange={(value) => updateField("abilities.invul.showInvulnerableSave", value)}
         />

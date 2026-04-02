@@ -28,9 +28,9 @@ export const WeaponListView = ({ card, weaponTypeKey, config, replaceCard, onEdi
 
   const getWeaponDisplayName = (weapon) => {
     if (format === "40k" && weapon.profiles?.length) {
-      return weapon.profiles[0]?.name || weapon.name || "Unnamed";
+      return weapon.profiles[0]?.name || weapon.name || "Untitled weapon";
     }
-    return weapon.name || "Unnamed";
+    return weapon.name || "Untitled weapon";
   };
 
   const getWeaponSummary = (weapon) => {
