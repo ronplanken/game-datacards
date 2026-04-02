@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Wrench, X, RotateCcw, ChevronDown } from "lucide-react";
+import { Wrench, X, RotateCcw, ChevronDown, RefreshCw } from "lucide-react";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { getLatestWizardVersion } from "../WhatsNewWizard/versions";
+import { getLatestWizardVersion, getUnseenVersions } from "../WhatsNewWizard/versions";
 import "./DevFab.css";
 
 const WIZARD_VERSIONS = ["0.0.0", "3.0.0", "3.1.0", "3.2.0", "3.3.0", "3.4.0", "3.5.0", "3.6.0", "3.7.0"];
@@ -31,6 +31,13 @@ export const DevFab = () => {
       lastMajorWizardVersion: "0.0.0",
       wizardCompleted: currentVersion,
     });
+  };
+
+  const unseen = getUnseenVersions(settings.lastMajorWizardVersion || "0.0.0", currentVersion);
+
+  const applyAndReload = (fn) => {
+    fn();
+    setTimeout(() => window.location.reload(), 100);
   };
 
   return (
@@ -87,21 +94,35 @@ export const DevFab = () => {
           <div className="dev-fab-divider" />
 
           <div className="dev-fab-section">
+            <label className="dev-fab-label">Debug</label>
+            <span className="dev-fab-value">
+              Unseen: {unseen.length > 0 ? unseen.map((v) => v.version).join(", ") : "none"}
+            </span>
+          </div>
+
+          <div className="dev-fab-section">
             <label className="dev-fab-label">Quick Actions</label>
-            <button className="dev-fab-action" onClick={resetWizardState} type="button">
+            <button className="dev-fab-action" onClick={() => applyAndReload(resetWizardState)} type="button">
               <RotateCcw size={14} />
               <span>Show all wizards from start</span>
             </button>
-            <button className="dev-fab-action" onClick={() => resetBothToVersion("3.6.0")} type="button">
+            <button
+              className="dev-fab-action"
+              onClick={() => applyAndReload(() => resetBothToVersion("3.6.0"))}
+              type="button">
               <RotateCcw size={14} />
               <span>Show only v3.7.0 wizard</span>
             </button>
             <button
               className="dev-fab-action"
-              onClick={() => resetBothToVersion(latestWizard || currentVersion)}
+              onClick={() => applyAndReload(() => resetBothToVersion(latestWizard || currentVersion))}
               type="button">
               <RotateCcw size={14} />
               <span>Mark all wizards seen</span>
+            </button>
+            <button className="dev-fab-action" onClick={() => window.location.reload()} type="button">
+              <RefreshCw size={14} />
+              <span>Reload page</span>
             </button>
           </div>
         </div>
