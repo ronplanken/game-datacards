@@ -96,14 +96,16 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();
   const location = useLocation();
 
-  // Detect if card came from a list (for edit button)
+  // Detect if card came from a list or cloud category (for edit button)
   const listCard = location.state?.listCard;
-  const isListCard = !!listCard;
+  const cloudCard = location.state?.cloudCard;
+  const editableCard = listCard || cloudCard;
+  const isEditableCard = !!editableCard;
 
   // Load custom datasource schema for the editor (only when editing a custom DS card)
   const [editorSchema, setEditorSchema] = useState(null);
   useEffect(() => {
-    if (!isListCard || !activeCard?.source) {
+    if (!isEditableCard || !activeCard?.source) {
       setEditorSchema(null);
       return;
     }
@@ -117,7 +119,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
     getCustomDatasourceData(activeCard.source).then((data) => {
       setEditorSchema(data?.schema || null);
     });
-  }, [isListCard, activeCard?.source, getCustomDatasourceData]);
+  }, [isEditableCard, activeCard?.source, getCustomDatasourceData]);
 
   // Initialize navigation hook to sync URL with state
   useViewerNavigation();
@@ -307,14 +309,14 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                       <ArrowLeft size={20} />
                     </button>
                     <h1 className="mobile-card-title">{activeCard.name}</h1>
-                    {isListCard && (
+                    {isEditableCard && (
                       <button className="mobile-card-edit" onClick={() => setIsEditorOpen(true)} type="button">
                         <Pencil size={18} />
                       </button>
                     )}
                   </div>
                   {/* Floating edit button - visible before scroll-reveal header appears */}
-                  {isListCard && !showHeader && (
+                  {isEditableCard && !showHeader && (
                     <button className="mobile-card-edit-floating" onClick={() => setIsEditorOpen(true)} type="button">
                       <Pencil size={20} />
                     </button>
@@ -341,7 +343,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                       <ArrowLeft size={20} />
                     </button>
                     <h1 className="mobile-card-title">{activeCard.name}</h1>
-                    {isListCard && (
+                    {isEditableCard && (
                       <button className="mobile-card-edit" onClick={() => setIsEditorOpen(true)} type="button">
                         <Pencil size={18} />
                       </button>
@@ -398,11 +400,12 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                     const factionSlug = cardFaction?.name?.toLowerCase().replaceAll(" ", "-");
                     const cardSlug = updatedCard.name?.toLowerCase().replaceAll(" ", "-");
                     const newPath = factionSlug && cardSlug ? `/mobile/${factionSlug}/${cardSlug}` : location.pathname;
-                    navigate(newPath, { replace: true, state: { listCard: updatedCard } });
+                    const stateKey = listCard ? "listCard" : "cloudCard";
+                    navigate(newPath, { replace: true, state: { [stateKey]: updatedCard } });
                   }
                 }}
                 card={activeCard}
-                cardUuid={listCard?.uuid}
+                cardUuid={editableCard?.uuid}
                 gameSystem={settings.selectedDataSource}
                 factionColours={cardFaction?.colours}
                 schema={editorSchema}
