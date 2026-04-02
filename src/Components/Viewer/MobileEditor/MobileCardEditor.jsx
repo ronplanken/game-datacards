@@ -196,6 +196,7 @@ export const MobileCardEditor = ({ isOpen, onClose, card, cardUuid, gameSystem, 
               config={drillDown.config}
               updateField={updateField}
               replaceCard={replaceCard}
+              onSelectProfile={(pIndex) => setDrillDown({ ...drillDown, profileIndex: pIndex })}
             />
           )}
         </DrillDownView>

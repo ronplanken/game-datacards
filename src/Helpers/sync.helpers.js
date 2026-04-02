@@ -53,11 +53,14 @@ export function runDebouncedSync({ items, isPending, getKey, syncFn, timeoutRef,
 
   const hasNewPending = [...currentPending].some((key) => !pendingRef.current.has(key));
 
-  if (hasNewPending && pendingItems.length > 0) {
+  // Schedule sync when new pending items appear, OR when pending items exist
+  // but the timeout was cleared by React effect cleanup (timeoutRef.current is null)
+  if (pendingItems.length > 0 && (hasNewPending || !timeoutRef.current)) {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null;
       syncFn();
     }, delay);
   }
@@ -67,6 +70,7 @@ export function runDebouncedSync({ items, isPending, getKey, syncFn, timeoutRef,
   return () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
   };
 }

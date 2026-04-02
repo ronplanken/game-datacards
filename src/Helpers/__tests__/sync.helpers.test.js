@@ -91,9 +91,10 @@ describe("sync.helpers", () => {
       expect(syncFn).toHaveBeenCalledOnce();
     });
 
-    it("does not trigger when no new pending items", () => {
+    it("does not trigger when no new pending items and timeout is active", () => {
       const syncFn = vi.fn();
-      const timeoutRef = { current: null };
+      const existingTimeout = setTimeout(() => {}, 10000);
+      const timeoutRef = { current: existingTimeout };
       const pendingRef = { current: new Set(["a"]) };
 
       runDebouncedSync({
@@ -108,6 +109,26 @@ describe("sync.helpers", () => {
 
       vi.advanceTimersByTime(2000);
       expect(syncFn).not.toHaveBeenCalled();
+    });
+
+    it("reschedules when pending items exist but timeout was cleared by cleanup", () => {
+      const syncFn = vi.fn();
+      const timeoutRef = { current: null };
+      const pendingRef = { current: new Set(["a"]) };
+
+      runDebouncedSync({
+        items: [{ uuid: "a", syncEnabled: true, syncStatus: "pending" }],
+        isPending: (item) => item.syncEnabled && item.syncStatus === "pending",
+        getKey: (item) => item.uuid,
+        syncFn,
+        timeoutRef,
+        pendingRef,
+        delay: 2000,
+      });
+
+      expect(syncFn).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(2000);
+      expect(syncFn).toHaveBeenCalledOnce();
     });
 
     it("does not trigger when no items match isPending", () => {

@@ -808,6 +808,96 @@
 }
 
 /* ===========================================
+   PROFILE SWITCHER
+   =========================================== */
+.mobile-editor-profile-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-editor-profile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mobile-editor-profile-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--me-surface);
+  border: 1px solid var(--me-border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--me-text-secondary);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.mobile-editor-profile-item:active {
+  background: var(--me-surface-hover);
+  transform: scale(0.98);
+}
+
+.mobile-editor-profile-item.active {
+  background: var(--me-accent-muted);
+  border-color: var(--me-border-accent);
+  color: var(--me-accent);
+  font-weight: 650;
+  cursor: default;
+}
+
+.mobile-editor-profile-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-editor-profile-item-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--me-accent);
+  background: rgba(232, 180, 69, 0.15);
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   PROFILE DELETE BUTTON
+   =========================================== */
+.mobile-editor-profile-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-top: 8px;
+  background: var(--me-danger-bg);
+  border: 1px dashed var(--me-danger);
+  border-radius: 10px;
+  color: var(--me-danger);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.mobile-editor-profile-delete-btn:active {
+  background: var(--me-danger);
+  color: #fff;
+  transform: scale(0.93);
+}
+
+/* ===========================================
    EDIT BUTTON (in card header)
    =========================================== */
 .mobile-card-edit {
