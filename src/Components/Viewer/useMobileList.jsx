@@ -170,7 +170,8 @@ export const MobileListProvider = (props) => {
 
   const updateCardData = (uuid, updatedCard) => {
     if (!uuid) return;
-    const category = lists[selectedList];
+    // Search all categories (lists, cloud categories, etc.) for the card
+    const category = cardStorage.categories.find((cat) => cat.cards?.some((c) => c.uuid === uuid));
     if (!category) return;
     const updatedCards = category.cards.map((card) =>
       card.uuid !== uuid ? card : { ...updatedCard, uuid: card.uuid },
