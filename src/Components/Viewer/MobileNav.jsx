@@ -83,7 +83,7 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
               type="ghost"
               size="large"
               className="button-bar"
-              shape="round"
+              style={{ borderRadius: 8 }}
               onClick={() =>
                 setShowList((val) => {
                   return showList ? false : true;
@@ -118,7 +118,7 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
                 icon={<AddCard />}
                 type="ghost"
                 size="large"
-                shape="round"
+                style={{ borderRadius: 8 }}
                 className="button-bar mobile-icon-button"
                 onClick={() => {
                   if (isAoS) {
