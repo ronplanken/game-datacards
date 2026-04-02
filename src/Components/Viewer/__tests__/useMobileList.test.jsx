@@ -234,6 +234,72 @@ describe("useMobileList", () => {
     });
   });
 
+  describe("updateCardData", () => {
+    it("should replace full card data while preserving UUID", () => {
+      mockCategories = [
+        {
+          uuid: "cat-1",
+          name: "Test",
+          type: "list",
+          dataSource: "40k-10e",
+          cards: [
+            { name: "Old Name", stats: [{ m: 6, t: 4 }], uuid: "card-1", isCustom: true },
+            { name: "B", uuid: "card-2", isCustom: true },
+          ],
+        },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateCardData("card-1", {
+          name: "New Name",
+          stats: [{ m: 8, t: 5 }],
+          keywords: ["Infantry"],
+        });
+      });
+
+      expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+      const [updatedCat, uuid] = mockUpdateCategory.mock.calls[0];
+      expect(uuid).toBe("cat-1");
+      expect(updatedCat.cards).toHaveLength(2);
+      // Card data replaced
+      expect(updatedCat.cards[0].name).toBe("New Name");
+      expect(updatedCat.cards[0].stats).toEqual([{ m: 8, t: 5 }]);
+      expect(updatedCat.cards[0].keywords).toEqual(["Infantry"]);
+      // UUID preserved
+      expect(updatedCat.cards[0].uuid).toBe("card-1");
+      // Other card unchanged
+      expect(updatedCat.cards[1].name).toBe("B");
+
+      expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
+    });
+
+    it("should not call updateCategory when uuid is null", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateCardData(null, { name: "X" });
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+
+    it("should not call updateCategory when category does not exist", () => {
+      mockCategories = [];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateCardData("card-1", { name: "X" });
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+  });
+
   describe("createList", () => {
     it("should call importCategory with a new list category", () => {
       mockCategories = [{ uuid: "cat-1", name: "Default", type: "list", dataSource: "40k-10e", cards: [] }];

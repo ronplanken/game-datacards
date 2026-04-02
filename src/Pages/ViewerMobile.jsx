@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Col, Grid, Layout, Row } from "antd";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Pencil } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import "antd/dist/antd.min.css";
 import "../App.css";
 import "../style.less";
@@ -19,8 +19,9 @@ import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemS
 import { MobileGameSystemSettings } from "../Components/Viewer/MobileGameSystemSettings";
 import { resolveMobileConfig } from "../Components/Viewer/mobileDatasourceConfig";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
-import { MobileListProvider } from "../Components/Viewer/useMobileList";
+import { MobileListProvider, useMobileList } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
+import { MobileCardEditor } from "../Components/Viewer/MobileEditor";
 import { MobileAccountSheet, MobileAccountSettingsSheet, MobileSyncSheet } from "../Premium";
 
 const MobileSharedListsModal = React.lazy(() =>
@@ -90,9 +91,33 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
     }
   }, [settings.showCardsAsDoubleSided]);
 
-  const { activeCard } = useCardStorage();
+  const { activeCard, updateActiveCard } = useCardStorage();
   const { shareLink, htmlToImageConvert } = useMobileSharing();
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();
+  const location = useLocation();
+
+  // Detect if card came from a list (for edit button)
+  const listCard = location.state?.listCard;
+  const isListCard = !!listCard;
+
+  // Load custom datasource schema for the editor (only when editing a custom DS card)
+  const [editorSchema, setEditorSchema] = useState(null);
+  useEffect(() => {
+    if (!isListCard || !activeCard?.source) {
+      setEditorSchema(null);
+      return;
+    }
+    // Built-in systems don't need a schema
+    const builtIn = ["40k-10e", "40k", "aos", "necromunda", "basic"];
+    if (builtIn.includes(activeCard.source)) {
+      setEditorSchema(null);
+      return;
+    }
+    // Load schema from localForage for custom datasources
+    getCustomDatasourceData(activeCard.source).then((data) => {
+      setEditorSchema(data?.schema || null);
+    });
+  }, [isListCard, activeCard?.source, getCustomDatasourceData]);
 
   // Initialize navigation hook to sync URL with state
   useViewerNavigation();
@@ -117,6 +142,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   const [isAccountSettingsVisible, setIsAccountSettingsVisible] = useState(false);
   const [isSyncSheetVisible, setIsSyncSheetVisible] = useState(false);
   const [isMobileSharedListsVisible, setIsMobileSharedListsVisible] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   // Search State
   const [searchText, setSearchText] = useState("");
@@ -268,19 +294,32 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
             <Col ref={parent} span={24}>
               {/* Scroll-reveal header (config-driven) */}
               {activeCard && config.useScrollRevealHeader && headerReady && (
-                <div
-                  className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
-                    showHeader ? "visible" : "hidden"
-                  }`}
-                  style={{
-                    "--banner-colour": cardFaction?.colours?.banner,
-                    "--header-colour": cardFaction?.colours?.header,
-                  }}>
-                  <button className="mobile-card-back" onClick={handleBackFromCard} type="button">
-                    <ArrowLeft size={20} />
-                  </button>
-                  <h1 className="mobile-card-title">{activeCard.name}</h1>
-                </div>
+                <>
+                  <div
+                    className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
+                      showHeader ? "visible" : "hidden"
+                    }`}
+                    style={{
+                      "--banner-colour": cardFaction?.colours?.banner,
+                      "--header-colour": cardFaction?.colours?.header,
+                    }}>
+                    <button className="mobile-card-back" onClick={handleBackFromCard} type="button">
+                      <ArrowLeft size={20} />
+                    </button>
+                    <h1 className="mobile-card-title">{activeCard.name}</h1>
+                    {isListCard && (
+                      <button className="mobile-card-edit" onClick={() => setIsEditorOpen(true)} type="button">
+                        <Pencil size={18} />
+                      </button>
+                    )}
+                  </div>
+                  {/* Floating edit button - visible before scroll-reveal header appears */}
+                  {isListCard && !showHeader && (
+                    <button className="mobile-card-edit-floating" onClick={() => setIsEditorOpen(true)} type="button">
+                      <Pencil size={20} />
+                    </button>
+                  )}
+                </>
               )}
 
               <div
@@ -302,6 +341,11 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                       <ArrowLeft size={20} />
                     </button>
                     <h1 className="mobile-card-title">{activeCard.name}</h1>
+                    {isListCard && (
+                      <button className="mobile-card-edit" onClick={() => setIsEditorOpen(true)} type="button">
+                        <Pencil size={18} />
+                      </button>
+                    )}
                   </div>
                 )}
                 <Row style={{ overflow: "hidden" }}>
@@ -344,6 +388,25 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
 
               <PWAInstallPrompt />
               <ListAdd isVisible={isListAddVisible} setIsVisible={setIsListAddVisible} />
+              <MobileCardEditor
+                isOpen={isEditorOpen}
+                onClose={(updatedCard) => {
+                  setIsEditorOpen(false);
+                  if (updatedCard) {
+                    updateActiveCard(updatedCard, true);
+                    // Build URL from updated name so useViewerNavigation can match it
+                    const factionSlug = cardFaction?.name?.toLowerCase().replaceAll(" ", "-");
+                    const cardSlug = updatedCard.name?.toLowerCase().replaceAll(" ", "-");
+                    const newPath = factionSlug && cardSlug ? `/mobile/${factionSlug}/${cardSlug}` : location.pathname;
+                    navigate(newPath, { replace: true, state: { listCard: updatedCard } });
+                  }
+                }}
+                card={activeCard}
+                cardUuid={listCard?.uuid}
+                gameSystem={settings.selectedDataSource}
+                factionColours={cardFaction?.colours}
+                schema={editorSchema}
+              />
               <MobileMenu isVisible={isMobileMenuVisible} setIsVisible={setIsMobileMenuVisible} />
               <MobileAccountSheet
                 isVisible={isAccountSheetVisible}

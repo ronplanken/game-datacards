@@ -1,0 +1,889 @@
+/* MobileCardEditor.css - Bold, faction-themed mobile card editor */
+
+/* ===========================================
+   DESIGN TOKENS
+   =========================================== */
+.mobile-editor {
+  /* Faction-driven (set via inline style) */
+  --me-banner: #1a1d2e;
+  --me-header: #2a2d3e;
+
+  /* Dark surface palette */
+  --me-bg: #0f1117;
+  --me-surface: rgba(255, 255, 255, 0.06);
+  --me-surface-hover: rgba(255, 255, 255, 0.1);
+  --me-surface-raised: rgba(255, 255, 255, 0.08);
+
+  /* Accent - faction tinted */
+  --me-accent: #e8b445;
+  --me-accent-muted: rgba(232, 180, 69, 0.15);
+  --me-accent-glow: rgba(232, 180, 69, 0.25);
+
+  /* Text on dark */
+  --me-text: #f0eee6;
+  --me-text-secondary: #a8a5a0;
+  --me-text-muted: #6b6966;
+
+  /* Borders */
+  --me-border: rgba(255, 255, 255, 0.08);
+  --me-border-accent: rgba(232, 180, 69, 0.2);
+
+  /* Semantic */
+  --me-danger: #ef4444;
+  --me-danger-bg: rgba(239, 68, 68, 0.12);
+  --me-success: #34d399;
+
+  /* Shadows */
+  --me-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --me-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ===========================================
+   BACKDROP
+   =========================================== */
+.mobile-editor-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  opacity: 0;
+  animation: meBackdropIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes meBackdropIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================================
+   EDITOR CONTAINER
+   =========================================== */
+.mobile-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 1101;
+  background: var(--me-bg);
+  display: flex;
+  flex-direction: column;
+  animation: meSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes meSlideIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   HEADER - Faction colored
+   =========================================== */
+.mobile-editor-header {
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--me-banner);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-editor-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.mobile-editor-back:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.93);
+}
+
+.mobile-editor-header-title {
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-editor-header-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--me-accent);
+  background: rgba(232, 180, 69, 0.15);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(232, 180, 69, 0.25);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   CONTENT
+   =========================================== */
+.mobile-editor-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mobile-editor-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mobile-editor-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mobile-editor-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+/* ===========================================
+   SECTION ENTRANCE ANIMATION
+   =========================================== */
+.mobile-editor-section-entrance {
+  animation: meSectionIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes meSectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   SECTIONS (Accordion Cards)
+   =========================================== */
+.mobile-editor-section {
+  background: var(--me-surface-raised);
+  border-radius: 14px;
+  border: 1px solid var(--me-border);
+  box-shadow: var(--me-shadow-card);
+  transition: border-color 0.2s ease;
+}
+
+.mobile-editor-section.is-open {
+  border-color: var(--me-border-accent);
+}
+
+.mobile-editor-section-header {
+  width: 100%;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--me-text);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  transition: background 0.15s ease;
+}
+
+.mobile-editor-section-header:active {
+  background: var(--me-surface-hover);
+}
+
+.mobile-editor-section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.mobile-editor-section-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-editor-section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--me-accent-muted);
+  color: var(--me-accent);
+  flex-shrink: 0;
+}
+
+.mobile-editor-chevron {
+  color: var(--me-text-muted);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-editor-chevron.open {
+  transform: rotate(0deg);
+}
+
+.mobile-editor-chevron:not(.open) {
+  transform: rotate(-90deg);
+}
+
+.mobile-editor-section-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--me-accent);
+  background: var(--me-accent-muted);
+  padding: 2px 8px;
+  border-radius: 6px;
+  min-width: 22px;
+  text-align: center;
+}
+
+.mobile-editor-section-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mobile-editor-section-actions .mobile-editor-add-btn {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  min-height: unset;
+  border-radius: 8px;
+}
+
+.mobile-editor-section-body {
+  padding: 0 16px 16px;
+  overflow: hidden;
+}
+
+.mobile-editor-section-body.is-open {
+  animation: meSectionBodyIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes meSectionBodyIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================
+   NAME SECTION
+   =========================================== */
+.mobile-editor-name-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--me-surface-raised);
+  border-radius: 14px;
+  border: 1px solid var(--me-border);
+  padding: 16px;
+  box-shadow: var(--me-shadow-card);
+}
+
+.mobile-editor-name-input .mobile-editor-field-input {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  padding: 14px 16px;
+  background: var(--me-surface);
+  border-color: var(--me-border-accent);
+  color: var(--me-text);
+}
+
+.mobile-editor-subname-input .mobile-editor-field-input {
+  font-size: 15px;
+  color: var(--me-text-secondary);
+}
+
+/* ===========================================
+   FIELD INPUTS
+   =========================================== */
+.mobile-editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mobile-editor-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--me-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.mobile-editor-field-input {
+  width: 100%;
+  height: 44px;
+  padding: 10px 14px;
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--me-text);
+  background: var(--me-surface);
+  border: 1px solid var(--me-border);
+  border-radius: 10px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  font-family: inherit;
+}
+
+.mobile-editor-field-input:focus {
+  border-color: var(--me-accent);
+  box-shadow: 0 0 0 3px var(--me-accent-glow);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.mobile-editor-field-input::placeholder {
+  color: var(--me-text-muted);
+}
+
+.mobile-editor-field-textarea {
+  height: auto;
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ===========================================
+   STAT GRID
+   =========================================== */
+.mobile-editor-stat-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.mobile-editor-stat-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.mobile-editor-stat-cell label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--me-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.mobile-editor-stat-input {
+  width: 100%;
+  height: 48px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--me-text);
+  background: var(--me-surface);
+  border: 1px solid var(--me-border);
+  border-radius: 10px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.mobile-editor-stat-input:focus {
+  border-color: var(--me-accent);
+  box-shadow: 0 0 0 3px var(--me-accent-glow);
+}
+
+/* ===========================================
+   TOGGLE
+   =========================================== */
+.mobile-editor-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 4px 0;
+}
+
+.mobile-editor-toggle-label {
+  font-size: 15px;
+  color: var(--me-text);
+}
+
+.mobile-editor-toggle {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  border-radius: 14px;
+  border: none;
+  background: var(--me-border);
+  cursor: pointer;
+  transition: background 0.25s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.mobile-editor-toggle.active {
+  background: var(--me-accent);
+}
+
+.mobile-editor-toggle.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.mobile-editor-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-editor-toggle.active .mobile-editor-toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* ===========================================
+   TAG INPUT
+   =========================================== */
+.mobile-editor-tags {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-editor-tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mobile-editor-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  min-height: 34px;
+  background: var(--me-accent-muted);
+  border: 1px solid var(--me-border-accent);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--me-accent);
+  transition: all 0.15s ease;
+}
+
+.mobile-editor-tag-text {
+  line-height: 1;
+}
+
+.mobile-editor-tag-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--me-text-muted);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.mobile-editor-tag-remove:active {
+  background: var(--me-danger);
+  color: #fff;
+  transform: scale(0.9);
+}
+
+.mobile-editor-tag-input {
+  height: 34px;
+  min-width: 80px;
+  max-width: 160px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--me-text);
+  background: var(--me-surface);
+  border: 1px solid var(--me-accent);
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+}
+
+.mobile-editor-tag-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 12px;
+  min-height: 34px;
+  background: transparent;
+  border: 1px dashed var(--me-text-muted);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--me-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.mobile-editor-tag-add:active {
+  border-color: var(--me-accent);
+  color: var(--me-accent);
+  background: var(--me-accent-muted);
+}
+
+/* ===========================================
+   WEAPON LIST ITEMS - Card-style tappable rows
+   =========================================== */
+.mobile-editor-weapon-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 14px;
+  gap: 12px;
+  background: var(--me-surface);
+  border: 1px solid var(--me-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+  margin-bottom: 8px;
+}
+
+.mobile-editor-weapon-row:last-child {
+  margin-bottom: 0;
+}
+
+.mobile-editor-weapon-row:active {
+  background: var(--me-surface-hover);
+  border-color: var(--me-border-accent);
+  transform: scale(0.98);
+}
+
+.mobile-editor-weapon-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-editor-weapon-name {
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--me-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-editor-weapon-meta {
+  font-size: 12px;
+  color: var(--me-text-muted);
+  margin-top: 2px;
+}
+
+.mobile-editor-weapon-arrow {
+  color: var(--me-accent);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+  opacity: 0.7;
+}
+
+.mobile-editor-weapon-row:active .mobile-editor-weapon-arrow {
+  transform: translateX(3px);
+  opacity: 1;
+}
+
+.mobile-editor-weapon-delete {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: var(--me-danger-bg);
+  color: var(--me-danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.mobile-editor-weapon-delete:active {
+  background: var(--me-danger);
+  color: #fff;
+  transform: scale(0.93);
+}
+
+/* ===========================================
+   DRILL-DOWN VIEW
+   =========================================== */
+.mobile-editor-drilldown {
+  position: fixed;
+  inset: 0;
+  z-index: 1102;
+  background: var(--me-bg);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.mobile-editor-drilldown .mobile-editor-header {
+  background: var(--me-header);
+}
+
+.mobile-editor-drilldown.open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* ===========================================
+   ADD BUTTON
+   =========================================== */
+.mobile-editor-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px dashed var(--me-text-muted);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--me-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.mobile-editor-add-btn:active {
+  border-color: var(--me-accent);
+  color: var(--me-accent);
+  background: var(--me-accent-muted);
+}
+
+/* ===========================================
+   ABILITY ITEMS
+   =========================================== */
+.mobile-editor-ability-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--me-border);
+}
+
+.mobile-editor-ability-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-editor-ability-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mobile-editor-ability-name-input {
+  flex: 1;
+}
+
+.mobile-editor-ability-name-input .mobile-editor-field-input {
+  height: 38px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+}
+
+/* ===========================================
+   POINTS SECTION
+   =========================================== */
+.mobile-editor-points-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--me-border);
+}
+
+.mobile-editor-points-entry:last-child {
+  border-bottom: none;
+}
+
+.mobile-editor-points-field {
+  flex: 1;
+}
+
+/* ===========================================
+   FIELDS SECTION
+   =========================================== */
+.mobile-editor-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===========================================
+   SELECT DROPDOWN
+   =========================================== */
+.mobile-editor-select {
+  width: 100%;
+  height: 44px;
+  padding: 10px 14px;
+  font-size: 16px;
+  color: var(--me-text);
+  background: var(--me-surface);
+  border: 1px solid var(--me-border);
+  border-radius: 10px;
+  outline: none;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b6966' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.mobile-editor-select:focus {
+  border-color: var(--me-accent);
+  box-shadow: 0 0 0 3px var(--me-accent-glow);
+}
+
+/* ===========================================
+   PROFILE GRID
+   =========================================== */
+.mobile-editor-profile-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* ===========================================
+   EDIT BUTTON (in card header)
+   =========================================== */
+.mobile-card-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--header-colour, rgba(255, 255, 255, 0.2));
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+.mobile-card-edit:active {
+  opacity: 0.7;
+  transform: scale(0.93);
+}
+
+/* ===========================================
+   RULES LIST
+   =========================================== */
+.mobile-editor-rule-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--me-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-editor-rule-item:last-child {
+  border-bottom: none;
+}
+
+.mobile-editor-rule-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===========================================
+   COLLECTION
+   =========================================== */
+.mobile-editor-collection-item {
+  padding: 12px;
+  background: var(--me-surface);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--me-border);
+}
+
+.mobile-editor-collection-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-editor-backdrop,
+  .mobile-editor,
+  .mobile-editor-drilldown,
+  .mobile-editor-section-entrance,
+  .mobile-editor-section-body.is-open {
+    animation: none;
+    transition: none;
+  }
+}

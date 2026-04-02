@@ -148,6 +148,33 @@
   background: rgba(15, 43, 56, 0.95);
 }
 
+// Floating edit button - positioned top-right over card
+.mobile-card-edit-floating {
+  position: fixed;
+  top: 76px; // Below search header (64px) + padding
+  right: 16px;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(15, 43, 56, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: floatingButtonFadeIn 0.25s ease-out;
+}
+
+.mobile-card-edit-floating:active {
+  transform: scale(0.92);
+  background: rgba(15, 43, 56, 0.95);
+}
+
 // Scroll-reveal header (shared base)
 .mobile-card-header-scroll {
   position: fixed;
