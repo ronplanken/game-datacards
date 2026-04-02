@@ -38,6 +38,7 @@ import { useFeatureFlags } from "./Hooks/useFeatureFlags";
 import { useUmami } from "./Hooks/useUmami";
 import { isListForgeHash, decodeListForgeUrlPayload, cleanListForgeHash } from "./Helpers/listforgeUrl.helpers";
 import { validateListforgeJson } from "./Helpers/listforgeImport.helpers";
+import { AutoSyncHandler } from "./Components/AutoSyncHandler";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
 import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
 import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
@@ -366,6 +367,7 @@ const RootLayout = () => (
                           <CheckoutSuccessHandler />
                           <ListForgeUrlHandler />
                           <SyncConflictHandler />
+                          <AutoSyncHandler />
                           <DatasourceConflictHandler />
                           <LocalDatasourceMigrationNotice />
                           <UpdateNotification />
