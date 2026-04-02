@@ -65,6 +65,7 @@ import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 import { LocalDatasourceMigrationNotice } from "./Components/LocalDatasourceMigrationNotice";
 import { UpdateNotification } from "./Components/UpdateNotification";
+import { DevFab } from "./Components/DevFab/DevFab";
 import { DesignerHelp } from "./Pages/DesignerHelp";
 import { DatasourceHelp } from "./Pages/DatasourceHelp";
 import { Col, Grid, Result, Row, Typography } from "antd";
@@ -368,6 +369,7 @@ const RootLayout = () => (
                           <DatasourceConflictHandler />
                           <LocalDatasourceMigrationNotice />
                           <UpdateNotification />
+                          {import.meta.env.MODE === "development" && <DevFab />}
                         </CloudCategoriesProvider>
                       </SyncProvider>
                     </TemplateStorageProvider>

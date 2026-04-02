@@ -168,6 +168,17 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
+  const updateCardData = (uuid, updatedCard) => {
+    if (!uuid) return;
+    const category = lists[selectedList];
+    if (!category) return;
+    const updatedCards = category.cards.map((card) =>
+      card.uuid !== uuid ? card : { ...updatedCard, uuid: card.uuid },
+    );
+    updateCategory({ ...category, cards: updatedCards }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
   const createList = (name) => {
     const listName = name?.trim() || "New List";
     importCategory({
@@ -251,6 +262,7 @@ export const MobileListProvider = (props) => {
     addDatacard,
     removeDatacard,
     updateDatacard,
+    updateCardData,
     createList,
     createListWithCards,
     renameList,
