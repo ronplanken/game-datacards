@@ -208,7 +208,7 @@ function resolve40kUnitSections(card) {
       key: "leadBy",
       label: "Led By",
       type: "stringList",
-      config: { dataPath: "leadBy", itemLabel: "Unit", isObjectArray: true, nameKey: "name" },
+      config: { dataPath: "leadBy", itemLabel: "Unit" },
     });
   }
 

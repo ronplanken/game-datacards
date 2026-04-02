@@ -4,34 +4,34 @@ import { EditorTextField } from "../shared/EditorTextField";
 
 /**
  * Generic editor for string arrays (wargear options, composition, leadBy).
- * Also handles object arrays with a name key.
+ * Auto-detects whether each item is a string or object.
  */
 export const StringListSection = ({ card, config, label, icon, replaceCard }) => {
-  const { dataPath, itemLabel = "Item", isObjectArray, nameKey = "name" } = config;
+  const { dataPath, itemLabel = "Item" } = config;
   const items = card[dataPath] || [];
+
+  const getValue = (item) => {
+    if (typeof item === "string") return item;
+    return item?.name || "";
+  };
+
+  const setValue = (item, value) => {
+    if (typeof item === "string") return value;
+    return { ...item, name: value };
+  };
 
   const handleUpdate = (index, value) => {
     const updated = [...items];
-    if (isObjectArray) {
-      updated[index] = { ...updated[index], [nameKey]: value };
-    } else {
-      updated[index] = value;
-    }
+    updated[index] = setValue(updated[index], value);
     replaceCard({ ...card, [dataPath]: updated });
   };
 
   const handleAdd = () => {
-    const newItem = isObjectArray ? { [nameKey]: "", type: "official" } : "";
-    replaceCard({ ...card, [dataPath]: [...items, newItem] });
+    replaceCard({ ...card, [dataPath]: [...items, ""] });
   };
 
   const handleRemove = (index) => {
     replaceCard({ ...card, [dataPath]: items.filter((_, i) => i !== index) });
-  };
-
-  const getValue = (item) => {
-    if (isObjectArray) return item?.[nameKey] || "";
-    return item || "";
   };
 
   return (

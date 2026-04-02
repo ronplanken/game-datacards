@@ -2,6 +2,17 @@ import { Plus, Trash2 } from "lucide-react";
 import { EditorAccordion } from "../shared/EditorAccordion";
 import { EditorTextField } from "../shared/EditorTextField";
 
+// Units can be strings (legacy) or objects with { name, type, uuid }
+const getUnitName = (unit) => {
+  if (typeof unit === "string") return unit;
+  return unit?.name || "";
+};
+
+const setUnitName = (unit, value) => {
+  if (typeof unit === "string") return value;
+  return { ...unit, name: value };
+};
+
 export const LeaderInfoSection = ({ card, config, label, icon, replaceCard }) => {
   const { dataPath } = config;
   const leads = card[dataPath] || { units: [], extra: "" };
@@ -9,14 +20,14 @@ export const LeaderInfoSection = ({ card, config, label, icon, replaceCard }) =>
 
   const handleUpdateUnit = (index, value) => {
     const updated = [...units];
-    updated[index] = { ...updated[index], name: value };
+    updated[index] = setUnitName(updated[index], value);
     replaceCard({ ...card, [dataPath]: { ...leads, units: updated } });
   };
 
   const handleAddUnit = () => {
     replaceCard({
       ...card,
-      [dataPath]: { ...leads, units: [...units, { type: "official", name: "" }] },
+      [dataPath]: { ...leads, units: [...units, ""] },
     });
   };
 
@@ -37,7 +48,7 @@ export const LeaderInfoSection = ({ card, config, label, icon, replaceCard }) =>
         <div key={index} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
           <div style={{ flex: 1 }}>
             <EditorTextField
-              value={unit.name}
+              value={getUnitName(unit)}
               onChange={(value) => handleUpdateUnit(index, value)}
               placeholder={`Unit ${index + 1}`}
             />
