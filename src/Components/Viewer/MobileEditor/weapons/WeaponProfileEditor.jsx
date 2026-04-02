@@ -5,7 +5,15 @@ import { EditorTagInput } from "../shared/EditorTagInput";
 import { EditorToggle } from "../shared/EditorToggle";
 import { getWeaponsArray, setWeaponsOnCard } from "./weaponHelpers";
 
-export const WeaponProfileEditor = ({ card, weaponTypeKey, weaponIndex, profileIndex, config, replaceCard }) => {
+export const WeaponProfileEditor = ({
+  card,
+  weaponTypeKey,
+  weaponIndex,
+  profileIndex,
+  config,
+  replaceCard,
+  onSelectProfile,
+}) => {
   const { format, columns } = config;
   const weapons = getWeaponsArray(card, weaponTypeKey, format);
 
@@ -24,6 +32,7 @@ export const WeaponProfileEditor = ({ card, weaponTypeKey, weaponIndex, profileI
         profileIndex={profileIndex}
         columns={columns}
         setWeapons={setWeapons}
+        onSelectProfile={onSelectProfile}
       />
     );
   }
@@ -32,7 +41,7 @@ export const WeaponProfileEditor = ({ card, weaponTypeKey, weaponIndex, profileI
   return <FlatWeaponEditor weapons={weapons} weaponIndex={weaponIndex} columns={columns} setWeapons={setWeapons} />;
 };
 
-const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setWeapons }) => {
+const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setWeapons, onSelectProfile }) => {
   const weapon = weapons[weaponIndex];
   const profiles = weapon.profiles || [];
   const profile = profiles[profileIndex];
@@ -60,6 +69,8 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
     const updatedWeapons = [...weapons];
     updatedWeapons[weaponIndex] = { ...weapon, profiles: updatedProfiles };
     setWeapons(updatedWeapons);
+    const clampedIndex = Math.min(profileIndex, updatedProfiles.length - 1);
+    onSelectProfile?.(clampedIndex);
   };
 
   return (
@@ -103,39 +114,28 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
           <span>Add Profile</span>
         </button>
         {profiles.length > 1 && (
-          <button
-            className="mobile-editor-add-btn"
-            onClick={removeProfile}
-            type="button"
-            style={{
-              flex: 0,
-              borderColor: "var(--bs-danger)",
-              color: "var(--bs-danger)",
-              background: "var(--bs-danger-bg)",
-            }}>
+          <button className="mobile-editor-profile-delete-btn" onClick={removeProfile} type="button">
             <Trash2 size={14} />
           </button>
         )}
       </div>
 
-      {/* Show other profiles as navigation */}
+      {/* Profile switcher */}
       {profiles.length > 1 && (
-        <div>
+        <div className="mobile-editor-profile-switcher">
           <label className="mobile-editor-field-label">All Profiles ({profiles.length})</label>
-          {profiles.map((p, i) => (
-            <div
-              key={i}
-              style={{
-                padding: "8px 0",
-                borderBottom: "1px solid var(--bs-border-light)",
-                fontWeight: i === profileIndex ? 600 : 400,
-                color: i === profileIndex ? "var(--bs-accent)" : "var(--bs-text)",
-                fontSize: 14,
-              }}>
-              {p.name || `Profile ${i + 1}`}
-              {i === profileIndex && " (editing)"}
-            </div>
-          ))}
+          <div className="mobile-editor-profile-list">
+            {profiles.map((p, i) => (
+              <button
+                key={i}
+                type="button"
+                className={`mobile-editor-profile-item${i === profileIndex ? " active" : ""}`}
+                onClick={() => onSelectProfile?.(i)}>
+                <span className="mobile-editor-profile-item-name">{p.name || `Profile ${i + 1}`}</span>
+                {i === profileIndex && <span className="mobile-editor-profile-item-badge">editing</span>}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
