@@ -137,7 +137,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     });
 
   const isEnhancementDisabled = (enhancement) => {
-    return category?.cards?.some((c) => c?.selectedEnhancement?.name === enhancement?.name);
+    return category?.cards?.some((c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid);
   };
 
   const modalRoot = document.getElementById("modal-root");
