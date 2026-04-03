@@ -1,6 +1,6 @@
 import { Trash2 } from "lucide-react";
 import { Button, Card, Input, Popconfirm, Space, Switch, Typography } from "antd";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
 export function WarscrollWeapon({ weapon, index, type }) {
@@ -30,7 +30,13 @@ export function WarscrollWeapon({ weapon, index, type }) {
     });
   };
 
-  const keywords = weapon.keywords || weapon.abilities || [];
+  const keywordsArray = weapon.abilities?.length ? weapon.abilities : weapon.keywords?.length ? weapon.keywords : [];
+  const [keywordsText, setKeywordsText] = useState(keywordsArray.join(", "));
+
+  useEffect(() => {
+    const arr = weapon.abilities?.length ? weapon.abilities : weapon.keywords?.length ? weapon.keywords : [];
+    setKeywordsText(arr.join(", "));
+  }, [weapon.abilities, weapon.keywords]);
 
   return (
     <Card
@@ -106,11 +112,15 @@ export function WarscrollWeapon({ weapon, index, type }) {
           <div className="editor-keywords_row">
             <Input
               size="small"
-              value={keywords.join(", ")}
-              onChange={(e) =>
+              value={keywordsText}
+              onChange={(e) => setKeywordsText(e.target.value)}
+              onBlur={() =>
                 handleChange(
                   "abilities",
-                  e.target.value.split(",").map((k) => k.trim()),
+                  keywordsText
+                    .split(",")
+                    .map((k) => k.trim())
+                    .filter(Boolean),
                 )
               }
               placeholder="Keywords (e.g. Crit (Mortal), Anti-Infantry)"

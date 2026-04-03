@@ -807,6 +807,10 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
+.mobile-editor-stat-cell-full {
+  grid-column: 1 / -1;
+}
+
 /* ===========================================
    PROFILE SWITCHER
    =========================================== */

@@ -5,6 +5,9 @@ import { EditorTagInput } from "../shared/EditorTagInput";
 import { EditorToggle } from "../shared/EditorToggle";
 import { getWeaponsArray, setWeaponsOnCard } from "./weaponHelpers";
 
+// Columns that store arrays and need special handling
+const ARRAY_COLUMNS = new Set(["abilities"]);
+
 export const WeaponProfileEditor = ({
   card,
   weaponTypeKey,
@@ -161,29 +164,46 @@ const FlatWeaponEditor = ({ weapons, weaponIndex, columns, setWeapons }) => {
       />
 
       <div className="mobile-editor-profile-grid">
-        {columns?.map((col) => (
-          <EditorNumberField
-            key={col.key}
-            label={col.label}
-            value={weapon[col.key]}
-            onChange={(value) => updateWeapon(col.key, value)}
-          />
-        ))}
+        {columns
+          ?.filter((col) => !ARRAY_COLUMNS.has(col.key))
+          .map((col) => (
+            <EditorNumberField
+              key={col.key}
+              label={col.label}
+              value={weapon[col.key]}
+              onChange={(value) => updateWeapon(col.key, value)}
+            />
+          ))}
       </div>
+
+      {columns
+        ?.filter((col) => ARRAY_COLUMNS.has(col.key))
+        .map((col) => {
+          const arr = weapon[col.key];
+          return (
+            <EditorTextField
+              key={col.key}
+              label={col.label}
+              value={Array.isArray(arr) ? arr.join(", ") : arr || ""}
+              onChange={(value) =>
+                updateWeapon(
+                  col.key,
+                  value
+                    .split(",")
+                    .map((k) => k.trim())
+                    .filter(Boolean),
+                )
+              }
+              placeholder="Comma-separated values"
+            />
+          );
+        })}
 
       <EditorToggle
         label="Active"
         checked={weapon.active !== false}
         onChange={(value) => updateWeapon("active", value)}
       />
-
-      {weapon.keywords && (
-        <EditorTagInput
-          label="Keywords"
-          tags={Array.isArray(weapon.keywords) ? weapon.keywords : []}
-          onChange={(tags) => updateWeapon("keywords", tags)}
-        />
-      )}
     </div>
   );
 };

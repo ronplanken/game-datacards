@@ -31,7 +31,7 @@ const WEAPON_COLUMNS_AOS = [
   { key: "wound", label: "Wnd" },
   { key: "rend", label: "Rnd" },
   { key: "damage", label: "Dmg" },
-  { key: "abilities", label: "Ability" },
+  { key: "abilities", label: "Keywords", fullWidth: true },
 ];
 
 // AoS stat field definitions
