@@ -114,7 +114,7 @@ export const UnitLoadout = ({ unit }) => {
             </div>
           </div>
         )}
-        {unit.leads && (
+        {unit.leads && (unit.leads.units?.length > 0 || unit.leads.extra) && (
           <>
             <div className="heading">
               <div className="title">Leader</div>
