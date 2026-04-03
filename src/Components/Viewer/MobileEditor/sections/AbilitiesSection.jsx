@@ -1,7 +1,33 @@
 import { Plus, Trash2 } from "lucide-react";
 import { EditorAccordion } from "../shared/EditorAccordion";
 import { EditorTextField } from "../shared/EditorTextField";
+import { EditorSelectField } from "../shared/EditorSelectField";
 import { EditorTagInput } from "../shared/EditorTagInput";
+
+const AOS_PHASE_OPTIONS = [
+  { value: "Passive", label: "Passive" },
+  { value: "startOfTurn", label: "Start of Turn" },
+  { value: "Your Hero Phase", label: "Your Hero Phase" },
+  { value: "Enemy Hero Phase", label: "Enemy Hero Phase" },
+  { value: "Movement Phase", label: "Movement Phase" },
+  { value: "Shooting Phase", label: "Shooting Phase" },
+  { value: "Charge Phase", label: "Charge Phase" },
+  { value: "Combat Phase", label: "Combat Phase" },
+  { value: "Any Charge Phase", label: "Any Charge Phase" },
+  { value: "Any Combat Phase", label: "Any Combat Phase" },
+  { value: "End of Turn", label: "End of Turn" },
+  { value: "deployment", label: "Deployment" },
+];
+
+const AOS_ICON_OPTIONS = [
+  { value: "offensive", label: "Offensive (Swords)" },
+  { value: "defensive", label: "Defensive (Shield)" },
+  { value: "special", label: "Special (Star)" },
+  { value: "movement", label: "Movement" },
+  { value: "shooting", label: "Shooting" },
+  { value: "control", label: "Control (Flag)" },
+  { value: "battleDamaged", label: "Battle Damaged" },
+];
 
 export const AbilitiesSection = ({ card, config, label, icon, updateField, replaceCard }) => {
   const { format } = config;
@@ -119,7 +145,7 @@ const Abilities40k = ({ card, label, icon, replaceCard, config }) => {
   );
 };
 
-// AoS abilities: flat array with phase, declare, effect fields
+// AoS abilities: flat array with phase, icon, declare, effect fields
 const AbilitiesAos = ({ card, label, icon, replaceCard }) => {
   const abilities = card.abilities || [];
 
@@ -132,7 +158,18 @@ const AbilitiesAos = ({ card, label, icon, replaceCard }) => {
   const handleAdd = () => {
     replaceCard({
       ...card,
-      abilities: [...abilities, { name: "New Ability", phase: "Passive", declare: "", effect: "" }],
+      abilities: [
+        ...abilities,
+        {
+          name: "New Ability",
+          phase: "Passive",
+          icon: "special",
+          phaseDetails: "",
+          declare: "",
+          effect: "",
+          keywords: [],
+        },
+      ],
     });
   };
 
@@ -155,27 +192,58 @@ const AbilitiesAos = ({ card, label, icon, replaceCard }) => {
               <Trash2 size={14} />
             </button>
           </div>
-          <EditorTextField
+          <EditorSelectField
             label="Phase"
             value={ability.phase}
             onChange={(value) => handleUpdate(index, "phase", value)}
-            placeholder="e.g. Passive, Hero Phase"
+            options={AOS_PHASE_OPTIONS}
           />
-          {ability.declare !== undefined && (
-            <EditorTextField
-              label="Declare"
-              value={ability.declare}
-              onChange={(value) => handleUpdate(index, "declare", value)}
-              placeholder="Declare text"
-              multiline
-            />
-          )}
+          <EditorSelectField
+            label="Icon"
+            value={ability.icon}
+            onChange={(value) => handleUpdate(index, "icon", value)}
+            options={AOS_ICON_OPTIONS}
+          />
+          <EditorTextField
+            label="Phase Details"
+            value={ability.phaseDetails}
+            onChange={(value) => handleUpdate(index, "phaseDetails", value)}
+            placeholder="e.g. Once Per Turn (Army), Any Combat Phase"
+          />
+          <EditorTextField
+            label="Casting/Chant Value"
+            value={ability.castingValue || ability.chantValue || ""}
+            onChange={(value) => handleUpdate(index, "castingValue", value ? parseInt(value) : null)}
+            placeholder="e.g. 7"
+          />
+          <EditorTextField
+            label="Declare"
+            value={ability.declare}
+            onChange={(value) => handleUpdate(index, "declare", value)}
+            placeholder="Declare text"
+            multiline
+          />
           <EditorTextField
             label="Effect"
             value={ability.effect}
             onChange={(value) => handleUpdate(index, "effect", value)}
             placeholder="Effect text"
             multiline
+          />
+          <EditorTextField
+            label="Keywords"
+            value={Array.isArray(ability.keywords) ? ability.keywords.join(", ") : ability.keywords || ""}
+            onChange={(value) =>
+              handleUpdate(
+                index,
+                "keywords",
+                value
+                  .split(",")
+                  .map((k) => k.trim())
+                  .filter(Boolean),
+              )
+            }
+            placeholder="Comma-separated keywords"
           />
         </div>
       ))}

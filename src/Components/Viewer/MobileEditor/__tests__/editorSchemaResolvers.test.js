@@ -172,7 +172,7 @@ describe("editorSchemaResolvers", () => {
       const statsSection = sections.find((s) => s.type === "stats");
 
       expect(statsSection.config.flatObject).toBe(true);
-      expect(statsSection.config.fields.map((f) => f.key)).toEqual(["move", "save", "control", "health"]);
+      expect(statsSection.config.fields.map((f) => f.key)).toEqual(["move", "save", "control", "health", "ward", "wizard", "priest"]);
     });
 
     it("should use AoS weapon format", () => {

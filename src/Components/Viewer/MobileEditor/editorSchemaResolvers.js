@@ -40,6 +40,9 @@ const STATS_AOS = [
   { key: "save", label: "Save" },
   { key: "control", label: "Control" },
   { key: "health", label: "Health" },
+  { key: "ward", label: "Ward" },
+  { key: "wizard", label: "Wizard" },
+  { key: "priest", label: "Priest" },
 ];
 
 /**
