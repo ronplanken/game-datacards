@@ -12,6 +12,7 @@ import {
   IconEyeOff,
   IconCopy,
   IconLayoutBottombar,
+  IconResize,
 } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
@@ -223,6 +224,25 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+              {baseSystem !== "40k-10e" && (
+                <div className="props-compact-input">
+                  <Tooltip content="Badge size" placement="top">
+                    <span className="props-compact-label">
+                      <IconResize size={10} stroke={1.5} />
+                    </span>
+                  </Tooltip>
+                  <select
+                    className="props-compact-field"
+                    value={field.size || "large"}
+                    onChange={(e) =>
+                      updateField(index, "size", e.target.value === "large" ? undefined : e.target.value)
+                    }
+                    aria-label="Badge size">
+                    <option value="large">Large</option>
+                    <option value="small">Small</option>
+                  </select>
                 </div>
               )}
               {baseSystem !== "40k-10e" && (

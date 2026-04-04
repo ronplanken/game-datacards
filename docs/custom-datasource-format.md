@@ -166,7 +166,8 @@ The remaining fields on a card depend on its `baseType` as defined in the schema
     "special-rules": [
       {
         "name": "Ability Name",
-        "description": "Ability description text."
+        "description": "Ability description text.",
+        "showAbility": true
       }
     ]
   },
@@ -183,7 +184,7 @@ The remaining fields on a card depend on its `baseType` as defined in the schema
 |------------------|-------------|
 | `stats`          | Array of stat profile objects. Keys match the schema's `stats.fields[].key` values. |
 | `weapons`        | Object keyed by weapon type key (from `schema.weaponTypes.types[].key`). Each value is an array of weapon objects whose fields match the weapon type's `columns[].key` values. |
-| `abilities`      | Object keyed by ability category key (from `schema.abilities.categories[].key`). Each value is an array of `{ name, description }` objects. |
+| `abilities`      | Object keyed by ability category key (from `schema.abilities.categories[].key`). Each value is an array of `{ name, description, showAbility }` objects. A legacy flat array format (`[{ category, name, description }]`) is also accepted and converted to nested object format on edit. |
 | `sections`       | Object keyed by section key (from `schema.sections.sections[].key`). Each value is an array of items. |
 | `keywords`       | Array of keyword strings. Present when `schema.metadata.hasKeywords` is true. |
 | `factionKeywords`| Array of faction keyword strings. Present when `schema.metadata.hasFactionKeywords` is true. |
@@ -398,7 +399,8 @@ Compatible hosts: GitHub raw files, GitHub Pages, any static host with CORS head
             "special-rules": [
               {
                 "name": "Choppas",
-                "description": "Re-roll To Wound rolls of 1 on the turn this unit charged."
+                "description": "Re-roll To Wound rolls of 1 on the turn this unit charged.",
+                "showAbility": true
               }
             ]
           },
