@@ -562,8 +562,11 @@ const validateFieldDefinition = (field, path) => {
   if (field.offValue !== undefined && typeof field.offValue !== "string") {
     errors.push(`${path}: "offValue" must be a string`);
   }
-  if (field.position !== undefined && field.position !== "left" && field.position !== "right") {
-    errors.push(`${path}: "position" must be "left" or "right"`);
+  if (field.position !== undefined && !["left", "right", "above", "below"].includes(field.position)) {
+    errors.push(`${path}: "position" must be "left", "right", "above", or "below"`);
+  }
+  if (field.size !== undefined && !["large", "small"].includes(field.size)) {
+    errors.push(`${path}: "size" must be "large" or "small"`);
   }
   if (field.color !== undefined && typeof field.color !== "string") {
     errors.push(`${path}: "color" must be a string`);

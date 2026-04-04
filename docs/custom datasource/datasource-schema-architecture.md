@@ -222,6 +222,7 @@ When `baseSystem` is not `"40k-10e"` (i.e. AoS or blank), stat fields gain addit
 | Property   | Type   | Description                                                    |
 |------------|--------|----------------------------------------------------------------|
 | `position` | string | `"left"`, `"right"`, `"above"`, or `"below"` — controls where the stat badge appears on the card. |
+| `size`     | string | `"large"` (default) or `"small"` — controls the badge rendering style. Large renders the full square block; small renders the compact inline badge. When omitted, defaults to large for left/above/below and small for right. |
 | `color`    | string | Hex colour for the stat badge background.                      |
 | `width`    | string | `"fixed"` (default) or `"fit"` — when `"fit"`, the badge expands to fit its content instead of using a fixed width. Only applies to `type: "string"` fields. |
 
