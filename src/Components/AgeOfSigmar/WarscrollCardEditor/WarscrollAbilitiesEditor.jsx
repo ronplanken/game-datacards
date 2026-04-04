@@ -3,6 +3,7 @@ import { Form, Input, Button, Select, Card } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { v4 as uuidv4 } from "uuid";
+import { AOS_PHASE_OPTIONS, AOS_ICON_OPTIONS } from "../constants";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -66,18 +67,11 @@ export function WarscrollAbilitiesEditor() {
                 value={ability.phase || "Passive"}
                 onChange={(value) => updateAbility(index, "phase", value)}
                 showSearch>
-                <Option value="Passive">Passive</Option>
-                <Option value="startOfTurn">Start of Turn</Option>
-                <Option value="Your Hero Phase">Your Hero Phase</Option>
-                <Option value="Enemy Hero Phase">Enemy Hero Phase</Option>
-                <Option value="Movement Phase">Movement Phase</Option>
-                <Option value="Shooting Phase">Shooting Phase</Option>
-                <Option value="Charge Phase">Charge Phase</Option>
-                <Option value="Combat Phase">Combat Phase</Option>
-                <Option value="Any Charge Phase">Any Charge Phase</Option>
-                <Option value="Any Combat Phase">Any Combat Phase</Option>
-                <Option value="End of Turn">End of Turn</Option>
-                <Option value="deployment">Deployment</Option>
+                {AOS_PHASE_OPTIONS.map((opt) => (
+                  <Option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </Option>
+                ))}
               </Select>
             </Form.Item>
             <Form.Item label={"Icon"}>
@@ -85,13 +79,11 @@ export function WarscrollAbilitiesEditor() {
                 value={ability.icon || "special"}
                 onChange={(value) => updateAbility(index, "icon", value)}
                 showSearch>
-                <Option value="offensive">Offensive (Swords)</Option>
-                <Option value="defensive">Defensive (Shield)</Option>
-                <Option value="special">Special (Star)</Option>
-                <Option value="movement">Movement</Option>
-                <Option value="shooting">Shooting</Option>
-                <Option value="control">Control (Flag)</Option>
-                <Option value="battleDamaged">Battle Damaged</Option>
+                {AOS_ICON_OPTIONS.map((opt) => (
+                  <Option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </Option>
+                ))}
               </Select>
             </Form.Item>
             <Form.Item label={"Phase Details"}>
