@@ -232,6 +232,7 @@ export const DatasourceUpdateBadge = () => null;
 export const UpgradeModal = () => null;
 export const UsageIndicator = () => null;
 export const SubscriptionBadge = () => null;
+export const PremiumUpgradeButton = () => null;
 
 // =====================================================
 // CUSTOM DATASOURCE COMPONENTS - All render null

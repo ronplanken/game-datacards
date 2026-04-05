@@ -13,6 +13,7 @@ import {
   SyncStatusIndicator,
   DatasourceUpdateBadge,
   CommunityBrowserModal,
+  PremiumUpgradeButton,
 } from "../Premium";
 import { useFeatureFlags } from "../Hooks/useFeatureFlags";
 import { Discord } from "../Icons/Discord";
@@ -112,6 +113,7 @@ export const AppHeader = ({
             {effectiveShowActions && screens.md && (
               <>
                 <div className="app-header-group">
+                  <PremiumUpgradeButton />
                   <DatasourceSelector />
                   {activeCategory && activeCategory.cards?.length > 0 && <ShareModal />}
                 </div>

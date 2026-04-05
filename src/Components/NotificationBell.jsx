@@ -18,6 +18,14 @@ const formatTimestamp = (timestamp) => {
   return date.toLocaleDateString();
 };
 
+// Check if a message timestamp is within the last 7 days
+const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
+const isRecentMessage = (timestamp) => {
+  if (!timestamp) return false;
+  const now = Date.now() / 1000;
+  return now - timestamp < SEVEN_DAYS_IN_SECONDS;
+};
+
 export const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -59,7 +67,7 @@ export const NotificationBell = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  const unreadCount = messages.filter((m) => m.id > settings.serviceMessage).length;
+  const unreadCount = messages.filter((m) => m.id > settings.serviceMessage && isRecentMessage(m.timestamp)).length;
 
   const markAllRead = () => {
     updateSettings({ ...settings, serviceMessage: lastMessageId });
@@ -95,7 +103,7 @@ export const NotificationBell = () => {
               <div
                 key={msg.id}
                 className={`notification-item ${
-                  msg.id > settings.serviceMessage ? "notification-item--unread" : ""
+                  msg.id > settings.serviceMessage && isRecentMessage(msg.timestamp) ? "notification-item--unread" : ""
                 } ${isOpen && index < 5 ? "notification-item--animate" : ""}`}>
                 <div className="notification-item-header">
                   <span className="notification-item-title">{msg.title}</span>
@@ -104,7 +112,9 @@ export const NotificationBell = () => {
                       {msg.severity}
                     </span>
                   )}
-                  {msg.id > settings.serviceMessage && <span className="notification-item-badge">New</span>}
+                  {msg.id > settings.serviceMessage && isRecentMessage(msg.timestamp) && (
+                    <span className="notification-item-badge">New</span>
+                  )}
                 </div>
                 <p className="notification-item-body">{msg.body}</p>
                 <div className="notification-item-meta">
