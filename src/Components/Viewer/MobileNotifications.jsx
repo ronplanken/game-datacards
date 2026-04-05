@@ -19,6 +19,14 @@ const formatTimestamp = (timestamp) => {
   return date.toLocaleDateString();
 };
 
+// Check if a message timestamp is within the last 7 days
+const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
+const isRecentMessage = (timestamp) => {
+  if (!timestamp) return false;
+  const now = Date.now() / 1000;
+  return now - timestamp < SEVEN_DAYS_IN_SECONDS;
+};
+
 export const MobileNotifications = ({ isVisible, setIsVisible }) => {
   const [messages, setMessages] = useState([]);
   const [lastMessageId, setLastMessageId] = useState(0);
@@ -35,7 +43,8 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
     }
   }, [isVisible]);
 
-  const unreadCount = messages.filter((m) => m.id > settings.serviceMessage).length;
+  const isActiveUnread = (m) => m.active !== false && m.id > settings.serviceMessage && isRecentMessage(m.timestamp);
+  const unreadCount = messages.filter(isActiveUnread).length;
 
   const markAllRead = () => {
     updateSettings({ ...settings, serviceMessage: lastMessageId });
@@ -63,7 +72,7 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
               <div
                 key={msg.id}
                 className={`mobile-notification-item ${
-                  msg.id > settings.serviceMessage ? "mobile-notification-item--unread" : ""
+                  isActiveUnread(msg) ? "mobile-notification-item--unread" : ""
                 }`}>
                 <div className="mobile-notification-item-header">
                   <span className="mobile-notification-item-title">{msg.title}</span>
@@ -73,7 +82,7 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
                       {msg.severity}
                     </span>
                   )}
-                  {msg.id > settings.serviceMessage && <span className="mobile-notification-item-badge">New</span>}
+                  {isActiveUnread(msg) && <span className="mobile-notification-item-badge">New</span>}
                 </div>
                 <p className="mobile-notification-item-body">{msg.body}</p>
                 <div className="mobile-notification-item-meta">

@@ -23,11 +23,14 @@ vi.mock("../../Hooks/useSettingsStorage", () => ({
 
 import { NotificationBell } from "../NotificationBell";
 
+const recentTimestamp = () => Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
+const oldTimestamp = () => Math.floor(Date.now() / 1000) - 8 * 86400; // 8 days ago
+
 const mockMessages = {
   messages: [
-    { id: 1, title: "First", body: "First message", severity: "info", author: "Admin", timestamp: 1700000000 },
-    { id: 2, title: "Second", body: "Second message", severity: "warning", timestamp: 1700000100 },
-    { id: 3, title: "Third", body: "Third message", severity: "error", timestamp: 1700000200 },
+    { id: 1, title: "First", body: "First message", severity: "info", author: "Admin", timestamp: recentTimestamp() },
+    { id: 2, title: "Second", body: "Second message", severity: "warning", timestamp: recentTimestamp() },
+    { id: 3, title: "Third", body: "Third message", severity: "error", timestamp: recentTimestamp() },
   ],
   lastMessageId: 3,
 };
@@ -180,6 +183,7 @@ describe("NotificationBell", () => {
         id: i + 1,
         title: `Message ${i + 1}`,
         body: `Body ${i + 1}`,
+        timestamp: recentTimestamp(),
       })),
       lastMessageId: 6,
     };
@@ -192,6 +196,85 @@ describe("NotificationBell", () => {
     await waitFor(() => {
       const items = document.querySelectorAll(".notification-item--animate");
       expect(items.length).toBe(5);
+    });
+  });
+
+  it("does not count old messages in unread badge", async () => {
+    mockGetMessages.mockResolvedValue({
+      messages: [
+        { id: 1, title: "Old", body: "Old message", timestamp: oldTimestamp() },
+        { id: 2, title: "Recent", body: "Recent message", timestamp: recentTimestamp() },
+      ],
+      lastMessageId: 2,
+    });
+    render(<NotificationBell />);
+    await waitFor(() => {
+      expect(screen.getByText("1")).toBeInTheDocument();
+    });
+  });
+
+  it("shows old unread messages without New badge or unread styling", async () => {
+    mockSettings = { serviceMessage: 0 };
+    mockGetMessages.mockResolvedValue({
+      messages: [
+        { id: 1, title: "OldMsg", body: "Old", timestamp: oldTimestamp() },
+        { id: 2, title: "RecentMsg", body: "Recent", timestamp: recentTimestamp() },
+      ],
+      lastMessageId: 2,
+    });
+    const user = userEvent.setup();
+    render(<NotificationBell />);
+    await user.click(screen.getByRole("button"));
+    await waitFor(() => {
+      expect(screen.getByText("OldMsg")).toBeInTheDocument();
+      expect(screen.getByText("RecentMsg")).toBeInTheDocument();
+      const badges = screen.getAllByText("New");
+      expect(badges).toHaveLength(1);
+    });
+  });
+
+  it("does not count messages without timestamp as recent", async () => {
+    mockGetMessages.mockResolvedValue({
+      messages: [{ id: 1, title: "NoTimestamp", body: "No ts" }],
+      lastMessageId: 1,
+    });
+    render(<NotificationBell />);
+    await waitFor(() => {
+      expect(document.querySelector(".notification-badge")).not.toBeInTheDocument();
+    });
+  });
+
+  it("does not count inactive messages in unread badge", async () => {
+    mockGetMessages.mockResolvedValue({
+      messages: [
+        { id: 1, title: "Inactive", body: "Inactive msg", active: false, timestamp: recentTimestamp() },
+        { id: 2, title: "Active", body: "Active msg", active: true, timestamp: recentTimestamp() },
+      ],
+      lastMessageId: 2,
+    });
+    render(<NotificationBell />);
+    await waitFor(() => {
+      expect(screen.getByText("1")).toBeInTheDocument();
+    });
+  });
+
+  it("shows inactive messages in list but without New badge", async () => {
+    mockSettings = { serviceMessage: 0 };
+    mockGetMessages.mockResolvedValue({
+      messages: [
+        { id: 1, title: "InactiveMsg", body: "Inactive", active: false, timestamp: recentTimestamp() },
+        { id: 2, title: "ActiveMsg", body: "Active", active: true, timestamp: recentTimestamp() },
+      ],
+      lastMessageId: 2,
+    });
+    const user = userEvent.setup();
+    render(<NotificationBell />);
+    await user.click(screen.getByRole("button"));
+    await waitFor(() => {
+      expect(screen.getByText("InactiveMsg")).toBeInTheDocument();
+      expect(screen.getByText("ActiveMsg")).toBeInTheDocument();
+      const badges = screen.getAllByText("New");
+      expect(badges).toHaveLength(1);
     });
   });
 });
