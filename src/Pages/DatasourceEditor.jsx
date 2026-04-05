@@ -50,6 +50,13 @@ export const DatasourceEditorPage = () => {
   // Import dialog state
   const [importOpen, setImportOpen] = useState(false);
 
+  // Post-create banner state
+  const [postCreateInfo, setPostCreateInfo] = useState(null);
+
+  const handleDismissPostCreate = useCallback(() => {
+    setPostCreateInfo(null);
+  }, []);
+
   const handleNewDatasource = useCallback(() => {
     setWizardMode("create");
     setWizardKey((k) => k + 1);
@@ -82,6 +89,7 @@ export const DatasourceEditorPage = () => {
           const data = await getCustomDatasourceData(createResult.id);
           if (data) {
             setCreatedDatasource(data);
+            setPostCreateInfo({ datasourceName: name });
           }
         }
       } else if (wizardMode === "add-card-type" && activeDatasource) {
@@ -236,7 +244,16 @@ export const DatasourceEditorPage = () => {
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />
           <Panel defaultSize={52} minSize={30} order={2}>
-            <EditorCenterPanel selectedItem={selectedItem} activeDatasource={activeDatasource} />
+            <EditorCenterPanel
+              selectedItem={selectedItem}
+              activeDatasource={activeDatasource}
+              datasourceCount={datasources.length}
+              onNewDatasource={handleNewDatasource}
+              postCreateInfo={postCreateInfo}
+              onDismissPostCreate={handleDismissPostCreate}
+              onAddCardType={handleAddCardType}
+              onSelectDatasource={() => activeDatasource && selectDatasource(activeDatasource)}
+            />
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />
           <Panel defaultSize={22} minSize={15} maxSize={35} order={3}>

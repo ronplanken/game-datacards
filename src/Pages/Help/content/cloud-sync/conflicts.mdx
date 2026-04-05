@@ -1,0 +1,29 @@
+## Resolving Conflicts
+
+A conflict occurs when the same item is edited on two different devices before either change is synced. The system detects this by comparing version numbers — if both the local version and the cloud version have advanced since the last successful sync, a conflict is raised.
+
+### When conflicts happen
+
+Conflicts are checked:
+
+- When you log in (once per session)
+- When reconnecting after being offline
+- Before each automatic sync upload
+
+### Resolution options
+
+When a conflict is detected, a dialog appears with these options:
+
+| Option | What happens |
+|--------|-------------|
+| **Keep local** | Your local version overwrites the cloud copy. Changes from the other device are lost. |
+| **Keep cloud** | The cloud version overwrites your local copy. Your local changes are lost. |
+| **Keep both** | Your local version is duplicated as a new item. The cloud version is downloaded separately. You end up with two copies. |
+
+### Avoiding conflicts
+
+The easiest way to avoid conflicts is to work on one device at a time, or to wait for sync to complete before switching devices. The 2-second sync delay means most changes are uploaded almost immediately.
+
+### Offline editing
+
+When you are offline, changes are saved locally and marked as "pending". When your connection returns, the system automatically attempts to sync. If the cloud version changed while you were offline, you will see a conflict dialog.

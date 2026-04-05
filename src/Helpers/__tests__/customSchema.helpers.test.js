@@ -1044,6 +1044,39 @@ describe("customSchema.helpers - validateSchema", () => {
       const result = validateSchema(schema);
       expect(result.valid).toBe(true);
     });
+
+    it("rejects stat field with invalid size value", () => {
+      const ct = validUnitCardType();
+      ct.schema.stats.fields = [{ key: "m", label: "M", type: "string", size: "medium" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes("size"))).toBe(true);
+    });
+
+    it("accepts stat field with size small", () => {
+      const ct = validUnitCardType();
+      ct.schema.stats.fields = [{ key: "m", label: "M", type: "string", size: "small" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it("accepts stat field with size large", () => {
+      const ct = validUnitCardType();
+      ct.schema.stats.fields = [{ key: "m", label: "M", type: "string", size: "large" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
+
+    it("accepts stat field without size (undefined)", () => {
+      const ct = validUnitCardType();
+      ct.schema.stats.fields = [{ key: "m", label: "M", type: "string" }];
+      const schema = { ...minimalValidSchema(), cardTypes: [ct] };
+      const result = validateSchema(schema);
+      expect(result.valid).toBe(true);
+    });
   });
 
   describe("preset validation", () => {

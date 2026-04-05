@@ -132,7 +132,9 @@ export const AppHeader = ({
                 <span className="app-header-separator" />
                 <div className="app-header-group">
                   <Tooltip content="Designer Help" placement="bottom-end">
-                    <button className="app-header-icon-btn" onClick={() => navigate("/designer/help")}>
+                    <button
+                      className="app-header-icon-btn"
+                      onClick={() => navigate("/help/card-designer/getting-started")}>
                       <HelpCircle size={18} />
                     </button>
                   </Tooltip>
@@ -146,7 +148,9 @@ export const AppHeader = ({
                 <span className="app-header-separator" />
                 <div className="app-header-group">
                   <Tooltip content="Datasource Help" placement="bottom-end">
-                    <button className="app-header-icon-btn" onClick={() => navigate("/datasources/help")}>
+                    <button
+                      className="app-header-icon-btn"
+                      onClick={() => navigate("/help/datasource-editor/getting-started")}>
                       <HelpCircle size={18} />
                     </button>
                   </Tooltip>

@@ -1,0 +1,37 @@
+## Weapons
+
+Define weapon types for your unit cards — typically one for ranged weapons and one for melee weapons. Each weapon type is a separate tab in the weapons editor.
+
+### Weapon type properties
+
+Each weapon type has these settings:
+
+| Property | Description |
+|----------|-------------|
+| **Key** | Internal identifier (e.g., `ranged`, `melee`). Must be unique. |
+| **Label** | Display name (e.g., "Ranged Weapons"). |
+| **Keywords** | Toggle whether weapons of this type support keywords (like *Rapid Fire* or *Devastating Wounds*). When enabled, each weapon entry gets a keywords input field. |
+| **Multiple profiles** | Toggle whether weapons can have multiple profiles (like a combi-weapon with two firing modes). When enabled, each weapon can have sub-entries with different stat lines. |
+
+### Weapon columns
+
+Each weapon type has a set of columns that define its stat line. Columns work like fields — each one has a key, label, and type.
+
+| Column property | Description |
+|----------------|-------------|
+| **Key** | Internal identifier (e.g., `range`, `a`, `s`). |
+| **Label** | Column header shown on the card (e.g., "Range", "A", "S"). |
+| **Type** | Data type: **text**, **enum**, or **boolean**. Rich text is not available for weapon columns. |
+| **Display** | How the column renders: **column** (standard table column) or **row** (shown as a row below the main stat line). Row display is useful for special properties that don't fit in the table. |
+| **Display label** | When using row display, whether to show the column label before the value. Defaults to yes. |
+| **Visual** | When using row display: **text** (plain text) or **badge** (styled badge). |
+
+### Default 40K weapon columns
+
+The 40K preset creates two weapon types:
+
+**Ranged Weapons**: Range, A (Attacks), BS (Ballistic Skill), S (Strength), AP, D (Damage)
+
+**Melee Weapons**: Range, A (Attacks), WS (Weapon Skill), S (Strength), AP, D (Damage)
+
+Both types have keywords and multiple profiles enabled by default.

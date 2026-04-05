@@ -1,0 +1,34 @@
+## Common Issues
+
+### The page is blank or shows an error
+
+If the app fails to load:
+
+1. **Hard refresh** — Press <Kbd mod>Shift</Kbd> + <Kbd>R</Kbd> (or <Kbd mod>Shift</Kbd> + <Kbd>F5</Kbd>) to bypass the cache.
+2. **Clear site data** — Go to your browser's developer tools, Application tab, and clear storage for the site. Note: this removes local data unless you have cloud sync.
+3. **Check browser compatibility** — Game Datacards requires a modern browser (Chrome, Firefox, Edge, or Safari). Internet Explorer is not supported.
+
+### Datasource import fails
+
+If importing a datasource JSON file fails:
+
+- **Drag and drop** — Try using the file picker instead of drag-and-drop, or vice versa.
+- **Invalid JSON** — Open the file in a text editor and check for syntax errors. The file must be valid JSON.
+- **Wrong format** — The file must be a datasource schema export, not a card data export or a different application's file.
+- **Validation errors** — The import dialog shows specific validation errors. Read them carefully — they tell you exactly what is wrong with the file.
+
+### Card preview is not updating
+
+If the card preview in the center panel stops reflecting changes:
+
+1. Select a different card, then select the original card again.
+2. Refresh the page if the issue persists.
+3. Check the browser console (F12) for error messages.
+
+### App is slow or laggy
+
+If the app feels slow:
+
+- **Too many cards** — Having hundreds of cards in a single datasource can slow down the editor. Consider splitting large datasources into multiple smaller ones.
+- **Large images** — Templates with many embedded images can increase memory usage. Use smaller image files where possible.
+- **Browser extensions** — Some ad blockers or privacy extensions can interfere with performance. Try disabling them for the site.

@@ -21,6 +21,7 @@ vi.mock("lucide-react", () => ({
   FolderOpen: (props) => <svg data-testid="icon-folder-open" {...props} />,
   Download: (props) => <svg data-testid="icon-download" {...props} />,
   Upload: (props) => <svg data-testid="icon-upload" {...props} />,
+  HelpCircle: (props) => <svg data-testid="icon-help" {...props} />,
 }));
 
 const mockDatasource = {
@@ -40,24 +41,14 @@ const mockDatasources = [mockDatasource, { id: "ds-2", name: "Other DS", version
 
 describe("EditorLeftPanel", () => {
   describe("empty state", () => {
-    it("renders empty state when no datasources and no active datasource", () => {
+    it("renders onboarding when no datasources and no active datasource", () => {
       render(<EditorLeftPanel datasources={[]} />);
-      expect(screen.getByText("No custom datasources yet")).toBeInTheDocument();
+      expect(screen.getByText("Custom Datasources")).toBeInTheDocument();
     });
 
-    it("renders New Datasource CTA button in empty state", () => {
-      const onNewDatasource = vi.fn();
-      render(<EditorLeftPanel datasources={[]} onNewDatasource={onNewDatasource} />);
-      const btn = screen.getByText("New Datasource");
-      expect(btn).toBeInTheDocument();
-    });
-
-    it("calls onNewDatasource when CTA button clicked", async () => {
-      const user = userEvent.setup();
-      const onNewDatasource = vi.fn();
-      render(<EditorLeftPanel datasources={[]} onNewDatasource={onNewDatasource} />);
-      await user.click(screen.getByText("New Datasource"));
-      expect(onNewDatasource).toHaveBeenCalledTimes(1);
+    it("renders description in onboarding", () => {
+      render(<EditorLeftPanel datasources={[]} />);
+      expect(screen.getByText(/Build your own card formats/)).toBeInTheDocument();
     });
   });
 

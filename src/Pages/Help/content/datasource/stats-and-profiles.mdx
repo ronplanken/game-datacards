@@ -1,0 +1,37 @@
+## Stats and Profiles
+
+Unit card types have a dedicated stats editor for defining stat lines like Movement, Toughness, Wounds, and Save. Stats appear as the main row of values at the top of each unit card.
+
+### Stat properties
+
+Each stat field supports the following properties:
+
+| Property | Description |
+|----------|-------------|
+| **Key** | Internal identifier (e.g., `m`, `t`, `sv`). Must be unique. |
+| **Label** | Display name shown on the card (e.g., "Movement"). |
+| **Type** | Data type: **text**, **enum** (dropdown), or **boolean** (toggle). Rich text is not available for stats. |
+| **Special** | Marks the stat with a highlight color. Useful for invulnerable saves or unique values that should stand out. |
+| **Special color** | The highlight color used when **special** is enabled (e.g., purple for invulnerable saves). |
+| **Hide when empty** | Hides the stat on cards where it has no value. Combine with **special** for stats that only appear on certain units (like an invulnerable save). |
+
+### Age of Sigmar stat properties
+
+AoS base systems expose additional properties per stat:
+
+| Property | Description |
+|----------|-------------|
+| **Position** | Where the stat badge appears: `left`, `right`, `above`, or `below`. |
+| **Size** | Badge size: `large` or `small`. |
+| **Color** | Badge background color. |
+| **Width** | Badge sizing mode: `fixed` width or `fit` to content. |
+
+These properties are hidden for 40K datasources, which use a fixed horizontal stat bar layout.
+
+### Multiple profiles
+
+Turn on **Allow multiple profiles** when a unit has models with different stat lines. For example, a squad where the sergeant has better stats than the rest of the unit. When enabled, the card data editor shows controls to add and manage multiple stat rows per card.
+
+### Default 40K stat line
+
+The 40K preset creates these stats: **M** (Movement), **T** (Toughness), **SV** (Save), **W** (Wounds), **LD** (Leadership), **OC** (Objective Control), and **INV** (Invulnerable Save — marked as special with purple highlight and hide-when-empty).

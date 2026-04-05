@@ -21,6 +21,12 @@ vi.mock("lucide-react", () => ({
   Sparkles: (props) => <svg data-testid="icon-sparkles" {...props} />,
   Zap: (props) => <svg data-testid="icon-zap" {...props} />,
   Database: (props) => <svg data-testid="icon-database" {...props} />,
+  PenLine: (props) => <svg data-testid="icon-penline" {...props} />,
+  Printer: (props) => <svg data-testid="icon-printer" {...props} />,
+  Plus: (props) => <svg data-testid="icon-plus" {...props} />,
+  CheckCircle2: (props) => <svg data-testid="icon-check" {...props} />,
+  X: (props) => <svg data-testid="icon-x" {...props} />,
+  HelpCircle: (props) => <svg data-testid="icon-help" {...props} />,
 }));
 
 const mockUnitCardType = {
@@ -86,20 +92,68 @@ const mockDatasource = {
 };
 
 describe("EditorCenterPanel", () => {
+  describe("onboarding state", () => {
+    it("renders onboarding center panel when datasourceCount is 0 and no selection", () => {
+      render(<EditorCenterPanel selectedItem={null} activeDatasource={null} datasourceCount={0} />);
+      expect(screen.getByText("How It Works")).toBeInTheDocument();
+    });
+
+    it("renders Get Started CTA in onboarding", () => {
+      const onNewDatasource = vi.fn();
+      render(
+        <EditorCenterPanel
+          selectedItem={null}
+          activeDatasource={null}
+          datasourceCount={0}
+          onNewDatasource={onNewDatasource}
+        />,
+      );
+      expect(screen.getByText("Get Started")).toBeInTheDocument();
+    });
+  });
+
   describe("empty state", () => {
-    it("renders empty state when no selection", () => {
-      render(<EditorCenterPanel selectedItem={null} activeDatasource={null} />);
+    it("renders empty state when no selection but datasources exist", () => {
+      render(<EditorCenterPanel selectedItem={null} activeDatasource={null} datasourceCount={1} />);
       expect(screen.getByText("Select a card type to view its structure")).toBeInTheDocument();
     });
 
     it("renders empty state when selectedItem is null but datasource exists", () => {
-      render(<EditorCenterPanel selectedItem={null} activeDatasource={mockDatasource} />);
+      render(<EditorCenterPanel selectedItem={null} activeDatasource={mockDatasource} datasourceCount={1} />);
       expect(screen.getByText("Select a card type to view its structure")).toBeInTheDocument();
     });
 
     it("renders empty state when datasource is null but selectedItem exists", () => {
-      render(<EditorCenterPanel selectedItem={{ type: "datasource" }} activeDatasource={null} />);
+      render(<EditorCenterPanel selectedItem={{ type: "datasource" }} activeDatasource={null} datasourceCount={1} />);
       expect(screen.getByText("Select a card type to view its structure")).toBeInTheDocument();
+    });
+  });
+
+  describe("post-create banner", () => {
+    it("renders post-create banner when postCreateInfo is set", () => {
+      render(
+        <EditorCenterPanel
+          selectedItem={{ type: "datasource" }}
+          activeDatasource={mockDatasource}
+          datasourceCount={1}
+          postCreateInfo={{ datasourceName: "Test DS" }}
+          onDismissPostCreate={vi.fn()}
+          onAddCardType={vi.fn()}
+          onSelectDatasource={vi.fn()}
+        />,
+      );
+      expect(screen.getByText(/Test DS/)).toBeInTheDocument();
+    });
+
+    it("does not render post-create banner when postCreateInfo is null", () => {
+      render(
+        <EditorCenterPanel
+          selectedItem={{ type: "datasource" }}
+          activeDatasource={mockDatasource}
+          datasourceCount={1}
+        />,
+      );
+      expect(screen.queryByText("Here are some things to try next:")).not.toBeInTheDocument();
     });
   });
 
