@@ -530,6 +530,228 @@
 }
 
 /* ===========================================
+   ONBOARDING EMPTY STATES
+   =========================================== */
+
+.designer-onboarding-heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--designer-text-primary);
+}
+
+.designer-onboarding-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--designer-text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.designer-onboarding-link:hover {
+  color: var(--designer-accent);
+}
+
+/* Center panel onboarding */
+
+.designer-onboarding-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 48px 32px;
+  text-align: center;
+  animation: designer-fade-in 0.3s ease-out;
+}
+
+.designer-onboarding-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--designer-text-primary);
+}
+
+.designer-onboarding-subtitle {
+  margin: 0 0 32px;
+  font-size: 13px;
+  color: var(--designer-text-tertiary);
+}
+
+.designer-onboarding-steps {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  max-width: 720px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.designer-onboarding-step {
+  flex: 1;
+  min-width: 180px;
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  background: var(--designer-bg-primary);
+  border-radius: var(--designer-radius-md);
+  box-shadow: var(--designer-shadow);
+  animation: designer-fade-in 0.3s ease-out backwards;
+}
+
+.designer-onboarding-step:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.designer-onboarding-step:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.designer-onboarding-step-icon {
+  color: var(--designer-accent);
+}
+
+.designer-onboarding-step-number {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--designer-accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.designer-onboarding-step h4 {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--designer-text-primary);
+}
+
+.designer-onboarding-step p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--designer-text-secondary);
+  line-height: 1.4;
+}
+
+.designer-onboarding-center .designer-template-btn {
+  width: auto;
+  padding: 0 24px;
+}
+
+.designer-onboarding-help-link {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: var(--designer-text-tertiary);
+}
+
+.designer-onboarding-help-link a {
+  color: var(--designer-accent);
+  text-decoration: none;
+}
+
+.designer-onboarding-help-link a:hover {
+  text-decoration: underline;
+}
+
+/* Post-create banner */
+
+.designer-post-create-banner {
+  margin: 12px;
+  padding: 16px;
+  background: var(--designer-bg-primary);
+  border-radius: var(--designer-radius-md);
+  border-left: 3px solid var(--designer-success);
+  box-shadow: var(--designer-shadow);
+  animation: designer-fade-in 0.3s ease-out;
+  transition: opacity 0.2s ease;
+}
+
+.designer-post-create-banner.exiting {
+  opacity: 0;
+}
+
+.designer-post-create-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.designer-post-create-header > svg {
+  color: var(--designer-success);
+  flex-shrink: 0;
+}
+
+.designer-post-create-header > span {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--designer-text-primary);
+}
+
+.designer-post-create-close {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--designer-text-tertiary);
+  border-radius: var(--designer-radius-sm);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+}
+
+.designer-post-create-close:hover {
+  background: var(--designer-bg-tertiary);
+  color: var(--designer-text-primary);
+}
+
+.designer-post-create-banner > p {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--designer-text-tertiary);
+}
+
+.designer-post-create-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.designer-post-create-actions .designer-btn-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--designer-text-secondary);
+  background: var(--designer-bg-secondary);
+  border: 1px solid var(--designer-border);
+  border-radius: var(--designer-radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.designer-post-create-actions .designer-btn-sm:hover {
+  color: var(--designer-accent);
+  border-color: var(--designer-accent);
+  background: var(--designer-accent-subtle);
+}
+
+/* ===========================================
    CENTER PANEL
    =========================================== */
 
