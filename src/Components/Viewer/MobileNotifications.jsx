@@ -43,7 +43,8 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
     }
   }, [isVisible]);
 
-  const unreadCount = messages.filter((m) => m.id > settings.serviceMessage && isRecentMessage(m.timestamp)).length;
+  const isActiveUnread = (m) => m.active !== false && m.id > settings.serviceMessage && isRecentMessage(m.timestamp);
+  const unreadCount = messages.filter(isActiveUnread).length;
 
   const markAllRead = () => {
     updateSettings({ ...settings, serviceMessage: lastMessageId });
@@ -71,9 +72,7 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
               <div
                 key={msg.id}
                 className={`mobile-notification-item ${
-                  msg.id > settings.serviceMessage && isRecentMessage(msg.timestamp)
-                    ? "mobile-notification-item--unread"
-                    : ""
+                  isActiveUnread(msg) ? "mobile-notification-item--unread" : ""
                 }`}>
                 <div className="mobile-notification-item-header">
                   <span className="mobile-notification-item-title">{msg.title}</span>
@@ -83,9 +82,7 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
                       {msg.severity}
                     </span>
                   )}
-                  {msg.id > settings.serviceMessage && isRecentMessage(msg.timestamp) && (
-                    <span className="mobile-notification-item-badge">New</span>
-                  )}
+                  {isActiveUnread(msg) && <span className="mobile-notification-item-badge">New</span>}
                 </div>
                 <p className="mobile-notification-item-body">{msg.body}</p>
                 <div className="mobile-notification-item-meta">

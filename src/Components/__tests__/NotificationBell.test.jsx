@@ -243,4 +243,38 @@ describe("NotificationBell", () => {
       expect(document.querySelector(".notification-badge")).not.toBeInTheDocument();
     });
   });
+
+  it("does not count inactive messages in unread badge", async () => {
+    mockGetMessages.mockResolvedValue({
+      messages: [
+        { id: 1, title: "Inactive", body: "Inactive msg", active: false, timestamp: recentTimestamp() },
+        { id: 2, title: "Active", body: "Active msg", active: true, timestamp: recentTimestamp() },
+      ],
+      lastMessageId: 2,
+    });
+    render(<NotificationBell />);
+    await waitFor(() => {
+      expect(screen.getByText("1")).toBeInTheDocument();
+    });
+  });
+
+  it("shows inactive messages in list but without New badge", async () => {
+    mockSettings = { serviceMessage: 0 };
+    mockGetMessages.mockResolvedValue({
+      messages: [
+        { id: 1, title: "InactiveMsg", body: "Inactive", active: false, timestamp: recentTimestamp() },
+        { id: 2, title: "ActiveMsg", body: "Active", active: true, timestamp: recentTimestamp() },
+      ],
+      lastMessageId: 2,
+    });
+    const user = userEvent.setup();
+    render(<NotificationBell />);
+    await user.click(screen.getByRole("button"));
+    await waitFor(() => {
+      expect(screen.getByText("InactiveMsg")).toBeInTheDocument();
+      expect(screen.getByText("ActiveMsg")).toBeInTheDocument();
+      const badges = screen.getAllByText("New");
+      expect(badges).toHaveLength(1);
+    });
+  });
 });
