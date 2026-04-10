@@ -71,9 +71,7 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`mobile-notification-item ${
-                  isActiveUnread(msg) ? "mobile-notification-item--unread" : ""
-                }`}>
+                className={`mobile-notification-item ${isActiveUnread(msg) ? "mobile-notification-item--unread" : ""}`}>
                 <div className="mobile-notification-item-header">
                   <span className="mobile-notification-item-title">{msg.title}</span>
                   {msg.severity && (

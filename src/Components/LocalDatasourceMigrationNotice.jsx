@@ -5,6 +5,7 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { LAST_WIZARD_VERSION } from "./WelcomeWizard";
 import { getMajorWizardVersion } from "./WhatsNewWizard";
+import "./WhatsNewWizard/WhatsNewWizard.css";
 
 const modalRoot = document.getElementById("modal-root");
 const DISMISS_KEY = "gdc-local-ds-migration-dismissed";
@@ -85,14 +86,32 @@ export const LocalDatasourceMigrationNotice = () => {
   if (!isVisible || !modalRoot) return null;
 
   return ReactDOM.createPortal(
-    <div className="wn-overlay" onClick={handleOverlayClick} style={{ zIndex: 10000 }}>
-      <div className="wn-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
-        <header className="wn-header">
-          <div className="wn-header-content">
-            <h1 className="wn-title">Migration Required</h1>
-            <p className="wn-subtitle">Local datasources need to be converted</p>
+    <div className="wnw-overlay" onClick={handleOverlayClick}>
+      <div className="wnw-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+        <header
+          style={{
+            padding: "24px 24px 16px",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: 16,
+          }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#f1f5f9" }}>Migration Required</h1>
+            <p style={{ margin: "6px 0 0", fontSize: 14, color: "#94a3b8" }}>Local datasources need to be converted</p>
           </div>
-          <button className="wn-close" onClick={handleDismiss} aria-label="Close">
+          <button
+            onClick={handleDismiss}
+            aria-label="Close"
+            style={{
+              background: "none",
+              border: "none",
+              color: "#94a3b8",
+              cursor: "pointer",
+              padding: 4,
+              flexShrink: 0,
+            }}>
             <svg
               width="20"
               height="20"
@@ -108,15 +127,15 @@ export const LocalDatasourceMigrationNotice = () => {
           </button>
         </header>
 
-        <div className="wn-body" style={{ padding: "20px 24px" }}>
-          <p style={{ margin: "0 0 12px", lineHeight: 1.5, fontSize: 14 }}>
+        <div style={{ padding: "20px 24px" }}>
+          <p style={{ margin: "0 0 12px", lineHeight: 1.5, fontSize: 14, color: "#94a3b8" }}>
             The old local datasource format is no longer supported. Please convert them to categories using the
             right-click menu in the tree view, then recreate them as custom datasources in the{" "}
-            <strong>Datasource Editor</strong> (/datasources).
+            <strong style={{ color: "#f1f5f9" }}>Datasource Editor</strong> (/datasources).
           </p>
 
-          <p style={{ margin: "0 0 12px", fontWeight: 600, fontSize: 14 }}>Affected datasources:</p>
-          <ul style={{ margin: "0 0 16px", paddingLeft: 20, fontSize: 14, lineHeight: 1.6 }}>
+          <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 14, color: "#f1f5f9" }}>Affected datasources:</p>
+          <ul style={{ margin: "0 0 16px", paddingLeft: 20, fontSize: 14, lineHeight: 1.6, color: "#94a3b8" }}>
             {localDatasources.map((ds) => (
               <li key={ds.uuid}>{ds.name}</li>
             ))}

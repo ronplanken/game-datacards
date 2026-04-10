@@ -1,4 +1,6 @@
 import { defineConfig } from "vite";
+import mdx from "@mdx-js/rollup";
+import remarkGfm from "remark-gfm";
 import react from "@vitejs/plugin-react";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import path from "path";
@@ -105,7 +107,8 @@ function premiumPackageResolver() {
 
 export default defineConfig({
   plugins: [
-    react(),
+    { enforce: "pre", ...mdx({ providerImportSource: "@mdx-js/react", remarkPlugins: [remarkGfm] }) },
+    react({ include: /\.(jsx|js|mdx|md)$/ }),
     nodePolyfills({
       include: ["stream", "timers", "buffer", "util", "events"],
       globals: { process: true, Buffer: true },

@@ -15,6 +15,7 @@ import v350Config from "./v3.5.0";
 import v352Config from "./v3.5.2";
 import v360Config from "./v3.6.0";
 import v370Config from "./v3.7.0";
+import v371Config from "./v3.7.1";
 
 /**
  * Registry of all version wizard configurations
@@ -42,6 +43,7 @@ export const VERSION_REGISTRY = [
   v352Config,
   v360Config,
   v370Config,
+  v371Config,
 ]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));

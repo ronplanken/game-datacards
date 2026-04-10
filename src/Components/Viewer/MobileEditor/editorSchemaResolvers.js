@@ -114,10 +114,20 @@ function resolve40kUnitSections(card) {
   // Weapons
   const weaponTypes = [];
   if (card.rangedWeapons) {
-    weaponTypes.push({ key: "rangedWeapons", label: "Ranged Weapons", columns: WEAPON_COLUMNS_40K_10E });
+    weaponTypes.push({
+      key: "rangedWeapons",
+      label: "Ranged Weapons",
+      columns: WEAPON_COLUMNS_40K_10E,
+      hasKeywords: true,
+    });
   }
   if (card.meleeWeapons) {
-    weaponTypes.push({ key: "meleeWeapons", label: "Melee Weapons", columns: WEAPON_COLUMNS_40K_10E });
+    weaponTypes.push({
+      key: "meleeWeapons",
+      label: "Melee Weapons",
+      columns: WEAPON_COLUMNS_40K_10E,
+      hasKeywords: true,
+    });
   }
   if (weaponTypes.length > 0) {
     sections.push({

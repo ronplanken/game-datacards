@@ -12,12 +12,15 @@ export const WeaponListView = ({ card, weaponTypeKey, config, replaceCard, onEdi
   const handleAdd = () => {
     const blank = { name: "New Weapon", active: true };
     if (format === "40k") {
-      const profile = { name: "New Weapon", active: true };
+      const profile = { name: "New Weapon", active: true, keywords: [] };
       columns?.forEach((col) => (profile[col.key] = ""));
       blank.profiles = [profile];
       blank.abilities = [];
     } else {
       columns?.forEach((col) => (blank[col.key] = ""));
+      if (config.hasKeywords) {
+        blank.keywords = [];
+      }
     }
     setWeapons([...weapons, blank]);
   };

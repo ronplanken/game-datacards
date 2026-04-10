@@ -66,8 +66,7 @@ import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 import { LocalDatasourceMigrationNotice } from "./Components/LocalDatasourceMigrationNotice";
 import { UpdateNotification } from "./Components/UpdateNotification";
 import { DevFab } from "./Components/DevFab/DevFab";
-import { DesignerHelp } from "./Pages/DesignerHelp";
-import { DatasourceHelp } from "./Pages/DatasourceHelp";
+import { HelpLayout, HelpLanding, HelpArticle } from "./Pages/Help";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
 
@@ -157,17 +156,6 @@ const DesignerRoute = () => {
       />
     </>
   );
-};
-
-// Designer Help route - requires same gates as Designer
-const DesignerHelpRoute = () => {
-  const { hasCardDesigner } = usePremiumFeatures();
-  const { designerEnabled } = useFeatureFlags();
-  const { isAuthenticated } = useAuth();
-
-  if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
-
-  return <DesignerHelp />;
 };
 
 // Admin route - requires admin tier, auth, and feature flag
@@ -394,13 +382,28 @@ const router = createBrowserRouter([
       { path: "/", element: isMobile ? <MobileRedirect /> : <App /> },
       // Designer routes (premium only)
       { path: "designer", element: <DesignerRoute /> },
-      { path: "designer/help", element: <DesignerHelpRoute /> },
       // Admin routes (admin tier only)
       { path: "admin", element: <AdminRoute /> },
       { path: "admin/:tab", element: <AdminRoute /> },
       // Datasource editor (community feature)
       { path: "datasources", element: <DatasourceRoute /> },
-      { path: "datasources/help", element: <DatasourceHelp /> },
+      // Unified help page with landing + per-article routes
+      {
+        path: "help",
+        element: <HelpLayout />,
+        children: [
+          { index: true, element: <HelpLanding /> },
+          { path: ":category/:slug", element: <HelpArticle /> },
+        ],
+      },
+      {
+        path: "designer/help",
+        element: <Navigate to="/help/card-designer/getting-started" replace />,
+      },
+      {
+        path: "datasources/help",
+        element: <Navigate to="/help/datasource-editor/getting-started" replace />,
+      },
       // Legal pages
       { path: "terms", element: <TermsOfService /> },
       { path: "privacy", element: <PrivacyPolicy /> },

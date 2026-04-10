@@ -10,11 +10,47 @@ const resolveStatValue = (value, field) => {
   return value || "-";
 };
 
-const badgeClassName = (base, field) => {
+const resolveBadgeBase = (defaultBase, field) => {
+  if (field.size === "small") return "stat-badge";
+  if (field.size === "large") return "core-stat-badge";
+  return defaultBase;
+};
+
+const badgeClassName = (defaultBase, field) => {
+  const base = resolveBadgeBase(defaultBase, field);
   return field.width === "fit" ? `${base} fit-content` : base;
 };
 
+const resolveBadgeStyle = (field) => {
+  if (field.special && field.specialColor) return { background: field.specialColor };
+  if (field.color) return { background: field.color };
+  return undefined;
+};
+
+const filterVisible = (fields, stats) =>
+  fields.filter((field) => {
+    if (field.special && field.hideWhenEmpty) {
+      const val = stats?.[field.key];
+      return val !== undefined && val !== null && val !== "";
+    }
+    return true;
+  });
+
 const VERTICAL_POSITIONS = ["right", "above", "below"];
+
+/**
+ * Renders a list of stat badge elements.
+ */
+const renderBadges = (fields, stats, defaultBadgeClass) =>
+  fields.map((field) => {
+    const value = resolveStatValue(stats?.[field.key], field);
+    return (
+      <div className={badgeClassName(defaultBadgeClass, field)} key={field.key} style={resolveBadgeStyle(field)}>
+        <span className="badge-value">{value}</span>
+        <span className="badge-label">{field.label}</span>
+      </div>
+    );
+  });
 
 /**
  * Schema-driven left stat badges for AoS warscrolls.
@@ -23,23 +59,13 @@ const VERTICAL_POSITIONS = ["right", "above", "below"];
  */
 export const DsAosLeftStats = ({ stats, statFields, grandAlliance }) => {
   const leftFields = (statFields || []).filter((f) => !VERTICAL_POSITIONS.includes(f.position));
+  const visibleFields = filterVisible(leftFields, stats);
 
-  if (leftFields.length === 0) return null;
+  if (visibleFields.length === 0) return null;
 
   return (
     <div className="stat-badges-wrapper" data-testid="ds-aos-left-stats">
-      <div className="ds-aos-left-grid">
-        {leftFields.map((field) => {
-          const value = resolveStatValue(stats?.[field.key], field);
-          const badgeStyle = field.color ? { background: field.color } : undefined;
-          return (
-            <div className={badgeClassName("core-stat-badge", field)} key={field.key} style={badgeStyle}>
-              <span className="badge-value">{value}</span>
-              <span className="badge-label">{field.label}</span>
-            </div>
-          );
-        })}
-      </div>
+      <div className="ds-aos-left-grid">{renderBadges(visibleFields, stats, "core-stat-badge")}</div>
     </div>
   );
 };
@@ -64,16 +90,7 @@ export const DsAosRightStats = ({ stats, statFields, grandAlliance, inline, flat
 
   if (visibleFields.length === 0) return null;
 
-  const badges = visibleFields.map((field) => {
-    const value = resolveStatValue(stats?.[field.key], field);
-    const badgeStyle = field.color ? { background: field.color } : undefined;
-    return (
-      <div className={badgeClassName("stat-badge", field)} key={field.key} style={badgeStyle}>
-        <span className="badge-value">{value}</span>
-        <span className="badge-label">{field.label}</span>
-      </div>
-    );
-  });
+  const badges = renderBadges(visibleFields, stats, "stat-badge");
 
   if (flat) {
     return <>{badges}</>;
@@ -97,39 +114,13 @@ export const DsAosRightStats = ({ stats, statFields, grandAlliance, inline, flat
  */
 export const DsAosAboveStats = ({ stats, statFields }) => {
   const aboveFields = (statFields || []).filter((f) => f.position === "above");
-
-  if (aboveFields.length === 0) return null;
-
-  const visibleFields = aboveFields.filter((field) => {
-    if (field.special && field.hideWhenEmpty) {
-      const val = stats?.[field.key];
-      return val !== undefined && val !== null && val !== "";
-    }
-    return true;
-  });
+  const visibleFields = filterVisible(aboveFields, stats);
 
   if (visibleFields.length === 0) return null;
 
   return (
     <div className="ds-aos-above-stats" data-testid="ds-aos-above-stats">
-      {visibleFields.map((field) => {
-        const value = resolveStatValue(stats?.[field.key], field);
-        const badgeStyle = {};
-        if (field.special && field.specialColor) {
-          badgeStyle.background = field.specialColor;
-        } else if (field.color) {
-          badgeStyle.background = field.color;
-        }
-        return (
-          <div
-            className={badgeClassName("core-stat-badge", field)}
-            key={field.key}
-            style={Object.keys(badgeStyle).length ? badgeStyle : undefined}>
-            <span className="badge-value">{value}</span>
-            <span className="badge-label">{field.label}</span>
-          </div>
-        );
-      })}
+      {renderBadges(visibleFields, stats, "core-stat-badge")}
     </div>
   );
 };
@@ -141,39 +132,13 @@ export const DsAosAboveStats = ({ stats, statFields }) => {
  */
 export const DsAosBelowStats = ({ stats, statFields }) => {
   const belowFields = (statFields || []).filter((f) => f.position === "below");
-
-  if (belowFields.length === 0) return null;
-
-  const visibleFields = belowFields.filter((field) => {
-    if (field.special && field.hideWhenEmpty) {
-      const val = stats?.[field.key];
-      return val !== undefined && val !== null && val !== "";
-    }
-    return true;
-  });
+  const visibleFields = filterVisible(belowFields, stats);
 
   if (visibleFields.length === 0) return null;
 
   return (
     <div className="ds-aos-below-stats" data-testid="ds-aos-below-stats">
-      {visibleFields.map((field) => {
-        const value = resolveStatValue(stats?.[field.key], field);
-        const badgeStyle = {};
-        if (field.special && field.specialColor) {
-          badgeStyle.background = field.specialColor;
-        } else if (field.color) {
-          badgeStyle.background = field.color;
-        }
-        return (
-          <div
-            className={badgeClassName("core-stat-badge", field)}
-            key={field.key}
-            style={Object.keys(badgeStyle).length ? badgeStyle : undefined}>
-            <span className="badge-value">{value}</span>
-            <span className="badge-label">{field.label}</span>
-          </div>
-        );
-      })}
+      {renderBadges(visibleFields, stats, "core-stat-badge")}
     </div>
   );
 };

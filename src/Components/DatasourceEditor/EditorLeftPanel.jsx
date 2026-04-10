@@ -16,6 +16,7 @@ import {
 import { DatasourceSyncIcon } from "../../Premium";
 import { ActiveItemToolbar } from "../Shared/ActiveItemToolbar";
 import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { OnboardingLeftPanel } from "./components/OnboardingLeftPanel";
 
 const BASETYPE_ICONS = {
   unit: Swords,
@@ -55,15 +56,7 @@ export const EditorLeftPanel = ({
   if (!activeDatasource && datasources.length === 0) {
     return (
       <div className="designer-layer-panel">
-        <div className="designer-empty-state full-height">
-          <Database />
-          <p>No custom datasources yet</p>
-          <p className="designer-empty-state-subtitle">Define custom card types and field layouts</p>
-          <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Create new datasource">
-            <Plus size={14} />
-            New Datasource
-          </button>
-        </div>
+        <OnboardingLeftPanel />
       </div>
     );
   }

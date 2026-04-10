@@ -686,6 +686,61 @@ describe("DsAosWarscrollCard", () => {
     expect(badge.style.background).toBe("rgb(91, 33, 182)");
   });
 
+  it("renders small badge class when stat field has size small", () => {
+    const smallSizeCardTypeDef = {
+      ...cardTypeDef,
+      schema: {
+        ...cardTypeDef.schema,
+        stats: {
+          ...cardTypeDef.schema.stats,
+          fields: [
+            { key: "move", label: "Move", position: "left", size: "small" },
+            { key: "save", label: "Save", position: "left" },
+          ],
+        },
+      },
+    };
+    const card = { name: "Test", stats: { move: '5"', save: "3+" } };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={smallSizeCardTypeDef} cardStyle={{}} faction={faction} />,
+    );
+    const leftStats = container.querySelector("[data-testid='ds-aos-left-stats']");
+    const badges = leftStats.querySelectorAll(".stat-badge, .core-stat-badge");
+    const moveBadge = Array.from(badges).find((b) => b.querySelector(".badge-label")?.textContent === "Move");
+    const saveBadge = Array.from(badges).find((b) => b.querySelector(".badge-label")?.textContent === "Save");
+    expect(moveBadge.classList.contains("stat-badge")).toBe(true);
+    expect(moveBadge.classList.contains("core-stat-badge")).toBe(false);
+    // Save has no size set, so it gets the default core-stat-badge for left position
+    expect(saveBadge.classList.contains("core-stat-badge")).toBe(true);
+  });
+
+  it("renders large badge class when stat field has size large on right position", () => {
+    const largeSizeCardTypeDef = {
+      ...cardTypeDef,
+      schema: {
+        ...cardTypeDef.schema,
+        stats: {
+          ...cardTypeDef.schema.stats,
+          fields: [
+            { key: "move", label: "Move", position: "left" },
+            { key: "ward", label: "Ward", position: "right", size: "large" },
+          ],
+        },
+      },
+    };
+    const card = { name: "Test", stats: { move: '5"', ward: "6+" } };
+    const { container } = render(
+      <DsAosWarscrollCard card={card} cardTypeDef={largeSizeCardTypeDef} cardStyle={{}} faction={faction} />,
+    );
+    const headerBadges = container.querySelector(".warscroll-header .desktop-badges");
+    const wardBadge = Array.from(headerBadges.querySelectorAll(".core-stat-badge, .stat-badge")).find(
+      (b) => b.querySelector(".badge-label")?.textContent === "Ward",
+    );
+    expect(wardBadge).toBeTruthy();
+    // size: "large" overrides the default "stat-badge" to "core-stat-badge"
+    expect(wardBadge.classList.contains("core-stat-badge")).toBe(true);
+  });
+
   it("excludes above and below fields from left stats", () => {
     const mixedCardTypeDef = {
       ...cardTypeDef,
