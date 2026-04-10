@@ -25,6 +25,7 @@ For detailed documentation on card data formats, import features, components, an
 
 - **All new features require unit tests.** Write tests using Vitest before or alongside implementation.
 - **Use Chrome DevTools MCP to validate UI work.** Take snapshots and screenshots to verify visual changes render correctly in the browser.
+- **WhatsNew wizard mobile steps must use `mwnw-*` CSS classes.** Desktop wizard uses `wnw-*` classes, mobile uses `mwnw-*`. When adding a new version step to `MobileWhatsNewWizard/versions/`, use an existing mobile step (e.g., v3.7.0 `StepMobileEditor.jsx`) as the template, not the desktop counterpart.
 
 ## Before Making Changes
 
