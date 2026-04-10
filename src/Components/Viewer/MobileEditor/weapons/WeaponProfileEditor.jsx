@@ -41,7 +41,15 @@ export const WeaponProfileEditor = ({
   }
 
   // AoS / custom: flat weapon properties
-  return <FlatWeaponEditor weapons={weapons} weaponIndex={weaponIndex} columns={columns} setWeapons={setWeapons} />;
+  return (
+    <FlatWeaponEditor
+      weapons={weapons}
+      weaponIndex={weaponIndex}
+      columns={columns}
+      config={config}
+      setWeapons={setWeapons}
+    />
+  );
 };
 
 const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setWeapons, onSelectProfile }) => {
@@ -59,7 +67,7 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
   };
 
   const addProfile = () => {
-    const blank = { name: "New Profile", active: true };
+    const blank = { name: "New Profile", active: true, keywords: [] };
     columns?.forEach((col) => (blank[col.key] = ""));
     const updatedWeapons = [...weapons];
     updatedWeapons[weaponIndex] = { ...weapon, profiles: [...profiles, blank] };
@@ -102,13 +110,11 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
         onChange={(value) => updateProfile("active", value)}
       />
 
-      {profile.keywords && (
-        <EditorTagInput
-          label="Keywords"
-          tags={profile.keywords || []}
-          onChange={(tags) => updateProfile("keywords", tags)}
-        />
-      )}
+      <EditorTagInput
+        label="Keywords"
+        tags={profile.keywords || []}
+        onChange={(tags) => updateProfile("keywords", tags)}
+      />
 
       {/* Profile management */}
       <div style={{ display: "flex", gap: 8 }}>
@@ -145,7 +151,7 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
   );
 };
 
-const FlatWeaponEditor = ({ weapons, weaponIndex, columns, setWeapons }) => {
+const FlatWeaponEditor = ({ weapons, weaponIndex, columns, config, setWeapons }) => {
   const weapon = weapons[weaponIndex];
 
   const updateWeapon = (field, value) => {
@@ -204,6 +210,14 @@ const FlatWeaponEditor = ({ weapons, weaponIndex, columns, setWeapons }) => {
         checked={weapon.active !== false}
         onChange={(value) => updateWeapon("active", value)}
       />
+
+      {config?.hasKeywords && (
+        <EditorTagInput
+          label="Keywords"
+          tags={weapon.keywords || []}
+          onChange={(tags) => updateWeapon("keywords", tags)}
+        />
+      )}
     </div>
   );
 };

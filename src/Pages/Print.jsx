@@ -48,10 +48,20 @@ export const Print = () => {
     return getAllCategoryCards(cardStorage.categories[CategoryId], cardStorage.categories);
   }, [CategoryId, cardStorage.categories]);
 
-  // Memoize pages split
+  // Expand each card into separate front/back entries so they respect cardsPerPage grid layout.
+  const printEntries = useMemo(() => {
+    if (printSettings.print_side !== "frontAndBack") {
+      return cards.map((card) => ({ card, side: null }));
+    }
+    return cards.flatMap((card) => [
+      { card, side: "front" },
+      { card, side: "back" },
+    ]);
+  }, [cards, printSettings.print_side]);
+
   const pages = useMemo(() => {
-    return split(cards, printSettings.cardsPerPage);
-  }, [cards, printSettings.cardsPerPage]);
+    return split(printEntries, printSettings.cardsPerPage);
+  }, [printEntries, printSettings.cardsPerPage]);
 
   // Track print page open (only on mount)
   const cardCount = cards.length;
@@ -299,13 +309,13 @@ export const Print = () => {
                   rowGap: printSettings.rowGap,
                   columnGap: printSettings.columnGap,
                 }}>
-                {pageCards.map((card, index) => (
+                {pageCards.map((entry, index) => (
                   <CardRenderer
-                    key={`${card.name}-${index}`}
-                    card={card}
+                    key={`${entry.card.name}-${entry.side || ""}-${index}`}
+                    card={entry.card}
                     cardScaling={printSettings.cardScaling}
-                    printSide={printSettings.print_side}
-                    forcePrintSide={printSettings.force_print_side}
+                    printSide={entry.side || printSettings.print_side}
+                    forcePrintSide={entry.side ? true : printSettings.force_print_side}
                     backgrounds={printSettings.backgrounds}
                   />
                 ))}
