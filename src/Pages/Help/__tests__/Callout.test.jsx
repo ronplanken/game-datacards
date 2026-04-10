@@ -39,4 +39,14 @@ describe("Callout", () => {
     const { container } = render(<Callout type="warning">Content</Callout>);
     expect(container.querySelector(".help-callout-warning")).toBeInTheDocument();
   });
+
+  it("uses role=alert for warning type", () => {
+    render(<Callout type="warning">Warning content</Callout>);
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
+  it("uses role=note for tip and info types", () => {
+    render(<Callout type="tip">Tip content</Callout>);
+    expect(screen.getByRole("note")).toBeInTheDocument();
+  });
 });

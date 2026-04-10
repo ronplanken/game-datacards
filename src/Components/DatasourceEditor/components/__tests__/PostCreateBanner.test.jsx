@@ -1,5 +1,6 @@
 import { render, screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { PostCreateBanner } from "../PostCreateBanner";
 
 vi.mock("lucide-react", () => ({
@@ -10,6 +11,20 @@ vi.mock("lucide-react", () => ({
   HelpCircle: (props) => <svg data-testid="icon-help" {...props} />,
 }));
 
+const renderBanner = (props = {}) =>
+  render(
+    <MemoryRouter>
+      <PostCreateBanner {...defaultProps} {...props} />
+    </MemoryRouter>,
+  );
+
+const defaultProps = {
+  datasourceName: "My Datasource",
+  onDismiss: vi.fn(),
+  onAddCardType: vi.fn(),
+  onSelectDatasource: vi.fn(),
+};
+
 describe("PostCreateBanner", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -19,27 +34,20 @@ describe("PostCreateBanner", () => {
     vi.useRealTimers();
   });
 
-  const defaultProps = {
-    datasourceName: "My Datasource",
-    onDismiss: vi.fn(),
-    onAddCardType: vi.fn(),
-    onSelectDatasource: vi.fn(),
-  };
-
   it("renders datasource name", () => {
-    render(<PostCreateBanner {...defaultProps} />);
+    renderBanner();
     expect(screen.getByText(/My Datasource/)).toBeInTheDocument();
   });
 
   it("renders next steps text", () => {
-    render(<PostCreateBanner {...defaultProps} />);
+    renderBanner();
     expect(screen.getByText("Here are some things to try next:")).toBeInTheDocument();
   });
 
   it("calls onDismiss when close button clicked", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const onDismiss = vi.fn();
-    render(<PostCreateBanner {...defaultProps} onDismiss={onDismiss} />);
+    renderBanner({ onDismiss });
     await user.click(screen.getByLabelText("Dismiss"));
     // Wait for exit animation timeout
     act(() => vi.advanceTimersByTime(200));
@@ -48,7 +56,7 @@ describe("PostCreateBanner", () => {
 
   it("auto-dismisses after 15 seconds", () => {
     const onDismiss = vi.fn();
-    render(<PostCreateBanner {...defaultProps} onDismiss={onDismiss} />);
+    renderBanner({ onDismiss });
     act(() => vi.advanceTimersByTime(15000));
     // Exit animation timeout
     act(() => vi.advanceTimersByTime(200));
@@ -58,7 +66,7 @@ describe("PostCreateBanner", () => {
   it("calls onAddCardType when action clicked", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const onAddCardType = vi.fn();
-    render(<PostCreateBanner {...defaultProps} onAddCardType={onAddCardType} />);
+    renderBanner({ onAddCardType });
     await user.click(screen.getByText("Add another card type"));
     expect(onAddCardType).toHaveBeenCalledTimes(1);
   });
@@ -66,14 +74,14 @@ describe("PostCreateBanner", () => {
   it("calls onSelectDatasource when action clicked", async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     const onSelectDatasource = vi.fn();
-    render(<PostCreateBanner {...defaultProps} onSelectDatasource={onSelectDatasource} />);
+    renderBanner({ onSelectDatasource });
     await user.click(screen.getByText("Edit datasource settings"));
     expect(onSelectDatasource).toHaveBeenCalledTimes(1);
   });
 
   it("renders help link pointing to new help route", () => {
-    render(<PostCreateBanner {...defaultProps} />);
-    const link = screen.getByText("Read the guide");
+    renderBanner();
+    const link = screen.getByText("Read the docs");
     expect(link.closest("a")).toHaveAttribute("href", "/help/datasource-editor/getting-started");
   });
 });

@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { OnboardingCenterPanel } from "../OnboardingCenterPanel";
 
 vi.mock("lucide-react", () => ({
@@ -9,47 +10,54 @@ vi.mock("lucide-react", () => ({
   Plus: (props) => <svg data-testid="icon-plus" {...props} />,
 }));
 
+const renderPanel = (props = {}) =>
+  render(
+    <MemoryRouter>
+      <OnboardingCenterPanel onNewDatasource={vi.fn()} {...props} />
+    </MemoryRouter>,
+  );
+
 describe("OnboardingCenterPanel", () => {
   it("renders heading", () => {
-    render(<OnboardingCenterPanel onNewDatasource={vi.fn()} />);
+    renderPanel();
     expect(screen.getByText("How It Works")).toBeInTheDocument();
   });
 
   it("renders subtitle", () => {
-    render(<OnboardingCenterPanel onNewDatasource={vi.fn()} />);
+    renderPanel();
     expect(screen.getByText("Three steps to custom game cards")).toBeInTheDocument();
   });
 
   it("renders three step cards with correct titles", () => {
-    render(<OnboardingCenterPanel onNewDatasource={vi.fn()} />);
+    renderPanel();
     expect(screen.getByText("Define a Schema")).toBeInTheDocument();
     expect(screen.getByText("Add Cards")).toBeInTheDocument();
     expect(screen.getByText("Print & Share")).toBeInTheDocument();
   });
 
   it("renders step numbers", () => {
-    render(<OnboardingCenterPanel onNewDatasource={vi.fn()} />);
+    renderPanel();
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 
-  it("renders Get Started CTA", () => {
-    render(<OnboardingCenterPanel onNewDatasource={vi.fn()} />);
-    expect(screen.getByText("Get Started")).toBeInTheDocument();
+  it("renders Create a Datasource CTA", () => {
+    renderPanel();
+    expect(screen.getByText("Create a Datasource")).toBeInTheDocument();
   });
 
   it("calls onNewDatasource when CTA clicked", async () => {
     const user = userEvent.setup();
     const onNewDatasource = vi.fn();
-    render(<OnboardingCenterPanel onNewDatasource={onNewDatasource} />);
-    await user.click(screen.getByText("Get Started"));
+    renderPanel({ onNewDatasource });
+    await user.click(screen.getByText("Create a Datasource"));
     expect(onNewDatasource).toHaveBeenCalledTimes(1);
   });
 
   it("renders help link pointing to new help route", () => {
-    render(<OnboardingCenterPanel onNewDatasource={vi.fn()} />);
-    const link = screen.getByText("Read the full guide");
+    renderPanel();
+    const link = screen.getByText("Read the docs");
     expect(link).toBeInTheDocument();
     expect(link.closest("a")).toHaveAttribute("href", "/help/datasource-editor/getting-started");
   });

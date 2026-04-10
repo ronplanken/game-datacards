@@ -1,11 +1,21 @@
 import React, { Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
 import { MDXProvider } from "@mdx-js/react";
 import { ChevronRight } from "lucide-react";
 import { mdxComponents } from "./components/mdxComponents";
 import { HelpTableOfContents } from "./components/HelpTableOfContents";
 import { HelpPageNav } from "./components/HelpPageNav";
 import { getCategory, getSection, getSectionNeighbors } from "./helpSections";
+
+const ArticleErrorFallback = ({ resetErrorBoundary }) => (
+  <div className="help-article-error">
+    <p>Failed to load this article.</p>
+    <button className="help-back-btn" onClick={resetErrorBoundary}>
+      Try again
+    </button>
+  </div>
+);
 
 export const HelpArticle = () => {
   const { category, slug } = useParams();
@@ -17,8 +27,9 @@ export const HelpArticle = () => {
       <main className="help-content">
         <div className="help-content-inner">
           <h2>Article not found</h2>
+          <p>This article may have been moved or removed. Browse all docs to find what you are looking for.</p>
           <p>
-            <Link to="/help">Back to Help</Link>
+            <Link to="/help">Browse docs</Link>
           </p>
         </div>
       </main>
@@ -31,10 +42,8 @@ export const HelpArticle = () => {
   return (
     <main className="help-content">
       <div className="help-article-layout">
-        {/* Article */}
         <article className="help-article">
-          {/* Breadcrumb */}
-          <nav className="help-breadcrumb">
+          <nav className="help-breadcrumb" aria-label="Breadcrumb">
             <Link to="/help" className="help-breadcrumb-link">
               Docs
             </Link>
@@ -44,26 +53,24 @@ export const HelpArticle = () => {
             <span className="help-breadcrumb-current">{section.label}</span>
           </nav>
 
-          {/* Page header */}
           <header className="help-article-header">
             <h1 className="help-article-title">{section.label}</h1>
             {section.description && <p className="help-article-description">{section.description}</p>}
           </header>
 
-          {/* MDX content */}
           <div className="help-article-body">
             <MDXProvider components={mdxComponents}>
-              <Suspense fallback={<div className="help-section-loading" />}>
-                <Component />
-              </Suspense>
+              <ErrorBoundary FallbackComponent={ArticleErrorFallback} resetKeys={[category, slug]}>
+                <Suspense fallback={<div className="help-section-loading">Loading article...</div>}>
+                  <Component />
+                </Suspense>
+              </ErrorBoundary>
             </MDXProvider>
           </div>
 
-          {/* Prev/Next navigation */}
           <HelpPageNav prev={prev} next={next} />
         </article>
 
-        {/* Table of Contents — directly right of article */}
         <HelpTableOfContents />
       </div>
     </main>

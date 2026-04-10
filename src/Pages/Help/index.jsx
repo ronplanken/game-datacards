@@ -1,16 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Database, PenTool, CreditCard, Cloud, Wrench } from "lucide-react";
 import { useUmami } from "../../Hooks/useUmami";
-import { helpCategories } from "./helpSections";
-
-const iconMap = {
-  Database,
-  PenTool,
-  CreditCard,
-  Cloud,
-  Wrench,
-};
+import { helpCategories, helpIconMap } from "./helpSections";
 
 export { HelpLayout } from "./HelpLayout";
 export { HelpArticle } from "./HelpArticle";
@@ -25,11 +16,10 @@ export const HelpLanding = () => {
   return (
     <main className="help-landing">
       <div className="help-landing-inner">
-        {/* Hero */}
         <div className="help-landing-hero">
           <div className="help-landing-badge">
             <span className="help-landing-badge-dot" />
-            <span>Documentation</span>
+            <span>Docs</span>
           </div>
           <h1 className="help-landing-title">
             How to use
@@ -41,10 +31,9 @@ export const HelpLanding = () => {
           </p>
         </div>
 
-        {/* Category cards grid */}
         <div className="help-landing-grid">
           {helpCategories.map((cat) => {
-            const Icon = iconMap[cat.icon];
+            const Icon = helpIconMap[cat.icon];
             const firstSection = cat.sections[0];
             if (!firstSection) return null;
 

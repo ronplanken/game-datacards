@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { CheckCircle2, X, Plus, Settings, HelpCircle } from "lucide-react";
 
 const AUTO_DISMISS_MS = 15000;
@@ -35,10 +36,10 @@ export const PostCreateBanner = ({ datasourceName, onDismiss, onAddCardType, onS
           <Settings size={12} />
           Edit datasource settings
         </button>
-        <a href="/help/datasource-editor/getting-started" className="designer-btn designer-btn-sm">
+        <Link to="/help/datasource-editor/getting-started" className="designer-btn designer-btn-sm">
           <HelpCircle size={12} />
-          Read the guide
-        </a>
+          Read the docs
+        </Link>
       </div>
     </div>
   );

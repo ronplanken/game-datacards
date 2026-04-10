@@ -1,4 +1,5 @@
 import { render, screen, act } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { HelpTableOfContents } from "../components/HelpTableOfContents";
 
 // Mock IntersectionObserver
@@ -12,6 +13,28 @@ beforeAll(() => {
     unobserve: vi.fn(),
   }));
 });
+
+// Mock MutationObserver — call callback immediately on observe
+let mutationCallback;
+beforeAll(() => {
+  global.MutationObserver = vi.fn((cb) => {
+    mutationCallback = cb;
+    return {
+      observe: vi.fn(() => {
+        // Trigger callback so headings get extracted
+        cb();
+      }),
+      disconnect: vi.fn(),
+    };
+  });
+});
+
+const renderTOC = (path = "/help/datasource-editor/getting-started") =>
+  render(
+    <MemoryRouter initialEntries={[path]}>
+      <HelpTableOfContents />
+    </MemoryRouter>,
+  );
 
 describe("HelpTableOfContents", () => {
   beforeEach(() => {
@@ -40,23 +63,19 @@ describe("HelpTableOfContents", () => {
   });
 
   it("renders the title after headings are extracted", async () => {
-    render(<HelpTableOfContents />);
-    await act(() => new Promise((r) => setTimeout(r, 300)));
+    await act(async () => renderTOC());
     expect(screen.getByText("On this page")).toBeInTheDocument();
   });
 
   it("renders heading items from the article", async () => {
-    render(<HelpTableOfContents />);
-    await act(() => new Promise((r) => setTimeout(r, 300)));
-    // TOC renders links; headings also exist in DOM. Use getAllByText and check for TOC links.
+    await act(async () => renderTOC());
     const tocNav = document.querySelector(".help-toc-nav");
     expect(tocNav).toBeInTheDocument();
     expect(tocNav.querySelectorAll(".help-toc-item")).toHaveLength(2);
   });
 
   it("indents h3 items", async () => {
-    render(<HelpTableOfContents />);
-    await act(() => new Promise((r) => setTimeout(r, 300)));
+    await act(async () => renderTOC());
     const tocNav = document.querySelector(".help-toc-nav");
     const indentedItems = tocNav.querySelectorAll(".help-toc-item-indent");
     expect(indentedItems).toHaveLength(1);
@@ -65,8 +84,10 @@ describe("HelpTableOfContents", () => {
 
   it("returns null when no headings exist", async () => {
     document.body.querySelector(".help-article-body")?.remove();
-    const { container } = render(<HelpTableOfContents />);
-    await act(() => new Promise((r) => setTimeout(r, 300)));
+    let container;
+    await act(async () => {
+      ({ container } = renderTOC());
+    });
     expect(container.innerHTML).toBe("");
   });
 });

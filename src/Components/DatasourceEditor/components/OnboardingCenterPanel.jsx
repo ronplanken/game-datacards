@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Settings, PenLine, Printer, Plus } from "lucide-react";
 
 const STEPS = [
@@ -39,12 +40,12 @@ export const OnboardingCenterPanel = ({ onNewDatasource }) => {
           );
         })}
       </div>
-      <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Get started">
+      <button className="designer-template-btn" onClick={onNewDatasource} aria-label="Create a datasource">
         <Plus size={14} />
-        Get Started
+        Create a Datasource
       </button>
       <p className="designer-onboarding-help-link">
-        Want more detail? <a href="/help/datasource-editor/getting-started">Read the full guide</a>
+        Want more detail? <Link to="/help/datasource-editor/getting-started">Read the docs</Link>
       </p>
     </div>
   );

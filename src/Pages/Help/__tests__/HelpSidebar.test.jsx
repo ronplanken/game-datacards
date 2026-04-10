@@ -17,7 +17,7 @@ vi.mock("lucide-react", () => ({
 const renderSidebar = (path = "/help") =>
   render(
     <MemoryRouter initialEntries={[path]}>
-      <HelpSidebar />
+      <HelpSidebar isOpen={false} onClose={vi.fn()} />
     </MemoryRouter>,
   );
 
@@ -59,8 +59,16 @@ describe("HelpSidebar", () => {
     expect(screen.queryByText("Template Presets")).not.toBeInTheDocument();
   });
 
-  it("renders back to home button", () => {
+  it("renders back to app button", () => {
     renderSidebar();
-    expect(screen.getByText("Back to Home")).toBeInTheDocument();
+    expect(screen.getByText("Back to App")).toBeInTheDocument();
+  });
+
+  it("shows empty state when search has no results", async () => {
+    const user = userEvent.setup();
+    renderSidebar("/help");
+    const input = screen.getByPlaceholderText("Search docs...");
+    await user.type(input, "xyznonexistent");
+    expect(screen.getByText("No articles match your search.")).toBeInTheDocument();
   });
 });

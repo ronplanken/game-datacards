@@ -1,4 +1,7 @@
 import { lazy } from "react";
+import { Database, PenTool, CreditCard, Cloud, Wrench } from "lucide-react";
+
+export const helpIconMap = { Database, PenTool, CreditCard, Cloud, Wrench };
 
 export const helpCategories = [
   {

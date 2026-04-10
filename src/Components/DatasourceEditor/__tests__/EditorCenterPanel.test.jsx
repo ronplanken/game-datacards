@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { EditorCenterPanel } from "../EditorCenterPanel";
 
 // Mock DatasourceCardPreview to avoid deep import chain
@@ -94,21 +95,27 @@ const mockDatasource = {
 describe("EditorCenterPanel", () => {
   describe("onboarding state", () => {
     it("renders onboarding center panel when datasourceCount is 0 and no selection", () => {
-      render(<EditorCenterPanel selectedItem={null} activeDatasource={null} datasourceCount={0} />);
+      render(
+        <MemoryRouter>
+          <EditorCenterPanel selectedItem={null} activeDatasource={null} datasourceCount={0} />
+        </MemoryRouter>,
+      );
       expect(screen.getByText("How It Works")).toBeInTheDocument();
     });
 
-    it("renders Get Started CTA in onboarding", () => {
+    it("renders Create a Datasource CTA in onboarding", () => {
       const onNewDatasource = vi.fn();
       render(
-        <EditorCenterPanel
-          selectedItem={null}
-          activeDatasource={null}
-          datasourceCount={0}
-          onNewDatasource={onNewDatasource}
-        />,
+        <MemoryRouter>
+          <EditorCenterPanel
+            selectedItem={null}
+            activeDatasource={null}
+            datasourceCount={0}
+            onNewDatasource={onNewDatasource}
+          />
+        </MemoryRouter>,
       );
-      expect(screen.getByText("Get Started")).toBeInTheDocument();
+      expect(screen.getByText("Create a Datasource")).toBeInTheDocument();
     });
   });
 
@@ -132,15 +139,17 @@ describe("EditorCenterPanel", () => {
   describe("post-create banner", () => {
     it("renders post-create banner when postCreateInfo is set", () => {
       render(
-        <EditorCenterPanel
-          selectedItem={{ type: "datasource" }}
-          activeDatasource={mockDatasource}
-          datasourceCount={1}
-          postCreateInfo={{ datasourceName: "Test DS" }}
-          onDismissPostCreate={vi.fn()}
-          onAddCardType={vi.fn()}
-          onSelectDatasource={vi.fn()}
-        />,
+        <MemoryRouter>
+          <EditorCenterPanel
+            selectedItem={{ type: "datasource" }}
+            activeDatasource={mockDatasource}
+            datasourceCount={1}
+            postCreateInfo={{ datasourceName: "Test DS" }}
+            onDismissPostCreate={vi.fn()}
+            onAddCardType={vi.fn()}
+            onSelectDatasource={vi.fn()}
+          />
+        </MemoryRouter>,
       );
       expect(screen.getByText(/Test DS/)).toBeInTheDocument();
     });

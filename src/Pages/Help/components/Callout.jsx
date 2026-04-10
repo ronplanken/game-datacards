@@ -16,7 +16,7 @@ const labels = {
 export const Callout = ({ type = "info", children }) => {
   const Icon = icons[type] || Info;
   return (
-    <div className={`help-callout help-callout-${type}`}>
+    <div className={`help-callout help-callout-${type}`} role={type === "warning" ? "alert" : "note"}>
       <div className="help-callout-header">
         <Icon size={16} />
         <span>{labels[type] || "Info"}</span>
