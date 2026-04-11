@@ -109,7 +109,7 @@ function App() {
       <AppHeader />
       <Content style={{ height: "calc(100vh - 64px)" }}>
         <PanelGroup direction="horizontal" autoSaveId="mainLayout">
-          <Panel defaultSize={18} order={1}>
+          <Panel defaultSize={18} minSize={5} order={1}>
             <LeftPanel
               selectedTreeIndex={selectedTreeIndex}
               setSelectedTreeIndex={setSelectedTreeIndex}
@@ -117,7 +117,7 @@ function App() {
             />
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />
-          <Panel defaultSize={41} order={2}>
+          <Panel defaultSize={41} minSize={10} order={2}>
             <div
               ref={cardContainerRef}
               style={{
@@ -161,7 +161,7 @@ function App() {
             </div>
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />
-          <Panel defaultSize={20} order={3}>
+          <Panel defaultSize={20} minSize={5} order={3}>
             {activeCard && (
               <div
                 style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}

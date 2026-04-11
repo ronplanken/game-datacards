@@ -40,9 +40,12 @@ const readCsv = async (file) => {
     return;
   }
 
-  return fetch(file)
-    .then((response) => response.text())
-    .then((text) => JSON.parse(text));
+  const response = await fetch(file);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${file}: ${response.status} ${response.statusText}`);
+  }
+  const text = await response.text();
+  return JSON.parse(text);
 };
 
 export const get40KData = async () => {

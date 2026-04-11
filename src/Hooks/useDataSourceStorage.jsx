@@ -1,5 +1,6 @@
 import localForage from "localforage";
 import React, { useEffect, useCallback } from "react";
+import { message } from "../Components/Toast/message";
 import { v4 as uuidv4 } from "uuid";
 import {
   get40KData,
@@ -37,6 +38,7 @@ export const DataSourceStorageProviderComponent = (props) => {
   const { settings, updateSettings } = useSettingsStorage();
 
   const [dataSource, setDataSource] = React.useState(getBasicData());
+  const [isLoading, setIsLoading] = React.useState(false);
   const [selectedFaction, setSelectedFaction] = React.useState(null);
   const [selectedSubFactions, setSelectedSubFactions] = React.useState([]);
   const [selectedFactionIndex, setSelectedFactionIndex] = React.useState(0);
@@ -57,7 +59,7 @@ export const DataSourceStorageProviderComponent = (props) => {
   };
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       if (!dataStore) {
         return;
       }
@@ -71,11 +73,13 @@ export const DataSourceStorageProviderComponent = (props) => {
           return;
         }
 
+        setIsLoading(true);
         const dataFactions = await get40KData();
 
         dataStore.setItem("40k", dataFactions);
 
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (settings.selectedDataSource === "40k-10e") {
         const storedData = await dataStore.getItem("40k-10e");
@@ -84,10 +88,12 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
+        setIsLoading(true);
         const dataFactions = await get40k10eData();
 
         dataStore.setItem("40k-10e", dataFactions);
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (settings.selectedDataSource === "40k-10e-cp") {
         const storedData = await dataStore.getItem("40k-10e-cp");
@@ -96,10 +102,12 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
+        setIsLoading(true);
         const dataFactions = await get40k10eCombatPatrolData();
 
         dataStore.setItem("40k-10e-cp", dataFactions);
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (settings.selectedDataSource === "basic") {
         const basicData = getBasicData();
@@ -118,10 +126,12 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
+        setIsLoading(true);
         const dataFactions = await getAoSData();
 
         dataStore.setItem("aos", dataFactions);
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
       }
 
       // Handle custom datasources (prefixed with "custom-")
@@ -142,7 +152,14 @@ export const DataSourceStorageProviderComponent = (props) => {
         }
       }
     };
-    fetch();
+    fetchData()
+      .catch((error) => {
+        console.error("Failed to load datasource:", error);
+        message.error("Failed to load datasource. Please try refreshing the page.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [settings.selectedDataSource]);
 
   // Reload active custom/subscribed datasource when sync writes new data to localForage
@@ -174,40 +191,50 @@ export const DataSourceStorageProviderComponent = (props) => {
     if (!dataStore) {
       return;
     }
-    if (settings.selectedDataSource === "40k") {
-      const dataFactions = await get40KData();
+    const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
+    try {
+      if (settings.selectedDataSource === "40k") {
+        const dataFactions = await get40KData();
 
-      dataStore.setItem("40k", dataFactions);
+        dataStore.setItem("40k", dataFactions);
 
-      setDataSource(dataFactions);
-    }
-    if (settings.selectedDataSource === "40k-10e") {
-      const dataFactions = await get40k10eData();
-      dataStore.setItem("40k-10e", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "40k-10e") {
+        const dataFactions = await get40k10eData();
+        dataStore.setItem("40k-10e", dataFactions);
 
-      setDataSource(dataFactions);
-    }
-    if (settings.selectedDataSource === "40k-10e-cp") {
-      const dataFactions = await get40k10eCombatPatrolData();
-      dataStore.setItem("40k-10e-cp", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "40k-10e-cp") {
+        const dataFactions = await get40k10eCombatPatrolData();
+        dataStore.setItem("40k-10e-cp", dataFactions);
 
-      setDataSource(dataFactions);
-    }
-    if (settings.selectedDataSource === "basic") {
-      const basicData = getBasicData();
-      setDataSource(basicData);
-      setSelectedFaction(basicData.data[0]);
-    }
-    if (settings.selectedDataSource === "necromunda") {
-      const basicData = getNecromundaBasicData();
-      setDataSource(basicData);
-      setSelectedFaction(basicData.data[0]);
-    }
-    if (settings.selectedDataSource === "aos") {
-      const dataFactions = await getAoSData();
-      dataStore.setItem("aos", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "basic") {
+        const basicData = getBasicData();
+        setDataSource(basicData);
+        setSelectedFaction(basicData.data[0]);
+      }
+      if (settings.selectedDataSource === "necromunda") {
+        const basicData = getNecromundaBasicData();
+        setDataSource(basicData);
+        setSelectedFaction(basicData.data[0]);
+      }
+      if (settings.selectedDataSource === "aos") {
+        const dataFactions = await getAoSData();
+        dataStore.setItem("aos", dataFactions);
 
-      setDataSource(dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+    } catch (error) {
+      console.error("Failed to check for updates:", error);
+      message.error("Failed to check for updates. Please try again.");
     }
   };
 
@@ -708,6 +735,7 @@ export const DataSourceStorageProviderComponent = (props) => {
   const context = {
     dataSource,
     setDataSource,
+    isLoading,
     selectedFactionIndex,
     selectedFaction,
     updateSelectedFaction,
