@@ -97,8 +97,15 @@ export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
             </div>
           </div>
           <div className="footer">
-            {schema.metadata?.hasKeywords !== false && <UnitKeywords keywords={card.keywords} />}
-            {schema.metadata?.hasFactionKeywords !== false && <UnitFactions factions={card.factions} />}
+            {schema.metadata?.hasKeywords !== false && (
+              <UnitKeywords keywords={card.keywords} label={schema.metadata?.keywordsLabel} />
+            )}
+            {schema.metadata?.hasFactionKeywords !== false && (
+              <UnitFactions
+                factions={card.factionKeywords || card.factions}
+                label={schema.metadata?.factionKeywordsLabel}
+              />
+            )}
           </div>
           <UnitFactionSymbol unit={card} />
         </div>

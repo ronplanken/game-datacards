@@ -171,10 +171,32 @@ describe("CustomUnitCard", () => {
     expect(screen.getByText("INFANTRY, IMPERIUM")).toBeInTheDocument();
   });
 
-  it("renders faction keywords when schema has hasFactionKeywords enabled", () => {
+  it("renders faction keywords from legacy `factions` field", () => {
     render(<CustomUnitCard unit={makeUnit()} cardTypeDef={makeCardTypeDef()} cardStyle={{}} />);
-    expect(screen.getByText("faction keywords")).toBeInTheDocument();
+    expect(screen.getByText("faction")).toBeInTheDocument();
     expect(screen.getByText("Adeptus Astartes")).toBeInTheDocument();
+  });
+
+  it("renders faction keywords from custom-datasource `factionKeywords` field", () => {
+    const unit = makeUnit({ factions: undefined, factionKeywords: ["Blessed Sisters 3.5.3"] });
+    render(<CustomUnitCard unit={unit} cardTypeDef={makeCardTypeDef()} cardStyle={{}} />);
+    expect(screen.getByText("Blessed Sisters 3.5.3")).toBeInTheDocument();
+  });
+
+  it("uses configured keywords/factionKeywords labels from schema metadata", () => {
+    const cardTypeDef = makeCardTypeDef({
+      metadata: {
+        hasKeywords: true,
+        hasFactionKeywords: true,
+        hasPoints: true,
+        pointsFormat: "per-model",
+        keywordsLabel: "Tags",
+        factionKeywordsLabel: "Allegiance",
+      },
+    });
+    render(<CustomUnitCard unit={makeUnit()} cardTypeDef={cardTypeDef} cardStyle={{}} />);
+    expect(screen.getByText("Tags")).toBeInTheDocument();
+    expect(screen.getByText("Allegiance")).toBeInTheDocument();
   });
 
   it("hides keywords when schema has hasKeywords disabled", () => {
@@ -183,7 +205,7 @@ describe("CustomUnitCard", () => {
     });
     render(<CustomUnitCard unit={makeUnit()} cardTypeDef={cardTypeDef} cardStyle={{}} />);
     expect(screen.queryByText("keywords")).not.toBeInTheDocument();
-    expect(screen.queryByText("faction keywords")).not.toBeInTheDocument();
+    expect(screen.queryByText("faction")).not.toBeInTheDocument();
   });
 
   it("applies card style CSS variables", () => {

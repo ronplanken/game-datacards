@@ -139,6 +139,8 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @typedef {Object} UnitMetadataDefinition
  * @property {boolean} hasKeywords - Whether cards have keywords
  * @property {boolean} hasFactionKeywords - Whether cards have faction keywords
+ * @property {string} [keywordsLabel] - Display label for the keywords bar (defaults to "Keywords")
+ * @property {string} [factionKeywordsLabel] - Display label for the faction keywords bar (defaults to "Faction")
  * @property {boolean} hasPoints - Whether cards have points costs
  * @property {PointsFormat} pointsFormat - Points display format
  */
