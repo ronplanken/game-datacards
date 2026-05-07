@@ -1,7 +1,7 @@
-export const UnitFactions = ({ factions }) => {
+export const UnitFactions = ({ factions, label }) => {
   return (
     <div className="factions">
-      <span className="title">faction keywords</span>
+      <span className="title">{label || "faction"}</span>
       <span className="value">{factions?.join(", ")}</span>
     </div>
   );

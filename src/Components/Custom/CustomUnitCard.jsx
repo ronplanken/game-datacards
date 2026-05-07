@@ -88,14 +88,14 @@ export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle, isMobile }) => {
         <div className="footer">
           {schema.metadata?.hasKeywords && unit.keywords?.length > 0 && (
             <div className="keywords">
-              <span className="title">keywords</span>
+              <span className="title">{schema.metadata?.keywordsLabel || "keywords"}</span>
               <span className="value">{unit.keywords.join(", ")}</span>
             </div>
           )}
-          {schema.metadata?.hasFactionKeywords && unit.factions?.length > 0 && (
+          {schema.metadata?.hasFactionKeywords && (unit.factionKeywords || unit.factions)?.length > 0 && (
             <div className="factions">
-              <span className="title">faction keywords</span>
-              <span className="value">{unit.factions.join(", ")}</span>
+              <span className="title">{schema.metadata?.factionKeywordsLabel || "faction"}</span>
+              <span className="value">{(unit.factionKeywords || unit.factions).join(", ")}</span>
             </div>
           )}
         </div>

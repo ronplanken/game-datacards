@@ -280,7 +280,9 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | Property           | Type   | Description                                                              |
 |--------------------|--------|--------------------------------------------------------------------------|
 | `hasKeywords`      | boolean | Include a keywords bar at the bottom of the card.                       |
+| `keywordsLabel`    | string  | Optional. Override the keywords bar label (defaults to `"Keywords"`).  |
 | `hasFactionKeywords` | boolean | Include a faction keywords bar at the bottom of the card.            |
+| `factionKeywordsLabel` | string | Optional. Override the faction keywords bar label (defaults to `"Faction"`). |
 | `hasPoints`        | boolean | Include a points cost field on the card.                                |
 | `pointsFormat`     | string  | `"per-model"` or `"per-unit"`. Only applies when `hasPoints` is true.  |
 | `bannerType`       | string  | Controls the header banner text. Only applies when `baseSystem` is not `"40k-10e"`. |
