@@ -11,6 +11,7 @@ description: Table of contents for all Game Datacards documentation files
 |------|-------------|
 | [card-data-formats.md](card-data-formats.md) | JSON schemas for all card types (40k 10e DataCards, Stratagems, Enhancements, Rules; AoS Warscrolls, Spells) |
 | [custom-datasource-format.md](custom-datasource-format.md) | JSON format for creating and sharing custom datasources, including validation limits and all game system card schemas |
+| [starcraft-tcg.md](starcraft-tcg.md) | Starcraft TCG base system: unit schema, ability badges, Models / Supply tiers, weapon tables, starter datasource |
 
 ## Features
 

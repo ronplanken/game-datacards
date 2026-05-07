@@ -68,22 +68,80 @@ const TreeNode = ({ label, icon: Icon, defaultOpen = false, children, badge, dep
 };
 
 /**
+ * A leaf flag/info row inside the tree (used for "X enabled" or "X: value" lines).
+ */
+const FlagRow = ({ label, depth }) => (
+  <div className="schema-tree-node">
+    <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + depth * 16 }}>
+      <span className="schema-tree-chevron-spacer" />
+      <span className="schema-tree-flag-label">{label}</span>
+    </div>
+  </div>
+);
+
+/**
+ * An expandable row that renders FieldNode-style content (key + label + type
+ * badge as direct flex children, so the badge can right-align via
+ * `margin-left: auto`) AND optionally contains tree children below.
+ * Used for ability categories which have both a "row identity" (key/label/format)
+ * and sub-flags (phase style, layout, etc.).
+ */
+const ExpandableFieldRow = ({ field, depth, children }) => {
+  const [open, setOpen] = useState(false);
+  const hasChildren = children != null && (Array.isArray(children) ? children.some(Boolean) : true);
+  const connectorLeft = 12 + depth * 16 + 7;
+
+  return (
+    <div className="schema-tree-node">
+      <button
+        className={`schema-tree-node-header schema-tree-field ${hasChildren ? "expandable" : ""}`}
+        style={{ paddingLeft: 12 + depth * 16 }}
+        onClick={() => hasChildren && setOpen(!open)}
+        aria-expanded={hasChildren ? open : undefined}>
+        {hasChildren ? (
+          open ? (
+            <ChevronDown size={14} className="schema-tree-chevron" />
+          ) : (
+            <ChevronRight size={14} className="schema-tree-chevron" />
+          )
+        ) : (
+          <span className="schema-tree-chevron-spacer" />
+        )}
+        <span className="schema-tree-field-key">{field.key}</span>
+        {field.label && field.label !== field.key && <span className="schema-tree-field-label">{field.label}</span>}
+        {field.badge && <span className="schema-type-badge string">{field.badge}</span>}
+      </button>
+      {open && hasChildren && (
+        <div className="schema-tree-children" style={{ "--tree-connector-left": `${connectorLeft}px` }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
  * Renders a single field definition node.
  * Enum fields with options are collapsible to reveal the option values.
+ * Fields with extra flags (special, hideWhenEmpty) show those as sub-rows.
  */
 const FieldNode = ({ field, depth }) => {
   const [open, setOpen] = useState(false);
   const badgeClass = TYPE_BADGE_CLASSES[field.type] || "schema-type-badge";
   const hasOptions = field.type === "enum" && Array.isArray(field.options) && field.options.length > 0;
+  const extraFlags = [];
+  if (field.special) extraFlags.push("Special field");
+  if (field.hideWhenEmpty) extraFlags.push("Hide when empty");
+  const expandable = hasOptions || extraFlags.length > 0;
 
   return (
     <div className="schema-tree-node">
       <button
-        className={`schema-tree-node-header schema-tree-field ${hasOptions ? "expandable" : ""}`}
+        className={`schema-tree-node-header schema-tree-field ${expandable ? "expandable" : ""}`}
         style={{ paddingLeft: 12 + depth * 16 }}
-        onClick={() => hasOptions && setOpen(!open)}
-        aria-expanded={hasOptions ? open : undefined}>
-        {hasOptions ? (
+        onClick={() => expandable && setOpen(!open)}
+        aria-expanded={expandable ? open : undefined}>
+        {expandable ? (
           open ? (
             <ChevronDown size={14} className="schema-tree-chevron" />
           ) : (
@@ -96,18 +154,22 @@ const FieldNode = ({ field, depth }) => {
         {field.label && field.label !== field.key && <span className="schema-tree-field-label">{field.label}</span>}
         <span className={badgeClass}>{field.type}</span>
       </button>
-      {open && hasOptions && (
+      {open && expandable && (
         <div className="schema-tree-children">
-          {field.options.map((opt) => (
-            <div key={opt} className="schema-tree-node">
-              <div
-                className="schema-tree-node-header schema-tree-enum-option"
-                style={{ paddingLeft: 12 + (depth + 1) * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-enum-option-value">{opt}</span>
-              </div>
-            </div>
+          {extraFlags.map((flag) => (
+            <FlagRow key={flag} label={flag} depth={depth + 1} />
           ))}
+          {hasOptions &&
+            field.options.map((opt) => (
+              <div key={opt} className="schema-tree-node">
+                <div
+                  className="schema-tree-node-header schema-tree-enum-option"
+                  style={{ paddingLeft: 12 + (depth + 1) * 16 }}>
+                  <span className="schema-tree-chevron-spacer" />
+                  <span className="schema-tree-enum-option-value">{opt}</span>
+                </div>
+              </div>
+            ))}
         </div>
       )}
     </div>
@@ -128,14 +190,7 @@ const UnitSchemaTree = ({ schema }) => {
           {schema.stats.fields?.map((field) => (
             <FieldNode key={field.key} field={field} depth={1} />
           ))}
-          {schema.stats.allowMultipleProfiles && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Multiple profiles enabled</span>
-              </div>
-            </div>
-          )}
+          {schema.stats.allowMultipleProfiles && <FlagRow label="Multiple stat profiles enabled" depth={1} />}
         </TreeNode>
       )}
 
@@ -152,21 +207,20 @@ const UnitSchemaTree = ({ schema }) => {
               {weaponType.columns?.map((col) => (
                 <FieldNode key={col.key} field={col} depth={2} />
               ))}
-              {weaponType.hasKeywords && (
-                <div className="schema-tree-node">
-                  <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 2 * 16 }}>
-                    <span className="schema-tree-chevron-spacer" />
-                    <span className="schema-tree-flag-label">Weapon keywords enabled</span>
-                  </div>
-                </div>
+              {weaponType.phaseStyle && <FlagRow label={`Phase style: ${weaponType.phaseStyle}`} depth={2} />}
+              {weaponType.linkedAbilityCategory && (
+                <FlagRow label={`Linked ability category: ${weaponType.linkedAbilityCategory}`} depth={2} />
               )}
+              {weaponType.hasKeywords && <FlagRow label="Weapon keywords enabled" depth={2} />}
               {weaponType.hasProfiles && (
-                <div className="schema-tree-node">
-                  <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 2 * 16 }}>
-                    <span className="schema-tree-chevron-spacer" />
-                    <span className="schema-tree-flag-label">Weapon profiles enabled</span>
-                  </div>
-                </div>
+                <TreeNode label="Multiple profiles enabled" defaultOpen={false} depth={2}>
+                  {weaponType.profileRelation && (
+                    <FlagRow label={`Relation: ${weaponType.profileRelation}`} depth={3} />
+                  )}
+                  {weaponType.profileChildLabel && (
+                    <FlagRow label={`Child label: ${weaponType.profileChildLabel}`} depth={3} />
+                  )}
+                </TreeNode>
               )}
             </TreeNode>
           ))}
@@ -181,32 +235,23 @@ const UnitSchemaTree = ({ schema }) => {
           defaultOpen={true}
           badge={`${schema.abilities.categories?.length || 0}`}
           depth={0}>
-          {schema.abilities.categories?.map((cat) => (
-            <div key={cat.key} className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-field" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-field-key">{cat.key}</span>
-                {cat.label && <span className="schema-tree-field-label">{cat.label}</span>}
-                <span className="schema-type-badge string">{cat.format}</span>
-              </div>
-            </div>
-          ))}
-          {schema.abilities.hasInvulnerableSave && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Invulnerable save enabled</span>
-              </div>
-            </div>
-          )}
-          {schema.abilities.hasDamagedAbility && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Damaged profile enabled</span>
-              </div>
-            </div>
-          )}
+          {schema.abilities.categories?.map((cat) => {
+            const subFlags = [];
+            if (cat.phaseStyle) subFlags.push(`Phase style: ${cat.phaseStyle}`);
+            if (cat.layout) subFlags.push(`Layout: ${cat.layout}`);
+            if (cat.hasType) subFlags.push("Type pill enabled");
+            if (cat.hasCost) subFlags.push("Cost chip enabled");
+            if (cat.hasTriggerIcon) subFlags.push("Trigger icon enabled");
+            return (
+              <ExpandableFieldRow key={cat.key} field={{ key: cat.key, label: cat.label, badge: cat.format }} depth={1}>
+                {subFlags.map((flag) => (
+                  <FlagRow key={flag} label={flag} depth={2} />
+                ))}
+              </ExpandableFieldRow>
+            );
+          })}
+          {schema.abilities.hasInvulnerableSave && <FlagRow label="Invulnerable save enabled" depth={1} />}
+          {schema.abilities.hasDamagedAbility && <FlagRow label="Damaged profile enabled" depth={1} />}
         </TreeNode>
       )}
 
@@ -234,29 +279,21 @@ const UnitSchemaTree = ({ schema }) => {
       {/* Metadata section */}
       {schema.metadata && (
         <TreeNode label="Card Properties" icon={Settings} defaultOpen={true} depth={0}>
-          {schema.metadata.hasKeywords && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Keywords enabled</span>
-              </div>
-            </div>
-          )}
-          {schema.metadata.hasFactionKeywords && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Faction keywords enabled</span>
-              </div>
-            </div>
-          )}
+          {schema.metadata.hasKeywords && <FlagRow label="Keywords enabled" depth={1} />}
+          {schema.metadata.hasFactionKeywords && <FlagRow label="Faction keywords enabled" depth={1} />}
+          {schema.metadata.hasCombatRole && <FlagRow label="Combat Role badge enabled" depth={1} />}
+          {schema.metadata.hasArmySlot && <FlagRow label="Army Slot badge enabled" depth={1} />}
           {schema.metadata.hasPoints && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Points ({schema.metadata.pointsFormat || "per-unit"})</span>
-              </div>
-            </div>
+            <TreeNode label={`Points (${schema.metadata.pointsFormat || "per-unit"})`} defaultOpen={false} depth={1}>
+              {schema.metadata.pointsLabel && <FlagRow label={`Label: ${schema.metadata.pointsLabel}`} depth={2} />}
+            </TreeNode>
+          )}
+          {schema.metadata.bannerType && schema.metadata.bannerType !== "faction" && (
+            <TreeNode label={`Banner: ${schema.metadata.bannerType}`} defaultOpen={false} depth={1}>
+              {schema.metadata.bannerType === "custom" && schema.metadata.bannerCustomText && (
+                <FlagRow label={`Text: ${schema.metadata.bannerCustomText}`} depth={2} />
+              )}
+            </TreeNode>
           )}
         </TreeNode>
       )}
@@ -292,14 +329,7 @@ const GenericSchemaTree = ({ schema, baseType }) => {
           {schema.rules.fields?.map((field) => (
             <FieldNode key={field.key} field={field} depth={1} />
           ))}
-          {schema.rules.allowMultiple && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Multiple entries allowed</span>
-              </div>
-            </div>
-          )}
+          {schema.rules.allowMultiple && <FlagRow label="Multiple entries allowed" depth={1} />}
         </TreeNode>
       )}
 
@@ -314,14 +344,7 @@ const GenericSchemaTree = ({ schema, baseType }) => {
           {schema.keywords.fields?.map((field) => (
             <FieldNode key={field.key} field={field} depth={1} />
           ))}
-          {schema.keywords.allowMultiple && (
-            <div className="schema-tree-node">
-              <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
-                <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Multiple entries allowed</span>
-              </div>
-            </div>
-          )}
+          {schema.keywords.allowMultiple && <FlagRow label="Multiple entries allowed" depth={1} />}
         </TreeNode>
       )}
     </>

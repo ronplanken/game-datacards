@@ -80,6 +80,7 @@ export const StepWeapons = ({ wizard }) => {
         label: `Weapon Type ${currentTypes.length + 1}`,
         hasKeywords: false,
         hasProfiles: false,
+        profileRelation: "equal",
         columns: [],
       };
       return { ...prev, types: [...currentTypes, newType] };

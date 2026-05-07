@@ -13,7 +13,7 @@ export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
 export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
 
 // Valid base systems
-export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "blank"];
+export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "starcraft-tcg", "blank"];
 
 // Valid ability formats
 export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
@@ -25,10 +25,27 @@ export const VALID_COLUMN_DISPLAY_MODES = ["column", "row"];
 export const VALID_COLUMN_VISUAL_MODES = ["text", "badge"];
 
 // Valid ability layout modes
-export const VALID_ABILITY_LAYOUTS = ["full", "half", "third", "quarter"];
+// `inline` is used for movement-style phase rows that put the section heading
+// and body side-by-side rather than stacking the ability list in a grid.
+export const VALID_ABILITY_LAYOUTS = ["full", "half", "third", "quarter", "inline"];
 
 // Valid section formats
 export const VALID_SECTION_FORMATS = ["list", "richtext"];
+
+// Valid phase styles — drives section-heading icon and the inline-row variant
+export const VALID_PHASE_STYLES = ["movement", "assault", "combat", "special"];
+
+// Valid profile relations on a weapon type when hasProfiles is true:
+// - "equal"        — profiles render as flat siblings, reorderable
+// - "parent-child" — first profile is the base, subsequent profiles are
+//                    upgrades (indented in the editor + the renderer)
+export const VALID_PROFILE_RELATIONS = ["equal", "parent-child"];
+
+// Valid ability types (Starcraft TCG badge pill values)
+export const VALID_ABILITY_TYPES = ["PASSIVE", "ACTIVE", "REACTION"];
+
+// Valid ability cost units (Starcraft TCG chip units)
+export const VALID_ABILITY_COST_UNITS = ["CP", "BM", "VP"];
 
 // Valid points formats
 export const VALID_POINTS_FORMATS = ["per-model", "per-unit"];
@@ -125,6 +142,10 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {string} [header] - Optional header text displayed above the category
  * @property {boolean} [hasColor] - Whether abilities in this category support per-ability strip color (AoS)
  * @property {boolean} [hasPhase] - Whether abilities in this category support per-ability phase text (AoS)
+ * @property {boolean} [hasType] - Whether abilities show a PASSIVE/ACTIVE/REACTION pill (Starcraft TCG)
+ * @property {boolean} [hasCost] - Whether abilities can carry cost chips like CP/BM (Starcraft TCG)
+ * @property {boolean} [hasTriggerIcon] - Whether abilities can show a triggered-ability arrow glyph (Starcraft TCG)
+ * @property {"movement" | "assault" | "combat" | "special"} [phaseStyle] - Optional phase-header styling (Starcraft TCG)
  */
 
 /**
@@ -474,7 +495,14 @@ export const createAoSPreset = () => ({
 export const getPresetStepDefaults = (baseSystem, baseType) => {
   if (baseSystem === "blank") return null;
 
-  const preset = baseSystem === "40k-10e" ? create40kPreset() : baseSystem === "aos" ? createAoSPreset() : null;
+  const preset =
+    baseSystem === "40k-10e"
+      ? create40kPreset()
+      : baseSystem === "aos"
+        ? createAoSPreset()
+        : baseSystem === "starcraft-tcg"
+          ? createStarcraftTcgPreset()
+          : null;
   if (!preset) return null;
 
   const cardType = preset.cardTypes.find((ct) => ct.baseType === baseType);
@@ -686,6 +714,22 @@ const validateUnitSchema = (schema, path) => {
         if (typeof wt.hasProfiles !== "boolean") {
           errors.push(`${wtPath}: "hasProfiles" must be a boolean`);
         }
+        if (wt.phaseStyle !== undefined && !VALID_PHASE_STYLES.includes(wt.phaseStyle)) {
+          errors.push(
+            `${wtPath}: invalid "phaseStyle" "${wt.phaseStyle}" (must be one of ${VALID_PHASE_STYLES.join(", ")})`,
+          );
+        }
+        if (wt.linkedAbilityCategory !== undefined && typeof wt.linkedAbilityCategory !== "string") {
+          errors.push(`${wtPath}: "linkedAbilityCategory" must be a string`);
+        }
+        if (wt.profileRelation !== undefined && !VALID_PROFILE_RELATIONS.includes(wt.profileRelation)) {
+          errors.push(
+            `${wtPath}: invalid "profileRelation" "${wt.profileRelation}" (must be one of ${VALID_PROFILE_RELATIONS.join(", ")})`,
+          );
+        }
+        if (wt.profileChildLabel !== undefined && typeof wt.profileChildLabel !== "string") {
+          errors.push(`${wtPath}: "profileChildLabel" must be a string`);
+        }
         errors.push(...validateFieldArray(wt.columns, `${wtPath}.columns`));
         if (wt.key) {
           if (weaponKeys.has(wt.key)) {
@@ -735,6 +779,20 @@ const validateUnitSchema = (schema, path) => {
         }
         if (cat.hasPhase !== undefined && typeof cat.hasPhase !== "boolean") {
           errors.push(`${catPath}: "hasPhase" must be a boolean`);
+        }
+        if (cat.hasType !== undefined && typeof cat.hasType !== "boolean") {
+          errors.push(`${catPath}: "hasType" must be a boolean`);
+        }
+        if (cat.hasCost !== undefined && typeof cat.hasCost !== "boolean") {
+          errors.push(`${catPath}: "hasCost" must be a boolean`);
+        }
+        if (cat.hasTriggerIcon !== undefined && typeof cat.hasTriggerIcon !== "boolean") {
+          errors.push(`${catPath}: "hasTriggerIcon" must be a boolean`);
+        }
+        if (cat.phaseStyle !== undefined && !VALID_PHASE_STYLES.includes(cat.phaseStyle)) {
+          errors.push(
+            `${catPath}: invalid "phaseStyle" "${cat.phaseStyle}" (must be one of ${VALID_PHASE_STYLES.join(", ")})`,
+          );
         }
         if (cat.key) {
           if (catKeys.has(cat.key)) {
@@ -803,6 +861,9 @@ const validateUnitSchema = (schema, path) => {
       errors.push(
         `${path}.metadata: invalid "pointsFormat" "${schema.metadata.pointsFormat}" (must be one of ${VALID_POINTS_FORMATS.join(", ")})`,
       );
+    }
+    if (schema.metadata.pointsLabel !== undefined && typeof schema.metadata.pointsLabel !== "string") {
+      errors.push(`${path}.metadata: "pointsLabel" must be a string`);
     }
   }
 
@@ -1129,6 +1190,150 @@ export const migrateCardToSchema = (card, oldSchema, newSchema) => {
   return migrateFieldCard(card, oldSchema, newSchema);
 };
 
+// --- Preset: Starcraft TCG ---
+
+/**
+ * Weapon column set shared by Assault and Combat phase weapon tables.
+ * @returns {FieldDefinition[]}
+ */
+const starcraftWeaponColumns = () => [
+  createFieldDefinition({ key: "rng", label: "RNG", type: "string" }),
+  createFieldDefinition({ key: "roa", label: "RoA", type: "string" }),
+  createFieldDefinition({ key: "hit", label: "Hit", type: "string" }),
+  createFieldDefinition({ key: "surge", label: "Surge type", type: "string" }),
+  createFieldDefinition({ key: "sdice", label: "S Dice", type: "string" }),
+  createFieldDefinition({ key: "dmg", label: "Dmg", type: "string" }),
+  createFieldDefinition({ key: "keyword", label: "Keyword", type: "string" }),
+];
+
+/**
+ * Creates a schema preset matching the Starcraft Trading Card Game datasheet format.
+ * Defines a single "unit" card type with Speed/Evade/Armour/HP/Size stats,
+ * tiered Models-per-Supply section, Assault and Combat weapon tables, and
+ * phase-grouped abilities with PASSIVE/ACTIVE/REACTION pills plus CP/BM cost chips.
+ * @returns {DatasourceSchema}
+ */
+export const createStarcraftTcgPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "starcraft-tcg",
+  cardTypes: [
+    {
+      key: "unit",
+      label: "Unit",
+      baseType: "unit",
+      schema: {
+        stats: {
+          label: "Stats",
+          allowMultipleProfiles: false,
+          fields: [
+            createFieldDefinition({ key: "speed", label: "Speed", type: "string", displayOrder: 1 }),
+            createFieldDefinition({ key: "evade", label: "Evade", type: "string", displayOrder: 2 }),
+            createFieldDefinition({ key: "armour", label: "Armour", type: "string", displayOrder: 3 }),
+            createFieldDefinition({ key: "hitPoints", label: "Hit Points", type: "string", displayOrder: 4 }),
+            createFieldDefinition({ key: "size", label: "Size", type: "string", displayOrder: 5 }),
+          ],
+        },
+        weaponTypes: {
+          label: "Weapons",
+          allowMultiple: true,
+          types: [
+            {
+              key: "assault",
+              label: "Assault Phase",
+              hasKeywords: false,
+              hasProfiles: true,
+              profileRelation: "parent-child",
+              profileChildLabel: "Upgrade",
+              phaseStyle: "assault",
+              linkedAbilityCategory: "assault",
+              columns: starcraftWeaponColumns(),
+            },
+            {
+              key: "combat",
+              label: "Combat Phase",
+              hasKeywords: false,
+              hasProfiles: true,
+              profileRelation: "parent-child",
+              profileChildLabel: "Upgrade",
+              phaseStyle: "combat",
+              linkedAbilityCategory: "combat",
+              columns: starcraftWeaponColumns(),
+            },
+          ],
+        },
+        abilities: {
+          label: "Abilities",
+          categories: [
+            {
+              key: "special",
+              label: "Special Abilities",
+              format: "name-description",
+              layout: "half",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "special",
+            },
+            {
+              key: "anyPhase",
+              label: "Any Phase",
+              format: "name-description",
+              layout: "half",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "special",
+            },
+            {
+              key: "movement",
+              label: "Movement Phase",
+              format: "name-description",
+              layout: "inline",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "movement",
+            },
+            {
+              key: "assault",
+              label: "Assault Phase",
+              format: "name-description",
+              layout: "full",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "assault",
+            },
+            {
+              key: "combat",
+              label: "Combat Phase",
+              format: "name-description",
+              layout: "full",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "combat",
+            },
+          ],
+        },
+        sections: {
+          label: "Sections",
+          sections: [],
+        },
+        metadata: {
+          hasKeywords: true,
+          hasFactionKeywords: true,
+          // Points carries the Models / Supply tiers in the renderer:
+          // { active, models, cost } → tier `{ models, supply: cost }`.
+          hasPoints: true,
+          pointsFormat: "per-unit",
+          pointsLabel: "Models / Supply",
+        },
+      },
+    },
+  ],
+});
+
 // --- Preset: Warhammer 40K 10th Edition ---
 
 /**
@@ -1175,6 +1380,7 @@ export const create40kPreset = () => ({
               label: "Ranged Weapons",
               hasKeywords: true,
               hasProfiles: true,
+              profileRelation: "equal",
               columns: [
                 createFieldDefinition({ key: "range", label: "Range", type: "string" }),
                 createFieldDefinition({ key: "a", label: "A", type: "string" }),
@@ -1189,6 +1395,7 @@ export const create40kPreset = () => ({
               label: "Melee Weapons",
               hasKeywords: true,
               hasProfiles: true,
+              profileRelation: "equal",
               columns: [
                 createFieldDefinition({ key: "range", label: "Range", type: "string" }),
                 createFieldDefinition({ key: "a", label: "A", type: "string" }),

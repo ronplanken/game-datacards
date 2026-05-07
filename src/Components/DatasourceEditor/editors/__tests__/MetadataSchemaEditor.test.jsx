@@ -54,7 +54,8 @@ describe("MetadataSchemaEditor", () => {
   it("renders hasPoints checkbox checked when true", () => {
     render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
     const checkboxes = screen.getAllByRole("checkbox");
-    expect(checkboxes[2].checked).toBe(true);
+    // Order: hasKeywords, hasFactionKeywords, hasCombatRole, hasArmySlot, hasPoints
+    expect(checkboxes[4].checked).toBe(true);
   });
 
   it("toggles hasKeywords on checkbox change", () => {
@@ -85,7 +86,7 @@ describe("MetadataSchemaEditor", () => {
     const onChange = vi.fn();
     render(<MetadataSchemaEditor schema={mockSchema} onChange={onChange} />);
     const checkboxes = screen.getAllByRole("checkbox");
-    fireEvent.click(checkboxes[2]);
+    fireEvent.click(checkboxes[4]);
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({ hasPoints: false }),

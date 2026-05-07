@@ -3,6 +3,7 @@ import { Database, Info, Palette } from "lucide-react";
 import { IconTag, IconNumber, IconUser, IconPalette } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
+import { FactionsEditor } from "./FactionsEditor";
 
 const BASE_SYSTEM_LABELS = {
   "40k-10e": "Warhammer 40K 10th Edition",
@@ -101,6 +102,7 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
           <span className="props-metadata-value">{baseSystemLabel}</span>
         </div>
       </Section>
+      <FactionsEditor datasource={datasource} onUpdateDatasource={onUpdateDatasource} />
     </div>
   );
 };

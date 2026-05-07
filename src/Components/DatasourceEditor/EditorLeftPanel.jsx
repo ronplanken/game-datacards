@@ -52,6 +52,7 @@ export const EditorLeftPanel = ({
 }) => {
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
   const [activeCardTypeTab, setActiveCardTypeTab] = useState(null);
+  const [activeFactionId, setActiveFactionId] = useState(null);
 
   if (!activeDatasource && datasources.length === 0) {
     return (
@@ -62,6 +63,10 @@ export const EditorLeftPanel = ({
   }
 
   const cardTypes = activeDatasource?.schema?.cardTypes || [];
+  const factions = activeDatasource?.data || [];
+  const resolvedFactionId = factions.find((f) => f.id === activeFactionId) ? activeFactionId : factions[0]?.id || null;
+  const activeCardTypeKey = activeCardTypeTab || cardTypes[0]?.key;
+  const activeCardType = cardTypes.find((c) => c.key === activeCardTypeKey);
 
   return (
     <div className="designer-layer-panel">
@@ -140,8 +145,7 @@ export const EditorLeftPanel = ({
                 {
                   icon: Download,
                   onClick: () => onExportDatasource?.(activeDatasource),
-                  title: "Export schema (coming soon)",
-                  disabled: true,
+                  title: "Export datasource",
                 },
                 {
                   icon: Upload,
@@ -279,29 +283,27 @@ export const EditorLeftPanel = ({
               Cards
               <CardCountBadge
                 activeDatasource={activeDatasource}
-                cardTypeKey={activeCardTypeTab || cardTypes[0]?.key}
+                cardTypeKey={activeCardTypeKey}
+                factionId={resolvedFactionId}
               />
             </h3>
             <button
               className="designer-panel-header-action"
-              onClick={() => {
-                const ct = cardTypes.find((c) => c.key === (activeCardTypeTab || cardTypes[0]?.key));
-                if (ct) onAddCard?.(ct);
-              }}
-              title={`Add ${cardTypes.find((c) => c.key === (activeCardTypeTab || cardTypes[0]?.key))?.label || "card"}`}>
+              onClick={() => activeCardType && onAddCard?.(activeCardType, resolvedFactionId)}
+              title={`Add ${activeCardType?.label || "card"}`}>
               <Plus size={14} />
             </button>
           </div>
           <div className="designer-panel-content">
-            <CardTypeTabBar
-              cardTypes={cardTypes}
-              activeTab={activeCardTypeTab || cardTypes[0]?.key}
-              onTabChange={setActiveCardTypeTab}
-            />
+            {factions.length > 1 && (
+              <FactionSwitcher factions={factions} activeFactionId={resolvedFactionId} onChange={setActiveFactionId} />
+            )}
+            <CardTypeTabBar cardTypes={cardTypes} activeTab={activeCardTypeKey} onTabChange={setActiveCardTypeTab} />
             <CardList
               activeDatasource={activeDatasource}
-              cardTypeKey={activeCardTypeTab || cardTypes[0]?.key}
+              cardTypeKey={activeCardTypeKey}
               cardTypes={cardTypes}
+              factionId={resolvedFactionId}
               selectedItem={selectedItem}
               onSelectCard={onSelectCard}
               onDeleteCard={onDeleteCard}
@@ -314,13 +316,30 @@ export const EditorLeftPanel = ({
   );
 };
 
-const CardCountBadge = ({ activeDatasource, cardTypeKey }) => {
-  const faction = activeDatasource?.data?.[0];
+const CardCountBadge = ({ activeDatasource, cardTypeKey, factionId }) => {
+  const factions = activeDatasource?.data || [];
+  const faction = factions.find((f) => f.id === factionId) || factions[0];
   if (!faction || !cardTypeKey) return null;
   const targetArray = getTargetArray(cardTypeKey);
   const count = (faction[targetArray] || []).filter((c) => c.cardType === cardTypeKey).length;
   return <span className="designer-panel-title-count">{count}</span>;
 };
+
+const FactionSwitcher = ({ factions, activeFactionId, onChange }) => (
+  <div className="designer-faction-switcher">
+    <select
+      className="designer-faction-select"
+      value={activeFactionId || ""}
+      onChange={(e) => onChange(e.target.value)}
+      aria-label="Faction">
+      {factions.map((faction) => (
+        <option key={faction.id} value={faction.id}>
+          {faction.name || faction.id}
+        </option>
+      ))}
+    </select>
+  </div>
+);
 
 const CardTypeTabBar = ({ cardTypes, activeTab, onTabChange }) => (
   <div className="designer-card-type-tabs">
@@ -344,6 +363,7 @@ const CardList = ({
   activeDatasource,
   cardTypeKey,
   cardTypes,
+  factionId,
   selectedItem,
   onSelectCard,
   onDeleteCard,
@@ -352,7 +372,8 @@ const CardList = ({
   const cardTypeDef = cardTypes.find((ct) => ct.key === cardTypeKey);
   if (!cardTypeDef) return null;
 
-  const faction = activeDatasource.data?.[0];
+  const factions = activeDatasource.data || [];
+  const faction = factions.find((f) => f.id === factionId) || factions[0];
   if (!faction) return null;
 
   const targetArray = getTargetArray(cardTypeKey);

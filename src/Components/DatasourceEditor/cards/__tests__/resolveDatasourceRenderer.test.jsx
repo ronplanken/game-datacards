@@ -5,6 +5,7 @@ import { Ds40kEnhancementCard } from "../Ds40kEnhancementCard";
 import { Ds40kRuleCard } from "../Ds40kRuleCard";
 import { Ds40kUnitCard } from "../Ds40kUnitCard";
 import { DsAosWarscrollCard } from "../DsAosWarscrollCard";
+import { DsStarcraftUnitCard } from "../DsStarcraftUnitCard";
 
 describe("resolveDatasourceRenderer", () => {
   describe("40k-10e base system", () => {
@@ -36,6 +37,16 @@ describe("resolveDatasourceRenderer", () => {
 
     it("returns null for stratagem baseType", () => {
       expect(resolveDatasourceRenderer("aos", "stratagem")).toBeNull();
+    });
+  });
+
+  describe("starcraft-tcg base system", () => {
+    it("returns DsStarcraftUnitCard for unit baseType", () => {
+      expect(resolveDatasourceRenderer("starcraft-tcg", "unit")).toBe(DsStarcraftUnitCard);
+    });
+
+    it("returns null for stratagem baseType", () => {
+      expect(resolveDatasourceRenderer("starcraft-tcg", "stratagem")).toBeNull();
     });
   });
 

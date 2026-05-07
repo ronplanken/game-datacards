@@ -481,6 +481,42 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
+/* Faction switcher — native <select> dropdown, only rendered when the
+   datasource has more than one faction. Scales cleanly with any number
+   of factions (the browser handles long-list scrolling). */
+.designer-faction-switcher {
+  margin: 0 8px 8px 8px;
+}
+
+.designer-faction-select {
+  width: 100%;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid var(--designer-border);
+  border-radius: var(--designer-radius-md);
+  background-color: var(--designer-bg-primary);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  color: var(--designer-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border-color 0.15s ease;
+}
+
+.designer-faction-select:hover {
+  border-color: var(--designer-accent);
+}
+
+.designer-faction-select:focus-visible {
+  outline: 2px solid var(--designer-accent);
+  outline-offset: -1px;
+  border-color: var(--designer-accent);
+}
+
 /* Card list */
 .designer-card-list {
   padding: 0 8px;
@@ -1046,6 +1082,32 @@ select.props-compact-field {
   position: relative;
 }
 
+/* Inline confirm row inside a FactionsEditor item — appears underneath the
+   regular inputs while the user has clicked the trash icon on a faction that
+   still owns cards. */
+.props-faction-confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0 0;
+}
+
+.props-faction-confirm-text {
+  font-size: 11px;
+  color: var(--designer-text-secondary);
+  margin-right: auto;
+}
+
+.props-faction-confirm-delete {
+  background: var(--designer-error, #c0392b);
+  color: #fff;
+  border-color: var(--designer-error, #c0392b);
+}
+
+.props-faction-confirm-delete:hover {
+  filter: brightness(1.05);
+}
+
 /* Vertical trunk line */
 .props-tree-children::before {
   content: "";
@@ -1547,6 +1609,18 @@ select.props-compact-field {
   font-weight: 600;
   color: var(--designer-text-primary);
   font-size: 13px;
+}
+
+/* Property-level TreeNode labels (nested two or more levels deep — i.e. a
+   TreeNode inside another TreeNode's children, like "Multiple profiles
+   enabled" inside "Assault Phase") render with lighter weight and smaller
+   size. Top-level section headings (Weapons, Abilities, Card Properties)
+   AND first-level entries (Assault Phase, Combat Phase) keep the bold
+   primary styling. */
+.schema-tree-children .schema-tree-children .schema-tree-label {
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--designer-text-secondary);
 }
 
 .schema-tree-badge {

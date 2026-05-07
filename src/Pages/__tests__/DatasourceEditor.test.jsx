@@ -95,7 +95,7 @@ vi.mock("../../Components/DatasourceEditor/DatasourceEditor.css", () => ({}));
 
 // Mock helpers
 vi.mock("../../Helpers/customDatasource.helpers", () => ({
-  exportDatasourceSchema: vi.fn((ds) => ({ name: ds?.name, schema: ds?.schema })),
+  exportDatasource: vi.fn((ds) => ({ name: ds?.name, schema: ds?.schema, data: ds?.data })),
   downloadJsonFile: vi.fn(),
   generateDatasourceFilename: vi.fn((name) => `${name}-datasource.json`),
 }));

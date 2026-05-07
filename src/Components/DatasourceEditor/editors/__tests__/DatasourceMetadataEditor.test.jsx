@@ -5,8 +5,12 @@ vi.mock("lucide-react", () => ({
   Database: (props) => <svg data-testid="icon-database" {...props} />,
   Info: (props) => <svg data-testid="icon-info" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
+  Users: (props) => <svg data-testid="icon-users" {...props} />,
+  Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+  ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
+  Plus: (props) => <svg data-testid="icon-plus" {...props} />,
 }));
 
 const mockDatasource = {

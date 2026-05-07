@@ -28,6 +28,7 @@ vi.mock("lucide-react", () => ({
   X: (props) => <svg data-testid="icon-x" {...props} />,
   LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
+  Users: (props) => <svg data-testid="icon-users" {...props} />,
 }));
 
 const mockDatasource = {
@@ -240,7 +241,9 @@ describe("SchemaDefinitionEditor", () => {
           onUpdateDatasource={vi.fn()}
         />,
       );
-      expect(screen.getByLabelText("Multiple profiles")).toBeInTheDocument();
+      // Stats editor renders a "Multiple profiles" toggle; weapons editor
+      // also renders one when hasProfiles is true. Either is fine for this test.
+      expect(screen.getAllByLabelText("Multiple profiles").length).toBeGreaterThanOrEqual(1);
       const checkboxes = screen.getAllByRole("checkbox");
       expect(checkboxes.length).toBeGreaterThanOrEqual(1);
     });

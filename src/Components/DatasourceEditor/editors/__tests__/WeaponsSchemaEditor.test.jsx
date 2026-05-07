@@ -92,7 +92,7 @@ describe("WeaponsSchemaEditor", () => {
 
   it("renders hasProfiles toggle checked when true", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    expect(screen.getByLabelText("Weapon profiles").checked).toBe(true);
+    expect(screen.getByLabelText("Multiple profiles").checked).toBe(true);
   });
 
   it("toggles hasKeywords on checkbox change", () => {
@@ -111,7 +111,7 @@ describe("WeaponsSchemaEditor", () => {
   it("toggles hasProfiles on checkbox change", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
-    fireEvent.click(screen.getByLabelText("Weapon profiles"));
+    fireEvent.click(screen.getByLabelText("Multiple profiles"));
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
         weaponTypes: expect.objectContaining({

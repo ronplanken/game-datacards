@@ -198,7 +198,7 @@ describe("SchemaTreeView", () => {
 
     it("shows multiple profiles flag", () => {
       render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
-      expect(screen.getByText("Multiple profiles enabled")).toBeInTheDocument();
+      expect(screen.getByText("Multiple stat profiles enabled")).toBeInTheDocument();
     });
 
     it("renders weapon types section with badge count", () => {
@@ -235,7 +235,7 @@ describe("SchemaTreeView", () => {
       await user.click(screen.getByText("Ranged Weapons"));
       expect(screen.getByText("range")).toBeInTheDocument();
       expect(screen.getByText("Weapon keywords enabled")).toBeInTheDocument();
-      expect(screen.getByText("Weapon profiles enabled")).toBeInTheDocument();
+      expect(screen.getByText("Multiple profiles enabled")).toBeInTheDocument();
     });
   });
 

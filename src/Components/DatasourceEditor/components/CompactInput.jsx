@@ -20,6 +20,7 @@ export const CompactInput = ({
   max,
   step,
   style,
+  placeholder,
 }) => {
   const colorRef = useRef(null);
 
@@ -88,6 +89,7 @@ export const CompactInput = ({
         min={min}
         max={max}
         step={step}
+        placeholder={placeholder}
         className="props-compact-field"
         aria-label={ariaLabel || (typeof label === "string" ? label : undefined)}
       />
