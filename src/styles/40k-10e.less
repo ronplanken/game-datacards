@@ -2965,8 +2965,8 @@
       }
       .factions {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        flex-direction: row;
+        align-items: center;
         position: relative;
         padding-left: 48px;
         background-color: var(--background-colour);
@@ -2979,6 +2979,7 @@
           font-weight: 400;
           padding-right: 4px;
           line-height: 1.1rem;
+          white-space: nowrap;
 
           &::after {
             content: ":";

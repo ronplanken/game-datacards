@@ -238,7 +238,7 @@ const UnitSchemaTree = ({ schema }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Keywords enabled</span>
+                <span className="schema-tree-flag-label">Keywords ({schema.metadata.keywordsLabel || "Keywords"})</span>
               </div>
             </div>
           )}
@@ -246,7 +246,9 @@ const UnitSchemaTree = ({ schema }) => {
             <div className="schema-tree-node">
               <div className="schema-tree-node-header schema-tree-flag" style={{ paddingLeft: 12 + 1 * 16 }}>
                 <span className="schema-tree-chevron-spacer" />
-                <span className="schema-tree-flag-label">Faction keywords enabled</span>
+                <span className="schema-tree-flag-label">
+                  Faction keywords ({schema.metadata.factionKeywordsLabel || "Faction"})
+                </span>
               </div>
             </div>
           )}
