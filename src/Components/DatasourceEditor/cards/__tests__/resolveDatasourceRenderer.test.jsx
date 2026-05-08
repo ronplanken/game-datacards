@@ -40,13 +40,13 @@ describe("resolveDatasourceRenderer", () => {
     });
   });
 
-  describe("starcraft-tcg base system", () => {
+  describe("starcraft-tmg base system", () => {
     it("returns DsStarcraftUnitCard for unit baseType", () => {
-      expect(resolveDatasourceRenderer("starcraft-tcg", "unit")).toBe(DsStarcraftUnitCard);
+      expect(resolveDatasourceRenderer("starcraft-tmg", "unit")).toBe(DsStarcraftUnitCard);
     });
 
     it("returns null for stratagem baseType", () => {
-      expect(resolveDatasourceRenderer("starcraft-tcg", "stratagem")).toBeNull();
+      expect(resolveDatasourceRenderer("starcraft-tmg", "stratagem")).toBeNull();
     });
   });
 

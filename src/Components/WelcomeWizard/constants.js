@@ -16,6 +16,7 @@ export const WIZARD_STEPS = [
 ];
 
 // Game system/datasource configuration
+// `tier: "primary"` cards are featured prominently, `tier: "secondary"` render as compact buttons
 export const GAME_SYSTEMS = [
   {
     id: "40k-10e",
@@ -24,6 +25,7 @@ export const GAME_SYSTEMS = [
     description: "Community-maintained datacards for 10th edition games",
     color: "#dc2626",
     tag: "Popular",
+    tier: "primary",
   },
   {
     id: "aos",
@@ -32,6 +34,16 @@ export const GAME_SYSTEMS = [
     description: "Community-maintained warscrolls and unit cards",
     color: "#ca8a04",
     tag: "New",
+    tier: "primary",
+  },
+  {
+    id: "starcraft-tmg",
+    title: "Starcraft 2 TMG",
+    subtitle: "Tabletop Miniatures Game",
+    description: "Community-maintained datasheets for the Starcraft 2 miniatures game",
+    color: "#7c3aed",
+    tag: "New",
+    tier: "primary",
   },
   {
     id: "40k-10e-cp",
@@ -40,6 +52,7 @@ export const GAME_SYSTEMS = [
     description: "Simplified cards for Combat Patrol game mode",
     color: "#0891b2",
     tag: null,
+    tier: "secondary",
   },
   {
     id: "necromunda",
@@ -48,6 +61,7 @@ export const GAME_SYSTEMS = [
     description: "Fighter cards for skirmish games",
     color: "#a05236",
     tag: null,
+    tier: "secondary",
   },
   {
     id: "basic",
@@ -56,6 +70,7 @@ export const GAME_SYSTEMS = [
     description: "Create fully custom cards from scratch",
     color: "#6366f1",
     tag: null,
+    tier: "secondary",
   },
   {
     id: "40k",
@@ -64,6 +79,7 @@ export const GAME_SYSTEMS = [
     description: "Import and customize cards from Wahapedia data",
     color: "#737373",
     tag: "Legacy",
+    tier: "secondary",
   },
 ];
 
@@ -71,8 +87,8 @@ export const GAME_SYSTEMS = [
 export const FEATURE_HIGHLIGHTS = [
   {
     id: "systems",
-    title: "6 Game Systems",
-    description: "40K, Age of Sigmar, Necromunda, and more",
+    title: "7 Game Systems",
+    description: "40K, Age of Sigmar, Starcraft 2 TMG, and more",
     icon: "Gamepad2",
   },
   {

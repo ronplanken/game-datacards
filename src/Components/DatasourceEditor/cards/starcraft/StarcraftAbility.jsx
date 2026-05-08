@@ -23,7 +23,7 @@ const renderTypePill = (type) => {
 };
 
 /**
- * Renders a single Starcraft TCG ability with optional up-arrow glyph (shown
+ * Renders a single Starcraft TMG ability with optional up-arrow glyph (shown
  * when the ability is `triggered` or `upgrade`), name, PASSIVE/ACTIVE/REACTION
  * pill, cost chips, and description.
  *

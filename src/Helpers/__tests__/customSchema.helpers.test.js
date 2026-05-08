@@ -29,7 +29,7 @@ describe("customSchema.helpers - constants", () => {
   });
 
   it("defines valid base systems", () => {
-    expect(VALID_BASE_SYSTEMS).toEqual(["40k-10e", "aos", "starcraft-tcg", "blank"]);
+    expect(VALID_BASE_SYSTEMS).toEqual(["40k-10e", "aos", "starcraft-tmg", "blank"]);
   });
 
   it("defines valid ability formats", () => {
@@ -368,7 +368,7 @@ describe("customSchema.helpers - createStarcraftTcgPreset", () => {
   it("returns a schema with correct version and base system", () => {
     const schema = createStarcraftTcgPreset();
     expect(schema.version).toBe(SCHEMA_VERSION);
-    expect(schema.baseSystem).toBe("starcraft-tcg");
+    expect(schema.baseSystem).toBe("starcraft-tmg");
   });
 
   it("defines a single unit card type", () => {

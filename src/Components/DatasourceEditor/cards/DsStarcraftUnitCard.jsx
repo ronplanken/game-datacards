@@ -1,4 +1,5 @@
 import React from "react";
+import { ArrowLeft } from "lucide-react";
 import { StarcraftHeader } from "./starcraft/StarcraftHeader";
 import { StarcraftAbility } from "./starcraft/StarcraftAbility";
 import { StarcraftWeaponTable } from "./starcraft/StarcraftWeaponTable";
@@ -101,13 +102,18 @@ const InlinePhaseRow = ({ category, abilities }) => {
   );
 };
 
-const WeaponSection = ({ category, weaponTypeDef, weapons, abilities }) => {
+const WeaponSection = ({ category, weaponTypeDef, weapons, abilities, isMobile }) => {
   if (!weapons?.length && !abilities?.length) return null;
   const hasAbilities = abilities?.length > 0;
   return (
     <div className="sc-section" data-testid={`sc-section-${weaponTypeDef.key}`}>
       <SectionHeading category={category} label={weaponTypeDef.label} />
-      <StarcraftWeaponTable weapons={weapons} weaponTypeDef={weaponTypeDef} isLast={!hasAbilities} />
+      <StarcraftWeaponTable
+        weapons={weapons}
+        weaponTypeDef={weaponTypeDef}
+        isLast={!hasAbilities}
+        isMobile={isMobile}
+      />
       {hasAbilities && (
         <div className={abilityGridClass(category)}>
           {abilities.map((ability, idx) => (
@@ -120,7 +126,7 @@ const WeaponSection = ({ category, weaponTypeDef, weapons, abilities }) => {
 };
 
 /**
- * Datasource-native Starcraft TCG Unit card renderer.
+ * Datasource-native Starcraft TMG Unit card renderer.
  *
  * Layout (matches the Claude Design "SC2 Card" handoff):
  * - Header (full-width, angled bottom-right): name + subtitle, hex-cut stat
@@ -130,7 +136,7 @@ const WeaponSection = ({ category, weaponTypeDef, weapons, abilities }) => {
  * - Body (right): section blocks for movement, assault, combat, and special
  *   abilities — each in a faction-coloured frame with an angled bottom-right.
  */
-export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isMobile }) => {
+export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isMobile, onBack }) => {
   const schema = cardTypeDef?.schema || {};
   const statFields = schema.stats?.fields || [];
   const abilityCategories = schema.abilities?.categories || [];
@@ -139,7 +145,7 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
   const groupedAbilities = groupAbilitiesByCategory(card.abilities);
 
   // Merge faction colours into the CSS variables the LESS file expects. When
-  // the datasource omits colours, defaults from starcraft-tcg.less kick in.
+  // the datasource omits colours, defaults from starcraft-tmg.less kick in.
   const mergedStyle = {
     ...(cardStyle || {}),
     "--sc-header-colour": faction?.colours?.header || cardStyle?.["--header-colour"] || undefined,
@@ -202,6 +208,7 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
           weaponTypeDef={weaponType}
           weapons={weapons}
           abilities={abilities}
+          isMobile={isMobile}
         />
       );
     }
@@ -224,6 +231,7 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
         weaponTypeDef={weaponType}
         weapons={weapons}
         abilities={[]}
+        isMobile={isMobile}
       />
     );
   };
@@ -236,6 +244,12 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
     <div className={`data-starcraft${isMobile ? " viewer" : ""}`} data-testid="ds-starcraft-unit" style={mergedStyle}>
       <div className="ds-starcraft-card" data-name={card.name}>
         <div className="sc-bg-texture" aria-hidden="true" />
+
+        {isMobile && onBack && (
+          <button className="sc-back-button" onClick={onBack} type="button" aria-label="Back">
+            <ArrowLeft size={20} />
+          </button>
+        )}
 
         <StarcraftHeader
           card={card}
@@ -254,6 +268,17 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
             </div>
           )}
         </div>
+
+        {isMobile && showKeywords && (primaryFactionTag || tagKeywords.length > 0) && (
+          <div className="sc-mobile-tags">
+            {primaryFactionTag && <span className="sc-mobile-faction-pill">{primaryFactionTag}</span>}
+            {tagKeywords.length > 0 && (
+              <span className="sc-mobile-tags-list">
+                <span className="sc-mobile-tags-label">Tags:</span> {tagKeywords.join(", ")}
+              </span>
+            )}
+          </div>
+        )}
 
         <div className="sc-body">
           {/* Iterate ability categories in schema order — each may resolve to

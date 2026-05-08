@@ -1,5 +1,5 @@
 /**
- * Inline SVG icons for Starcraft TCG phase section headings and triggered-ability
+ * Inline SVG icons for Starcraft TMG phase section headings and triggered-ability
  * glyph. Glyphs match the Claude Design "SC2 Card" handoff: a right-pointing arrow
  * for movement, a star for assault, and a soldier silhouette for combat. All icons
  * inherit `currentColor` so they tint with the surrounding text colour.

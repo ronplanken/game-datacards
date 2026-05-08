@@ -13,7 +13,7 @@ The `schema` property sits inside a datasource's top-level structure.
 ```js
 {
   version: "1.0.0",
-  baseSystem: "40k-10e" | "aos" | "starcraft-tcg" | "blank",
+  baseSystem: "40k-10e" | "aos" | "starcraft-tmg" | "blank",
   colours: {
     header: string,      // hex colour for card headers (default: "#1a1a2e")
     banner: string,      // hex colour for card banners (default: "#16213e")
@@ -265,9 +265,9 @@ When `baseSystem` is not `"40k-10e"`, ability categories gain additional toggles
 | `hasPhase` | boolean | Enables a phase text field on each ability in this category. Phase text appears as a tag above the ability. |
 | `hasColor` | boolean | Enables a per-ability banner colour on the ability name strip. When set, each ability can define a `color` hex value. |
 
-#### Starcraft TCG-specific ability properties
+#### Starcraft TMG-specific ability properties
 
-When `baseSystem` is `"starcraft-tcg"`, ability categories gain these additional toggles
+When `baseSystem` is `"starcraft-tmg"`, ability categories gain these additional toggles
 (additive; default-false; ignored by other systems):
 
 | Property         | Type    | Description                                                                                                   |
@@ -285,7 +285,7 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 |----------|--------|------------------------------------------------------|
 | `key`    | string | Unique identifier for this section.                  |
 | `label`  | string | Display label.                                       |
-| `format` | string | `"list"` (bullet list of items), `"richtext"` (freeform HTML/markup), or `"modelsSupplyTiers"` (Starcraft TCG — tiered `[{ models, supply }, …]` rows rendered natively in the header). |
+| `format` | string | `"list"` (bullet list of items), `"richtext"` (freeform HTML/markup), or `"modelsSupplyTiers"` (Starcraft TMG — tiered `[{ models, supply }, …]` rows rendered natively in the header). |
 
 ### Metadata properties
 

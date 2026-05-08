@@ -75,7 +75,7 @@ const isDashValue = (value) => value === "-" || value === "—" || value === "�
 
 // Normalise a tier source into `{ models, supply }`. Accepts:
 // - Points-shape: `{ active, models, cost }` (current canonical shape — Models /
-//   Supply rides on top of the Points cost editor for Starcraft TCG)
+//   Supply rides on top of the Points cost editor for Starcraft TMG)
 // - Section-shape: `{ models, supply }` (legacy modelsSupplyTiers section)
 // - Plain string: "1-3" or "1-3/0" (very-old section format)
 const normaliseTier = (tier) => {
@@ -118,7 +118,7 @@ const SupplyTiers = ({ tiers, caption = "Models / Supply" }) => {
  * tiered Models/Supply (hex cells with dark supply pills), and faction emblem.
  *
  * Models / Supply tiers ride on top of the canonical Points cost editor for
- * Starcraft TCG — `card.points` is the source of truth (`{ active, models,
+ * Starcraft TMG — `card.points` is the source of truth (`{ active, models,
  * cost }`). Older data shapes (`card.sections.modelsSupply`, top-level
  * `card.modelsSupply`) are still accepted as fallbacks.
  *

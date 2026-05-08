@@ -1,12 +1,12 @@
 {
-  "id": "custom-starcraft-tcg-sample",
-  "name": "Starcraft TCG — Sample",
-  "version": "1.1.0",
+  "id": "starcraft-tmg",
+  "name": "Starcraft TMG",
+  "version": "1.0.0",
   "author": "Game Datacards",
-  "lastUpdated": "2026-05-07T00:00:00.000Z",
+  "lastUpdated": "2026-05-08T00:00:00.000Z",
   "schema": {
     "version": "1.0.0",
-    "baseSystem": "starcraft-tcg",
+    "baseSystem": "starcraft-tmg",
     "colours": {
       "header": "#4c1d95",
       "banner": "#2e1065"
@@ -247,7 +247,7 @@
           "id": "marine-001",
           "name": "Marine",
           "faction_id": "terran",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -416,7 +416,7 @@
           "id": "marauder-001",
           "name": "Marauder",
           "faction_id": "terran",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -548,7 +548,7 @@
           "id": "medic-001",
           "name": "Medic",
           "faction_id": "terran",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -676,7 +676,7 @@
           "id": "jim-raynor-001",
           "name": "Jim Raynor",
           "faction_id": "terran",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -800,7 +800,7 @@
           "id": "point-defense-drone-001",
           "name": "Point Defense Drone",
           "faction_id": "terran",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -861,7 +861,7 @@
           "id": "raynors-raider-marine-001",
           "name": "Raynor's Raider (Marine)",
           "faction_id": "terran",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -982,7 +982,7 @@
           "id": "goliath-001",
           "name": "Goliath",
           "faction_id": "terran",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -1157,7 +1157,7 @@
           "id": "hydralisk-001",
           "name": "Hydralisk",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -1290,7 +1290,7 @@
           "id": "kerrigan-001",
           "name": "Kerrigan",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -1417,7 +1417,7 @@
           "id": "omega-worm-001",
           "name": "Omega Worm",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -1493,7 +1493,7 @@
           "id": "kerrigan-swarm-raptor-001",
           "name": "Kerrigan Swarm Raptor (Zergling)",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -1603,7 +1603,7 @@
           "id": "queen-001",
           "name": "Queen",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -1745,7 +1745,7 @@
           "id": "roach-001",
           "name": "Roach",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -1885,7 +1885,7 @@
           "id": "corpser-roach-001",
           "name": "Corpser (Roach)",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2037,7 +2037,7 @@
           "id": "roachling-001",
           "name": "Roachling",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2101,7 +2101,7 @@
           "id": "vile-roach-001",
           "name": "Vile (Roach)",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2253,7 +2253,7 @@
           "id": "zergling-001",
           "name": "Zergling",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2373,7 +2373,7 @@
           "id": "raptor-zergling-001",
           "name": "Raptor (Zergling)",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2512,7 +2512,7 @@
           "id": "swarmling-zergling-001",
           "name": "Swarmling (Zergling)",
           "faction_id": "zerg",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2624,7 +2624,7 @@
           "id": "adept-001",
           "name": "Adept",
           "faction_id": "protoss",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2757,7 +2757,7 @@
           "id": "artanis-001",
           "name": "Artanis",
           "faction_id": "protoss",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2872,7 +2872,7 @@
           "id": "praetor-guard-zealot-001",
           "name": "Praetor Guard (Zealot)",
           "faction_id": "protoss",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -2991,7 +2991,7 @@
           "id": "pylon-001",
           "name": "Pylon",
           "faction_id": "protoss",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -3052,7 +3052,7 @@
           "id": "sentry-001",
           "name": "Sentry",
           "faction_id": "protoss",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -3199,7 +3199,7 @@
           "id": "stalker-001",
           "name": "Stalker",
           "faction_id": "protoss",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {
@@ -3320,7 +3320,7 @@
           "id": "zealot-001",
           "name": "Zealot",
           "faction_id": "protoss",
-          "source": "custom-starcraft-tcg-sample",
+          "source": "starcraft-tmg",
           "cardType": "unit",
           "stats": [
             {

@@ -25,8 +25,8 @@ const BASE_SYSTEMS = [
     color: "#d69e2e",
   },
   {
-    id: "starcraft-tcg",
-    title: "Starcraft TCG",
+    id: "starcraft-tmg",
+    title: "Starcraft TMG",
     subtitle: "Datasheet format",
     description:
       "Speed/Evade/Armour/Hit Points/Size stats, Movement/Assault/Combat phase sections, and PASSIVE/ACTIVE/REACTION abilities with CP and BM cost chips.",

@@ -52,7 +52,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const types = ensureIds(weaponTypes.types);
   const [activeTab, setActiveTab] = useState(0);
   const abilityCategoryOptions = (schema?.abilities?.categories || []).map((c) => ({ value: c.key, label: c.label }));
-  const showPhaseFields = baseSystem === "starcraft-tcg";
+  const showPhaseFields = baseSystem === "starcraft-tmg";
 
   const updateWeaponTypes = (updatedTypes) => {
     onChange({ ...schema, weaponTypes: { ...weaponTypes, types: updatedTypes } });

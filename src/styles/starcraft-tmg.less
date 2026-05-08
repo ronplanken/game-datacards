@@ -1,4 +1,4 @@
-// Starcraft TCG datasheet styles — visual treatment derived from the
+// Starcraft TMG datasheet styles — visual treatment derived from the
 // Claude Design "SC2 Card" handoff (Barlow Condensed display, hex-cut stat
 // tiles, angled section-head tabs, bordered section blocks, two-column
 // ability grid with clipped corners). Card is sized to match 40k-10e
@@ -510,7 +510,10 @@
     font-size: 11px;
     line-height: 1.35;
     margin: 0;
-    padding: 6px 8px 18px;
+    padding: 6px 8px;
+    // match the section's inner notch so the diagonal border is visible
+    // without needing extra bottom padding to clear the corner
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
 
     &.single {
       grid-template-columns: 1fr;
@@ -736,10 +739,12 @@
       }
     }
 
-    // last weapon table inside a section block — no bottom border so
-    // the section-block clip-path provides the visible edge
+    // last weapon table inside a section block — no bottom border, and
+    // clip the bottom-right corner to match the section's inner notch so
+    // the colored 1.5px diagonal border isn't overpainted by the table fill
     &.is-last {
       border-bottom: none;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
     }
   }
 
@@ -750,10 +755,326 @@
   }
 
   // ------- VIEWER (mobile) -------
-  &.viewer .ds-starcraft-card {
-    width: 100%;
-    max-width: 1077px;
-    height: auto;
-    aspect-ratio: 1077 / 714;
+  // Breakdown: drop the fixed 1077x714 frame and the absolute-positioned
+  // header / art rail / body, and re-flow everything into a single column so
+  // each phase block is full-width and readable on a phone.
+  &.viewer {
+    .ds-starcraft-card {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      transform: none;
+      box-shadow: none;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--sc-paper);
+      // Contain the card's internal z-indexes (back button = 30, faction
+      // pill = 4, header = 3, …). Without `isolation`, dropping the desktop
+      // `transform: scale()` removes the implicit stacking context and the
+      // children float up to the page level, ending up on top of the
+      // mobile bottom nav (which sits at z-index auto). `isolation: isolate`
+      // re-creates a stacking context with no visual side-effects.
+      isolation: isolate;
+      // Small breathing room below the last phase block before the scroll
+      // boundary / bottom nav.
+      padding-bottom: 16px;
+    }
+
+    // Back button overlaying the header (matches AoS / 40k mobile patterns)
+    .sc-back-button {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 30;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.35);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+
+      &:active {
+        opacity: 0.8;
+      }
+    }
+
+    // Header reflows: name above, stat pills wrap, supply tier centred.
+    .sc-header {
+      position: static;
+      height: auto;
+      flex-direction: column;
+      align-items: stretch;
+      clip-path: none;
+      padding: 16px 16px 12px;
+      gap: 12px;
+
+      .sc-header-name-block {
+        flex: 0 0 auto;
+        min-width: 0;
+        // Leave room on the left for the in-card back button (36px + 12px
+        // gap). The page-level header is hidden in scroll-reveal mode and
+        // only re-appears once the card name scrolls out of view, so the
+        // card's own name carries the top of the screen.
+        padding: 0 0 0 52px;
+        clip-path: none;
+        background: transparent;
+        min-height: 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        // Reset the desktop `align-items: center` (which would horizontally
+        // centre everything in a column flex) so the name & badges sit
+        // flush-left next to the back button.
+        align-items: flex-start;
+
+        .sc-header-name {
+          font-size: 22px;
+          line-height: 1.05;
+          color: #fff;
+        }
+
+        .sc-header-subtitle {
+          margin-top: 4px;
+        }
+
+        .sc-header-badges {
+          margin-top: 6px;
+        }
+      }
+
+      .sc-header-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+        gap: 6px;
+        padding: 0;
+        align-self: stretch;
+
+        .sc-stat,
+        .sc-stat .sc-stat-pill {
+          width: 100%;
+          height: 56px;
+        }
+
+        .sc-stat .sc-stat-pill {
+          .sc-stat-value {
+            font-size: 22px;
+          }
+          .sc-stat-label {
+            font-size: 9px;
+          }
+        }
+      }
+
+      .sc-header-supply {
+        align-self: center;
+        padding: 0;
+      }
+
+      // Hide the giant emblem on the right — too dominant on a narrow screen.
+      .sc-header-symbol {
+        display: none;
+      }
+    }
+
+    // Drop the dark left art rail entirely; faction tag + keywords are
+    // re-rendered inline below the header instead.
+    .sc-image-block {
+      display: none;
+    }
+
+    // Inline faction pill + keyword tags strip shown on mobile.
+    .sc-mobile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px 0;
+      font-size: 11px;
+      color: var(--sc-text-soft);
+
+      .sc-mobile-faction-pill {
+        background: linear-gradient(180deg, var(--sc-header-colour) 0%, var(--sc-header-dark) 100%);
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 2px;
+      }
+
+      .sc-mobile-tags-label {
+        font-weight: 700;
+        color: var(--sc-text);
+      }
+
+      .sc-mobile-tags-list {
+        flex: 1 1 auto;
+        line-height: 1.35;
+      }
+    }
+
+    // Body becomes a normal stacked flow, no longer pinned to the right of
+    // the (hidden) art rail.
+    .sc-body {
+      position: static;
+      padding: 12px 12px 0;
+      gap: 10px;
+    }
+
+    // Section title tab still sits above each block, slightly larger.
+    .sc-section-heading {
+      height: 26px;
+      font-size: 13px;
+      padding: 0 36px 0 12px;
+    }
+
+    // Ability grid collapses to a single column on mobile so descriptions
+    // breathe; keep the angled corner clip from the desktop fix.
+    .sc-ability-grid {
+      grid-template-columns: 1fr !important;
+      gap: 6px;
+      padding: 8px;
+      font-size: 12.5px;
+    }
+
+    // Inline phase row stays as-is structurally, just re-flowable.
+    .sc-phase-row {
+      flex-wrap: wrap;
+
+      .sc-section-heading {
+        align-self: stretch;
+      }
+
+      .sc-section-body {
+        flex: 1 1 100%;
+        padding: 6px 12px 12px;
+        font-size: 12.5px;
+      }
+    }
+
+    // Per-weapon stacked cards replace the desktop column table.
+    .sc-weapon-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--sc-rule-soft);
+      margin: 0 1.5px;
+      width: calc(100% - 3px);
+
+      &.is-last {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+      }
+    }
+
+    .sc-weapon-card {
+      background: #fff;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      &:nth-child(even) {
+        background: #f4f7fa;
+      }
+
+      &.indent {
+        padding-left: 24px;
+      }
+
+      .sc-weapon-card-name {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--sc-text);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .sc-weapon-card-indent {
+        color: var(--sc-text-soft);
+        font-weight: 400;
+      }
+
+      .sc-weapon-card-stats {
+        display: grid;
+        // Force 6 stat tiles per row (matches the Starcraft TMG weapon column
+        // count: RNG / RoA / Hit / Surge / S Dice / Dmg). `minmax(0, 1fr)`
+        // lets the tile shrink below the value's intrinsic width so long
+        // values like "Armoured" wrap rather than push the grid out.
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 3px;
+      }
+
+      .sc-weapon-card-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 4px;
+        padding: 4px 4px;
+        line-height: 1.1;
+        min-width: 0;
+      }
+
+      .sc-weapon-card-stat-label {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 600;
+        font-size: 9px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--sc-text-soft);
+        text-align: center;
+      }
+
+      .sc-weapon-card-stat-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--sc-text);
+        margin-top: 2px;
+        text-align: center;
+        word-break: break-word;
+        line-height: 1.1;
+      }
+
+      // Long-text column (e.g. Keyword) rendered below the stat grid as a
+      // full-width row instead of cramming into a 64px tile.
+      .sc-weapon-card-wide {
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 4px;
+        padding: 6px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .sc-weapon-card-wide-label {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 600;
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--sc-text-soft);
+      }
+
+      .sc-weapon-card-wide-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--sc-text);
+        line-height: 1.25;
+      }
+    }
   }
 }

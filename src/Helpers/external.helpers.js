@@ -529,6 +529,16 @@ export const get40k10eCombatPatrolData = async () => {
   };
 };
 
+export const getStarcraftData = async () => {
+  const url = `${import.meta.env.VITE_DATASOURCE_STARCRAFT_URL}/starcraft-tmg.json?${new Date().getTime()}`;
+  const data = await readCsv(url);
+  return {
+    ...data,
+    version: import.meta.env.VITE_VERSION,
+    lastCheckedForUpdate: new Date().toISOString(),
+  };
+};
+
 export const getMessages = async () => {
   const url = `${import.meta.env.VITE_MESSAGES_URL}?${new Date().getTime()}`;
   const data = await readCsv(url);

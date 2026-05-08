@@ -184,7 +184,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
                   />
                 </div>
               )}
-              {baseSystem === "starcraft-tcg" && (
+              {baseSystem === "starcraft-tmg" && (
                 <div className="props-compact-row-2col">
                   <CompactInput
                     label={<IconBadge size={10} stroke={1.5} />}

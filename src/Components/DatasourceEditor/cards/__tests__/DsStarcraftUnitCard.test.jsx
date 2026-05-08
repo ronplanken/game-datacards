@@ -1,9 +1,9 @@
 import React from "react";
 import { render, screen, within } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { DsStarcraftUnitCard } from "../DsStarcraftUnitCard";
 import { createStarcraftTcgPreset } from "../../../../Helpers/customSchema.helpers";
-import sampleDatasource from "../../../../data/starcraft-tcg.json";
+import sampleDatasource from "../../../../data/starcraft-tmg.json";
 
 const cardTypeDef = createStarcraftTcgPreset().cardTypes[0];
 
@@ -173,6 +173,54 @@ describe("DsStarcraftUnitCard", () => {
     );
     expect(container.querySelector(".sc-faction-pill")).toBeNull();
     expect(container.querySelector(".sc-tags")).toBeNull();
+  });
+
+  it("applies the viewer scope class on mobile", () => {
+    const { container } = render(
+      <DsStarcraftUnitCard card={roach} cardTypeDef={cardTypeDef} cardStyle={{}} faction={zergFaction} isMobile />,
+    );
+    expect(container.querySelector(".data-starcraft.viewer")).toBeTruthy();
+  });
+
+  it("renders weapons as stacked cards on mobile (no table)", () => {
+    const { container } = render(
+      <DsStarcraftUnitCard card={roach} cardTypeDef={cardTypeDef} cardStyle={{}} faction={zergFaction} isMobile />,
+    );
+    expect(container.querySelector(".sc-weapon-table")).toBeNull();
+    const cards = container.querySelectorAll(".sc-weapon-card");
+    expect(cards.length).toBeGreaterThan(0);
+    // Stat tiles label the columns inline so the stat block is scannable on
+    // a phone without a header row.
+    expect(cards[0].querySelector(".sc-weapon-card-stat-label")).toBeTruthy();
+  });
+
+  it("renders a back button on mobile only when onBack is provided", () => {
+    const onBack = vi.fn();
+    const { container, rerender } = render(
+      <DsStarcraftUnitCard
+        card={roach}
+        cardTypeDef={cardTypeDef}
+        cardStyle={{}}
+        faction={zergFaction}
+        isMobile
+        onBack={onBack}
+      />,
+    );
+    expect(container.querySelector(".sc-back-button")).toBeTruthy();
+
+    rerender(
+      <DsStarcraftUnitCard card={roach} cardTypeDef={cardTypeDef} cardStyle={{}} faction={zergFaction} isMobile />,
+    );
+    expect(container.querySelector(".sc-back-button")).toBeNull();
+  });
+
+  it("renders the inline mobile faction pill + tags strip on mobile", () => {
+    const { container } = render(
+      <DsStarcraftUnitCard card={roach} cardTypeDef={cardTypeDef} cardStyle={{}} faction={zergFaction} isMobile />,
+    );
+    const mobileTags = container.querySelector(".sc-mobile-tags");
+    expect(mobileTags).toBeTruthy();
+    expect(mobileTags.querySelector(".sc-mobile-faction-pill")).toBeTruthy();
   });
 
   it("accepts native abilities format (object keyed by category)", () => {

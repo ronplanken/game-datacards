@@ -105,6 +105,22 @@
   font-family: "Cinzel", serif;
 }
 
+// Starcraft TMG mobile card title — Barlow Condensed to match the in-card
+// header typography. Scoped so it only fires on Starcraft datasources.
+.data-starcraft-mobile .mobile-card-title,
+.mobile-card-header-starcraft .mobile-card-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+// Starcraft scroll-reveal header — uses the faction's banner colour like
+// the desktop header gradient, so the slide-in matches the card chrome.
+.mobile-card-header-starcraft {
+  background: var(--header-colour, #1d5da1);
+}
+
 // ============================================
 // AoS SCROLL-REVEAL HEADER
 // ============================================

@@ -101,6 +101,8 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
         return <NecromundaCardDisplay />;
       case "aos":
         return <AgeOfSigmarCardDisplay />;
+      case "starcraft-tmg":
+        return <CustomCardDisplay />;
       default:
         if (isCustomDatasource) {
           return <CustomCardDisplay type="viewer" />;
@@ -108,6 +110,9 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
         return null;
     }
   };
+
+  const isStarcraftBuiltin = activeCard?.source === "starcraft-tmg";
+  const useCustomScope = isCustomDatasource || isStarcraftBuiltin;
 
   return (
     <Layout>
@@ -131,7 +136,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
                 "--banner-colour": cardFaction?.colours?.banner,
                 "--header-colour": cardFaction?.colours?.header,
               }}
-              className={`viewer-card-container ${isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`}`}>
+              className={`viewer-card-container ${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
               <Row style={{ overflow: "hidden", justifyContent: "center" }}>{renderCard()}</Row>
               <ViewerFloatingToolbar
                 side={side}
@@ -172,13 +177,14 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
             top: "0px",
             left: "0px",
           }}
-          className={`${isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`}`}>
+          className={`${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
           <Row style={{ overflow: "hidden" }}>
             {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
             {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
             {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
+            {activeCard?.source === "starcraft-tmg" && <CustomCardDisplay />}
             {isCustomDatasource && <CustomCardDisplay />}
           </Row>
         </div>
@@ -194,13 +200,14 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
             top: "0px",
             left: "0px",
           }}
-          className={`${isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`}`}>
+          className={`${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
           <Row style={{ overflow: "hidden" }}>
             {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} type="viewer" />}
             {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
             {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay type="viewer" />}
+            {activeCard?.source === "starcraft-tmg" && <CustomCardDisplay type="viewer" />}
             {isCustomDatasource && <CustomCardDisplay type="viewer" />}
           </Row>
         </div>

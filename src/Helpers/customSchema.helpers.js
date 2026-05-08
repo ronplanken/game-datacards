@@ -13,7 +13,7 @@ export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
 export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
 
 // Valid base systems
-export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "starcraft-tcg", "blank"];
+export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "starcraft-tmg", "blank"];
 
 // Valid ability formats
 export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
@@ -41,10 +41,10 @@ export const VALID_PHASE_STYLES = ["movement", "assault", "combat", "special"];
 //                    upgrades (indented in the editor + the renderer)
 export const VALID_PROFILE_RELATIONS = ["equal", "parent-child"];
 
-// Valid ability types (Starcraft TCG badge pill values)
+// Valid ability types (Starcraft TMG badge pill values)
 export const VALID_ABILITY_TYPES = ["PASSIVE", "ACTIVE", "REACTION"];
 
-// Valid ability cost units (Starcraft TCG chip units)
+// Valid ability cost units (Starcraft TMG chip units)
 export const VALID_ABILITY_COST_UNITS = ["CP", "BM", "VP"];
 
 // Valid points formats
@@ -142,10 +142,10 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {string} [header] - Optional header text displayed above the category
  * @property {boolean} [hasColor] - Whether abilities in this category support per-ability strip color (AoS)
  * @property {boolean} [hasPhase] - Whether abilities in this category support per-ability phase text (AoS)
- * @property {boolean} [hasType] - Whether abilities show a PASSIVE/ACTIVE/REACTION pill (Starcraft TCG)
- * @property {boolean} [hasCost] - Whether abilities can carry cost chips like CP/BM (Starcraft TCG)
- * @property {boolean} [hasTriggerIcon] - Whether abilities can show a triggered-ability arrow glyph (Starcraft TCG)
- * @property {"movement" | "assault" | "combat" | "special"} [phaseStyle] - Optional phase-header styling (Starcraft TCG)
+ * @property {boolean} [hasType] - Whether abilities show a PASSIVE/ACTIVE/REACTION pill (Starcraft TMG)
+ * @property {boolean} [hasCost] - Whether abilities can carry cost chips like CP/BM (Starcraft TMG)
+ * @property {boolean} [hasTriggerIcon] - Whether abilities can show a triggered-ability arrow glyph (Starcraft TMG)
+ * @property {"movement" | "assault" | "combat" | "special"} [phaseStyle] - Optional phase-header styling (Starcraft TMG)
  */
 
 /**
@@ -500,7 +500,7 @@ export const getPresetStepDefaults = (baseSystem, baseType) => {
       ? create40kPreset()
       : baseSystem === "aos"
         ? createAoSPreset()
-        : baseSystem === "starcraft-tcg"
+        : baseSystem === "starcraft-tmg"
           ? createStarcraftTcgPreset()
           : null;
   if (!preset) return null;
@@ -1190,7 +1190,7 @@ export const migrateCardToSchema = (card, oldSchema, newSchema) => {
   return migrateFieldCard(card, oldSchema, newSchema);
 };
 
-// --- Preset: Starcraft TCG ---
+// --- Preset: Starcraft TMG ---
 
 /**
  * Weapon column set shared by Assault and Combat phase weapon tables.
@@ -1207,7 +1207,7 @@ const starcraftWeaponColumns = () => [
 ];
 
 /**
- * Creates a schema preset matching the Starcraft Trading Card Game datasheet format.
+ * Creates a schema preset matching the Starcraft Tabletop Miniatures Game datasheet format.
  * Defines a single "unit" card type with Speed/Evade/Armour/HP/Size stats,
  * tiered Models-per-Supply section, Assault and Combat weapon tables, and
  * phase-grouped abilities with PASSIVE/ACTIVE/REACTION pills plus CP/BM cost chips.
@@ -1215,7 +1215,7 @@ const starcraftWeaponColumns = () => [
  */
 export const createStarcraftTcgPreset = () => ({
   version: SCHEMA_VERSION,
-  baseSystem: "starcraft-tcg",
+  baseSystem: "starcraft-tmg",
   cardTypes: [
     {
       key: "unit",

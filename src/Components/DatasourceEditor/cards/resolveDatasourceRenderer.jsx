@@ -38,7 +38,7 @@ export const resolveDatasourceRenderer = (baseSystem, baseType) => {
     }
   }
 
-  if (baseSystem === "starcraft-tcg") {
+  if (baseSystem === "starcraft-tmg") {
     switch (baseType) {
       case "unit":
         return DsStarcraftUnitCard;

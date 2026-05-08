@@ -1,8 +1,8 @@
 ---
-title: Starcraft Trading Card Game Datasheets
-description: First-class base system for Starcraft TCG datasheets, including schema preset, card renderer, and starter datasource
+title: Starcraft Tabletop Miniatures Game Datasheets
+description: First-class base system for Starcraft TMG datasheets, including schema preset, card renderer, and starter datasource
 category: Data Formats
-tags: [starcraft-tcg, datasource, schema, renderer, unit]
+tags: [starcraft-tmg, datasource, schema, renderer, unit]
 related:
   - custom datasource/datasource-schema-architecture.md
   - custom-datasource-format.md
@@ -10,13 +10,13 @@ file_locations:
   - src/Helpers/customSchema.helpers.js
   - src/Components/DatasourceEditor/cards/DsStarcraftUnitCard.jsx
   - src/Components/DatasourceEditor/cards/starcraft/
-  - src/styles/starcraft-tcg.less
-  - src/data/starcraft-tcg.json
+  - src/styles/starcraft-tmg.less
+  - src/data/starcraft-tmg.json
 ---
 
-# Starcraft TCG Datasheets
+# Starcraft TMG Datasheets
 
-Starcraft TCG is a first-class base system alongside `40k-10e` and `aos`. It provides a single
+Starcraft TMG is a first-class base system alongside `40k-10e` and `aos`. It provides a single
 `unit` card type that mirrors the printed Starcraft datasheets: stat hex pills in the faction-coloured
 header, tiered Models / Supply, phase-grouped abilities with badges, and Assault / Combat weapon tables.
 
@@ -33,9 +33,9 @@ header, tiered Models / Supply, phase-grouped abilities with badges, and Assault
 
 ## Base system identifier
 
-`baseSystem: "starcraft-tcg"` — added to `VALID_BASE_SYSTEMS` in `src/Helpers/customSchema.helpers.js`.
+`baseSystem: "starcraft-tmg"` — added to `VALID_BASE_SYSTEMS` in `src/Helpers/customSchema.helpers.js`.
 The wizard (`StepBaseSystem.jsx`) exposes it alongside the 40K and AoS options with a Rocket icon and
-purple accent, and `resolveDatasourceRenderer("starcraft-tcg", "unit")` returns `DsStarcraftUnitCard`.
+purple accent, and `resolveDatasourceRenderer("starcraft-tmg", "unit")` returns `DsStarcraftUnitCard`.
 
 ## Unit schema
 
@@ -101,16 +101,16 @@ maps those into CSS variables:
 - `--sc-header-dark` ← `colours.banner` — gradient end, borders, faction-pill underlay
 - `--sc-accent` ← `colours.accent` (or `colours.banner` if absent) — faction tag pill
 
-Defaults in `src/styles/starcraft-tcg.less` keep cards legible when colours are missing.
+Defaults in `src/styles/starcraft-tmg.less` keep cards legible when colours are missing.
 
 ## Starter datasource
 
-`src/data/starcraft-tcg.json` ships as a reference datasource with Terran, Zerg, and Protoss factions
+`src/data/starcraft-tmg.json` ships as a reference datasource with Terran, Zerg, and Protoss factions
 and two fully-populated cards (Marine, Roach). Import via the standard custom-datasource import flow
 to see every schema feature exercised end-to-end.
 
 ## Wizard flow
 
-Selecting **Starcraft TCG** in the wizard's base-system step seeds the type-specific step data via
-`getPresetStepDefaults("starcraft-tcg", "unit")`. Stats, weapons, abilities, sections, and metadata
+Selecting **Starcraft TMG** in the wizard's base-system step seeds the type-specific step data via
+`getPresetStepDefaults("starcraft-tmg", "unit")`. Stats, weapons, abilities, sections, and metadata
 arrive pre-filled; users can customise any of it before review.
