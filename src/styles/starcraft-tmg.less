@@ -833,8 +833,12 @@
 
       .sc-header-stats {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
-        gap: 6px;
+        // Force one row per card: the stat count is passed in from
+        // StarcraftHeader as a CSS variable so factions with more stats (e.g.
+        // Protoss with Shield = 6) shrink the tiles instead of wrapping. The
+        // fallback matches the previous default (5 visible Terran/Zerg stats).
+        grid-template-columns: repeat(var(--sc-stat-count, 5), minmax(0, 1fr));
+        gap: 4px;
         padding: 0;
         align-self: stretch;
 
@@ -846,10 +850,11 @@
 
         .sc-stat .sc-stat-pill {
           .sc-stat-value {
-            font-size: 22px;
+            font-size: 20px;
           }
           .sc-stat-label {
-            font-size: 9px;
+            font-size: 8px;
+            padding: 0 1px;
           }
         }
       }
@@ -986,11 +991,12 @@
 
       .sc-weapon-card-stats {
         display: grid;
-        // Force 6 stat tiles per row (matches the Starcraft TMG weapon column
-        // count: RNG / RoA / Hit / Surge / S Dice / Dmg). `minmax(0, 1fr)`
-        // lets the tile shrink below the value's intrinsic width so long
-        // values like "Armoured" wrap rather than push the grid out.
-        grid-template-columns: repeat(6, minmax(0, 1fr));
+        // Tile count is passed in by StarcraftWeaponTable via the
+        // --sc-weapon-col-count CSS variable so weapons with extra columns
+        // (e.g. Protoss + Target = 7) scale tiles down instead of wrapping a
+        // single tile to a new row. `minmax(0, 1fr)` lets the tile shrink
+        // below its intrinsic value width so long values wrap inside.
+        grid-template-columns: repeat(var(--sc-weapon-col-count, 6), minmax(0, 1fr));
         gap: 3px;
       }
 
@@ -1000,7 +1006,7 @@
         align-items: center;
         background: rgba(0, 0, 0, 0.04);
         border-radius: 4px;
-        padding: 4px 4px;
+        padding: 4px 2px;
         line-height: 1.1;
         min-width: 0;
       }
@@ -1008,8 +1014,8 @@
       .sc-weapon-card-stat-label {
         font-family: "Barlow Condensed", sans-serif;
         font-weight: 600;
-        font-size: 9px;
-        letter-spacing: 0.06em;
+        font-size: 8px;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
         color: var(--sc-text-soft);
         text-align: center;
@@ -1018,7 +1024,7 @@
       .sc-weapon-card-stat-value {
         font-family: "Barlow Condensed", sans-serif;
         font-weight: 700;
-        font-size: 13px;
+        font-size: 12px;
         color: var(--sc-text);
         margin-top: 2px;
         text-align: center;
