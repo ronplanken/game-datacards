@@ -203,22 +203,46 @@ export function useDatasourceEditorState() {
 
   /**
    * Update a card by ID — searches every faction for the matching card.
+   * If the updated card's `faction_id` no longer matches the faction it lives
+   * in, physically move it from the source faction's collection array into the
+   * target faction's collection array. This is what makes the card editor's
+   * Faction dropdown actually re-faction a card (not just re-skin its colour
+   * theme).
    */
   const updateCard = useCallback(
     async (updatedCard) => {
       if (!activeDatasource?.data?.length) return;
       const targetArray = getTargetArray(updatedCard.cardType);
-      let touched = false;
-      const updatedData = activeDatasource.data.map((faction) => {
-        const cards = faction[targetArray] || [];
-        if (!cards.some((c) => c.id === updatedCard.id)) return faction;
-        touched = true;
-        return {
-          ...faction,
-          [targetArray]: cards.map((c) => (c.id === updatedCard.id ? updatedCard : c)),
-        };
+      const factions = activeDatasource.data;
+      const sourceFaction = factions.find((f) => (f[targetArray] || []).some((c) => c.id === updatedCard.id));
+      if (!sourceFaction) return;
+
+      const desiredFactionId = updatedCard.faction_id;
+      const desiredFaction = desiredFactionId != null ? factions.find((f) => f.id === desiredFactionId) : null;
+      const isMoving = !!desiredFaction && desiredFaction.id !== sourceFaction.id;
+
+      const updatedData = factions.map((faction) => {
+        if (isMoving && faction.id === sourceFaction.id) {
+          return {
+            ...faction,
+            [targetArray]: (faction[targetArray] || []).filter((c) => c.id !== updatedCard.id),
+          };
+        }
+        if (isMoving && faction.id === desiredFaction.id) {
+          return {
+            ...faction,
+            [targetArray]: [...(faction[targetArray] || []), updatedCard],
+          };
+        }
+        if (!isMoving && faction.id === sourceFaction.id) {
+          return {
+            ...faction,
+            [targetArray]: (faction[targetArray] || []).map((c) => (c.id === updatedCard.id ? updatedCard : c)),
+          };
+        }
+        return faction;
       });
-      if (!touched) return;
+
       const updatedDatasource = { ...activeDatasource, data: updatedData };
       await updateDatasource(updatedDatasource);
       // Keep selected card in sync
