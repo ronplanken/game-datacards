@@ -114,6 +114,7 @@ export const FactionsEditor = ({ datasource, onUpdateDatasource }) => {
         {factions.length === 0 && <div className="props-field-list-empty">No factions yet</div>}
         {factions.map((faction, index) => {
           const isPending = pendingDeleteId === faction.id;
+          const count = cardCount(faction);
           const headerColour = faction.colours?.header || schemaColours.header;
           const bannerColour = faction.colours?.banner || schemaColours.banner;
           const accentColour = faction.colours?.accent || faction.colours?.banner || schemaColours.banner;
@@ -163,7 +164,7 @@ export const FactionsEditor = ({ datasource, onUpdateDatasource }) => {
                 {isPending && (
                   <div className="props-faction-confirm-row">
                     <span className="props-faction-confirm-text">
-                      Delete with {cardCount(faction)} card{cardCount(faction) !== 1 ? "s" : ""}?
+                      Delete with {count} card{count !== 1 ? "s" : ""}?
                     </span>
                     <button
                       type="button"
@@ -203,7 +204,7 @@ export const FactionsEditor = ({ datasource, onUpdateDatasource }) => {
                   className="designer-layer-action-btn danger"
                   onClick={() => requestDelete(faction)}
                   aria-label={`Remove ${faction.name}`}
-                  title={cardCount(faction) > 0 ? "Remove faction (also removes its cards)" : "Remove faction"}>
+                  title={count > 0 ? "Remove faction (also removes its cards)" : "Remove faction"}>
                   <Trash2 size={14} />
                 </button>
               </div>

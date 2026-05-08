@@ -33,9 +33,9 @@ const renderTypePill = (type) => {
  */
 export const StarcraftAbility = ({ ability, category, inline = false }) => {
   if (!ability) return null;
-  const showUpIcon = category?.hasTriggerIcon !== false && (ability.triggered || ability.upgrade);
-  const showType = category?.hasType !== false;
-  const showCost = category?.hasCost !== false;
+  const showUpIcon = !!category?.hasTriggerIcon && (ability.triggered || ability.upgrade);
+  const showType = !!category?.hasType;
+  const showCost = !!category?.hasCost;
 
   const Wrapper = inline ? "span" : "div";
 

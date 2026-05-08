@@ -2,10 +2,10 @@ import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { DsStarcraftUnitCard } from "../DsStarcraftUnitCard";
-import { createStarcraftTcgPreset } from "../../../../Helpers/customSchema.helpers";
+import { createStarcraftTmgPreset } from "../../../../Helpers/customSchema.helpers";
 import sampleDatasource from "./fixtures/starcraft-tmg.json";
 
-const cardTypeDef = createStarcraftTcgPreset().cardTypes[0];
+const cardTypeDef = createStarcraftTmgPreset().cardTypes[0];
 
 const zergFaction = sampleDatasource.data.find((f) => f.id === "zerg");
 const roach = zergFaction.datasheets.find((u) => u.id === "roach-001");

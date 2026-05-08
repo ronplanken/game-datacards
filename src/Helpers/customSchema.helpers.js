@@ -30,7 +30,7 @@ export const VALID_COLUMN_VISUAL_MODES = ["text", "badge"];
 export const VALID_ABILITY_LAYOUTS = ["full", "half", "third", "quarter", "inline"];
 
 // Valid section formats
-export const VALID_SECTION_FORMATS = ["list", "richtext"];
+export const VALID_SECTION_FORMATS = ["list", "richtext", "modelsSupplyTiers"];
 
 // Valid phase styles — drives section-heading icon and the inline-row variant
 export const VALID_PHASE_STYLES = ["movement", "assault", "combat", "special"];
@@ -503,7 +503,7 @@ export const getPresetStepDefaults = (baseSystem, baseType) => {
       : baseSystem === "aos"
         ? createAoSPreset()
         : baseSystem === "starcraft-tmg"
-          ? createStarcraftTcgPreset()
+          ? createStarcraftTmgPreset()
           : null;
   if (!preset) return null;
 
@@ -1215,7 +1215,7 @@ const starcraftWeaponColumns = () => [
  * phase-grouped abilities with PASSIVE/ACTIVE/REACTION pills plus CP/BM cost chips.
  * @returns {DatasourceSchema}
  */
-export const createStarcraftTcgPreset = () => ({
+export const createStarcraftTmgPreset = () => ({
   version: SCHEMA_VERSION,
   baseSystem: "starcraft-tmg",
   cardTypes: [

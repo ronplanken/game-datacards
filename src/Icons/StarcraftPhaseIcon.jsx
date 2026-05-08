@@ -24,11 +24,9 @@ export const StarcraftPhaseCombatIcon = (props) => (
   </svg>
 );
 
-export const StarcraftSpecialIcon = (props) => (
-  <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14" {...props}>
-    <path d="M8 1 L10 6 L15 7 L11 11 L12 15 L8 13 L4 15 L5 11 L1 7 L6 6 Z" />
-  </svg>
-);
+// Special abilities reuse the assault star glyph deliberately — special acts as
+// a generic "any phase" emphasis marker in the design handoff.
+export const StarcraftSpecialIcon = StarcraftPhaseAssaultIcon;
 
 export const StarcraftTriggerArrow = (props) => (
   <svg viewBox="0 0 16 16" fill="currentColor" width="13" height="13" {...props}>

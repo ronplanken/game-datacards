@@ -39,7 +39,7 @@ purple accent, and `resolveDatasourceRenderer("starcraft-tmg", "unit")` returns 
 
 ## Unit schema
 
-The preset (`createStarcraftTcgPreset()`) defines one card type with `baseType: "unit"`.
+The preset (`createStarcraftTmgPreset()`) defines one card type with `baseType: "unit"`.
 
 | Section | Keys | Notes |
 |---|---|---|
