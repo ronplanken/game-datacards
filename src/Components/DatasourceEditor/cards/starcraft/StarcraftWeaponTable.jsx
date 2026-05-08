@@ -90,7 +90,7 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile 
               <span className="sc-weapon-card-name-text">{row.name || "-"}</span>
             </div>
             {compactColumns.length > 0 && (
-              <div className="sc-weapon-card-stats">
+              <div className="sc-weapon-card-stats" style={{ "--sc-weapon-col-count": compactColumns.length }}>
                 {compactColumns.map((col) => (
                   <div key={col.key} className="sc-weapon-card-stat">
                     <span className="sc-weapon-card-stat-label">{col.label}</span>

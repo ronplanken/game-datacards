@@ -86,7 +86,7 @@ export const StarcraftHeader = ({ card, statFields, subtitle, showSupply = true,
         </div>
       </div>
 
-      <div className="sc-header-stats">
+      <div className="sc-header-stats" style={{ "--sc-stat-count": sortedFields.length }}>
         {sortedFields.map((field) => {
           const value = renderStatValue(field, statLine);
           const dash = isDashValue(value);
