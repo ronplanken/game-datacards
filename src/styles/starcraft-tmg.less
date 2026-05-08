@@ -1,0 +1,1058 @@
+// Starcraft TMG datasheet styles — visual treatment derived from the
+// Claude Design "SC2 Card" handoff (Barlow Condensed display, hex-cut stat
+// tiles, angled section-head tabs, bordered section blocks, two-column
+// ability grid with clipped corners). Card is sized to match 40k-10e
+// (1077x714) so print and scaling pipelines work without tuning.
+//
+//   --sc-header-colour            Main faction colour (header gradient top)
+//   --sc-header-dark              Darker tint used for header gradient bottom
+//   --sc-accent                   Accent used for the faction-tag pill
+//   --sc-glow                     Light tint used for subtitles, emblem fill
+
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap");
+
+.data-starcraft {
+  --sc-header-colour: #1d5da1;
+  --sc-header-dark: #0e3866;
+  --sc-accent: #154a82;
+  --sc-glow: #6cc1ff;
+  --sc-text: #0d1822;
+  --sc-text-soft: #2b3a4a;
+  --sc-section-bg: linear-gradient(180deg, var(--sc-header-colour) 0%, var(--sc-header-dark) 100%);
+  --sc-section-text: #ffffff;
+  --sc-paper: #eef2f6;
+  --sc-paper-2: #dfe6ec;
+  --sc-rule: #b6c3cf;
+  --sc-rule-soft: #d4dde5;
+  --sc-pill-passive: #d24545;
+  --sc-pill-active: #2bbf5b;
+  --sc-pill-reaction: #f3a623;
+  --sc-chip-cp: #2eb24a;
+  --sc-chip-bm: #2c79d6;
+  --sc-chip-generic: #6b7280;
+
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--sc-text);
+
+  .ds-starcraft-card {
+    width: 1077px;
+    height: 714px;
+    background: var(--sc-paper);
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+    color: var(--sc-text);
+    transform: scale(var(--card-scaling-factor, 1));
+    transform-origin: top center;
+    box-sizing: border-box;
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.4),
+      0 30px 60px -20px rgba(0, 0, 0, 0.6),
+      0 10px 20px rgba(0, 0, 0, 0.3);
+
+    * {
+      box-sizing: border-box;
+    }
+
+    @media print {
+      transform-origin: 0 0;
+    }
+  }
+
+  // soft radial vignette behind everything
+  .sc-bg-texture {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(800px 400px at 70% 20%, rgba(0, 0, 0, 0.04), transparent 70%),
+      radial-gradient(600px 300px at 100% 100%, rgba(0, 0, 0, 0.06), transparent 70%);
+    z-index: 0;
+  }
+
+  // ------- HEADER -------
+  .sc-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 110px;
+    background: linear-gradient(180deg, var(--sc-header-colour) 0%, var(--sc-header-dark) 100%);
+    color: #fff;
+    display: flex;
+    align-items: stretch;
+    z-index: 3;
+    clip-path: polygon(0 0, 100% 0, 100% 92%, calc(100% - 28px) 100%, 0 100%);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+    padding-bottom: 6px;
+
+    .sc-header-name-block {
+      display: flex;
+      align-items: center;
+      align-self: stretch;
+      padding: 0 28px 0 32px;
+      position: relative;
+      flex: 0 0 320px;
+      min-width: 320px;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 0 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.15));
+
+      .sc-header-name {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 34px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+        line-height: 0.95;
+        overflow-wrap: break-word;
+        word-break: normal;
+      }
+
+      .sc-header-subtitle {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        color: var(--sc-glow);
+        text-transform: uppercase;
+        margin-top: 6px;
+        opacity: 0.85;
+        white-space: nowrap;
+      }
+
+      .sc-header-badges {
+        display: flex;
+        gap: 12px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+      }
+
+      .sc-header-badge {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        line-height: 1;
+      }
+
+      .sc-header-badge-label {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .sc-header-badge-value {
+        background: rgba(0, 0, 0, 0.45);
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 4px 10px 4px 8px;
+        clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+        white-space: nowrap;
+      }
+    }
+
+    .sc-header-stats {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      flex: 1;
+      justify-content: flex-start;
+      align-self: center;
+
+      .sc-stat {
+        width: 78px;
+        height: 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .sc-stat-pill {
+          width: 78px;
+          height: 64px;
+          background: rgba(255, 255, 255, 0.96);
+          color: var(--sc-header-dark);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          // square with notched/angled corners
+          clip-path: polygon(
+            8px 0,
+            calc(100% - 8px) 0,
+            100% 8px,
+            100% calc(100% - 8px),
+            calc(100% - 8px) 100%,
+            8px 100%,
+            0 calc(100% - 8px),
+            0 8px
+          );
+          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+
+          .sc-stat-value {
+            font-family: "Barlow Condensed", sans-serif;
+            font-weight: 800;
+            font-size: 30px;
+            line-height: 1;
+            color: var(--sc-header-dark);
+          }
+
+          .sc-stat-label {
+            font-family: "Barlow Condensed", sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #5a6470;
+            margin-top: 4px;
+            white-space: nowrap;
+            text-align: center;
+            padding: 0 2px;
+            line-height: 1;
+          }
+        }
+
+        // sc-stat-label is inside the pill in the new structure;
+        // hide any standalone label for backwards-compat with older renders
+        > .sc-stat-label {
+          display: none;
+        }
+
+        &.sc-stat-dash .sc-stat-pill .sc-stat-value {
+          color: #a8b1bc;
+        }
+      }
+    }
+
+    .sc-header-supply {
+      align-self: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px 0 8px;
+      gap: 2px;
+
+      .sc-supply-tiers {
+        display: flex;
+        gap: 8px;
+      }
+
+      .sc-supply-tier {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        padding-bottom: 12px;
+
+        .sc-supply-models {
+          width: 64px;
+          height: 44px;
+          background: rgba(255, 255, 255, 0.96);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          clip-path: polygon(
+            7px 0,
+            calc(100% - 7px) 0,
+            100% 7px,
+            100% calc(100% - 7px),
+            calc(100% - 7px) 100%,
+            7px 100%,
+            0 calc(100% - 7px),
+            0 7px
+          );
+          font-family: "Barlow Condensed", sans-serif;
+          font-weight: 700;
+          font-size: 18px;
+          color: var(--sc-header-dark);
+          position: relative;
+        }
+
+        .sc-supply-value {
+          position: absolute;
+          bottom: -2px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #2b3340;
+          color: #fff;
+          font-family: "Barlow Condensed", sans-serif;
+          font-weight: 700;
+          font-size: 12px;
+          line-height: 1;
+          padding: 3px 8px;
+          border-radius: 2px;
+          z-index: 4;
+        }
+      }
+
+      .sc-supply-caption {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        color: rgba(255, 255, 255, 0.95);
+        text-transform: uppercase;
+        margin-top: 6px;
+        white-space: nowrap;
+      }
+    }
+
+  }
+
+  // ------- LEFT ART RAIL -------
+  .sc-image-block {
+    position: absolute;
+    top: 96px;
+    left: 0;
+    bottom: 0;
+    width: 252px;
+    background: linear-gradient(180deg, #2a3540 0%, #11171e 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 1;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(135deg, transparent 0 14px, rgba(255, 255, 255, 0.03) 14px 15px),
+        repeating-linear-gradient(45deg, transparent 0 14px, rgba(255, 255, 255, 0.025) 14px 15px);
+    }
+
+  }
+
+  // faction tag pill anchored to the bottom-left of the art rail
+  .sc-faction-pill {
+    position: absolute;
+    left: -4px;
+    bottom: 64px;
+    background: linear-gradient(180deg, var(--sc-header-colour) 0%, var(--sc-header-dark) 100%);
+    color: #fff;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 30px 8px 18px;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    z-index: 4;
+    white-space: nowrap;
+  }
+
+  .sc-tags {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    width: 220px;
+    font-family: "Inter", sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    font-weight: 500;
+    z-index: 4;
+    line-height: 1.4;
+
+    .sc-tags-label {
+      color: rgba(255, 255, 255, 0.95);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+  }
+
+  // ------- BODY -------
+  .sc-body {
+    position: absolute;
+    top: 116px;
+    left: 260px;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 2;
+  }
+
+  .sc-body > * {
+    flex: 0 0 auto;
+  }
+
+  // Section heading tab — used by both .sc-section (full block) and
+  // .sc-phase-row (inline movement-style row).
+  .sc-section-heading {
+    background: linear-gradient(180deg, var(--sc-header-colour) 0%, var(--sc-header-dark) 100%);
+    color: var(--sc-section-text);
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 44px 0 12px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+    white-space: nowrap;
+    width: max-content;
+    max-width: none;
+    box-sizing: content-box;
+    gap: 6px;
+    margin: 0;
+
+    .sc-phase-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      color: #fff;
+
+      svg {
+        width: 14px;
+        height: 14px;
+        fill: currentColor;
+      }
+    }
+  }
+
+  // section block — bordered chrome around weapon tables / abilities;
+  // an outer mid-tone fill clipped to a notched bottom-right + an inner
+  // white fill inset by 1.5px gives a clean 1.5px border on three sides
+  // and a notched corner.
+  .sc-section {
+    background: var(--sc-header-colour);
+    padding: 0 0 1.5px;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 1.5px;
+      background: #fff;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+      z-index: 0;
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .sc-section-body {
+      padding: 6px 18px 6px 8px;
+      font-size: 11.5px;
+      line-height: 1.4;
+      color: var(--sc-text);
+    }
+
+    .sc-section-body--inline {
+      padding: 6px 18px 14px 8px;
+    }
+  }
+
+  // ------- ABILITY GRID -------
+  // Up-arrow chevron mark — used for both ability trigger glyph and weapon
+  // upgrade indicator (matches the .up-ico clip-path from the source design)
+  .sc-up-ico {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    background: var(--sc-text);
+    vertical-align: -2px;
+    margin-right: 3px;
+    clip-path: polygon(50% 0, 100% 50%, 75% 50%, 75% 100%, 25% 100%, 25% 50%, 0 50%);
+  }
+
+  .sc-ability-name {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-right: 6px;
+  }
+
+  .sc-ability-description {
+    display: inline;
+  }
+
+  .sc-ability-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 1.35;
+    margin: 0;
+    padding: 6px 8px;
+    // match the section's inner notch so the diagonal border is visible
+    // without needing extra bottom padding to clear the corner
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+
+    &.single {
+      grid-template-columns: 1fr;
+    }
+    &.half {
+      grid-template-columns: 1fr 1fr;
+    }
+    &.third {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    &.quarter {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .sc-ability {
+      // outer = border colour, inner ::before = white fill inset by 1px
+      background: var(--sc-rule);
+      padding: 5px 9px;
+      font-size: 11px;
+      line-height: 1.35;
+      position: relative;
+      display: block;
+      // angled top-left and bottom-right corners
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        background: #fff;
+        clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+        z-index: 0;
+      }
+
+      > * {
+        position: relative;
+        z-index: 1;
+      }
+    }
+  }
+
+  .sc-ability-inline {
+    display: inline;
+    font-size: 11.5px;
+    line-height: 1.4;
+
+    + .sc-ability-inline {
+      margin-left: 8px;
+    }
+  }
+
+  // movement / inline phase-row variant: a thin bordered block with the
+  // section head on the left and the body inline next to it
+  .sc-phase-row {
+    background: var(--sc-header-colour);
+    padding: 0;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 1.5px;
+      background: #fff;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+      z-index: 0;
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .sc-section-heading {
+      flex: 0 0 auto;
+      align-self: flex-start;
+    }
+
+    .sc-section-body {
+      flex: 1 1 auto;
+      align-self: center;
+      padding: 6px 18px 14px 8px;
+      font-size: 11.5px;
+      line-height: 1.4;
+      color: var(--sc-text);
+      min-width: 0;
+    }
+  }
+
+  // ------- PILLS / CHIPS -------
+  .sc-pill {
+    display: inline-block;
+    padding: 1px 9px 1px 7px;
+    border-radius: 2px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    color: #fff;
+    vertical-align: 1px;
+    margin: 0 2px 0 1px;
+    white-space: nowrap;
+    line-height: 1.4;
+
+    &.sc-pill-PASSIVE {
+      background: var(--sc-pill-passive);
+    }
+    &.sc-pill-ACTIVE {
+      background: var(--sc-pill-active);
+    }
+    &.sc-pill-REACTION {
+      background: var(--sc-pill-reaction);
+    }
+  }
+
+  .sc-chip {
+    display: inline-block;
+    padding: 1px 9px 1px 7px;
+    border-radius: 2px;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    font-size: 10.5px;
+    color: #fff;
+    vertical-align: 1px;
+    margin: 0 2px 0 1px;
+    white-space: nowrap;
+    line-height: 1.4;
+
+    &.sc-chip-CP {
+      background: var(--sc-chip-cp);
+    }
+    &.sc-chip-BM {
+      background: var(--sc-chip-bm);
+    }
+    &.sc-chip-generic {
+      background: var(--sc-chip-generic);
+    }
+  }
+
+  // ------- WEAPON TABLE -------
+  .sc-weapon-table {
+    width: calc(100% - 3px);
+    margin: 0 1.5px;
+    border-collapse: collapse;
+    font-size: 10.5px;
+    background: #fff;
+    border-top: 1px solid var(--sc-rule);
+    border-bottom: 1px solid var(--sc-rule);
+
+    thead th {
+      background: linear-gradient(180deg, #3c4855, #232c36);
+      color: #fff;
+      font-family: "Barlow Condensed", sans-serif;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 6px;
+      text-align: left;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: none;
+      white-space: nowrap;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    tbody td {
+      padding: 3px 6px;
+      border-top: 1px solid var(--sc-rule-soft);
+      border-right: 1px solid var(--sc-rule-soft);
+      vertical-align: middle;
+      font-size: 10.5px;
+      height: 26px;
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f4f7fa;
+    }
+
+    .sc-weapon-name {
+      font-family: "Barlow Condensed", sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 12px;
+      padding: 0 !important;
+      position: relative;
+
+      .sc-weapon-name-icon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-right: 1px solid var(--sc-rule-soft);
+        background: rgba(0, 0, 0, 0.03);
+        color: var(--sc-header-colour);
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .sc-weapon-name-text {
+        display: block;
+        padding: 4px 6px;
+      }
+
+      &.indent .sc-weapon-name-text {
+        margin-left: 32px;
+        padding-left: 8px;
+        font-weight: 600;
+      }
+    }
+
+    // last weapon table inside a section block — no bottom border, and
+    // clip the bottom-right corner to match the section's inner notch so
+    // the colored 1.5px diagonal border isn't overpainted by the table fill
+    &.is-last {
+      border-bottom: none;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+    }
+  }
+
+  // when a weapon table is followed by abilities the bottom of the table
+  // should be flush; abilities-grid then carries the bottom padding
+  .sc-section .sc-weapon-table + .sc-ability-grid {
+    margin-top: 4px;
+  }
+
+  // ------- VIEWER (mobile) -------
+  // Breakdown: drop the fixed 1077x714 frame and the absolute-positioned
+  // header / art rail / body, and re-flow everything into a single column so
+  // each phase block is full-width and readable on a phone.
+  &.viewer {
+    .ds-starcraft-card {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      transform: none;
+      box-shadow: none;
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--sc-paper);
+      // Contain the card's internal z-indexes (back button = 30, faction
+      // pill = 4, header = 3, …). Without `isolation`, dropping the desktop
+      // `transform: scale()` removes the implicit stacking context and the
+      // children float up to the page level, ending up on top of the
+      // mobile bottom nav (which sits at z-index auto). `isolation: isolate`
+      // re-creates a stacking context with no visual side-effects.
+      isolation: isolate;
+      // Small breathing room below the last phase block before the scroll
+      // boundary / bottom nav.
+      padding-bottom: 16px;
+    }
+
+    // Back button overlaying the header (matches AoS / 40k mobile patterns)
+    .sc-back-button {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 30;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.35);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+
+      &:active {
+        opacity: 0.8;
+      }
+    }
+
+    // Header reflows: name above, stat pills wrap, supply tier centred.
+    .sc-header {
+      position: static;
+      height: auto;
+      flex-direction: column;
+      align-items: stretch;
+      clip-path: none;
+      padding: 16px 16px 12px;
+      gap: 12px;
+
+      .sc-header-name-block {
+        flex: 0 0 auto;
+        min-width: 0;
+        // Leave room on the left for the in-card back button (36px + 12px
+        // gap). The page-level header is hidden in scroll-reveal mode and
+        // only re-appears once the card name scrolls out of view, so the
+        // card's own name carries the top of the screen.
+        padding: 0 0 0 52px;
+        clip-path: none;
+        background: transparent;
+        min-height: 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        // Reset the desktop `align-items: center` (which would horizontally
+        // centre everything in a column flex) so the name & badges sit
+        // flush-left next to the back button.
+        align-items: flex-start;
+
+        .sc-header-name {
+          font-size: 22px;
+          line-height: 1.05;
+          color: #fff;
+        }
+
+        .sc-header-subtitle {
+          margin-top: 4px;
+        }
+
+        .sc-header-badges {
+          margin-top: 6px;
+        }
+      }
+
+      .sc-header-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+        gap: 6px;
+        padding: 0;
+        align-self: stretch;
+
+        .sc-stat,
+        .sc-stat .sc-stat-pill {
+          width: 100%;
+          height: 56px;
+        }
+
+        .sc-stat .sc-stat-pill {
+          .sc-stat-value {
+            font-size: 22px;
+          }
+          .sc-stat-label {
+            font-size: 9px;
+          }
+        }
+      }
+
+      .sc-header-supply {
+        align-self: center;
+        padding: 0;
+      }
+    }
+
+    // Drop the dark left art rail entirely; faction tag + keywords are
+    // re-rendered inline below the header instead.
+    .sc-image-block {
+      display: none;
+    }
+
+    // Inline faction pill + keyword tags strip shown on mobile.
+    .sc-mobile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px 0;
+      font-size: 11px;
+      color: var(--sc-text-soft);
+
+      .sc-mobile-faction-pill {
+        background: linear-gradient(180deg, var(--sc-header-colour) 0%, var(--sc-header-dark) 100%);
+        color: #fff;
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 2px;
+      }
+
+      .sc-mobile-tags-label {
+        font-weight: 700;
+        color: var(--sc-text);
+      }
+
+      .sc-mobile-tags-list {
+        flex: 1 1 auto;
+        line-height: 1.35;
+      }
+    }
+
+    // Body becomes a normal stacked flow, no longer pinned to the right of
+    // the (hidden) art rail.
+    .sc-body {
+      position: static;
+      padding: 12px 12px 0;
+      gap: 10px;
+    }
+
+    // Section title tab still sits above each block, slightly larger.
+    .sc-section-heading {
+      height: 26px;
+      font-size: 13px;
+      padding: 0 36px 0 12px;
+    }
+
+    // Ability grid collapses to a single column on mobile so descriptions
+    // breathe; keep the angled corner clip from the desktop fix.
+    .sc-ability-grid {
+      grid-template-columns: 1fr !important;
+      gap: 6px;
+      padding: 8px;
+      font-size: 12.5px;
+    }
+
+    // Inline phase row stays as-is structurally, just re-flowable.
+    .sc-phase-row {
+      flex-wrap: wrap;
+
+      .sc-section-heading {
+        align-self: stretch;
+      }
+
+      .sc-section-body {
+        flex: 1 1 100%;
+        padding: 6px 12px 12px;
+        font-size: 12.5px;
+      }
+    }
+
+    // Per-weapon stacked cards replace the desktop column table.
+    .sc-weapon-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--sc-rule-soft);
+      margin: 0 1.5px;
+      width: calc(100% - 3px);
+
+      &.is-last {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%);
+      }
+    }
+
+    .sc-weapon-card {
+      background: #fff;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      &:nth-child(even) {
+        background: #f4f7fa;
+      }
+
+      &.indent {
+        padding-left: 24px;
+      }
+
+      .sc-weapon-card-name {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--sc-text);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .sc-weapon-card-indent {
+        color: var(--sc-text-soft);
+        font-weight: 400;
+      }
+
+      .sc-weapon-card-stats {
+        display: grid;
+        // Force 6 stat tiles per row (matches the Starcraft TMG weapon column
+        // count: RNG / RoA / Hit / Surge / S Dice / Dmg). `minmax(0, 1fr)`
+        // lets the tile shrink below the value's intrinsic width so long
+        // values like "Armoured" wrap rather than push the grid out.
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 3px;
+      }
+
+      .sc-weapon-card-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 4px;
+        padding: 4px 4px;
+        line-height: 1.1;
+        min-width: 0;
+      }
+
+      .sc-weapon-card-stat-label {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 600;
+        font-size: 9px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--sc-text-soft);
+        text-align: center;
+      }
+
+      .sc-weapon-card-stat-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--sc-text);
+        margin-top: 2px;
+        text-align: center;
+        word-break: break-word;
+        line-height: 1.1;
+      }
+
+      // Long-text column (e.g. Keyword) rendered below the stat grid as a
+      // full-width row instead of cramming into a 64px tile.
+      .sc-weapon-card-wide {
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 4px;
+        padding: 6px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .sc-weapon-card-wide-label {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 600;
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--sc-text-soft);
+      }
+
+      .sc-weapon-card-wide-value {
+        font-family: "Barlow Condensed", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--sc-text);
+        line-height: 1.25;
+      }
+    }
+  }
+}

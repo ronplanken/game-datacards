@@ -9,8 +9,8 @@ export const StepPatchNotes = () => (
       </div>
       <h2 className="mwnw-features-title">Custom Datasource Card Fixes</h2>
       <p className="mwnw-features-subtitle">
-        Cards built with the Datasource Editor now show the faction keywords and ability descriptions you typed in,
-        and you can rename the keywords and faction bars on each card.
+        Cards built with the Datasource Editor now show the faction keywords and ability descriptions you typed in, and
+        you can rename the keywords and faction bars on each card.
       </p>
     </header>
 
@@ -22,8 +22,8 @@ export const StepPatchNotes = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Faction Keywords Show on the Card</span>
           <span className="mwnw-feature-item-desc">
-            Faction keywords typed into the editor now show up in the faction bar at the bottom of the card.
-            Previously they stayed empty even after you saved the card.
+            Faction keywords typed into the editor now show up in the faction bar at the bottom of the card. Previously
+            they stayed empty even after you saved the card.
           </span>
         </div>
       </div>
@@ -35,8 +35,8 @@ export const StepPatchNotes = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Ability Descriptions Show by Default</span>
           <span className="mwnw-feature-item-desc">
-            New abilities in the Datasource Editor now show their description on the card straight away. Older
-            abilities with a hidden description fix themselves the next time you edit the description.
+            New abilities in the Datasource Editor now show their description on the card straight away. Older abilities
+            with a hidden description fix themselves the next time you edit the description.
           </span>
         </div>
       </div>
@@ -48,8 +48,8 @@ export const StepPatchNotes = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Customise the Keywords &amp; Faction Labels</span>
           <span className="mwnw-feature-item-desc">
-            The Datasource Editor now lets you rename the &quot;Keywords&quot; and &quot;Faction&quot; bars on the
-            card. The faction bar also defaults to &quot;Faction&quot; instead of &quot;Faction Keywords&quot;.
+            The Datasource Editor now lets you rename the &quot;Keywords&quot; and &quot;Faction&quot; bars on the card.
+            The faction bar also defaults to &quot;Faction&quot; instead of &quot;Faction Keywords&quot;.
           </span>
         </div>
       </div>

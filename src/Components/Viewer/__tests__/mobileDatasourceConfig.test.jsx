@@ -9,6 +9,15 @@ describe("mobileDatasourceConfig", () => {
       expect(BUILTIN_CONFIGS).toHaveProperty("basic");
       expect(BUILTIN_CONFIGS).toHaveProperty("necromunda");
       expect(BUILTIN_CONFIGS).toHaveProperty("aos");
+      expect(BUILTIN_CONFIGS).toHaveProperty("starcraft-tmg");
+    });
+
+    it("Starcraft TMG uses CustomCardDisplay with sc-header-name scroll reveal", () => {
+      const sc = BUILTIN_CONFIGS["starcraft-tmg"];
+      expect(sc.useScrollRevealHeader).toBe(true);
+      expect(sc.scrollRevealTargetSelector).toBe(".sc-header-name");
+      expect(sc.scrollRevealHeaderClass).toBe("mobile-card-header-starcraft");
+      expect(sc.cssClass).toContain("data-starcraft-mobile");
     });
 
     it("each config has required shape", () => {
@@ -114,10 +123,11 @@ describe("mobileDatasourceConfig", () => {
 
   describe("SELECTOR_SYSTEMS", () => {
     it("has expected entries", () => {
-      expect(SELECTOR_SYSTEMS).toHaveLength(2);
+      expect(SELECTOR_SYSTEMS).toHaveLength(3);
       const ids = SELECTOR_SYSTEMS.map((s) => s.id);
       expect(ids).toContain("40k-10e");
       expect(ids).toContain("aos");
+      expect(ids).toContain("starcraft-tmg");
     });
 
     it("each entry has name, meta, and cssClass", () => {

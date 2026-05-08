@@ -124,11 +124,14 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
   // Initialize navigation hook to sync URL with state
   useViewerNavigation();
 
-  // Scroll-reveal header (config-driven)
+  // Scroll-reveal header (config-driven). `topOffset` shrinks the
+  // observer's visible region from the top — needed when the page chrome
+  // (e.g. AoS stat wheel) sits above the unit name. Cards whose name target
+  // is at the very top of the scroll area should set this to 0.
   const { showHeader, headerReady, scrollContainerRef } = useScrollRevealHeader({
     enabled: !!activeCard && config.useScrollRevealHeader,
     targetSelector: config.scrollRevealTargetSelector,
-    topOffset: 64,
+    topOffset: config.scrollRevealTopOffset ?? 64,
   });
 
   // Handle back navigation from card viewer
@@ -298,9 +301,9 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
               {activeCard && config.useScrollRevealHeader && headerReady && (
                 <>
                   <div
-                    className={`mobile-card-header mobile-card-header-scroll mobile-card-header-aos ${
-                      showHeader ? "visible" : "hidden"
-                    }`}
+                    className={`mobile-card-header mobile-card-header-scroll ${
+                      config.scrollRevealHeaderClass || ""
+                    } ${showHeader ? "visible" : "hidden"}`}
                     style={{
                       "--banner-colour": cardFaction?.colours?.banner,
                       "--header-colour": cardFaction?.colours?.header,

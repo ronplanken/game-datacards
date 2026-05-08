@@ -134,7 +134,7 @@ function App() {
                   ? activeCard.customHeaderColour
                   : cardFaction?.colours?.header,
               }}
-              className={`${isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`}`}>
+              className={`${isCustomDatasource || activeCard?.source === "starcraft-tmg" ? "data-custom" : `data-${activeCard?.source}`}`}>
               <Row style={{ overflow: "hidden", justifyContent: "center", flex: "1 0 auto" }}>
                 {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "40k-10e" && (
@@ -143,6 +143,7 @@ function App() {
                 {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
                 {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
                 {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
+                {activeCard?.source === "starcraft-tmg" && <CustomCardDisplay />}
                 {activeCard?.source?.startsWith("custom-") && <CustomCardDisplay />}
               </Row>
               <FloatingToolbar
@@ -165,12 +166,13 @@ function App() {
             {activeCard && (
               <div
                 style={{ overflowY: "auto", height: "calc(100vh - 64px)" }}
-                className={`${isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`}`}>
+                className={`${isCustomDatasource || activeCard?.source === "starcraft-tmg" ? "data-custom" : `data-${activeCard?.source}`}`}>
                 {activeCard?.source === "40k" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "40k-10e" && <Warhammer40K10eCardEditor />}
                 {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "necromunda" && <NecromundaCardEditor />}
                 {activeCard?.source === "aos" && <AgeOfSigmarCardEditor />}
+                {activeCard?.source === "starcraft-tmg" && <CustomCardEditor />}
                 {activeCard?.source?.startsWith("custom-") && <CustomCardEditor />}
               </div>
             )}

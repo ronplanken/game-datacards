@@ -13,6 +13,7 @@ import {
   createBlankPreset,
   create40kPreset,
   createAoSPreset,
+  createStarcraftTmgPreset,
   validateSchema,
   getDefaultValueForType,
   migrateCardToSchema,
@@ -28,7 +29,7 @@ describe("customSchema.helpers - constants", () => {
   });
 
   it("defines valid base systems", () => {
-    expect(VALID_BASE_SYSTEMS).toEqual(["40k-10e", "aos", "blank"]);
+    expect(VALID_BASE_SYSTEMS).toEqual(["40k-10e", "aos", "starcraft-tmg", "blank"]);
   });
 
   it("defines valid ability formats", () => {
@@ -36,7 +37,7 @@ describe("customSchema.helpers - constants", () => {
   });
 
   it("defines valid section formats", () => {
-    expect(VALID_SECTION_FORMATS).toEqual(["list", "richtext"]);
+    expect(VALID_SECTION_FORMATS).toEqual(["list", "richtext", "modelsSupplyTiers"]);
   });
 
   it("defines valid points formats", () => {
@@ -360,6 +361,73 @@ describe("customSchema.helpers - createBlankPreset", () => {
     expect(a.cardTypes).not.toBe(b.cardTypes);
     a.cardTypes.push({ key: "test", label: "Test", baseType: "unit", schema: {} });
     expect(b.cardTypes).toHaveLength(0);
+  });
+});
+
+describe("customSchema.helpers - createStarcraftTmgPreset", () => {
+  it("returns a schema with correct version and base system", () => {
+    const schema = createStarcraftTmgPreset();
+    expect(schema.version).toBe(SCHEMA_VERSION);
+    expect(schema.baseSystem).toBe("starcraft-tmg");
+  });
+
+  it("defines a single unit card type", () => {
+    const schema = createStarcraftTmgPreset();
+    expect(schema.cardTypes).toHaveLength(1);
+    expect(schema.cardTypes[0].baseType).toBe("unit");
+    expect(schema.cardTypes[0].key).toBe("unit");
+  });
+
+  it("defines the Starcraft stat fields including the optional Shield", () => {
+    const unit = createStarcraftTmgPreset().cardTypes[0];
+    const keys = unit.schema.stats.fields.map((f) => f.key);
+    expect(keys).toEqual(["speed", "evade", "armour", "hitPoints", "shield", "size"]);
+    const shield = unit.schema.stats.fields.find((f) => f.key === "shield");
+    expect(shield.special).toBe(true);
+    expect(shield.hideWhenEmpty).toBe(true);
+  });
+
+  it("defines Assault and Combat weapon tables with the full column set", () => {
+    const unit = createStarcraftTmgPreset().cardTypes[0];
+    const types = unit.schema.weaponTypes.types;
+    expect(types.map((t) => t.key)).toEqual(["assault", "combat"]);
+    types.forEach((t) => {
+      expect(t.columns.map((c) => c.key)).toEqual(["rng", "roa", "hit", "surge", "sdice", "dmg", "keyword"]);
+    });
+  });
+
+  it("defines Special + Movement/Assault/Combat ability categories with badge flags", () => {
+    const unit = createStarcraftTmgPreset().cardTypes[0];
+    const categories = unit.schema.abilities.categories;
+    expect(categories.map((c) => c.key)).toEqual(["special", "anyPhase", "movement", "assault", "combat"]);
+    categories.forEach((c) => {
+      expect(c.hasType).toBe(true);
+      expect(c.hasCost).toBe(true);
+      expect(c.hasTriggerIcon).toBe(true);
+    });
+  });
+
+  it("uses points to carry Models / Supply tiers (Supply is the cost mechanic)", () => {
+    const unit = createStarcraftTmgPreset().cardTypes[0];
+    // Models / Supply rides on top of the canonical points cost editor —
+    // each tier is `{ active, models, cost }` where cost is the supply value.
+    expect(unit.schema.metadata.hasPoints).toBe(true);
+    expect(unit.schema.sections.sections).toEqual([]);
+    expect(unit.schema.metadata.hasKeywords).toBe(true);
+    expect(unit.schema.metadata.hasFactionKeywords).toBe(true);
+  });
+
+  it("passes validateSchema", () => {
+    const result = validateSchema(createStarcraftTmgPreset());
+    expect(result.errors).toEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
+  it("returns a new object on each call (no shared references)", () => {
+    const a = createStarcraftTmgPreset();
+    const b = createStarcraftTmgPreset();
+    expect(a).not.toBe(b);
+    expect(a.cardTypes).not.toBe(b.cardTypes);
   });
 });
 

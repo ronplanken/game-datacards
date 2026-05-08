@@ -28,6 +28,7 @@ vi.mock("lucide-react", () => ({
   X: (props) => <svg data-testid="icon-x" {...props} />,
   LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
+  Users: (props) => <svg data-testid="icon-users" {...props} />,
 }));
 
 const mockDatasource = {
@@ -157,7 +158,9 @@ describe("SchemaEditorPersistence", () => {
         />,
       );
 
-      const checkbox = screen.getByLabelText("Multiple profiles");
+      // Both StatsSchemaEditor and WeaponsSchemaEditor expose a "Multiple profiles"
+      // toggle; the stats one renders first in the DOM order.
+      const checkbox = screen.getAllByLabelText("Multiple profiles")[0];
       fireEvent.click(checkbox);
 
       expect(onUpdate).toHaveBeenCalledTimes(1);
@@ -214,7 +217,7 @@ describe("SchemaEditorPersistence", () => {
         />,
       );
 
-      const checkbox = screen.getByLabelText("Multiple profiles");
+      const checkbox = screen.getAllByLabelText("Multiple profiles")[0];
       fireEvent.click(checkbox);
 
       const updatedDS = onUpdate.mock.calls[0][0];

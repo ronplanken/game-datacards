@@ -11,6 +11,10 @@ import {
   IconLayoutRows,
   IconEye,
   IconPalette,
+  IconActivityHeartbeat,
+  IconLink,
+  IconHierarchy,
+  IconTypography,
 } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
@@ -22,18 +26,33 @@ const COLUMN_TYPES = [
   { value: "boolean", label: "Boolean" },
 ];
 
+const PHASE_STYLE_OPTIONS = [
+  { value: "", label: "None" },
+  { value: "movement", label: "Movement" },
+  { value: "assault", label: "Assault" },
+  { value: "combat", label: "Combat" },
+  { value: "special", label: "Special" },
+];
+
+const PROFILE_RELATION_OPTIONS = [
+  { value: "equal", label: "Equal (siblings)" },
+  { value: "parent-child", label: "Parent → Child" },
+];
+
 /**
  * Editor for weapon type definitions.
  * Connected-tab interface per weapon type with editable column list per tab,
  * inline "+" tab to add weapon types, X to close tabs,
  * hasKeywords/hasProfiles toggles.
  */
-export const WeaponsSchemaEditor = ({ schema, onChange }) => {
+export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const weaponTypes = schema?.weaponTypes;
   if (!weaponTypes) return null;
 
   const types = ensureIds(weaponTypes.types);
   const [activeTab, setActiveTab] = useState(0);
+  const abilityCategoryOptions = (schema?.abilities?.categories || []).map((c) => ({ value: c.key, label: c.label }));
+  const showPhaseFields = baseSystem === "starcraft-tmg";
 
   const updateWeaponTypes = (updatedTypes) => {
     onChange({ ...schema, weaponTypes: { ...weaponTypes, types: updatedTypes } });
@@ -52,6 +71,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
       label: `Weapon Type ${nextNum}`,
       hasKeywords: false,
       hasProfiles: false,
+      profileRelation: "equal",
       columns: [],
     };
     updateWeaponTypes([...types, newType]);
@@ -170,24 +190,112 @@ export const WeaponsSchemaEditor = ({ schema, onChange }) => {
             onChange={(val) => updateType(activeTab, { label: val })}
           />
 
-          <div className="props-compact-row-2col">
-            <CompactInput
-              label={<IconTags size={10} stroke={1.5} />}
-              ariaLabel="Weapon keywords"
-              tooltip="Enable weapon keywords"
-              type="toggle"
-              value={!!activeType.hasKeywords}
-              onChange={(val) => updateType(activeTab, { hasKeywords: val })}
-            />
-            <CompactInput
-              label={<IconLayersSubtract size={10} stroke={1.5} />}
-              ariaLabel="Weapon profiles"
-              tooltip="Enable weapon profiles"
-              type="toggle"
-              value={!!activeType.hasProfiles}
-              onChange={(val) => updateType(activeTab, { hasProfiles: val })}
-            />
-          </div>
+          <CompactInput
+            label={<IconTags size={10} stroke={1.5} />}
+            ariaLabel="Weapon keywords"
+            tooltip="Enable weapon keywords"
+            type="toggle"
+            value={!!activeType.hasKeywords}
+            onChange={(val) => updateType(activeTab, { hasKeywords: val })}
+          />
+          <CompactInput
+            label={<IconLayersSubtract size={10} stroke={1.5} />}
+            ariaLabel="Multiple profiles"
+            tooltip="Multiple profiles — let a weapon carry more than one stat profile"
+            type="toggle"
+            value={!!activeType.hasProfiles}
+            onChange={(val) => updateType(activeTab, { hasProfiles: val })}
+          />
+
+          {activeType.hasProfiles && (
+            <div className="props-tree-children">
+              <div className="props-tree-child">
+                <div className="props-compact-input">
+                  <Tooltip content="Profile relation — how multiple profiles relate to each other" placement="top">
+                    <span className="props-compact-label">
+                      <IconHierarchy size={10} stroke={1.5} />
+                    </span>
+                  </Tooltip>
+                  <select
+                    className="props-compact-field"
+                    value={activeType.profileRelation || "equal"}
+                    onChange={(e) =>
+                      updateType(activeTab, {
+                        profileRelation: e.target.value === "equal" ? undefined : e.target.value,
+                      })
+                    }
+                    aria-label="Profile relation">
+                    {PROFILE_RELATION_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              {activeType.profileRelation === "parent-child" && (
+                <div className="props-tree-child">
+                  <CompactInput
+                    label={<IconTypography size={10} stroke={1.5} />}
+                    ariaLabel="Child label"
+                    tooltip="Label used for child / upgrade profiles (e.g. Upgrade)"
+                    type="text"
+                    value={activeType.profileChildLabel || ""}
+                    onChange={(val) => updateType(activeTab, { profileChildLabel: val || undefined })}
+                    placeholder="sub-profile"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {showPhaseFields && (
+            <div className="props-compact-row-2col">
+              <div className="props-compact-input">
+                <Tooltip content="Phase style — drives the section heading icon" placement="top">
+                  <span className="props-compact-label">
+                    <IconActivityHeartbeat size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
+                <select
+                  className="props-compact-field"
+                  value={activeType.phaseStyle || ""}
+                  onChange={(e) =>
+                    updateType(activeTab, { phaseStyle: e.target.value === "" ? undefined : e.target.value })
+                  }
+                  aria-label="Phase style">
+                  {PHASE_STYLE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="props-compact-input">
+                <Tooltip content="Render this ability category alongside this weapon block" placement="top">
+                  <span className="props-compact-label">
+                    <IconLink size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
+                <select
+                  className="props-compact-field"
+                  value={activeType.linkedAbilityCategory || ""}
+                  onChange={(e) =>
+                    updateType(activeTab, {
+                      linkedAbilityCategory: e.target.value === "" ? undefined : e.target.value,
+                    })
+                  }
+                  aria-label="Linked ability category">
+                  <option value="">None</option>
+                  {abilityCategoryOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
 
           <div className="props-field-list-header">
             <span className="props-field-list-title">Columns</span>

@@ -9,6 +9,7 @@ import {
   getAoSData,
   getBasicData,
   getNecromundaBasicData,
+  getStarcraftData,
 } from "../Helpers/external.helpers";
 import {
   validateCustomDatasource,
@@ -133,6 +134,20 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(dataFactions);
         setSelectedFaction(dataFactions.data[factionIndex]);
       }
+      if (settings.selectedDataSource === "starcraft-tmg") {
+        const storedData = await dataStore.getItem("starcraft-tmg");
+        if (storedData) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
+          return;
+        }
+        setIsLoading(true);
+        const dataFactions = await getStarcraftData();
+
+        dataStore.setItem("starcraft-tmg", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex] || dataFactions.data[0]);
+      }
 
       // Handle custom datasources (prefixed with "custom-")
       if (settings.selectedDataSource?.startsWith("custom-")) {
@@ -231,6 +246,13 @@ export const DataSourceStorageProviderComponent = (props) => {
 
         setDataSource(dataFactions);
         setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "starcraft-tmg") {
+        const dataFactions = await getStarcraftData();
+        dataStore.setItem("starcraft-tmg", dataFactions);
+
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex] || dataFactions.data[0]);
       }
     } catch (error) {
       console.error("Failed to check for updates:", error);

@@ -53,7 +53,7 @@ export const DatasourceCardEditor = ({ card, activeDatasource, onUpdateCard }) =
   };
 
   return (
-    <CardEditProvider card={card} onUpdateCard={onUpdateCard}>
+    <CardEditProvider card={card} onUpdateCard={onUpdateCard} factions={activeDatasource.data || []}>
       <div className="props-body">
         {hasCardDesigner && (
           <Section title="Template" icon={Layers} defaultOpen={true}>

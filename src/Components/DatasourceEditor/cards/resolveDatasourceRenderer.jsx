@@ -3,6 +3,7 @@ import { Ds40kEnhancementCard } from "./Ds40kEnhancementCard";
 import { Ds40kRuleCard } from "./Ds40kRuleCard";
 import { Ds40kUnitCard } from "./Ds40kUnitCard";
 import { DsAosWarscrollCard } from "./DsAosWarscrollCard";
+import { DsStarcraftUnitCard } from "./DsStarcraftUnitCard";
 
 /**
  * Maps (baseSystem, baseType) to a native-styled datasource card component.
@@ -32,6 +33,15 @@ export const resolveDatasourceRenderer = (baseSystem, baseType) => {
     switch (baseType) {
       case "unit":
         return DsAosWarscrollCard;
+      default:
+        return null;
+    }
+  }
+
+  if (baseSystem === "starcraft-tmg") {
+    switch (baseType) {
+      case "unit":
+        return DsStarcraftUnitCard;
       default:
         return null;
     }

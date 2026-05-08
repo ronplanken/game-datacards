@@ -16,6 +16,7 @@ const BUILT_IN_DATASOURCES = [
   { id: "40k", title: "Wahapedia 9th Edition" },
   { id: "necromunda", title: "Necromunda" },
   { id: "aos", title: "Age of Sigmar" },
+  { id: "starcraft-tmg", title: "Starcraft TMG" },
 ];
 
 export const DatasourceSelector = () => {

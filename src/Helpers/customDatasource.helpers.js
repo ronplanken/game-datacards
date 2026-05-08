@@ -27,6 +27,13 @@ const CARD_TYPE_TO_ARRAY = {
 };
 
 /**
+ * All known card-collection array keys on a faction object. Derived from
+ * `CARD_TYPE_TO_ARRAY` so any new card type registered there is automatically
+ * picked up by the FactionsEditor (card counting, id-rename rewrites, etc.).
+ */
+export const FACTION_CARD_COLLECTION_KEYS = Array.from(new Set(Object.values(CARD_TYPE_TO_ARRAY)));
+
+/**
  * Validates a custom datasource JSON structure
  * @param {Object} data - The datasource data to validate
  * @returns {{ isValid: boolean, errors: string[] }}
@@ -421,6 +428,41 @@ export const exportDatasourceSchema = (datasource) => {
       name: faction.name,
       colours: faction.colours,
     }));
+  }
+
+  return exported;
+};
+
+/**
+ * Creates a full export of a datasource (schema + card data) for sharing or backup.
+ * Strips internal storage fields (sourceType, sourceUrl, etc.) but keeps the
+ * `id`, full `schema`, and the complete `data` array (factions with all their
+ * datasheets, stratagems, enhancements, rules, etc.). The exported shape
+ * matches the standard datasource export format, so it can be reimported as-is.
+ * @param {Object} datasource - The full datasource object from storage
+ * @returns {Object} - Clean datasource export object including all card data
+ */
+export const exportDatasource = (datasource) => {
+  if (!datasource) return null;
+
+  const exported = {
+    id: datasource.id,
+    name: datasource.name,
+    version: datasource.version,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  if (datasource.author) {
+    exported.author = datasource.author;
+  }
+
+  if (datasource.schema) {
+    exported.schema = datasource.schema;
+  }
+
+  if (datasource.data && Array.isArray(datasource.data)) {
+    // Deep-clone so consumers can't accidentally mutate the active datasource.
+    exported.data = JSON.parse(JSON.stringify(datasource.data));
   }
 
   return exported;

@@ -1,22 +1,6 @@
 import { ReactFitty } from "react-fitty";
 import { DamagedIcon } from "../../../Icons/WeaponTypeIcon";
-
-/**
- * Sorts stat fields by displayOrder for consistent column ordering.
- */
-const sortStatFields = (fields) => {
-  return [...(fields || [])].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-};
-
-/**
- * Checks if a special field with hideWhenEmpty should be hidden.
- * Returns true when all active stat lines have an empty/falsy value for the field.
- */
-const shouldHideField = (field, stats) => {
-  if (!field.special || !field.hideWhenEmpty) return false;
-  const activeStats = (stats || []).filter((s) => s.active !== false);
-  return activeStats.every((s) => !s[field.key]);
-};
+import { sortStatFields, shouldHideField } from "../statFields";
 
 /**
  * Schema-driven unit stats that uses the native 40K CSS structure.

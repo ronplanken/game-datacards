@@ -1,7 +1,19 @@
 import React from "react";
 import { nanoid } from "nanoid";
 import { Sparkles, Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { IconKey, IconTag, IconTemplate, IconHeading, IconClock, IconPalette, IconColumns } from "@tabler/icons-react";
+import {
+  IconKey,
+  IconTag,
+  IconTemplate,
+  IconHeading,
+  IconClock,
+  IconPalette,
+  IconColumns,
+  IconActivityHeartbeat,
+  IconBadge,
+  IconCoin,
+  IconArrowUp,
+} from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
@@ -9,6 +21,14 @@ import { ensureIds } from "./editorUtils";
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name Only" },
   { value: "name-description", label: "Name + Description" },
+];
+
+const PHASE_STYLE_OPTIONS = [
+  { value: "", label: "None" },
+  { value: "movement", label: "Movement" },
+  { value: "assault", label: "Assault" },
+  { value: "combat", label: "Combat" },
+  { value: "special", label: "Special" },
 ];
 
 /**
@@ -113,6 +133,27 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
                   <option value="half">50%</option>
                   <option value="third">33%</option>
                   <option value="quarter">25%</option>
+                  <option value="inline">Inline (single row)</option>
+                </select>
+              </div>
+              <div className="props-compact-input">
+                <Tooltip content="Phase style — drives section icon and inline rendering" placement="top">
+                  <span className="props-compact-label">
+                    <IconActivityHeartbeat size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
+                <select
+                  className="props-compact-field"
+                  value={category.phaseStyle || ""}
+                  onChange={(e) =>
+                    updateCategory(index, "phaseStyle", e.target.value === "" ? undefined : e.target.value)
+                  }
+                  aria-label="Phase style">
+                  {PHASE_STYLE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
                 </select>
               </div>
               <CompactInput
@@ -140,6 +181,34 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
                     type="toggle"
                     value={!!category.hasColor}
                     onChange={(val) => updateCategory(index, "hasColor", val)}
+                  />
+                </div>
+              )}
+              {baseSystem === "starcraft-tmg" && (
+                <div className="props-compact-row-2col">
+                  <CompactInput
+                    label={<IconBadge size={10} stroke={1.5} />}
+                    ariaLabel="Type pill"
+                    tooltip="Show PASSIVE / ACTIVE / REACTION pill"
+                    type="toggle"
+                    value={category.hasType !== false}
+                    onChange={(val) => updateCategory(index, "hasType", val)}
+                  />
+                  <CompactInput
+                    label={<IconCoin size={10} stroke={1.5} />}
+                    ariaLabel="Cost chip"
+                    tooltip="Show CP / BM cost chip"
+                    type="toggle"
+                    value={category.hasCost !== false}
+                    onChange={(val) => updateCategory(index, "hasCost", val)}
+                  />
+                  <CompactInput
+                    label={<IconArrowUp size={10} stroke={1.5} />}
+                    ariaLabel="Trigger / upgrade icon"
+                    tooltip="Show up-arrow icon on triggered or upgrade abilities"
+                    type="toggle"
+                    value={category.hasTriggerIcon !== false}
+                    onChange={(val) => updateCategory(index, "hasTriggerIcon", val)}
                   />
                 </div>
               )}

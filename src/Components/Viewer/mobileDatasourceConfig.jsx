@@ -101,6 +101,26 @@ export const BUILTIN_CONFIGS = {
     GameSystemSettingsScreen: "aos",
     useScrollRevealHeader: true,
     scrollRevealTargetSelector: ".warscroll-unit-name",
+    scrollRevealHeaderClass: "mobile-card-header-aos",
+  },
+  "starcraft-tmg": {
+    label: "Starcraft TMG",
+    labelShort: "Starcraft",
+    labelMeta: "TMG",
+    cssClass: "data-custom data-starcraft-mobile",
+    selectorCssClass: "gss-option-starcraft",
+    renderCard: (type, { onBack } = {}) => (
+      <CustomCardDisplay type={type} onBack={type === "viewer" ? onBack : undefined} />
+    ),
+    FactionComponent: MobileCustomFaction,
+    FactionUnitsComponent: MobileCustomFactionUnits,
+    extraRouteViews: [],
+    SettingsSection: null,
+    GameSystemSettingsScreen: null,
+    useScrollRevealHeader: true,
+    scrollRevealTargetSelector: ".sc-header-name",
+    scrollRevealHeaderClass: "mobile-card-header-starcraft",
+    scrollRevealTopOffset: -80,
   },
 };
 
@@ -109,23 +129,49 @@ export const BUILTIN_CONFIGS = {
  * Uses CustomCardDisplay for rendering and MobileCustomFaction for browsing.
  */
 export const buildCustomConfig = (dataSource) => {
-  const isAos = dataSource?.schema?.baseSystem === "aos";
+  const baseSystem = dataSource?.schema?.baseSystem;
+  const isAos = baseSystem === "aos";
+  const isStarcraft = baseSystem === "starcraft-tmg";
+  // Append a per-base-system marker so mobile-page chrome (the back-button
+  // header / title) can adopt that system's typography. The card itself
+  // still owns its `.data-starcraft` (etc.) scope; the marker here is for
+  // header/title styling outside the card.
+  const cssClass = ["data-custom", isStarcraft ? "data-starcraft-mobile" : null].filter(Boolean).join(" ");
+  let scrollRevealTargetSelector = null;
+  let scrollRevealHeaderClass = null;
+  let scrollRevealTopOffset;
+  if (isAos) {
+    scrollRevealTargetSelector = ".warscroll-unit-name";
+    scrollRevealHeaderClass = "mobile-card-header-aos";
+  } else if (isStarcraft) {
+    // Reveal once the in-card unit name scrolls out of view, so the card's
+    // own back button + name carry the top of the screen until then.
+    // Negative offset extends the observer's effective root above the
+    // container, keeping the name flagged as "visible" for an extra ~80px
+    // of scroll past the actual top — so the page-level header doesn't
+    // pop in the instant the name disappears.
+    scrollRevealTargetSelector = ".sc-header-name";
+    scrollRevealHeaderClass = "mobile-card-header-starcraft";
+    scrollRevealTopOffset = -80;
+  }
   return {
     label: dataSource?.name || "Custom Datasource",
     labelShort: dataSource?.name || "Custom Datasource",
     labelMeta: null,
-    cssClass: "data-custom",
+    cssClass,
     selectorCssClass: "gss-option-custom",
     renderCard: (type, { onBack } = {}) => (
-      <CustomCardDisplay type={type} onBack={type === "viewer" && isAos ? onBack : undefined} />
+      <CustomCardDisplay type={type} onBack={type === "viewer" && (isAos || isStarcraft) ? onBack : undefined} />
     ),
     FactionComponent: MobileCustomFaction,
     FactionUnitsComponent: MobileCustomFactionUnits,
     extraRouteViews: [],
     SettingsSection: null,
     GameSystemSettingsScreen: null,
-    useScrollRevealHeader: isAos,
-    scrollRevealTargetSelector: isAos ? ".warscroll-unit-name" : null,
+    useScrollRevealHeader: isAos || isStarcraft,
+    scrollRevealTargetSelector,
+    scrollRevealHeaderClass,
+    scrollRevealTopOffset,
   };
 };
 
@@ -159,4 +205,5 @@ export const resolveMobileConfig = (datasourceId, dataSource) => {
 export const SELECTOR_SYSTEMS = [
   { id: "40k-10e", name: "Warhammer 40,000", meta: "10th Edition", cssClass: "gss-option-40k" },
   { id: "aos", name: "Age of Sigmar", meta: "4th Edition", cssClass: "gss-option-aos" },
+  { id: "starcraft-tmg", name: "Starcraft", meta: "TMG", cssClass: "gss-option-starcraft" },
 ];

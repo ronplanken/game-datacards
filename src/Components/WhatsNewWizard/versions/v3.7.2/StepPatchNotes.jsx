@@ -38,8 +38,8 @@ export const StepPatchNotes = () => (
             Ability Descriptions Show by Default
           </strong>
           <p>
-            New abilities in the Datasource Editor now show their description on the card straight away. Older
-            abilities with a hidden description fix themselves the next time you edit the description.
+            New abilities in the Datasource Editor now show their description on the card straight away. Older abilities
+            with a hidden description fix themselves the next time you edit the description.
           </p>
         </div>
       </div>
@@ -51,8 +51,8 @@ export const StepPatchNotes = () => (
             Customise the Keywords &amp; Faction Labels
           </strong>
           <p>
-            The Datasource Editor now lets you rename the &quot;Keywords&quot; and &quot;Faction&quot; bars on the
-            card. The faction bar also defaults to &quot;Faction&quot; instead of &quot;Faction Keywords&quot;.
+            The Datasource Editor now lets you rename the &quot;Keywords&quot; and &quot;Faction&quot; bars on the card.
+            The faction bar also defaults to &quot;Faction&quot; instead of &quot;Faction Keywords&quot;.
           </p>
         </div>
       </div>

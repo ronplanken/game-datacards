@@ -10,11 +10,7 @@ import { DatasourceWizard } from "../Components/DatasourceWizard";
 import { useDatasourceEditorState } from "../Components/DatasourceEditor/hooks/useDatasourceEditorState";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSync } from "../Premium";
-import {
-  exportDatasourceSchema,
-  downloadJsonFile,
-  generateDatasourceFilename,
-} from "../Helpers/customDatasource.helpers";
+import { exportDatasource, downloadJsonFile, generateDatasourceFilename } from "../Helpers/customDatasource.helpers";
 import "../Components/DatasourceEditor/DatasourceEditor.css";
 
 const { Content } = Layout;
@@ -159,9 +155,9 @@ export const DatasourceEditorPage = () => {
 
   const handleExportDatasource = useCallback((datasource) => {
     if (!datasource) return;
-    const schemaExport = exportDatasourceSchema(datasource);
-    const filename = generateDatasourceFilename(datasource.name).replace("-datasource.json", "-schema.json");
-    downloadJsonFile(schemaExport, filename);
+    const datasourceExport = exportDatasource(datasource);
+    const filename = generateDatasourceFilename(datasource.name);
+    downloadJsonFile(datasourceExport, filename);
   }, []);
 
   const handleOpenImport = useCallback(() => {

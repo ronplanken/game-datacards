@@ -73,7 +73,17 @@
       "Bash(git rebase:*)",
       "Bash(wc -l /Users/ronplanken/Documents/Warhammer/game-datacards/.claude/worktrees/ralph/src/Components/DatasourceEditor/editors/*.jsx | tail -1)",
       "Bash(pbpaste:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(mkdir -p /tmp/claude-design)",
+      "Read(//tmp/**)",
+      "Bash(cp /Users/ronplanken/.claude/projects/-Users-ronplanken-Documents-Warhammer-game-datacards/27c6cde0-5a05-4500-9584-490a41e21aa1/tool-results/webfetch-1778162595937-xt6ksv.bin design.gz)",
+      "Bash(gunzip -kf design.gz)",
+      "Read(//private/tmp/claude-design/**)",
+      "Bash(mkdir -p extracted)",
+      "Bash(tar -xf design -C extracted)"
+    ],
+    "additionalDirectories": [
+      "/Users/ronplanken/Documents/Warhammer/gdc-premium"
     ]
   }
 }

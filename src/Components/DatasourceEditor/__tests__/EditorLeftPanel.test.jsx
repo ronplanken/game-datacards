@@ -90,11 +90,11 @@ describe("EditorLeftPanel", () => {
       expect(screen.getByTitle("Add card type")).toBeInTheDocument();
     });
 
-    it("renders disabled Export button when datasource is active", () => {
+    it("renders enabled Export button when datasource is active", () => {
       render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
-      const btn = screen.getByTitle("Export schema (coming soon)");
+      const btn = screen.getByTitle("Export datasource");
       expect(btn).toBeInTheDocument();
-      expect(btn).toBeDisabled();
+      expect(btn).not.toBeDisabled();
     });
 
     it("renders disabled Import button when datasource is active", () => {
@@ -172,7 +172,7 @@ describe("EditorLeftPanel", () => {
       expect(onAddCardType).toHaveBeenCalledTimes(1);
     });
 
-    it("does not call onExportDatasource when disabled Export button clicked", async () => {
+    it("calls onExportDatasource with the active datasource when Export button clicked", async () => {
       const user = userEvent.setup();
       const onExportDatasource = vi.fn();
       render(
@@ -182,8 +182,8 @@ describe("EditorLeftPanel", () => {
           onExportDatasource={onExportDatasource}
         />,
       );
-      await user.click(screen.getByTitle("Export schema (coming soon)"));
-      expect(onExportDatasource).not.toHaveBeenCalled();
+      await user.click(screen.getByTitle("Export datasource"));
+      expect(onExportDatasource).toHaveBeenCalledWith(mockDatasource);
     });
 
     it("does not call onImportSchema when disabled Import button clicked", async () => {

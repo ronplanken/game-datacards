@@ -1,6 +1,16 @@
 import React from "react";
 import { Tags } from "lucide-react";
-import { IconCategory, IconHash, IconUsers, IconCoin, IconBadge, IconTypography } from "@tabler/icons-react";
+import {
+  IconCategory,
+  IconHash,
+  IconUsers,
+  IconCoin,
+  IconBadge,
+  IconTypography,
+  IconTag,
+  IconShield,
+  IconSword,
+} from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 
@@ -76,6 +86,22 @@ export const MetadataSchemaEditor = ({ schema, onChange, baseSystem }) => {
         </div>
       )}
       <CompactInput
+        label={<IconSword size={10} stroke={1.5} />}
+        ariaLabel="Combat role"
+        tooltip="Include combat role badge (e.g., Damage Dealer, Tank)"
+        type="toggle"
+        value={!!metadata.hasCombatRole}
+        onChange={(val) => updateMetadata({ hasCombatRole: val })}
+      />
+      <CompactInput
+        label={<IconShield size={10} stroke={1.5} />}
+        ariaLabel="Army slot"
+        tooltip="Include army slot badge (e.g., Core, Elite, Hero)"
+        type="toggle"
+        value={!!metadata.hasArmySlot}
+        onChange={(val) => updateMetadata({ hasArmySlot: val })}
+      />
+      <CompactInput
         label={<IconCoin size={10} stroke={1.5} />}
         ariaLabel="Points cost"
         tooltip="Include points cost"
@@ -104,6 +130,17 @@ export const MetadataSchemaEditor = ({ schema, onChange, baseSystem }) => {
                 ))}
               </select>
             </div>
+          </div>
+          <div className="props-tree-child">
+            <CompactInput
+              label={<IconTag size={10} stroke={1.5} />}
+              ariaLabel="Points label"
+              tooltip="Label for the Points panel and (when supported) the renderer caption"
+              type="text"
+              value={metadata.pointsLabel || ""}
+              onChange={(val) => updateMetadata({ pointsLabel: val || undefined })}
+              placeholder="Points"
+            />
           </div>
         </div>
       )}

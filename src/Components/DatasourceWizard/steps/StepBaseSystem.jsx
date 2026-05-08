@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Circle, CheckCircle, Crosshair, Shield, FileText } from "lucide-react";
+import { Circle, CheckCircle, Crosshair, Shield, FileText, Rocket } from "lucide-react";
 
 /**
  * Base system options for the datasource wizard.
@@ -23,6 +23,15 @@ const BASE_SYSTEMS = [
       "Stat profiles for move, save, control, health, ward, and wizard/priest levels following the AoS format.",
     icon: Shield,
     color: "#d69e2e",
+  },
+  {
+    id: "starcraft-tmg",
+    title: "Starcraft TMG",
+    subtitle: "Single-sided format",
+    description:
+      "Phase-based weapons, abilities, and stat profiles following the older single-sided Starcraft TMG card format.",
+    icon: Rocket,
+    color: "#7c3aed",
   },
   {
     id: "blank",

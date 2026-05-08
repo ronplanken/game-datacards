@@ -93,7 +93,11 @@ const CardTypeEditorWithSections = ({ cardType, activeDatasource, onUpdateDataso
           <div className="props-body">
             {cardTypeSettings}
             <StatsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} baseSystem={baseSystem} />
-            <WeaponsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
+            <WeaponsSchemaEditor
+              schema={cardType.schema}
+              onChange={handleCardTypeSchemaChange}
+              baseSystem={baseSystem}
+            />
             <AbilitiesSchemaEditor
               schema={cardType.schema}
               onChange={handleCardTypeSchemaChange}

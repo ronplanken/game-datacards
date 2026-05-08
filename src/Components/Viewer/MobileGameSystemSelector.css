@@ -92,6 +92,10 @@
   background: #c9a227;
 }
 
+.gss-option-starcraft .gss-option-marker {
+  background: #6d28d9;
+}
+
 /* Option content */
 .gss-option-content {
   flex: 1;
@@ -144,6 +148,18 @@
 .gss-option-aos:hover .gss-option-arrow,
 .gss-option-aos:focus .gss-option-arrow {
   color: #c9a227;
+  transform: translateX(2px);
+}
+
+.gss-option-starcraft:hover,
+.gss-option-starcraft:focus {
+  background: rgba(109, 40, 217, 0.12);
+  border-color: rgba(109, 40, 217, 0.45);
+}
+
+.gss-option-starcraft:hover .gss-option-arrow,
+.gss-option-starcraft:focus .gss-option-arrow {
+  color: #6d28d9;
   transform: translateX(2px);
 }
 
@@ -232,6 +248,10 @@
 
 .gss-option-aos {
   animation-delay: 0.35s;
+}
+
+.gss-option-starcraft {
+  animation-delay: 0.4s;
 }
 
 .gss-option-custom {

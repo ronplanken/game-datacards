@@ -53,6 +53,8 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
         return <NecromundaCardDisplay />;
       case "aos":
         return <AgeOfSigmarCardDisplay />;
+      case "starcraft-tmg":
+        return <CustomCardDisplay />;
       default:
         if (isCustomDatasource) {
           return <CustomCardDisplay type="viewer" />;
@@ -61,7 +63,8 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
     }
   };
 
-  const cssClass = isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`;
+  const useCustomScope = isCustomDatasource || activeCard?.source === "starcraft-tmg";
+  const cssClass = useCustomScope ? "data-custom" : `data-${activeCard?.source}`;
 
   return (
     <div
@@ -101,6 +104,8 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
         return <NecromundaCardDisplay />;
       case "aos":
         return <AgeOfSigmarCardDisplay />;
+      case "starcraft-tmg":
+        return <CustomCardDisplay />;
       default:
         if (isCustomDatasource) {
           return <CustomCardDisplay />;
@@ -109,7 +114,8 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
     }
   };
 
-  const hiddenCssClass = isCustomDatasource ? "data-custom" : `data-${activeCard?.source}`;
+  const useCustomScope = isCustomDatasource || activeCard?.source === "starcraft-tmg";
+  const hiddenCssClass = useCustomScope ? "data-custom" : `data-${activeCard?.source}`;
 
   return (
     <div

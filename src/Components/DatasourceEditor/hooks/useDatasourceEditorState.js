@@ -5,18 +5,8 @@ import {
   createBlankCardFromSchema,
   getTargetArray,
   countDatasourceCards,
+  FACTION_CARD_COLLECTION_KEYS,
 } from "../../../Helpers/customDatasource.helpers";
-
-const CARD_ARRAY_NAMES = [
-  "datasheets",
-  "stratagems",
-  "enhancements",
-  "warscrolls",
-  "manifestationLores",
-  "psychicpowers",
-  "secondaries",
-  "rules",
-];
 
 const COOKIE_NAME = "gdc-ds-selection";
 
@@ -42,7 +32,7 @@ function clearSelection() {
 function findCardInDatasource(datasource, cardId) {
   if (!datasource?.data) return null;
   for (const faction of datasource.data) {
-    for (const arrayName of CARD_ARRAY_NAMES) {
+    for (const arrayName of FACTION_CARD_COLLECTION_KEYS) {
       const cards = faction[arrayName];
       if (Array.isArray(cards)) {
         const card = cards.find((c) => c.id === cardId);
@@ -185,12 +175,16 @@ export function useDatasourceEditorState() {
   );
 
   /**
-   * Add a blank card to the first faction in the active datasource.
+   * Add a blank card to a specific faction (or the first one if no factionId).
    */
   const addCard = useCallback(
-    async (cardTypeDef) => {
-      if (!activeDatasource?.data?.[0]) return;
-      const faction = activeDatasource.data[0];
+    async (cardTypeDef, factionId) => {
+      if (!activeDatasource?.data?.length) return;
+      const factions = activeDatasource.data;
+      const targetIndex = factionId ? factions.findIndex((f) => f.id === factionId) : 0;
+      const faction = targetIndex >= 0 ? factions[targetIndex] : factions[0];
+      const realIndex = targetIndex >= 0 ? targetIndex : 0;
+      if (!faction) return;
       const card = createBlankCardFromSchema(cardTypeDef, faction.id, activeDatasource.id);
       const targetArray = getTargetArray(cardTypeDef.key);
 
@@ -198,10 +192,8 @@ export function useDatasourceEditorState() {
         ...faction,
         [targetArray]: [...(faction[targetArray] || []), card],
       };
-      const updatedDatasource = {
-        ...activeDatasource,
-        data: [updatedFaction, ...activeDatasource.data.slice(1)],
-      };
+      const updatedData = factions.map((f, i) => (i === realIndex ? updatedFaction : f));
+      const updatedDatasource = { ...activeDatasource, data: updatedData };
       await updateDatasource(updatedDatasource);
       setSelectedItem({ type: "card", data: card });
       saveSelection({ ds: activeDatasource.id, type: cardTypeDef.key, card: card.id });
@@ -210,23 +202,24 @@ export function useDatasourceEditorState() {
   );
 
   /**
-   * Update a card by ID in the first faction of the active datasource.
+   * Update a card by ID — searches every faction for the matching card.
    */
   const updateCard = useCallback(
     async (updatedCard) => {
-      if (!activeDatasource?.data?.[0]) return;
-      const faction = activeDatasource.data[0];
+      if (!activeDatasource?.data?.length) return;
       const targetArray = getTargetArray(updatedCard.cardType);
-      const cards = faction[targetArray] || [];
-
-      const updatedFaction = {
-        ...faction,
-        [targetArray]: cards.map((c) => (c.id === updatedCard.id ? updatedCard : c)),
-      };
-      const updatedDatasource = {
-        ...activeDatasource,
-        data: [updatedFaction, ...activeDatasource.data.slice(1)],
-      };
+      let touched = false;
+      const updatedData = activeDatasource.data.map((faction) => {
+        const cards = faction[targetArray] || [];
+        if (!cards.some((c) => c.id === updatedCard.id)) return faction;
+        touched = true;
+        return {
+          ...faction,
+          [targetArray]: cards.map((c) => (c.id === updatedCard.id ? updatedCard : c)),
+        };
+      });
+      if (!touched) return;
+      const updatedDatasource = { ...activeDatasource, data: updatedData };
       await updateDatasource(updatedDatasource);
       // Keep selected card in sync
       if (selectedItem?.type === "card" && selectedItem?.data?.id === updatedCard.id) {
@@ -237,23 +230,21 @@ export function useDatasourceEditorState() {
   );
 
   /**
-   * Delete a card by ID from the first faction.
+   * Delete a card by ID — searches every faction for the matching card.
    */
   const deleteCard = useCallback(
     async (cardId, cardType) => {
-      if (!activeDatasource?.data?.[0]) return;
-      const faction = activeDatasource.data[0];
+      if (!activeDatasource?.data?.length) return;
       const targetArray = getTargetArray(cardType);
-      const cards = faction[targetArray] || [];
-
-      const updatedFaction = {
-        ...faction,
-        [targetArray]: cards.filter((c) => c.id !== cardId),
-      };
-      const updatedDatasource = {
-        ...activeDatasource,
-        data: [updatedFaction, ...activeDatasource.data.slice(1)],
-      };
+      let touched = false;
+      const updatedData = activeDatasource.data.map((faction) => {
+        const cards = faction[targetArray] || [];
+        if (!cards.some((c) => c.id === cardId)) return faction;
+        touched = true;
+        return { ...faction, [targetArray]: cards.filter((c) => c.id !== cardId) };
+      });
+      if (!touched) return;
+      const updatedDatasource = { ...activeDatasource, data: updatedData };
       await updateDatasource(updatedDatasource);
       // Clear selection if deleted card was selected
       if (selectedItem?.type === "card" && selectedItem?.data?.id === cardId) {
