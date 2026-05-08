@@ -483,6 +483,172 @@ describe("useDatasourceEditorState", () => {
       ];
     });
 
+    it("updateCard updates the card in place when faction_id is unchanged", async () => {
+      const twoFactionDs = {
+        ...fullDatasource,
+        data: [
+          {
+            id: "faction-1",
+            name: "Faction One",
+            datasheets: [{ id: "card-1", name: "Unit A", cardType: "infantry", faction_id: "faction-1" }],
+          },
+          {
+            id: "faction-2",
+            name: "Faction Two",
+            datasheets: [],
+          },
+        ],
+      };
+      mockGetCustomDatasourceData.mockResolvedValueOnce(twoFactionDs);
+
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      await act(async () => {
+        await result.current.updateCard({
+          id: "card-1",
+          name: "Unit A Renamed",
+          cardType: "infantry",
+          faction_id: "faction-1",
+        });
+      });
+
+      const data = result.current.activeDatasource.data;
+      expect(data[0].datasheets).toHaveLength(1);
+      expect(data[0].datasheets[0].name).toBe("Unit A Renamed");
+      expect(data[1].datasheets).toHaveLength(0);
+    });
+
+    it("updateCard moves the card to the new faction when faction_id changes", async () => {
+      const twoFactionDs = {
+        ...fullDatasource,
+        data: [
+          {
+            id: "faction-1",
+            name: "Faction One",
+            datasheets: [
+              { id: "card-1", name: "Unit A", cardType: "infantry", faction_id: "faction-1" },
+              { id: "card-2", name: "Unit B", cardType: "infantry", faction_id: "faction-1" },
+            ],
+          },
+          {
+            id: "faction-2",
+            name: "Faction Two",
+            datasheets: [{ id: "card-3", name: "Unit C", cardType: "infantry", faction_id: "faction-2" }],
+          },
+        ],
+      };
+      mockGetCustomDatasourceData.mockResolvedValueOnce(twoFactionDs);
+
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      await act(async () => {
+        await result.current.updateCard({
+          id: "card-1",
+          name: "Unit A",
+          cardType: "infantry",
+          faction_id: "faction-2",
+        });
+      });
+
+      const data = result.current.activeDatasource.data;
+      // Source faction no longer contains card-1
+      expect(data[0].datasheets.map((c) => c.id)).toEqual(["card-2"]);
+      // Target faction contains card-1 with the new faction_id
+      expect(data[1].datasheets.map((c) => c.id)).toEqual(["card-3", "card-1"]);
+      const moved = data[1].datasheets.find((c) => c.id === "card-1");
+      expect(moved.faction_id).toBe("faction-2");
+    });
+
+    it("updateCard keeps card in source faction when target faction_id does not exist", async () => {
+      const twoFactionDs = {
+        ...fullDatasource,
+        data: [
+          {
+            id: "faction-1",
+            name: "Faction One",
+            datasheets: [{ id: "card-1", name: "Unit A", cardType: "infantry", faction_id: "faction-1" }],
+          },
+          {
+            id: "faction-2",
+            name: "Faction Two",
+            datasheets: [],
+          },
+        ],
+      };
+      mockGetCustomDatasourceData.mockResolvedValueOnce(twoFactionDs);
+
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      await act(async () => {
+        await result.current.updateCard({
+          id: "card-1",
+          name: "Unit A",
+          cardType: "infantry",
+          faction_id: "ghost-faction",
+        });
+      });
+
+      const data = result.current.activeDatasource.data;
+      // Card stays in source faction; the unknown faction_id is preserved on the card
+      expect(data[0].datasheets).toHaveLength(1);
+      expect(data[0].datasheets[0].faction_id).toBe("ghost-faction");
+      expect(data[1].datasheets).toHaveLength(0);
+    });
+
+    it("updateCard keeps the moved card selected", async () => {
+      const twoFactionDs = {
+        ...fullDatasource,
+        data: [
+          {
+            id: "faction-1",
+            name: "Faction One",
+            datasheets: [{ id: "card-1", name: "Unit A", cardType: "infantry", faction_id: "faction-1" }],
+          },
+          {
+            id: "faction-2",
+            name: "Faction Two",
+            datasheets: [],
+          },
+        ],
+      };
+      mockGetCustomDatasourceData.mockResolvedValueOnce(twoFactionDs);
+
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      act(() => {
+        result.current.selectCard(twoFactionDs.data[0].datasheets[0]);
+      });
+
+      await act(async () => {
+        await result.current.updateCard({
+          id: "card-1",
+          name: "Unit A",
+          cardType: "infantry",
+          faction_id: "faction-2",
+        });
+      });
+
+      expect(result.current.selectedItem.type).toBe("card");
+      expect(result.current.selectedItem.data.id).toBe("card-1");
+      expect(result.current.selectedItem.data.faction_id).toBe("faction-2");
+    });
+
     it("clears selection when deleted card was selected", async () => {
       const { result } = renderHook(() => useDatasourceEditorState());
 
