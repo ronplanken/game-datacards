@@ -17,6 +17,14 @@ const GAME_SYSTEMS = [
     colorLight: "rgba(201, 162, 39, 0.12)",
     colorBorder: "rgba(201, 162, 39, 0.5)",
   },
+  {
+    id: "starcraft-tmg",
+    name: "Starcraft 2 TMG",
+    edition: "Tabletop Miniatures Game",
+    color: "#7c3aed",
+    colorLight: "rgba(124, 58, 237, 0.15)",
+    colorBorder: "rgba(124, 58, 237, 0.5)",
+  },
 ];
 
 export const StepGameSystem = ({ selectedSystem, onSelect }) => {
