@@ -198,12 +198,7 @@ export const resolveMobileConfig = (datasourceId, dataSource) => {
   return buildCustomConfig(dataSource);
 };
 
-/**
- * Systems shown on the game system selector screen.
- * These are the primary systems with full support.
- */
-export const SELECTOR_SYSTEMS = [
-  { id: "40k-10e", name: "Warhammer 40,000", meta: "10th Edition", cssClass: "gss-option-40k" },
-  { id: "aos", name: "Age of Sigmar", meta: "4th Edition", cssClass: "gss-option-aos" },
-  { id: "starcraft-tmg", name: "Starcraft", meta: "TMG", cssClass: "gss-option-starcraft" },
-];
+// Systems shown on the mobile game system selector screen. Sourced from the
+// canonical mobile-systems registry so the welcome wizard and the selector
+// stay in sync — see ./mobileGameSystems.js.
+export { PRIMARY_MOBILE_SYSTEMS as SELECTOR_SYSTEMS } from "./mobileGameSystems";

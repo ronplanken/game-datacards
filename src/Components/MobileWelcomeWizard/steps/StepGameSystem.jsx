@@ -1,23 +1,13 @@
 import { Database, AlertTriangle, Circle, CheckCircle2 } from "lucide-react";
+import { PRIMARY_MOBILE_SYSTEMS } from "../../Viewer/mobileGameSystems";
 
-const GAME_SYSTEMS = [
-  {
-    id: "40k-10e",
-    name: "Warhammer 40,000",
-    edition: "10th Edition",
-    color: "#8b2020",
-    colorLight: "rgba(139, 32, 32, 0.15)",
-    colorBorder: "rgba(139, 32, 32, 0.5)",
-  },
-  {
-    id: "aos",
-    name: "Age of Sigmar",
-    edition: "4th Edition",
-    color: "#c9a227",
-    colorLight: "rgba(201, 162, 39, 0.12)",
-    colorBorder: "rgba(201, 162, 39, 0.5)",
-  },
-];
+const hexToRgba = (hex, alpha) => {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 export const StepGameSystem = ({ selectedSystem, onSelect }) => {
   return (
@@ -33,8 +23,10 @@ export const StepGameSystem = ({ selectedSystem, onSelect }) => {
       </header>
 
       <div className="mww-gamesystem-options">
-        {GAME_SYSTEMS.map((system, index) => {
+        {PRIMARY_MOBILE_SYSTEMS.map((system, index) => {
           const isSelected = selectedSystem === system.id;
+          const name = system.longName ?? system.name;
+          const edition = system.longMeta ?? system.meta;
           return (
             <button
               key={system.id}
@@ -43,14 +35,14 @@ export const StepGameSystem = ({ selectedSystem, onSelect }) => {
               type="button"
               style={{
                 "--system-color": system.color,
-                "--system-color-light": system.colorLight,
-                "--system-color-border": system.colorBorder,
+                "--system-color-light": hexToRgba(system.color, 0.15),
+                "--system-color-border": hexToRgba(system.color, 0.5),
                 animationDelay: `${0.1 + index * 0.05}s`,
               }}>
               <div className="mww-gamesystem-card-marker" />
               <div className="mww-gamesystem-card-content">
-                <span className="mww-gamesystem-card-name">{system.name}</span>
-                <span className="mww-gamesystem-card-edition">{system.edition}</span>
+                <span className="mww-gamesystem-card-name">{name}</span>
+                <span className="mww-gamesystem-card-edition">{edition}</span>
               </div>
               <div className="mww-gamesystem-card-check">{isSelected ? <CheckCircle2 /> : <Circle />}</div>
             </button>
