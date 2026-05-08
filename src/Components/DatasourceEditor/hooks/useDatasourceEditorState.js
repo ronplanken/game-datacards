@@ -208,6 +208,8 @@ export function useDatasourceEditorState() {
    * target faction's collection array. This is what makes the card editor's
    * Faction dropdown actually re-faction a card (not just re-skin its colour
    * theme).
+  /**
+   * Update a card by ID — searches every faction for the matching card.
    */
   const updateCard = useCallback(
     async (updatedCard) => {
