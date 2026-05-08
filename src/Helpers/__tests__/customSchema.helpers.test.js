@@ -378,10 +378,13 @@ describe("customSchema.helpers - createStarcraftTcgPreset", () => {
     expect(schema.cardTypes[0].key).toBe("unit");
   });
 
-  it("defines the five Starcraft stat fields", () => {
+  it("defines the Starcraft stat fields including the optional Shield", () => {
     const unit = createStarcraftTcgPreset().cardTypes[0];
     const keys = unit.schema.stats.fields.map((f) => f.key);
-    expect(keys).toEqual(["speed", "evade", "armour", "hitPoints", "size"]);
+    expect(keys).toEqual(["speed", "evade", "armour", "hitPoints", "shield", "size"]);
+    const shield = unit.schema.stats.fields.find((f) => f.key === "shield");
+    expect(shield.special).toBe(true);
+    expect(shield.hideWhenEmpty).toBe(true);
   });
 
   it("defines Assault and Combat weapon tables with the full column set", () => {
