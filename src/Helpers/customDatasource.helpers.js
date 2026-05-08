@@ -438,8 +438,7 @@ export const exportDatasourceSchema = (datasource) => {
  * Strips internal storage fields (sourceType, sourceUrl, etc.) but keeps the
  * `id`, full `schema`, and the complete `data` array (factions with all their
  * datasheets, stratagems, enhancements, rules, etc.). The exported shape
- * matches the in-repo sample format (e.g. src/data/starcraft-tmg.json), so it
- * can be reimported as-is.
+ * matches the standard datasource export format, so it can be reimported as-is.
  * @param {Object} datasource - The full datasource object from storage
  * @returns {Object} - Clean datasource export object including all card data
  */

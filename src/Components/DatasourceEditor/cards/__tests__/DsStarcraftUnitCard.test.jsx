@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { DsStarcraftUnitCard } from "../DsStarcraftUnitCard";
 import { createStarcraftTcgPreset } from "../../../../Helpers/customSchema.helpers";
-import sampleDatasource from "../../../../data/starcraft-tmg.json";
+import sampleDatasource from "./fixtures/starcraft-tmg.json";
 
 const cardTypeDef = createStarcraftTcgPreset().cardTypes[0];
 
