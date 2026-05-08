@@ -153,4 +153,82 @@ describe("MetadataSchemaEditor", () => {
     expect(options[1].value).toBe("per-unit");
     expect(options[1].textContent).toBe("Per Unit");
   });
+
+  describe("custom labels", () => {
+    it("shows keywords label input when hasKeywords is true", () => {
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+      expect(screen.getByLabelText("Keywords label")).toBeInTheDocument();
+    });
+
+    it("hides keywords label input when hasKeywords is false", () => {
+      const schema = { metadata: { hasKeywords: false, hasFactionKeywords: false } };
+      render(<MetadataSchemaEditor schema={schema} onChange={vi.fn()} />);
+      expect(screen.queryByLabelText("Keywords label")).not.toBeInTheDocument();
+    });
+
+    it("shows faction keywords label input only when hasFactionKeywords is true", () => {
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+      expect(screen.getByLabelText("Faction keywords label")).toBeInTheDocument();
+    });
+
+    it("hides faction keywords label input when hasFactionKeywords is false", () => {
+      const schema = { metadata: { hasKeywords: false, hasFactionKeywords: false } };
+      render(<MetadataSchemaEditor schema={schema} onChange={vi.fn()} />);
+      expect(screen.queryByLabelText("Faction keywords label")).not.toBeInTheDocument();
+    });
+
+    it("renders keywordsLabel value when set", () => {
+      const schema = { metadata: { hasKeywords: true, hasFactionKeywords: true, keywordsLabel: "Tags" } };
+      render(<MetadataSchemaEditor schema={schema} onChange={vi.fn()} />);
+      expect(screen.getByLabelText("Keywords label").value).toBe("Tags");
+    });
+
+    it("renders factionKeywordsLabel value when set", () => {
+      const schema = {
+        metadata: { hasKeywords: true, hasFactionKeywords: true, factionKeywordsLabel: "Allegiance" },
+      };
+      render(<MetadataSchemaEditor schema={schema} onChange={vi.fn()} />);
+      expect(screen.getByLabelText("Faction keywords label").value).toBe("Allegiance");
+    });
+
+    it("uses default placeholders when no custom label is set", () => {
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+      expect(screen.getByLabelText("Keywords label").placeholder).toBe("Keywords");
+      expect(screen.getByLabelText("Faction keywords label").placeholder).toBe("Faction");
+    });
+
+    it("updates keywordsLabel on text change", () => {
+      const onChange = vi.fn();
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={onChange} />);
+      fireEvent.change(screen.getByLabelText("Keywords label"), { target: { value: "Tags" } });
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({ keywordsLabel: "Tags" }),
+        }),
+      );
+    });
+
+    it("clears keywordsLabel back to undefined when input is emptied", () => {
+      const schema = { metadata: { hasKeywords: true, hasFactionKeywords: true, keywordsLabel: "Tags" } };
+      const onChange = vi.fn();
+      render(<MetadataSchemaEditor schema={schema} onChange={onChange} />);
+      fireEvent.change(screen.getByLabelText("Keywords label"), { target: { value: "" } });
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({ keywordsLabel: undefined }),
+        }),
+      );
+    });
+
+    it("updates factionKeywordsLabel on text change", () => {
+      const onChange = vi.fn();
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={onChange} />);
+      fireEvent.change(screen.getByLabelText("Faction keywords label"), { target: { value: "Allegiance" } });
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({ factionKeywordsLabel: "Allegiance" }),
+        }),
+      );
+    });
+  });
 });

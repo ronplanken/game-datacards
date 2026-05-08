@@ -16,6 +16,7 @@ import v352Config from "./v3.5.2";
 import v360Config from "./v3.6.0";
 import v370Config from "./v3.7.0";
 import v371Config from "./v3.7.1";
+import v372Config from "./v3.7.2";
 import v380Config from "./v3.8.0";
 
 /**
@@ -45,6 +46,7 @@ export const VERSION_REGISTRY = [
   v360Config,
   v370Config,
   v371Config,
+  v372Config,
   v380Config,
 ]
   .filter((config) => config && config.version)

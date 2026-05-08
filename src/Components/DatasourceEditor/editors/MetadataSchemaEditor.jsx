@@ -47,6 +47,21 @@ export const MetadataSchemaEditor = ({ schema, onChange, baseSystem }) => {
         value={!!metadata.hasKeywords}
         onChange={(val) => updateMetadata({ hasKeywords: val })}
       />
+      {metadata.hasKeywords && (
+        <div className="props-tree-children">
+          <div className="props-tree-child">
+            <CompactInput
+              label={<IconTypography size={10} stroke={1.5} />}
+              ariaLabel="Keywords label"
+              tooltip="Label shown on the card (defaults to Keywords)"
+              type="text"
+              value={metadata.keywordsLabel || ""}
+              onChange={(val) => updateMetadata({ keywordsLabel: val || undefined })}
+              placeholder="Keywords"
+            />
+          </div>
+        </div>
+      )}
       <CompactInput
         label={<IconUsers size={10} stroke={1.5} />}
         ariaLabel="Faction keywords"
@@ -55,6 +70,21 @@ export const MetadataSchemaEditor = ({ schema, onChange, baseSystem }) => {
         value={!!metadata.hasFactionKeywords}
         onChange={(val) => updateMetadata({ hasFactionKeywords: val })}
       />
+      {metadata.hasFactionKeywords && (
+        <div className="props-tree-children">
+          <div className="props-tree-child">
+            <CompactInput
+              label={<IconTypography size={10} stroke={1.5} />}
+              ariaLabel="Faction keywords label"
+              tooltip="Label shown on the card (defaults to Faction)"
+              type="text"
+              value={metadata.factionKeywordsLabel || ""}
+              onChange={(val) => updateMetadata({ factionKeywordsLabel: val || undefined })}
+              placeholder="Faction"
+            />
+          </div>
+        </div>
+      )}
       <CompactInput
         label={<IconSword size={10} stroke={1.5} />}
         ariaLabel="Combat role"

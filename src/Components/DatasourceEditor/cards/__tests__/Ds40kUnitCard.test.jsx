@@ -104,7 +104,7 @@ describe("Ds40kUnitCard", () => {
     expect(screen.getByText("keywords")).toBeTruthy();
   });
 
-  it("renders faction keywords when schema enables them", () => {
+  it("renders faction keywords from legacy `factions` field", () => {
     const card = {
       name: "Unit",
       stats: [],
@@ -112,8 +112,44 @@ describe("Ds40kUnitCard", () => {
       factions: ["Adeptus Astartes"],
     };
     render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
-    expect(screen.getByText("faction keywords")).toBeTruthy();
+    expect(screen.getByText("faction")).toBeTruthy();
     expect(screen.getByText("Adeptus Astartes")).toBeTruthy();
+  });
+
+  it("renders faction keywords from custom-datasource `factionKeywords` field", () => {
+    const card = {
+      name: "Unit",
+      stats: [],
+      abilities: [],
+      factionKeywords: ["Blessed Sisters 3.5.3"],
+    };
+    render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
+    expect(screen.getByText("Blessed Sisters 3.5.3")).toBeTruthy();
+  });
+
+  it("uses configured keywords/factionKeywords labels from schema metadata", () => {
+    const customSchema = {
+      ...cardTypeDef,
+      schema: {
+        ...cardTypeDef.schema,
+        metadata: {
+          hasKeywords: true,
+          hasFactionKeywords: true,
+          keywordsLabel: "Tags",
+          factionKeywordsLabel: "Allegiance",
+        },
+      },
+    };
+    const card = {
+      name: "Unit",
+      stats: [],
+      abilities: [],
+      keywords: ["Infantry"],
+      factionKeywords: ["Imperium"],
+    };
+    render(<Ds40kUnitCard card={card} cardTypeDef={customSchema} cardStyle={{}} />);
+    expect(screen.getByText("Tags")).toBeTruthy();
+    expect(screen.getByText("Allegiance")).toBeTruthy();
   });
 
   it("has data-testid for testing", () => {

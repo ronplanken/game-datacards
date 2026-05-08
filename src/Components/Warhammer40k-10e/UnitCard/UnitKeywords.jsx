@@ -1,7 +1,7 @@
-export const UnitKeywords = ({ keywords }) => {
+export const UnitKeywords = ({ keywords, label }) => {
   return (
     <div className="keywords">
-      <span className="title">keywords</span>
+      <span className="title">{label || "keywords"}</span>
       <span className="value">
         {keywords?.map((keyword, i, { length }) => {
           if (keyword?.includes(":")) {

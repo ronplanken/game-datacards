@@ -222,8 +222,8 @@ describe("SchemaTreeView", () => {
     it("renders metadata section with flags", () => {
       render(<SchemaTreeView selectedItem={selectedItem} activeDatasource={mockDatasource} />);
       expect(screen.getByText("Card Properties")).toBeInTheDocument();
-      expect(screen.getByText("Keywords enabled")).toBeInTheDocument();
-      expect(screen.getByText("Faction keywords enabled")).toBeInTheDocument();
+      expect(screen.getByText("Keywords (Keywords)")).toBeInTheDocument();
+      expect(screen.getByText("Faction keywords (Faction)")).toBeInTheDocument();
       expect(screen.getByText("Points (per-model)")).toBeInTheDocument();
     });
 

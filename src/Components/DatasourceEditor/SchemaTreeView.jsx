@@ -279,8 +279,12 @@ const UnitSchemaTree = ({ schema }) => {
       {/* Metadata section */}
       {schema.metadata && (
         <TreeNode label="Card Properties" icon={Settings} defaultOpen={true} depth={0}>
-          {schema.metadata.hasKeywords && <FlagRow label="Keywords enabled" depth={1} />}
-          {schema.metadata.hasFactionKeywords && <FlagRow label="Faction keywords enabled" depth={1} />}
+          {schema.metadata.hasKeywords && (
+            <FlagRow label={`Keywords (${schema.metadata.keywordsLabel || "Keywords"})`} depth={1} />
+          )}
+          {schema.metadata.hasFactionKeywords && (
+            <FlagRow label={`Faction keywords (${schema.metadata.factionKeywordsLabel || "Faction"})`} depth={1} />
+          )}
           {schema.metadata.hasCombatRole && <FlagRow label="Combat Role badge enabled" depth={1} />}
           {schema.metadata.hasArmySlot && <FlagRow label="Army Slot badge enabled" depth={1} />}
           {schema.metadata.hasPoints && (

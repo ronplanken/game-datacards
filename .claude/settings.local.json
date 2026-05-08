@@ -81,6 +81,9 @@
       "Read(//private/tmp/claude-design/**)",
       "Bash(mkdir -p extracted)",
       "Bash(tar -xf design -C extracted)"
+    ],
+    "additionalDirectories": [
+      "/Users/ronplanken/Documents/Warhammer/gdc-premium"
     ]
   }
 }
