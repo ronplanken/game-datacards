@@ -254,7 +254,6 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
         <StarcraftHeader
           card={card}
           statFields={statFields}
-          factionId={card.faction_id || faction?.id}
           showSupply={card.showPoints !== false}
           supplyCaption={schema.metadata?.pointsLabel}
         />
