@@ -246,11 +246,16 @@ export function useDatasourceEditorState() {
       });
 
       const updatedDatasource = { ...activeDatasource, data: updatedData };
-      await updateDatasource(updatedDatasource);
-      // Keep selected card in sync
+      // Keep selected card in sync synchronously, before any await. Awaiting
+      // here would split this state update into a separate React batch and
+      // some controlled editors (notably @uiw/react-md-editor) will see a
+      // stale `value` prop in the interim render, snap their internal state
+      // back to the old value, then re-sync and reset the textarea — which
+      // jumps the caret to the end after the first keystroke.
       if (selectedItem?.type === "card" && selectedItem?.data?.id === updatedCard.id) {
         setSelectedItem({ type: "card", data: updatedCard });
       }
+      await updateDatasource(updatedDatasource);
     },
     [activeDatasource, updateDatasource, selectedItem],
   );
