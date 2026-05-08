@@ -27,9 +27,9 @@ const BASE_SYSTEMS = [
   {
     id: "starcraft-tmg",
     title: "Starcraft TMG",
-    subtitle: "Datasheet format",
+    subtitle: "Single-sided format",
     description:
-      "Speed/Evade/Armour/Hit Points/Size stats, Movement/Assault/Combat phase sections, and PASSIVE/ACTIVE/REACTION abilities with CP and BM cost chips.",
+      "Phase-based weapons, abilities, and stat profiles following the older single-sided Starcraft TMG card format.",
     icon: Rocket,
     color: "#7c3aed",
   },
