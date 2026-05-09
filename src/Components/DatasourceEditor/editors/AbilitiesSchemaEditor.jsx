@@ -197,7 +197,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
                   <CompactInput
                     label={<IconCoin size={10} stroke={1.5} />}
                     ariaLabel="Cost chip"
-                    tooltip="Show CP / BM cost chip"
+                    tooltip="Show CP / BM / VP / PE cost chip"
                     type="toggle"
                     value={category.hasCost !== false}
                     onChange={(val) => updateCategory(index, "hasCost", val)}

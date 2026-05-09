@@ -10,6 +10,7 @@ import {
   IconTag,
   IconShield,
   IconSword,
+  IconResize,
 } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
@@ -101,6 +102,16 @@ export const MetadataSchemaEditor = ({ schema, onChange, baseSystem }) => {
         value={!!metadata.hasArmySlot}
         onChange={(val) => updateMetadata({ hasArmySlot: val })}
       />
+      {baseSystem === "starcraft-tmg" && (
+        <CompactInput
+          label={<IconResize size={10} stroke={1.5} />}
+          ariaLabel="Auto-resize"
+          tooltip="Allow per-card toggle to auto-resize the card height to fit its content"
+          type="toggle"
+          value={!!metadata.hasAutoResize}
+          onChange={(val) => updateMetadata({ hasAutoResize: val })}
+        />
+      )}
       <CompactInput
         label={<IconCoin size={10} stroke={1.5} />}
         ariaLabel="Points cost"

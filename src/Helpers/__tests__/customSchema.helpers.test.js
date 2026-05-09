@@ -4,6 +4,7 @@ import {
   VALID_FIELD_TYPES,
   VALID_BASE_SYSTEMS,
   VALID_ABILITY_FORMATS,
+  VALID_ABILITY_COST_UNITS,
   VALID_POINTS_FORMATS,
   VALID_SECTION_FORMATS,
   SCHEMA_VERSION,
@@ -42,6 +43,10 @@ describe("customSchema.helpers - constants", () => {
 
   it("defines valid points formats", () => {
     expect(VALID_POINTS_FORMATS).toEqual(["per-model", "per-unit"]);
+  });
+
+  it("defines valid ability cost units (Starcraft TMG)", () => {
+    expect(VALID_ABILITY_COST_UNITS).toEqual(["CP", "BM", "VP", "PE"]);
   });
 
   it("defines schema version", () => {
@@ -415,6 +420,11 @@ describe("customSchema.helpers - createStarcraftTmgPreset", () => {
     expect(unit.schema.sections.sections).toEqual([]);
     expect(unit.schema.metadata.hasKeywords).toBe(true);
     expect(unit.schema.metadata.hasFactionKeywords).toBe(true);
+  });
+
+  it("opts into per-card auto-resize via metadata.hasAutoResize", () => {
+    const unit = createStarcraftTmgPreset().cardTypes[0];
+    expect(unit.schema.metadata.hasAutoResize).toBe(true);
   });
 
   it("passes validateSchema", () => {

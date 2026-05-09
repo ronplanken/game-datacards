@@ -6,7 +6,7 @@ const renderCostChips = (costs) => {
   return costs.map((cost, idx) => {
     if (!cost || cost.amount === "" || cost.amount === null || cost.amount === undefined) return null;
     const unit = (cost.unit || "").toUpperCase();
-    const chipClass = ["CP", "BM"].includes(unit) ? `sc-chip-${unit}` : "sc-chip-generic";
+    const chipClass = ["CP", "BM", "VP", "PE"].includes(unit) ? `sc-chip-${unit}` : "sc-chip-generic";
     return (
       <span key={`${idx}-${unit}`} className={`sc-chip ${chipClass}`}>
         {cost.amount} {unit}

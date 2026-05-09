@@ -29,6 +29,8 @@
   --sc-pill-reaction: #f3a623;
   --sc-chip-cp: #2eb24a;
   --sc-chip-bm: #2c79d6;
+  --sc-chip-vp: #a855f7;
+  --sc-chip-pe: #f5b400;
   --sc-chip-generic: #6b7280;
 
   font-family: "Inter", system-ui, sans-serif;
@@ -56,6 +58,27 @@
 
     @media print {
       transform-origin: 0 0;
+    }
+
+    // Auto-resize card height — opt-in flag (`card.styling.autoHeight`).
+    // The header stays absolute (top-anchored). The image rail anchors
+    // `bottom: 0` so it stretches with the card. The body switches to
+    // `position: relative` and uses margins to preserve the desktop offsets,
+    // letting the card grow vertically with its content while still keeping
+    // the standard 714px frame as a minimum.
+    &.auto-height {
+      height: auto;
+      min-height: 714px;
+      overflow: visible;
+
+      .sc-body {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        margin: 116px 14px 14px 260px;
+      }
     }
   }
 
@@ -633,6 +656,13 @@
     }
     &.sc-chip-BM {
       background: var(--sc-chip-bm);
+    }
+    &.sc-chip-VP {
+      background: var(--sc-chip-vp);
+    }
+    &.sc-chip-PE {
+      background: var(--sc-chip-pe);
+      color: #1a1a2e;
     }
     &.sc-chip-generic {
       background: var(--sc-chip-generic);
