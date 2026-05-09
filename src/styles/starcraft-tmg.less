@@ -65,8 +65,11 @@
     // `bottom: 0` so it stretches with the card. The body switches to
     // `position: relative` and uses margins to preserve the desktop offsets,
     // letting the card grow vertically with its content while still keeping
-    // the standard 714px frame as a minimum.
+    // the standard 714px frame as a minimum. `display: flow-root` establishes
+    // a new block formatting context so the body's `margin-top` does not
+    // collapse into the card and slide the content under the header.
     &.auto-height {
+      display: flow-root;
       height: auto;
       min-height: 714px;
       overflow: visible;
