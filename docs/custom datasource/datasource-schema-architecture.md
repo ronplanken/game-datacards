@@ -273,7 +273,7 @@ When `baseSystem` is `"starcraft-tmg"`, ability categories gain these additional
 | Property         | Type    | Description                                                                                                   |
 |------------------|---------|---------------------------------------------------------------------------------------------------------------|
 | `hasType`        | boolean | Render a `PASSIVE` / `ACTIVE` / `REACTION` pill from `ability.type`.                                          |
-| `hasCost`        | boolean | Render cost chips from `ability.costs = [{ amount, unit }]`. Known units: `CP` (blue), `BM` (purple).         |
+| `hasCost`        | boolean | Render cost chips from `ability.costs = [{ amount, unit }]`. Known units: `CP` (green), `BM` (blue), `VP` (purple), `PE` (Protoss gold). |
 | `hasTriggerIcon` | boolean | Render an up-arrow glyph before the ability name when `ability.triggered === true`.                          |
 | `phaseStyle`     | string  | Phase icon in the section heading: `"movement"`, `"assault"`, `"combat"`, or `"special"`.                    |
 
@@ -299,6 +299,7 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `pointsFormat`     | string  | `"per-model"` or `"per-unit"`. Only applies when `hasPoints` is true.  |
 | `bannerType`       | string  | Controls the header banner text. Only applies when `baseSystem` is not `"40k-10e"`. |
 | `bannerCustomText` | string  | Custom banner text. Only applies when `bannerType` is `"custom"`.       |
+| `hasAutoResize`    | boolean | Starcraft TMG only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
 
 #### Banner type values (AoS / non-40k only)
 

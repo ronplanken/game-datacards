@@ -231,4 +231,27 @@ describe("MetadataSchemaEditor", () => {
       );
     });
   });
+
+  describe("auto-resize toggle (Starcraft TMG only)", () => {
+    it("hides the auto-resize toggle when baseSystem is not starcraft-tmg", () => {
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} baseSystem="40k-10e" />);
+      expect(screen.queryByLabelText("Auto-resize")).not.toBeInTheDocument();
+    });
+
+    it("shows the auto-resize toggle when baseSystem is starcraft-tmg", () => {
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} baseSystem="starcraft-tmg" />);
+      expect(screen.getByLabelText("Auto-resize")).toBeInTheDocument();
+    });
+
+    it("toggles hasAutoResize on checkbox change", () => {
+      const onChange = vi.fn();
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={onChange} baseSystem="starcraft-tmg" />);
+      fireEvent.click(screen.getByLabelText("Auto-resize"));
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({ hasAutoResize: true }),
+        }),
+      );
+    });
+  });
 });

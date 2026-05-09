@@ -242,7 +242,7 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
 
   return (
     <div className={`data-starcraft${isMobile ? " viewer" : ""}`} data-testid="ds-starcraft-unit" style={mergedStyle}>
-      <div className="ds-starcraft-card" data-name={card.name}>
+      <div className={`ds-starcraft-card${card.styling?.autoHeight ? " auto-height" : ""}`} data-name={card.name}>
         <div className="sc-bg-texture" aria-hidden="true" />
 
         {isMobile && onBack && (

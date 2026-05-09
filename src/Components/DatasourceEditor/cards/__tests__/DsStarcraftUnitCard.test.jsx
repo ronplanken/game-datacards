@@ -223,6 +223,21 @@ describe("DsStarcraftUnitCard", () => {
     expect(mobileTags.querySelector(".sc-mobile-faction-pill")).toBeTruthy();
   });
 
+  it("does not apply auto-height by default", () => {
+    const { container } = render(
+      <DsStarcraftUnitCard card={roach} cardTypeDef={cardTypeDef} cardStyle={{}} faction={zergFaction} />,
+    );
+    expect(container.querySelector(".ds-starcraft-card.auto-height")).toBeNull();
+  });
+
+  it("applies auto-height class when card.styling.autoHeight is true", () => {
+    const cardWithAutoHeight = { ...roach, styling: { autoHeight: true } };
+    const { container } = render(
+      <DsStarcraftUnitCard card={cardWithAutoHeight} cardTypeDef={cardTypeDef} cardStyle={{}} faction={zergFaction} />,
+    );
+    expect(container.querySelector(".ds-starcraft-card.auto-height")).toBeTruthy();
+  });
+
   it("accepts native abilities format (object keyed by category)", () => {
     const cardWithNative = {
       ...roach,

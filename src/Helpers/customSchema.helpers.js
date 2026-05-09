@@ -45,7 +45,7 @@ export const VALID_PROFILE_RELATIONS = ["equal", "parent-child"];
 export const VALID_ABILITY_TYPES = ["PASSIVE", "ACTIVE", "REACTION"];
 
 // Valid ability cost units (Starcraft TMG chip units)
-export const VALID_ABILITY_COST_UNITS = ["CP", "BM", "VP"];
+export const VALID_ABILITY_COST_UNITS = ["CP", "BM", "VP", "PE"];
 
 // Valid points formats
 export const VALID_POINTS_FORMATS = ["per-model", "per-unit"];
@@ -164,6 +164,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {string} [factionKeywordsLabel] - Display label for the faction keywords bar (defaults to "Faction")
  * @property {boolean} hasPoints - Whether cards have points costs
  * @property {PointsFormat} pointsFormat - Points display format
+ * @property {boolean} [hasAutoResize] - Whether cards can opt into auto-resizing height to fit content (Starcraft TMG)
  */
 
 /**
@@ -1340,6 +1341,7 @@ export const createStarcraftTmgPreset = () => ({
           pointsLabel: "Models / Supply",
           hasCombatRole: true,
           hasArmySlot: true,
+          hasAutoResize: true,
         },
       },
     },
