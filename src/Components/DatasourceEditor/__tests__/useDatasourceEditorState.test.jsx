@@ -649,6 +649,45 @@ describe("useDatasourceEditorState", () => {
       expect(result.current.selectedItem.data.faction_id).toBe("faction-2");
     });
 
+    it("updateCard updates selectedItem synchronously, before persistence completes", async () => {
+      // Regression: when this hook awaited persistence before syncing
+      // selectedItem, the markdown editor used in the card editor saw a stale
+      // value during the interim render and snapped its caret to the end of
+      // the textarea after the first keystroke.
+      const { result } = renderHook(() => useDatasourceEditorState());
+
+      await act(async () => {
+        await result.current.openDatasource({ id: "custom-1" });
+      });
+
+      act(() => {
+        result.current.selectCard(fullDatasource.data[0].datasheets[0]);
+      });
+
+      expect(result.current.selectedItem.data.name).toBe("Test Unit");
+
+      // Make persistence hang so we can inspect state between the sync
+      // updates and the awaited persistence.
+      let resolvePersist;
+      mockUpdateDatasourceSyncState.mockImplementationOnce(() => new Promise((resolve) => (resolvePersist = resolve)));
+
+      const updated = { ...fullDatasource.data[0].datasheets[0], name: "Renamed Unit" };
+      let updatePromise;
+      act(() => {
+        updatePromise = result.current.updateCard(updated);
+      });
+
+      // selectedItem must reflect the new card *before* persistence resolves.
+      expect(result.current.selectedItem).toEqual({ type: "card", data: updated });
+
+      await act(async () => {
+        resolvePersist({ id: "custom-1" });
+        await updatePromise;
+      });
+
+      expect(result.current.selectedItem.data.name).toBe("Renamed Unit");
+    });
+
     it("clears selection when deleted card was selected", async () => {
       const { result } = renderHook(() => useDatasourceEditorState());
 
