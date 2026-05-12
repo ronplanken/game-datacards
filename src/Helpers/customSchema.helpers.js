@@ -164,7 +164,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {string} [factionKeywordsLabel] - Display label for the faction keywords bar (defaults to "Faction")
  * @property {boolean} hasPoints - Whether cards have points costs
  * @property {PointsFormat} pointsFormat - Points display format
- * @property {boolean} [hasAutoResize] - Whether cards can opt into auto-resizing height to fit content (Starcraft TMG)
+ * @property {boolean} [hasAutoResize] - Whether cards can opt into auto-resizing height to fit content (Starcraft TMG, 40k-10e)
  */
 
 /**

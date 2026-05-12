@@ -102,7 +102,7 @@ export const MetadataSchemaEditor = ({ schema, onChange, baseSystem }) => {
         value={!!metadata.hasArmySlot}
         onChange={(val) => updateMetadata({ hasArmySlot: val })}
       />
-      {baseSystem === "starcraft-tmg" && (
+      {(baseSystem === "starcraft-tmg" || baseSystem === "40k-10e") && (
         <CompactInput
           label={<IconResize size={10} stroke={1.5} />}
           ariaLabel="Auto-resize"

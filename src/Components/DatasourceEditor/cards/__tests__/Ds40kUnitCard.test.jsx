@@ -185,4 +185,16 @@ describe("Ds40kUnitCard", () => {
     const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} isMobile />);
     expect(container.querySelector(".unit-card-front-wrapper.ds-unit.viewer")).toBeTruthy();
   });
+
+  it("does not apply auto-height by default", () => {
+    const card = { name: "Unit", stats: [], abilities: [] };
+    const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
+    expect(container.querySelector(".unit.front.auto-height")).toBeNull();
+  });
+
+  it("applies auto-height class when card.styling.autoHeight is true", () => {
+    const card = { name: "Unit", stats: [], abilities: [], styling: { autoHeight: true } };
+    const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
+    expect(container.querySelector(".unit.front.auto-height")).toBeTruthy();
+  });
 });
