@@ -66,10 +66,15 @@ export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
   // Support invulnerable save from both flat and nested abilities format
   const invul = Array.isArray(card.abilities) ? null : card.abilities?.invul;
 
+  const autoHeight = !!card.styling?.autoHeight;
+
   return (
     <div className="data-40k-10e" data-testid="ds-40k-unit">
       <div className={`unit-card-front-wrapper ds-unit${isMobile ? " viewer" : ""}`} style={cardStyle}>
-        <div className="unit front" data-name={card.name} data-fullname={`${card.name} ${card.subname || ""}`}>
+        <div
+          className={`unit front${autoHeight ? " auto-height" : ""}`}
+          data-name={card.name}
+          data-fullname={`${card.name} ${card.subname || ""}`}>
           <div className="header">
             <UnitName
               name={card.name || "Untitled Unit"}

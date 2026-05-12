@@ -232,9 +232,9 @@ describe("MetadataSchemaEditor", () => {
     });
   });
 
-  describe("auto-resize toggle (Starcraft TMG only)", () => {
-    it("hides the auto-resize toggle when baseSystem is not starcraft-tmg", () => {
-      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} baseSystem="40k-10e" />);
+  describe("auto-resize toggle (Starcraft TMG and 40k-10e)", () => {
+    it("hides the auto-resize toggle when baseSystem is not starcraft-tmg or 40k-10e", () => {
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} baseSystem="aos" />);
       expect(screen.queryByLabelText("Auto-resize")).not.toBeInTheDocument();
     });
 
@@ -243,9 +243,25 @@ describe("MetadataSchemaEditor", () => {
       expect(screen.getByLabelText("Auto-resize")).toBeInTheDocument();
     });
 
-    it("toggles hasAutoResize on checkbox change", () => {
+    it("shows the auto-resize toggle when baseSystem is 40k-10e", () => {
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={vi.fn()} baseSystem="40k-10e" />);
+      expect(screen.getByLabelText("Auto-resize")).toBeInTheDocument();
+    });
+
+    it("toggles hasAutoResize on checkbox change (starcraft-tmg)", () => {
       const onChange = vi.fn();
       render(<MetadataSchemaEditor schema={mockSchema} onChange={onChange} baseSystem="starcraft-tmg" />);
+      fireEvent.click(screen.getByLabelText("Auto-resize"));
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({ hasAutoResize: true }),
+        }),
+      );
+    });
+
+    it("toggles hasAutoResize on checkbox change (40k-10e)", () => {
+      const onChange = vi.fn();
+      render(<MetadataSchemaEditor schema={mockSchema} onChange={onChange} baseSystem="40k-10e" />);
       fireEvent.click(screen.getByLabelText("Auto-resize"));
       expect(onChange).toHaveBeenCalledWith(
         expect.objectContaining({

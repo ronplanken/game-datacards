@@ -299,7 +299,7 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `pointsFormat`     | string  | `"per-model"` or `"per-unit"`. Only applies when `hasPoints` is true.  |
 | `bannerType`       | string  | Controls the header banner text. Only applies when `baseSystem` is not `"40k-10e"`. |
 | `bannerCustomText` | string  | Custom banner text. Only applies when `bannerType` is `"custom"`.       |
-| `hasAutoResize`    | boolean | Starcraft TMG only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
+| `hasAutoResize`    | boolean | Starcraft TMG and 40k-10e only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
 
 #### Banner type values (AoS / non-40k only)
 
