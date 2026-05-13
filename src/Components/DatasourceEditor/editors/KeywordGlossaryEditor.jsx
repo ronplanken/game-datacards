@@ -6,7 +6,11 @@ import { Dropdown, Menu, Select } from "antd";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
-import { getDefaultKeywordGlossary, VALID_GLOSSARY_SCOPES } from "../../../Helpers/customSchema.helpers";
+import {
+  getDefaultKeywordGlossary,
+  VALID_GLOSSARY_DISPLAY_MODES,
+  VALID_GLOSSARY_SCOPES,
+} from "../../../Helpers/customSchema.helpers";
 
 const MATCH_TYPE_TOOLTIP = "Match type — exact matches the full keyword, prefix matches the start";
 
@@ -14,6 +18,16 @@ const MATCH_TYPE_OPTIONS = [
   { value: "exact", label: "Exact" },
   { value: "prefix", label: "Prefix" },
 ];
+
+const DISPLAY_MODE_OPTIONS = [
+  { value: "explanation", label: "Explanation row" },
+  { value: "tooltip", label: "Hover tooltip" },
+];
+
+const DISPLAY_MODE_TOOLTIP =
+  "Weapons only — explanation shows a description row below the weapon profile, tooltip shows the description on hover over the inline keyword tag.";
+
+const isValidDisplayMode = (value) => VALID_GLOSSARY_DISPLAY_MODES.includes(value);
 
 const SCOPE_LABELS = {
   weapons: "Weapons",
@@ -88,6 +102,7 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
       description: "",
       matchType: "exact",
       appliesTo: ["weapons"],
+      displayMode: "explanation",
     };
     writeEntries([...entries, newEntry]);
   };
@@ -199,6 +214,24 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
                     aria-label={`Applies to scopes for ${entry.name || "keyword"}`}
                   />
                 </div>
+                {scopes.includes("weapons") && (
+                  <div className="props-compact-input">
+                    <Tooltip content={DISPLAY_MODE_TOOLTIP} placement="top">
+                      <span className="props-compact-label">Display</span>
+                    </Tooltip>
+                    <select
+                      className="props-compact-field"
+                      value={isValidDisplayMode(entry.displayMode) ? entry.displayMode : "explanation"}
+                      onChange={(e) => updateEntry(index, "displayMode", e.target.value)}
+                      aria-label={`Display mode for ${entry.name || "keyword"}`}>
+                      {DISPLAY_MODE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
                 <label className="props-glossary-description" htmlFor={`glossary-desc-${entry._id}`}>
                   <span className="props-glossary-description-label">Description</span>
                   <textarea

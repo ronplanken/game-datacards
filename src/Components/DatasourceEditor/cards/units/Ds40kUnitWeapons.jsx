@@ -1,9 +1,38 @@
+import { Button } from "antd";
 import { UnitWeapon } from "../../../Warhammer40k-10e/UnitCard/UnitWeapon";
 import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
 import { UnitWeaponKeywords } from "../../../Warhammer40k-10e/UnitCard/UnitWeaponKeyword";
+import { KeywordTooltip, tooltipProps as keywordTooltipProps } from "../../../Warhammer40k-10e/UnitCard/KeywordTooltip";
+import { Tooltip } from "../../../Tooltip/Tooltip";
 import { WeaponTypeIcon } from "../../../Icons/WeaponTypeIcon";
 import { Ds40kUnitSections } from "./Ds40kUnitSections";
-import { collectKeywordExplanations } from "../../../../Helpers/customSchema.helpers";
+import { collectKeywordExplanations, resolveKeywordEntry } from "../../../../Helpers/customSchema.helpers";
+
+/**
+ * Inline weapon keyword tag renderer that consults the datasource glossary
+ * for hover tooltips. Glossary entries with `displayMode: "tooltip"` show
+ * their description on hover via antd Tooltip; everything else falls back
+ * to the built-in KeywordTooltip dictionary (or a plain pill).
+ *
+ * Mirrors the .keyword > .keyword-button structure produced by
+ * UnitWeaponKeywords so the existing 40k-10e CSS (uppercase + bracket
+ * pseudo-elements) keeps working.
+ */
+const Ds40kWeaponKeywords = ({ keywords, glossary }) => (
+  <span className="keyword">
+    {keywords.map((keyword, index) => {
+      const entry = resolveKeywordEntry(keyword, glossary, "weapons");
+      if (entry?.displayMode === "tooltip" && entry.description) {
+        return (
+          <Tooltip key={`${keyword}-${index}`} {...keywordTooltipProps} content={entry.description}>
+            <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
+          </Tooltip>
+        );
+      }
+      return <KeywordTooltip key={`${keyword}-${index}`} keyword={keyword} />;
+    })}
+  </span>
+);
 
 /**
  * Schema-driven weapon type section using native 40K CSS structure.
@@ -23,7 +52,11 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
         profile.keywords?.forEach((kw) => allKeywords.push(kw));
       });
     });
-    return collectKeywordExplanations(allKeywords, glossary, "weapons");
+    // `displayMode: "tooltip"` entries are rendered as hover tooltips on the
+    // inline keyword tag instead of an explanation row below the profile.
+    return collectKeywordExplanations(allKeywords, glossary, "weapons").filter(
+      (entry) => entry.displayMode !== "tooltip",
+    );
   })();
 
   return (
@@ -40,7 +73,7 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
         ))}
       </div>
       {weapons?.map((weapon, index) => (
-        <Ds40kWeaponProfiles weapon={weapon} columns={columns} key={`weapon-${index}`} />
+        <Ds40kWeaponProfiles weapon={weapon} columns={columns} glossary={glossary} key={`weapon-${index}`} />
       ))}
       {/* Weapon abilities — glossary-driven explanations + per-weapon abilities,
           rendered as flat `.ability` rows inside a single `.special` block to match
@@ -77,7 +110,7 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
  * Renders weapon profiles using schema-defined columns.
  * Adapts the native UnitWeapon structure for dynamic columns.
  */
-const Ds40kWeaponProfiles = ({ weapon, columns }) => {
+const Ds40kWeaponProfiles = ({ weapon, columns, glossary }) => {
   return (
     <>
       {weapon.profiles
@@ -92,7 +125,11 @@ const Ds40kWeaponProfiles = ({ weapon, columns }) => {
                 <span>{profile.name}</span>
                 {profile.keywords?.length > 0 && (
                   <span style={{ paddingLeft: "4px" }}>
-                    <UnitWeaponKeywords keywords={profile.keywords} />
+                    {Array.isArray(glossary) && glossary.length > 0 ? (
+                      <Ds40kWeaponKeywords keywords={profile.keywords} glossary={glossary} />
+                    ) : (
+                      <UnitWeaponKeywords keywords={profile.keywords} />
+                    )}
                   </span>
                 )}
               </div>

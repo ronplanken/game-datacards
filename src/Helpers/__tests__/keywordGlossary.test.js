@@ -271,4 +271,23 @@ describe("validateSchema with keywordGlossary", () => {
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.includes("bogus"))).toBe(true);
   });
+
+  it("accepts displayMode 'explanation' and 'tooltip'", () => {
+    for (const mode of ["explanation", "tooltip"]) {
+      const result = validateSchema({
+        ...baseValid,
+        keywordGlossary: [{ key: "k", name: "K", description: "", appliesTo: ["weapons"], displayMode: mode }],
+      });
+      expect(result.valid).toBe(true);
+    }
+  });
+
+  it("rejects an invalid displayMode", () => {
+    const result = validateSchema({
+      ...baseValid,
+      keywordGlossary: [{ key: "k", name: "K", description: "", appliesTo: ["weapons"], displayMode: "banner" }],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("displayMode"))).toBe(true);
+  });
 });

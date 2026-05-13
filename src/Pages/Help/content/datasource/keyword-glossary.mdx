@@ -1,0 +1,36 @@
+## Keyword Glossary
+
+Define a keyword once and every card that uses it shows the explanation automatically. New 40K 10th Edition datasources start with the 23 official weapon keywords already defined — One Shot, Devastating Wounds, Sustained Hits, Anti-, Twin-linked, and so on.
+
+You'll find the glossary editor in the **right panel** when the datasource itself is selected, below Datasource Info, Colours, System, and above Factions.
+
+### Entry properties
+
+| Property | Description |
+|----------|-------------|
+| **Name** | The keyword as it appears on cards (e.g. `One Shot`, `Anti-`). |
+| **Match type** | **Exact** matches the whole keyword. **Prefix** matches the start of the keyword — use this for rules with a number suffix, so a single `Anti-` entry covers `Anti-Infantry 4+`, `Anti-Psyker 5+`, and any other variant. |
+| **Storage key** | Auto-generated from the name. You rarely need to touch this — only edit it if you want a stable id that won't change when you rename the entry. |
+| **Applies to** | Where the description gets used: Weapons, Abilities, Unit keywords, Rules, Stratagems, or Enhancements. New entries default to **Weapons**. One entry can cover several places at once — handy for keywords like *Lethal Hits* that show up both on weapons and inside ability text. |
+| **Display mode** | Weapons only. Picks how the description appears (see below). |
+| **Description** | The explanation text. Line breaks and bullet markers (`• `) are kept as-is. |
+
+### Display mode (weapons only)
+
+- **Explanation row** *(default)* — a `One Shot: The bearer can only shoot with this weapon once per battle.` line shows below the weapon table, matching the built-in 40K layout.
+- **Hover tooltip** — no row below the table; the description pops up when you hover the inline `[ONE SHOT]` tag instead. Use this for common keywords that you don't want crowding the card.
+
+### How matching works
+
+When a card renders a keyword, it:
+
+1. Looks at every glossary entry whose **Applies to** includes that part of the card.
+2. Picks the entry with the longest matching **Name** (by exact or prefix match).
+3. Renders the description as a row (or a tooltip, for weapons in tooltip mode). If two weapons share a keyword, the row only shows up once.
+
+### Tips
+
+- Use the **+** in the section header to add an entry. The **⋯** menu has a **Restore defaults** action that replaces the glossary with the 40K 10e seed set.
+- For common rules like *Lethal Hits* and *Sustained Hits*, **Hover tooltip** keeps the card clean.
+- For unique or one-off rules like *Plasma Warhead* or *Hazardous*, **Explanation row** keeps the description on screen at all times.
+- For rules that take a number (`Rapid Fire`, `Melta`, `Anti-…`), use **Prefix** matching so one entry covers every variant.

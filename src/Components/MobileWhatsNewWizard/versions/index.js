@@ -13,6 +13,7 @@ import v370Config from "./v3.7.0";
 import v371Config from "./v3.7.1";
 import v372Config from "./v3.7.2";
 import v380Config from "./v3.8.0";
+import v390Config from "./v3.9.0";
 
 /**
  * Registry of all mobile version wizard configurations
@@ -38,6 +39,7 @@ export const MOBILE_VERSION_REGISTRY = [
   v371Config,
   v372Config,
   v380Config,
+  v390Config,
 ]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));

@@ -64,6 +64,7 @@ schema: {
 | `description` | string   | yes      | Explanation text rendered by consuming renderers. |
 | `matchType`   | string   | no       | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`). |
 | `appliesTo`   | string[] | yes      | Non-empty array of scopes from `VALID_GLOSSARY_SCOPES`. |
+| `displayMode` | string   | no       | Weapons-only. `"explanation"` (default) renders an explanation row under the profile; `"tooltip"` shows the description on hover over the inline keyword tag and skips the row. Other scopes ignore this field. |
 
 The validator rejects entries with a missing/empty `appliesTo`, duplicate keys, or scopes outside the allow-list.
 
@@ -108,7 +109,8 @@ The glossary editor lives in the Datasource Editor right panel, under the dataso
 - Keyword name input
 - Match type select (`Exact` / `Prefix`)
 - Auto-generated storage key (editable for advanced users)
-- **Applies to** checkbox row (one chip per scope; new entries default to `weapons` selected)
+- **Applies to** multi-select dropdown (one option per scope; new entries default to `weapons` selected)
+- **Display mode** select (`Explanation row` / `Hover tooltip`) — only shown when the entry applies to weapons
 - Multi-line description textarea
 - Trash button
 
@@ -122,7 +124,9 @@ The **premium `SchemaWeaponsEditor`** uses glossary entries whose `appliesTo` in
 
 1. Collects every keyword across active weapon profiles in that section.
 2. Resolves them via `collectKeywordExplanations(keywords, glossary, "weapons")` — entries without `weapons` in `appliesTo` are skipped.
-3. Renders a `<div class="special">` block per matched entry, with `[NAME]` as the heading and the description via `UnitAbilityDescription` — matching the existing per-weapon `abilities` blocks already used by the renderer.
+3. Filters out entries with `displayMode: "tooltip"` (those show on hover only).
+4. Renders one `<div class="special">` block containing one `.ability > .name + .description` row per remaining entry (matching the built-in `UnitWeapon.jsx` layout, producing the compact "**One Shot:** description…" line).
+5. Renders the inline keyword tag via `Ds40kWeaponKeywords`: for keywords whose glossary entry has `displayMode: "tooltip"`, wraps the tag in an antd `Tooltip` whose content is the glossary description; otherwise falls back to the built-in `KeywordTooltip` dictionary (or a plain pill for unknown keywords).
 
 Description text can include newlines and bullet markers (`• `) which `UnitAbilityDescription` renders verbatim.
 

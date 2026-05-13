@@ -14,6 +14,10 @@ export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
 // Valid match types for keyword glossary entries
 export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix"];
 
+// Valid display modes for weapon-scoped keyword glossary entries.
+// Other scopes don't honour this field today.
+export const VALID_GLOSSARY_DISPLAY_MODES = ["explanation", "tooltip"];
+
 // Valid scopes for keyword glossary entries. Each scope corresponds to a
 // place in the rendered card where keyword references can appear; renderers
 // filter the glossary by the scope they care about. Plural form throughout.
@@ -1042,6 +1046,11 @@ const validateKeywordGlossary = (glossary, path) => {
     if (entry.matchType !== undefined && !VALID_KEYWORD_MATCH_TYPES.includes(entry.matchType)) {
       errors.push(
         `${entryPath}: invalid "matchType" "${entry.matchType}" (must be one of ${VALID_KEYWORD_MATCH_TYPES.join(", ")})`,
+      );
+    }
+    if (entry.displayMode !== undefined && !VALID_GLOSSARY_DISPLAY_MODES.includes(entry.displayMode)) {
+      errors.push(
+        `${entryPath}: invalid "displayMode" "${entry.displayMode}" (must be one of ${VALID_GLOSSARY_DISPLAY_MODES.join(", ")})`,
       );
     }
     if (!Array.isArray(entry.appliesTo) || entry.appliesTo.length === 0) {

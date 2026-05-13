@@ -211,6 +211,49 @@ describe("KeywordGlossaryEditor", () => {
     expect(screen.queryByRole("button", { name: /Restore defaults/i })).toBeNull();
   });
 
+  it("shows the Display mode select only when the entry applies to weapons", () => {
+    render(<KeywordGlossaryEditor schema={baseSchema()} onChange={vi.fn()} />);
+    openSection();
+    expect(screen.getByLabelText("Display mode for One Shot")).toBeInTheDocument();
+  });
+
+  it("hides the Display mode select when the entry does not apply to weapons", () => {
+    const schema = baseSchema({
+      keywordGlossary: [
+        {
+          key: "stealth",
+          name: "Stealth",
+          description: "",
+          matchType: "exact",
+          appliesTo: ["abilities"],
+        },
+      ],
+    });
+    render(<KeywordGlossaryEditor schema={schema} onChange={vi.fn()} />);
+    openSection();
+    expect(screen.queryByLabelText("Display mode for Stealth")).toBeNull();
+  });
+
+  it("switches displayMode via the select", () => {
+    const onChange = vi.fn();
+    render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
+    openSection();
+    fireEvent.change(screen.getByLabelText("Display mode for One Shot"), {
+      target: { value: "tooltip" },
+    });
+    const next = onChange.mock.calls.at(-1)[0];
+    expect(next.keywordGlossary[0].displayMode).toBe("tooltip");
+  });
+
+  it("seeds new entries with displayMode='explanation'", () => {
+    const onChange = vi.fn();
+    render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
+    openSection();
+    fireEvent.click(screen.getByLabelText("Add keyword"));
+    const next = onChange.mock.calls.at(-1)[0];
+    expect(next.keywordGlossary[1].displayMode).toBe("explanation");
+  });
+
   it("strips the transient _id before persisting", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);

@@ -13,6 +13,14 @@ vi.mock("antd", () => ({
   Grid: { useBreakpoint: () => ({}) },
 }));
 
+// The renderer wraps tooltip-mode keywords in our custom Tooltip wrapper;
+// flatten it so the trigger element is reachable for assertions.
+vi.mock("../../../../Tooltip/Tooltip", () => ({
+  Tooltip: ({ children, content }) => (
+    <span data-tooltip-content={typeof content === "string" ? content : "rich"}>{children}</span>
+  ),
+}));
+
 const weaponTypes = {
   label: "Weapons",
   types: [
@@ -107,9 +115,7 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
         ],
       },
     };
-    const { container } = render(
-      <Ds40kUnitWeapons unit={unit} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
-    );
+    const { container } = render(<Ds40kUnitWeapons unit={unit} weaponTypes={weaponTypes} keywordGlossary={glossary} />);
     expect(container.querySelectorAll(".special")).toHaveLength(1);
     expect(container.querySelectorAll(".special .ability")).toHaveLength(2);
   });
@@ -154,6 +160,28 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
     };
     render(<Ds40kUnitWeapons unit={unit} weaponTypes={weaponTypes} keywordGlossary={glossary} />);
     expect(screen.getAllByText(/once per battle/i)).toHaveLength(1);
+  });
+
+  it("renders a hover tooltip on the inline tag and skips the explanation row for displayMode='tooltip'", () => {
+    const tooltipGlossary = [
+      {
+        key: "one-shot",
+        name: "One Shot",
+        description: "The bearer can only shoot with this weapon once per battle.",
+        matchType: "exact",
+        appliesTo: ["weapons"],
+        displayMode: "tooltip",
+      },
+    ];
+    const { container } = render(
+      <Ds40kUnitWeapons unit={unitWith(["One Shot"])} weaponTypes={weaponTypes} keywordGlossary={tooltipGlossary} />,
+    );
+    // No explanation row underneath the weapon profile
+    expect(container.querySelector(".special .ability")).toBeNull();
+    // Inline tag is wrapped in our (mocked) Tooltip with the description as content
+    const tooltipTrigger = container.querySelector("[data-tooltip-content]");
+    expect(tooltipTrigger).toBeTruthy();
+    expect(tooltipTrigger.getAttribute("data-tooltip-content")).toMatch(/once per battle/i);
   });
 
   it("ignores glossary entries whose appliesTo does not include 'weapons'", () => {

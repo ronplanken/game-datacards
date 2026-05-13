@@ -67,6 +67,7 @@ keywordGlossary: [
 | `description` | string   | Explanation text rendered by consuming renderers. |
 | `matchType`   | string   | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`; used for parametrised rules like `Anti-Infantry 4+` matching `Anti-`). |
 | `appliesTo`   | string[] | **Required, non-empty.** Scopes in which the entry can render. One entry may declare multiple scopes (e.g. a `Lethal Hits` keyword that applies both to weapons and to ability-text tooltips). |
+| `displayMode` | string   | Weapons-only. `"explanation"` (default) renders the description as an explanation row below the weapon table. `"tooltip"` renders the description as a hover tooltip on the inline keyword tag and skips the explanation row. Other scopes ignore this field today. |
 
 **Valid scopes** (`VALID_GLOSSARY_SCOPES`):
 
