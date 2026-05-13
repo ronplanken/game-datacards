@@ -1,7 +1,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import { EditorAccordion } from "../shared/EditorAccordion";
-import { EditorTextField } from "../shared/EditorTextField";
-import { EditorToggle } from "../shared/EditorToggle";
+import { SchemaFieldEditor } from "../shared/SchemaFieldEditor";
+import { getDefaultValueForType } from "../../../../Helpers/customSchema.helpers";
 
 export const FieldCollectionSection = ({ card, config, label, icon, replaceCard }) => {
   const { collectionPath, fields, allowMultiple } = config;
@@ -16,7 +16,7 @@ export const FieldCollectionSection = ({ card, config, label, icon, replaceCard 
   const handleAdd = () => {
     const blank = {};
     fields.forEach((f) => {
-      blank[f.key] = f.type === "boolean" ? false : "";
+      blank[f.key] = getDefaultValueForType(f);
     });
     replaceCard({ ...card, [collectionPath]: [...items, blank] });
   };
@@ -35,28 +35,14 @@ export const FieldCollectionSection = ({ card, config, label, icon, replaceCard 
               <Trash2 size={14} />
             </button>
           </div>
-          {fields.map((field) => {
-            if (field.type === "boolean") {
-              return (
-                <EditorToggle
-                  key={field.key}
-                  label={field.label}
-                  checked={!!item[field.key]}
-                  onChange={(value) => handleUpdate(index, field.key, value)}
-                />
-              );
-            }
-            return (
-              <EditorTextField
-                key={field.key}
-                label={field.label}
-                value={item[field.key]}
-                onChange={(value) => handleUpdate(index, field.key, value)}
-                placeholder={field.label}
-                multiline={field.type === "richtext"}
-              />
-            );
-          })}
+          {fields.map((field) => (
+            <SchemaFieldEditor
+              key={field.key}
+              field={field}
+              value={item[field.key]}
+              onChange={(value) => handleUpdate(index, field.key, value)}
+            />
+          ))}
         </div>
       ))}
       {(allowMultiple || items.length === 0) && (

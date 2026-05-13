@@ -969,6 +969,70 @@
 }
 
 /* ===========================================
+   CHIP LIST (ability costs, etc.)
+   =========================================== */
+.mobile-editor-chip-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.mobile-editor-chip-amount {
+  flex: 1;
+}
+
+.mobile-editor-chip-unit {
+  width: 90px;
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   MODELS/SUPPLY TIER ROW
+   =========================================== */
+.mobile-editor-tier-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.mobile-editor-tier-row .mobile-editor-stat-cell {
+  flex: 1;
+}
+
+/* ===========================================
+   COLOR PICKER (ability strip colour)
+   =========================================== */
+.mobile-editor-color-input {
+  width: 44px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--me-border);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ===========================================
+   PARENT-CHILD PROFILE INDICATOR
+   =========================================== */
+.mobile-editor-profile-item--upgrade {
+  margin-left: 16px;
+  position: relative;
+}
+
+.mobile-editor-profile-item--upgrade::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  background: var(--me-border);
+}
+
+/* ===========================================
    REDUCED MOTION
    =========================================== */
 @media (prefers-reduced-motion: reduce) {
