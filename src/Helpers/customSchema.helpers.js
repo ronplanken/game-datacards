@@ -6,13 +6,18 @@
  * card data itself.
  */
 
-import { WARHAMMER_40K_10E_WEAPON_KEYWORDS } from "./weaponKeywordDefaults";
+import { WARHAMMER_40K_10E_KEYWORD_GLOSSARY } from "./keywordGlossaryDefaults";
 
 // Valid base types for card type definitions
 export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
 
-// Valid match types for weapon keyword glossary entries
+// Valid match types for keyword glossary entries
 export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix"];
+
+// Valid scopes for keyword glossary entries. Each scope corresponds to a
+// place in the rendered card where keyword references can appear; renderers
+// filter the glossary by the scope they care about. Plural form throughout.
+export const VALID_GLOSSARY_SCOPES = ["weapons", "abilities", "unit-keywords", "rules", "stratagems", "enhancements"];
 
 // Valid field types
 export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
@@ -993,25 +998,26 @@ export const validateSchema = (schema) => {
     }
   });
 
-  // Weapon keyword glossary (optional, datasource-level)
-  if (schema.weaponKeywordGlossary !== undefined) {
-    errors.push(...validateWeaponKeywordGlossary(schema.weaponKeywordGlossary, "weaponKeywordGlossary"));
+  // Keyword glossary (optional, datasource-level)
+  if (schema.keywordGlossary !== undefined) {
+    errors.push(...validateKeywordGlossary(schema.keywordGlossary, "keywordGlossary"));
   }
 
   return { valid: errors.length === 0, errors };
 };
 
-// --- Weapon Keyword Glossary ---
+// --- Keyword Glossary ---
 
 /**
- * Validates a weapon keyword glossary array.
- * Each entry must have a non-empty string key, name, and description.
- * matchType is optional and defaults to "exact".
+ * Validates a keyword glossary array.
+ * Each entry must have a non-empty string key, name, description, and a
+ * non-empty `appliesTo` array drawn from VALID_GLOSSARY_SCOPES. `matchType`
+ * is optional and defaults to "exact" at the renderer.
  * @param {object[]} glossary - The glossary array
  * @param {string} path - Dot-separated path for error messages
  * @returns {string[]} Array of error messages
  */
-const validateWeaponKeywordGlossary = (glossary, path) => {
+const validateKeywordGlossary = (glossary, path) => {
   const errors = [];
   if (!Array.isArray(glossary)) {
     errors.push(`${path}: must be an array`);
@@ -1038,6 +1044,17 @@ const validateWeaponKeywordGlossary = (glossary, path) => {
         `${entryPath}: invalid "matchType" "${entry.matchType}" (must be one of ${VALID_KEYWORD_MATCH_TYPES.join(", ")})`,
       );
     }
+    if (!Array.isArray(entry.appliesTo) || entry.appliesTo.length === 0) {
+      errors.push(`${entryPath}: "appliesTo" must be a non-empty array of scopes`);
+    } else {
+      entry.appliesTo.forEach((scope, si) => {
+        if (!VALID_GLOSSARY_SCOPES.includes(scope)) {
+          errors.push(
+            `${entryPath}.appliesTo[${si}]: invalid scope "${scope}" (must be one of ${VALID_GLOSSARY_SCOPES.join(", ")})`,
+          );
+        }
+      });
+    }
     if (entry.key) {
       if (keys.has(entry.key)) {
         errors.push(`${entryPath}: duplicate glossary entry key "${entry.key}"`);
@@ -1049,7 +1066,20 @@ const validateWeaponKeywordGlossary = (glossary, path) => {
 };
 
 /**
- * Resolves a weapon keyword tag to its glossary entry, if any.
+ * Filters a glossary down to entries whose `appliesTo` includes the given
+ * scope. Entries missing `appliesTo` are skipped — every entry must declare
+ * at least one scope to render anywhere.
+ * @param {Array} glossary
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {Array}
+ */
+export const filterGlossaryByScope = (glossary, scope) => {
+  if (!Array.isArray(glossary) || !scope) return [];
+  return glossary.filter((entry) => Array.isArray(entry?.appliesTo) && entry.appliesTo.includes(scope));
+};
+
+/**
+ * Resolves a keyword tag to its glossary entry, if any, within a given scope.
  * Match rules:
  *   - "exact"  → case-insensitive equality
  *   - "prefix" → case-insensitive startsWith match
@@ -1057,17 +1087,20 @@ const validateWeaponKeywordGlossary = (glossary, path) => {
  * `name` wins so specific entries (e.g. "Twin-linked") take precedence over
  * shorter prefixes that happen to be substrings.
  *
- * @param {string} keyword - The keyword tag on a weapon profile
- * @param {Array} glossary - The schema's weaponKeywordGlossary array
+ * @param {string} keyword - The keyword tag (e.g. on a weapon profile)
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
  * @returns {object|null} The matching glossary entry, or null
  */
-export const resolveWeaponKeywordEntry = (keyword, glossary) => {
+export const resolveKeywordEntry = (keyword, glossary, scope) => {
   if (typeof keyword !== "string" || !keyword.trim() || !Array.isArray(glossary) || glossary.length === 0) {
     return null;
   }
+  const scoped = scope ? filterGlossaryByScope(glossary, scope) : glossary;
+  if (scoped.length === 0) return null;
   const haystack = keyword.toLowerCase().trim();
   let best = null;
-  for (const entry of glossary) {
+  for (const entry of scoped) {
     if (!entry?.name || typeof entry.name !== "string") continue;
     const needle = entry.name.toLowerCase().trim();
     if (!needle) continue;
@@ -1082,22 +1115,23 @@ export const resolveWeaponKeywordEntry = (keyword, glossary) => {
 
 /**
  * Returns the deduplicated set of glossary explanation entries that apply
- * to the given list of weapon keyword tags. Preserves the order in which
- * matching entries first appear so the renderer can emit explanation rows
- * predictably below the weapon profile.
+ * to the given list of keyword tags, scoped to a particular render context.
+ * Preserves the order in which matching entries first appear so renderers
+ * can emit explanation rows predictably.
  *
- * @param {string[]} keywords - Weapon keyword tags
- * @param {Array} glossary - The schema's weaponKeywordGlossary array
+ * @param {string[]} keywords - Keyword tags (e.g. from weapon profiles)
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
  * @returns {object[]} Deduplicated glossary entries
  */
-export const collectWeaponKeywordExplanations = (keywords, glossary) => {
+export const collectKeywordExplanations = (keywords, glossary, scope) => {
   if (!Array.isArray(keywords) || !Array.isArray(glossary) || glossary.length === 0) {
     return [];
   }
   const seen = new Set();
   const out = [];
   for (const keyword of keywords) {
-    const entry = resolveWeaponKeywordEntry(keyword, glossary);
+    const entry = resolveKeywordEntry(keyword, glossary, scope);
     if (entry && !seen.has(entry.key)) {
       seen.add(entry.key);
       out.push(entry);
@@ -1107,14 +1141,17 @@ export const collectWeaponKeywordExplanations = (keywords, glossary) => {
 };
 
 /**
- * Returns the default seeded weapon keyword glossary for the given base system.
+ * Returns the default seeded keyword glossary for the given base system.
  * Currently only `40k-10e` ships a seed; every other system starts empty.
  * @param {BaseSystem} baseSystem
  * @returns {object[]} A fresh copy of the seed array (safe to mutate)
  */
-export const getDefaultWeaponKeywordGlossary = (baseSystem) => {
+export const getDefaultKeywordGlossary = (baseSystem) => {
   if (baseSystem === "40k-10e") {
-    return WARHAMMER_40K_10E_WEAPON_KEYWORDS.map((entry) => ({ ...entry }));
+    return WARHAMMER_40K_10E_KEYWORD_GLOSSARY.map((entry) => ({
+      ...entry,
+      appliesTo: [...entry.appliesTo],
+    }));
   }
   return [];
 };
@@ -1486,7 +1523,7 @@ export const createStarcraftTmgPreset = () => ({
 export const create40kPreset = () => ({
   version: SCHEMA_VERSION,
   baseSystem: "40k-10e",
-  weaponKeywordGlossary: getDefaultWeaponKeywordGlossary("40k-10e"),
+  keywordGlossary: getDefaultKeywordGlossary("40k-10e"),
   cardTypes: [
     {
       key: "unit",

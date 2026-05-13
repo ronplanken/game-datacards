@@ -68,7 +68,7 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
           cardTypeDef={cardTypeDef}
           cardStyle={cardStyle}
           faction={cardFaction}
-          weaponKeywordGlossary={schema.weaponKeywordGlossary}
+          keywordGlossary={schema.keywordGlossary}
         />
       );
     }

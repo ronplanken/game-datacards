@@ -34,8 +34,27 @@ const weaponTypes = {
 };
 
 const glossary = [
-  { key: "one-shot", name: "One Shot", description: "The bearer can only shoot with this weapon once per battle." },
-  { key: "anti", name: "Anti-", description: "Critical Wounds vs matching keyword.", matchType: "prefix" },
+  {
+    key: "one-shot",
+    name: "One Shot",
+    description: "The bearer can only shoot with this weapon once per battle.",
+    matchType: "exact",
+    appliesTo: ["weapons"],
+  },
+  {
+    key: "anti",
+    name: "Anti-",
+    description: "Critical Wounds vs matching keyword.",
+    matchType: "prefix",
+    appliesTo: ["weapons"],
+  },
+  {
+    key: "ability-only",
+    name: "One Shot",
+    description: "Should never render under a weapon profile.",
+    matchType: "exact",
+    appliesTo: ["abilities"],
+  },
 ];
 
 const unitWith = (keywords) => ({
@@ -64,7 +83,7 @@ const unitWith = (keywords) => ({
 describe("Ds40kUnitWeapons glossary explanations", () => {
   it("renders an explanation block when a weapon keyword matches the glossary", () => {
     const { container } = render(
-      <Ds40kUnitWeapons unit={unitWith(["One Shot"])} weaponTypes={weaponTypes} weaponKeywordGlossary={glossary} />,
+      <Ds40kUnitWeapons unit={unitWith(["One Shot"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
     );
     const explanation = container.querySelector(".special");
     expect(explanation).toBeTruthy();
@@ -82,7 +101,7 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
       <Ds40kUnitWeapons
         unit={unitWith(["Custom Special Keyword"])}
         weaponTypes={weaponTypes}
-        weaponKeywordGlossary={glossary}
+        keywordGlossary={glossary}
       />,
     );
     expect(screen.queryByText(/once per battle/i)).toBeNull();
@@ -91,11 +110,7 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
 
   it("resolves prefix matches for parametrised keywords", () => {
     render(
-      <Ds40kUnitWeapons
-        unit={unitWith(["Anti-Infantry 4+"])}
-        weaponTypes={weaponTypes}
-        weaponKeywordGlossary={glossary}
-      />,
+      <Ds40kUnitWeapons unit={unitWith(["Anti-Infantry 4+"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
     );
     expect(screen.getByText(/Critical Wounds vs matching keyword/i)).toBeInTheDocument();
   });
@@ -114,7 +129,14 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
         ],
       },
     };
-    render(<Ds40kUnitWeapons unit={unit} weaponTypes={weaponTypes} weaponKeywordGlossary={glossary} />);
+    render(<Ds40kUnitWeapons unit={unit} weaponTypes={weaponTypes} keywordGlossary={glossary} />);
     expect(screen.getAllByText(/once per battle/i)).toHaveLength(1);
+  });
+
+  it("ignores glossary entries whose appliesTo does not include 'weapons'", () => {
+    // Both glossary entries share the name "One Shot" but only one is scoped to weapons.
+    render(<Ds40kUnitWeapons unit={unitWith(["One Shot"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />);
+    expect(screen.queryByText(/Should never render under a weapon profile/i)).toBeNull();
+    expect(screen.getByText(/once per battle/i)).toBeInTheDocument();
   });
 });

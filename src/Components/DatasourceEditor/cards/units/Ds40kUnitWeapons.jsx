@@ -2,7 +2,7 @@ import { UnitWeapon } from "../../../Warhammer40k-10e/UnitCard/UnitWeapon";
 import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
 import { WeaponTypeIcon } from "../../../Icons/WeaponTypeIcon";
 import { Ds40kUnitSections } from "./Ds40kUnitSections";
-import { collectWeaponKeywordExplanations } from "../../../../Helpers/customSchema.helpers";
+import { collectKeywordExplanations } from "../../../../Helpers/customSchema.helpers";
 
 /**
  * Schema-driven weapon type section using native 40K CSS structure.
@@ -22,7 +22,7 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
         profile.keywords?.forEach((kw) => allKeywords.push(kw));
       });
     });
-    return collectWeaponKeywordExplanations(allKeywords, glossary);
+    return collectKeywordExplanations(allKeywords, glossary, "weapons");
   })();
 
   return (
@@ -127,9 +127,10 @@ const Ds40kWeaponProfiles = ({ weapon, columns }) => {
  * @param {Object} props.unit - The card data
  * @param {Object} props.weaponTypes - The weaponTypes schema definition
  * @param {Object} [props.sectionsSchema] - The sections schema definition
- * @param {Array} [props.weaponKeywordGlossary] - Datasource-level weapon keyword glossary
+ * @param {Array} [props.keywordGlossary] - Datasource-level keyword glossary; the weapons
+ *   renderer consumes entries whose `appliesTo` includes "weapons".
  */
-export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, weaponKeywordGlossary }) => {
+export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, keywordGlossary }) => {
   if (!weaponTypes?.types?.length) {
     return null;
   }
@@ -148,7 +149,7 @@ export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, weaponKeyw
           <Ds40kWeaponType
             weaponTypeDef={weaponTypeDef}
             weapons={weapons}
-            glossary={weaponKeywordGlossary}
+            glossary={keywordGlossary}
             key={weaponTypeDef.key}
           />
         );

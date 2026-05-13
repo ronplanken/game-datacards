@@ -3,7 +3,7 @@ import { WIZARD_MODES, BASE_TYPES, getWizardMode, resolveSteps } from "../consta
 import {
   getPresetStepDefaults,
   DEFAULT_DATASOURCE_COLOURS,
-  getDefaultWeaponKeywordGlossary,
+  getDefaultKeywordGlossary,
 } from "../../../Helpers/customSchema.helpers";
 
 /**
@@ -261,7 +261,7 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
     const metadata = stepData["metadata"] || {};
     const baseSystemData = stepData["base-system"] || {};
     const baseSystem = baseSystemData.baseSystem || "blank";
-    const seededGlossary = getDefaultWeaponKeywordGlossary(baseSystem);
+    const seededGlossary = getDefaultKeywordGlossary(baseSystem);
 
     const schema = {
       version: "1.0.0",
@@ -273,7 +273,7 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
       },
     };
     if (seededGlossary.length > 0) {
-      schema.weaponKeywordGlossary = seededGlossary;
+      schema.keywordGlossary = seededGlossary;
     }
 
     return {
