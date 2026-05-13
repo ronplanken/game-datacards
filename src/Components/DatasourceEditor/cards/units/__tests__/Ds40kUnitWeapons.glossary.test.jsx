@@ -186,13 +186,16 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
     expect(tooltipTrigger.querySelector(".keyword-button.has-info")).toBeTruthy();
   });
 
-  it("marks the inline tag with has-info for explanation-mode glossary entries", () => {
+  it("leaves the inline tag plain for explanation-mode glossary entries (no has-info)", () => {
+    // Explanation-mode entries put the description in the row below the
+    // weapon table, not in a hover tooltip — so the inline tag stays
+    // plain. Reserve the dotted underline for actual hover tooltips.
     const { container } = render(
       <Ds40kUnitWeapons unit={unitWith(["One Shot"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
     );
     const button = container.querySelector(".keyword .keyword-button");
     expect(button).toBeTruthy();
-    expect(button.classList.contains("has-info")).toBe(true);
+    expect(button.classList.contains("has-info")).toBe(false);
   });
 
   it("leaves the inline tag plain when no glossary entry matches", () => {

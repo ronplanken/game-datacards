@@ -11,14 +11,16 @@ import { collectKeywordExplanations, resolveKeywordEntry } from "../../../../Hel
 /**
  * Inline weapon keyword tag renderer that consults the datasource glossary
  * for hover tooltips. Glossary entries with `displayMode: "tooltip"` show
- * their description on hover via antd Tooltip; everything else falls back
- * to the built-in KeywordTooltip dictionary (or a plain pill).
+ * their description on hover via antd Tooltip; entries in explanation
+ * mode bypass the tooltip entirely (their description shows in the row
+ * below the weapon table). Keywords with no glossary match fall through
+ * to the built-in `KeywordTooltip` dictionary.
  *
  * Mirrors the .keyword > .keyword-button structure produced by
  * UnitWeaponKeywords so the existing 40k-10e CSS (uppercase + bracket
- * pseudo-elements) keeps working. The `has-info` class on a button marks
- * keywords that have a hover tooltip or an explanation row to flag — the
- * CSS in 40k-10e.less renders those with a dotted underline.
+ * pseudo-elements) keeps working. The `has-info` class is reserved for
+ * keywords that actually carry a hover tooltip — the CSS in 40k-10e.less
+ * renders those with a dotted underline.
  */
 const Ds40kWeaponKeywords = ({ keywords, glossary }) => (
   <span className="keyword">
@@ -32,15 +34,15 @@ const Ds40kWeaponKeywords = ({ keywords, glossary }) => (
         );
       }
       if (entry) {
-        // Glossary match in explanation mode: no hover tooltip, but the
-        // description shows in the explanation row below — flag the tag
-        // with `has-info` so users notice it's covered there.
+        // Glossary match in explanation mode: no hover tooltip — the
+        // description shows in the row below the weapon table, so the
+        // inline tag stays plain (no `has-info` underline).
         return (
           <Button
             key={`${keyword}-${index}`}
             type="text"
             size="small"
-            className="keyword-button has-info">{`${keyword}`}</Button>
+            className="keyword-button">{`${keyword}`}</Button>
         );
       }
       return <KeywordTooltip key={`${keyword}-${index}`} keyword={keyword} />;
