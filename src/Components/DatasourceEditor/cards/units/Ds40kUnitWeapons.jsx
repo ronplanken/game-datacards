@@ -16,7 +16,9 @@ import { collectKeywordExplanations, resolveKeywordEntry } from "../../../../Hel
  *
  * Mirrors the .keyword > .keyword-button structure produced by
  * UnitWeaponKeywords so the existing 40k-10e CSS (uppercase + bracket
- * pseudo-elements) keeps working.
+ * pseudo-elements) keeps working. The `has-info` class on a button marks
+ * keywords that have a hover tooltip or an explanation row to flag — the
+ * CSS in 40k-10e.less renders those with a dotted underline.
  */
 const Ds40kWeaponKeywords = ({ keywords, glossary }) => (
   <span className="keyword">
@@ -25,8 +27,20 @@ const Ds40kWeaponKeywords = ({ keywords, glossary }) => (
       if (entry?.displayMode === "tooltip" && entry.description) {
         return (
           <Tooltip key={`${keyword}-${index}`} {...keywordTooltipProps} content={entry.description}>
-            <Button type="text" size="small" className="keyword-button">{`${keyword}`}</Button>
+            <Button type="text" size="small" className="keyword-button has-info">{`${keyword}`}</Button>
           </Tooltip>
+        );
+      }
+      if (entry) {
+        // Glossary match in explanation mode: no hover tooltip, but the
+        // description shows in the explanation row below — flag the tag
+        // with `has-info` so users notice it's covered there.
+        return (
+          <Button
+            key={`${keyword}-${index}`}
+            type="text"
+            size="small"
+            className="keyword-button has-info">{`${keyword}`}</Button>
         );
       }
       return <KeywordTooltip key={`${keyword}-${index}`} keyword={keyword} />;

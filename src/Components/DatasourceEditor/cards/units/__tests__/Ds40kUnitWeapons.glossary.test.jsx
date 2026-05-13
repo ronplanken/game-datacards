@@ -182,6 +182,26 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
     const tooltipTrigger = container.querySelector("[data-tooltip-content]");
     expect(tooltipTrigger).toBeTruthy();
     expect(tooltipTrigger.getAttribute("data-tooltip-content")).toMatch(/once per battle/i);
+    // The inline tag is flagged as carrying extra info so CSS can underline it.
+    expect(tooltipTrigger.querySelector(".keyword-button.has-info")).toBeTruthy();
+  });
+
+  it("marks the inline tag with has-info for explanation-mode glossary entries", () => {
+    const { container } = render(
+      <Ds40kUnitWeapons unit={unitWith(["One Shot"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
+    );
+    const button = container.querySelector(".keyword .keyword-button");
+    expect(button).toBeTruthy();
+    expect(button.classList.contains("has-info")).toBe(true);
+  });
+
+  it("leaves the inline tag plain when no glossary entry matches", () => {
+    const { container } = render(
+      <Ds40kUnitWeapons unit={unitWith(["Made Up Keyword"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
+    );
+    const button = container.querySelector(".keyword .keyword-button");
+    expect(button).toBeTruthy();
+    expect(button.classList.contains("has-info")).toBe(false);
   });
 
   it("ignores glossary entries whose appliesTo does not include 'weapons'", () => {

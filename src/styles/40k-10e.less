@@ -4144,6 +4144,15 @@
       &::after {
         content: ", ";
       }
+
+      // Keywords with a tooltip on hover or an explanation row below the
+      // weapon table get a dotted underline so it's discoverable that
+      // hovering / reading further yields the rule text.
+      &.has-info {
+        text-decoration: underline dotted;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+      }
     }
     .keyword-button:first-child {
       &::before {
