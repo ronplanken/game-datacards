@@ -385,10 +385,8 @@ const AbilitiesCustom = ({ card, label, icon, replaceCard, config }) => {
                     <label className="mobile-editor-field-label">Strip Color</label>
                     <input
                       type="color"
-                      value={ability.color || "#4a5568"}
-                      onChange={(e) =>
-                        handleUpdate(cat.key, index, "color", e.target.value === "#4a5568" ? undefined : e.target.value)
-                      }
+                      value={ability.color ?? "#4a5568"}
+                      onChange={(e) => handleUpdate(cat.key, index, "color", e.target.value)}
                       className="mobile-editor-color-input"
                     />
                   </div>

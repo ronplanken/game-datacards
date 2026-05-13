@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { EditorAccordion } from "../shared/EditorAccordion";
 import { EditorTextField } from "../shared/EditorTextField";
@@ -6,13 +7,30 @@ import { EditorNumberField } from "../shared/EditorNumberField";
 const ModelsSupplyTiersField = ({ sectionDef, items, onChange }) => {
   const rows = Array.isArray(items) ? items : [];
 
+  // Stable keys so removing a tier from the middle doesn't reuse the deleted row's DOM.
+  const counterRef = useRef(0);
+  const [keys, setKeys] = useState(() => rows.map(() => `tier-${counterRef.current++}`));
+  if (keys.length < rows.length) {
+    const next = [...keys];
+    while (next.length < rows.length) next.push(`tier-${counterRef.current++}`);
+    setKeys(next);
+  } else if (keys.length > rows.length) {
+    setKeys(keys.slice(0, rows.length));
+  }
+
   const setRow = (index, patch) => {
     const next = [...rows];
     next[index] = { ...(next[index] || {}), ...patch };
     onChange(next);
   };
-  const removeRow = (index) => onChange(rows.filter((_, i) => i !== index));
-  const addRow = () => onChange([...rows, { models: "", supply: "0" }]);
+  const removeRow = (index) => {
+    setKeys((prev) => prev.filter((_, i) => i !== index));
+    onChange(rows.filter((_, i) => i !== index));
+  };
+  const addRow = () => {
+    setKeys((prev) => [...prev, `tier-${counterRef.current++}`]);
+    onChange([...rows, { models: "", supply: "0" }]);
+  };
 
   return (
     <div style={{ marginBottom: 16 }}>
@@ -20,7 +38,7 @@ const ModelsSupplyTiersField = ({ sectionDef, items, onChange }) => {
       {rows.map((row, index) => {
         const value = typeof row === "object" && row !== null ? row : { models: String(row ?? ""), supply: "0" };
         return (
-          <div key={index} className="mobile-editor-tier-row">
+          <div key={keys[index]} className="mobile-editor-tier-row">
             <EditorNumberField
               label="Models"
               value={value.models ?? ""}

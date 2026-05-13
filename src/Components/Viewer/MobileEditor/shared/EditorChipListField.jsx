@@ -1,37 +1,46 @@
+import { useRef, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { EditorTextField } from "./EditorTextField";
 import { EditorSelectField } from "./EditorSelectField";
 
-/**
- * Editable list of {amount, unit} chips. Mirrors the cost-chip UX in the
- * desktop SchemaAbilitiesEditor so the same data shape (e.g. ability.costs
- * for Starcraft TMG) round-trips between the mobile and desktop editors.
- *
- * Props:
- *  - label    Section label
- *  - value    Array of { amount, unit } (defaults to [])
- *  - units    Array of allowed unit strings (e.g. ["CP","BM","VP","PE"])
- *  - onChange Called with the next array on every mutation
- *  - addLabel Text shown on the add button
- */
+// Editable list of {amount, unit} chips matching the desktop SchemaAbilitiesEditor cost-chip UX.
 export const EditorChipListField = ({ label, value, units, onChange, addLabel = "Add" }) => {
   const items = Array.isArray(value) ? value : [];
   const unitOptions = (units || []).map((u) => ({ value: u, label: u }));
   const defaultUnit = units?.[0] ?? "";
+
+  // Maintain a parallel array of stable React keys so removing a chip from the
+  // middle doesn't reuse the deleted row's DOM (and pending debounce state) for
+  // the chip that shifts up to take its place.
+  const counterRef = useRef(0);
+  const [keys, setKeys] = useState(() => items.map(() => `chip-${counterRef.current++}`));
+  if (keys.length < items.length) {
+    const next = [...keys];
+    while (next.length < items.length) next.push(`chip-${counterRef.current++}`);
+    setKeys(next);
+  } else if (keys.length > items.length) {
+    setKeys(keys.slice(0, items.length));
+  }
 
   const setAt = (index, patch) => {
     const next = [...items];
     next[index] = { ...next[index], ...patch };
     onChange(next);
   };
-  const removeAt = (index) => onChange(items.filter((_, i) => i !== index));
-  const add = () => onChange([...items, { amount: "", unit: defaultUnit }]);
+  const removeAt = (index) => {
+    setKeys((prev) => prev.filter((_, i) => i !== index));
+    onChange(items.filter((_, i) => i !== index));
+  };
+  const add = () => {
+    setKeys((prev) => [...prev, `chip-${counterRef.current++}`]);
+    onChange([...items, { amount: "", unit: defaultUnit }]);
+  };
 
   return (
     <div className="mobile-editor-field">
       {label && <label className="mobile-editor-field-label">{label}</label>}
       {items.map((chip, index) => (
-        <div key={index} className="mobile-editor-chip-row">
+        <div key={keys[index]} className="mobile-editor-chip-row">
           <div className="mobile-editor-chip-amount">
             <EditorTextField
               value={chip.amount ?? ""}
