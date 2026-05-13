@@ -29,7 +29,19 @@ vi.mock("lucide-react", () => ({
   LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
   Users: (props) => <svg data-testid="icon-users" {...props} />,
+  MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
   RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
+}));
+
+vi.mock("antd", () => ({
+  Select: () => null,
+  Dropdown: ({ children, overlay }) => (
+    <>
+      {children}
+      {overlay}
+    </>
+  ),
+  Menu: () => null,
 }));
 
 const mockDatasource = {

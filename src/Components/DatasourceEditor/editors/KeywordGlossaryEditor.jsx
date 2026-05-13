@@ -1,7 +1,8 @@
 import React from "react";
 import { nanoid } from "nanoid";
-import { BookOpen, RotateCcw, Trash2 } from "lucide-react";
+import { BookOpen, MoreHorizontal, RotateCcw, Trash2 } from "lucide-react";
 import { IconKey, IconTag, IconTemplate } from "@tabler/icons-react";
+import { Dropdown, Menu, Select } from "antd";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
@@ -22,6 +23,11 @@ const SCOPE_LABELS = {
   stratagems: "Stratagems",
   enhancements: "Enhancements",
 };
+
+const SCOPE_OPTIONS = VALID_GLOSSARY_SCOPES.map((scope) => ({
+  value: scope,
+  label: SCOPE_LABELS[scope] || scope,
+}));
 
 const slugify = (value) =>
   (value || "")
@@ -59,14 +65,9 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
     writeEntries(next);
   };
 
-  const toggleScope = (index, scope) => {
-    const entry = entries[index];
-    const current = Array.isArray(entry.appliesTo) ? entry.appliesTo : [];
-    // Don't allow unchecking the last remaining scope — schema validator
-    // requires appliesTo to be non-empty, and silently producing an
-    // invalid entry would only surface much later at save/export time.
-    if (current.includes(scope) && current.length === 1) return;
-    const nextScopes = current.includes(scope) ? current.filter((s) => s !== scope) : [...current, scope];
+  const setAppliesTo = (index, nextScopes) => {
+    // Keep validator happy: an entry must always have at least one scope.
+    if (!Array.isArray(nextScopes) || nextScopes.length === 0) return;
     updateEntry(index, "appliesTo", nextScopes);
   };
 
@@ -100,21 +101,44 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
     writeEntries(defaults);
   };
 
+  const overflowMenu = seedAvailable ? (
+    <Menu
+      items={[
+        {
+          key: "restore-defaults",
+          label: (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <RotateCcw size={14} />
+              Restore defaults
+            </span>
+          ),
+          onClick: restoreDefaults,
+        },
+      ]}
+    />
+  ) : null;
+
+  const headerActions = overflowMenu ? (
+    <Dropdown overlay={overflowMenu} trigger={["click"]} placement="bottomRight">
+      <button
+        type="button"
+        className="props-section-header-action"
+        aria-label="Keyword glossary actions"
+        title="More actions"
+        onClick={(e) => e.stopPropagation()}>
+        <MoreHorizontal size={14} />
+      </button>
+    </Dropdown>
+  ) : null;
+
   return (
-    <Section title="Keyword Glossary" icon={BookOpen} defaultOpen={false} onAdd={addEntry} addLabel="Add keyword">
-      {seedAvailable && (
-        <div className="props-field-list-toolbar">
-          <button
-            type="button"
-            className="designer-layer-action-btn"
-            onClick={restoreDefaults}
-            aria-label="Restore default keyword glossary"
-            title={`Restore the built-in ${baseSystem} keyword set`}>
-            <RotateCcw size={12} />
-            <span>Restore defaults</span>
-          </button>
-        </div>
-      )}
+    <Section
+      title="Keyword Glossary"
+      icon={BookOpen}
+      defaultOpen={false}
+      onAdd={addEntry}
+      addLabel="Add keyword"
+      headerActions={headerActions}>
       <div className="props-field-list">
         {entries.length === 0 && (
           <div className="props-field-list-empty">
@@ -160,36 +184,27 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
                   value={entry.key || ""}
                   onChange={(val) => updateEntry(index, "key", val)}
                 />
-                <fieldset
-                  className="props-field-item-scopes"
-                  aria-label={`Applies to scopes for ${entry.name || "keyword"}`}>
-                  <legend className="props-compact-label">Applies to</legend>
-                  {VALID_GLOSSARY_SCOPES.map((scope) => {
-                    const checked = scopes.includes(scope);
-                    const isOnlyScope = checked && scopes.length === 1;
-                    return (
-                      <label
-                        key={scope}
-                        className={`props-field-item-scope-chip${isOnlyScope ? " is-locked" : ""}`}
-                        title={isOnlyScope ? "An entry must apply to at least one scope" : undefined}>
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          disabled={isOnlyScope}
-                          onChange={() => toggleScope(index, scope)}
-                          aria-label={SCOPE_LABELS[scope] || scope}
-                        />
-                        <span>{SCOPE_LABELS[scope] || scope}</span>
-                      </label>
-                    );
-                  })}
-                </fieldset>
-                <label className="props-field-item-textarea-label" htmlFor={`glossary-desc-${entry._id}`}>
-                  <span className="props-compact-label">Description</span>
+                <div className="props-glossary-scopes">
+                  <span className="props-glossary-scopes-label">Applies to</span>
+                  <Select
+                    mode="multiple"
+                    size="small"
+                    bordered={false}
+                    showArrow
+                    value={scopes}
+                    options={SCOPE_OPTIONS}
+                    placeholder="Select scopes"
+                    onChange={(val) => setAppliesTo(index, val)}
+                    className="props-glossary-scopes-select"
+                    aria-label={`Applies to scopes for ${entry.name || "keyword"}`}
+                  />
+                </div>
+                <label className="props-glossary-description" htmlFor={`glossary-desc-${entry._id}`}>
+                  <span className="props-glossary-description-label">Description</span>
                   <textarea
                     id={`glossary-desc-${entry._id}`}
-                    className="props-compact-field props-compact-textarea"
-                    rows={3}
+                    className="props-glossary-description-field"
+                    rows={4}
                     value={entry.description || ""}
                     onChange={(e) => updateEntry(index, "description", e.target.value)}
                     placeholder="The bearer can only shoot with this weapon once per battle."

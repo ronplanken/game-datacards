@@ -5,9 +5,49 @@ vi.mock("lucide-react", () => ({
   BookOpen: (props) => <svg data-testid="icon-book" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+  MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
   Plus: (props) => <svg data-testid="icon-plus" {...props} />,
   RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
+}));
+
+// Mock the bits of antd we use: a native multi-select stands in for
+// the antd Select, and Dropdown/Menu are flattened so the menu items
+// are reachable in tests without needing to click open a popover.
+vi.mock("antd", () => ({
+  Select: ({ value, onChange, options = [], "aria-label": ariaLabel }) => (
+    <select
+      multiple
+      aria-label={ariaLabel}
+      value={value || []}
+      onChange={(e) => {
+        const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
+        onChange?.(selected);
+      }}>
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  ),
+  Dropdown: ({ children, overlay }) => (
+    <>
+      {children}
+      {overlay}
+    </>
+  ),
+  Menu: ({ items = [] }) => (
+    <ul>
+      {items.map((item) => (
+        <li key={item.key}>
+          <button type="button" onClick={item.onClick}>
+            {item.label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  ),
 }));
 
 const baseSchema = (overrides = {}) => ({
@@ -25,6 +65,15 @@ const baseSchema = (overrides = {}) => ({
 });
 
 const openSection = () => fireEvent.click(screen.getByText("Keyword Glossary"));
+
+// Helper: drive our mocked multi-select by setting `selected` on each
+// option and dispatching a change event.
+const setScopes = (select, values) => {
+  for (const opt of select.options) {
+    opt.selected = values.includes(opt.value);
+  }
+  fireEvent.change(select);
+};
 
 describe("KeywordGlossaryEditor", () => {
   it("returns null when schema is missing", () => {
@@ -94,16 +143,17 @@ describe("KeywordGlossaryEditor", () => {
     expect(next.keywordGlossary[0].matchType).toBe("prefix");
   });
 
-  it("toggles an additional scope on appliesTo", () => {
+  it("adds a scope via the appliesTo dropdown", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
-    fireEvent.click(screen.getByLabelText("Abilities"));
+    const select = screen.getByLabelText("Applies to scopes for One Shot");
+    setScopes(select, ["weapons", "abilities"]);
     const next = onChange.mock.calls.at(-1)[0];
     expect(next.keywordGlossary[0].appliesTo).toEqual(["weapons", "abilities"]);
   });
 
-  it("removes a scope from appliesTo when its checkbox is toggled off (multi-scope entry)", () => {
+  it("removes a scope via the appliesTo dropdown (multi-scope entry)", () => {
     const onChange = vi.fn();
     const schema = baseSchema({
       keywordGlossary: [
@@ -118,19 +168,47 @@ describe("KeywordGlossaryEditor", () => {
     });
     render(<KeywordGlossaryEditor schema={schema} onChange={onChange} />);
     openSection();
-    fireEvent.click(screen.getByLabelText("Abilities"));
+    const select = screen.getByLabelText("Applies to scopes for Twin-linked");
+    setScopes(select, ["weapons"]);
     const next = onChange.mock.calls.at(-1)[0];
     expect(next.keywordGlossary[0].appliesTo).toEqual(["weapons"]);
   });
 
-  it("locks the last remaining scope so appliesTo can never become empty", () => {
+  it("refuses to clear appliesTo via the dropdown so the schema stays valid", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
-    const weaponsCheckbox = screen.getByLabelText("Weapons");
-    expect(weaponsCheckbox.disabled).toBe(true);
-    fireEvent.click(weaponsCheckbox);
+    const select = screen.getByLabelText("Applies to scopes for One Shot");
+    setScopes(select, []);
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("renders an option for every supported scope", () => {
+    render(<KeywordGlossaryEditor schema={baseSchema()} onChange={vi.fn()} />);
+    openSection();
+    const select = screen.getByLabelText("Applies to scopes for One Shot");
+    const labels = Array.from(select.options).map((o) => o.textContent);
+    expect(labels).toEqual(["Weapons", "Abilities", "Unit keywords", "Rules", "Stratagems", "Enhancements"]);
+  });
+
+  it("seeds entries from the overflow menu 'Restore defaults' action on 40k-10e", () => {
+    const onChange = vi.fn();
+    render(<KeywordGlossaryEditor schema={baseSchema({ keywordGlossary: [] })} onChange={onChange} />);
+    openSection();
+    fireEvent.click(screen.getByRole("button", { name: /Restore defaults/i }));
+    const next = onChange.mock.calls.at(-1)[0];
+    expect(next.keywordGlossary.length).toBeGreaterThan(5);
+    expect(next.keywordGlossary.some((e) => e.name === "One Shot")).toBe(true);
+    expect(next.keywordGlossary.every((e) => e.appliesTo?.includes("weapons"))).toBe(true);
+  });
+
+  it("hides the overflow menu trigger when the base system has no seeds", () => {
+    render(
+      <KeywordGlossaryEditor schema={baseSchema({ baseSystem: "blank", keywordGlossary: [] })} onChange={vi.fn()} />,
+    );
+    openSection();
+    expect(screen.queryByLabelText("Keyword glossary actions")).toBeNull();
+    expect(screen.queryByRole("button", { name: /Restore defaults/i })).toBeNull();
   });
 
   it("strips the transient _id before persisting", () => {
@@ -142,32 +220,5 @@ describe("KeywordGlossaryEditor", () => {
     for (const entry of next.keywordGlossary) {
       expect(entry).not.toHaveProperty("_id");
     }
-  });
-
-  it("renders a checkbox for every supported scope", () => {
-    render(<KeywordGlossaryEditor schema={baseSchema()} onChange={vi.fn()} />);
-    openSection();
-    ["Weapons", "Abilities", "Unit keywords", "Rules", "Stratagems", "Enhancements"].forEach((label) => {
-      expect(screen.getByLabelText(label)).toBeInTheDocument();
-    });
-  });
-
-  it("shows a Restore defaults button for 40k-10e and seeds entries", () => {
-    const onChange = vi.fn();
-    render(<KeywordGlossaryEditor schema={baseSchema({ keywordGlossary: [] })} onChange={onChange} />);
-    openSection();
-    fireEvent.click(screen.getByRole("button", { name: /Restore default keyword glossary/i }));
-    const next = onChange.mock.calls.at(-1)[0];
-    expect(next.keywordGlossary.length).toBeGreaterThan(5);
-    expect(next.keywordGlossary.some((e) => e.name === "One Shot")).toBe(true);
-    expect(next.keywordGlossary.every((e) => e.appliesTo?.includes("weapons"))).toBe(true);
-  });
-
-  it("hides the Restore defaults button for systems without seeds", () => {
-    render(
-      <KeywordGlossaryEditor schema={baseSchema({ baseSystem: "blank", keywordGlossary: [] })} onChange={vi.fn()} />,
-    );
-    openSection();
-    expect(screen.queryByRole("button", { name: /Restore default keyword glossary/i })).toBeNull();
   });
 });

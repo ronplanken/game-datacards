@@ -2055,3 +2055,97 @@ select.props-compact-field {
   color: var(--designer-error);
   line-height: 1.6;
 }
+
+/* ===========================================
+   KEYWORD GLOSSARY EDITOR
+   =========================================== */
+
+.props-glossary-scopes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px 4px;
+  background: var(--designer-bg-secondary);
+  border: 1px solid var(--designer-border);
+  border-radius: var(--designer-radius-sm);
+}
+
+.props-glossary-scopes-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--designer-text-tertiary);
+}
+
+/* Tighten the antd Select chrome so it looks at home in the props panel. */
+.props-glossary-scopes-select.ant-select {
+  width: 100%;
+  min-height: 26px;
+  font-size: 11px;
+}
+
+.props-glossary-scopes-select.ant-select.ant-select-multiple .ant-select-selector {
+  padding: 1px 4px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-height: 24px;
+}
+
+.props-glossary-scopes-select.ant-select-multiple .ant-select-selection-item {
+  height: 20px;
+  line-height: 18px;
+  padding: 0 6px;
+  font-size: 11px;
+  background: var(--designer-accent-subtle);
+  border-color: transparent;
+  color: var(--designer-text-primary);
+}
+
+.props-glossary-scopes-select.ant-select-multiple .ant-select-selection-placeholder {
+  font-size: 11px;
+  color: var(--designer-text-muted);
+}
+
+.props-glossary-description {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px;
+  background: var(--designer-bg-secondary);
+  border: 1px solid var(--designer-border);
+  border-radius: var(--designer-radius-sm);
+}
+
+.props-glossary-description-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--designer-text-tertiary);
+}
+
+.props-glossary-description-field {
+  width: 100%;
+  min-height: 76px;
+  padding: 6px 8px;
+  background: var(--designer-bg-primary, #fff);
+  color: var(--designer-text-primary);
+  border: 1px solid var(--designer-border);
+  border-radius: var(--designer-radius-sm);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.45;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.props-glossary-description-field:focus {
+  border-color: var(--designer-accent);
+}
+
+.props-glossary-description-field::placeholder {
+  color: var(--designer-text-muted);
+}
