@@ -103,13 +103,45 @@ describe("KeywordGlossaryEditor", () => {
     expect(next.keywordGlossary[0].appliesTo).toEqual(["weapons", "abilities"]);
   });
 
-  it("removes a scope from appliesTo when its checkbox is toggled off", () => {
+  it("removes a scope from appliesTo when its checkbox is toggled off (multi-scope entry)", () => {
+    const onChange = vi.fn();
+    const schema = baseSchema({
+      keywordGlossary: [
+        {
+          key: "twin-linked",
+          name: "Twin-linked",
+          description: "",
+          matchType: "exact",
+          appliesTo: ["weapons", "abilities"],
+        },
+      ],
+    });
+    render(<KeywordGlossaryEditor schema={schema} onChange={onChange} />);
+    openSection();
+    fireEvent.click(screen.getByLabelText("Abilities"));
+    const next = onChange.mock.calls.at(-1)[0];
+    expect(next.keywordGlossary[0].appliesTo).toEqual(["weapons"]);
+  });
+
+  it("locks the last remaining scope so appliesTo can never become empty", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
-    fireEvent.click(screen.getByLabelText("Weapons"));
+    const weaponsCheckbox = screen.getByLabelText("Weapons");
+    expect(weaponsCheckbox.disabled).toBe(true);
+    fireEvent.click(weaponsCheckbox);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("strips the transient _id before persisting", () => {
+    const onChange = vi.fn();
+    render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
+    openSection();
+    fireEvent.click(screen.getByLabelText("Add keyword"));
     const next = onChange.mock.calls.at(-1)[0];
-    expect(next.keywordGlossary[0].appliesTo).toEqual([]);
+    for (const entry of next.keywordGlossary) {
+      expect(entry).not.toHaveProperty("_id");
+    }
   });
 
   it("renders a checkbox for every supported scope", () => {

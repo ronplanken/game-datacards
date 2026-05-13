@@ -7,6 +7,7 @@ import { CustomStratagemCard } from "./CustomStratagemCard";
 import { CustomUnitCard } from "./CustomUnitCard";
 import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
 import { TemplateRenderer } from "../../Premium";
+import { readKeywordGlossary } from "../../Helpers/customSchema.helpers";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -117,7 +118,7 @@ export const CustomCardDisplay = ({
           faction={cardFaction}
           isMobile={isMobile}
           onBack={isMobile ? onBack : undefined}
-          keywordGlossary={schema.keywordGlossary}
+          keywordGlossary={readKeywordGlossary(schema)}
         />
       );
     }

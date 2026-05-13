@@ -7,6 +7,19 @@ import {
   countDatasourceCards,
   FACTION_CARD_COLLECTION_KEYS,
 } from "../../../Helpers/customDatasource.helpers";
+import { migrateLegacyKeywordGlossary } from "../../../Helpers/customSchema.helpers";
+
+/**
+ * Applies in-memory migrations to a freshly loaded datasource.
+ * Today this only renames the legacy `weaponKeywordGlossary` field on the
+ * schema; cheap to call on every load.
+ */
+function migrateDatasourceOnLoad(datasource) {
+  if (!datasource?.schema) return datasource;
+  const migratedSchema = migrateLegacyKeywordGlossary(datasource.schema);
+  if (migratedSchema === datasource.schema) return datasource;
+  return { ...datasource, schema: migratedSchema };
+}
 
 const COOKIE_NAME = "gdc-ds-selection";
 
@@ -68,7 +81,7 @@ export function useDatasourceEditorState() {
       try {
         const data = await getCustomDatasourceData(registryEntry.id);
         if (data) {
-          setActiveDatasource(data);
+          setActiveDatasource(migrateDatasourceOnLoad(data));
           setSelectedItem({ type: "datasource" });
           saveSelection({ ds: registryEntry.id });
         }
@@ -153,9 +166,10 @@ export function useDatasourceEditorState() {
    * Set the active datasource after wizard creation (receives full datasource object).
    */
   const setCreatedDatasource = useCallback((datasource) => {
-    setActiveDatasource(datasource);
+    const migrated = migrateDatasourceOnLoad(datasource);
+    setActiveDatasource(migrated);
     setSelectedItem({ type: "datasource" });
-    saveSelection({ ds: datasource.id });
+    saveSelection({ ds: migrated.id });
   }, []);
 
   /**
@@ -340,7 +354,13 @@ export function useDatasourceEditorState() {
           clearSelection();
           return;
         }
-        setActiveDatasource(data);
+        const migrated = migrateDatasourceOnLoad(data);
+        setActiveDatasource(migrated);
+        // Replace `data` below with `migrated` so card-by-id lookup uses
+        // the post-migration object — schema-level migrations don't touch
+        // cards today, but keeping the references consistent avoids
+        // surprises if that changes.
+        data = migrated;
 
         if (saved.card) {
           const card = findCardInDatasource(data, saved.card);

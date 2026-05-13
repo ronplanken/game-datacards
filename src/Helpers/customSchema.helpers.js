@@ -1065,6 +1065,37 @@ const validateKeywordGlossary = (glossary, path) => {
   return errors;
 };
 
+const LEGACY_GLOSSARY_CACHE = new WeakMap();
+
+/**
+ * Reads `schema.keywordGlossary`, falling back to the legacy
+ * `schema.weaponKeywordGlossary` field if the new key is missing. When
+ * pulling from the legacy field, entries that don't declare `appliesTo`
+ * are augmented with `["weapons"]` so renderers downstream behave as if
+ * the migration had already happened.
+ *
+ * Returns `undefined` when neither field is present. Returns a stable
+ * reference for a given input schema (cached in a WeakMap) so renderers
+ * can use it as a React dep without triggering re-renders.
+ *
+ * @param {object} schema
+ * @returns {Array | undefined}
+ */
+export const readKeywordGlossary = (schema) => {
+  if (!schema || typeof schema !== "object") return undefined;
+  if (Array.isArray(schema.keywordGlossary)) return schema.keywordGlossary;
+  if (!Array.isArray(schema.weaponKeywordGlossary)) return undefined;
+  const cached = LEGACY_GLOSSARY_CACHE.get(schema);
+  if (cached) return cached;
+  const migrated = schema.weaponKeywordGlossary.map((entry) =>
+    entry && typeof entry === "object" && !(Array.isArray(entry.appliesTo) && entry.appliesTo.length > 0)
+      ? { ...entry, appliesTo: ["weapons"] }
+      : entry,
+  );
+  LEGACY_GLOSSARY_CACHE.set(schema, migrated);
+  return migrated;
+};
+
 /**
  * Filters a glossary down to entries whose `appliesTo` includes the given
  * scope. Entries missing `appliesTo` are skipped — every entry must declare
@@ -1138,6 +1169,44 @@ export const collectKeywordExplanations = (keywords, glossary, scope) => {
     }
   }
   return out;
+};
+
+/**
+ * Migrates legacy `weaponKeywordGlossary` to `keywordGlossary`, adding
+ * `appliesTo: ["weapons"]` to any entry that doesn't declare scopes yet.
+ * Idempotent: if the schema already has `keywordGlossary`, the legacy
+ * field is dropped without overwriting.
+ *
+ * Returns the same schema reference when nothing needs migrating, so
+ * callers can use `=== schema` to detect a no-op.
+ *
+ * @param {object} schema - The datasource schema
+ * @returns {object} A migrated schema (new object) or the input untouched
+ */
+export const migrateLegacyKeywordGlossary = (schema) => {
+  if (!schema || typeof schema !== "object") return schema;
+  const hasLegacy = Array.isArray(schema.weaponKeywordGlossary);
+  const hasNew = Array.isArray(schema.keywordGlossary);
+  if (!hasLegacy && !hasNew) return schema;
+
+  const { weaponKeywordGlossary, keywordGlossary, ...rest } = schema;
+  const sourceList = hasNew ? keywordGlossary : weaponKeywordGlossary;
+  const migrated = sourceList.map((entry) => {
+    if (!entry || typeof entry !== "object") return entry;
+    if (Array.isArray(entry.appliesTo) && entry.appliesTo.length > 0) return entry;
+    return { ...entry, appliesTo: ["weapons"] };
+  });
+
+  // Short-circuit when the rename + appliesTo backfill would produce an
+  // identical structure. Avoids churning state when nothing changed.
+  const sameShape =
+    !hasLegacy &&
+    hasNew &&
+    migrated.length === keywordGlossary.length &&
+    migrated.every((entry, i) => entry === keywordGlossary[i]);
+  if (sameShape) return schema;
+
+  return { ...rest, keywordGlossary: migrated };
 };
 
 /**

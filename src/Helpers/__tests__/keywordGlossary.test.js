@@ -4,6 +4,8 @@ import {
   collectKeywordExplanations,
   filterGlossaryByScope,
   getDefaultKeywordGlossary,
+  migrateLegacyKeywordGlossary,
+  readKeywordGlossary,
   validateSchema,
   create40kPreset,
   VALID_GLOSSARY_SCOPES,
@@ -270,5 +272,92 @@ describe("validateSchema with keywordGlossary", () => {
     });
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.includes("bogus"))).toBe(true);
+  });
+});
+
+describe("migrateLegacyKeywordGlossary", () => {
+  it("renames weaponKeywordGlossary to keywordGlossary", () => {
+    const schema = {
+      baseSystem: "40k-10e",
+      weaponKeywordGlossary: [
+        { key: "one-shot", name: "One Shot", description: "Once per battle.", matchType: "exact" },
+      ],
+    };
+    const migrated = migrateLegacyKeywordGlossary(schema);
+    expect(migrated).not.toBe(schema);
+    expect(migrated.weaponKeywordGlossary).toBeUndefined();
+    expect(migrated.keywordGlossary).toHaveLength(1);
+  });
+
+  it("backfills appliesTo: ['weapons'] on legacy entries that lack it", () => {
+    const schema = {
+      weaponKeywordGlossary: [{ key: "one-shot", name: "One Shot", description: "x" }],
+    };
+    const migrated = migrateLegacyKeywordGlossary(schema);
+    expect(migrated.keywordGlossary[0].appliesTo).toEqual(["weapons"]);
+  });
+
+  it("preserves an existing appliesTo on legacy entries", () => {
+    const schema = {
+      weaponKeywordGlossary: [{ key: "k", name: "K", description: "", appliesTo: ["abilities"] }],
+    };
+    const migrated = migrateLegacyKeywordGlossary(schema);
+    expect(migrated.keywordGlossary[0].appliesTo).toEqual(["abilities"]);
+  });
+
+  it("returns the same reference when nothing needs migrating", () => {
+    const schema = {
+      keywordGlossary: [{ key: "one-shot", name: "One Shot", description: "x", appliesTo: ["weapons"] }],
+    };
+    expect(migrateLegacyKeywordGlossary(schema)).toBe(schema);
+  });
+
+  it("returns the same reference when neither field is present", () => {
+    const schema = { baseSystem: "blank", cardTypes: [] };
+    expect(migrateLegacyKeywordGlossary(schema)).toBe(schema);
+  });
+
+  it("drops the legacy field even if both are present, preferring the new field", () => {
+    const schema = {
+      keywordGlossary: [{ key: "new", name: "N", description: "n", appliesTo: ["weapons"] }],
+      weaponKeywordGlossary: [{ key: "old", name: "O", description: "o" }],
+    };
+    const migrated = migrateLegacyKeywordGlossary(schema);
+    expect(migrated.weaponKeywordGlossary).toBeUndefined();
+    expect(migrated.keywordGlossary.map((e) => e.key)).toEqual(["new"]);
+  });
+
+  it("handles null/undefined input safely", () => {
+    expect(migrateLegacyKeywordGlossary(null)).toBeNull();
+    expect(migrateLegacyKeywordGlossary(undefined)).toBeUndefined();
+  });
+});
+
+describe("readKeywordGlossary", () => {
+  it("returns the new-shape field when present", () => {
+    const list = [{ key: "k", name: "K", description: "", appliesTo: ["weapons"] }];
+    expect(readKeywordGlossary({ keywordGlossary: list })).toBe(list);
+  });
+
+  it("falls back to the legacy field, backfilling appliesTo", () => {
+    const schema = {
+      weaponKeywordGlossary: [{ key: "k", name: "K", description: "" }],
+    };
+    const result = readKeywordGlossary(schema);
+    expect(result).toEqual([{ key: "k", name: "K", description: "", appliesTo: ["weapons"] }]);
+  });
+
+  it("returns the same migrated reference on repeated reads (cached)", () => {
+    const schema = {
+      weaponKeywordGlossary: [{ key: "k", name: "K", description: "" }],
+    };
+    const a = readKeywordGlossary(schema);
+    const b = readKeywordGlossary(schema);
+    expect(a).toBe(b);
+  });
+
+  it("returns undefined when neither field is present", () => {
+    expect(readKeywordGlossary({})).toBeUndefined();
+    expect(readKeywordGlossary(null)).toBeUndefined();
   });
 });

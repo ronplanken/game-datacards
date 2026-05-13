@@ -50,7 +50,7 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
   const seedAvailable = getDefaultKeywordGlossary(baseSystem).length > 0;
 
   const writeEntries = (next) => {
-    const cleaned = next.map(({ _id, ...rest }) => ({ _id, ...rest }));
+    const cleaned = next.map(({ _id, ...rest }) => rest);
     onChange({ ...schema, keywordGlossary: cleaned });
   };
 
@@ -62,6 +62,10 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
   const toggleScope = (index, scope) => {
     const entry = entries[index];
     const current = Array.isArray(entry.appliesTo) ? entry.appliesTo : [];
+    // Don't allow unchecking the last remaining scope — schema validator
+    // requires appliesTo to be non-empty, and silently producing an
+    // invalid entry would only surface much later at save/export time.
+    if (current.includes(scope) && current.length === 1) return;
     const nextScopes = current.includes(scope) ? current.filter((s) => s !== scope) : [...current, scope];
     updateEntry(index, "appliesTo", nextScopes);
   };
@@ -162,11 +166,16 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
                   <legend className="props-compact-label">Applies to</legend>
                   {VALID_GLOSSARY_SCOPES.map((scope) => {
                     const checked = scopes.includes(scope);
+                    const isOnlyScope = checked && scopes.length === 1;
                     return (
-                      <label key={scope} className="props-field-item-scope-chip">
+                      <label
+                        key={scope}
+                        className={`props-field-item-scope-chip${isOnlyScope ? " is-locked" : ""}`}
+                        title={isOnlyScope ? "An entry must apply to at least one scope" : undefined}>
                         <input
                           type="checkbox"
                           checked={checked}
+                          disabled={isOnlyScope}
                           onChange={() => toggleScope(index, scope)}
                           aria-label={SCOPE_LABELS[scope] || scope}
                         />
