@@ -81,14 +81,37 @@ const unitWith = (keywords) => ({
 });
 
 describe("Ds40kUnitWeapons glossary explanations", () => {
-  it("renders an explanation block when a weapon keyword matches the glossary", () => {
+  it("renders an explanation row when a weapon keyword matches the glossary", () => {
     const { container } = render(
       <Ds40kUnitWeapons unit={unitWith(["One Shot"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
     );
-    const explanation = container.querySelector(".special");
-    expect(explanation).toBeTruthy();
-    expect(explanation.querySelector(".heading .title").textContent).toBe("One Shot");
+    const special = container.querySelector(".special");
+    expect(special).toBeTruthy();
+    const ability = special.querySelector(".ability");
+    expect(ability).toBeTruthy();
+    expect(ability.querySelector(".name").textContent).toBe("One Shot");
     expect(screen.getByText(/once per battle/i)).toBeInTheDocument();
+  });
+
+  it("collapses multiple matched explanations into a single .special container", () => {
+    const unit = {
+      name: "Test Unit",
+      weapons: {
+        ranged: [
+          {
+            profiles: [
+              { name: "Gun A", active: true, keywords: ["One Shot"] },
+              { name: "Gun B", active: true, keywords: ["Anti-Infantry 4+"] },
+            ],
+          },
+        ],
+      },
+    };
+    const { container } = render(
+      <Ds40kUnitWeapons unit={unit} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
+    );
+    expect(container.querySelectorAll(".special")).toHaveLength(1);
+    expect(container.querySelectorAll(".special .ability")).toHaveLength(2);
   });
 
   it("renders nothing extra when there is no glossary", () => {

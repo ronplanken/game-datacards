@@ -1,5 +1,6 @@
 import { UnitWeapon } from "../../../Warhammer40k-10e/UnitCard/UnitWeapon";
 import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
+import { UnitWeaponKeywords } from "../../../Warhammer40k-10e/UnitCard/UnitWeaponKeyword";
 import { WeaponTypeIcon } from "../../../Icons/WeaponTypeIcon";
 import { Ds40kUnitSections } from "./Ds40kUnitSections";
 import { collectKeywordExplanations } from "../../../../Helpers/customSchema.helpers";
@@ -41,37 +42,33 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
       {weapons?.map((weapon, index) => (
         <Ds40kWeaponProfiles weapon={weapon} columns={columns} key={`weapon-${index}`} />
       ))}
-      {/* Glossary-driven keyword explanations (e.g. [ONE SHOT] - The bearer ...) */}
-      {glossaryExplanations.map((entry) => (
-        <div className="special" key={`weapon-glossary-${entry.key}`}>
-          <div className="heading">
-            <div className="title">{entry.name}</div>
-          </div>
-          <UnitAbilityDescription name={entry.name} description={entry.description} showDescription={true} />
-        </div>
-      ))}
-      {/* Primarch-style weapon abilities */}
-      {weapons?.some((w) => w.abilities?.length > 0) &&
-        weapons
-          .filter((w) => w.abilities?.length > 0)
-          .map((weapon) =>
-            weapon.abilities
-              ?.filter((ability) => ability.showAbility)
-              ?.map((ability, i) => (
-                <div className="special" key={`weapon-ability-${ability.name}-${i}`}>
-                  <div className="heading">
-                    <div className="title">{ability.name}</div>
-                  </div>
-                  {ability.showDescription && (
-                    <UnitAbilityDescription
-                      name={ability.name}
-                      description={ability.description}
-                      showDescription={ability.showDescription}
-                    />
-                  )}
-                </div>
+      {/* Weapon abilities — glossary-driven explanations + per-weapon abilities,
+          rendered as flat `.ability` rows inside a single `.special` block to match
+          the built-in UnitWeapon CSS structure ("One Shot: …" compact rows). */}
+      {(glossaryExplanations.length > 0 || weapons?.some((w) => w.abilities?.some((a) => a.showAbility))) && (
+        <div className="special">
+          {glossaryExplanations.map((entry) => (
+            <UnitAbilityDescription
+              key={`weapon-glossary-${entry.key}`}
+              name={entry.name}
+              description={entry.description}
+              showDescription={true}
+            />
+          ))}
+          {weapons?.flatMap((weapon, wIdx) =>
+            (weapon.abilities || [])
+              .filter((ability) => ability.showAbility)
+              .map((ability, aIdx) => (
+                <UnitAbilityDescription
+                  key={`weapon-ability-${wIdx}-${aIdx}-${ability.name}`}
+                  name={ability.name}
+                  description={ability.description}
+                  showDescription={ability.showDescription}
+                />
               )),
           )}
+        </div>
+      )}
     </div>
   );
 };
@@ -95,7 +92,7 @@ const Ds40kWeaponProfiles = ({ weapon, columns }) => {
                 <span>{profile.name}</span>
                 {profile.keywords?.length > 0 && (
                   <span style={{ paddingLeft: "4px" }}>
-                    [<span className="weapon-keywords">{profile.keywords.join(", ")}</span>]
+                    <UnitWeaponKeywords keywords={profile.keywords} />
                   </span>
                 )}
               </div>
