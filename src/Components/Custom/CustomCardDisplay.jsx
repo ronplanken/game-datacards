@@ -117,6 +117,7 @@ export const CustomCardDisplay = ({
           faction={cardFaction}
           isMobile={isMobile}
           onBack={isMobile ? onBack : undefined}
+          weaponKeywordGlossary={schema.weaponKeywordGlossary}
         />
       );
     }

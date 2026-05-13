@@ -2,15 +2,28 @@ import { UnitWeapon } from "../../../Warhammer40k-10e/UnitCard/UnitWeapon";
 import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
 import { WeaponTypeIcon } from "../../../Icons/WeaponTypeIcon";
 import { Ds40kUnitSections } from "./Ds40kUnitSections";
+import { collectWeaponKeywordExplanations } from "../../../../Helpers/customSchema.helpers";
 
 /**
  * Schema-driven weapon type section using native 40K CSS structure.
  * Reads column headers from schema weapon type definition.
  */
-const Ds40kWeaponType = ({ weaponTypeDef, weapons }) => {
+const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
   const columns = weaponTypeDef.columns || [];
   const iconType = weaponTypeDef.key === "melee" ? "melee" : "ranged";
   const skillColumn = columns.find((c) => c.key === "skill");
+
+  const glossaryExplanations = (() => {
+    if (!Array.isArray(glossary) || glossary.length === 0 || !weapons?.length) return [];
+    const allKeywords = [];
+    weapons.forEach((weapon) => {
+      weapon.profiles?.forEach((profile) => {
+        if (profile.active === false) return;
+        profile.keywords?.forEach((kw) => allKeywords.push(kw));
+      });
+    });
+    return collectWeaponKeywordExplanations(allKeywords, glossary);
+  })();
 
   return (
     <div className={weaponTypeDef.key}>
@@ -27,6 +40,15 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons }) => {
       </div>
       {weapons?.map((weapon, index) => (
         <Ds40kWeaponProfiles weapon={weapon} columns={columns} key={`weapon-${index}`} />
+      ))}
+      {/* Glossary-driven keyword explanations (e.g. [ONE SHOT] - The bearer ...) */}
+      {glossaryExplanations.map((entry) => (
+        <div className="special" key={`weapon-glossary-${entry.key}`}>
+          <div className="heading">
+            <div className="title">{entry.name}</div>
+          </div>
+          <UnitAbilityDescription name={entry.name} description={entry.description} showDescription={true} />
+        </div>
       ))}
       {/* Primarch-style weapon abilities */}
       {weapons?.some((w) => w.abilities?.length > 0) &&
@@ -105,8 +127,9 @@ const Ds40kWeaponProfiles = ({ weapon, columns }) => {
  * @param {Object} props.unit - The card data
  * @param {Object} props.weaponTypes - The weaponTypes schema definition
  * @param {Object} [props.sectionsSchema] - The sections schema definition
+ * @param {Array} [props.weaponKeywordGlossary] - Datasource-level weapon keyword glossary
  */
-export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema }) => {
+export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, weaponKeywordGlossary }) => {
   if (!weaponTypes?.types?.length) {
     return null;
   }
@@ -121,7 +144,14 @@ export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema }) => {
           return null;
         }
 
-        return <Ds40kWeaponType weaponTypeDef={weaponTypeDef} weapons={weapons} key={weaponTypeDef.key} />;
+        return (
+          <Ds40kWeaponType
+            weaponTypeDef={weaponTypeDef}
+            weapons={weapons}
+            glossary={weaponKeywordGlossary}
+            key={weaponTypeDef.key}
+          />
+        );
       })}
       {sectionsSchema && <Ds40kUnitSections unit={unit} sectionsSchema={sectionsSchema} />}
     </div>

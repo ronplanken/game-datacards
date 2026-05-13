@@ -29,6 +29,7 @@ vi.mock("lucide-react", () => ({
   LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
   Users: (props) => <svg data-testid="icon-users" {...props} />,
+  RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
 }));
 
 const mockDatasource = {

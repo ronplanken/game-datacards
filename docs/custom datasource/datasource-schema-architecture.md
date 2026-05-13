@@ -19,19 +19,47 @@ The `schema` property sits inside a datasource's top-level structure.
     banner: string,      // hex colour for card banners (default: "#16213e")
   },
   cardTypes: [CardTypeDefinition],
+  weaponKeywordGlossary: [WeaponKeywordGlossaryEntry], // optional, see below
 }
 ```
 
-| Field        | Type   | Description |
-|--------------|--------|-------------|
-| `version`    | string | Schema version string. |
-| `baseSystem` | string | Determines available editor features and default presets. |
-| `colours`    | object | Default faction colours, propagated to each faction's `colours` object. |
-| `cardTypes`  | array  | Card type definitions (see below). |
+| Field                   | Type   | Description |
+|-------------------------|--------|-------------|
+| `version`               | string | Schema version string. |
+| `baseSystem`            | string | Determines available editor features and default presets. |
+| `colours`               | object | Default faction colours, propagated to each faction's `colours` object. |
+| `cardTypes`             | array  | Card type definitions (see below). |
+| `weaponKeywordGlossary` | array  | Optional. Definitions for weapon keywords; the unit renderer expands matching keywords into explanation rows below the weapon profile. |
 
 ### Colours
 
 Colours control the visual theming of card headers and banners. The Datasource Editor exposes these as "Main" (header) and "Accent" (banner) colour pickers. Changes propagate to every faction's `colours` object automatically. Similarly, renaming the datasource propagates the new name to every faction.
+
+## Weapon Keyword Glossary
+
+The optional `weaponKeywordGlossary` array at the schema root pairs a weapon keyword tag (e.g. `One Shot`, `Anti-`) with a description. When the unit renderer (`Ds40kUnitWeapons`) encounters a weapon profile with one of these keywords, it renders an explanation row below the weapon table — matching how the built-in 10th edition cards display `[ONE SHOT] - The bearer can only shoot with this weapon once per battle.`
+
+```js
+weaponKeywordGlossary: [
+  { key: "one-shot", name: "One Shot", description: "The bearer can only shoot with this weapon once per battle." },
+  { key: "anti", name: "Anti-", description: "An unmodified Wound roll of 'x+' against a target with the matching keyword scores a Critical Wound.", matchType: "prefix" },
+],
+```
+
+| Property      | Type   | Description |
+|---------------|--------|-------------|
+| `key`         | string | Stable storage key, unique within the glossary. |
+| `name`        | string | The keyword name as it appears on weapons (e.g. `One Shot`, `Anti-`). |
+| `description` | string | Explanation text rendered under the weapon profile. |
+| `matchType`   | string | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`; used for parametrised rules like `Anti-Infantry 4+` matching `Anti-`). |
+
+**Resolution rules:**
+
+- Each weapon keyword is resolved to **at most one** glossary entry.
+- When multiple entries match the same keyword, the entry with the **longest `name`** wins, so specific entries (e.g. `Power Fist`) take precedence over shorter prefixes (e.g. `Power`).
+- Within a weapon type section, explanation rows are deduplicated — the same keyword across multiple weapons only renders one description block.
+- Datasources with `baseSystem: "40k-10e"` created via the wizard are pre-seeded with the official 10e keyword set (`One Shot`, `Devastating Wounds`, `Sustained Hits`, `Anti-`, etc.). The seed lives in `src/Helpers/weaponKeywordDefaults.js`. The schema editor also exposes a "Restore defaults" button for 40k-10e datasources.
+- The Datasource Editor's premium `SchemaWeaponsEditor` uses the glossary names to populate an autocomplete dropdown when adding keywords to a weapon, but users can still free-type any value.
 
 ## Discriminated Union: `cardTypes`
 

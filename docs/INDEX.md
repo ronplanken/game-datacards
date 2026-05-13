@@ -13,6 +13,13 @@ description: Table of contents for all Game Datacards documentation files
 | [custom-datasource-format.md](custom-datasource-format.md) | JSON format for creating and sharing custom datasources, including validation limits and all game system card schemas |
 | [starcraft-tmg.md](starcraft-tmg.md) | Starcraft TMG base system: unit schema, ability badges, Models / Supply tiers, weapon tables, starter datasource |
 
+## Custom Datasource
+
+| File | Description |
+|------|-------------|
+| [custom datasource/datasource-schema-architecture.md](custom%20datasource/datasource-schema-architecture.md) | Canonical reference for the custom datasource schema (card types, weapons, abilities, metadata, glossary). |
+| [custom datasource/weapon-keyword-glossary.md](custom%20datasource/weapon-keyword-glossary.md) | Datasource-level weapon keyword glossary — defines `One Shot`, `Anti-`, etc. and renders explanation lines below weapon profiles on custom 40k-10e cards. |
+
 ## Features
 
 | File | Description |

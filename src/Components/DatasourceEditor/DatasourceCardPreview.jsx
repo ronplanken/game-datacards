@@ -62,7 +62,15 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
     };
 
     if (NativeComponent) {
-      return <NativeComponent card={card} cardTypeDef={cardTypeDef} cardStyle={cardStyle} faction={cardFaction} />;
+      return (
+        <NativeComponent
+          card={card}
+          cardTypeDef={cardTypeDef}
+          cardStyle={cardStyle}
+          faction={cardFaction}
+          weaponKeywordGlossary={schema.weaponKeywordGlossary}
+        />
+      );
     }
 
     switch (baseType) {

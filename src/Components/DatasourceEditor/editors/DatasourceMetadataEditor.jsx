@@ -4,6 +4,7 @@ import { IconTag, IconNumber, IconUser, IconPalette } from "@tabler/icons-react"
 import { Section, CompactInput } from "../components";
 import { DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
 import { FactionsEditor } from "./FactionsEditor";
+import { WeaponKeywordGlossaryEditor } from "./WeaponKeywordGlossaryEditor";
 
 const BASE_SYSTEM_LABELS = {
   "40k-10e": "Warhammer 40K 10th Edition",
@@ -42,6 +43,11 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
         colours: { ...faction.colours, [colourKey]: value },
       })),
     });
+  };
+
+  const handleSchemaChange = (updatedSchema) => {
+    if (!onUpdateDatasource) return;
+    onUpdateDatasource({ ...datasource, schema: updatedSchema });
   };
 
   const headerColour = datasource.schema?.colours?.header || DEFAULT_DATASOURCE_COLOURS.header;
@@ -102,6 +108,7 @@ export const DatasourceMetadataEditor = ({ datasource, onUpdateDatasource }) => 
           <span className="props-metadata-value">{baseSystemLabel}</span>
         </div>
       </Section>
+      <WeaponKeywordGlossaryEditor schema={datasource.schema} onChange={handleSchemaChange} />
       <FactionsEditor datasource={datasource} onUpdateDatasource={onUpdateDatasource} />
     </div>
   );
