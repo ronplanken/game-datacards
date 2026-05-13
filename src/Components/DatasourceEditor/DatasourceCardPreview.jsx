@@ -8,7 +8,6 @@ import { TemplateRenderer } from "../../Premium";
 import { resolveDatasourceRenderer } from "./cards/resolveDatasourceRenderer";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { DatasourcePreviewToolbar } from "./DatasourcePreviewToolbar";
-import { readKeywordGlossary } from "../../Helpers/customSchema.helpers";
 
 /**
  * Renders a card preview in the Datasource Editor center panel.
@@ -69,7 +68,7 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
           cardTypeDef={cardTypeDef}
           cardStyle={cardStyle}
           faction={cardFaction}
-          keywordGlossary={readKeywordGlossary(schema)}
+          keywordGlossary={schema.keywordGlossary}
         />
       );
     }
