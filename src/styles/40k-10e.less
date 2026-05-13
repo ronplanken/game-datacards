@@ -4145,13 +4145,18 @@
         content: ", ";
       }
 
-      // Keywords with a tooltip on hover or an explanation row below the
+      // Keywords with a hover tooltip or an explanation row below the
       // weapon table get a dotted underline so it's discoverable that
-      // hovering / reading further yields the rule text.
+      // hovering / reading further yields the rule text. antd's Button
+      // overrides `text-decoration`, so draw the dotted line as a small
+      // repeating background gradient pinned to the bottom edge.
       &.has-info {
-        text-decoration: underline dotted;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 2px;
+        background-image: linear-gradient(to right, currentColor 1px, transparent 1px);
+        background-size: 3px 1px;
+        background-repeat: repeat-x;
+        background-position: 0 100%;
+        padding-bottom: 2px;
+        background-clip: padding-box;
       }
     }
     .keyword-button:first-child {
