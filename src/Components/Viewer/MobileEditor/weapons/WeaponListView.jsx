@@ -1,27 +1,30 @@
 import { ChevronRight, Plus, Trash2 } from "lucide-react";
 import { getWeaponsArray, setWeaponsOnCard } from "./weaponHelpers";
 
+const usesProfiles = (config) => config?.format === "40k" || (config?.format === "custom" && config?.hasProfiles);
+
 export const WeaponListView = ({ card, weaponTypeKey, config, replaceCard, onEditWeapon }) => {
   const { format, columns, label } = config;
   const weapons = getWeaponsArray(card, weaponTypeKey, format);
+  const profileBased = usesProfiles(config);
 
   const setWeapons = (updated) => {
     replaceCard(setWeaponsOnCard(card, weaponTypeKey, updated, format));
   };
 
   const handleAdd = () => {
-    const blank = { name: "New Weapon", active: true };
-    if (format === "40k") {
+    if (profileBased) {
       const profile = { name: "New Weapon", active: true, keywords: [] };
       columns?.forEach((col) => (profile[col.key] = ""));
-      blank.profiles = [profile];
-      blank.abilities = [];
-    } else {
-      columns?.forEach((col) => (blank[col.key] = ""));
-      if (config.hasKeywords) {
-        blank.keywords = [];
-      }
+      const blank = { active: true, profiles: [profile] };
+      if (format === "40k") blank.abilities = [];
+      setWeapons([...weapons, blank]);
+      return;
     }
+
+    const blank = { name: "New Weapon", active: true };
+    columns?.forEach((col) => (blank[col.key] = ""));
+    if (config.hasKeywords) blank.keywords = [];
     setWeapons([...weapons, blank]);
   };
 
@@ -30,18 +33,22 @@ export const WeaponListView = ({ card, weaponTypeKey, config, replaceCard, onEdi
   };
 
   const getWeaponDisplayName = (weapon) => {
-    if (format === "40k" && weapon.profiles?.length) {
+    if (profileBased && weapon.profiles?.length) {
       return weapon.profiles[0]?.name || weapon.name || "Untitled weapon";
     }
     return weapon.name || "Untitled weapon";
   };
 
   const getWeaponSummary = (weapon) => {
-    if (format === "40k") {
-      const profileCount = weapon.profiles?.length || 0;
-      return profileCount > 1 ? `${profileCount} profiles` : "";
+    if (!profileBased) return "";
+    const profileCount = weapon.profiles?.length || 0;
+    if (profileCount <= 1) return "";
+    if (config.profileRelation === "parent-child") {
+      const childLabel = (config.profileChildLabel || "Upgrade").toLowerCase();
+      const extras = profileCount - 1;
+      return `${extras} ${childLabel}${extras === 1 ? "" : "s"}`;
     }
-    return "";
+    return `${profileCount} profiles`;
   };
 
   return (

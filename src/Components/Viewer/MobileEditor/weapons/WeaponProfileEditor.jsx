@@ -1,12 +1,33 @@
 import { Plus, Trash2 } from "lucide-react";
 import { EditorTextField } from "../shared/EditorTextField";
 import { EditorNumberField } from "../shared/EditorNumberField";
+import { EditorSelectField } from "../shared/EditorSelectField";
 import { EditorTagInput } from "../shared/EditorTagInput";
 import { EditorToggle } from "../shared/EditorToggle";
 import { getWeaponsArray, setWeaponsOnCard } from "./weaponHelpers";
 
 // Columns that store arrays and need special handling
 const ARRAY_COLUMNS = new Set(["abilities"]);
+
+/**
+ * Render a single weapon column input using the schema field type so enum
+ * columns get a Select (matching desktop SchemaFieldEditor) while string /
+ * richtext stay on the stat-cell EditorNumberField that already styles the
+ * grid layout for stat-like values.
+ */
+const ColumnInput = ({ column, value, onChange }) => {
+  if (column.type === "boolean") {
+    return <EditorToggle label={column.label} checked={!!value} onChange={onChange} />;
+  }
+  if (column.type === "enum" && Array.isArray(column.options) && column.options.length > 0) {
+    const options = column.options.map((opt) => ({ value: opt, label: opt }));
+    return <EditorSelectField label={column.label} value={value} onChange={onChange} options={options} />;
+  }
+  if (column.type === "richtext") {
+    return <EditorTextField label={column.label} value={value} onChange={onChange} multiline />;
+  }
+  return <EditorNumberField label={column.label} value={value} onChange={onChange} />;
+};
 
 export const WeaponProfileEditor = ({
   card,
@@ -17,7 +38,7 @@ export const WeaponProfileEditor = ({
   replaceCard,
   onSelectProfile,
 }) => {
-  const { format, columns } = config;
+  const { format, columns, hasProfiles } = config;
   const weapons = getWeaponsArray(card, weaponTypeKey, format);
 
   const setWeapons = (updated) => {
@@ -26,21 +47,24 @@ export const WeaponProfileEditor = ({
   const weapon = weapons[weaponIndex];
   if (!weapon) return null;
 
-  // 40k: weapons have profiles array
-  if (format === "40k") {
+  // 40k always uses profiles; custom uses profiles when its weapon type declares
+  // hasProfiles=true. AoS and the flat custom fallback edit the weapon directly.
+  const useProfiles = format === "40k" || (format === "custom" && hasProfiles);
+
+  if (useProfiles) {
     return (
-      <FortyKProfileEditor
+      <ProfileWeaponEditor
         weapons={weapons}
         weaponIndex={weaponIndex}
         profileIndex={profileIndex}
         columns={columns}
+        config={config}
         setWeapons={setWeapons}
         onSelectProfile={onSelectProfile}
       />
     );
   }
 
-  // AoS / custom: flat weapon properties
   return (
     <FlatWeaponEditor
       weapons={weapons}
@@ -52,11 +76,15 @@ export const WeaponProfileEditor = ({
   );
 };
 
-const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setWeapons, onSelectProfile }) => {
+const ProfileWeaponEditor = ({ weapons, weaponIndex, profileIndex, columns, config, setWeapons, onSelectProfile }) => {
   const weapon = weapons[weaponIndex];
   const profiles = weapon.profiles || [];
   const profile = profiles[profileIndex];
   if (!profile) return null;
+
+  const hasKeywords = config.hasKeywords !== false;
+  const isParentChild = config.profileRelation === "parent-child";
+  const childLabel = config.profileChildLabel || "Upgrade";
 
   const updateProfile = (field, value) => {
     const updatedProfiles = [...profiles];
@@ -67,7 +95,10 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
   };
 
   const addProfile = () => {
-    const blank = { name: "New Profile", active: true, keywords: [] };
+    const isUpgrade = isParentChild;
+    const baseName = isUpgrade ? `${childLabel} ${profiles.length}` : `Profile ${profiles.length + 1}`;
+    const blank = { name: baseName, active: true, keywords: [] };
+    if (isUpgrade) blank.upgrade = true;
     columns?.forEach((col) => (blank[col.key] = ""));
     const updatedWeapons = [...weapons];
     updatedWeapons[weaponIndex] = { ...weapon, profiles: [...profiles, blank] };
@@ -84,6 +115,15 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
     onSelectProfile?.(clampedIndex);
   };
 
+  // Parent-child shows the base flush and additional rows as indented upgrades;
+  // mirror that visual rhythm on the add button label so editors know what
+  // they'll create.
+  const addButtonLabel = isParentChild
+    ? profiles.length === 0
+      ? "Add weapon"
+      : `Add ${childLabel.toLowerCase()}`
+    : "Add Profile";
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <EditorTextField
@@ -95,9 +135,9 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
 
       <div className="mobile-editor-profile-grid">
         {columns?.map((col) => (
-          <EditorNumberField
+          <ColumnInput
             key={col.key}
-            label={col.label}
+            column={col}
             value={profile[col.key]}
             onChange={(value) => updateProfile(col.key, value)}
           />
@@ -110,17 +150,19 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
         onChange={(value) => updateProfile("active", value)}
       />
 
-      <EditorTagInput
-        label="Keywords"
-        tags={profile.keywords || []}
-        onChange={(tags) => updateProfile("keywords", tags)}
-      />
+      {hasKeywords && (
+        <EditorTagInput
+          label="Keywords"
+          tags={profile.keywords || []}
+          onChange={(tags) => updateProfile("keywords", tags)}
+        />
+      )}
 
       {/* Profile management */}
       <div style={{ display: "flex", gap: 8 }}>
         <button className="mobile-editor-add-btn" onClick={addProfile} type="button" style={{ flex: 1 }}>
           <Plus size={14} />
-          <span>Add Profile</span>
+          <span>{addButtonLabel}</span>
         </button>
         {profiles.length > 1 && (
           <button className="mobile-editor-profile-delete-btn" onClick={removeProfile} type="button">
@@ -138,7 +180,9 @@ const FortyKProfileEditor = ({ weapons, weaponIndex, profileIndex, columns, setW
               <button
                 key={i}
                 type="button"
-                className={`mobile-editor-profile-item${i === profileIndex ? " active" : ""}`}
+                className={`mobile-editor-profile-item${i === profileIndex ? " active" : ""}${
+                  isParentChild && i > 0 ? " mobile-editor-profile-item--upgrade" : ""
+                }`}
                 onClick={() => onSelectProfile?.(i)}>
                 <span className="mobile-editor-profile-item-name">{p.name || `Profile ${i + 1}`}</span>
                 {i === profileIndex && <span className="mobile-editor-profile-item-badge">editing</span>}
@@ -173,9 +217,9 @@ const FlatWeaponEditor = ({ weapons, weaponIndex, columns, config, setWeapons })
         {columns
           ?.filter((col) => !ARRAY_COLUMNS.has(col.key))
           .map((col) => (
-            <EditorNumberField
+            <ColumnInput
               key={col.key}
-              label={col.label}
+              column={col}
               value={weapon[col.key]}
               onChange={(value) => updateWeapon(col.key, value)}
             />
