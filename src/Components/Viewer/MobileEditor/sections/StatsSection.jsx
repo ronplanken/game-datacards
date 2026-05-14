@@ -2,6 +2,22 @@ import { Plus, Trash2 } from "lucide-react";
 import { EditorAccordion } from "../shared/EditorAccordion";
 import { EditorNumberField } from "../shared/EditorNumberField";
 import { EditorTextField } from "../shared/EditorTextField";
+import { EditorSelectField } from "../shared/EditorSelectField";
+import { EditorToggle } from "../shared/EditorToggle";
+
+// Stats are usually free-text values like "3+" or "2d6", so default to the
+// stat-cell number input. Enum / boolean schema types are explicitly handled
+// to mirror desktop SchemaFieldEditor while keeping the compact grid layout.
+const StatFieldInput = ({ field, value, onChange }) => {
+  if (field.type === "boolean") {
+    return <EditorToggle label={field.label} checked={!!value} onChange={onChange} />;
+  }
+  if (field.type === "enum" && Array.isArray(field.options) && field.options.length > 0) {
+    const options = field.options.map((opt) => ({ value: opt, label: opt }));
+    return <EditorSelectField label={field.label} value={value} onChange={onChange} options={options} />;
+  }
+  return <EditorNumberField label={field.label} value={value} onChange={onChange} />;
+};
 
 export const StatsSection = ({ card, config, label, icon, updateField, replaceCard }) => {
   const { fields, allowMultipleProfiles, dataPath, flatObject } = config;
@@ -56,9 +72,9 @@ export const StatsSection = ({ card, config, label, icon, updateField, replaceCa
         {stats.length > 0 && (
           <div className="mobile-editor-stat-grid">
             {fields.map((field) => (
-              <EditorNumberField
+              <StatFieldInput
                 key={field.key}
-                label={field.label}
+                field={field}
                 value={stats[0]?.[field.key]}
                 onChange={(value) => handleStatChange(0, field.key, value)}
               />
@@ -99,9 +115,9 @@ export const StatsSection = ({ card, config, label, icon, updateField, replaceCa
           </div>
           <div className="mobile-editor-stat-grid">
             {fields.map((field) => (
-              <EditorNumberField
+              <StatFieldInput
                 key={field.key}
-                label={field.label}
+                field={field}
                 value={profile[field.key]}
                 onChange={(value) => handleStatChange(index, field.key, value)}
               />
@@ -121,9 +137,9 @@ const FlatStatsSection = ({ card, fields, label, icon, dataPath, updateField }) 
     <EditorAccordion title={label} icon={icon}>
       <div className="mobile-editor-stat-grid">
         {fields.map((field) => (
-          <EditorNumberField
+          <StatFieldInput
             key={field.key}
-            label={field.label}
+            field={field}
             value={stats[field.key]}
             onChange={(value) => updateField(`${dataPath}.${field.key}`, value)}
           />

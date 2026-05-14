@@ -283,4 +283,157 @@ describe("editorSchemaResolvers", () => {
       expect(sections[0].type).toBe("name");
     });
   });
+
+  describe("custom schema flag forwarding", () => {
+    const schemaWithFlags = {
+      version: "1.0.0",
+      baseSystem: "starcraft-tmg",
+      cardTypes: [
+        {
+          key: "unit",
+          label: "Unit",
+          baseType: "unit",
+          schema: {
+            stats: {
+              label: "Stats",
+              allowMultipleProfiles: false,
+              fields: [{ key: "hp", label: "HP", type: "string" }],
+            },
+            weaponTypes: {
+              label: "Weapons",
+              types: [
+                {
+                  key: "assault",
+                  label: "Assault Phase",
+                  hasKeywords: false,
+                  hasProfiles: true,
+                  profileRelation: "parent-child",
+                  profileChildLabel: "Upgrade",
+                  phaseStyle: "assault",
+                  linkedAbilityCategory: "assault",
+                  columns: [{ key: "rng", label: "RNG", type: "string" }],
+                },
+              ],
+            },
+            abilities: {
+              label: "Abilities",
+              categories: [
+                {
+                  key: "movement",
+                  label: "Movement",
+                  format: "name-description",
+                  layout: "half",
+                  phaseStyle: "movement",
+                  hasType: true,
+                  hasCost: true,
+                  hasTriggerIcon: true,
+                },
+              ],
+            },
+            sections: {
+              label: "Sections",
+              sections: [{ key: "tiers", label: "Models / Supply", format: "modelsSupplyTiers" }],
+            },
+            metadata: {
+              hasKeywords: true,
+              hasFactionKeywords: true,
+              keywordsLabel: "Tags",
+              factionKeywordsLabel: "Race",
+              hasPoints: true,
+              pointsFormat: "per-unit",
+              pointsLabel: "Models / Supply",
+              hasCombatRole: true,
+              hasArmySlot: true,
+              hasAutoResize: true,
+            },
+          },
+        },
+      ],
+    };
+    const card = { name: "Marine", cardType: "unit" };
+
+    it("surfaces metadata flags on the name section", () => {
+      const sections = resolveEditorSections(card, "my-ds", schemaWithFlags);
+      const nameSection = sections.find((s) => s.type === "name");
+      expect(nameSection.config.hasCombatRole).toBe(true);
+      expect(nameSection.config.hasArmySlot).toBe(true);
+      expect(nameSection.config.hasAutoResize).toBe(true);
+    });
+
+    it("forwards ability category flags (hasType / hasCost / hasTriggerIcon / layout / phaseStyle)", () => {
+      const sections = resolveEditorSections(card, "my-ds", schemaWithFlags);
+      const abilities = sections.find((s) => s.type === "abilities");
+      const cat = abilities.config.categories[0];
+      expect(cat.hasType).toBe(true);
+      expect(cat.hasCost).toBe(true);
+      expect(cat.hasTriggerIcon).toBe(true);
+      expect(cat.layout).toBe("half");
+      expect(cat.phaseStyle).toBe("movement");
+    });
+
+    it("forwards weapon profile relation and child label", () => {
+      const sections = resolveEditorSections(card, "my-ds", schemaWithFlags);
+      const weapons = sections.find((s) => s.type === "weapons");
+      const wt = weapons.config.types[0];
+      expect(wt.hasProfiles).toBe(true);
+      expect(wt.profileRelation).toBe("parent-child");
+      expect(wt.profileChildLabel).toBe("Upgrade");
+      expect(wt.phaseStyle).toBe("assault");
+      expect(wt.linkedAbilityCategory).toBe("assault");
+    });
+
+    it("forwards keyword labels and points label", () => {
+      const sections = resolveEditorSections(card, "my-ds", schemaWithFlags);
+      const keywords = sections.find((s) => s.type === "keywords");
+      expect(keywords.config.keywordsLabel).toBe("Tags");
+      expect(keywords.config.factionKeywordsLabel).toBe("Race");
+      const points = sections.find((s) => s.type === "points");
+      expect(points.label).toBe("Models / Supply");
+      expect(points.config.pointsLabel).toBe("Models / Supply");
+    });
+
+    it("preserves section format (modelsSupplyTiers, richtext, list) on custom sections", () => {
+      const sections = resolveEditorSections(card, "my-ds", schemaWithFlags);
+      const custom = sections.find((s) => s.type === "customSections");
+      expect(custom.config.sections[0].format).toBe("modelsSupplyTiers");
+    });
+  });
+
+  describe("custom datasource without metadata flags", () => {
+    const minimalSchema = {
+      version: "1.0.0",
+      baseSystem: "blank",
+      cardTypes: [
+        {
+          key: "unit",
+          label: "Unit",
+          baseType: "unit",
+          schema: {
+            stats: { label: "Stats", allowMultipleProfiles: false, fields: [{ key: "str", label: "STR" }] },
+            weaponTypes: { label: "Weapons", types: [{ key: "w", label: "W", columns: [] }] },
+            abilities: { label: "A", categories: [{ key: "c", label: "C", format: "name-description" }] },
+            metadata: { hasKeywords: false, hasFactionKeywords: false, hasPoints: false, pointsFormat: "per-unit" },
+          },
+        },
+      ],
+    };
+    const card = { name: "X", cardType: "unit" };
+
+    it("emits all category flags as explicit false rather than undefined", () => {
+      const sections = resolveEditorSections(card, "x", minimalSchema);
+      const cat = sections.find((s) => s.type === "abilities").config.categories[0];
+      expect(cat.hasType).toBe(false);
+      expect(cat.hasCost).toBe(false);
+      expect(cat.hasTriggerIcon).toBe(false);
+      expect(cat.hasPhase).toBe(false);
+      expect(cat.hasColor).toBe(false);
+    });
+
+    it("does not include keywords or points sections when metadata disables them", () => {
+      const sections = resolveEditorSections(card, "x", minimalSchema);
+      const types = sections.map((s) => s.type);
+      expect(types).not.toContain("keywords");
+      expect(types).not.toContain("points");
+    });
+  });
 });

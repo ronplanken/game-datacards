@@ -13,7 +13,11 @@ export const PointsSection = ({ card, config, label, icon, updateField, replaceC
   // Scalar points (number or string)
   return (
     <EditorAccordion title={label} icon={icon}>
-      <EditorNumberField label="Points" value={card.points} onChange={(value) => updateField("points", value)} />
+      <EditorNumberField
+        label={config?.pointsLabel || "Points"}
+        value={card.points}
+        onChange={(value) => updateField("points", value)}
+      />
     </EditorAccordion>
   );
 };

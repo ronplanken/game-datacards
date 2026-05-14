@@ -378,12 +378,63 @@ function resolveAosSections(card) {
   return sections;
 }
 
+// Pull category fields onto the editor section in a stable, lossless shape.
+// Forwards every schema flag the desktop SchemaAbilitiesEditor reads so the
+// mobile AbilitiesCustom branch can offer identical controls.
+function mapAbilityCategory(cat) {
+  return {
+    key: cat.key,
+    label: cat.label,
+    format: cat.format || "name-description",
+    layout: cat.layout,
+    phaseStyle: cat.phaseStyle,
+    header: cat.header,
+    hasType: !!cat.hasType,
+    typeOptions: cat.typeOptions,
+    hasCost: !!cat.hasCost,
+    hasCostUnits: cat.hasCostUnits,
+    costUnitOptions: cat.costUnitOptions,
+    hasTriggerIcon: !!cat.hasTriggerIcon,
+    hasPhase: !!cat.hasPhase,
+    hasColor: !!cat.hasColor,
+  };
+}
+
+// Forward weapon-type definition fields the mobile editor reacts to (profile
+// relation, profile child label, phase style, linked ability category).
+function mapWeaponType(wt) {
+  return {
+    key: wt.key,
+    label: wt.label,
+    columns: wt.columns || [],
+    hasKeywords: wt.hasKeywords,
+    hasProfiles: !!wt.hasProfiles,
+    profileRelation: wt.profileRelation,
+    profileChildLabel: wt.profileChildLabel,
+    phaseStyle: wt.phaseStyle,
+    linkedAbilityCategory: wt.linkedAbilityCategory,
+  };
+}
+
 function resolveCustomSections(card, schema) {
   const cardTypeDef = schema.cardTypes?.find((ct) => ct.key === card.cardType);
   if (!cardTypeDef) return resolveGenericSections(card);
 
-  const sections = [{ key: "name", label: "Name", type: "name", config: {} }];
   const s = cardTypeDef.schema;
+  const metadata = s?.metadata || {};
+
+  const sections = [
+    {
+      key: "name",
+      label: "Name",
+      type: "name",
+      config: {
+        hasCombatRole: !!metadata.hasCombatRole,
+        hasArmySlot: !!metadata.hasArmySlot,
+        hasAutoResize: !!metadata.hasAutoResize,
+      },
+    },
+  ];
 
   if (cardTypeDef.baseType === "unit") {
     // Stats
@@ -402,18 +453,11 @@ function resolveCustomSections(card, schema) {
 
     // Weapons
     if (s.weaponTypes?.types?.length) {
-      const types = s.weaponTypes.types.map((wt) => ({
-        key: wt.key,
-        label: wt.label,
-        columns: wt.columns || [],
-        hasKeywords: wt.hasKeywords,
-        hasProfiles: wt.hasProfiles,
-      }));
       sections.push({
         key: "weapons",
         label: s.weaponTypes.label || "Weapons",
         type: "weapons",
-        config: { types, format: "custom" },
+        config: { types: s.weaponTypes.types.map(mapWeaponType), format: "custom" },
       });
     }
 
@@ -425,11 +469,7 @@ function resolveCustomSections(card, schema) {
         type: "abilities",
         config: {
           format: "custom",
-          categories: s.abilities.categories.map((cat) => ({
-            key: cat.key,
-            label: cat.label,
-            format: cat.format || "name-description",
-          })),
+          categories: s.abilities.categories.map(mapAbilityCategory),
         },
       });
     }
@@ -445,25 +485,27 @@ function resolveCustomSections(card, schema) {
     }
 
     // Keywords
-    if (s.metadata?.hasKeywords || s.metadata?.hasFactionKeywords) {
+    if (metadata.hasKeywords || metadata.hasFactionKeywords) {
       sections.push({
         key: "keywords",
         label: "Keywords",
         type: "keywords",
         config: {
-          keywordsPath: s.metadata?.hasKeywords ? "keywords" : null,
-          factionKeywordsPath: s.metadata?.hasFactionKeywords ? "factionKeywords" : null,
+          keywordsPath: metadata.hasKeywords ? "keywords" : null,
+          factionKeywordsPath: metadata.hasFactionKeywords ? "factionKeywords" : null,
+          keywordsLabel: metadata.keywordsLabel,
+          factionKeywordsLabel: metadata.factionKeywordsLabel,
         },
       });
     }
 
     // Points
-    if (s.metadata?.hasPoints) {
+    if (metadata.hasPoints) {
       sections.push({
         key: "points",
-        label: "Points",
+        label: metadata.pointsLabel || "Points",
         type: "points",
-        config: { format: s.metadata.pointsFormat || "per-unit" },
+        config: { format: metadata.pointsFormat || "per-unit", pointsLabel: metadata.pointsLabel },
       });
     }
   } else {

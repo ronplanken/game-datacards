@@ -3,7 +3,10 @@ import { EditorAccordion } from "../shared/EditorAccordion";
 import { EditorTextField } from "../shared/EditorTextField";
 import { EditorSelectField } from "../shared/EditorSelectField";
 import { EditorTagInput } from "../shared/EditorTagInput";
+import { EditorToggle } from "../shared/EditorToggle";
+import { EditorChipListField } from "../shared/EditorChipListField";
 import { AOS_PHASE_OPTIONS, AOS_ICON_OPTIONS } from "../../../AgeOfSigmar/constants";
+import { VALID_ABILITY_TYPES, VALID_ABILITY_COST_UNITS } from "../../../../Helpers/customSchema.helpers";
 
 export const AbilitiesSection = ({ card, config, label, icon, updateField, replaceCard }) => {
   const { format } = config;
@@ -231,7 +234,10 @@ const AbilitiesAos = ({ card, label, icon, replaceCard }) => {
   );
 };
 
-// Custom datasource abilities: categorized, format determined by schema
+// Custom datasource abilities: categorized, format and schema flags determined
+// by the resolver's `categories` config. Mirrors the desktop
+// SchemaAbilitiesEditor so the same fields (type/costs/triggered/phase/color)
+// round-trip between mobile and desktop edits.
 const AbilitiesCustom = ({ card, label, icon, replaceCard, config }) => {
   const { categories } = config;
   const abilities = card.abilities || {};
@@ -261,8 +267,12 @@ const AbilitiesCustom = ({ card, label, icon, replaceCard, config }) => {
     }
   };
 
-  const handleAdd = (categoryKey) => {
-    const newItem = { name: "New Ability", description: "" };
+  const handleAdd = (categoryKey, format) => {
+    const newItem = { name: "New Ability", showAbility: true };
+    if (format === "name-description") {
+      newItem.description = "";
+      newItem.showDescription = true;
+    }
     if (isArray) {
       replaceCard({ ...card, abilities: [...abilities, { ...newItem, category: categoryKey }] });
     } else {
@@ -309,6 +319,9 @@ const AbilitiesCustom = ({ card, label, icon, replaceCard, config }) => {
           );
         }
 
+        const typeOptions = (cat.typeOptions || VALID_ABILITY_TYPES).map((t) => ({ value: t, label: t }));
+        const costUnits = cat.costUnitOptions || VALID_ABILITY_COST_UNITS;
+
         return (
           <div key={cat.key} style={{ marginBottom: 16 }}>
             <label className="mobile-editor-field-label">{cat.label}</label>
@@ -328,19 +341,75 @@ const AbilitiesCustom = ({ card, label, icon, replaceCard, config }) => {
                     <Trash2 size={14} />
                   </button>
                 </div>
+                {cat.hasType && (
+                  <EditorSelectField
+                    label="Type pill"
+                    value={ability.type || ""}
+                    onChange={(value) => handleUpdate(cat.key, index, "type", value || undefined)}
+                    options={[{ value: "", label: "None" }, ...typeOptions]}
+                  />
+                )}
+                {cat.hasCost && (
+                  <EditorChipListField
+                    label="Cost chips"
+                    value={ability.costs}
+                    units={costUnits}
+                    onChange={(costs) => handleUpdate(cat.key, index, "costs", costs.length ? costs : undefined)}
+                    addLabel="Add cost"
+                  />
+                )}
+                {cat.hasTriggerIcon && (
+                  <>
+                    <EditorToggle
+                      label="Triggered"
+                      checked={!!ability.triggered}
+                      onChange={(value) => handleUpdate(cat.key, index, "triggered", value || undefined)}
+                    />
+                    <EditorToggle
+                      label="Upgrade"
+                      checked={!!ability.upgrade}
+                      onChange={(value) => handleUpdate(cat.key, index, "upgrade", value || undefined)}
+                    />
+                  </>
+                )}
+                {cat.hasPhase && (
+                  <EditorTextField
+                    label="Phase"
+                    value={ability.phase || ""}
+                    onChange={(value) => handleUpdate(cat.key, index, "phase", value || undefined)}
+                    placeholder="e.g. Hero, Movement, Passive"
+                  />
+                )}
+                {cat.hasColor && (
+                  <div className="mobile-editor-field">
+                    <label className="mobile-editor-field-label">Strip Color</label>
+                    <input
+                      type="color"
+                      value={ability.color ?? "#4a5568"}
+                      onChange={(e) => handleUpdate(cat.key, index, "color", e.target.value)}
+                      className="mobile-editor-color-input"
+                    />
+                  </div>
+                )}
                 {ability.description !== undefined && (
                   <EditorTextField
+                    label="Description"
                     value={ability.description}
                     onChange={(value) => handleUpdate(cat.key, index, "description", value)}
                     placeholder="Description"
                     multiline
                   />
                 )}
+                <EditorToggle
+                  label="Visible"
+                  checked={ability.showAbility !== false}
+                  onChange={(value) => handleUpdate(cat.key, index, "showAbility", value)}
+                />
               </div>
             ))}
-            <button className="mobile-editor-add-btn" onClick={() => handleAdd(cat.key)} type="button">
+            <button className="mobile-editor-add-btn" onClick={() => handleAdd(cat.key, cat.format)} type="button">
               <Plus size={14} />
-              <span>Add</span>
+              <span>Add {cat.label}</span>
             </button>
           </div>
         );
