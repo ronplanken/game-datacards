@@ -6,6 +6,7 @@ import { replaceKeywords } from "../UnitAbilityDescription";
 // Mock tooltip components to render keyword text visibly
 vi.mock("../KeywordTooltip", () => ({
   KeywordTooltip: ({ keyword }) => <span data-testid="keyword-tooltip">{keyword}</span>,
+  tooltipProps: {},
 }));
 
 vi.mock("../RuleTooltip", () => ({
@@ -16,8 +17,16 @@ vi.mock("../../../MarkdownSpanWrapDisplay", () => ({
   MarkdownSpanWrapDisplay: ({ content }) => <span>{content}</span>,
 }));
 
-function renderKeywords(input) {
-  const result = replaceKeywords(input);
+vi.mock("../../../Tooltip/Tooltip", () => ({
+  Tooltip: ({ content, children }) => (
+    <span data-testid="glossary-tooltip" data-content={content}>
+      {children}
+    </span>
+  ),
+}));
+
+function renderKeywords(input, glossary) {
+  const result = replaceKeywords(input, glossary);
   const { container } = render(<div>{result}</div>);
   return container;
 }
@@ -198,6 +207,114 @@ describe("replaceKeywords", () => {
       const keywords = getTooltipKeywords(container, "keyword-tooltip");
       expect(keywords).not.toContain("precision");
       expect(keywords).toContain("blast");
+    });
+  });
+
+  describe("datasource glossary keywords", () => {
+    const glossary = [
+      {
+        key: "shadow-step",
+        name: "Shadow Step",
+        description: "This unit can move through walls.",
+        matchType: "exact",
+        appliesTo: ["abilities"],
+        displayMode: "tooltip",
+      },
+      {
+        key: "barrage",
+        name: "Barrage",
+        description: "Explanation-mode entry.",
+        matchType: "exact",
+        appliesTo: ["abilities"],
+        displayMode: "explanation",
+      },
+    ];
+
+    it("underlines a glossary keyword found in the description with a tooltip", () => {
+      const container = renderKeywords("The model uses Shadow Step to advance", glossary);
+      const button = container.querySelector(".keyword-button.has-info");
+      expect(button).not.toBeNull();
+      expect(button.textContent).toBe("Shadow Step");
+      const tooltip = container.querySelector('[data-testid="glossary-tooltip"]');
+      expect(tooltip.getAttribute("data-content")).toBe("This unit can move through walls.");
+    });
+
+    it("does not touch the description when no glossary is provided", () => {
+      const container = renderKeywords("The model uses Shadow Step to advance");
+      expect(container.querySelector(".keyword-button.has-info")).toBeNull();
+      expect(container.textContent).toContain("Shadow Step");
+    });
+
+    it("ignores glossary entries in explanation display mode", () => {
+      const container = renderKeywords("Incoming Barrage hits hard", glossary);
+      expect(container.querySelector(".keyword-button.has-info")).toBeNull();
+    });
+
+    it("does not match a glossary keyword inside a larger word", () => {
+      const container = renderKeywords("A Shadow Stepper appears", glossary);
+      expect(container.querySelector(".keyword-button.has-info")).toBeNull();
+    });
+
+    it("skips the built-in 40K dictionary in glossary-only mode", () => {
+      const result = replaceKeywords("This weapon has [LANCE] and Stealth", glossary, true);
+      const { container } = render(<div>{result}</div>);
+      expect(getTooltipKeywords(container, "keyword-tooltip")).toEqual([]);
+      expect(getTooltipKeywords(container, "rule-tooltip")).toEqual([]);
+      // Bracket tags are left as literal text, not parsed into keyword tags.
+      expect(container.textContent).toContain("[LANCE]");
+    });
+
+    it("still matches glossary keywords in glossary-only mode", () => {
+      const result = replaceKeywords("The model uses Shadow Step here", glossary, true);
+      const { container } = render(<div>{result}</div>);
+      const button = container.querySelector(".keyword-button.has-info");
+      expect(button).not.toBeNull();
+      expect(button.textContent).toBe("Shadow Step");
+    });
+
+    it("still parses the built-in dictionary when glossary-only mode is off", () => {
+      const container = renderKeywords("This unit has Stealth", glossary);
+      expect(getTooltipKeywords(container, "rule-tooltip")).toContain("stealth");
+    });
+  });
+
+  describe("per-keyword glossary styling", () => {
+    const styled = (style) => [
+      {
+        key: "shadow-step",
+        name: "Shadow Step",
+        description: "Move through walls.",
+        matchType: "exact",
+        appliesTo: ["abilities"],
+        displayMode: "tooltip",
+        ...(style ? { style } : {}),
+      },
+    ];
+
+    it("renders uppercase + brackets + bold by default", () => {
+      const container = renderKeywords("Uses Shadow Step now", styled());
+      const button = container.querySelector(".keyword-button");
+      expect(button.className).not.toContain("kw-no-caps");
+      expect(button.className).not.toContain("kw-no-bold");
+      expect(container.textContent).toContain("[");
+      expect(container.textContent).toContain("]");
+    });
+
+    it("drops brackets when style.brackets is none", () => {
+      const container = renderKeywords("Uses Shadow Step now", styled({ brackets: "none" }));
+      expect(container.querySelector(".keyword-button")).not.toBeNull();
+      expect(container.textContent).not.toContain("[");
+      expect(container.textContent).not.toContain("]");
+    });
+
+    it("adds kw-no-caps when style.casing is normal", () => {
+      const container = renderKeywords("Uses Shadow Step now", styled({ casing: "normal" }));
+      expect(container.querySelector(".keyword-button").className).toContain("kw-no-caps");
+    });
+
+    it("adds kw-no-bold when style.weight is normal", () => {
+      const container = renderKeywords("Uses Shadow Step now", styled({ weight: "normal" }));
+      expect(container.querySelector(".keyword-button").className).toContain("kw-no-bold");
     });
   });
 });

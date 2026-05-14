@@ -2,12 +2,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { KeywordGlossaryEditor } from "../KeywordGlossaryEditor";
 
 vi.mock("lucide-react", () => ({
+  Bold: (props) => <svg data-testid="icon-bold" {...props} />,
   BookOpen: (props) => <svg data-testid="icon-book" {...props} />,
+  Brackets: (props) => <svg data-testid="icon-brackets" {...props} />,
+  CaseUpper: (props) => <svg data-testid="icon-case-upper" {...props} />,
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+  Download: (props) => <svg data-testid="icon-download" {...props} />,
+  Eye: (props) => <svg data-testid="icon-eye" {...props} />,
+  Link: (props) => <svg data-testid="icon-link" {...props} />,
   MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
   Plus: (props) => <svg data-testid="icon-plus" {...props} />,
-  RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
 }));
 
@@ -64,7 +69,15 @@ const baseSchema = (overrides = {}) => ({
   ...overrides,
 });
 
-const openSection = () => fireEvent.click(screen.getByText("Keyword Glossary"));
+// The Keyword Glossary section is open by default; only click to expand it
+// if it happens to be collapsed, so the helper is robust either way.
+const openSection = () => {
+  const header = screen.getByText("Keyword Glossary").closest("button");
+  if (header.getAttribute("aria-expanded") === "false") fireEvent.click(header);
+};
+
+// Entries render collapsed; click the entry header (its name) to reveal inputs.
+const expandEntry = (name) => fireEvent.click(screen.getByText(name));
 
 // Helper: drive our mocked multi-select by setting `selected` on each
 // option and dispatching a change event.
@@ -87,9 +100,13 @@ describe("KeywordGlossaryEditor", () => {
     expect(screen.getByText("Keyword Glossary")).toBeInTheDocument();
   });
 
-  it("renders existing entries", () => {
+  it("renders existing entries collapsed with the name in the header", () => {
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={vi.fn()} />);
     openSection();
+    // Collapsed: name shows in the header, inputs are not mounted yet.
+    expect(screen.getByText("One Shot")).toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Once per battle.")).toBeNull();
+    expandEntry("One Shot");
     expect(screen.getByDisplayValue("One Shot")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Once per battle.")).toBeInTheDocument();
   });
@@ -128,6 +145,7 @@ describe("KeywordGlossaryEditor", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
+    expandEntry("One Shot");
     const desc = screen.getByLabelText("Keyword description");
     fireEvent.change(desc, { target: { value: "Updated text." } });
     const next = onChange.mock.calls.at(-1)[0];
@@ -138,6 +156,7 @@ describe("KeywordGlossaryEditor", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
+    expandEntry("One Shot");
     fireEvent.change(screen.getByLabelText("Match type"), { target: { value: "prefix" } });
     const next = onChange.mock.calls.at(-1)[0];
     expect(next.keywordGlossary[0].matchType).toBe("prefix");
@@ -147,6 +166,7 @@ describe("KeywordGlossaryEditor", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
+    expandEntry("One Shot");
     const select = screen.getByLabelText("Applies to scopes for One Shot");
     setScopes(select, ["weapons", "abilities"]);
     const next = onChange.mock.calls.at(-1)[0];
@@ -168,6 +188,7 @@ describe("KeywordGlossaryEditor", () => {
     });
     render(<KeywordGlossaryEditor schema={schema} onChange={onChange} />);
     openSection();
+    expandEntry("Twin-linked");
     const select = screen.getByLabelText("Applies to scopes for Twin-linked");
     setScopes(select, ["weapons"]);
     const next = onChange.mock.calls.at(-1)[0];
@@ -178,6 +199,7 @@ describe("KeywordGlossaryEditor", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
+    expandEntry("One Shot");
     const select = screen.getByLabelText("Applies to scopes for One Shot");
     setScopes(select, []);
     expect(onChange).not.toHaveBeenCalled();
@@ -186,16 +208,17 @@ describe("KeywordGlossaryEditor", () => {
   it("renders an option for every supported scope", () => {
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={vi.fn()} />);
     openSection();
+    expandEntry("One Shot");
     const select = screen.getByLabelText("Applies to scopes for One Shot");
     const labels = Array.from(select.options).map((o) => o.textContent);
     expect(labels).toEqual(["Weapons", "Abilities", "Unit keywords", "Rules", "Stratagems", "Enhancements"]);
   });
 
-  it("seeds entries from the overflow menu 'Restore defaults' action on 40k-10e", () => {
+  it("seeds entries from the overflow menu 'Import 40K 10e defaults' action on 40k-10e", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema({ keywordGlossary: [] })} onChange={onChange} />);
     openSection();
-    fireEvent.click(screen.getByRole("button", { name: /Restore defaults/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Import 40K 10e defaults/i }));
     const next = onChange.mock.calls.at(-1)[0];
     expect(next.keywordGlossary.length).toBeGreaterThan(5);
     expect(next.keywordGlossary.some((e) => e.name === "One Shot")).toBe(true);
@@ -208,12 +231,13 @@ describe("KeywordGlossaryEditor", () => {
     );
     openSection();
     expect(screen.queryByLabelText("Keyword glossary actions")).toBeNull();
-    expect(screen.queryByRole("button", { name: /Restore defaults/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Import .* defaults/i })).toBeNull();
   });
 
   it("shows the Display mode select only when the entry applies to weapons", () => {
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={vi.fn()} />);
     openSection();
+    expandEntry("One Shot");
     expect(screen.getByLabelText("Display mode for One Shot")).toBeInTheDocument();
   });
 
@@ -231,6 +255,7 @@ describe("KeywordGlossaryEditor", () => {
     });
     render(<KeywordGlossaryEditor schema={schema} onChange={vi.fn()} />);
     openSection();
+    expandEntry("Stealth");
     expect(screen.queryByLabelText("Display mode for Stealth")).toBeNull();
   });
 
@@ -238,6 +263,7 @@ describe("KeywordGlossaryEditor", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
+    expandEntry("One Shot");
     fireEvent.change(screen.getByLabelText("Display mode for One Shot"), {
       target: { value: "tooltip" },
     });
@@ -254,14 +280,15 @@ describe("KeywordGlossaryEditor", () => {
     expect(next.keywordGlossary[1].displayMode).toBe("explanation");
   });
 
-  it("strips the transient _id before persisting", () => {
+  it("persists a stable _id so inputs keep focus across edits", () => {
     const onChange = vi.fn();
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
     fireEvent.click(screen.getByLabelText("Add keyword"));
     const next = onChange.mock.calls.at(-1)[0];
     for (const entry of next.keywordGlossary) {
-      expect(entry).not.toHaveProperty("_id");
+      expect(typeof entry._id).toBe("string");
+      expect(entry._id.length).toBeGreaterThan(0);
     }
   });
 });

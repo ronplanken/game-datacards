@@ -41,6 +41,9 @@ const mockSchema = {
   },
 };
 
+// Column rows render collapsed; click the header (its title) to reveal inputs.
+const expandColumn = (label) => fireEvent.click(screen.getByText(label));
+
 describe("WeaponsSchemaEditor", () => {
   it("returns null when schema has no weaponTypes", () => {
     const { container } = render(<WeaponsSchemaEditor schema={{}} onChange={vi.fn()} />);
@@ -72,7 +75,9 @@ describe("WeaponsSchemaEditor", () => {
 
   it("shows columns of the active weapon type", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
-    // First tab (Ranged) columns should be visible
+    // First tab (Ranged) columns should be listed; expand to reveal inputs
+    expandColumn("Range");
+    expandColumn("BS");
     expect(screen.getByDisplayValue("Range")).toBeInTheDocument();
     expect(screen.getByDisplayValue("BS")).toBeInTheDocument();
   });
@@ -81,7 +86,8 @@ describe("WeaponsSchemaEditor", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
     // Click on Melee tab
     fireEvent.click(screen.getByRole("tab", { name: /Melee Weapons/i }));
-    // Melee columns should now be visible
+    // Melee columns should now be listed; expand to reveal inputs
+    expandColumn("WS");
     expect(screen.getByDisplayValue("WS")).toBeInTheDocument();
   });
 
@@ -259,6 +265,7 @@ describe("WeaponsSchemaEditor", () => {
   it("updates column type via select", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandColumn("Range");
     const typeSelects = screen.getAllByLabelText("Column type");
     fireEvent.change(typeSelects[0], { target: { value: "boolean" } });
     expect(onChange).toHaveBeenCalledWith(
@@ -334,6 +341,9 @@ describe("WeaponsSchemaEditor", () => {
 
   it("renders column display select for each column", () => {
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expandColumn("Range");
+    expandColumn("A");
+    expandColumn("BS");
     const displaySelects = screen.getAllByLabelText("Column display");
     expect(displaySelects.length).toBe(3); // 3 columns in ranged
     expect(displaySelects[0].value).toBe("column");
@@ -342,6 +352,7 @@ describe("WeaponsSchemaEditor", () => {
   it("updates column display to row", () => {
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandColumn("Range");
     const displaySelects = screen.getAllByLabelText("Column display");
     fireEvent.change(displaySelects[0], { target: { value: "row" } });
     expect(onChange).toHaveBeenCalledWith(
@@ -375,6 +386,7 @@ describe("WeaponsSchemaEditor", () => {
     };
     const onChange = vi.fn();
     render(<WeaponsSchemaEditor schema={schemaWithRowDisplay} onChange={onChange} />);
+    expandColumn("Keywords");
     const displaySelect = screen.getByLabelText("Column display");
     expect(displaySelect.value).toBe("row");
     fireEvent.change(displaySelect, { target: { value: "column" } });
@@ -410,6 +422,7 @@ describe("WeaponsSchemaEditor", () => {
       },
     };
     render(<WeaponsSchemaEditor schema={schemaWithRowDisplay} onChange={vi.fn()} />);
+    expandColumn("Keywords");
     // Display label and visual should be present for the row column
     expect(screen.getByLabelText("Display label")).toBeInTheDocument();
     expect(screen.getByLabelText("Visual style")).toBeInTheDocument();

@@ -22,6 +22,9 @@ const mockSchema = {
   },
 };
 
+// Stat fields render collapsed; click the header (its title) to reveal inputs.
+const expandField = (label) => fireEvent.click(screen.getByText(label));
+
 describe("StatsSchemaEditor", () => {
   it("returns null when schema has no stats", () => {
     const { container } = render(<StatsSchemaEditor schema={{}} onChange={vi.fn()} />);
@@ -65,13 +68,19 @@ describe("StatsSchemaEditor", () => {
 
   it("renders all stat fields", () => {
     render(<StatsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    // Collapsed: titles show in headers
+    expect(screen.getByText("M")).toBeInTheDocument();
+    expect(screen.getByText("T")).toBeInTheDocument();
+    expect(screen.getByText("SV")).toBeInTheDocument();
+    expandField("M");
     expect(screen.getByDisplayValue("M")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("T")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("SV")).toBeInTheDocument();
   });
 
   it("renders key inputs for each field", () => {
     render(<StatsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expandField("M");
+    expandField("T");
+    expandField("SV");
     expect(screen.getByDisplayValue("m")).toBeInTheDocument();
     expect(screen.getByDisplayValue("t")).toBeInTheDocument();
     expect(screen.getByDisplayValue("sv")).toBeInTheDocument();
@@ -80,6 +89,7 @@ describe("StatsSchemaEditor", () => {
   it("updates field label on change", () => {
     const onChange = vi.fn();
     render(<StatsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandField("M");
     const labelInput = screen.getByDisplayValue("M");
     fireEvent.change(labelInput, { target: { value: "Move" } });
     expect(onChange).toHaveBeenCalledWith(
@@ -94,6 +104,7 @@ describe("StatsSchemaEditor", () => {
   it("updates field key on change", () => {
     const onChange = vi.fn();
     render(<StatsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandField("M");
     const keyInput = screen.getByDisplayValue("m");
     fireEvent.change(keyInput, { target: { value: "move" } });
     expect(onChange).toHaveBeenCalledWith(
@@ -108,6 +119,7 @@ describe("StatsSchemaEditor", () => {
   it("updates field type via select", () => {
     const onChange = vi.fn();
     render(<StatsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandField("M");
     const typeSelects = screen.getAllByLabelText("Type");
     fireEvent.change(typeSelects[0], { target: { value: "boolean" } });
     expect(onChange).toHaveBeenCalledWith(
@@ -201,6 +213,7 @@ describe("StatsSchemaEditor", () => {
 
   it("renders type selects with string as default option", () => {
     render(<StatsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expandField("M");
     const typeSelects = screen.getAllByLabelText("Type");
     expect(typeSelects[0].value).toBe("string");
   });

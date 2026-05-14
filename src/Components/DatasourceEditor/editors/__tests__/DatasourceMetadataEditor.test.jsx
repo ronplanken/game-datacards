@@ -2,6 +2,10 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { DatasourceMetadataEditor } from "../DatasourceMetadataEditor";
 
 vi.mock("lucide-react", () => ({
+  Bold: (props) => <svg data-testid="icon-bold" {...props} />,
+  Brackets: (props) => <svg data-testid="icon-brackets" {...props} />,
+  CaseUpper: (props) => <svg data-testid="icon-case-upper" {...props} />,
+  Link: (props) => <svg data-testid="icon-link" {...props} />,
   Database: (props) => <svg data-testid="icon-database" {...props} />,
   Info: (props) => <svg data-testid="icon-info" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
@@ -14,6 +18,8 @@ vi.mock("lucide-react", () => ({
   BookOpen: (props) => <svg data-testid="icon-book" {...props} />,
   MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
   RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
+  Download: (props) => <svg data-testid="icon-download" {...props} />,
+  Eye: (props) => <svg data-testid="icon-eye" {...props} />,
 }));
 
 // The glossary editor (rendered inside DatasourceMetadataEditor) pulls in

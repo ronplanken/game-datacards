@@ -16,7 +16,7 @@ import {
   IconHierarchy,
   IconTypography,
 } from "@tabler/icons-react";
-import { Section, CompactInput } from "../components";
+import { Section, CompactInput, CollapsibleFieldItem } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
 
@@ -304,177 +304,179 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
           <div className="props-field-list">
             {(activeType.columns || []).length === 0 && <div className="props-field-list-empty">No columns yet</div>}
             {(activeType.columns || []).map((col, colIndex) => (
-              <div key={col._id} className="props-field-item">
-                <div className="props-field-item-inputs">
-                  <CompactInput
-                    label={<IconKey size={10} stroke={1.5} />}
-                    ariaLabel="Key"
-                    tooltip="Key"
-                    type="text"
-                    value={col.key}
-                    onChange={(val) => updateColumn(activeTab, colIndex, "key", val)}
-                  />
-                  <CompactInput
-                    label={<IconTag size={10} stroke={1.5} />}
-                    ariaLabel="Label"
-                    tooltip="Label"
-                    type="text"
-                    value={col.label}
-                    onChange={(val) => updateColumn(activeTab, colIndex, "label", val)}
-                  />
-                  <div className="props-compact-input">
-                    <Tooltip content="Type" placement="top">
-                      <span className="props-compact-label">
-                        <IconCategory size={10} stroke={1.5} />
-                      </span>
-                    </Tooltip>
-                    <select
-                      className="props-compact-field"
-                      value={col.type}
-                      onChange={(e) => updateColumn(activeTab, colIndex, "type", e.target.value)}
-                      aria-label="Column type">
-                      {COLUMN_TYPES.map((t) => (
-                        <option key={t.value} value={t.value}>
-                          {t.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="props-compact-input">
-                    <Tooltip content="Display" placement="top">
-                      <span className="props-compact-label">
-                        <IconLayoutRows size={10} stroke={1.5} />
-                      </span>
-                    </Tooltip>
-                    <select
-                      className="props-compact-field"
-                      value={col.display || "column"}
-                      onChange={(e) =>
-                        updateColumn(
-                          activeTab,
-                          colIndex,
-                          "display",
-                          e.target.value === "column" ? undefined : e.target.value,
-                        )
-                      }
-                      aria-label="Column display">
-                      <option value="column">Column</option>
-                      <option value="row">Row</option>
-                    </select>
-                  </div>
-                  {col.display === "row" && (
-                    <div className="props-tree-children">
-                      <div className="props-tree-child">
-                        <CompactInput
-                          label={<IconEye size={10} stroke={1.5} />}
-                          ariaLabel="Display label"
-                          tooltip="Show label before row values"
-                          type="toggle"
-                          value={col.displayLabel !== false}
-                          onChange={(val) => updateColumn(activeTab, colIndex, "displayLabel", val ? undefined : false)}
-                        />
-                      </div>
-                      <div className="props-tree-child">
-                        <div className="props-compact-input">
-                          <Tooltip content="Visual style" placement="top">
-                            <span className="props-compact-label">
-                              <IconPalette size={10} stroke={1.5} />
-                            </span>
-                          </Tooltip>
-                          <select
-                            className="props-compact-field"
-                            value={col.visual || "text"}
-                            onChange={(e) =>
-                              updateColumn(
-                                activeTab,
-                                colIndex,
-                                "visual",
-                                e.target.value === "text" ? undefined : e.target.value,
-                              )
-                            }
-                            aria-label="Visual style">
-                            <option value="text">Text</option>
-                            <option value="badge">Badge</option>
-                          </select>
-                        </div>
+              <CollapsibleFieldItem
+                key={col._id}
+                title={col.label || col.key || "Untitled column"}
+                actions={
+                  <>
+                    <button
+                      className="designer-layer-action-btn"
+                      onClick={() => moveColumn(activeTab, colIndex, -1)}
+                      disabled={colIndex === 0}
+                      aria-label={`Move ${col.label} up`}
+                      title="Move up">
+                      <ChevronUp size={14} />
+                    </button>
+                    <button
+                      className="designer-layer-action-btn"
+                      onClick={() => moveColumn(activeTab, colIndex, 1)}
+                      disabled={colIndex === (activeType.columns || []).length - 1}
+                      aria-label={`Move ${col.label} down`}
+                      title="Move down">
+                      <ChevronDown size={14} />
+                    </button>
+                    <button
+                      className="designer-layer-action-btn danger"
+                      onClick={() => removeColumn(activeTab, colIndex)}
+                      aria-label={`Remove ${col.label}`}
+                      title="Remove column">
+                      <Trash2 size={14} />
+                    </button>
+                  </>
+                }>
+                <CompactInput
+                  label={<IconKey size={10} stroke={1.5} />}
+                  ariaLabel="Key"
+                  tooltip="Key"
+                  type="text"
+                  value={col.key}
+                  onChange={(val) => updateColumn(activeTab, colIndex, "key", val)}
+                />
+                <CompactInput
+                  label={<IconTag size={10} stroke={1.5} />}
+                  ariaLabel="Label"
+                  tooltip="Label"
+                  type="text"
+                  value={col.label}
+                  onChange={(val) => updateColumn(activeTab, colIndex, "label", val)}
+                />
+                <div className="props-compact-input">
+                  <Tooltip content="Type" placement="top">
+                    <span className="props-compact-label">
+                      <IconCategory size={10} stroke={1.5} />
+                    </span>
+                  </Tooltip>
+                  <select
+                    className="props-compact-field"
+                    value={col.type}
+                    onChange={(e) => updateColumn(activeTab, colIndex, "type", e.target.value)}
+                    aria-label="Column type">
+                    {COLUMN_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="props-compact-input">
+                  <Tooltip content="Display" placement="top">
+                    <span className="props-compact-label">
+                      <IconLayoutRows size={10} stroke={1.5} />
+                    </span>
+                  </Tooltip>
+                  <select
+                    className="props-compact-field"
+                    value={col.display || "column"}
+                    onChange={(e) =>
+                      updateColumn(
+                        activeTab,
+                        colIndex,
+                        "display",
+                        e.target.value === "column" ? undefined : e.target.value,
+                      )
+                    }
+                    aria-label="Column display">
+                    <option value="column">Column</option>
+                    <option value="row">Row</option>
+                  </select>
+                </div>
+                {col.display === "row" && (
+                  <div className="props-tree-children">
+                    <div className="props-tree-child">
+                      <CompactInput
+                        label={<IconEye size={10} stroke={1.5} />}
+                        ariaLabel="Display label"
+                        tooltip="Show label before row values"
+                        type="toggle"
+                        value={col.displayLabel !== false}
+                        onChange={(val) => updateColumn(activeTab, colIndex, "displayLabel", val ? undefined : false)}
+                      />
+                    </div>
+                    <div className="props-tree-child">
+                      <div className="props-compact-input">
+                        <Tooltip content="Visual style" placement="top">
+                          <span className="props-compact-label">
+                            <IconPalette size={10} stroke={1.5} />
+                          </span>
+                        </Tooltip>
+                        <select
+                          className="props-compact-field"
+                          value={col.visual || "text"}
+                          onChange={(e) =>
+                            updateColumn(
+                              activeTab,
+                              colIndex,
+                              "visual",
+                              e.target.value === "text" ? undefined : e.target.value,
+                            )
+                          }
+                          aria-label="Visual style">
+                          <option value="text">Text</option>
+                          <option value="badge">Badge</option>
+                        </select>
                       </div>
                     </div>
-                  )}
-                  {col.type === "enum" && (
+                  </div>
+                )}
+                {col.type === "enum" && (
+                  <CompactInput
+                    label={<IconList size={10} stroke={1.5} />}
+                    ariaLabel="Options"
+                    tooltip="Options (comma-separated)"
+                    type="text"
+                    value={(col.options || []).join(", ")}
+                    onChange={(val) =>
+                      updateColumn(
+                        activeTab,
+                        colIndex,
+                        "options",
+                        val.split(",").map((s) => s.trim()),
+                      )
+                    }
+                    onBlur={(val) =>
+                      updateColumn(
+                        activeTab,
+                        colIndex,
+                        "options",
+                        val
+                          .split(",")
+                          .map((s) => s.trim())
+                          .filter(Boolean),
+                      )
+                    }
+                  />
+                )}
+                {col.type === "boolean" && (
+                  <>
                     <CompactInput
-                      label={<IconList size={10} stroke={1.5} />}
-                      ariaLabel="Options"
-                      tooltip="Options (comma-separated)"
+                      label="On"
+                      ariaLabel="On value"
+                      tooltip="Display value when true"
                       type="text"
-                      value={(col.options || []).join(", ")}
-                      onChange={(val) =>
-                        updateColumn(
-                          activeTab,
-                          colIndex,
-                          "options",
-                          val.split(",").map((s) => s.trim()),
-                        )
-                      }
-                      onBlur={(val) =>
-                        updateColumn(
-                          activeTab,
-                          colIndex,
-                          "options",
-                          val
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean),
-                        )
-                      }
+                      value={col.onValue || ""}
+                      onChange={(val) => updateColumn(activeTab, colIndex, "onValue", val || undefined)}
                     />
-                  )}
-                  {col.type === "boolean" && (
-                    <>
-                      <CompactInput
-                        label="On"
-                        ariaLabel="On value"
-                        tooltip="Display value when true"
-                        type="text"
-                        value={col.onValue || ""}
-                        onChange={(val) => updateColumn(activeTab, colIndex, "onValue", val || undefined)}
-                      />
-                      <CompactInput
-                        label="Off"
-                        ariaLabel="Off value"
-                        tooltip="Display value when false"
-                        type="text"
-                        value={col.offValue || ""}
-                        onChange={(val) => updateColumn(activeTab, colIndex, "offValue", val || undefined)}
-                      />
-                    </>
-                  )}
-                </div>
-                <div className="props-field-item-actions">
-                  <button
-                    className="designer-layer-action-btn"
-                    onClick={() => moveColumn(activeTab, colIndex, -1)}
-                    disabled={colIndex === 0}
-                    aria-label={`Move ${col.label} up`}
-                    title="Move up">
-                    <ChevronUp size={14} />
-                  </button>
-                  <button
-                    className="designer-layer-action-btn"
-                    onClick={() => moveColumn(activeTab, colIndex, 1)}
-                    disabled={colIndex === (activeType.columns || []).length - 1}
-                    aria-label={`Move ${col.label} down`}
-                    title="Move down">
-                    <ChevronDown size={14} />
-                  </button>
-                  <button
-                    className="designer-layer-action-btn danger"
-                    onClick={() => removeColumn(activeTab, colIndex)}
-                    aria-label={`Remove ${col.label}`}
-                    title="Remove column">
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
+                    <CompactInput
+                      label="Off"
+                      ariaLabel="Off value"
+                      tooltip="Display value when false"
+                      type="text"
+                      value={col.offValue || ""}
+                      onChange={(val) => updateColumn(activeTab, colIndex, "offValue", val || undefined)}
+                    />
+                  </>
+                )}
+              </CollapsibleFieldItem>
             ))}
           </div>
 

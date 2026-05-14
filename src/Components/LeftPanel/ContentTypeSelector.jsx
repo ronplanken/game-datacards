@@ -69,8 +69,11 @@ export const ContentTypeSelector = ({ selectedContentType, setSelectedContentTyp
         return data && data.length > 0;
       });
 
-  // Get the label for the selected content type
-  const allContentTypes = [...CONTENT_TYPES_40K, ...CONTENT_TYPES_AOS, ...uniqueCustomTypes];
+  // Get the label for the selected content type. Custom datasources have
+  // their own types — search those first so a custom array key that happens
+  // to collide with a built-in one (e.g. "unit" -> "datasheets") still shows
+  // the custom label.
+  const allContentTypes = isCustomDatasource ? uniqueCustomTypes : [...CONTENT_TYPES_40K, ...CONTENT_TYPES_AOS];
   const selectedLabel = allContentTypes.find((t) => t.value === selectedContentType)?.label || "Select a type";
 
   // Handle click outside to close dropdown

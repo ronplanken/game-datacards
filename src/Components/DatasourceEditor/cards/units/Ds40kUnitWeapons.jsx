@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Button } from "antd";
 import { UnitWeapon } from "../../../Warhammer40k-10e/UnitCard/UnitWeapon";
 import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
@@ -6,46 +7,70 @@ import { KeywordTooltip, tooltipProps as keywordTooltipProps } from "../../../Wa
 import { Tooltip } from "../../../Tooltip/Tooltip";
 import { WeaponTypeIcon } from "../../../Icons/WeaponTypeIcon";
 import { Ds40kUnitSections } from "./Ds40kUnitSections";
-import { collectKeywordExplanations, resolveKeywordEntry } from "../../../../Helpers/customSchema.helpers";
+import {
+  collectKeywordExplanations,
+  resolveKeywordEntry,
+  resolveKeywordStyle,
+} from "../../../../Helpers/customSchema.helpers";
 
 /**
  * Inline weapon keyword tag renderer that consults the datasource glossary
- * for hover tooltips. Glossary entries with `displayMode: "tooltip"` show
- * their description on hover via antd Tooltip; entries in explanation
- * mode bypass the tooltip entirely (their description shows in the row
- * below the weapon table). Keywords with no glossary match fall through
- * to the built-in `KeywordTooltip` dictionary.
+ * for hover tooltips and per-keyword presentation. Glossary entries with
+ * `displayMode: "tooltip"` show their description on hover via antd Tooltip;
+ * entries in explanation mode bypass the tooltip entirely (their description
+ * shows in the row below the weapon table). Keywords with no glossary match
+ * fall through to the built-in `KeywordTooltip` dictionary.
  *
- * Mirrors the .keyword > .keyword-button structure produced by
- * UnitWeaponKeywords so the existing 40k-10e CSS (uppercase + bracket
- * pseudo-elements) keeps working. The `has-info` class is reserved for
- * keywords that actually carry a hover tooltip — the CSS in 40k-10e.less
- * renders those with a dotted underline.
+ * Each keyword's caps/brackets/weight come from its glossary entry's `style`
+ * (see `resolveKeywordStyle`); unmatched keywords use the default look.
+ * Brackets and the `, ` separator are rendered as text nodes here, and the
+ * `.keyword-styled` wrapper suppresses the group-level pseudo-elements so the
+ * per-keyword treatment wins.
  */
 const Ds40kWeaponKeywords = ({ keywords, glossary }) => (
-  <span className="keyword">
+  <span className="keyword keyword-styled">
     {keywords.map((keyword, index) => {
       const entry = resolveKeywordEntry(keyword, glossary, "weapons");
-      if (entry?.displayMode === "tooltip" && entry.description) {
-        return (
-          <Tooltip key={`${keyword}-${index}`} {...keywordTooltipProps} content={entry.description}>
-            <Button type="text" size="small" className="keyword-button has-info">{`${keyword}`}</Button>
+      const style = resolveKeywordStyle(entry);
+      const isTooltip = entry?.displayMode === "tooltip" && !!entry.description;
+
+      const classes = ["keyword-button"];
+      // `has-info` draws the dotted underline that signals a hover tooltip.
+      if (isTooltip) classes.push("has-info");
+      if (style.casing !== "uppercase") classes.push("kw-no-caps");
+      if (style.weight !== "bold") classes.push("kw-no-bold");
+      const className = classes.join(" ");
+
+      let node;
+      if (isTooltip) {
+        node = (
+          <Tooltip {...keywordTooltipProps} content={entry.description}>
+            <Button type="text" size="small" className={className}>{`${keyword}`}</Button>
           </Tooltip>
         );
-      }
-      if (entry) {
+      } else if (entry) {
         // Glossary match in explanation mode: no hover tooltip — the
         // description shows in the row below the weapon table, so the
         // inline tag stays plain (no `has-info` underline).
-        return (
-          <Button
-            key={`${keyword}-${index}`}
-            type="text"
-            size="small"
-            className="keyword-button">{`${keyword}`}</Button>
-        );
+        node = <Button type="text" size="small" className={className}>{`${keyword}`}</Button>;
+      } else {
+        node = <KeywordTooltip keyword={keyword} />;
       }
-      return <KeywordTooltip key={`${keyword}-${index}`} keyword={keyword} />;
+
+      return (
+        <Fragment key={`${keyword}-${index}`}>
+          {index > 0 && ", "}
+          {style.brackets === "square" ? (
+            <>
+              {"["}
+              {node}
+              {"]"}
+            </>
+          ) : (
+            node
+          )}
+        </Fragment>
+      );
     })}
   </span>
 );
@@ -102,6 +127,8 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
               name={entry.name}
               description={entry.description}
               showDescription={true}
+              keywordGlossary={glossary}
+              glossaryOnly
             />
           ))}
           {weapons?.flatMap((weapon, wIdx) =>
@@ -113,6 +140,8 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
                   name={ability.name}
                   description={ability.description}
                   showDescription={ability.showDescription}
+                  keywordGlossary={glossary}
+                  glossaryOnly
                 />
               )),
           )}

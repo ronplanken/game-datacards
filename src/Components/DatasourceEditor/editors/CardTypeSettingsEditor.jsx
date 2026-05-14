@@ -1,6 +1,6 @@
 import React from "react";
 import { Tag } from "lucide-react";
-import { IconTag } from "@tabler/icons-react";
+import { IconTag, IconResize } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { TemplateSelector, usePremiumFeatures } from "../../../Premium";
 
@@ -11,14 +11,26 @@ const BASE_TYPE_LABELS = {
   stratagem: "Stratagem",
 };
 
+const AUTO_RESIZE_SYSTEMS = ["starcraft-tmg", "40k-10e"];
+
 /**
- * Editor for card type identity: name and template assignment.
+ * Editor for card type identity: name, template assignment, and the
+ * auto-resize card option (for base systems that support it).
  */
-export const CardTypeSettingsEditor = ({ cardType, activeDatasource, onUpdateCardType }) => {
+export const CardTypeSettingsEditor = ({
+  cardType,
+  activeDatasource,
+  onUpdateCardType,
+  onUpdateSchema,
+  baseSystem,
+}) => {
   if (!cardType) return null;
 
   const { hasCardDesigner } = usePremiumFeatures();
   const baseTypeLabel = BASE_TYPE_LABELS[cardType.baseType] || cardType.baseType;
+
+  const metadata = cardType.schema?.metadata;
+  const showAutoResize = !!metadata && AUTO_RESIZE_SYSTEMS.includes(baseSystem) && typeof onUpdateSchema === "function";
 
   return (
     <Section title="Card Type" icon={Tag} defaultOpen={true}>
@@ -34,6 +46,16 @@ export const CardTypeSettingsEditor = ({ cardType, activeDatasource, onUpdateCar
         <span className="props-metadata-label">Base Type</span>
         <span className="props-metadata-value">{baseTypeLabel}</span>
       </div>
+      {showAutoResize && (
+        <CompactInput
+          label={<IconResize size={10} stroke={1.5} />}
+          ariaLabel="Auto-resize"
+          tooltip="Allow per-card toggle to auto-resize the card height to fit its content"
+          type="toggle"
+          value={!!metadata.hasAutoResize}
+          onChange={(val) => onUpdateSchema({ ...cardType.schema, metadata: { ...metadata, hasAutoResize: val } })}
+        />
+      )}
       {hasCardDesigner && (
         <div className="props-card-type-template">
           <TemplateSelector value={cardType.templateId || null} onChange={(id) => onUpdateCardType("templateId", id)} />

@@ -16,6 +16,7 @@ import { MobileMenu } from "../Components/Viewer/MobileMenu";
 import { MobileWelcome } from "../Components/Viewer/MobileWelcome";
 import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemSelector";
+import { MobileGlossaryList } from "../Components/Viewer/MobileGlossaryList";
 import { MobileGameSystemSettings } from "../Components/Viewer/MobileGameSystemSettings";
 import { resolveMobileConfig } from "../Components/Viewer/mobileDatasourceConfig";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
@@ -39,7 +40,12 @@ import { useScrollRevealHeader } from "../Hooks/useScrollRevealHeader";
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
 
-export const ViewerMobile = ({ showUnits = false, showManifestationLores = false, showSpellLores = false }) => {
+export const ViewerMobile = ({
+  showUnits = false,
+  showManifestationLores = false,
+  showSpellLores = false,
+  showGlossary = false,
+}) => {
   const [parent] = useAutoAnimate({ duration: 75 });
   const screens = useBreakpoint();
   const navigate = useNavigate();
@@ -358,7 +364,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                     {config.renderCard("viewer", { onBack: handleBackFromCard })}
                   </React.Suspense>
                 </Row>
-                {!activeCard && !selectedFaction && !showUnits && (
+                {!activeCard && !selectedFaction && !showUnits && !showGlossary && (
                   <MobileWelcome
                     recentSearches={recentSearches}
                     onClearRecent={clearRecentSearches}
@@ -369,7 +375,7 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                 )}
                 {/* Faction overview */}
                 {/* eslint-disable-next-line prettier/prettier */}
-                {!activeCard && selectedFaction && !showUnits && !activeExtraView && (
+                {!activeCard && selectedFaction && !showUnits && !showGlossary && !activeExtraView && (
                   <React.Suspense fallback={null}>
                     <config.FactionComponent />
                   </React.Suspense>
@@ -380,6 +386,8 @@ export const ViewerMobile = ({ showUnits = false, showManifestationLores = false
                     <config.FactionUnitsComponent />
                   </React.Suspense>
                 )}
+                {/* Keyword glossary */}
+                {showGlossary && !activeCard && <MobileGlossaryList />}
                 {/* Extra route views (manifestation lores, spell lores, etc.) */}
                 {activeExtraView && <activeExtraView.Component />}
               </div>

@@ -1053,6 +1053,20 @@ const validateKeywordGlossary = (glossary, path) => {
         `${entryPath}: invalid "displayMode" "${entry.displayMode}" (must be one of ${VALID_GLOSSARY_DISPLAY_MODES.join(", ")})`,
       );
     }
+    if (entry.style !== undefined) {
+      if (typeof entry.style !== "object" || entry.style === null || Array.isArray(entry.style)) {
+        errors.push(`${entryPath}: "style" must be an object`);
+      } else {
+        Object.entries(KEYWORD_STYLE_OPTIONS).forEach(([styleKey, allowed]) => {
+          const value = entry.style[styleKey];
+          if (value !== undefined && !allowed.includes(value)) {
+            errors.push(
+              `${entryPath}.style.${styleKey}: invalid value "${value}" (must be one of ${allowed.join(", ")})`,
+            );
+          }
+        });
+      }
+    }
     if (!Array.isArray(entry.appliesTo) || entry.appliesTo.length === 0) {
       errors.push(`${entryPath}: "appliesTo" must be a non-empty array of scopes`);
     } else {
@@ -1147,6 +1161,88 @@ export const collectKeywordExplanations = (keywords, glossary, scope) => {
     }
   }
   return out;
+};
+
+/**
+ * Scans free text for occurrences of glossary entry names, scoped and
+ * limited to entries that carry a hover tooltip (`displayMode: "tooltip"`).
+ * Returns sorted, non-overlapping match ranges so renderers can wrap the
+ * matched substrings with an underline + tooltip inside ability/rule
+ * descriptions. Longer names win when two entries would overlap (e.g.
+ * "Feel No Pain" beats "Pain"). Matching is case-insensitive and bounded
+ * so a name is not matched inside a larger word.
+ *
+ * @param {string} text - The free-text description to scan
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {{start:number,end:number,text:string,entry:object}[]}
+ */
+export const findGlossaryMatchesInText = (text, glossary, scope) => {
+  if (typeof text !== "string" || !text.trim() || !Array.isArray(glossary) || glossary.length === 0) {
+    return [];
+  }
+  const scoped = (scope ? filterGlossaryByScope(glossary, scope) : glossary).filter(
+    (entry) =>
+      entry?.displayMode === "tooltip" &&
+      typeof entry.name === "string" &&
+      entry.name.trim() &&
+      typeof entry.description === "string" &&
+      entry.description.trim(),
+  );
+  if (scoped.length === 0) return [];
+  // Longest name first so specific entries claim their span before shorter ones.
+  const sorted = [...scoped].sort((a, b) => b.name.trim().length - a.name.trim().length);
+  const matches = [];
+  for (const entry of sorted) {
+    const needle = entry.name.trim();
+    const pattern = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(?<![A-Za-z0-9])${pattern}(?![A-Za-z0-9])`, "gi");
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const start = m.index;
+      const end = start + m[0].length;
+      if (matches.some((existing) => start < existing.end && end > existing.start)) continue;
+      matches.push({ start, end, text: m[0], entry });
+    }
+  }
+  return matches.sort((a, b) => a.start - b.start);
+};
+
+/**
+ * Allowed values for each per-keyword style field. Modelled as string enums
+ * (rather than booleans) so new presentation options — extra casings, bracket
+ * shapes, weights — can be added without a data migration.
+ */
+export const KEYWORD_STYLE_OPTIONS = {
+  casing: ["uppercase", "normal"],
+  brackets: ["square", "none"],
+  weight: ["bold", "normal"],
+};
+
+/**
+ * Default per-keyword presentation: matches the look custom datasource cards
+ * shipped with before the style options existed (uppercase, bracketed, bold).
+ */
+export const DEFAULT_KEYWORD_STYLE = { casing: "uppercase", brackets: "square", weight: "bold" };
+
+/**
+ * Resolves a glossary entry's optional `style` object to a complete style
+ * with every field defined. Unknown or missing values fall back to the
+ * default so entries (and non-glossary keywords, where `entry` is null) keep
+ * the original look unless they explicitly opt into something else.
+ *
+ * @param {object|null} entry - A glossary entry, or null for an unmatched keyword
+ * @returns {{casing:string,brackets:string,weight:string}}
+ */
+export const resolveKeywordStyle = (entry) => {
+  const style = entry && typeof entry.style === "object" && entry.style ? entry.style : {};
+  const pick = (field) =>
+    KEYWORD_STYLE_OPTIONS[field].includes(style[field]) ? style[field] : DEFAULT_KEYWORD_STYLE[field];
+  return {
+    casing: pick("casing"),
+    brackets: pick("brackets"),
+    weight: pick("weight"),
+  };
 };
 
 /**

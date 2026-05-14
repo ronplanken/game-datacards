@@ -12,8 +12,7 @@ export const StepPatchNotes = () => (
       </div>
     </div>
     <p className="wnw-feature-description">
-      Write a keyword description once and every card that uses it shows the explanation automatically — just like the
-      built-in 40K 10th Edition cards.
+      Write a keyword&apos;s explanation once and it appears on every card that uses it.
     </p>
 
     <div className="wnw-feature-highlights">
@@ -21,14 +20,9 @@ export const StepPatchNotes = () => (
         <div className="wnw-highlight-dot" />
         <div>
           <strong>
-            <BookOpen size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
-            Glossary section in the editor
+            <BookOpen size={14} style={{ verticalAlign: -2, marginRight: 6 }} />A glossary section in the editor
           </strong>
-          <p>
-            A new &quot;Keyword Glossary&quot; section under the datasource node. New 40K 10e datasources come
-            pre-loaded with the 23 official weapon keywords (One Shot, Devastating Wounds, Anti-, Twin-linked, and
-            friends). The section&apos;s ⋯ menu can restore the defaults at any time.
-          </p>
+          <p>New 40K 10th Edition datasources come pre-loaded with all 23 official weapon keywords.</p>
         </div>
       </div>
       <div className="wnw-highlight-item">
@@ -38,11 +32,7 @@ export const StepPatchNotes = () => (
             <Tag size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
             Reusable across the whole card
           </strong>
-          <p>
-            Each entry says where it can be used — weapons, abilities, unit keywords, rules, stratagems, or
-            enhancements. A single keyword like <em>Lethal Hits</em> can show up everywhere it&apos;s mentioned without
-            duplicating the description.
-          </p>
+          <p>One keyword works across weapons, abilities, rules, stratagems, and more, with no copying.</p>
         </div>
       </div>
       <div className="wnw-highlight-item">
@@ -52,11 +42,7 @@ export const StepPatchNotes = () => (
             <MousePointerClick size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
             Explanation row or hover tooltip
           </strong>
-          <p>
-            For weapon keywords, pick how the description shows: a line under the weapon table (the default, matching
-            the built-in 40K layout) or a tooltip on the inline `[KEYWORD]` tag — perfect for keeping common rules off
-            the card surface.
-          </p>
+          <p>For weapon keywords, show the explanation as a row under the table or a hover tooltip.</p>
         </div>
       </div>
     </div>

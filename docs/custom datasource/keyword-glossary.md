@@ -1,16 +1,20 @@
 ---
 title: Keyword Glossary
-description: Datasource-level mapping from keyword tags to their rule explanations. Each entry declares the render scopes (weapons, abilities, …) it applies to so a single glossary feeds every renderer.
+description: Datasource-level mapping from keyword tags to their rule explanations. Each entry declares the render scopes (weapons, abilities, …) it applies to so a single glossary feeds every renderer across 40k-10e, AoS, and Starcraft TMG.
 category: custom-datasource
-tags: [keywords, glossary, rendering, 40k-10e, weapons, abilities]
+tags: [keywords, glossary, rendering, 40k-10e, aos, starcraft-tmg, weapons, abilities]
 related:
   - datasource-schema-architecture.md
   - custom-datasource-format.md
+  - ../starcraft-tmg.md
 file_locations:
   defaults: src/Helpers/keywordGlossaryDefaults.js
   helpers: src/Helpers/customSchema.helpers.js
   editor: src/Components/DatasourceEditor/editors/KeywordGlossaryEditor.jsx
-  renderer: src/Components/DatasourceEditor/cards/units/Ds40kUnitWeapons.jsx
+  shared_renderer: src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx
+  renderer_40k: src/Components/DatasourceEditor/cards/units/Ds40kUnitWeapons.jsx
+  renderer_aos: src/Components/DatasourceEditor/cards/warscroll/DsAosWeapons.jsx
+  renderer_tmg: src/Components/DatasourceEditor/cards/starcraft/StarcraftWeaponTable.jsx
   premium_editor: ../gdc-premium/src/Components/CustomCardEditor/editors/index.jsx
 ---
 
@@ -19,6 +23,8 @@ file_locations:
 The built-in Warhammer 40K 10th edition data cards render a short explanation line below each weapon profile for every keyword on the weapon — for example, the inline `[One Shot]` tag on a Hunter-killer Missile is accompanied by `[ONE SHOT] - The bearer can only shoot with this weapon once per battle.` directly below the profile row.
 
 Custom datasources get the same behavior — and the same mechanism extends to other keyword sites on a card (ability text, the unit keywords bar, etc.) — through a **datasource-level glossary**. Define a keyword name, description, and the scopes it applies to once, and every renderer that consumes that scope auto-renders the explanation.
+
+The glossary is **base-system agnostic**: the `40k-10e`, `aos`, and `starcraft-tmg` datasource renderers all read the same `keywordGlossary` array and share the render logic in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx`.
 
 ## Table of Contents
 
@@ -74,8 +80,8 @@ The validator rejects entries with a missing/empty `appliesTo`, duplicate keys, 
 
 | Scope            | Where it applies |
 |------------------|------------------|
-| `weapons`        | Weapon profile keyword tags (rendered today by `Ds40kUnitWeapons`). |
-| `abilities`      | Ability descriptions / titles. Future renderer. |
+| `weapons`        | Weapon profile keyword tags + explanation rows. Rendered by `Ds40kUnitWeapons` (40k), `DsAosWeapons` (AoS), and `StarcraftWeaponTable` (TMG). |
+| `abilities`      | Ability descriptions — `displayMode: "tooltip"` entries get an underline + hover tooltip. Rendered by `Ds40kUnitExtra` (40k), `DsAosAbilities` (AoS), and `StarcraftAbility` (TMG). |
 | `unit-keywords`  | The unit keywords bar at the bottom of a card. Future renderer. |
 | `rules`          | Rule card content. Future renderer. |
 | `stratagems`     | Stratagem card content. Future renderer. |
@@ -120,15 +126,27 @@ The **premium `SchemaWeaponsEditor`** uses glossary entries whose `appliesTo` in
 
 ## Rendering
 
-`Ds40kUnitWeapons` receives the glossary via the `keywordGlossary` prop (threaded by `Ds40kUnitCard` from `DatasourceCardPreview` / `CustomCardDisplay`). For each weapon type section it:
+Every base-system card renderer receives the glossary via the `keywordGlossary` prop, threaded from `DatasourceCardPreview` / `CustomCardDisplay` (`schema.keywordGlossary`). The renderers then split into a 40K-specific path and a shared path used by AoS and Starcraft TMG.
 
-1. Collects every keyword across active weapon profiles in that section.
-2. Resolves them via `collectKeywordExplanations(keywords, glossary, "weapons")` — entries without `weapons` in `appliesTo` are skipped.
-3. Filters out entries with `displayMode: "tooltip"` (those show on hover only).
-4. Renders one `<div class="special">` block containing one `.ability > .name + .description` row per remaining entry (matching the built-in `UnitWeapon.jsx` layout, producing the compact "**One Shot:** description…" line).
-5. Renders the inline keyword tag via `Ds40kWeaponKeywords`: for keywords whose glossary entry has `displayMode: "tooltip"`, wraps the tag in an antd `Tooltip` whose content is the glossary description; otherwise falls back to the built-in `KeywordTooltip` dictionary (or a plain pill for unknown keywords).
+### Shared components (`shared/GlossaryKeywords.jsx`)
 
-Description text can include newlines and bullet markers (`• `) which `UnitAbilityDescription` renders verbatim.
+AoS and Starcraft TMG render glossary keywords through three system-neutral components that emit `ds-kw-*` CSS classes (themed per base system in `aos.less` / `starcraft-tmg.less`):
+
+- **`GlossaryKeywordTags`** — inline keyword tags. Each tag's caps/brackets/weight come from its glossary entry's `style` (`resolveKeywordStyle`). `displayMode: "tooltip"` entries get a hover tooltip and the `ds-kw-tag--has-info` dotted underline; everything else renders as a plain tag.
+- **`GlossaryExplanationRows`** — the "explanation line" treatment: one `name: description` row per resolved entry. Fed by `getKeywordExplanations(keywords, glossary, scope)`, which resolves + dedupes the keywords and drops `displayMode: "tooltip"` entries (those show on hover only).
+- **`GlossaryText`** — free text with inline tooltips: wraps every `findGlossaryMatchesInText` hit (abilities-scoped, `displayMode: "tooltip"`) in an underline + hover tooltip. Returns the raw string untouched when nothing matches.
+
+`splitKeywordString` turns a comma-separated keyword cell (`"Target (Ground), Long Range (18\")"`) into individual tags, ignoring commas inside parentheses — used by Starcraft TMG, which stores weapon keywords as a string column rather than an array.
+
+### Per-system wiring
+
+| Base system | Weapons | Abilities |
+|-------------|---------|-----------|
+| `40k-10e` | `Ds40kUnitWeapons` → `Ds40kWeaponKeywords` (inline tags) + a `<div class="special">` of `.ability` rows. Uses the 40K-native components rather than the shared ones. | `Ds40kUnitExtra` → `UnitAbilityDescription` (`glossaryOnly`). |
+| `aos` | `DsAosWeapons` → `GlossaryKeywordTags` replaces the plain `weapon-ability-badge` pills (desktop + mobile); `GlossaryExplanationRows` renders below the weapon table. Falls back to plain badges when no glossary is present. | `DsAosAbilities` → `GlossaryText` on `ability.description`, but only when there is an actual abilities-scoped tooltip match (otherwise the normal `MarkdownDisplay` path is kept so formatting survives). |
+| `starcraft-tmg` | `StarcraftWeaponTable` → the keyword column (any column whose `key` is `keyword`/`keywords`) is split with `splitKeywordString` and rendered via `GlossaryKeywordTags`; `GlossaryExplanationRows` renders below the table (desktop + mobile). | `StarcraftAbility` → `GlossaryText` on `ability.description`. |
+
+Description text can include newlines and bullet markers (`• `) which the 40K `UnitAbilityDescription` renders verbatim; the shared `GlossaryText` renders plain text plus tooltip spans.
 
 ## Verification checklist
 
@@ -136,7 +154,10 @@ Description text can include newlines and bullet markers (`• `) which `UnitAbi
 - Open a unit card, add a weapon with keyword `One Shot` → card preview shows the inline tag *and* the explanation row below the profile.
 - Add a weapon with keyword `Anti-Infantry 4+` → prefix match resolves to the `Anti-` glossary entry and renders its explanation.
 - Toggle `Weapons` off on the `One Shot` entry → existing weapons keep the inline tag but the explanation row disappears.
-- Toggle `Abilities` on (in addition to `Weapons`) → no visible change today (no ability renderer yet); the data round-trips through export/import.
+- Set a `Weapons` entry's display mode to `Hover tooltip` → the inline tag gets a dotted underline and shows the description on hover; the explanation row disappears.
 - Delete the `One Shot` entry → no explanation row anywhere; inline tag remains on the weapon.
 - Click "Restore defaults" → the 10e set comes back, all scoped to `Weapons`.
 - Create a `blank`-base datasource → glossary starts empty; manually-added entries with `Weapons` selected render correctly.
+- **AoS:** on an `aos` datasource, add a glossary entry scoped to `Weapons`, then add that keyword to a warscroll weapon profile → the keyword tag is styled and (explanation mode) an explanation row renders below the weapon table.
+- **Starcraft TMG:** on a `starcraft-tmg` datasource, add a glossary entry whose name matches a token in a weapon's `Keyword` column (e.g. `Target (Ground)` exact, or `Long Range` prefix) → the column splits into styled tags and explanation rows render below the table.
+- **Abilities (AoS / TMG):** add an entry scoped to `Abilities` with display mode `Hover tooltip`, reference its name in an ability description → the name gets a dotted underline + hover tooltip in the rendered card.

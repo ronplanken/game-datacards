@@ -1,27 +1,21 @@
-import { Layout, Row } from "antd";
+import { Layout } from "antd";
 import { message } from "./Components/Toast/message";
 import "antd/dist/antd.min.css";
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { v4 as uuidv4 } from "uuid";
 import "./App.css";
-import { FloatingToolbar } from "./Components/Toolbar/FloatingToolbar";
 import { AppHeader } from "./Components/AppHeader";
 import { LeftPanel } from "./Components/LeftPanel";
-import { AgeOfSigmarCardDisplay } from "./Components/AgeOfSigmar/CardDisplay";
 import { AgeOfSigmarCardEditor } from "./Components/AgeOfSigmar/CardEditor";
-import { NecromundaCardDisplay } from "./Components/Necromunda/CardDisplay";
 import { NecromundaCardEditor } from "./Components/Necromunda/CardEditor";
-import { Warhammer40K10eCardDisplay } from "./Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40K10eCardEditor } from "./Components/Warhammer40k-10e/CardEditor";
-import { Warhammer40KCardDisplay } from "./Components/Warhammer40k/CardDisplay";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
+import { MiddlePanel, getEffectiveMiddleView } from "./Components/MiddlePanel";
 import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
-import { useAutoFitScale } from "./Hooks/useAutoFitScale";
 import { CustomCardEditor } from "./Premium";
-import { CustomCardDisplay } from "./Components/Custom/CustomCardDisplay";
 import "./style.less";
 
 const { Content } = Layout;
@@ -31,6 +25,11 @@ function App() {
   const { settings, updateSettings } = useSettingsStorage();
 
   const [selectedTreeIndex, setSelectedTreeIndex] = useState(null);
+
+  // Which view the middle panel shows. "card" is the default; selecting a
+  // card always returns here (see effect below). "glossary" is opened
+  // explicitly from the DataSourcePanel.
+  const [middleView, setMiddleView] = useState("card");
 
   const {
     cardStorage,
@@ -43,30 +42,15 @@ function App() {
     cardUpdated,
   } = useCardStorage();
 
-  // Ref for the card display container
-  const cardContainerRef = useRef(null);
+  // Selecting any card (tree, datasource list, add-to-category) snaps the
+  // middle panel back to the card view without each call site knowing about
+  // the view state.
+  useEffect(() => {
+    if (activeCard) setMiddleView("card");
+  }, [activeCard]);
 
-  // Determine card type for proper scaling
-  const getCardType = () => {
-    if (!activeCard) return "unit";
-    if (activeCard.cardType === "stratagem") return "stratagem";
-    if (activeCard.cardType === "enhancement") return "enhancement";
-    if (activeCard.cardType === "rule") return "rule";
-    if (activeCard.cardType === "warscroll") return "warscroll";
-    if (activeCard.cardType === "spell") return "spell";
-    if (settings.showCardsAsDoubleSided || activeCard.variant === "full") return "unitFull";
-    return "unit";
-  };
-
-  // Use auto-fit hook
-  const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), settings.autoFitEnabled !== false);
-
-  // Determine effective scale based on mode
-  const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
-
-  // Zoom settings
-  const currentZoom = settings.zoom || 100;
-  const isAutoFit = settings.autoFitEnabled !== false;
+  const hasGlossary = dataSource?.schema?.keywordGlossary?.length > 0;
+  const effectiveMiddleView = getEffectiveMiddleView(middleView, activeCard, hasGlossary);
 
   // Handle add to category from toolbar
   const handleAddToCategory = (categoryUuid, cardOrCards = undefined) => {
@@ -102,7 +86,12 @@ function App() {
     }
   };
 
-  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+  // Open the keyword glossary in the middle panel. Clearing the active card
+  // also hides the right-hand editor panel.
+  const handleOpenGlossary = () => {
+    setActiveCard(null);
+    setMiddleView("glossary");
+  };
 
   return (
     <Layout>
@@ -114,52 +103,24 @@ function App() {
               selectedTreeIndex={selectedTreeIndex}
               setSelectedTreeIndex={setSelectedTreeIndex}
               onAddToCategory={handleAddToCategory}
+              onOpenGlossary={handleOpenGlossary}
             />
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />
           <Panel defaultSize={41} minSize={10} order={2}>
-            <div
-              ref={cardContainerRef}
-              style={{
-                height: "calc(100vh - 64px)",
-                overflow: "auto",
-                position: "relative",
-                display: "flex",
-                flexDirection: "column",
-                "--card-scaling-factor": effectiveScale,
-                "--banner-colour": activeCard?.useCustomColours
-                  ? activeCard.customBannerColour
-                  : cardFaction?.colours?.banner,
-                "--header-colour": activeCard?.useCustomColours
-                  ? activeCard.customHeaderColour
-                  : cardFaction?.colours?.header,
-              }}
-              className={`${isCustomDatasource || activeCard?.source === "starcraft-tmg" ? "data-custom" : `data-${activeCard?.source}`}`}>
-              <Row style={{ overflow: "hidden", justifyContent: "center", flex: "1 0 auto" }}>
-                {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
-                {activeCard?.source === "40k-10e" && (
-                  <Warhammer40K10eCardDisplay side={activeCard.print_side || "front"} />
-                )}
-                {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
-                {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
-                {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
-                {activeCard?.source === "starcraft-tmg" && <CustomCardDisplay />}
-                {activeCard?.source?.startsWith("custom-") && <CustomCardDisplay />}
-              </Row>
-              <FloatingToolbar
-                activeCard={activeCard}
-                settings={settings}
-                cardUpdated={cardUpdated}
-                currentZoom={currentZoom}
-                isAutoFit={isAutoFit}
-                categories={cardStorage.categories}
-                updateActiveCard={updateActiveCard}
-                saveActiveCard={saveActiveCard}
-                onZoomChange={(zoom) => updateSettings({ ...settings, autoFitEnabled: false, zoom })}
-                onAutoFitToggle={() => updateSettings({ ...settings, autoFitEnabled: true })}
-                onAddToCategory={handleAddToCategory}
-              />
-            </div>
+            <MiddlePanel
+              view={effectiveMiddleView}
+              activeCard={activeCard}
+              settings={settings}
+              updateSettings={updateSettings}
+              cardUpdated={cardUpdated}
+              cardStorage={cardStorage}
+              updateActiveCard={updateActiveCard}
+              saveActiveCard={saveActiveCard}
+              isCustomDatasource={isCustomDatasource}
+              dataSource={dataSource}
+              onAddToCategory={handleAddToCategory}
+            />
           </Panel>
           <PanelResizeHandle className="vertical-resizer" />
           <Panel defaultSize={20} minSize={5} order={3}>

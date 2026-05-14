@@ -17,6 +17,10 @@ vi.mock("lucide-react", () => ({
   Sparkles: (props) => <svg data-testid="icon-sparkles" {...props} />,
   Zap: (props) => <svg data-testid="icon-zap" {...props} />,
   Database: (props) => <svg data-testid="icon-database" {...props} />,
+  LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
+  Palette: (props) => <svg data-testid="icon-palette" {...props} />,
+  Info: (props) => <svg data-testid="icon-info" {...props} />,
+  Users: (props) => <svg data-testid="icon-users" {...props} />,
 }));
 
 const mockUnitCardType = {

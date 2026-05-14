@@ -965,7 +965,8 @@
   display: flex;
   align-items: center;
   height: 28px;
-  background: var(--designer-bg-secondary);
+  /* Whiter than the surrounding panel/cards so input fields read as editable. */
+  background: var(--designer-bg-primary, #fff);
   border: 1px solid var(--designer-border);
   border-radius: var(--designer-radius-sm);
   overflow: hidden;
@@ -976,6 +977,25 @@
   border-color: var(--designer-accent);
 }
 
+/* Variant for controls that can wrap taller than the 28px row — e.g. the
+   multi-select "Applies to" chips. Keeps the icon-label chip alignment but
+   lets the field grow instead of clipping. `align-items: stretch` makes the
+   icon-label chip fill the full (grown) row height instead of leaving a gap. */
+.props-compact-input.props-compact-input--auto {
+  height: auto;
+  min-height: 28px;
+  overflow: visible;
+  align-items: stretch;
+}
+
+/* In the grown row the label chip stretches full height; drop the explicit
+   `height: 100%` (which pins it to content height) so flex stretch wins, and
+   the chip's own `align-items: center` keeps the icon vertically centered. */
+.props-compact-input--auto .props-compact-label {
+  height: auto;
+  align-self: stretch;
+}
+
 .props-compact-label {
   display: flex;
   align-items: center;
@@ -983,7 +1003,8 @@
   min-width: 22px;
   padding: 0 6px;
   height: 100%;
-  background: var(--designer-bg-tertiary);
+  /* Grey icon chip — darker than the white field so the icon reads as a label. */
+  background: #e8eaed;
   color: var(--designer-text-secondary);
   font-size: 10px;
   font-weight: 600;
@@ -996,7 +1017,9 @@
   flex: 1;
   height: 100%;
   padding: 0 6px;
-  background: transparent;
+  /* Explicit white (not transparent) so text inputs AND native selects —
+     which have a grey UA background — match the description textarea. */
+  background-color: var(--designer-bg-primary, #fff);
   border: none;
   outline: none;
   color: var(--designer-text-primary);
@@ -1549,6 +1572,10 @@ select.props-compact-field {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+.schema-tree-overview + .schema-tree-content {
+  margin-top: 12px;
+}
+
 .schema-tree-icon {
   width: 16px;
   height: 16px;
@@ -2057,6 +2084,66 @@ select.props-compact-field {
 }
 
 /* ===========================================
+   COLLAPSIBLE FIELD ITEM
+   =========================================== */
+
+/* Collapsible rows stack header and body vertically so the body can span the
+   full card width instead of being squeezed beside the action buttons.
+   `align-items: stretch` overrides `.props-field-item`'s flex-start so both
+   the header row and the body fill the card width. */
+.props-collapsible-item {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.props-collapsible-item-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.props-collapsible-item-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  padding: 2px 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--designer-text-primary);
+  text-align: left;
+}
+
+.props-collapsible-item-header svg {
+  flex-shrink: 0;
+  color: var(--designer-text-tertiary);
+}
+
+.props-collapsible-item-title {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.props-collapsible-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+/* Reorder/delete buttons sit in a single row beside the collapsed header,
+   so a collapsed row stays one line tall. */
+.props-collapsible-item-actions {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* ===========================================
    KEYWORD GLOSSARY EDITOR
    =========================================== */
 
@@ -2078,8 +2165,30 @@ select.props-compact-field {
   color: var(--designer-text-tertiary);
 }
 
+/* Sub-group header inside a glossary entry (e.g. "Styling") — a small
+   uppercase caption with a divider so the style dropdowns read as their
+   own group, distinct from the keyword's identity fields above. */
+.props-glossary-group-label {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--designer-border);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--designer-text-tertiary);
+}
+
 /* Tighten the antd Select chrome so it looks at home in the props panel. */
+/* The "Applies to" multi-select sits in a compact-input row; make the row and
+   the select span the full panel width like the inputs above it. */
+.props-glossary-scopes-input {
+  width: 100%;
+}
+
 .props-glossary-scopes-select.ant-select {
+  flex: 1;
+  min-width: 0;
   width: 100%;
   min-height: 26px;
   font-size: 11px;

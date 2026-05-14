@@ -9,7 +9,7 @@ export const StepPatchNotes = () => (
       </div>
       <h2 className="mwnw-features-title">Keyword Glossary</h2>
       <p className="mwnw-features-subtitle">
-        Write a keyword description once and every card that uses it shows the explanation automatically.
+        Write a keyword&apos;s explanation once and it appears on every card that uses it.
       </p>
     </header>
 
@@ -19,10 +19,9 @@ export const StepPatchNotes = () => (
           <BookOpen size={20} />
         </div>
         <div className="mwnw-feature-item-content">
-          <span className="mwnw-feature-item-title">Glossary section in the editor</span>
+          <span className="mwnw-feature-item-title">A glossary section in the editor</span>
           <span className="mwnw-feature-item-desc">
-            A new section under the datasource node. New 40K 10e datasources come pre-loaded with the 23 official weapon
-            keywords.
+            New 40K 10th Edition datasources come pre-loaded with all 23 official weapon keywords.
           </span>
         </div>
       </div>
@@ -34,8 +33,7 @@ export const StepPatchNotes = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Reusable across the whole card</span>
           <span className="mwnw-feature-item-desc">
-            Each entry says where it can be used — weapons, abilities, unit keywords, rules, stratagems, or enhancements
-            — so one description covers every spot the keyword appears.
+            One keyword works across weapons, abilities, rules, stratagems, and more, with no copying.
           </span>
         </div>
       </div>
@@ -47,8 +45,7 @@ export const StepPatchNotes = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Explanation row or hover tooltip</span>
           <span className="mwnw-feature-item-desc">
-            For weapon keywords, pick how the description shows: a line under the weapon table or a tooltip on the
-            inline tag.
+            For weapon keywords, show the explanation as a row under the table or a hover tooltip.
           </span>
         </div>
       </div>

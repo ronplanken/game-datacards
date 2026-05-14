@@ -9,6 +9,10 @@ vi.mock("../../../Premium", () => ({
 
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
+  Bold: (props) => <svg data-testid="icon-bold" {...props} />,
+  Brackets: (props) => <svg data-testid="icon-brackets" {...props} />,
+  CaseUpper: (props) => <svg data-testid="icon-case-upper" {...props} />,
+  Link: (props) => <svg data-testid="icon-link" {...props} />,
   Settings: (props) => <svg data-testid="icon-settings" {...props} />,
   Database: (props) => <svg data-testid="icon-database" {...props} />,
   Info: (props) => <svg data-testid="icon-info" {...props} />,
@@ -31,6 +35,8 @@ vi.mock("lucide-react", () => ({
   Users: (props) => <svg data-testid="icon-users" {...props} />,
   MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
   RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
+  Download: (props) => <svg data-testid="icon-download" {...props} />,
+  Eye: (props) => <svg data-testid="icon-eye" {...props} />,
 }));
 
 vi.mock("antd", () => ({
@@ -240,7 +246,9 @@ describe("SchemaDefinitionEditor", () => {
           onUpdateDatasource={vi.fn()}
         />,
       );
-      // Stat fields M and T should be rendered as editable inputs
+      // Stat fields render collapsed; expand them to reveal editable inputs
+      fireEvent.click(screen.getByText("M"));
+      fireEvent.click(screen.getByText("T"));
       expect(screen.getByDisplayValue("M")).toBeInTheDocument();
       expect(screen.getByDisplayValue("T")).toBeInTheDocument();
     });

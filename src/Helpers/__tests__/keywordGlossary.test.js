@@ -3,9 +3,12 @@ import {
   resolveKeywordEntry,
   collectKeywordExplanations,
   filterGlossaryByScope,
+  findGlossaryMatchesInText,
+  resolveKeywordStyle,
   getDefaultKeywordGlossary,
   validateSchema,
   create40kPreset,
+  DEFAULT_KEYWORD_STYLE,
   VALID_GLOSSARY_SCOPES,
 } from "../customSchema.helpers";
 
@@ -150,6 +153,116 @@ describe("collectKeywordExplanations", () => {
   });
 });
 
+describe("findGlossaryMatchesInText", () => {
+  const abilityGlossary = [
+    {
+      key: "feel-no-pain",
+      name: "Feel No Pain",
+      description: "Roll to ignore a lost wound.",
+      matchType: "exact",
+      appliesTo: ["abilities"],
+      displayMode: "tooltip",
+    },
+    {
+      key: "pain",
+      name: "Pain",
+      description: "A shorter keyword.",
+      matchType: "exact",
+      appliesTo: ["abilities"],
+      displayMode: "tooltip",
+    },
+    {
+      key: "scout",
+      name: "Scout",
+      description: "Make a pre-game move.",
+      matchType: "exact",
+      appliesTo: ["abilities"],
+      displayMode: "explanation",
+    },
+    {
+      key: "stealth",
+      name: "Stealth",
+      description: "Subtract 1 from hit rolls.",
+      matchType: "exact",
+      appliesTo: ["weapons"],
+      displayMode: "tooltip",
+    },
+  ];
+
+  it("matches a tooltip entry name as a whole word, case-insensitively", () => {
+    const matches = findGlossaryMatchesInText("This model has feel no pain in melee", abilityGlossary, "abilities");
+    expect(matches).toHaveLength(1);
+    expect(matches[0].entry.key).toBe("feel-no-pain");
+    expect(matches[0].text).toBe("feel no pain");
+  });
+
+  it("returns multiple matches sorted by position", () => {
+    const matches = findGlossaryMatchesInText("Feel No Pain now, more Pain later", abilityGlossary, "abilities");
+    expect(matches.map((m) => m.entry.key)).toEqual(["feel-no-pain", "pain"]);
+    expect(matches[0].start).toBeLessThan(matches[1].start);
+  });
+
+  it("prefers the longer entry name when two would overlap", () => {
+    const matches = findGlossaryMatchesInText("It has Feel No Pain.", abilityGlossary, "abilities");
+    expect(matches).toHaveLength(1);
+    expect(matches[0].entry.key).toBe("feel-no-pain");
+  });
+
+  it("does not match a name inside a larger word", () => {
+    expect(findGlossaryMatchesInText("A painful situation", abilityGlossary, "abilities")).toEqual([]);
+  });
+
+  it("ignores entries that are not in tooltip display mode", () => {
+    expect(findGlossaryMatchesInText("Use Scout to redeploy", abilityGlossary, "abilities")).toEqual([]);
+  });
+
+  it("ignores entries outside the requested scope", () => {
+    expect(findGlossaryMatchesInText("This weapon has Stealth", abilityGlossary, "abilities")).toEqual([]);
+    expect(findGlossaryMatchesInText("This weapon has Stealth", abilityGlossary, "weapons")).toHaveLength(1);
+  });
+
+  it("returns [] for missing or empty inputs", () => {
+    expect(findGlossaryMatchesInText("", abilityGlossary, "abilities")).toEqual([]);
+    expect(findGlossaryMatchesInText(null, abilityGlossary, "abilities")).toEqual([]);
+    expect(findGlossaryMatchesInText("Feel No Pain", null, "abilities")).toEqual([]);
+    expect(findGlossaryMatchesInText("Feel No Pain", [], "abilities")).toEqual([]);
+  });
+
+  it("skips tooltip entries that have no description", () => {
+    const noDesc = [
+      {
+        key: "k",
+        name: "Rampage",
+        description: "",
+        matchType: "exact",
+        appliesTo: ["abilities"],
+        displayMode: "tooltip",
+      },
+    ];
+    expect(findGlossaryMatchesInText("Goes on a Rampage", noDesc, "abilities")).toEqual([]);
+  });
+});
+
+describe("resolveKeywordStyle", () => {
+  it("returns the default style for a null entry", () => {
+    expect(resolveKeywordStyle(null)).toEqual(DEFAULT_KEYWORD_STYLE);
+  });
+
+  it("returns the default style for an entry with no style object", () => {
+    expect(resolveKeywordStyle({ key: "k", name: "K" })).toEqual(DEFAULT_KEYWORD_STYLE);
+  });
+
+  it("keeps valid per-field overrides and fills the rest from defaults", () => {
+    const resolved = resolveKeywordStyle({ style: { casing: "normal", brackets: "none" } });
+    expect(resolved).toEqual({ casing: "normal", brackets: "none", weight: "bold" });
+  });
+
+  it("falls back to defaults for unknown values", () => {
+    const resolved = resolveKeywordStyle({ style: { casing: "tiny", weight: "ultra", brackets: "round" } });
+    expect(resolved).toEqual(DEFAULT_KEYWORD_STYLE);
+  });
+});
+
 describe("getDefaultKeywordGlossary", () => {
   it("returns a populated array for 40k-10e with appliesTo: ['weapons']", () => {
     const defaults = getDefaultKeywordGlossary("40k-10e");
@@ -289,5 +402,39 @@ describe("validateSchema with keywordGlossary", () => {
     });
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.includes("displayMode"))).toBe(true);
+  });
+
+  it("accepts a valid style object", () => {
+    const result = validateSchema({
+      ...baseValid,
+      keywordGlossary: [
+        {
+          key: "k",
+          name: "K",
+          description: "",
+          appliesTo: ["weapons"],
+          style: { casing: "normal", brackets: "none", weight: "bold" },
+        },
+      ],
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  it("rejects a non-object style", () => {
+    const result = validateSchema({
+      ...baseValid,
+      keywordGlossary: [{ key: "k", name: "K", description: "", appliesTo: ["weapons"], style: "bold" }],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("style"))).toBe(true);
+  });
+
+  it("rejects an invalid style field value", () => {
+    const result = validateSchema({
+      ...baseValid,
+      keywordGlossary: [{ key: "k", name: "K", description: "", appliesTo: ["weapons"], style: { casing: "huge" } }],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes("style.casing"))).toBe(true);
   });
 });

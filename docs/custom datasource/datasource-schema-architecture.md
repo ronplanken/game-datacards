@@ -37,9 +37,17 @@ Colours control the visual theming of card headers and banners. The Datasource E
 
 ## Keyword Glossary
 
-The optional `keywordGlossary` array at the schema root pairs a keyword tag (e.g. `One Shot`, `Anti-`) with a description and declares the render contexts in which it applies. When the weapons renderer (`Ds40kUnitWeapons`) encounters a weapon profile keyword that resolves to a glossary entry scoped to `"weapons"`, it renders an explanation row below the weapon table — matching how the built-in 10th edition cards display `[ONE SHOT] - The bearer can only shoot with this weapon once per battle.`
+The optional `keywordGlossary` array at the schema root pairs a keyword tag (e.g. `One Shot`, `Anti-`) with a description and declares the render contexts in which it applies. It is shared by every base system — the `40k-10e`, `aos`, and `starcraft-tmg` datasource renderers all consume the same glossary. When a weapons renderer encounters a weapon profile keyword that resolves to a glossary entry scoped to `"weapons"`, it renders an explanation row below the weapon table — matching how the built-in 10th edition cards display `[ONE SHOT] - The bearer can only shoot with this weapon once per battle.`
 
-Future renderers consume the same glossary, filtered by their own scope (e.g. an ability-text renderer filters by `"abilities"`).
+Each base system wires the glossary through its own card renderer:
+
+| Base system | Weapons renderer | Abilities renderer | Keyword storage |
+|-------------|------------------|--------------------|-----------------|
+| `40k-10e` | `Ds40kUnitWeapons` | `Ds40kUnitExtra` | `profile.keywords` array |
+| `aos` | `DsAosWeapons` | `DsAosAbilities` | `profile.keywords` array |
+| `starcraft-tmg` | `StarcraftWeaponTable` | `StarcraftAbility` | comma-separated string column whose key is `keyword`/`keywords` |
+
+The abilities renderers scan ability descriptions for glossary entry names scoped to `"abilities"` with `displayMode: "tooltip"` and wrap each match with an underline + hover tooltip. Custom datasource cards parse ability text against the glossary **only** — the built-in 40K keyword dictionary (bracket tags, hard-coded rule/weapon keywords) is skipped for them. The shared render logic lives in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx` (`GlossaryKeywordTags`, `GlossaryExplanationRows`, `GlossaryText`).
 
 ```js
 keywordGlossary: [
@@ -56,6 +64,7 @@ keywordGlossary: [
     description: "An unmodified Wound roll of 'x+' against a target with the matching keyword scores a Critical Wound.",
     matchType: "prefix",
     appliesTo: ["weapons"],
+    style: { casing: "uppercase", brackets: "square", weight: "bold" },
   },
 ],
 ```
@@ -68,13 +77,14 @@ keywordGlossary: [
 | `matchType`   | string   | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`; used for parametrised rules like `Anti-Infantry 4+` matching `Anti-`). |
 | `appliesTo`   | string[] | **Required, non-empty.** Scopes in which the entry can render. One entry may declare multiple scopes (e.g. a `Lethal Hits` keyword that applies both to weapons and to ability-text tooltips). |
 | `displayMode` | string   | Weapons-only. `"explanation"` (default) renders the description as an explanation row below the weapon table. `"tooltip"` renders the description as a hover tooltip on the inline keyword tag and skips the explanation row. Other scopes ignore this field today. |
+| `style`       | object   | Optional. Per-keyword presentation of the inline keyword tag. Modelled as string enums so more options can be added later. `casing`: `"uppercase"` (default) or `"normal"`. `brackets`: `"square"` (default) or `"none"`. `weight`: `"bold"` (default) or `"normal"`. Missing or unknown values fall back to the default, so existing entries keep the original look. |
 
 **Valid scopes** (`VALID_GLOSSARY_SCOPES`):
 
 | Scope            | Where it renders |
 |------------------|------------------|
-| `weapons`        | Below weapon profiles, when a weapon keyword resolves to the entry. |
-| `abilities`      | Inside ability descriptions (future renderer). |
+| `weapons`        | Inline weapon keyword tags (styled + hover tooltip for `displayMode: "tooltip"`) and explanation rows below the weapon table. Rendered by `40k-10e`, `aos`, and `starcraft-tmg`. |
+| `abilities`      | Inside ability descriptions — `displayMode: "tooltip"` entries get an underline + hover tooltip on each name match. Rendered by `40k-10e`, `aos`, and `starcraft-tmg`. |
 | `unit-keywords`  | Tooltips on the unit-level keywords bar at the bottom of a card (future renderer). |
 | `rules`          | Rule cards (future renderer). |
 | `stratagems`     | Stratagem cards (future renderer). |

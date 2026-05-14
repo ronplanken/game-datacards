@@ -28,6 +28,10 @@ vi.mock("lucide-react", () => ({
   CheckCircle2: (props) => <svg data-testid="icon-check" {...props} />,
   X: (props) => <svg data-testid="icon-x" {...props} />,
   HelpCircle: (props) => <svg data-testid="icon-help" {...props} />,
+  LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
+  Palette: (props) => <svg data-testid="icon-palette" {...props} />,
+  Info: (props) => <svg data-testid="icon-info" {...props} />,
+  Users: (props) => <svg data-testid="icon-users" {...props} />,
 }));
 
 const mockUnitCardType = {

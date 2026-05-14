@@ -1,5 +1,7 @@
 import React from "react";
 import { MarkdownDisplay } from "../../../MarkdownDisplay";
+import { findGlossaryMatchesInText } from "../../../../Helpers/customSchema.helpers";
+import { GlossaryText } from "../shared/GlossaryKeywords";
 
 /**
  * Build the phase tag text for an ability.
@@ -43,9 +45,24 @@ const LAYOUT_CLASS = {
 };
 
 /**
+ * Renders an ability's free-text description. Routes through `GlossaryText`
+ * (dotted underline + hover tooltip) only when the datasource glossary
+ * actually has an "abilities"-scoped tooltip match in the text; otherwise
+ * keeps the normal Markdown rendering so formatting is preserved.
+ */
+const AbilityDescription = ({ content, glossary }) => {
+  const matches =
+    Array.isArray(glossary) && glossary.length > 0 ? findGlossaryMatchesInText(content, glossary, "abilities") : [];
+  if (matches.length > 0) {
+    return <GlossaryText text={content} glossary={glossary} scope="abilities" matches={matches} />;
+  }
+  return <MarkdownDisplay content={content} />;
+};
+
+/**
  * Renders a single ability item.
  */
-const AbilityItem = ({ ability, category, grandAlliance, itemKey }) => {
+const AbilityItem = ({ ability, category, grandAlliance, itemKey, glossary }) => {
   if (typeof ability === "string") {
     return (
       <div className={`ability-wrapper ${grandAlliance}`} key={itemKey}>
@@ -97,7 +114,7 @@ const AbilityItem = ({ ability, category, grandAlliance, itemKey }) => {
               </p>
             )}
             {!ability.declare && !ability.effect && ability.description && (
-              <MarkdownDisplay content={ability.description} />
+              <AbilityDescription content={ability.description} glossary={glossary} />
             )}
             {!ability.declare && !ability.effect && !ability.description && ability.lore && (
               <MarkdownDisplay content={ability.lore} />
@@ -128,7 +145,7 @@ const AbilityItem = ({ ability, category, grandAlliance, itemKey }) => {
  * - "third": Three per row (33%)
  * - "quarter": Four per row (25%)
  */
-export const DsAosAbilities = ({ card, abilitiesSchema, grandAlliance }) => {
+export const DsAosAbilities = ({ card, abilitiesSchema, grandAlliance, glossary }) => {
   const categories = abilitiesSchema?.categories || [];
 
   if (categories.length === 0) return null;
@@ -150,6 +167,7 @@ export const DsAosAbilities = ({ card, abilitiesSchema, grandAlliance }) => {
           category={category}
           grandAlliance={grandAlliance}
           itemKey={`${category.key}-${index}`}
+          glossary={glossary}
         />
       ))
       .filter(Boolean);

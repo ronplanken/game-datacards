@@ -68,14 +68,19 @@ const abilityGridClass = (category) => {
 
 // Plain ability section (Special Abilities, Movement-style ability lists with
 // no weapons but with multiple ability cards arranged in a grid).
-const AbilitySection = ({ category, abilities }) => {
+const AbilitySection = ({ category, abilities, glossary }) => {
   if (!abilities?.length) return null;
   return (
     <div className="sc-section" data-testid={`sc-section-${category.key}`}>
       <SectionHeading category={category} />
       <div className={abilityGridClass(category)}>
         {abilities.map((ability, idx) => (
-          <StarcraftAbility key={`${ability.name || "ability"}-${idx}`} ability={ability} category={category} />
+          <StarcraftAbility
+            key={`${ability.name || "ability"}-${idx}`}
+            ability={ability}
+            category={category}
+            glossary={glossary}
+          />
         ))}
       </div>
     </div>
@@ -85,7 +90,7 @@ const AbilitySection = ({ category, abilities }) => {
 // Compact phase-row variant — used for movement-style phases that contain a
 // single inline body (no weapon table, no ability grid). Header sits to the
 // left of the body inside a thin bordered block.
-const InlinePhaseRow = ({ category, abilities }) => {
+const InlinePhaseRow = ({ category, abilities, glossary }) => {
   if (!abilities?.length) return null;
   return (
     <div className="sc-phase-row" data-testid={`sc-section-${category.key}`}>
@@ -94,7 +99,7 @@ const InlinePhaseRow = ({ category, abilities }) => {
         {abilities.map((ability, idx) => (
           <React.Fragment key={`${ability.name || "ability"}-${idx}`}>
             {idx > 0 && " "}
-            <StarcraftAbility ability={ability} category={category} inline />
+            <StarcraftAbility ability={ability} category={category} glossary={glossary} inline />
           </React.Fragment>
         ))}
       </div>
@@ -102,7 +107,7 @@ const InlinePhaseRow = ({ category, abilities }) => {
   );
 };
 
-const WeaponSection = ({ category, weaponTypeDef, weapons, abilities, isMobile }) => {
+const WeaponSection = ({ category, weaponTypeDef, weapons, abilities, isMobile, glossary }) => {
   if (!weapons?.length && !abilities?.length) return null;
   const hasAbilities = abilities?.length > 0;
   return (
@@ -113,11 +118,17 @@ const WeaponSection = ({ category, weaponTypeDef, weapons, abilities, isMobile }
         weaponTypeDef={weaponTypeDef}
         isLast={!hasAbilities}
         isMobile={isMobile}
+        glossary={glossary}
       />
       {hasAbilities && (
         <div className={abilityGridClass(category)}>
           {abilities.map((ability, idx) => (
-            <StarcraftAbility key={`${ability.name || "ability"}-${idx}`} ability={ability} category={category} />
+            <StarcraftAbility
+              key={`${ability.name || "ability"}-${idx}`}
+              ability={ability}
+              category={category}
+              glossary={glossary}
+            />
           ))}
         </div>
       )}
@@ -136,7 +147,7 @@ const WeaponSection = ({ category, weaponTypeDef, weapons, abilities, isMobile }
  * - Body (right): section blocks for movement, assault, combat, and special
  *   abilities — each in a faction-coloured frame with an angled bottom-right.
  */
-export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isMobile, onBack }) => {
+export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isMobile, onBack, keywordGlossary }) => {
   const schema = cardTypeDef?.schema || {};
   const statFields = schema.stats?.fields || [];
   const abilityCategories = schema.abilities?.categories || [];
@@ -209,14 +220,15 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
           weapons={weapons}
           abilities={abilities}
           isMobile={isMobile}
+          glossary={keywordGlossary}
         />
       );
     }
     if (!showAbilities) return null;
     if (category.layout === "inline") {
-      return <InlinePhaseRow key={categoryKey} category={category} abilities={abilities} />;
+      return <InlinePhaseRow key={categoryKey} category={category} abilities={abilities} glossary={keywordGlossary} />;
     }
-    return <AbilitySection key={categoryKey} category={category} abilities={abilities} />;
+    return <AbilitySection key={categoryKey} category={category} abilities={abilities} glossary={keywordGlossary} />;
   };
 
   // Standalone weapon type (no linked or matching ability category).
@@ -232,6 +244,7 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
         weapons={weapons}
         abilities={[]}
         isMobile={isMobile}
+        glossary={keywordGlossary}
       />
     );
   };
