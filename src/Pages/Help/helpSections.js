@@ -51,6 +51,11 @@ export const helpCategories = [
         component: lazy(() => import("./content/datasource/weapons.mdx")),
       },
       {
+        key: "keyword-glossary",
+        label: "Keyword Glossary",
+        component: lazy(() => import("./content/datasource/keyword-glossary.mdx")),
+      },
+      {
         key: "abilities",
         label: "Abilities",
         component: lazy(() => import("./content/datasource/abilities.mdx")),

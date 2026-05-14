@@ -1,6 +1,10 @@
 import { useState, useCallback, useMemo } from "react";
 import { WIZARD_MODES, BASE_TYPES, getWizardMode, resolveSteps } from "../constants";
-import { getPresetStepDefaults, DEFAULT_DATASOURCE_COLOURS } from "../../../Helpers/customSchema.helpers";
+import {
+  getPresetStepDefaults,
+  DEFAULT_DATASOURCE_COLOURS,
+  getDefaultKeywordGlossary,
+} from "../../../Helpers/customSchema.helpers";
 
 /**
  * Step IDs that carry type-specific state and should be reset
@@ -256,20 +260,27 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
     // Full datasource schema
     const metadata = stepData["metadata"] || {};
     const baseSystemData = stepData["base-system"] || {};
+    const baseSystem = baseSystemData.baseSystem || "blank";
+    const seededGlossary = getDefaultKeywordGlossary(baseSystem);
+
+    const schema = {
+      version: "1.0.0",
+      baseSystem,
+      cardTypes: [cardTypeEntry],
+      colours: {
+        header: metadata.mainColour || DEFAULT_DATASOURCE_COLOURS.header,
+        banner: metadata.accentColour || DEFAULT_DATASOURCE_COLOURS.banner,
+      },
+    };
+    if (seededGlossary.length > 0) {
+      schema.keywordGlossary = seededGlossary;
+    }
 
     return {
       name: metadata.name || "",
       version: metadata.version || "1.0.0",
       author: metadata.author || "",
-      schema: {
-        version: "1.0.0",
-        baseSystem: baseSystemData.baseSystem || "blank",
-        cardTypes: [cardTypeEntry],
-        colours: {
-          header: metadata.mainColour || DEFAULT_DATASOURCE_COLOURS.header,
-          banner: metadata.accentColour || DEFAULT_DATASOURCE_COLOURS.banner,
-        },
-      },
+      schema,
     };
   }, [mode, baseType, stepData]);
 

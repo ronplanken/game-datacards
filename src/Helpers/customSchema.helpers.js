@@ -6,8 +6,22 @@
  * card data itself.
  */
 
+import { WARHAMMER_40K_10E_KEYWORD_GLOSSARY } from "./keywordGlossaryDefaults";
+
 // Valid base types for card type definitions
 export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
+
+// Valid match types for keyword glossary entries
+export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix"];
+
+// Valid display modes for weapon-scoped keyword glossary entries.
+// Other scopes don't honour this field today.
+export const VALID_GLOSSARY_DISPLAY_MODES = ["explanation", "tooltip"];
+
+// Valid scopes for keyword glossary entries. Each scope corresponds to a
+// place in the rendered card where keyword references can appear; renderers
+// filter the glossary by the scope they care about. Plural form throughout.
+export const VALID_GLOSSARY_SCOPES = ["weapons", "abilities", "unit-keywords", "rules", "stratagems", "enhancements"];
 
 // Valid field types
 export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
@@ -988,7 +1002,263 @@ export const validateSchema = (schema) => {
     }
   });
 
+  // Keyword glossary (optional, datasource-level)
+  if (schema.keywordGlossary !== undefined) {
+    errors.push(...validateKeywordGlossary(schema.keywordGlossary, "keywordGlossary"));
+  }
+
   return { valid: errors.length === 0, errors };
+};
+
+// --- Keyword Glossary ---
+
+/**
+ * Validates a keyword glossary array.
+ * Each entry must have a non-empty string key, name, description, and a
+ * non-empty `appliesTo` array drawn from VALID_GLOSSARY_SCOPES. `matchType`
+ * is optional and defaults to "exact" at the renderer.
+ * @param {object[]} glossary - The glossary array
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateKeywordGlossary = (glossary, path) => {
+  const errors = [];
+  if (!Array.isArray(glossary)) {
+    errors.push(`${path}: must be an array`);
+    return errors;
+  }
+  const keys = new Set();
+  glossary.forEach((entry, i) => {
+    const entryPath = `${path}[${i}]`;
+    if (!entry || typeof entry !== "object") {
+      errors.push(`${entryPath}: must be an object`);
+      return;
+    }
+    if (!entry.key || typeof entry.key !== "string") {
+      errors.push(`${entryPath}: missing or invalid "key" (must be a non-empty string)`);
+    }
+    if (!entry.name || typeof entry.name !== "string") {
+      errors.push(`${entryPath}: missing or invalid "name" (must be a non-empty string)`);
+    }
+    if (typeof entry.description !== "string") {
+      errors.push(`${entryPath}: "description" must be a string`);
+    }
+    if (entry.matchType !== undefined && !VALID_KEYWORD_MATCH_TYPES.includes(entry.matchType)) {
+      errors.push(
+        `${entryPath}: invalid "matchType" "${entry.matchType}" (must be one of ${VALID_KEYWORD_MATCH_TYPES.join(", ")})`,
+      );
+    }
+    if (entry.displayMode !== undefined && !VALID_GLOSSARY_DISPLAY_MODES.includes(entry.displayMode)) {
+      errors.push(
+        `${entryPath}: invalid "displayMode" "${entry.displayMode}" (must be one of ${VALID_GLOSSARY_DISPLAY_MODES.join(", ")})`,
+      );
+    }
+    if (entry.style !== undefined) {
+      if (typeof entry.style !== "object" || entry.style === null || Array.isArray(entry.style)) {
+        errors.push(`${entryPath}: "style" must be an object`);
+      } else {
+        Object.entries(KEYWORD_STYLE_OPTIONS).forEach(([styleKey, allowed]) => {
+          const value = entry.style[styleKey];
+          if (value !== undefined && !allowed.includes(value)) {
+            errors.push(
+              `${entryPath}.style.${styleKey}: invalid value "${value}" (must be one of ${allowed.join(", ")})`,
+            );
+          }
+        });
+      }
+    }
+    if (!Array.isArray(entry.appliesTo) || entry.appliesTo.length === 0) {
+      errors.push(`${entryPath}: "appliesTo" must be a non-empty array of scopes`);
+    } else {
+      entry.appliesTo.forEach((scope, si) => {
+        if (!VALID_GLOSSARY_SCOPES.includes(scope)) {
+          errors.push(
+            `${entryPath}.appliesTo[${si}]: invalid scope "${scope}" (must be one of ${VALID_GLOSSARY_SCOPES.join(", ")})`,
+          );
+        }
+      });
+    }
+    if (entry.key) {
+      if (keys.has(entry.key)) {
+        errors.push(`${entryPath}: duplicate glossary entry key "${entry.key}"`);
+      }
+      keys.add(entry.key);
+    }
+  });
+  return errors;
+};
+
+/**
+ * Filters a glossary down to entries whose `appliesTo` includes the given
+ * scope. Entries missing `appliesTo` are skipped — every entry must declare
+ * at least one scope to render anywhere.
+ * @param {Array} glossary
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {Array}
+ */
+export const filterGlossaryByScope = (glossary, scope) => {
+  if (!Array.isArray(glossary) || !scope) return [];
+  return glossary.filter((entry) => Array.isArray(entry?.appliesTo) && entry.appliesTo.includes(scope));
+};
+
+/**
+ * Resolves a keyword tag to its glossary entry, if any, within a given scope.
+ * Match rules:
+ *   - "exact"  → case-insensitive equality
+ *   - "prefix" → case-insensitive startsWith match
+ * When multiple entries match the same keyword, the entry with the longest
+ * `name` wins so specific entries (e.g. "Twin-linked") take precedence over
+ * shorter prefixes that happen to be substrings.
+ *
+ * @param {string} keyword - The keyword tag (e.g. on a weapon profile)
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {object|null} The matching glossary entry, or null
+ */
+export const resolveKeywordEntry = (keyword, glossary, scope) => {
+  if (typeof keyword !== "string" || !keyword.trim() || !Array.isArray(glossary) || glossary.length === 0) {
+    return null;
+  }
+  const scoped = scope ? filterGlossaryByScope(glossary, scope) : glossary;
+  if (scoped.length === 0) return null;
+  const haystack = keyword.toLowerCase().trim();
+  let best = null;
+  for (const entry of scoped) {
+    if (!entry?.name || typeof entry.name !== "string") continue;
+    const needle = entry.name.toLowerCase().trim();
+    if (!needle) continue;
+    const matchType = entry.matchType === "prefix" ? "prefix" : "exact";
+    const matches = matchType === "prefix" ? haystack.startsWith(needle) : haystack === needle;
+    if (matches && (!best || needle.length > best.name.toLowerCase().trim().length)) {
+      best = entry;
+    }
+  }
+  return best;
+};
+
+/**
+ * Returns the deduplicated set of glossary explanation entries that apply
+ * to the given list of keyword tags, scoped to a particular render context.
+ * Preserves the order in which matching entries first appear so renderers
+ * can emit explanation rows predictably.
+ *
+ * @param {string[]} keywords - Keyword tags (e.g. from weapon profiles)
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {object[]} Deduplicated glossary entries
+ */
+export const collectKeywordExplanations = (keywords, glossary, scope) => {
+  if (!Array.isArray(keywords) || !Array.isArray(glossary) || glossary.length === 0) {
+    return [];
+  }
+  const seen = new Set();
+  const out = [];
+  for (const keyword of keywords) {
+    const entry = resolveKeywordEntry(keyword, glossary, scope);
+    if (entry && !seen.has(entry.key)) {
+      seen.add(entry.key);
+      out.push(entry);
+    }
+  }
+  return out;
+};
+
+/**
+ * Scans free text for occurrences of glossary entry names, scoped and
+ * limited to entries that carry a hover tooltip (`displayMode: "tooltip"`).
+ * Returns sorted, non-overlapping match ranges so renderers can wrap the
+ * matched substrings with an underline + tooltip inside ability/rule
+ * descriptions. Longer names win when two entries would overlap (e.g.
+ * "Feel No Pain" beats "Pain"). Matching is case-insensitive and bounded
+ * so a name is not matched inside a larger word.
+ *
+ * @param {string} text - The free-text description to scan
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {{start:number,end:number,text:string,entry:object}[]}
+ */
+export const findGlossaryMatchesInText = (text, glossary, scope) => {
+  if (typeof text !== "string" || !text.trim() || !Array.isArray(glossary) || glossary.length === 0) {
+    return [];
+  }
+  const scoped = (scope ? filterGlossaryByScope(glossary, scope) : glossary).filter(
+    (entry) =>
+      entry?.displayMode === "tooltip" &&
+      typeof entry.name === "string" &&
+      entry.name.trim() &&
+      typeof entry.description === "string" &&
+      entry.description.trim(),
+  );
+  if (scoped.length === 0) return [];
+  // Longest name first so specific entries claim their span before shorter ones.
+  const sorted = [...scoped].sort((a, b) => b.name.trim().length - a.name.trim().length);
+  const matches = [];
+  for (const entry of sorted) {
+    const needle = entry.name.trim();
+    const pattern = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(?<![A-Za-z0-9])${pattern}(?![A-Za-z0-9])`, "gi");
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const start = m.index;
+      const end = start + m[0].length;
+      if (matches.some((existing) => start < existing.end && end > existing.start)) continue;
+      matches.push({ start, end, text: m[0], entry });
+    }
+  }
+  return matches.sort((a, b) => a.start - b.start);
+};
+
+/**
+ * Allowed values for each per-keyword style field. Modelled as string enums
+ * (rather than booleans) so new presentation options — extra casings, bracket
+ * shapes, weights — can be added without a data migration.
+ */
+export const KEYWORD_STYLE_OPTIONS = {
+  casing: ["uppercase", "normal"],
+  brackets: ["square", "none"],
+  weight: ["bold", "normal"],
+};
+
+/**
+ * Default per-keyword presentation: matches the look custom datasource cards
+ * shipped with before the style options existed (uppercase, bracketed, bold).
+ */
+export const DEFAULT_KEYWORD_STYLE = { casing: "uppercase", brackets: "square", weight: "bold" };
+
+/**
+ * Resolves a glossary entry's optional `style` object to a complete style
+ * with every field defined. Unknown or missing values fall back to the
+ * default so entries (and non-glossary keywords, where `entry` is null) keep
+ * the original look unless they explicitly opt into something else.
+ *
+ * @param {object|null} entry - A glossary entry, or null for an unmatched keyword
+ * @returns {{casing:string,brackets:string,weight:string}}
+ */
+export const resolveKeywordStyle = (entry) => {
+  const style = entry && typeof entry.style === "object" && entry.style ? entry.style : {};
+  const pick = (field) =>
+    KEYWORD_STYLE_OPTIONS[field].includes(style[field]) ? style[field] : DEFAULT_KEYWORD_STYLE[field];
+  return {
+    casing: pick("casing"),
+    brackets: pick("brackets"),
+    weight: pick("weight"),
+  };
+};
+
+/**
+ * Returns the default seeded keyword glossary for the given base system.
+ * Currently only `40k-10e` ships a seed; every other system starts empty.
+ * @param {BaseSystem} baseSystem
+ * @returns {object[]} A fresh copy of the seed array (safe to mutate)
+ */
+export const getDefaultKeywordGlossary = (baseSystem) => {
+  if (baseSystem === "40k-10e") {
+    return WARHAMMER_40K_10E_KEYWORD_GLOSSARY.map((entry) => ({
+      ...entry,
+      appliesTo: [...entry.appliesTo],
+    }));
+  }
+  return [];
 };
 
 // --- Migration Helpers ---
@@ -1358,6 +1628,7 @@ export const createStarcraftTmgPreset = () => ({
 export const create40kPreset = () => ({
   version: SCHEMA_VERSION,
   baseSystem: "40k-10e",
+  keywordGlossary: getDefaultKeywordGlossary("40k-10e"),
   cardTypes: [
     {
       key: "unit",

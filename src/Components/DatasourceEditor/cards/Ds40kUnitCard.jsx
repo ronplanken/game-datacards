@@ -25,7 +25,7 @@ import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
  * @param {Object} props.cardTypeDef - The card type definition from the schema
  * @param {Object} props.cardStyle - CSS variable overrides
  */
-export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
+export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle, isMobile, keywordGlossary }) => {
   const schema = cardTypeDef?.schema || {};
   const statFields = schema.stats?.fields || [];
   const { getImageUrl, isReady } = useIndexedDBImages();
@@ -97,8 +97,13 @@ export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
           </div>
           <div className="data_container">
             <div className="data">
-              <Ds40kUnitWeapons unit={card} weaponTypes={schema.weaponTypes} sectionsSchema={schema.sections} />
-              <Ds40kUnitExtra unit={card} abilitiesSchema={schema.abilities} />
+              <Ds40kUnitWeapons
+                unit={card}
+                weaponTypes={schema.weaponTypes}
+                sectionsSchema={schema.sections}
+                keywordGlossary={keywordGlossary}
+              />
+              <Ds40kUnitExtra unit={card} abilitiesSchema={schema.abilities} keywordGlossary={keywordGlossary} />
             </div>
           </div>
           <div className="footer">

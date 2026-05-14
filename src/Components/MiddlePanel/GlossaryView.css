@@ -1,0 +1,43 @@
+.glossary-view {
+  height: calc(100vh - 64px);
+  overflow: auto;
+  background: #fff;
+}
+
+.glossary-view-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--banner-colour, #001529);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.glossary-view-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.glossary-view-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* Keep the shared search bar sticky below the view header. */
+.glossary-view .glossary-search {
+  position: sticky;
+  top: 60px;
+  z-index: 99;
+}

@@ -4144,6 +4144,32 @@
       &::after {
         content: ", ";
       }
+
+      // Keywords with a hover tooltip get a dotted underline so it's
+      // discoverable that hovering yields the rule text. antd's Button
+      // overrides `text-decoration`, so draw the dotted line as a
+      // repeating background gradient pinned to the bottom edge. Sizing
+      // chosen for visible weight at the small font size used here.
+      &.has-info {
+        background-image: linear-gradient(
+          to right,
+          color-mix(in srgb, currentColor 50%, transparent) 2px,
+          transparent 2px
+        );
+        background-size: 4px 2px;
+        background-repeat: repeat-x;
+        background-position: 0 100%;
+        // Slightly taller than the base button so the dotted line sits
+        // clear of the uppercase text.
+        height: 17px;
+        background-clip: padding-box;
+
+        // The dotted underline is a hover affordance — drop it in print.
+        @media print {
+          background-image: none;
+          height: 16px;
+        }
+      }
     }
     .keyword-button:first-child {
       &::before {
@@ -4160,6 +4186,29 @@
     }
     &::before {
       content: "[";
+    }
+  }
+
+  // Per-keyword styled glossary tags. Used by custom datasource renderers so
+  // each keyword controls its own caps/brackets/weight instead of inheriting
+  // the group `[A, B]` treatment above. Brackets and the `, ` separator are
+  // rendered as text nodes by the renderer, so the group pseudo-elements and
+  // the per-button comma are suppressed here.
+  .keyword.keyword-styled {
+    &::before,
+    &::after {
+      content: "";
+    }
+    .keyword-button {
+      &::after {
+        content: "";
+      }
+      &.kw-no-caps {
+        text-transform: none;
+      }
+      &.kw-no-bold {
+        font-weight: 400;
+      }
     }
   }
 }

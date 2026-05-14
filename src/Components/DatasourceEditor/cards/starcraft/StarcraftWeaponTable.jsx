@@ -1,4 +1,10 @@
 import React from "react";
+import {
+  GlossaryExplanationRows,
+  GlossaryKeywordTags,
+  getKeywordExplanations,
+  splitKeywordString,
+} from "../shared/GlossaryKeywords";
 
 /**
  * Renders the weapon list for a single Starcraft TMG phase (Assault or Combat).
@@ -13,12 +19,20 @@ import React from "react";
  * `isMobile` switches the markup from a column table to per-weapon stacked
  * cards: each weapon gets a name banner and a stat grid with column labels
  * inline, so the data stays scannable on a narrow screen.
+ *
+ * When a `glossary` is supplied, the keyword column (a comma-separated string
+ * cell whose key is `keyword`/`keywords`) renders glossary-styled tags with
+ * hover tooltips, and matching explanation-mode entries render as explanation
+ * rows below the table.
  */
-export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile }) => {
+export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile, glossary }) => {
   const columns = weaponTypeDef?.columns || [];
   const relation = weaponTypeDef?.profileRelation || "parent-child";
   const indentSubProfiles = relation === "parent-child";
   if (!weapons?.length) return null;
+
+  const hasGlossary = Array.isArray(glossary) && glossary.length > 0;
+  const isKeywordColumn = (col) => /^keywords?$/i.test(col?.key || "");
 
   const cellValue = (source, field) => {
     if (!source) return "-";
@@ -61,6 +75,40 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile 
 
   if (!rows.length) return null;
 
+  // Parse each keyword cell once (TMG stores keywords as a comma-separated
+  // string column): row data object → { [colKey]: tags }. Both the
+  // explanation rows and the per-cell render read from this.
+  const keywordColumns = columns.filter(isKeywordColumn);
+  const keywordTagsByRow = new Map();
+  if (hasGlossary) {
+    rows.forEach((row) => {
+      const byCol = {};
+      keywordColumns.forEach((col) => {
+        byCol[col.key] = splitKeywordString(row.data?.[col.key]);
+      });
+      keywordTagsByRow.set(row.data, byCol);
+    });
+  }
+
+  const explanationEntries = hasGlossary
+    ? getKeywordExplanations(
+        rows.flatMap((row) => keywordColumns.flatMap((col) => keywordTagsByRow.get(row.data)[col.key])),
+        glossary,
+        "weapons",
+      )
+    : [];
+
+  // Keyword columns render as glossary-styled tags; every other column stays plain text.
+  const renderCell = (data, col) => {
+    if (hasGlossary && isKeywordColumn(col)) {
+      const tags = keywordTagsByRow.get(data)?.[col.key] || [];
+      if (tags.length > 0) {
+        return <GlossaryKeywordTags keywords={tags} glossary={glossary} scope="weapons" />;
+      }
+    }
+    return cellValue(data, col);
+  };
+
   if (isMobile) {
     // Split columns into compact stat tiles vs long-text rows. A column is
     // treated as "wide" if any of its values exceeds ~12 chars — cells that
@@ -94,7 +142,7 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile 
                 {compactColumns.map((col) => (
                   <div key={col.key} className="sc-weapon-card-stat">
                     <span className="sc-weapon-card-stat-label">{col.label}</span>
-                    <span className="sc-weapon-card-stat-value">{cellValue(row.data, col)}</span>
+                    <span className="sc-weapon-card-stat-value">{renderCell(row.data, col)}</span>
                   </div>
                 ))}
               </div>
@@ -105,12 +153,13 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile 
               return (
                 <div key={col.key} className="sc-weapon-card-wide">
                   <span className="sc-weapon-card-wide-label">{col.label}</span>
-                  <span className="sc-weapon-card-wide-value">{value}</span>
+                  <span className="sc-weapon-card-wide-value">{renderCell(row.data, col)}</span>
                 </div>
               );
             })}
           </div>
         ))}
+        <GlossaryExplanationRows entries={explanationEntries} />
       </div>
     );
   }
@@ -130,25 +179,28 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile 
   );
 
   return (
-    <table className={`sc-weapon-table${isLast ? " is-last" : ""}`}>
-      <thead>
-        <tr>
-          <th>Name</th>
-          {columns.map((col) => (
-            <th key={col.key}>{col.label}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row) => (
-          <tr key={row.key} className={row.indent ? "sc-weapon-profile" : "sc-weapon-row"}>
-            {renderNameCell(row.name, { indent: row.indent, upgrade: row.upgrade })}
+    <>
+      <table className={`sc-weapon-table${isLast && explanationEntries.length === 0 ? " is-last" : ""}`}>
+        <thead>
+          <tr>
+            <th>Name</th>
             {columns.map((col) => (
-              <td key={col.key}>{cellValue(row.data, col)}</td>
+              <th key={col.key}>{col.label}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.key} className={row.indent ? "sc-weapon-profile" : "sc-weapon-row"}>
+              {renderNameCell(row.name, { indent: row.indent, upgrade: row.upgrade })}
+              {columns.map((col) => (
+                <td key={col.key}>{renderCell(row.data, col)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <GlossaryExplanationRows entries={explanationEntries} />
+    </>
   );
 };

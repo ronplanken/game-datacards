@@ -21,6 +21,9 @@ const mockSchema = {
   },
 };
 
+// Category rows render collapsed; click the header (its title) to reveal inputs.
+const expandCategory = (label) => fireEvent.click(screen.getByText(label));
+
 describe("AbilitiesSchemaEditor", () => {
   it("returns null when schema has no abilities", () => {
     const { container } = render(<AbilitiesSchemaEditor schema={{}} onChange={vi.fn()} />);
@@ -39,13 +42,18 @@ describe("AbilitiesSchemaEditor", () => {
 
   it("renders all category labels", () => {
     render(<AbilitiesSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expect(screen.getByText("Core")).toBeInTheDocument();
+    expect(screen.getByText("Faction")).toBeInTheDocument();
+    expect(screen.getByText("Unit Abilities")).toBeInTheDocument();
+    expandCategory("Core");
     expect(screen.getByDisplayValue("Core")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Faction")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Unit Abilities")).toBeInTheDocument();
   });
 
   it("renders category key inputs", () => {
     render(<AbilitiesSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expandCategory("Core");
+    expandCategory("Faction");
+    expandCategory("Unit Abilities");
     expect(screen.getByDisplayValue("core")).toBeInTheDocument();
     expect(screen.getByDisplayValue("faction")).toBeInTheDocument();
     expect(screen.getByDisplayValue("unit")).toBeInTheDocument();
@@ -53,6 +61,9 @@ describe("AbilitiesSchemaEditor", () => {
 
   it("renders format dropdowns with correct values", () => {
     render(<AbilitiesSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expandCategory("Core");
+    expandCategory("Faction");
+    expandCategory("Unit Abilities");
     const formatSelects = screen.getAllByLabelText("Format");
     expect(formatSelects[0].value).toBe("name-only");
     expect(formatSelects[1].value).toBe("name-description");
@@ -62,6 +73,7 @@ describe("AbilitiesSchemaEditor", () => {
   it("updates category label on change", () => {
     const onChange = vi.fn();
     render(<AbilitiesSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandCategory("Core");
     fireEvent.change(screen.getByDisplayValue("Core"), { target: { value: "Core Abilities" } });
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -75,6 +87,7 @@ describe("AbilitiesSchemaEditor", () => {
   it("updates category key on change", () => {
     const onChange = vi.fn();
     render(<AbilitiesSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandCategory("Core");
     fireEvent.change(screen.getByDisplayValue("core"), { target: { value: "core_abilities" } });
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -88,6 +101,7 @@ describe("AbilitiesSchemaEditor", () => {
   it("updates category format via select", () => {
     const onChange = vi.fn();
     render(<AbilitiesSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandCategory("Core");
     const formatSelects = screen.getAllByLabelText("Format");
     fireEvent.change(formatSelects[0], { target: { value: "name-description" } });
     expect(onChange).toHaveBeenCalledWith(

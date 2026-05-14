@@ -1,7 +1,10 @@
 import React from "react";
-import { KeywordTooltip } from "./KeywordTooltip";
+import { Button } from "antd";
+import { KeywordTooltip, tooltipProps as keywordTooltipProps } from "./KeywordTooltip";
 import { RuleTooltip } from "./RuleTooltip";
+import { Tooltip } from "../../Tooltip/Tooltip";
 import { MarkdownSpanWrapDisplay } from "../../MarkdownSpanWrapDisplay";
+import { findGlossaryMatchesInText, resolveKeywordStyle } from "../../../Helpers/customSchema.helpers";
 const RULE_KEYWORDS = [
   "feel no pain",
   "leader",
@@ -30,7 +33,19 @@ function isPartOfPhrase(text, matchStart) {
   return false;
 }
 
-export function replaceKeywords(inputString) {
+/**
+ * Parses an ability/weapon description into renderable React nodes, wrapping
+ * recognised keywords with tooltips.
+ *
+ * @param {string} inputString - The raw description text
+ * @param {Array} [glossary] - Datasource keyword glossary; "abilities"-scoped
+ *   tooltip entries get an underline + hover tooltip
+ * @param {boolean} [glossaryOnly=false] - When true, the built-in 40K keyword
+ *   dictionary (bracket tags, rule keywords, weapon keywords) is skipped and
+ *   only the datasource glossary drives parsing. Used by custom datasource
+ *   cards so they are not parsed against hard-coded 40K rules.
+ */
+export function replaceKeywords(inputString, glossary, glossaryOnly = false) {
   if (!inputString) {
     return;
   }
@@ -53,22 +68,32 @@ export function replaceKeywords(inputString) {
   // Collect all matches with their positions and types
   const allMatches = [];
   let m;
-  while ((m = bracketRegex.exec(processedString)) !== null) {
-    allMatches.push({ type: "bracket", keyword: m[1], start: m.index, end: m.index + m[0].length });
-  }
-  while ((m = ruleRegex.exec(processedString)) !== null) {
-    if (!isPartOfPhrase(processedString, m.index)) {
-      allMatches.push({ type: "rule", keyword: m[0], start: m.index, end: m.index + m[0].length });
+  // The built-in 40K keyword dictionary is skipped entirely in glossary-only
+  // mode so custom datasource cards rely solely on their own glossary.
+  if (!glossaryOnly) {
+    while ((m = bracketRegex.exec(processedString)) !== null) {
+      allMatches.push({ type: "bracket", keyword: m[1], start: m.index, end: m.index + m[0].length });
+    }
+    while ((m = ruleRegex.exec(processedString)) !== null) {
+      if (!isPartOfPhrase(processedString, m.index)) {
+        allMatches.push({ type: "rule", keyword: m[0], start: m.index, end: m.index + m[0].length });
+      }
+    }
+    while ((m = weaponKeywordRegex.exec(processedString)) !== null) {
+      if (!isPartOfPhrase(processedString, m.index)) {
+        allMatches.push({ type: "weapon", keyword: m[0], start: m.index, end: m.index + m[0].length });
+      }
     }
   }
-  while ((m = weaponKeywordRegex.exec(processedString)) !== null) {
-    if (!isPartOfPhrase(processedString, m.index)) {
-      allMatches.push({ type: "weapon", keyword: m[0], start: m.index, end: m.index + m[0].length });
-    }
-  }
+  // Datasource glossary entries scoped to abilities that carry a hover tooltip.
+  findGlossaryMatchesInText(processedString, glossary, "abilities").forEach((gm) => {
+    allMatches.push({ type: "glossary", keyword: gm.text, entry: gm.entry, start: gm.start, end: gm.end });
+  });
 
-  // Sort by position, then prefer bracket matches over others at the same position
-  allMatches.sort((a, b) => a.start - b.start || (a.type === "bracket" ? -1 : 1));
+  // Sort by position; at the same position prefer explicit bracket tags, then
+  // glossary matches, then the built-in keyword dictionary.
+  const matchTypeRank = { bracket: 0, glossary: 1 };
+  allMatches.sort((a, b) => a.start - b.start || (matchTypeRank[a.type] ?? 2) - (matchTypeRank[b.type] ?? 2));
 
   // Remove overlapping matches (keep the first/prioritized one)
   const filteredMatches = [];
@@ -86,6 +111,31 @@ export function replaceKeywords(inputString) {
 
   filteredMatches.forEach((match, index) => {
     const textBefore = processedString.slice(currentPos, match.start);
+
+    if (match.type === "glossary") {
+      const kwStyle = resolveKeywordStyle(match.entry);
+      const btnClasses = ["keyword-button", "has-info"];
+      if (kwStyle.casing !== "uppercase") btnClasses.push("kw-no-caps");
+      if (kwStyle.weight !== "bold") btnClasses.push("kw-no-bold");
+      const showBrackets = kwStyle.brackets === "square";
+      components.push(
+        <React.Fragment key={`glossary-${index}`}>
+          {textBefore}
+          <span className="keyword keyword-styled">
+            {showBrackets && "["}
+            <Tooltip {...keywordTooltipProps} content={match.entry.description}>
+              <Button type="text" size="small" className={btnClasses.join(" ")}>
+                {match.keyword}
+              </Button>
+            </Tooltip>
+            {showBrackets && "]"}
+          </span>
+        </React.Fragment>,
+      );
+      currentPos = match.end;
+      return;
+    }
+
     // For bracket matches, check inner content to decide weapon vs rule style
     const useWeaponStyle = match.type === "weapon" || (match.type === "bracket" && !isRuleKeyword(match.keyword));
 
@@ -197,11 +247,19 @@ export function replaceKeywords(inputString) {
   });
 }
 
-export const UnitAbilityDescription = ({ name, description, showDescription }) => {
+export const UnitAbilityDescription = ({
+  name,
+  description,
+  showDescription,
+  keywordGlossary,
+  glossaryOnly = false,
+}) => {
   return (
     <div className="ability">
       <span className="name">{name}</span>
-      {showDescription && <span className="description">{replaceKeywords(description)}</span>}
+      {showDescription && (
+        <span className="description">{replaceKeywords(description, keywordGlossary, glossaryOnly)}</span>
+      )}
     </div>
   );
 };

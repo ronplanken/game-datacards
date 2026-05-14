@@ -1862,3 +1862,69 @@
     }
   }
 }
+
+// ============================================
+// KEYWORD GLOSSARY (datasource-level)
+// Inline keyword tags + explanation rows rendered by the shared
+// GlossaryKeywords components (src/Components/DatasourceEditor/cards/shared).
+// ============================================
+.data-aos {
+  .ds-kw-tags {
+    font-family: "Cinzel", serif;
+    font-size: 8px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .ds-kw-tag {
+    text-transform: uppercase;
+    font-weight: 700;
+
+    &.ds-kw-tag--no-caps {
+      text-transform: none;
+    }
+    &.ds-kw-tag--no-bold {
+      font-weight: 500;
+    }
+  }
+
+  // Dotted underline marks keywords that reveal rule text on hover.
+  .ds-kw-tag--has-info,
+  .ds-kw-inline.ds-kw-tag--has-info {
+    background-image: linear-gradient(to right, currentColor 2px, transparent 2px);
+    background-size: 4px 1px;
+    background-repeat: repeat-x;
+    background-position: 0 100%;
+    cursor: help;
+
+    @media print {
+      background-image: none;
+    }
+  }
+
+  .ds-kw-explanations {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 3px 5px 4px;
+  }
+
+  .ds-kw-explanation {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 11px;
+    line-height: 1.25;
+    color: var(--text-dark);
+  }
+
+  .ds-kw-explanation-name {
+    font-family: "Cinzel", serif;
+    font-weight: 700;
+    font-size: 9px;
+    text-transform: uppercase;
+    margin-right: 4px;
+
+    &::after {
+      content: ":";
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { List, ChevronRight } from "lucide-react";
+import { List, ChevronRight, BookOpen } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { getTargetArray } from "../../Helpers/customDatasource.helpers";
 import "./MobileCustomFaction.css";
@@ -20,6 +20,12 @@ export const MobileCustomFaction = () => {
     const cardSlug = card.name?.toLowerCase().replaceAll(" ", "-");
     navigate(`/mobile/${factionSlug}/${cardSlug}`);
   };
+
+  const handleBrowseGlossary = () => {
+    navigate(`/mobile/${factionSlug}/glossary`);
+  };
+
+  const glossaryCount = Array.isArray(schema?.keywordGlossary) ? schema.keywordGlossary.length : 0;
 
   // Build sections from schema card types
   const sections = useMemo(() => {
@@ -63,6 +69,16 @@ export const MobileCustomFaction = () => {
         <span className="units-count">{totalCards}</span>
         <ChevronRight size={18} />
       </button>
+
+      {/* Keyword Glossary Button */}
+      {glossaryCount > 0 && (
+        <button className="mobile-faction-units-button" onClick={handleBrowseGlossary}>
+          <BookOpen size={18} />
+          <span>Keyword Glossary</span>
+          <span className="units-count">{glossaryCount}</span>
+          <ChevronRight size={18} />
+        </button>
+      )}
 
       {/* Card Type Sections */}
       {sections.map((section) => (

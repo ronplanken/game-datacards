@@ -83,6 +83,8 @@ const CardTypeEditorWithSections = ({ cardType, activeDatasource, onUpdateDataso
       cardType={cardType}
       activeDatasource={activeDatasource}
       onUpdateCardType={handleCardTypeFieldChange}
+      onUpdateSchema={handleCardTypeSchemaChange}
+      baseSystem={baseSystem}
     />
   );
 

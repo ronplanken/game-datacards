@@ -9,6 +9,10 @@ vi.mock("../../../Premium", () => ({
 
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
+  Bold: (props) => <svg data-testid="icon-bold" {...props} />,
+  Brackets: (props) => <svg data-testid="icon-brackets" {...props} />,
+  CaseUpper: (props) => <svg data-testid="icon-case-upper" {...props} />,
+  Link: (props) => <svg data-testid="icon-link" {...props} />,
   Settings: (props) => <svg data-testid="icon-settings" {...props} />,
   Database: (props) => <svg data-testid="icon-database" {...props} />,
   Info: (props) => <svg data-testid="icon-info" {...props} />,
@@ -29,6 +33,21 @@ vi.mock("lucide-react", () => ({
   LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
   Users: (props) => <svg data-testid="icon-users" {...props} />,
+  MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
+  RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
+  Download: (props) => <svg data-testid="icon-download" {...props} />,
+  Eye: (props) => <svg data-testid="icon-eye" {...props} />,
+}));
+
+vi.mock("antd", () => ({
+  Select: () => null,
+  Dropdown: ({ children, overlay }) => (
+    <>
+      {children}
+      {overlay}
+    </>
+  ),
+  Menu: () => null,
 }));
 
 const mockDatasource = {

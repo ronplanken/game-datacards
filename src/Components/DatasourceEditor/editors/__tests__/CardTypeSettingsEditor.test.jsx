@@ -94,6 +94,79 @@ describe("CardTypeSettingsEditor", () => {
     expect(onUpdate).toHaveBeenCalledWith("templateId", "template-uuid-1");
   });
 
+  describe("auto-resize toggle", () => {
+    const unitWithMetadata = { ...mockCardType, schema: { metadata: {} } };
+
+    it("shows the auto-resize toggle for 40k-10e card types with metadata", () => {
+      render(
+        <CardTypeSettingsEditor
+          cardType={unitWithMetadata}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={vi.fn()}
+          baseSystem="40k-10e"
+        />,
+      );
+      expect(screen.getByLabelText("Auto-resize")).toBeInTheDocument();
+    });
+
+    it("shows the auto-resize toggle for starcraft-tmg card types with metadata", () => {
+      render(
+        <CardTypeSettingsEditor
+          cardType={unitWithMetadata}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={vi.fn()}
+          baseSystem="starcraft-tmg"
+        />,
+      );
+      expect(screen.getByLabelText("Auto-resize")).toBeInTheDocument();
+    });
+
+    it("hides the auto-resize toggle for unsupported base systems", () => {
+      render(
+        <CardTypeSettingsEditor
+          cardType={unitWithMetadata}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={vi.fn()}
+          baseSystem="aos"
+        />,
+      );
+      expect(screen.queryByLabelText("Auto-resize")).not.toBeInTheDocument();
+    });
+
+    it("hides the auto-resize toggle when the schema has no metadata", () => {
+      render(
+        <CardTypeSettingsEditor
+          cardType={mockCardType}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={vi.fn()}
+          baseSystem="40k-10e"
+        />,
+      );
+      expect(screen.queryByLabelText("Auto-resize")).not.toBeInTheDocument();
+    });
+
+    it("updates schema.metadata.hasAutoResize on toggle", () => {
+      const onUpdateSchema = vi.fn();
+      render(
+        <CardTypeSettingsEditor
+          cardType={unitWithMetadata}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={onUpdateSchema}
+          baseSystem="40k-10e"
+        />,
+      );
+      fireEvent.click(screen.getByLabelText("Auto-resize"));
+      expect(onUpdateSchema).toHaveBeenCalledWith(
+        expect.objectContaining({ metadata: expect.objectContaining({ hasAutoResize: true }) }),
+      );
+    });
+  });
+
   afterEach(() => {
     mockPremiumFeatures.hasCardDesigner = false;
   });

@@ -9,7 +9,16 @@ import { useSectionStateContext } from "../hooks/useSectionState";
  * Automatically uses SectionStateContext when available to persist open/closed state.
  * The `sectionKey` prop (defaults to `title`) identifies this section in the persisted state.
  */
-export const Section = ({ title, sectionKey, icon: Icon, defaultOpen = true, onAdd, addLabel, children }) => {
+export const Section = ({
+  title,
+  sectionKey,
+  icon: Icon,
+  defaultOpen = true,
+  onAdd,
+  addLabel,
+  headerActions,
+  children,
+}) => {
   const ctx = useSectionStateContext();
   const key = sectionKey || title;
 
@@ -44,6 +53,7 @@ export const Section = ({ title, sectionKey, icon: Icon, defaultOpen = true, onA
           <span className="props-section-title">{title}</span>
           {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
+        {headerActions}
         {onAdd && (
           <button
             className="props-section-header-action"

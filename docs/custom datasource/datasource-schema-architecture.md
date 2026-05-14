@@ -19,19 +19,85 @@ The `schema` property sits inside a datasource's top-level structure.
     banner: string,      // hex colour for card banners (default: "#16213e")
   },
   cardTypes: [CardTypeDefinition],
+  keywordGlossary: [KeywordGlossaryEntry], // optional, see below
 }
 ```
 
-| Field        | Type   | Description |
-|--------------|--------|-------------|
-| `version`    | string | Schema version string. |
-| `baseSystem` | string | Determines available editor features and default presets. |
-| `colours`    | object | Default faction colours, propagated to each faction's `colours` object. |
-| `cardTypes`  | array  | Card type definitions (see below). |
+| Field             | Type   | Description |
+|-------------------|--------|-------------|
+| `version`         | string | Schema version string. |
+| `baseSystem`      | string | Determines available editor features and default presets. |
+| `colours`         | object | Default faction colours, propagated to each faction's `colours` object. |
+| `cardTypes`       | array  | Card type definitions (see below). |
+| `keywordGlossary` | array  | Optional. Definitions for keywords used anywhere on a card. Each entry declares the render scopes (weapons, abilities, …) where it applies. |
 
 ### Colours
 
 Colours control the visual theming of card headers and banners. The Datasource Editor exposes these as "Main" (header) and "Accent" (banner) colour pickers. Changes propagate to every faction's `colours` object automatically. Similarly, renaming the datasource propagates the new name to every faction.
+
+## Keyword Glossary
+
+The optional `keywordGlossary` array at the schema root pairs a keyword tag (e.g. `One Shot`, `Anti-`) with a description and declares the render contexts in which it applies. It is shared by every base system — the `40k-10e`, `aos`, and `starcraft-tmg` datasource renderers all consume the same glossary. When a weapons renderer encounters a weapon profile keyword that resolves to a glossary entry scoped to `"weapons"`, it renders an explanation row below the weapon table — matching how the built-in 10th edition cards display `[ONE SHOT] - The bearer can only shoot with this weapon once per battle.`
+
+Each base system wires the glossary through its own card renderer:
+
+| Base system | Weapons renderer | Abilities renderer | Keyword storage |
+|-------------|------------------|--------------------|-----------------|
+| `40k-10e` | `Ds40kUnitWeapons` | `Ds40kUnitExtra` | `profile.keywords` array |
+| `aos` | `DsAosWeapons` | `DsAosAbilities` | `profile.keywords` array |
+| `starcraft-tmg` | `StarcraftWeaponTable` | `StarcraftAbility` | comma-separated string column whose key is `keyword`/`keywords` |
+
+The abilities renderers scan ability descriptions for glossary entry names scoped to `"abilities"` with `displayMode: "tooltip"` and wrap each match with an underline + hover tooltip. Custom datasource cards parse ability text against the glossary **only** — the built-in 40K keyword dictionary (bracket tags, hard-coded rule/weapon keywords) is skipped for them. The shared render logic lives in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx` (`GlossaryKeywordTags`, `GlossaryExplanationRows`, `GlossaryText`).
+
+```js
+keywordGlossary: [
+  {
+    key: "one-shot",
+    name: "One Shot",
+    description: "The bearer can only shoot with this weapon once per battle.",
+    matchType: "exact",
+    appliesTo: ["weapons"],
+  },
+  {
+    key: "anti",
+    name: "Anti-",
+    description: "An unmodified Wound roll of 'x+' against a target with the matching keyword scores a Critical Wound.",
+    matchType: "prefix",
+    appliesTo: ["weapons"],
+    style: { casing: "uppercase", brackets: "square", weight: "bold" },
+  },
+],
+```
+
+| Property      | Type     | Description |
+|---------------|----------|-------------|
+| `key`         | string   | Stable storage key, unique within the glossary. |
+| `name`        | string   | The keyword name as it appears on cards (e.g. `One Shot`, `Anti-`). |
+| `description` | string   | Explanation text rendered by consuming renderers. |
+| `matchType`   | string   | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`; used for parametrised rules like `Anti-Infantry 4+` matching `Anti-`). |
+| `appliesTo`   | string[] | **Required, non-empty.** Scopes in which the entry can render. One entry may declare multiple scopes (e.g. a `Lethal Hits` keyword that applies both to weapons and to ability-text tooltips). |
+| `displayMode` | string   | Weapons-only. `"explanation"` (default) renders the description as an explanation row below the weapon table. `"tooltip"` renders the description as a hover tooltip on the inline keyword tag and skips the explanation row. Other scopes ignore this field today. |
+| `style`       | object   | Optional. Per-keyword presentation of the inline keyword tag. Modelled as string enums so more options can be added later. `casing`: `"uppercase"` (default) or `"normal"`. `brackets`: `"square"` (default) or `"none"`. `weight`: `"bold"` (default) or `"normal"`. Missing or unknown values fall back to the default, so existing entries keep the original look. |
+
+**Valid scopes** (`VALID_GLOSSARY_SCOPES`):
+
+| Scope            | Where it renders |
+|------------------|------------------|
+| `weapons`        | Inline weapon keyword tags (styled + hover tooltip for `displayMode: "tooltip"`) and explanation rows below the weapon table. Rendered by `40k-10e`, `aos`, and `starcraft-tmg`. |
+| `abilities`      | Inside ability descriptions — `displayMode: "tooltip"` entries get an underline + hover tooltip on each name match. Rendered by `40k-10e`, `aos`, and `starcraft-tmg`. |
+| `unit-keywords`  | Tooltips on the unit-level keywords bar at the bottom of a card (future renderer). |
+| `rules`          | Rule cards (future renderer). |
+| `stratagems`     | Stratagem cards (future renderer). |
+| `enhancements`   | Enhancement cards (future renderer). |
+
+**Resolution rules:**
+
+- Each keyword tag is resolved to **at most one** glossary entry within a given scope.
+- A glossary entry only matters in a renderer if its `appliesTo` array contains that renderer's scope.
+- When multiple in-scope entries match the same keyword, the entry with the **longest `name`** wins, so specific entries (e.g. `Power Fist`) take precedence over shorter prefixes (e.g. `Power`).
+- Within a single renderer section, explanation rows are deduplicated — the same keyword across multiple weapons only renders one description block.
+- Datasources with `baseSystem: "40k-10e"` created via the wizard are pre-seeded with the official 10e keyword set (`One Shot`, `Devastating Wounds`, `Sustained Hits`, `Anti-`, etc.), each scoped to `["weapons"]`. The seed lives in `src/Helpers/keywordGlossaryDefaults.js`. The schema editor also exposes a "Restore defaults" button for 40k-10e datasources.
+- The Datasource Editor's premium `SchemaWeaponsEditor` uses glossary entries whose `appliesTo` includes `"weapons"` to populate an autocomplete dropdown when adding keywords to a weapon. Users can still free-type any value.
 
 ## Discriminated Union: `cardTypes`
 

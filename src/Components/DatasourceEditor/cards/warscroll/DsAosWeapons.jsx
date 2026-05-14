@@ -1,4 +1,5 @@
 import React from "react";
+import { GlossaryExplanationRows, GlossaryKeywordTags, getKeywordExplanations } from "../shared/GlossaryKeywords";
 
 /**
  * Resolves display value for a weapon column, handling booleans.
@@ -62,12 +63,32 @@ const RowFields = ({ profile, rowCols, altBg, withTestId }) => {
  * - "row": Rendered as a full-width row below the table columns
  *   - `displayLabel`: Label shown before the values (defaults to column label)
  *   - `visual`: "text" (default, comma-separated) or "badge" (styled badges)
+ *
+ * When a `glossary` is supplied, weapon keyword tags resolve their styling and
+ * hover tooltips from the datasource keyword glossary, and matching
+ * explanation-mode entries render as explanation rows below the table.
  */
-export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns, isMobile }) => {
+export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns, isMobile, glossary }) => {
   if (!weapons || weapons.length === 0 || !weaponTypeDef) return null;
 
   const activeWeapons = weapons.filter((w) => w.active !== false);
   if (activeWeapons.length === 0) return null;
+
+  const hasGlossary = Array.isArray(glossary) && glossary.length > 0;
+
+  // Renders a weapon profile's keyword tags — glossary-styled when a glossary
+  // is present, otherwise the plain badge treatment.
+  const renderKeywords = (keywords) => {
+    if (!keywords?.length) return null;
+    if (hasGlossary) {
+      return <GlossaryKeywordTags keywords={keywords} glossary={glossary} scope="weapons" />;
+    }
+    return keywords.map((kw, i) => (
+      <span key={i} className="weapon-ability-badge">
+        {kw}
+      </span>
+    ));
+  };
 
   const allColumns = weaponTypeDef.columns || [];
   const columnCols = allColumns.filter((col) => (col.display || "column") === "column");
@@ -86,6 +107,15 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
   });
 
   if (rows.length === 0) return null;
+
+  // Glossary explanation rows for every keyword across this weapon section.
+  const explanationEntries = hasGlossary
+    ? getKeywordExplanations(
+        rows.flatMap((profile) => profile.keywords || []),
+        glossary,
+        "weapons",
+      )
+    : [];
 
   if (isMobile) {
     return (
@@ -106,16 +136,11 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
             </div>
             <RowFields profile={profile} rowCols={rowCols} altBg={false} />
             {profile.keywords?.length > 0 && (
-              <div className="weapon-card-abilities">
-                {profile.keywords.map((kw, i) => (
-                  <span key={i} className="weapon-ability-badge">
-                    {kw}
-                  </span>
-                ))}
-              </div>
+              <div className="weapon-card-abilities">{renderKeywords(profile.keywords)}</div>
             )}
           </div>
         ))}
+        <GlossaryExplanationRows entries={explanationEntries} />
       </div>
     );
   }
@@ -146,13 +171,7 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
             <span className="w-name">
               {profile.name}
               {profile.keywords?.length > 0 && (
-                <div className="weapon-abilities-list">
-                  {profile.keywords.map((kw, i) => (
-                    <span key={i} className="weapon-ability-badge">
-                      {kw}
-                    </span>
-                  ))}
-                </div>
+                <div className="weapon-abilities-list">{renderKeywords(profile.keywords)}</div>
               )}
             </span>
             {columnCols.map((col) => (
@@ -164,6 +183,7 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
           <RowFields profile={profile} rowCols={rowCols} altBg={index % 2 === 1} withTestId />
         </React.Fragment>
       ))}
+      <GlossaryExplanationRows entries={explanationEntries} />
     </div>
   );
 };

@@ -44,7 +44,7 @@ The preset (`createStarcraftTmgPreset()`) defines one card type with `baseType: 
 | Section | Keys | Notes |
 |---|---|---|
 | `stats` | `speed`, `evade`, `armour`, `hitPoints`, `size` | Rendered as hex-shaped pills in the header |
-| `weaponTypes` | `assault`, `combat` | Shared column set: RNG, RoA, Hit, Surge type, S Dice, Dmg, Keyword |
+| `weaponTypes` | `assault`, `combat` | Shared column set: RNG, RoA, Hit, Surge type, S Dice, Dmg, Keyword. The `keyword` column (comma-separated string) resolves against the [keyword glossary](custom%20datasource/keyword-glossary.md) — matching tokens render as styled tags with hover tooltips / explanation rows. |
 | `abilities` | `special`, `movement`, `assault`, `combat` | Each category sets `hasType`, `hasCost`, `hasTriggerIcon`, `phaseStyle` |
 | `sections` | `modelsSupply` | Format `modelsSupplyTiers` — tiered Models × Supply pairs |
 | `metadata` | `hasKeywords`, `hasFactionKeywords` | `hasPoints: false` — Supply is the cost mechanic |

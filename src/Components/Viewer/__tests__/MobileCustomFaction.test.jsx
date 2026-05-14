@@ -27,6 +27,13 @@ const mockDataSource = {
       { key: "unit", baseType: "unit", label: "Units" },
       { key: "stratagem", baseType: "stratagem", label: "Stratagems" },
     ],
+    keywordGlossary: [
+      { key: "a", name: "A", description: "desc", appliesTo: ["weapons"] },
+      { key: "b", name: "B", description: "desc", appliesTo: ["weapons"] },
+      { key: "c", name: "C", description: "desc", appliesTo: ["weapons"] },
+      { key: "d", name: "D", description: "desc", appliesTo: ["weapons"] },
+      { key: "e", name: "E", description: "desc", appliesTo: ["weapons"] },
+    ],
   },
 };
 
@@ -76,6 +83,18 @@ describe("MobileCustomFaction", () => {
     render(<MobileCustomFaction />);
     fireEvent.click(screen.getByText("Alpha Unit"));
     expect(mockNavigate).toHaveBeenCalledWith("/mobile/test-faction/alpha-unit");
+  });
+
+  it("renders Keyword Glossary button with entry count", () => {
+    render(<MobileCustomFaction />);
+    expect(screen.getByText("Keyword Glossary")).toBeTruthy();
+    expect(screen.getByText("5")).toBeTruthy();
+  });
+
+  it("navigates to glossary page on Keyword Glossary click", () => {
+    render(<MobileCustomFaction />);
+    fireEvent.click(screen.getByText("Keyword Glossary"));
+    expect(mockNavigate).toHaveBeenCalledWith("/mobile/test-faction/glossary");
   });
 
   it("shows section card counts", () => {

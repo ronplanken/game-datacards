@@ -31,8 +31,10 @@ const getAbilitiesForCategory = (abilities, categoryKey) => {
  * @param {Object} props
  * @param {Object} props.unit - The card data
  * @param {Object} props.abilitiesSchema - The abilities schema definition
+ * @param {Array} [props.keywordGlossary] - Datasource-level keyword glossary; ability
+ *   descriptions underline + tooltip glossary entries scoped to "abilities".
  */
-export const Ds40kUnitExtra = ({ unit, abilitiesSchema }) => {
+export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary }) => {
   const categories = abilitiesSchema?.categories || [];
 
   const hasAnyAbilities = categories.some((cat) => {
@@ -78,6 +80,8 @@ export const Ds40kUnitExtra = ({ unit, abilitiesSchema }) => {
                     name={ability.name}
                     description={ability.description}
                     showDescription={ability.showDescription}
+                    keywordGlossary={keywordGlossary}
+                    glossaryOnly
                   />
                 ));
             }

@@ -1,5 +1,6 @@
 import React from "react";
 import { VALID_ABILITY_TYPES } from "../../../../Helpers/customSchema.helpers";
+import { GlossaryText } from "../shared/GlossaryKeywords";
 
 const renderCostChips = (costs) => {
   if (!Array.isArray(costs) || costs.length === 0) return null;
@@ -30,8 +31,10 @@ const renderTypePill = (type) => {
  * @param {boolean} props.inline - When true, render as inline flow (used by
  *   movement-style phase rows where abilities are part of a paragraph rather
  *   than discrete cells in a grid).
+ * @param {Array} [props.glossary] - Datasource keyword glossary; "abilities"-scoped
+ *   tooltip entries are underlined + hover-tooltipped within the description.
  */
-export const StarcraftAbility = ({ ability, category, inline = false }) => {
+export const StarcraftAbility = ({ ability, category, inline = false, glossary }) => {
   if (!ability) return null;
   const showUpIcon = !!category?.hasTriggerIcon && (ability.triggered || ability.upgrade);
   const showType = !!category?.hasType;
@@ -45,7 +48,11 @@ export const StarcraftAbility = ({ ability, category, inline = false }) => {
       {ability.name && <span className="sc-ability-name">{ability.name}:</span>}{" "}
       {showType && renderTypePill(ability.type)}
       {showCost && renderCostChips(ability.costs)}
-      {ability.description && <span className="sc-ability-description">{ability.description}</span>}
+      {ability.description && (
+        <span className="sc-ability-description">
+          <GlossaryText text={ability.description} glossary={glossary} scope="abilities" />
+        </span>
+      )}
     </Wrapper>
   );
 };

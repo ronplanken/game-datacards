@@ -48,8 +48,10 @@ const buildAosStats = (card, statFields) => {
  * @param {Object} props.cardTypeDef - The card type definition from the schema
  * @param {Object} props.cardStyle - CSS variable overrides
  * @param {Object} props.faction - The faction data
+ * @param {Array} [props.keywordGlossary] - Datasource-level keyword glossary; weapon
+ *   keyword tags and ability descriptions resolve their explanations from it.
  */
-export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMobile, onBack }) => {
+export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMobile, onBack, keywordGlossary }) => {
   const schema = cardTypeDef?.schema || {};
   const statFields = schema.stats?.fields || [];
   const { getImageUrl, isReady } = useIndexedDBImages();
@@ -137,12 +139,18 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMo
                   grandAlliance={grandAlliance}
                   maxColumns={maxColumns}
                   isMobile={isMobile}
+                  glossary={keywordGlossary}
                 />
               );
             });
           })()}
 
-          <DsAosAbilities card={card} abilitiesSchema={schema.abilities} grandAlliance={grandAlliance} />
+          <DsAosAbilities
+            card={card}
+            abilitiesSchema={schema.abilities}
+            grandAlliance={grandAlliance}
+            glossary={keywordGlossary}
+          />
 
           <DsAosSections card={card} sectionsSchema={schema.sections} grandAlliance={grandAlliance} />
 

@@ -14,7 +14,16 @@ import {
   Zap,
   Database,
   LayoutList,
+  Palette,
+  Info,
+  Users,
 } from "lucide-react";
+
+const BASE_SYSTEM_LABELS = {
+  "40k-10e": "Warhammer 40K 10th Edition",
+  aos: "Age of Sigmar",
+  blank: "Blank / Custom",
+};
 
 const BASETYPE_ICONS = {
   unit: Swords,
@@ -410,17 +419,74 @@ const DatasourceOverview = ({ datasource }) => {
 };
 
 /**
+ * Renders the datasource-level settings (colours, system, glossary, factions)
+ * as a collapsible tree, mirroring the card-type schema tree.
+ */
+const DatasourceSettingsTree = ({ datasource }) => {
+  const schema = datasource?.schema || {};
+  const colours = schema.colours || {};
+  const glossary = schema.keywordGlossary || [];
+  const factions = datasource?.data || [];
+  const baseSystemLabel = BASE_SYSTEM_LABELS[schema.baseSystem] || schema.baseSystem || "Custom";
+
+  return (
+    <div className="schema-tree-content">
+      <TreeNode label="Colours" icon={Palette} defaultOpen={true} depth={0}>
+        {colours.header && <FlagRow label={`Header: ${colours.header}`} depth={1} />}
+        {colours.banner && <FlagRow label={`Banner: ${colours.banner}`} depth={1} />}
+        {colours.accent && <FlagRow label={`Accent: ${colours.accent}`} depth={1} />}
+        {!colours.header && !colours.banner && !colours.accent && <FlagRow label="No colours set" depth={1} />}
+      </TreeNode>
+
+      <TreeNode label="System" icon={Info} defaultOpen={true} depth={0}>
+        <FlagRow label={`Base system: ${baseSystemLabel}`} depth={1} />
+        {datasource.version && <FlagRow label={`Version: ${datasource.version}`} depth={1} />}
+        {datasource.author && <FlagRow label={`Author: ${datasource.author}`} depth={1} />}
+      </TreeNode>
+
+      <TreeNode label="Keyword Glossary" icon={BookOpen} defaultOpen={false} badge={`${glossary.length}`} depth={0}>
+        {glossary.length === 0 && <FlagRow label="No keywords defined" depth={1} />}
+        {glossary.map((entry, i) => {
+          const scopes = Array.isArray(entry.appliesTo) ? entry.appliesTo : [];
+          return (
+            <TreeNode
+              key={entry.key || entry.name || i}
+              label={entry.name || entry.key || "Untitled keyword"}
+              defaultOpen={false}
+              depth={1}>
+              <FlagRow label={`Match type: ${entry.matchType || "exact"}`} depth={2} />
+              {scopes.length > 0 && <FlagRow label={`Applies to: ${scopes.join(", ")}`} depth={2} />}
+              {scopes.includes("weapons") && (
+                <FlagRow label={`Display: ${entry.displayMode || "explanation"}`} depth={2} />
+              )}
+            </TreeNode>
+          );
+        })}
+      </TreeNode>
+
+      <TreeNode label="Factions" icon={Users} defaultOpen={false} badge={`${factions.length}`} depth={0}>
+        {factions.length === 0 && <FlagRow label="No factions defined" depth={1} />}
+        {factions.map((faction) => (
+          <FlagRow key={faction.id} label={faction.name || faction.id} depth={1} />
+        ))}
+      </TreeNode>
+    </div>
+  );
+};
+
+/**
  * Schema tree visualization for the center panel.
  * Shows the selected card type's full schema structure, or a datasource overview.
  */
 export const SchemaTreeView = ({ selectedItem, activeDatasource }) => {
   if (!selectedItem || !activeDatasource) return null;
 
-  // Datasource parent selected: show overview
+  // Datasource parent selected: show overview + settings tree
   if (selectedItem.type === "datasource") {
     return (
       <div className="schema-tree-container">
         <DatasourceOverview datasource={activeDatasource} />
+        <DatasourceSettingsTree datasource={activeDatasource} />
       </div>
     );
   }
