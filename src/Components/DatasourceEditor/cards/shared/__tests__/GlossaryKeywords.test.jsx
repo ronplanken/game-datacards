@@ -43,6 +43,14 @@ const glossary = [
     displayMode: "explanation",
   },
   {
+    key: "sustained-hits",
+    name: "Sustained Hits",
+    description: "Extra hits on critical hits.",
+    matchType: "parameterized",
+    appliesTo: ["weapons", "abilities"],
+    displayMode: "tooltip",
+  },
+  {
     key: "rampage",
     name: "Rampage",
     description: "Make a bonus attack.",
@@ -75,7 +83,11 @@ describe("splitKeywordString", () => {
 
 describe("getKeywordExplanations", () => {
   it("returns explanation-mode entries and drops tooltip-mode ones", () => {
-    const entries = getKeywordExplanations(["One Shot", "Lance", "Anti-Infantry 4+"], glossary, "weapons");
+    const entries = getKeywordExplanations(
+      ["One Shot", "Lance", "Anti-Infantry 4+", "Sustained Hits D6+2"],
+      glossary,
+      "weapons",
+    );
     expect(entries.map((e) => e.key)).toEqual(["one-shot", "anti"]);
   });
 
@@ -97,6 +109,14 @@ describe("GlossaryKeywordTags", () => {
     expect(trigger).toBeTruthy();
     expect(trigger.getAttribute("data-tooltip-content")).toMatch(/on the charge/i);
     expect(trigger.querySelector(".ds-kw-tag--has-info")).toBeTruthy();
+  });
+
+  it("renders the full parameterized keyword text on tooltip-mode tags", () => {
+    const { container } = render(<GlossaryKeywordTags keywords={["Sustained Hits D6+2"]} glossary={glossary} />);
+    const trigger = container.querySelector("[data-tooltip-content]");
+    expect(trigger).toBeTruthy();
+    expect(trigger.textContent).toBe("[Sustained Hits D6+2]");
+    expect(trigger.getAttribute("data-tooltip-content")).toMatch(/extra hits/i);
   });
 
   it("leaves explanation-mode entries plain (no tooltip, no has-info)", () => {
@@ -158,6 +178,15 @@ describe("GlossaryText", () => {
     expect(trigger).toBeTruthy();
     expect(trigger.getAttribute("data-tooltip-content")).toMatch(/bonus attack/i);
     expect(trigger.querySelector(".ds-kw-inline")).toBeTruthy();
+  });
+
+  it("wraps the full parameterized match in free text", () => {
+    const { container } = render(
+      <GlossaryText text="This unit has Sustained Hits D6+2 in combat" glossary={glossary} scope="abilities" />,
+    );
+    const trigger = container.querySelector("[data-tooltip-content]");
+    expect(trigger).toBeTruthy();
+    expect(trigger.textContent).toBe("Sustained Hits D6+2");
   });
 
   it("returns the raw string when nothing matches", () => {

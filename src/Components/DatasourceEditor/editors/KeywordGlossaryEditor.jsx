@@ -13,11 +13,13 @@ import {
   VALID_GLOSSARY_SCOPES,
 } from "../../../Helpers/customSchema.helpers";
 
-const MATCH_TYPE_TOOLTIP = "Match type — exact matches the full keyword, prefix matches the start";
+const MATCH_TYPE_TOOLTIP =
+  "Match type — exact matches the full keyword, prefix matches the start, parameterized matches the keyword plus a value";
 
 const MATCH_TYPE_OPTIONS = [
   { value: "exact", label: "Exact" },
   { value: "prefix", label: "Prefix" },
+  { value: "parameterized", label: "Parameterized" },
 ];
 
 const DISPLAY_MODE_OPTIONS = [

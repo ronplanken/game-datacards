@@ -53,7 +53,14 @@ const glossary = [
     key: "anti",
     name: "Anti-",
     description: "Critical Wounds vs matching keyword.",
-    matchType: "prefix",
+    matchType: "parameterized",
+    appliesTo: ["weapons"],
+  },
+  {
+    key: "sustained-hits",
+    name: "Sustained Hits",
+    description: "Extra hits on critical hits.",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
   },
   {
@@ -137,11 +144,19 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
     expect(screen.queryByText(/Critical Wounds vs matching keyword/i)).toBeNull();
   });
 
-  it("resolves prefix matches for parametrised keywords", () => {
+  it("resolves parameterized matches for parametrised keywords", () => {
     render(
       <Ds40kUnitWeapons unit={unitWith(["Anti-Infantry 4+"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
     );
     expect(screen.getByText(/Critical Wounds vs matching keyword/i)).toBeInTheDocument();
+  });
+
+  it("renders the full parameterized inline keyword while resolving the base explanation", () => {
+    const { container } = render(
+      <Ds40kUnitWeapons unit={unitWith(["Sustained Hits D6+2"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
+    );
+    expect(container.querySelector(".keyword").textContent).toContain("Sustained Hits D6+2");
+    expect(screen.getByText(/Extra hits on critical hits/i)).toBeInTheDocument();
   });
 
   it("deduplicates explanation rows within a weapon type", () => {
