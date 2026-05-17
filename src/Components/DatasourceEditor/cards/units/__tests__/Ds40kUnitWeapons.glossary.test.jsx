@@ -153,7 +153,11 @@ describe("Ds40kUnitWeapons glossary explanations", () => {
 
   it("renders the full parameterized inline keyword while resolving the base explanation", () => {
     const { container } = render(
-      <Ds40kUnitWeapons unit={unitWith(["Sustained Hits D6+2"])} weaponTypes={weaponTypes} keywordGlossary={glossary} />,
+      <Ds40kUnitWeapons
+        unit={unitWith(["Sustained Hits D6+2"])}
+        weaponTypes={weaponTypes}
+        keywordGlossary={glossary}
+      />,
     );
     expect(container.querySelector(".keyword").textContent).toContain("Sustained Hits D6+2");
     expect(screen.getByText(/Extra hits on critical hits/i)).toBeInTheDocument();
