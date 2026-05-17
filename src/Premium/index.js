@@ -22,6 +22,8 @@ export const CloudCategoriesProvider = ({ children }) => children;
 // HOOKS - Return safe defaults / disabled state
 // =====================================================
 
+const EMPTY_ERROR_MAP = new Map();
+
 /**
  * Stub for useAuth - no authentication in public version
  */
@@ -97,7 +99,7 @@ export const useSync = () => ({
   conflictCount: 0,
   // Diagnostics
   syncEvents: [],
-  lastErrorByItemId: new Map(),
+  lastErrorByItemId: EMPTY_ERROR_MAP,
   clearSyncEvents: () => {},
   recordSyncEvent: () => {},
 });

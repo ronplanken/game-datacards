@@ -26,7 +26,7 @@ export const parseSubscriptionLimitError = (errorMessage) => {
  * in-memory id that lives only for the current page/session.
  */
 let memoryDeviceId = null;
-const newDeviceId = () => `device-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+const newDeviceId = () => `device-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
 export const getDeviceId = () => {
   try {
