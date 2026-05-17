@@ -56,7 +56,7 @@ schema: {
       key: "anti",
       name: "Anti-",
       description: "An unmodified Wound roll of 'x+' against a target with the matching keyword scores a Critical Wound.",
-      matchType: "prefix",
+      matchType: "parameterized",
       appliesTo: ["weapons"],
     },
   ],
@@ -68,7 +68,7 @@ schema: {
 | `key`         | string   | yes      | Stable storage key, unique within the glossary. |
 | `name`        | string   | yes      | Keyword name as it appears on cards. |
 | `description` | string   | yes      | Explanation text rendered by consuming renderers. |
-| `matchType`   | string   | no       | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`). |
+| `matchType`   | string   | no       | `"exact"` (default, case-insensitive equality), `"prefix"` (case-insensitive `startsWith`), or `"parameterized"` (entry name plus an optional value such as `Sustained Hits 2`, `Feel No Pain 5+`, `Melta D6+2`, or `Anti-Vehicle 4+`). |
 | `appliesTo`   | string[] | yes      | Non-empty array of scopes from `VALID_GLOSSARY_SCOPES`. |
 | `displayMode` | string   | no       | Weapons-only. `"explanation"` (default) renders an explanation row under the profile; `"tooltip"` shows the description on hover over the inline keyword tag and skips the row. Other scopes ignore this field. |
 
@@ -98,7 +98,8 @@ The renderer resolves each keyword tag to at most one glossary entry via `resolv
 1. Filter the glossary down to entries whose `appliesTo` includes the renderer's scope.
 2. `exact` entries compare via case-insensitive equality on the keyword tag.
 3. `prefix` entries match when the keyword tag starts with the entry name (case-insensitive).
-4. When multiple in-scope entries match the same tag, the entry with the **longest `name`** wins. This lets a specific entry like `Power Fist` win over a generic prefix `Power`.
+4. `parameterized` entries match the bare entry name or the entry name plus a value, including save values (`5+`), dice values (`D6`, `D6+2`, `2D6+2`), and text-plus-value suffixes (`Vehicle 4+`).
+5. When multiple in-scope entries match the same tag, the entry with the **longest `name`** wins. This lets a specific entry like `Power Fist` win over a generic prefix `Power`.
 
 Within one renderer section, the same glossary entry is only rendered once even if multiple weapons share the keyword — explanation rows are deduplicated by entry key.
 
@@ -113,7 +114,7 @@ Other base systems (`aos`, `starcraft-tmg`, `blank`) start with an empty glossar
 The glossary editor lives in the Datasource Editor right panel, under the datasource node (above the Factions section). Each row exposes:
 
 - Keyword name input
-- Match type select (`Exact` / `Prefix`)
+- Match type select (`Exact` / `Prefix` / `Parameterized`)
 - Auto-generated storage key (editable for advanced users)
 - **Applies to** multi-select dropdown (one option per scope; new entries default to `weapons` selected)
 - **Display mode** select (`Explanation row` / `Hover tooltip`) — only shown when the entry applies to weapons

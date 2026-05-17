@@ -31,7 +31,21 @@ const glossary = [
     key: "rapid-fire",
     name: "Rapid Fire",
     description: "Extra attacks at half range.",
-    matchType: "prefix",
+    matchType: "parameterized",
+    appliesTo: ["weapons"],
+  },
+  {
+    key: "sustained-hits",
+    name: "Sustained Hits",
+    description: "Extra hits on critical hits.",
+    matchType: "parameterized",
+    appliesTo: ["weapons"],
+  },
+  {
+    key: "melta",
+    name: "Melta",
+    description: "Extra damage within half range.",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
   },
   {
@@ -66,7 +80,14 @@ describe("VALID_GLOSSARY_SCOPES", () => {
 describe("filterGlossaryByScope", () => {
   it("returns only entries whose appliesTo includes the given scope", () => {
     const filtered = filterGlossaryByScope(glossary, "weapons");
-    expect(filtered.map((e) => e.key)).toEqual(["one-shot", "anti", "rapid-fire", "twin-linked"]);
+    expect(filtered.map((e) => e.key)).toEqual([
+      "one-shot",
+      "anti",
+      "rapid-fire",
+      "sustained-hits",
+      "melta",
+      "twin-linked",
+    ]);
   });
 
   it("returns an entry to multiple scopes when listed", () => {
@@ -104,10 +125,32 @@ describe("resolveKeywordEntry", () => {
     expect(resolveKeywordEntry("  ONE SHOT  ", glossary, "weapons")?.key).toBe("one-shot");
   });
 
-  it("matches prefix entries against parametrised keywords", () => {
+  it("matches parameterized entries with text-plus-save values", () => {
     expect(resolveKeywordEntry("Anti-Infantry 4+", glossary, "weapons")?.key).toBe("anti");
     expect(resolveKeywordEntry("Anti-Psyker 5+", glossary, "weapons")?.key).toBe("anti");
+    expect(resolveKeywordEntry("Anti-Heavy Vehicles 4+", glossary, "weapons")?.key).toBe("anti");
+  });
+
+  it("matches text-only values for hyphenated parameterized entries", () => {
+    expect(resolveKeywordEntry("Anti-Vehicle", glossary, "weapons")?.key).toBe("anti");
+    expect(resolveKeywordEntry("Anti-Heavy Vehicles", glossary, "weapons")?.key).toBe("anti");
+  });
+
+  it("matches parameterized entries with numeric, save, dice, and dice-plus values", () => {
     expect(resolveKeywordEntry("Rapid Fire 2", glossary, "weapons")?.key).toBe("rapid-fire");
+    expect(resolveKeywordEntry("Sustained Hits 2", glossary, "weapons")?.key).toBe("sustained-hits");
+    expect(resolveKeywordEntry("Melta D6", glossary, "weapons")?.key).toBe("melta");
+    expect(resolveKeywordEntry("Melta D6+2", glossary, "weapons")?.key).toBe("melta");
+    expect(resolveKeywordEntry("Melta 2D6+2", glossary, "weapons")?.key).toBe("melta");
+  });
+
+  it("matches a bare parameterized keyword name but not unrelated trailing text", () => {
+    expect(resolveKeywordEntry("Sustained Hits", glossary, "weapons")?.key).toBe("sustained-hits");
+    expect(resolveKeywordEntry("Sustained Hits in melee", glossary, "weapons")).toBeNull();
+  });
+
+  it("does not consume unbounded words before a parameter value", () => {
+    expect(resolveKeywordEntry("Sustained Hits also gives extra Pain 5+", glossary, "weapons")).toBeNull();
   });
 
   it("does not match unrelated keywords", () => {
@@ -159,7 +202,7 @@ describe("findGlossaryMatchesInText", () => {
       key: "feel-no-pain",
       name: "Feel No Pain",
       description: "Roll to ignore a lost wound.",
-      matchType: "exact",
+      matchType: "parameterized",
       appliesTo: ["abilities"],
       displayMode: "tooltip",
     },
@@ -194,6 +237,43 @@ describe("findGlossaryMatchesInText", () => {
     expect(matches).toHaveLength(1);
     expect(matches[0].entry.key).toBe("feel-no-pain");
     expect(matches[0].text).toBe("feel no pain");
+  });
+
+  it("includes parameterized keyword values in the matched tooltip span", () => {
+    const matches = findGlossaryMatchesInText(
+      "This model has Feel No Pain 5+ and Sustained Hits D6+2.",
+      [
+        ...abilityGlossary,
+        {
+          key: "sustained-hits",
+          name: "Sustained Hits",
+          description: "Extra hits.",
+          matchType: "parameterized",
+          appliesTo: ["abilities"],
+          displayMode: "tooltip",
+        },
+      ],
+      "abilities",
+    );
+    expect(matches.map((m) => m.text)).toEqual(["Feel No Pain 5+", "Sustained Hits D6+2"]);
+  });
+
+  it("does not underline long prose as a parameterized keyword value", () => {
+    const matches = findGlossaryMatchesInText(
+      "Sustained Hits also gives extra Pain 5+ models.",
+      [
+        {
+          key: "sustained-hits",
+          name: "Sustained Hits",
+          description: "Extra hits.",
+          matchType: "parameterized",
+          appliesTo: ["abilities"],
+          displayMode: "tooltip",
+        },
+      ],
+      "abilities",
+    );
+    expect(matches.map((m) => m.text)).toEqual(["Sustained Hits"]);
   });
 
   it("returns multiple matches sorted by position", () => {

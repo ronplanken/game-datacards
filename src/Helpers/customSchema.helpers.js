@@ -12,7 +12,7 @@ import { WARHAMMER_40K_10E_KEYWORD_GLOSSARY } from "./keywordGlossaryDefaults";
 export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
 
 // Valid match types for keyword glossary entries
-export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix"];
+export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix", "parameterized"];
 
 // Valid display modes for weapon-scoped keyword glossary entries.
 // Other scopes don't honour this field today.
@@ -1101,11 +1101,46 @@ export const filterGlossaryByScope = (glossary, scope) => {
   return glossary.filter((entry) => Array.isArray(entry?.appliesTo) && entry.appliesTo.includes(scope));
 };
 
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const PARAMETER_VALUE_PATTERN = String.raw`(?:(?:\d+D\d+|D\d+)(?:\+\d+)?|\d+\+|\d+(?:\+\d+)?)`;
+const PARAMETER_WORD_PATTERN = String.raw`[A-Za-z][A-Za-z-]*`;
+const PARAMETER_TOKEN_PATTERN = String.raw`(?:${PARAMETER_WORD_PATTERN}\s+){0,3}${PARAMETER_VALUE_PATTERN}`;
+const TEXT_ONLY_PARAMETER_PATTERN = String.raw`${PARAMETER_WORD_PATTERN}(?:\s+${PARAMETER_WORD_PATTERN}){0,2}`;
+
+const getMatchType = (entry) => (VALID_KEYWORD_MATCH_TYPES.includes(entry?.matchType) ? entry.matchType : "exact");
+
+const createParameterizedKeywordRegex = (needle) => {
+  const separator = /[\s-]$/.test(needle) ? "" : String.raw`\s+`;
+  const textOnlySuffix = /-$/.test(needle) ? String.raw`|${TEXT_ONLY_PARAMETER_PATTERN}` : "";
+  return new RegExp(
+    String.raw`^${escapeRegExp(needle)}(?:${separator}(?:${PARAMETER_TOKEN_PATTERN}${textOnlySuffix}))?$`,
+    "i",
+  );
+};
+
+const createGlossaryTextRegex = (needle, matchType) => {
+  const escaped = escapeRegExp(needle);
+  if (matchType === "parameterized") {
+    const separator = /[\s-]$/.test(needle) ? "" : String.raw`\s+`;
+    const textOnlySuffix = /-$/.test(needle) ? String.raw`|${TEXT_ONLY_PARAMETER_PATTERN}` : "";
+    // Keep the leading boundary permissive around "-" so entries like "Anti-"
+    // can start inside "Anti-Vehicle", but require a stricter trailing boundary
+    // so values like "5+" are not half-matched inside "5+1".
+    return new RegExp(
+      String.raw`(?<![A-Za-z0-9])${escaped}(?:${separator}(?:${PARAMETER_TOKEN_PATTERN}${textOnlySuffix}))?(?![A-Za-z0-9+-])`,
+      "gi",
+    );
+  }
+  return new RegExp(String.raw`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "gi");
+};
+
 /**
  * Resolves a keyword tag to its glossary entry, if any, within a given scope.
  * Match rules:
- *   - "exact"  → case-insensitive equality
- *   - "prefix" → case-insensitive startsWith match
+ *   - "exact"         → case-insensitive equality
+ *   - "prefix"        → case-insensitive startsWith match
+ *   - "parameterized" → exact entry name, optionally followed by a value
  * When multiple entries match the same keyword, the entry with the longest
  * `name` wins so specific entries (e.g. "Twin-linked") take precedence over
  * shorter prefixes that happen to be substrings.
@@ -1127,8 +1162,13 @@ export const resolveKeywordEntry = (keyword, glossary, scope) => {
     if (!entry?.name || typeof entry.name !== "string") continue;
     const needle = entry.name.toLowerCase().trim();
     if (!needle) continue;
-    const matchType = entry.matchType === "prefix" ? "prefix" : "exact";
-    const matches = matchType === "prefix" ? haystack.startsWith(needle) : haystack === needle;
+    const matchType = getMatchType(entry);
+    const matches =
+      matchType === "prefix"
+        ? haystack.startsWith(needle)
+        : matchType === "parameterized"
+          ? createParameterizedKeywordRegex(needle).test(haystack)
+          : haystack === needle;
     if (matches && (!best || needle.length > best.name.toLowerCase().trim().length)) {
       best = entry;
     }
@@ -1195,8 +1235,7 @@ export const findGlossaryMatchesInText = (text, glossary, scope) => {
   const matches = [];
   for (const entry of sorted) {
     const needle = entry.name.trim();
-    const pattern = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(`(?<![A-Za-z0-9])${pattern}(?![A-Za-z0-9])`, "gi");
+    const re = createGlossaryTextRegex(needle, getMatchType(entry));
     let m;
     while ((m = re.exec(text)) !== null) {
       const start = m.index;

@@ -8,9 +8,9 @@
  * `schema.keywordGlossary` array; this list is the starter set.
  *
  * Fields:
- *   - matchType: "exact" (case-insensitive equality) or "prefix"
- *     (case-insensitive startsWith), the latter used for parametrised rules
- *     like "Anti-Infantry 4+" or "Melta 2".
+ *   - matchType: "exact" (case-insensitive equality), "prefix"
+ *     (case-insensitive startsWith), or "parameterized" for rules with a
+ *     variable value like "Sustained Hits 2", "Feel No Pain 5+", or "Melta D6+2".
  *   - appliesTo: scopes in which a renderer may use the entry. Today the
  *     seeded entries are weapon-keyword explanations; future scopes
  *     (abilities, unit-keywords, rules, stratagems, enhancements) will
@@ -25,7 +25,7 @@ export const WARHAMMER_40K_10E_KEYWORD_GLOSSARY = [
     key: "anti",
     name: "Anti-",
     description: "An unmodified Wound roll of 'x+' against a target with the matching keyword scores a Critical Wound.",
-    matchType: "prefix",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
   },
   {
@@ -65,7 +65,7 @@ export const WARHAMMER_40K_10E_KEYWORD_GLOSSARY = [
     name: "Feel No Pain",
     description:
       "Each time this model would lose a wound, roll one D6: if the result equals or exceeds 'x', that wound is not lost.",
-    matchType: "prefix",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
   },
   {
@@ -132,7 +132,7 @@ export const WARHAMMER_40K_10E_KEYWORD_GLOSSARY = [
     name: "Melta",
     description:
       "Each time an attack made with this weapon targets a unit within half that weapon's range, that attack's Damage characteristic is increased by the amount denoted by 'x'.",
-    matchType: "prefix",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
   },
   {
@@ -179,14 +179,14 @@ export const WARHAMMER_40K_10E_KEYWORD_GLOSSARY = [
     key: "rapid-fire",
     name: "Rapid Fire",
     description: "Increase the Attacks by 'x' when targeting units within half range.",
-    matchType: "prefix",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
   },
   {
     key: "sustained-hits",
     name: "Sustained Hits",
     description: "Each Critical Hit scores 'x' additional hits on the target.",
-    matchType: "prefix",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
   },
   {

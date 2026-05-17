@@ -62,7 +62,7 @@ keywordGlossary: [
     key: "anti",
     name: "Anti-",
     description: "An unmodified Wound roll of 'x+' against a target with the matching keyword scores a Critical Wound.",
-    matchType: "prefix",
+    matchType: "parameterized",
     appliesTo: ["weapons"],
     style: { casing: "uppercase", brackets: "square", weight: "bold" },
   },
@@ -74,7 +74,7 @@ keywordGlossary: [
 | `key`         | string   | Stable storage key, unique within the glossary. |
 | `name`        | string   | The keyword name as it appears on cards (e.g. `One Shot`, `Anti-`). |
 | `description` | string   | Explanation text rendered by consuming renderers. |
-| `matchType`   | string   | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`; used for parametrised rules like `Anti-Infantry 4+` matching `Anti-`). |
+| `matchType`   | string   | `"exact"` (default, case-insensitive equality), `"prefix"` (case-insensitive `startsWith`), or `"parameterized"` (entry name plus an optional value such as `Sustained Hits 2`, `Feel No Pain 5+`, `Melta D6+2`, or `Anti-Vehicle 4+`). |
 | `appliesTo`   | string[] | **Required, non-empty.** Scopes in which the entry can render. One entry may declare multiple scopes (e.g. a `Lethal Hits` keyword that applies both to weapons and to ability-text tooltips). |
 | `displayMode` | string   | Weapons-only. `"explanation"` (default) renders the description as an explanation row below the weapon table. `"tooltip"` renders the description as a hover tooltip on the inline keyword tag and skips the explanation row. Other scopes ignore this field today. |
 | `style`       | object   | Optional. Per-keyword presentation of the inline keyword tag. Modelled as string enums so more options can be added later. `casing`: `"uppercase"` (default) or `"normal"`. `brackets`: `"square"` (default) or `"none"`. `weight`: `"bold"` (default) or `"normal"`. Missing or unknown values fall back to the default, so existing entries keep the original look. |
