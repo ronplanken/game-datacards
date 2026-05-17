@@ -95,6 +95,11 @@ export const useSync = () => ({
   pendingCount: 0,
   errorCount: 0,
   conflictCount: 0,
+  // Diagnostics
+  syncEvents: [],
+  lastErrorByItemId: new Map(),
+  clearSyncEvents: () => {},
+  recordSyncEvent: () => {},
 });
 
 /**
@@ -221,6 +226,13 @@ export const SyncConflictHandler = () => null;
 export const DatasourceConflictModal = () => null;
 export const DatasourceConflictHandler = () => null;
 export const SyncStatusIndicator = () => null;
+export const SyncDiagnosticsModal = () => null;
+export const SyncDiagnosticsProvider = ({ children }) => children;
+export const useSyncDiagnostics = () => ({
+  isOpen: false,
+  open: () => {},
+  close: () => {},
+});
 export const ListSyncButton = () => null;
 
 // =====================================================

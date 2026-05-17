@@ -17,6 +17,7 @@ import {
   AuthProvider,
   SubscriptionProvider,
   SyncProvider,
+  SyncDiagnosticsProvider,
   CloudCategoriesProvider,
   CheckoutSuccessModal,
   SyncConflictHandler,
@@ -345,20 +346,22 @@ const RootLayout = () => (
                   <CardStorageProviderComponent>
                     <TemplateStorageProvider>
                       <SyncProvider>
-                        <CloudCategoriesProvider>
-                          <Outlet />
-                          <ScrollRestoration />
-                          <UmamiSessionIdentifier />
-                          <WizardSelector />
-                          <WhatsNewWizardSelector />
-                          <CheckoutSuccessHandler />
-                          <ListForgeUrlHandler />
-                          <SyncConflictHandler />
-                          <DatasourceConflictHandler />
-                          <LocalDatasourceMigrationNotice />
-                          <UpdateNotification />
-                          {import.meta.env.MODE === "development" && <DevFab />}
-                        </CloudCategoriesProvider>
+                        <SyncDiagnosticsProvider>
+                          <CloudCategoriesProvider>
+                            <Outlet />
+                            <ScrollRestoration />
+                            <UmamiSessionIdentifier />
+                            <WizardSelector />
+                            <WhatsNewWizardSelector />
+                            <CheckoutSuccessHandler />
+                            <ListForgeUrlHandler />
+                            <SyncConflictHandler />
+                            <DatasourceConflictHandler />
+                            <LocalDatasourceMigrationNotice />
+                            <UpdateNotification />
+                            {import.meta.env.MODE === "development" && <DevFab />}
+                          </CloudCategoriesProvider>
+                        </SyncDiagnosticsProvider>
                       </SyncProvider>
                     </TemplateStorageProvider>
                   </CardStorageProviderComponent>
