@@ -211,7 +211,7 @@ Two-mode wizard (`src/Components/DatasourceWizard/`) for creating datasources ("
 ### Datasource Validation Limits
 
 - Max 200 char names, 50 char versions
-- Max 10 factions, 2000 total cards
+- Max 25 factions, 2000 total cards
 - Schema export/import via JSON
 
 ## Card Designer (Premium)
