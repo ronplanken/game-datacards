@@ -7,7 +7,7 @@ export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "
 // Validation limits for security
 const MAX_NAME_LENGTH = 200;
 const MAX_VERSION_LENGTH = 50;
-const MAX_FACTION_COUNT = 10;
+const MAX_FACTION_COUNT = 25;
 const MAX_CARD_COUNT = 2000;
 const MAX_STRING_FIELD_LENGTH = 10000;
 

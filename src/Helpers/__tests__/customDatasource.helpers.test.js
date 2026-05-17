@@ -100,7 +100,7 @@ describe("validateCustomDatasource", () => {
   });
 
   it("returns invalid when too many factions", () => {
-    const factions = Array.from({ length: 11 }, (_, i) => ({
+    const factions = Array.from({ length: 26 }, (_, i) => ({
       id: `f-${i}`,
       name: `Faction ${i}`,
       colours: { header: "#000", banner: "#111" },

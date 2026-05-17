@@ -679,7 +679,7 @@ describe("customDatasource.helpers", () => {
     });
 
     it("should reject too many factions", () => {
-      const manyFactions = Array(11)
+      const manyFactions = Array(26)
         .fill(null)
         .map((_, i) => ({
           id: `faction-${i}`,
