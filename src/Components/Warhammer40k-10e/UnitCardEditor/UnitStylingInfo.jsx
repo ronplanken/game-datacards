@@ -1,4 +1,4 @@
-import { Form, Input, Select, Switch, Upload, Button, Space, Typography, Slider, Card } from "antd";
+import { Form, Input, Select, Switch, Upload, Button, Space, Typography, Card } from "antd";
 import { message } from "../../Toast/message";
 import { Upload as UploadIcon, Trash2 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
@@ -7,6 +7,7 @@ import { FactionSelect } from "../FactionSelect";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { SliderWithInput } from "../../Shared/SliderWithInput";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -281,37 +282,33 @@ export function UnitStylingInfo() {
           </Form.Item>
 
           <Form.Item label={"Horizontal Position"}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-200}
-                max={200}
-                value={activeCard.imagePositionX || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, imagePositionX: value })}
-                marks={{
-                  [-200]: "Left",
-                  0: "Center",
-                  200: "Right",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-200}
+              max={200}
+              value={activeCard.imagePositionX || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, imagePositionX: value })}
+              marks={{
+                [-200]: "Left",
+                0: "Center",
+                200: "Right",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
 
           <Form.Item label={"Vertical Position"} style={{ marginBottom: 0 }}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-200}
-                max={200}
-                value={activeCard.imagePositionY || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, imagePositionY: value })}
-                marks={{
-                  [-200]: "Top",
-                  0: "Center",
-                  200: "Bottom",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-200}
+              max={200}
+              value={activeCard.imagePositionY || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, imagePositionY: value })}
+              marks={{
+                [-200]: "Top",
+                0: "Center",
+                200: "Bottom",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
         </Form>
       </Card>
@@ -373,55 +370,49 @@ export function UnitStylingInfo() {
             </Form.Item>
 
             <Form.Item label={"Scale"}>
-              <div style={{ paddingRight: "20px" }}>
-                <Slider
-                  min={0.5}
-                  max={2}
-                  step={0.1}
-                  value={activeCard.factionSymbolScale || 0.8}
-                  onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolScale: value })}
-                  marks={{
-                    0.5: "50%",
-                    1: "100%",
-                    2: "200%",
-                  }}
-                  tooltip={{ formatter: (value) => `${Math.round(value * 100)}%` }}
-                />
-              </div>
+              <SliderWithInput
+                min={0.5}
+                max={2}
+                step={0.1}
+                value={activeCard.factionSymbolScale || 0.8}
+                onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolScale: value })}
+                marks={{
+                  0.5: "50%",
+                  1: "100%",
+                  2: "200%",
+                }}
+                tooltip={{ formatter: (value) => `${Math.round(value * 100)}%` }}
+              />
             </Form.Item>
 
             <Form.Item label={"Horizontal Position"}>
-              <div style={{ paddingRight: "20px" }}>
-                <Slider
-                  min={-30}
-                  max={30}
-                  value={activeCard.factionSymbolPositionX || 0}
-                  onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionX: value })}
-                  marks={{
-                    [-30]: "Left",
-                    0: "Center",
-                    30: "Right",
-                  }}
-                  tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-                />
-              </div>
+              <SliderWithInput
+                min={-30}
+                max={30}
+                value={activeCard.factionSymbolPositionX || 0}
+                onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionX: value })}
+                marks={{
+                  [-30]: "Left",
+                  0: "Center",
+                  30: "Right",
+                }}
+                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+              />
             </Form.Item>
 
             <Form.Item label={"Vertical Position"} style={{ marginBottom: 0 }}>
-              <div style={{ paddingRight: "20px" }}>
-                <Slider
-                  min={-30}
-                  max={30}
-                  value={activeCard.factionSymbolPositionY || 0}
-                  onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionY: value })}
-                  marks={{
-                    [-30]: "Top",
-                    0: "Center",
-                    30: "Bottom",
-                  }}
-                  tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-                />
-              </div>
+              <SliderWithInput
+                min={-30}
+                max={30}
+                value={activeCard.factionSymbolPositionY || 0}
+                onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionY: value })}
+                marks={{
+                  [-30]: "Top",
+                  0: "Center",
+                  30: "Bottom",
+                }}
+                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+              />
             </Form.Item>
           </Form>
         )}
