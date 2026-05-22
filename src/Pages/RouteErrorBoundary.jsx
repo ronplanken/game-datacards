@@ -18,7 +18,7 @@ export const RouteErrorBoundary = () => {
 
   const status = isRouteErrorResponse(error) ? error.status : null;
   const detail = isRouteErrorResponse(error)
-    ? error.statusText || error.data
+    ? error.statusText || (typeof error.data === "string" ? error.data : JSON.stringify(error.data))
     : error instanceof Error
       ? error.message
       : null;

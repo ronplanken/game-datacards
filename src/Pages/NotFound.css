@@ -62,19 +62,16 @@
   font-weight: 600;
   color: #fff;
   background: #1677ff;
+  border: 1px solid transparent;
   border-radius: 10px;
   text-decoration: none;
+  cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .notfound-button:hover {
   background: #4096ff;
   color: #fff;
-}
-
-.notfound-button {
-  border: 1px solid transparent;
-  cursor: pointer;
 }
 
 .notfound-button--ghost {
