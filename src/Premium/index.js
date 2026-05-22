@@ -194,6 +194,7 @@ export const SignupModal = () => null;
 export const TwoFactorPrompt = () => null;
 export const TwoFactorSetup = () => null;
 export const AccountSettingsModal = () => null;
+export const ResetPasswordPage = () => null;
 
 // =====================================================
 // MOBILE AUTH COMPONENTS - All render null
