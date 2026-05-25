@@ -76,6 +76,9 @@ review gate is the backstop. Use a dedicated, rotatable key for this pipeline.
   "Run OpenCode" step substitutes the real absolute path (via `sed`) before
   running, so the permission globs and the `external_directory` grant resolve
   correctly. Edit the placeholders, not hardcoded `/home/runner/...` paths.
+- OpenCode matches **in-project** `edit` rules against paths relative to the app
+  root (`src/**`, `docs/**`); only the **external** (`gdc-premium`) rules use
+  absolute paths. Don't make the app's edit rules absolute or they won't match.
 - OpenCode auto-installs the `@ai-sdk/openai-compatible` provider package named in
   `opencode.json` (confirmed working in CI).
 - If the model rejects the request over `max_tokens`, lower `limit.output` in
