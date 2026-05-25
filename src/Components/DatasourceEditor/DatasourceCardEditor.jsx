@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Col } from "antd";
-import { Layers } from "lucide-react";
+import { Layers, Tag } from "lucide-react";
 import { resolveCardType } from "../Custom/CustomCardDisplay";
 import {
   CardEditProvider,
@@ -9,7 +9,7 @@ import {
   TemplateSelector,
   usePremiumFeatures,
 } from "../../Premium";
-import { Section } from "./components";
+import { Section, CompactInput } from "./components";
 
 /**
  * Card editor wrapper for the Datasource Editor right panel.
@@ -27,6 +27,14 @@ export const DatasourceCardEditor = ({ card, activeDatasource, onUpdateCard }) =
     (templateId) => {
       if (!onUpdateCard) return;
       onUpdateCard({ ...card, templateId: templateId || undefined });
+    },
+    [card, onUpdateCard],
+  );
+
+  const handleSubcategoryChange = useCallback(
+    (value) => {
+      if (!onUpdateCard) return;
+      onUpdateCard({ ...card, subcategory: value || undefined });
     },
     [card, onUpdateCard],
   );
@@ -59,6 +67,16 @@ export const DatasourceCardEditor = ({ card, activeDatasource, onUpdateCard }) =
       factions={activeDatasource.data || []}
       datasourceSchema={activeDatasource.schema}>
       <div className="props-body">
+        <Section title="Subcategory" icon={Tag} defaultOpen={true}>
+          <CompactInput
+            label="Group"
+            ariaLabel="Card subcategory"
+            value={card.subcategory || ""}
+            onChange={handleSubcategoryChange}
+            type="text"
+            placeholder="e.g. Core, Elite..."
+          />
+        </Section>
         {hasCardDesigner && (
           <Section title="Template" icon={Layers} defaultOpen={true}>
             <TemplateSelector

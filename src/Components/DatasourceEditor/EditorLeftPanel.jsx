@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Download,
   Upload,
+  Tag,
 } from "lucide-react";
 import { DatasourceSyncIcon } from "../../Premium";
 import { ActiveItemToolbar } from "../Shared/ActiveItemToolbar";
@@ -53,6 +54,7 @@ export const EditorLeftPanel = ({
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
   const [activeCardTypeTab, setActiveCardTypeTab] = useState(null);
   const [activeFactionId, setActiveFactionId] = useState(null);
+  const [sortOrder, setSortOrder] = useState("default");
 
   if (!activeDatasource && datasources.length === 0) {
     return (
@@ -287,12 +289,23 @@ export const EditorLeftPanel = ({
                 factionId={resolvedFactionId}
               />
             </h3>
-            <button
-              className="designer-panel-header-action"
-              onClick={() => activeCardType && onAddCard?.(activeCardType, resolvedFactionId)}
-              title={`Add ${activeCardType?.label || "card"}`}>
-              <Plus size={14} />
-            </button>
+            <div className="designer-panel-header-actions">
+              <select
+                className="designer-sort-select"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                aria-label="Sort order">
+                <option value="default">Default</option>
+                <option value="asc">A to Z</option>
+                <option value="desc">Z to A</option>
+              </select>
+              <button
+                className="designer-panel-header-action"
+                onClick={() => activeCardType && onAddCard?.(activeCardType, resolvedFactionId)}
+                title={`Add ${activeCardType?.label || "card"}`}>
+                <Plus size={14} />
+              </button>
+            </div>
           </div>
           <div className="designer-panel-content">
             {factions.length > 1 && (
@@ -305,9 +318,9 @@ export const EditorLeftPanel = ({
               cardTypes={cardTypes}
               factionId={resolvedFactionId}
               selectedItem={selectedItem}
+              sortOrder={sortOrder}
               onSelectCard={onSelectCard}
               onDeleteCard={onDeleteCard}
-              onAddCard={onAddCard}
             />
           </div>
         </>
@@ -365,9 +378,9 @@ const CardList = ({
   cardTypes,
   factionId,
   selectedItem,
+  sortOrder,
   onSelectCard,
   onDeleteCard,
-  onAddCard,
 }) => {
   const cardTypeDef = cardTypes.find((ct) => ct.key === cardTypeKey);
   if (!cardTypeDef) return null;
@@ -379,9 +392,91 @@ const CardList = ({
   const targetArray = getTargetArray(cardTypeKey);
   const cards = (faction[targetArray] || []).filter((c) => c.cardType === cardTypeKey);
 
+  const sortCards = (arr) => {
+    if (sortOrder === "asc") return [...arr].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    if (sortOrder === "desc") return [...arr].sort((a, b) => (b.name || "").localeCompare(a.name || ""));
+    return arr;
+  };
+
+  // Group cards by subcategory, preserving the original order of groups
+  const groups = [];
+  const subcategoryIndex = new Map();
+  let groupOrder = 0;
+
+  for (const card of cards) {
+    const key = card.subcategory || "";
+    if (!subcategoryIndex.has(key)) {
+      subcategoryIndex.set(key, groupOrder++);
+      groups.push({ label: key || "Uncategorized", key, order: groupOrder, cards: [] });
+    }
+    groups[subcategoryIndex.get(key)].cards.push(card);
+  }
+
+  // Sort groups by their original order, sort cards within each group
+  groups.sort((a, b) => a.order - b.order);
+  for (const group of groups) {
+    group.cards = sortCards(group.cards);
+  }
+
+  const showSubcategoryHeaders = groups.length > 1 || (groups.length === 1 && groups[0].key !== "");
+
+  if (cards.length === 0) {
+    return (
+      <div className="designer-card-list">
+        <div className="designer-empty-state" style={{ padding: "12px 0" }}>
+          <p style={{ fontSize: 12, opacity: 0.6 }}>No {cardTypeDef.label.toLowerCase()} cards yet</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (showSubcategoryHeaders) {
+    return (
+      <div className="designer-card-list">
+        {groups.map((group) => (
+          <div key={group.key || "__uncategorized__"} className="designer-card-subcategory">
+            <div className="designer-card-subcategory-header">
+              <Tag size={12} />
+              <span>{group.label}</span>
+              <span className="designer-card-subcategory-count">{group.cards.length}</span>
+            </div>
+            {group.cards.map((card) => (
+              <div
+                key={card.id}
+                className={`designer-layer-item ${selectedItem?.type === "card" && selectedItem?.data?.id === card.id ? "selected" : ""}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => onSelectCard?.(card)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelectCard?.(card);
+                  }
+                }}>
+                <span className="designer-layer-name">{card.name || "Unnamed"}</span>
+                <span className="designer-layer-actions">
+                  <button
+                    className="designer-layer-action-btn danger"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteCard?.(card.id, card.cardType);
+                    }}
+                    title="Delete card">
+                    <Trash2 size={14} />
+                  </button>
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const sorted = sortCards(cards);
   return (
     <div className="designer-card-list">
-      {cards.map((card) => (
+      {sorted.map((card) => (
         <div
           key={card.id}
           className={`designer-layer-item ${selectedItem?.type === "card" && selectedItem?.data?.id === card.id ? "selected" : ""}`}
@@ -408,11 +503,6 @@ const CardList = ({
           </span>
         </div>
       ))}
-      {cards.length === 0 && (
-        <div className="designer-empty-state" style={{ padding: "12px 0" }}>
-          <p style={{ fontSize: 12, opacity: 0.6 }}>No {cardTypeDef.label.toLowerCase()} cards yet</p>
-        </div>
-      )}
     </div>
   );
 };
