@@ -25,6 +25,8 @@
     },
     "edit": {
       "*": "deny",
+      "src/**": "allow",
+      "docs/**": "allow",
       "GDCWS/game-datacards/src/**": "allow",
       "GDCWS/game-datacards/docs/**": "allow",
       "GDCWS/gdc-premium/src/**": "allow",
