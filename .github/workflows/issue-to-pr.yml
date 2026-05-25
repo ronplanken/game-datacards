@@ -1,0 +1,126 @@
+name: Issue to PR (DeepSeek)
+
+# Opt-in pipeline: when an approver adds the `ai-build` label to a from-discord
+# enhancement issue, an OpenCode agent driven by DeepSeek V4 Pro implements it and
+# opens a draft PR in each repo it changed. See .github/issue-to-pr/README.md.
+
+on:
+  issues:
+    types: [labeled]
+
+# One run per issue; don't cancel an in-flight implementation if the event refires.
+concurrency:
+  group: issue-to-pr-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    name: Implement issue with DeepSeek
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event.label.name == 'ai-build' &&
+      contains(toJSON(github.event.issue.labels.*.name), '"from-discord"') &&
+      contains(toJSON(github.event.issue.labels.*.name), '"enhancement"') &&
+      !contains(toJSON(github.event.issue.labels.*.name), '"ai-attempted"')
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout game-datacards
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          path: game-datacards
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Checkout gdc-premium (sibling)
+        uses: actions/checkout@v4
+        with:
+          repository: ronplanken/gdc-premium
+          path: gdc-premium
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      # Mark the issue before doing any work so a failed run never auto-retries.
+      # Re-adding `ai-build` after `ai-attempted` is present is a no-op (the guard
+      # above fails), so this also prevents label loops.
+      - name: Mark attempted (prevent retries)
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label ai-attempted
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          (cd game-datacards && yarn install --immutable)
+          (cd gdc-premium && yarn install --frozen-lockfile)
+
+      - name: Install OpenCode
+        run: npm install -g opencode-ai@1.15.10
+
+      - name: Create working branches
+        run: |
+          BRANCH="ai/issue-${{ github.event.issue.number }}"
+          git -C game-datacards checkout -b "$BRANCH"
+          git -C gdc-premium checkout -b "$BRANCH"
+
+      # Build the agent prompt from the committed template plus the issue. Issue
+      # title/body are passed via env (never interpolated into the script) so a
+      # malicious issue cannot inject shell commands.
+      - name: Assemble prompt
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_REPO: ${{ github.repository }}
+        run: |
+          PROMPT_FILE="$RUNNER_TEMP/prompt.txt"
+          {
+            cat game-datacards/.github/issue-to-pr/prompt.md
+            printf '\n\n## The issue to implement\n\n'
+            printf 'Repository: %s\n' "$ISSUE_REPO"
+            printf 'Issue number: #%s\n' "$ISSUE_NUMBER"
+            printf 'Title: %s\n\n' "$ISSUE_TITLE"
+            printf 'Body:\n'
+            printf '%s\n' "$ISSUE_BODY"
+          } > "$PROMPT_FILE"
+          echo "PROMPT_FILE=$PROMPT_FILE" >> "$GITHUB_ENV"
+
+      - name: Run OpenCode (DeepSeek V4 Pro)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENCODE_CONFIG: ${{ github.workspace }}/game-datacards/.github/issue-to-pr/opencode.json
+        run: |
+          opencode run \
+            --dir "${{ github.workspace }}" \
+            --model deepseek/deepseek-v4-pro \
+            "$(cat "$PROMPT_FILE")"
+
+      - name: Lint and test (game-datacards)
+        id: checks
+        continue-on-error: true
+        run: |
+          cd game-datacards
+          yarn lint:fix || true
+          yarn prettier:fix || true
+          if yarn test:ci; then
+            echo "result=tests passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=tests FAILED (see workflow logs)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open draft PR(s) and comment on issue
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          GAME_REPO: ${{ github.repository }}
+          PREMIUM_REPO: ronplanken/gdc-premium
+          CHECKS: ${{ steps.checks.outputs.result }}
+        run: bash game-datacards/.github/issue-to-pr/create-prs.sh
