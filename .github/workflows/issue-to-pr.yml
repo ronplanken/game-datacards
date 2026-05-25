@@ -1,8 +1,8 @@
-name: Issue to PR (DeepSeek)
+name: Issue to PR
 
 # Opt-in pipeline: when an approver adds the `ai-build` label to a from-discord
-# enhancement issue, an OpenCode agent driven by DeepSeek V4 Pro implements it and
-# opens a draft PR in each repo it changed. See .github/issue-to-pr/README.md.
+# enhancement issue, an OpenCode agent implements it and opens a draft PR in each
+# repo it changed. See .github/issue-to-pr/README.md.
 
 on:
   issues:
@@ -14,15 +14,44 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Fire only when an approver adds `ai-build`, then re-read the issue's CURRENT
+  # labels to confirm eligibility. Reading the supporting labels from the
+  # triggering event is unreliable: when several labels are applied together, the
+  # `ai-build` event's payload may not yet include `from-discord`/`enhancement`
+  # (they can arrive in a later event), which would wrongly skip the run.
+  gate:
+    name: Check eligibility
+    if: github.event.label.name == 'ai-build'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    outputs:
+      eligible: ${{ steps.check.outputs.eligible }}
+    steps:
+      - name: Read current labels
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          labels="$(gh issue view "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" --json labels --jq '[.labels[].name]')"
+          echo "Current labels: $labels"
+          if echo "$labels" | grep -q '"from-discord"' \
+             && echo "$labels" | grep -q '"enhancement"' \
+             && ! echo "$labels" | grep -q '"ai-attempted"'; then
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+            echo "Eligible: proceeding to implementation."
+          else
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            echo "Not eligible: needs from-discord + enhancement and must not be ai-attempted."
+          fi
+
   implement:
-    name: Implement issue with DeepSeek
+    name: Implement issue
+    needs: gate
+    if: needs.gate.outputs.eligible == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: >-
-      github.event.label.name == 'ai-build' &&
-      contains(toJSON(github.event.issue.labels.*.name), '"from-discord"') &&
-      contains(toJSON(github.event.issue.labels.*.name), '"enhancement"') &&
-      !contains(toJSON(github.event.issue.labels.*.name), '"ai-attempted"')
     permissions:
       contents: read
       issues: write
@@ -44,8 +73,8 @@ jobs:
           fetch-depth: 0
 
       # Mark the issue before doing any work so a failed run never auto-retries.
-      # Re-adding `ai-build` after `ai-attempted` is present is a no-op (the guard
-      # above fails), so this also prevents label loops.
+      # Re-adding `ai-build` after `ai-attempted` is present is a no-op (the gate
+      # fails), so this also prevents label loops.
       - name: Mark attempted (prevent retries)
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -72,7 +101,8 @@ jobs:
 
       # Build the agent prompt from the committed template plus the issue. Issue
       # title/body are passed via env (never interpolated into the script) so a
-      # malicious issue cannot inject shell commands.
+      # malicious issue cannot inject shell commands. The repository locations are
+      # appended as absolute paths so the agent uses them verbatim.
       - name: Assemble prompt
         env:
           ISSUE_TITLE: ${{ github.event.issue.title }}
@@ -83,7 +113,11 @@ jobs:
           PROMPT_FILE="$RUNNER_TEMP/prompt.txt"
           {
             cat game-datacards/.github/issue-to-pr/prompt.md
-            printf '\n\n## The issue to implement\n\n'
+            printf '\n\n## Repository locations\n\n'
+            printf -- '- App (game-datacards), your working directory: %s\n' "$GITHUB_WORKSPACE/game-datacards"
+            printf -- '- Premium package (gdc-premium): %s\n' "$GITHUB_WORKSPACE/gdc-premium"
+            printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each.\n'
+            printf '\n## The issue to implement\n\n'
             printf 'Repository: %s\n' "$ISSUE_REPO"
             printf 'Issue number: #%s\n' "$ISSUE_NUMBER"
             printf 'Title: %s\n\n' "$ISSUE_TITLE"
@@ -92,13 +126,19 @@ jobs:
           } > "$PROMPT_FILE"
           echo "PROMPT_FILE=$PROMPT_FILE" >> "$GITHUB_ENV"
 
-      - name: Run OpenCode (DeepSeek V4 Pro)
+      # The committed opencode.json uses the GDCWS placeholder for the runner
+      # workspace; substitute the real absolute path before running so the
+      # permission globs (and external_directory access to gdc-premium) resolve.
+      - name: Run OpenCode
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          OPENCODE_CONFIG: ${{ github.workspace }}/game-datacards/.github/issue-to-pr/opencode.json
         run: |
+          CONFIG="$RUNNER_TEMP/opencode.json"
+          sed "s#GDCWS#${GITHUB_WORKSPACE}#g" \
+            game-datacards/.github/issue-to-pr/opencode.json > "$CONFIG"
+          export OPENCODE_CONFIG="$CONFIG"
           opencode run \
-            --dir "${{ github.workspace }}" \
+            --dir "${GITHUB_WORKSPACE}/game-datacards" \
             --model deepseek/deepseek-v4-pro \
             "$(cat "$PROMPT_FILE")"
 
