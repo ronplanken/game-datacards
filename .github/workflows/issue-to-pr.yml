@@ -14,15 +14,44 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Fire only when an approver adds `ai-build`, then re-read the issue's CURRENT
+  # labels to confirm eligibility. Reading the supporting labels from the
+  # triggering event is unreliable: when several labels are applied together, the
+  # `ai-build` event's payload may not yet include `from-discord`/`enhancement`
+  # (they can arrive in a later event), which would wrongly skip the run.
+  gate:
+    name: Check eligibility
+    if: github.event.label.name == 'ai-build'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    outputs:
+      eligible: ${{ steps.check.outputs.eligible }}
+    steps:
+      - name: Read current labels
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          labels="$(gh issue view "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" --json labels --jq '[.labels[].name]')"
+          echo "Current labels: $labels"
+          if echo "$labels" | grep -q '"from-discord"' \
+             && echo "$labels" | grep -q '"enhancement"' \
+             && ! echo "$labels" | grep -q '"ai-attempted"'; then
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+            echo "Eligible: proceeding to implementation."
+          else
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            echo "Not eligible: needs from-discord + enhancement and must not be ai-attempted."
+          fi
+
   implement:
     name: Implement issue with DeepSeek
+    needs: gate
+    if: needs.gate.outputs.eligible == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: >-
-      github.event.label.name == 'ai-build' &&
-      contains(toJSON(github.event.issue.labels.*.name), '"from-discord"') &&
-      contains(toJSON(github.event.issue.labels.*.name), '"enhancement"') &&
-      !contains(toJSON(github.event.issue.labels.*.name), '"ai-attempted"')
     permissions:
       contents: read
       issues: write
