@@ -20,12 +20,15 @@
     }
   },
   "permission": {
+    "external_directory": {
+      "GDCWS/gdc-premium/**": "allow"
+    },
     "edit": {
       "*": "deny",
-      "game-datacards/src/**": "allow",
-      "game-datacards/docs/**": "allow",
-      "gdc-premium/src/**": "allow",
-      "gdc-premium/docs/**": "allow"
+      "GDCWS/game-datacards/src/**": "allow",
+      "GDCWS/game-datacards/docs/**": "allow",
+      "GDCWS/gdc-premium/src/**": "allow",
+      "GDCWS/gdc-premium/docs/**": "allow"
     },
     "bash": {
       "*": "allow",
