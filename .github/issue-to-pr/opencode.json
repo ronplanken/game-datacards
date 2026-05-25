@@ -1,0 +1,46 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "deepseek": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "DeepSeek",
+      "options": {
+        "baseURL": "https://api.deepseek.com/v1",
+        "apiKey": "{env:DEEPSEEK_API_KEY}"
+      },
+      "models": {
+        "deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro",
+          "limit": {
+            "context": 1000000,
+            "output": 65536
+          }
+        }
+      }
+    }
+  },
+  "permission": {
+    "edit": {
+      "*": "deny",
+      "game-datacards/src/**": "allow",
+      "game-datacards/docs/**": "allow",
+      "gdc-premium/src/**": "allow",
+      "gdc-premium/docs/**": "allow"
+    },
+    "bash": {
+      "*": "allow",
+      "curl*": "deny",
+      "wget*": "deny",
+      "nc *": "deny",
+      "ncat*": "deny",
+      "telnet*": "deny",
+      "ssh *": "deny",
+      "scp *": "deny",
+      "sudo *": "deny",
+      "npm *": "deny",
+      "npx *": "deny",
+      "rm -rf /*": "deny"
+    },
+    "webfetch": "deny"
+  }
+}
