@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { compare } from "compare-versions";
 import {
   VERSION_REGISTRY,
   getVersionConfig,
@@ -16,12 +17,12 @@ describe("WhatsNewWizard version registry", () => {
   it("is sorted in ascending version order", () => {
     const versions = VERSION_REGISTRY.map((v) => v.version);
     for (let i = 1; i < versions.length; i++) {
-      expect(versions[i] > versions[i - 1]).toBe(true);
+      expect(compare(versions[i], versions[i - 1], ">")).toBe(true);
     }
   });
 
-  it("has v3.9.0 as the latest version", () => {
-    expect(getLatestWizardVersion()).toBe("3.9.0");
+  it("has v3.10.0 as the latest version", () => {
+    expect(getLatestWizardVersion()).toBe("3.10.0");
   });
 
   it("returns v3.2.2 config via getVersionConfig", () => {
