@@ -3,12 +3,15 @@ set -euo pipefail
 
 # Opens a draft PR in each repo (game-datacards, gdc-premium) that the agent
 # changed, cross-links them to the originating issue, and comments on the issue
-# with the result. Pushes a branch named ai/issue-<n> in each changed repo so the
-# existing scripts/build-premium.sh branch-matching links the two at build time.
+# with the result. Pushes the branch named in $BRANCH (e.g.
+# feature/<n>-<slug> or bug/<n>-<slug>, set by the workflow's gate job) in each
+# changed repo so the existing scripts/build-premium.sh branch-matching links the
+# two at build time. Both repos must use the same branch name.
 #
 # Required env:
 #   GITHUB_WORKSPACE  parent dir containing game-datacards/ and gdc-premium/
 #   GH_TOKEN          PAT with contents + pull-requests + issues write on both repos
+#   BRANCH            working branch name, same in both repos
 #   ISSUE_NUMBER      issue number in game-datacards
 #   ISSUE_TITLE       issue title
 #   GAME_REPO         owner/repo, e.g. ronplanken/game-datacards
@@ -18,7 +21,7 @@ set -euo pipefail
 #   PREMIUM_BASE      base branch for the premium PR (default: main)
 #   BOT_NAME, BOT_EMAIL
 
-BRANCH="ai/issue-${ISSUE_NUMBER}"
+BRANCH="${BRANCH:?BRANCH must be set by the workflow}"
 PREMIUM_BASE="${PREMIUM_BASE:-main}"
 BOT_NAME="${BOT_NAME:-gdc-issue-bot}"
 BOT_EMAIL="${BOT_EMAIL:-issue-bot@users.noreply.github.com}"
