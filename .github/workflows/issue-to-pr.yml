@@ -27,13 +27,16 @@ jobs:
       issues: read
     outputs:
       eligible: ${{ steps.check.outputs.eligible }}
+      branch: ${{ steps.check.outputs.branch }}
     steps:
       - name: Read current labels
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
-          labels="$(gh issue view "${{ github.event.issue.number }}" \
+          labels="$(gh issue view "$ISSUE_NUMBER" \
             --repo "${{ github.repository }}" --json labels --jq '[.labels[].name]')"
           echo "Current labels: $labels"
           if echo "$labels" | grep -q '"from-discord"' \
@@ -41,6 +44,32 @@ jobs:
              && ! echo "$labels" | grep -q '"ai-attempted"'; then
             echo "eligible=true" >> "$GITHUB_OUTPUT"
             echo "Eligible: proceeding to implementation."
+
+            # Branch type from labels: enhancement -> feature, otherwise bug.
+            if echo "$labels" | grep -q '"enhancement"'; then
+              type="feature"
+            else
+              type="bug"
+            fi
+
+            # Short, git-safe slug from the issue title. The title is untrusted, so
+            # it is read from the environment as data (never interpolated into the
+            # script) and reduced to lowercase a-z0-9 plus single hyphens, max 40
+            # chars. Result is e.g. feature/123-add-keyword-glossary.
+            slug="$(printf '%s' "$ISSUE_TITLE" \
+              | tr '[:upper:]' '[:lower:]' \
+              | tr -c 'a-z0-9' '-' \
+              | sed -E 's/-+/-/g; s/^-//; s/-$//' \
+              | cut -c1-40 \
+              | sed -E 's/-$//')"
+
+            if [ -n "$slug" ]; then
+              branch="${type}/${ISSUE_NUMBER}-${slug}"
+            else
+              branch="${type}/${ISSUE_NUMBER}"
+            fi
+            echo "branch=$branch" >> "$GITHUB_OUTPUT"
+            echo "Branch: $branch"
           else
             echo "eligible=false" >> "$GITHUB_OUTPUT"
             echo "Not eligible: needs from-discord + (enhancement or bug) and must not be ai-attempted."
@@ -94,8 +123,9 @@ jobs:
         run: npm install -g opencode-ai@1.15.10
 
       - name: Create working branches
+        env:
+          BRANCH: ${{ needs.gate.outputs.branch }}
         run: |
-          BRANCH="ai/issue-${{ github.event.issue.number }}"
           git -C game-datacards checkout -b "$BRANCH"
           git -C gdc-premium checkout -b "$BRANCH"
 
@@ -163,4 +193,5 @@ jobs:
           GAME_REPO: ${{ github.repository }}
           PREMIUM_REPO: ronplanken/gdc-premium
           CHECKS: ${{ steps.checks.outputs.result }}
+          BRANCH: ${{ needs.gate.outputs.branch }}
         run: bash game-datacards/.github/issue-to-pr/create-prs.sh

@@ -20,9 +20,12 @@ human reviews and merges; nothing is auto-merged.
      (desktop + mobile) so the update is announced in-app. This happens in
      `game-datacards` even for premium-package features, so that repo always gets
      a PR. A no-op run skips the bump.
-4. For each repo the agent changed, it pushes a branch `ai/issue-<n>` and opens a
-   **draft** PR, cross-linked to the issue. Because both repos use the same branch
-   name, the premium build links them automatically.
+4. For each repo the agent changed, it pushes a branch named for the issue type
+   and number — `feature/<n>-<slug>` for an enhancement, `bug/<n>-<slug>` for a
+   bug (the `<slug>` is a short, sanitised form of the issue title) — and opens a
+   **draft** PR, cross-linked to the issue. The branch name is computed once in
+   the `gate` job; because both repos use the same name, the premium build links
+   them automatically.
 5. The PRs are opened with a PAT, so `ci.yml` and `claude-review.yml` run on them
    automatically. The bot also comments the result back on the issue.
 
