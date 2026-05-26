@@ -116,7 +116,7 @@ jobs:
             printf '\n\n## Repository locations\n\n'
             printf -- '- App (game-datacards), your working directory: %s\n' "$GITHUB_WORKSPACE/game-datacards"
             printf -- '- Premium package (gdc-premium): %s\n' "$GITHUB_WORKSPACE/gdc-premium"
-            printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each.\n'
+            printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each, plus the app (game-datacards) package.json version field for the patch bump described in the prompt.\n'
             printf '\n## The issue to implement\n\n'
             printf 'Repository: %s\n' "$ISSUE_REPO"
             printf 'Issue number: #%s\n' "$ISSUE_NUMBER"
