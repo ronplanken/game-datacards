@@ -15,6 +15,11 @@ human reviews and merges; nothing is auto-merged.
    `prompt.md`, then runs `yarn lint:fix` + `yarn test:ci`. The app is OpenCode's
    project root; the premium package is reachable via the `external_directory`
    grant in `opencode.json`.
+   - As part of the prompt, after implementing the change the agent bumps the
+     app's patch version in `package.json` and adds a matching "What's New" entry
+     (desktop + mobile) so the update is announced in-app. This happens in
+     `game-datacards` even for premium-package features, so that repo always gets
+     a PR. A no-op run skips the bump.
 4. For each repo the agent changed, it pushes a branch `ai/issue-<n>` and opens a
    **draft** PR, cross-linked to the issue. Because both repos use the same branch
    name, the premium build links them automatically.
@@ -51,8 +56,9 @@ idea-bot already applies.
 - **Model**: change `--model` in `issue-to-pr.yml` and the `models` block in
   `opencode.json` (e.g. to a cheaper model to cut cost).
 - **Guardrails**: `opencode.json` `permission` fences what the agent may edit
-  (only `src/` + `docs/` in both repos) and blocks network/destructive shell. The
-  `gate` job controls which issues qualify.
+  (`src/` + `docs/` in both repos, plus the app's `package.json` for the version
+  bump) and blocks network/destructive shell. The `gate` job controls which issues
+  qualify.
 
 ## Security / threat model
 
@@ -60,8 +66,9 @@ Issue bodies originate from untrusted Discord users, so the pipeline is built
 defensively:
 
 - The agent is told to treat the issue as a spec, not instructions.
-- `opencode.json` denies edits outside `src/`/`docs/`, denies `curl`/`wget`/
-  `ssh`/`webfetch` (no exfiltration), and denies `npm`.
+- `opencode.json` denies edits outside `src/`/`docs/` (the only exception is the
+  app's `package.json`, for the version bump), denies `curl`/`wget`/`ssh`/
+  `webfetch` (no exfiltration), and denies `npm`.
 - Issue text is passed via environment variables, never interpolated into shell.
 - Output is always a **draft** PR gated behind human review + the existing Claude
   review.
