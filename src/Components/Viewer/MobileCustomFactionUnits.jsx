@@ -26,9 +26,22 @@ export const MobileCustomFactionUnits = () => {
     navigate(`/mobile/${factionSlug}`);
   };
 
+  const cardBaseTypes = useMemo(() => {
+    if (!schema?.cardTypes) return {};
+    const map = {};
+    schema.cardTypes.forEach((ct) => {
+      if (ct.baseType) {
+        map[ct.key] = ct.baseType;
+      }
+    });
+    return map;
+  }, [schema]);
+
   const handleCardClick = (card) => {
     const cardSlug = card.name?.toLowerCase().replaceAll(" ", "-");
-    navigate(`/mobile/${factionSlug}/${cardSlug}`);
+    const baseType = cardBaseTypes[card.cardType];
+    const typeSegment = ["enhancement", "stratagem", "rule"].includes(baseType) ? `/${baseType}` : "";
+    navigate(`/mobile/${factionSlug}${typeSegment}/${cardSlug}`);
   };
 
   // Collect all cards grouped by card type

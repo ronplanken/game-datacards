@@ -16,9 +16,10 @@ export const MobileCustomFaction = () => {
     navigate(`/mobile/${factionSlug}/units`);
   };
 
-  const handleCardClick = (card) => {
+  const handleCardClick = (card, baseType) => {
     const cardSlug = card.name?.toLowerCase().replaceAll(" ", "-");
-    navigate(`/mobile/${factionSlug}/${cardSlug}`);
+    const typeSegment = ["enhancement", "stratagem", "rule"].includes(baseType) ? `/${baseType}` : "";
+    navigate(`/mobile/${factionSlug}${typeSegment}/${cardSlug}`);
   };
 
   const handleBrowseGlossary = () => {
@@ -39,6 +40,7 @@ export const MobileCustomFaction = () => {
         return {
           key: ct.key,
           label: ct.label,
+          baseType: ct.baseType,
           cards,
         };
       })
@@ -89,7 +91,10 @@ export const MobileCustomFaction = () => {
           </div>
           <div className="custom-faction-card-list">
             {section.cards.map((card) => (
-              <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
+              <button
+                key={card.id}
+                className="custom-faction-card-item"
+                onClick={() => handleCardClick(card, section.baseType)}>
                 <span className="custom-faction-card-name">{card.name}</span>
                 <ChevronRight size={16} className="custom-faction-card-arrow" />
               </button>
