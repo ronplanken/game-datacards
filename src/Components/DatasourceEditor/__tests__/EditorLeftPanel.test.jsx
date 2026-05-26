@@ -22,6 +22,10 @@ vi.mock("lucide-react", () => ({
   Download: (props) => <svg data-testid="icon-download" {...props} />,
   Upload: (props) => <svg data-testid="icon-upload" {...props} />,
   HelpCircle: (props) => <svg data-testid="icon-help" {...props} />,
+  Tag: (props) => <svg data-testid="icon-tag" {...props} />,
+  ArrowUpDown: (props) => <svg data-testid="icon-sort-none" {...props} />,
+  ArrowDownAZ: (props) => <svg data-testid="icon-sort-asc" {...props} />,
+  ArrowDownZA: (props) => <svg data-testid="icon-sort-desc" {...props} />,
 }));
 
 const mockDatasource = {
@@ -31,10 +35,24 @@ const mockDatasource = {
   schema: {
     baseSystem: "40k-10e",
     cardTypes: [
-      { key: "infantry", label: "Infantry", baseType: "unit", schema: {} },
+      { key: "infantry", label: "Infantry", baseType: "unit", schema: { metadata: { hasSubcategory: true } } },
       { key: "battle-rules", label: "Battle Rules", baseType: "rule", schema: {} },
     ],
   },
+  data: [
+    {
+      id: "faction-1",
+      name: "Faction",
+      datasheets: [
+        { id: "card-1", name: "Zeta Unit", cardType: "infantry" },
+        { id: "card-2", name: "Alpha Unit", cardType: "infantry" },
+        { id: "card-3", name: "Beta Unit", cardType: "infantry", subcategory: "Core" },
+        { id: "card-4", name: "Gamma Unit", cardType: "infantry", subcategory: "Core" },
+        { id: "card-5", name: "Delta Unit", cardType: "infantry", subcategory: "Elite" },
+      ],
+      rules: [{ id: "card-6", name: "Test Rule", cardType: "battle-rules" }],
+    },
+  ],
 };
 
 const mockDatasources = [mockDatasource, { id: "ds-2", name: "Other DS", version: "2.0.0", schema: { cardTypes: [] } }];
@@ -309,6 +327,141 @@ describe("EditorLeftPanel", () => {
       const treeItems = screen.getAllByText("Test Datasource");
       const treeItem = treeItems[treeItems.length - 1].closest(".designer-layer-item");
       expect(treeItem).toHaveClass("selected");
+    });
+
+    describe("sorting", () => {
+      const cardListNames = () =>
+        screen
+          .getAllByText(/Unit/)
+          .filter((el) => el.closest(".designer-card-list"))
+          .map((el) => el.textContent);
+
+      it("renders a per-card-type sort toggle in the tab bar", () => {
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+        // One sort toggle per card type tab (Infantry + Battle Rules)
+        expect(screen.getByRole("button", { name: /Sort Infantry cards/ })).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: /Sort Battle Rules cards/ })).toBeInTheDocument();
+      });
+
+      it("starts with no sorting (original order)", () => {
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+        const toggle = screen.getByRole("button", { name: /Sort Infantry cards/ });
+        expect(toggle).toHaveAccessibleName(/No sorting/);
+        // Original order within subcategory groups: uncategorized (Zeta, Alpha), Core (Beta, Gamma), Elite (Delta)
+        expect(cardListNames()).toEqual(["Zeta Unit", "Alpha Unit", "Beta Unit", "Gamma Unit", "Delta Unit"]);
+      });
+
+      it("sorts cards A-Z after one click on the toggle", async () => {
+        const user = userEvent.setup();
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+
+        await user.click(screen.getByRole("button", { name: /Sort Infantry cards/ }));
+
+        // Cards are sorted within subcategory groups: uncategorized (Alpha, Zeta), Core (Beta, Gamma), Elite (Delta)
+        expect(cardListNames()).toEqual(["Alpha Unit", "Zeta Unit", "Beta Unit", "Gamma Unit", "Delta Unit"]);
+        expect(screen.getByRole("button", { name: /Sort Infantry cards/ })).toHaveAccessibleName(/A to Z/);
+      });
+
+      it("sorts cards Z-A after two clicks on the toggle", async () => {
+        const user = userEvent.setup();
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+
+        const toggle = screen.getByRole("button", { name: /Sort Infantry cards/ });
+        await user.click(toggle);
+        await user.click(screen.getByRole("button", { name: /Sort Infantry cards/ }));
+
+        // Cards sorted Z-A within subcategory groups: uncategorized (Zeta, Alpha), Core (Gamma, Beta), Elite (Delta)
+        expect(cardListNames()).toEqual(["Zeta Unit", "Alpha Unit", "Gamma Unit", "Beta Unit", "Delta Unit"]);
+        expect(screen.getByRole("button", { name: /Sort Infantry cards/ })).toHaveAccessibleName(/Z to A/);
+      });
+
+      it("cycles back to no sorting after three clicks", async () => {
+        const user = userEvent.setup();
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+
+        for (let i = 0; i < 3; i++) {
+          await user.click(screen.getByRole("button", { name: /Sort Infantry cards/ }));
+        }
+        expect(screen.getByRole("button", { name: /Sort Infantry cards/ })).toHaveAccessibleName(/No sorting/);
+        expect(cardListNames()).toEqual(["Zeta Unit", "Alpha Unit", "Beta Unit", "Gamma Unit", "Delta Unit"]);
+      });
+
+      it("keeps sort order independent per card type", async () => {
+        const user = userEvent.setup();
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+
+        // Sort Infantry A-Z, then switch to Battle Rules: it should still be unsorted.
+        await user.click(screen.getByRole("button", { name: /Sort Infantry cards/ }));
+        expect(screen.getByRole("button", { name: /Sort Battle Rules cards/ })).toHaveAccessibleName(/No sorting/);
+        expect(screen.getByRole("button", { name: /Sort Infantry cards/ })).toHaveAccessibleName(/A to Z/);
+      });
+    });
+
+    describe("subcategories", () => {
+      it("renders subcategory headers when cards have subcategories set", () => {
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+        expect(screen.getByText("Core")).toBeInTheDocument();
+        expect(screen.getByText("Elite")).toBeInTheDocument();
+        expect(screen.getByText("Uncategorized")).toBeInTheDocument();
+      });
+
+      it("does not render subcategory headers when no cards have subcategories", () => {
+        const dsWithoutSubcategories = {
+          ...mockDatasource,
+          data: [
+            {
+              id: "faction-1",
+              name: "Faction",
+              datasheets: [
+                { id: "card-1", name: "Unit A", cardType: "infantry" },
+                { id: "card-2", name: "Unit B", cardType: "infantry" },
+              ],
+              rules: [],
+            },
+          ],
+        };
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={dsWithoutSubcategories} />);
+        expect(screen.queryByText("Uncategorized")).not.toBeInTheDocument();
+        expect(screen.getByText("Unit A")).toBeInTheDocument();
+        expect(screen.getByText("Unit B")).toBeInTheDocument();
+      });
+
+      it("does not group cards when the card type has subcategory disabled", () => {
+        const dsSubcategoryDisabled = {
+          ...mockDatasource,
+          schema: {
+            ...mockDatasource.schema,
+            cardTypes: [
+              // hasSubcategory omitted -> grouping disabled
+              { key: "infantry", label: "Infantry", baseType: "unit", schema: {} },
+              { key: "battle-rules", label: "Battle Rules", baseType: "rule", schema: {} },
+            ],
+          },
+        };
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={dsSubcategoryDisabled} />);
+        // Cards still have subcategory values, but no headers are shown
+        expect(screen.queryByText("Core")).not.toBeInTheDocument();
+        expect(screen.queryByText("Elite")).not.toBeInTheDocument();
+        expect(screen.queryByText("Uncategorized")).not.toBeInTheDocument();
+        expect(document.querySelectorAll(".designer-card-subcategory-header").length).toBe(0);
+        // All cards render flat
+        expect(screen.getByText("Beta Unit")).toBeInTheDocument();
+        expect(screen.getByText("Delta Unit")).toBeInTheDocument();
+      });
+
+      it("shows subcategory counts", () => {
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+        // Core has 2 cards (Beta Unit, Gamma Unit), Elite has 1 (Delta Unit), Uncategorized has 2 (Zeta, Alpha)
+        const subcategoryHeaders = document.querySelectorAll(".designer-card-subcategory-header");
+        expect(subcategoryHeaders.length).toBe(3);
+      });
+
+      it("displays card names within subcategory groups", () => {
+        render(<EditorLeftPanel datasources={mockDatasources} activeDatasource={mockDatasource} />);
+        // Cards should be grouped: uncategorized first (Zeta, Alpha), then Core (Beta, Gamma), then Elite (Delta)
+        const cardItems = document.querySelectorAll(".designer-card-list .designer-card-subcategory");
+        expect(cardItems.length).toBe(3);
+      });
     });
   });
 });
