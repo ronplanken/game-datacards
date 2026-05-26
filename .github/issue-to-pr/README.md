@@ -1,13 +1,13 @@
 # Issue to PR pipeline
 
-Turns an approved Discord-sourced feature issue into a draft pull request,
+Turns an approved Discord-sourced feature or bug issue into a draft pull request,
 implemented by an [OpenCode](https://opencode.ai) agent (1M-context model). A
 human reviews and merges; nothing is auto-merged.
 
 ## How it works
 
-1. The idea-to-issue Discord bot files a feature issue here with the
-   `from-discord` + `enhancement` labels.
+1. The idea-to-issue Discord bot files a feature or bug issue here with the
+   `from-discord` + `enhancement` (or `bug`) labels.
 2. An approver adds the **`ai-build`** label when they want the bot to attempt it.
 3. `issue-to-pr.yml` runs: it checks out **both** `game-datacards` and
    `gdc-premium` as sibling directories (matching the `vite.config.js` /
@@ -41,8 +41,8 @@ retry, remove `ai-attempted` and re-add `ai-build`.
 | `ai-generated` | Applied to PRs the pipeline opens. |
 | `ai-attempted` | Set automatically; blocks re-runs. |
 
-The pipeline relies on the `from-discord` and `enhancement` labels the idea-bot
-already applies.
+The pipeline relies on the `from-discord` and `enhancement`/`bug` labels the
+idea-bot already applies.
 
 ## Tuning
 

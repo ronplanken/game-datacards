@@ -1,8 +1,8 @@
 name: Issue to PR
 
 # Opt-in pipeline: when an approver adds the `ai-build` label to a from-discord
-# enhancement issue, an OpenCode agent implements it and opens a draft PR in each
-# repo it changed. See .github/issue-to-pr/README.md.
+# enhancement or bug issue, an OpenCode agent implements it and opens a draft PR
+# in each repo it changed. See .github/issue-to-pr/README.md.
 
 on:
   issues:
@@ -17,8 +17,8 @@ jobs:
   # Fire only when an approver adds `ai-build`, then re-read the issue's CURRENT
   # labels to confirm eligibility. Reading the supporting labels from the
   # triggering event is unreliable: when several labels are applied together, the
-  # `ai-build` event's payload may not yet include `from-discord`/`enhancement`
-  # (they can arrive in a later event), which would wrongly skip the run.
+  # `ai-build` event's payload may not yet include `from-discord`/`enhancement`/
+  # `bug` (they can arrive in a later event), which would wrongly skip the run.
   gate:
     name: Check eligibility
     if: github.event.label.name == 'ai-build'
@@ -37,13 +37,13 @@ jobs:
             --repo "${{ github.repository }}" --json labels --jq '[.labels[].name]')"
           echo "Current labels: $labels"
           if echo "$labels" | grep -q '"from-discord"' \
-             && echo "$labels" | grep -q '"enhancement"' \
+             && { echo "$labels" | grep -q '"enhancement"' || echo "$labels" | grep -q '"bug"'; } \
              && ! echo "$labels" | grep -q '"ai-attempted"'; then
             echo "eligible=true" >> "$GITHUB_OUTPUT"
             echo "Eligible: proceeding to implementation."
           else
             echo "eligible=false" >> "$GITHUB_OUTPUT"
-            echo "Not eligible: needs from-discord + enhancement and must not be ai-attempted."
+            echo "Not eligible: needs from-discord + (enhancement or bug) and must not be ai-attempted."
           fi
 
   implement:
