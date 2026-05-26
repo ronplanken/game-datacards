@@ -455,6 +455,23 @@
 
 .designer-card-type-tab {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  background: transparent;
+  transition: all 0.15s ease;
+}
+
+.designer-card-type-tab.active {
+  background: var(--designer-bg-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Tab label button — selects the card type */
+.designer-card-type-tab-select {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -467,18 +484,53 @@
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease;
   white-space: nowrap;
 }
 
-.designer-card-type-tab:hover {
+.designer-card-type-tab-select span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.designer-card-type-tab:hover .designer-card-type-tab-select,
+.designer-card-type-tab.active .designer-card-type-tab-select {
   color: var(--designer-text-primary);
 }
 
-.designer-card-type-tab.active {
-  background: var(--designer-bg-primary);
-  color: var(--designer-text-primary);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+/* Per-card-type sort toggle — cycles none / A-Z / Z-A */
+.designer-card-type-tab-sort {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-right: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--designer-text-tertiary);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.15s ease;
+}
+
+.designer-card-type-tab-sort:hover {
+  background: var(--designer-accent-subtle);
+  color: var(--designer-accent);
+  opacity: 1;
+}
+
+.designer-card-type-tab-sort.is-active {
+  color: var(--designer-accent);
+  opacity: 1;
+}
+
+.designer-card-type-tab-sort:focus-visible {
+  outline: 2px solid var(--designer-accent);
+  outline-offset: -1px;
 }
 
 /* Faction switcher — native <select> dropdown, only rendered when the
@@ -557,41 +609,6 @@
   padding: 1px 6px;
   background: var(--designer-bg-secondary);
   border-radius: 8px;
-}
-
-/* Sort select in the Cards panel header */
-.designer-panel-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.designer-sort-select {
-  padding: 3px 22px 3px 6px;
-  border: 1px solid var(--designer-border);
-  border-radius: var(--designer-radius-sm);
-  background-color: var(--designer-bg-secondary);
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 4px center;
-  color: var(--designer-text-secondary);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  transition: border-color 0.15s ease;
-}
-
-.designer-sort-select:hover {
-  border-color: var(--designer-accent);
-}
-
-.designer-sort-select:focus-visible {
-  outline: 2px solid var(--designer-accent);
-  outline-offset: -1px;
-  border-color: var(--designer-accent);
 }
 
 /* ===========================================

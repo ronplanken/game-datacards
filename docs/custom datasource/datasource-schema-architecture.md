@@ -366,6 +366,7 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `bannerType`       | string  | Controls the header banner text. Only applies when `baseSystem` is not `"40k-10e"`. |
 | `bannerCustomText` | string  | Custom banner text. Only applies when `bannerType` is `"custom"`.       |
 | `hasAutoResize`    | boolean | Starcraft TMG and 40k-10e only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
+| `hasSubcategory`   | boolean | Exposes a per-card "Subcategory" text field in the Basic Information panel. When set, cards are grouped under their `subcategory` value (uncategorised cards under "Uncategorized") in the datasource editor card list. Toggled via the card type settings. |
 
 #### Banner type values (AoS / non-40k only)
 
