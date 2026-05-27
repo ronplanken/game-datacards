@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Tag } from "lucide-react";
 import { List } from "antd";
 import classNames from "classnames";
 import { useDataSourceType } from "../../../Helpers/cardstorage.helpers";
@@ -6,6 +6,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useViewerNavigation } from "../../../Hooks/useViewerNavigation";
+import { getTargetArray } from "../../../Helpers/customDatasource.helpers";
 
 // Group warscrolls by keywords (same as mobile)
 const groupWarscrollsByRole = (warscrolls) => {
@@ -62,7 +63,7 @@ const WARSCROLL_ROLE_ORDER = [
 ];
 
 export const ViewerUnitList = ({ searchText, selectedContentType }) => {
-  const { dataSource, selectedFaction } = useDataSourceStorage();
+  const { dataSource, selectedFaction, isCustomDatasource } = useDataSourceStorage();
   const { activeCard, setActiveCard } = useCardStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const {
@@ -75,6 +76,72 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
 
   // Build unit list based on content type
   let unitList = [];
+
+  // Custom datasource: build from schema.cardTypes
+  if (isCustomDatasource && dataSource?.schema?.cardTypes?.length) {
+    const cardTypeDef = dataSource.schema.cardTypes.find((ct) => ct.key === selectedContentType);
+    if (cardTypeDef && selectedFaction) {
+      const targetArray = getTargetArray(cardTypeDef.key) || getTargetArray(cardTypeDef.baseType);
+      let cards = (selectedFaction[targetArray] || []).filter(
+        (c) => c.cardType === cardTypeDef.key || c.cardType === cardTypeDef.baseType,
+      );
+
+      if (searchText) {
+        cards = cards.filter((c) => (c.name || "").toLowerCase().includes(searchText.toLowerCase()));
+      }
+
+      cards = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+
+      const subcategoriesEnabled = !!cardTypeDef?.schema?.metadata?.hasSubcategory;
+
+      if (subcategoriesEnabled) {
+        const groups = [];
+        const subcategoryIndex = new Map();
+        for (const card of cards) {
+          const key = card.subcategory || "";
+          if (!subcategoryIndex.has(key)) {
+            subcategoryIndex.set(key, groups.length);
+            groups.push({ label: key || "Uncategorized", key, cards: [] });
+          }
+          groups[subcategoryIndex.get(key)].cards.push(card);
+        }
+
+        const showHeaders = groups.length > 1 || (groups.length === 1 && groups[0].key !== "");
+
+        if (showHeaders) {
+          for (const group of groups) {
+            unitList.push({ type: "subcategory-header", name: group.label, count: group.cards.length });
+            for (const card of group.cards) {
+              unitList.push({
+                ...card,
+                cardType: cardTypeDef.key,
+                source: dataSource.id,
+                faction_id: selectedFaction.id,
+              });
+            }
+          }
+        } else {
+          for (const card of cards) {
+            unitList.push({
+              ...card,
+              cardType: cardTypeDef.key,
+              source: dataSource.id,
+              faction_id: selectedFaction.id,
+            });
+          }
+        }
+      } else {
+        for (const card of cards) {
+          unitList.push({
+            ...card,
+            cardType: cardTypeDef.key,
+            source: dataSource.id,
+            faction_id: selectedFaction.id,
+          });
+        }
+      }
+    }
+  }
 
   if (selectedContentType === "datasheets") {
     unitList = useDataSourceType(searchText);
@@ -321,6 +388,17 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
               (Generic)
             </span>
           )}
+        </List.Item>
+      );
+    }
+
+    // Subcategory header item (custom datasource)
+    if (card.type === "subcategory-header") {
+      return (
+        <List.Item key={`list-subcategory-${index}`} className="list-subcategory-header">
+          <Tag size={12} />
+          <span>{card.name}</span>
+          <span className="list-subcategory-header-count">{card.count}</span>
         </List.Item>
       );
     }

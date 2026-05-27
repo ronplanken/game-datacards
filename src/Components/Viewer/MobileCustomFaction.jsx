@@ -36,10 +36,33 @@ export const MobileCustomFaction = () => {
         const arrayName = getTargetArray(ct.key) || getTargetArray(ct.baseType);
         const cards =
           selectedFaction[arrayName]?.filter((c) => c.cardType === ct.key || c.cardType === ct.baseType) || [];
+        const sorted = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+        const hasSubcategory = !!ct?.schema?.metadata?.hasSubcategory;
+
+        if (hasSubcategory) {
+          const subGroups = [];
+          const subIndex = new Map();
+          for (const card of sorted) {
+            const key = card.subcategory || "";
+            if (!subIndex.has(key)) {
+              subIndex.set(key, subGroups.length);
+              subGroups.push({ label: key || "Uncategorized", key, cards: [] });
+            }
+            subGroups[subIndex.get(key)].cards.push(card);
+          }
+          const showHeaders = subGroups.length > 1 || (subGroups.length === 1 && subGroups[0].key !== "");
+          return {
+            key: ct.key,
+            label: ct.label,
+            cards: sorted,
+            subGroups: showHeaders ? subGroups : null,
+          };
+        }
+
         return {
           key: ct.key,
           label: ct.label,
-          cards,
+          cards: sorted,
         };
       })
       .filter((section) => section.cards.length > 0);
@@ -87,14 +110,33 @@ export const MobileCustomFaction = () => {
             <span>{section.label}</span>
             <span className="custom-faction-section-count">{section.cards.length}</span>
           </div>
-          <div className="custom-faction-card-list">
-            {section.cards.map((card) => (
-              <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
-                <span className="custom-faction-card-name">{card.name}</span>
-                <ChevronRight size={16} className="custom-faction-card-arrow" />
-              </button>
-            ))}
-          </div>
+          {section.subGroups ? (
+            section.subGroups.map((subGroup) => (
+              <div key={subGroup.key || "__uncategorized__"} className="custom-faction-subcategory">
+                <div className="custom-faction-subcategory-header">
+                  <span>{subGroup.label}</span>
+                  <span className="custom-faction-subcategory-count">{subGroup.cards.length}</span>
+                </div>
+                <div className="custom-faction-card-list">
+                  {subGroup.cards.map((card) => (
+                    <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
+                      <span className="custom-faction-card-name">{card.name}</span>
+                      <ChevronRight size={16} className="custom-faction-card-arrow" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="custom-faction-card-list">
+              {section.cards.map((card) => (
+                <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
+                  <span className="custom-faction-card-name">{card.name}</span>
+                  <ChevronRight size={16} className="custom-faction-card-arrow" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       ))}
 

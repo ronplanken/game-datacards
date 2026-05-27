@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import "./ViewerContentTypeSelector.css";
@@ -19,19 +19,32 @@ export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedCont
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { selectedFaction } = useDataSourceStorage();
+  const { selectedFaction, dataSource, isCustomDatasource } = useDataSourceStorage();
+
+  const customContentTypes = useMemo(() => {
+    if (!isCustomDatasource || !dataSource?.schema?.cardTypes?.length) return null;
+    return dataSource.schema.cardTypes.map((ct) => ({
+      value: ct.key,
+      label: ct.label,
+      key: ct.key,
+    }));
+  }, [isCustomDatasource, dataSource]);
 
   // Determine if this is AoS data (has warscrolls property)
   const isAoS = selectedFaction?.warscrolls !== undefined;
-  const CONTENT_TYPES = isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
+  const CONTENT_TYPES = customContentTypes ? customContentTypes : isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
 
-  // Reset content type when data source changes (e.g., 40K to AoS)
+  // Reset content type when data source changes (e.g., 40K to AoS, or to custom)
   useEffect(() => {
-    const defaultType = isAoS ? "warscrolls" : "datasheets";
+    const defaultType = customContentTypes
+      ? customContentTypes[0]?.value || "datasheets"
+      : isAoS
+        ? "warscrolls"
+        : "datasheets";
     if (selectedContentType !== defaultType && !CONTENT_TYPES.some((t) => t.value === selectedContentType)) {
       setSelectedContentType(defaultType);
     }
-  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES]);
+  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES, customContentTypes]);
 
   // Get available content types based on faction data
   const availableTypes = CONTENT_TYPES.filter((type) => {

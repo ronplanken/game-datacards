@@ -31,7 +31,7 @@ export const MobileCustomFactionUnits = () => {
     navigate(`/mobile/${factionSlug}/${cardSlug}`);
   };
 
-  // Collect all cards grouped by card type
+  // Collect all cards grouped by card type, with optional subcategory grouping
   const { grouped, allCards } = useMemo(() => {
     if (!schema?.cardTypes || !selectedFaction) return { grouped: [], allCards: [] };
 
@@ -45,8 +45,30 @@ export const MobileCustomFactionUnits = () => {
 
       if (cards.length > 0) {
         const sorted = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-        groups.push({ key: ct.key, label: ct.label, cards: sorted });
         all.push(...sorted);
+
+        const hasSubcategory = !!ct?.schema?.metadata?.hasSubcategory;
+
+        if (hasSubcategory) {
+          const subGroups = [];
+          const subIndex = new Map();
+          for (const card of sorted) {
+            const key = card.subcategory || "";
+            if (!subIndex.has(key)) {
+              subIndex.set(key, subGroups.length);
+              subGroups.push({ label: key || "Uncategorized", key, cards: [] });
+            }
+            subGroups[subIndex.get(key)].cards.push(card);
+          }
+          const showHeaders = subGroups.length > 1 || (subGroups.length === 1 && subGroups[0].key !== "");
+          if (showHeaders) {
+            groups.push({ key: ct.key, label: ct.label, subGroups, hasSubcategory: true });
+          } else {
+            groups.push({ key: ct.key, label: ct.label, cards: sorted });
+          }
+        } else {
+          groups.push({ key: ct.key, label: ct.label, cards: sorted });
+        }
       }
     });
 
@@ -100,13 +122,31 @@ export const MobileCustomFactionUnits = () => {
               <div key={group.key} className="faction-units-section">
                 <div className="faction-units-section-header">
                   <span>{group.label}</span>
-                  <span className="faction-units-section-count">{group.cards.length}</span>
+                  <span className="faction-units-section-count">
+                    {group.hasSubcategory
+                      ? group.subGroups?.reduce((sum, sg) => sum + sg.cards.length, 0)
+                      : group.cards?.length || 0}
+                  </span>
                 </div>
-                {group.cards.map((card) => (
-                  <button key={card.id} className="faction-units-item" onClick={() => handleCardClick(card)}>
-                    <span className="faction-units-item-name">{card.name}</span>
-                  </button>
-                ))}
+                {group.hasSubcategory
+                  ? group.subGroups?.map((subGroup) => (
+                      <div key={subGroup.key || "__uncategorized__"} className="faction-units-subcategory">
+                        <div className="faction-units-subcategory-header">
+                          <span>{subGroup.label}</span>
+                          <span className="faction-units-subcategory-count">{subGroup.cards.length}</span>
+                        </div>
+                        {subGroup.cards.map((card) => (
+                          <button key={card.id} className="faction-units-item" onClick={() => handleCardClick(card)}>
+                            <span className="faction-units-item-name">{card.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    ))
+                  : group.cards?.map((card) => (
+                      <button key={card.id} className="faction-units-item" onClick={() => handleCardClick(card)}>
+                        <span className="faction-units-item-name">{card.name}</span>
+                      </button>
+                    ))}
               </div>
             ))}
           </>
