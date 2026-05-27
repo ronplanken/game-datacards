@@ -31,10 +31,10 @@
       "*": "deny",
       "src/**": "allow",
       "docs/**": "allow",
-      "package.json": "allow",
+      "changes/unreleased/**": "allow",
       "GDCWS/game-datacards/src/**": "allow",
       "GDCWS/game-datacards/docs/**": "allow",
-      "GDCWS/game-datacards/package.json": "allow",
+      "GDCWS/game-datacards/changes/unreleased/**": "allow",
       "GDCWS/gdc-premium/src/**": "allow",
       "GDCWS/gdc-premium/docs/**": "allow",
       "GDCWS/pr-summary.md": "allow"

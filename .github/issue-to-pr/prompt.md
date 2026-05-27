@@ -54,11 +54,12 @@ These are the source of truth; this prompt only summarises them. Read and follow
 2. **Never read, print, embed, or commit secrets or environment variables**
    (API keys, tokens, `.env` files).
 3. **Only edit files under `src/` and `docs/`** in the app and in the premium
-   package. There are two exceptions: the app's (`game-datacards`) `package.json`
-   `version` field, for the patch bump in "Release the change" below; and the PR
-   summary file at the path given under "Repository locations", for "Write the PR
-   summary" below. Do not touch CI workflows, build config, lockfiles, `.env*`, or
-   any `package.json` other than the app's version field.
+   package. There are two exceptions, both at the paths given under "Repository
+   locations": the release fragment file, for "Record the change" below; and the
+   PR summary file, for "Write the PR summary" below. Do NOT bump the version or
+   touch `package.json`, `src/data/releaseNotes.json`, the What's New wizard,
+   CI workflows, build config, lockfiles, or `.env*`. Versioning and release
+   notes are handled automatically after your PR merges.
 4. **Use Yarn, never npm.**
 5. **Match the existing code style**: Prettier with double quotes, 120-char
    width, 2-space indent. Follow the patterns of nearby files.
@@ -74,99 +75,52 @@ These are the source of truth; this prompt only summarises them. Read and follow
   works: the stubs in the app's `src/Premium/index.js` must still export everything
   the app imports.
 
-## Release the change
+## Record the change (release note)
 
-Once the feature or fix is implemented and the checks above pass, record it as a
-release. This always happens in the **app** (`game-datacards`), even for a
-premium-package change, because both release channels live there.
+Once the feature or fix is implemented and the checks above pass, leave a short
+release note so the change is announced after it ships. You do **not** bump the
+version, edit `package.json`, edit `src/data/releaseNotes.json`, or touch the
+What's New wizard — all of that happens automatically once your PR merges. You
+only write one small fragment file describing the change.
 
-Skip this section only if you made no code changes (see "If you cannot do it
-well"). A no-op gets no release.
+Skip this only if you made no code changes (see "If you cannot do it well"). A
+no-op gets no fragment.
 
-There are two release channels. The **"Release type"** line in "The issue to
-implement" below tells you which one to use:
-
-- **`note`** (the default, used for most fixes and small changes) — add a short
-  entry to the notification feed. Users see a small note in the in-app
-  notification bell. Do **not** add a What's New wizard entry.
-- **`feature`** — a human decided this change is notable enough to interrupt with
-  the full-screen What's New wizard. Add a What's New entry as well.
-
-Choosing the channel is not your call: follow the "Release type" line exactly. If
-that line is missing, treat it as `note`.
-
-### 1. Bump the version
-
-In the app's `package.json`, change only the `version` field. This is the only
-edit allowed outside `src/`/`docs/`.
-
-- For **`note`**, bump the **patch** number — the third part — by one (e.g.
-  `3.9.0` → `3.9.1`, or `3.9.4` → `3.9.5`).
-- For **`feature`**, bump the **minor** number — the second part — by one and
-  reset the patch to `0` (e.g. `3.9.4` → `3.10.0`).
-
-### 2a. Release type `note`: add a notification entry
-
-Append one object to the JSON array in `src/data/releaseNotes.json`, keeping the
-existing entries. Use this shape:
+Write a single JSON object to the **release fragment file** whose absolute path is
+given under "Repository locations" (it lives at `changes/unreleased/<issue>.json`
+inside the app). Use this shape:
 
 ```json
 {
-  "version": "3.9.1",
   "title": "Keywords stay after saving",
   "body": "Keywords you typed used to disappear after saving. Now they stay.",
-  "severity": "info",
-  "timestamp": 1716800000
+  "severity": "info"
 }
 ```
 
-- `version` must match the version you just bumped to.
-- `timestamp` is the current Unix time in **seconds** (the output of `date +%s`),
-  not milliseconds. A note only shows as new for seven days, so it must be
-  roughly now.
+- `title` and `body` are the player-facing note — write them with the rules in
+  "How to write the release text" below.
 - `severity` is optional — one of `info`, `success`, `warning`, `error`. Use
   `info` for an ordinary fix.
-- Write `title` and `body` with the rules in "How to write the release text"
-  below. No What's New folders, no registry edits, and no test — it is static
-  content.
+- Do **not** add a `version` or `timestamp`. The automatic post-merge release
+  assigns the next patch version and the current time. Each issue gets its own
+  fragment file (named after the issue number), so two open PRs never collide.
 
-### 2b. Release type `feature`: add a What's New entry for that version
-
-The app shows a "What's New" wizard the first time someone opens it after an
-update. There is a desktop version and a mobile version, and you must add the new
-version to **both** or the entry will be missing on one. The cleanest way is to
-copy the most recent existing version as a template, then replace its words.
-
-- **Find the latest version folders.** Look in
-  `src/Components/WhatsNewWizard/versions/` (desktop) and
-  `src/Components/MobileWhatsNewWizard/versions/` (mobile). Each version is a
-  folder like `v3.9.0/`.
-- **Copy the newest one** in each into a new folder named after your bumped
-  version (e.g. `v3.9.1/`), keeping the same files inside (an `index.js` and a
-  step component). Update the `version` and `releaseName` fields and the step
-  `key` to match the new version, then rewrite the visible text (see the writing
-  rules below).
-- **Register both.** Each `versions/` folder has an `index.js` registry that
-  imports every version and lists it in an array. Add your new version there in
-  the same style as the existing entries — an import line and an array entry — in
-  **both** the desktop and the mobile registry.
-- **Use the right CSS classes.** Desktop step components use `wnw-*` classes;
-  mobile step components use `mwnw-*` classes. Keep them separate; do not copy a
-  desktop step into the mobile folder. (This rule is also in `CLAUDE.md`.)
-- No test is required for the What's New entry itself; it is static content.
+This note appears as a small item in the in-app notification bell. The full-screen
+What's New wizard is reserved for notable feature releases that a human cuts
+manually — it is not part of this task.
 
 ### How to write the release text
 
-This applies to both a notification entry and a What's New entry. The text is read
-by ordinary players, not developers, and it must not read like it was written by
-an AI or by a marketing team. Write the way someone on the team would jot a short,
-honest note to players. Distilled from the existing entries:
+The `title` and `body` are read by ordinary players, not developers, and must not
+read like they were written by an AI or a marketing team. Write the way someone on
+the team would jot a short, honest note to players. Distilled from the existing
+entries:
 
 - **Talk to the reader as "you", in the present tense.** Open with one plain
   sentence that says what changed and why it helps.
 - **Then name the specifics** people actually see — the buttons, screens, or
-  labels in the app. A couple of short sentences, or a short plain list if there
-  are a few separate changes.
+  labels in the app. A couple of short sentences at most.
 - **For a fix, say it plainly:** what used to go wrong, and what happens now
   (e.g. "Keywords you typed used to disappear after saving. Now they stay.").
 - **Keep it understandable to a non-developer.** No jargon, no code, no file or
@@ -175,25 +129,17 @@ honest note to players. Distilled from the existing entries:
   "powerful", "effortless", "unlock", "elevate", "supercharge", "robust". Don't
   write slogan-like three-part phrases, and don't overstate — describe what it
   does, calmly and concretely.
-- **Keep the layout restrained.** Reuse the wizard's existing heading and
-  description structure, but do not build stacks of decorative highlight cards —
-  each with its own icon and a coloured dot or left accent. That pattern looks
-  AI-generated. Plain text, and at most a simple list, reads more human and is
-  what we want here.
-- **Pick a short, plain `releaseName`** that names the change in a few words.
 
 ## Final check before you finish
 
-The version bump and the release entry (a notification entry, or a What's New
-entry plus registry edits) land *after* the checks in "Definition of done"
-already ran, so they can break lint or tests on their own (malformed
-`releaseNotes.json`, a new step component with a lint error, a registry snapshot
-test that now sees an extra version, and so on). Do not finish on a stale check.
+The release fragment is static JSON, but writing it (and any last edits) lands
+*after* the checks in "Definition of done" already ran. Do not finish on a stale
+check: the fragment must be valid JSON, and nothing you touched last should have
+broken lint or tests.
 
-As your last action, after the release edits are in place, run `yarn lint:fix`,
-`yarn prettier:fix`, and `yarn test:ci` once more inside the app
-(`game-datacards`) directory, and resolve anything that broke. Only end your run
-once these pass on the full working tree, release changes included.
+As your last action, run `yarn lint:fix`, `yarn prettier:fix`, and `yarn test:ci`
+once more inside the app (`game-datacards`) directory, and resolve anything that
+broke. Only end your run once these pass on the full working tree.
 
 ## Write the PR summary
 
