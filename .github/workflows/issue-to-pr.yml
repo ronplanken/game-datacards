@@ -153,7 +153,7 @@ jobs:
             printf '\n\n## Repository locations\n\n'
             printf -- '- App (game-datacards), your working directory: %s\n' "$GITHUB_WORKSPACE/game-datacards"
             printf -- '- Premium package (gdc-premium): %s\n' "$GITHUB_WORKSPACE/gdc-premium"
-            printf -- '- PR summary file (write your summary here as your final step): %s\n' "$GITHUB_WORKSPACE/pr-summary.md"
+            printf -- '- PR summary file (write your summary here as your final step): %s\n' "$GITHUB_WORKSPACE/game-datacards/pr-summary.md"
             printf -- '- Release fragment file (write the release note here): %s\n' "$GITHUB_WORKSPACE/game-datacards/changes/unreleased/${ISSUE_NUMBER}.json"
             printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each, plus the release fragment and PR summary files above (see "Record the change" and "Write the PR summary"). Do NOT edit package.json or any other release bookkeeping; the version bump and release notes happen automatically after merge.\n'
             printf '\n## The issue to implement\n\n'
@@ -230,7 +230,8 @@ jobs:
           PREMIUM_REPO: ronplanken/gdc-premium
           CHECKS: ${{ steps.checks.outputs.result }}
           BRANCH: ${{ needs.gate.outputs.branch }}
-          # pr-summary.md is written by the agent; usage.txt by the step above.
-          SUMMARY_FILE: ${{ github.workspace }}/pr-summary.md
+          # pr-summary.md is written by the agent inside the app repo; usage.txt
+          # by the step above. create-prs.sh deletes the summary before committing.
+          SUMMARY_FILE: ${{ github.workspace }}/game-datacards/pr-summary.md
           USAGE_FILE: ${{ env.USAGE_FILE }}
         run: bash game-datacards/.github/issue-to-pr/create-prs.sh

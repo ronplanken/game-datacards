@@ -35,9 +35,10 @@ human reviews and merges; nothing is auto-merged.
    the `gate` job; because both repos use the same name, the premium build links
    them automatically.
    - The PR body is built by `create-prs.sh` from the agent's own plain-language
-     summary (written to `pr-summary.md`, outside both repos so it is never
-     committed), the actual `git diff --stat` of the change, the issue link
-     (`Closes #<n>` on the app PR), the lint/test status, and the OpenCode usage.
+     summary (written to `pr-summary.md` in the app repo, which `create-prs.sh`
+     deletes before committing so it never lands in the PR), the actual
+     `git diff --stat` of the change, the issue link (`Closes #<n>` on the app
+     PR), the lint/test status, and the OpenCode usage.
 5. The PRs are opened with a PAT, so `ci.yml` and `claude-review.yml` run on them
    automatically. The bot also comments the result back on the issue.
 
