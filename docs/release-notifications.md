@@ -15,6 +15,9 @@ file_locations:
   settings: src/Hooks/useSettingsStorage.jsx
   pipeline_prompt: .github/issue-to-pr/prompt.md
   pipeline_workflow: .github/workflows/issue-to-pr.yml
+  fragments: changes/unreleased/
+  release_workflow: .github/workflows/release.yml
+  release_script: .github/scripts/apply-release-fragment.mjs
 ---
 
 # Release Notifications and What's New Channels
@@ -28,15 +31,15 @@ that the steady stream of small fixes does not bury users under update modals.
 - [Release notes feed](#release-notes-feed)
 - [Read state and unread badge](#read-state-and-unread-badge)
 - [Where notes render](#where-notes-render)
-- [How the pipeline chooses a channel](#how-the-pipeline-chooses-a-channel)
+- [How the pipeline releases](#how-the-pipeline-releases)
 - [Authoring a release note](#authoring-a-release-note)
 
 ## The two channels
 
-| Channel | For | Version bump | Where it shows |
-|---------|-----|--------------|----------------|
-| **Release note** (default) | Fixes and small changes | Patch (`3.9.0` -> `3.9.1`) | A small item in the notification bell |
-| **What's New** (opt-in) | Notable features | Minor (`3.9.4` -> `3.10.0`) | The full-screen What's New wizard |
+| Channel | For | Who/when | Version bump | Where it shows |
+|---------|-----|----------|--------------|----------------|
+| **Release note** | Fixes and small changes (all issue-to-PR PRs) | Pipeline, automatically after merge | Patch (`3.9.0` -> `3.9.1`) | A small item in the notification bell |
+| **What's New** | Notable features | A human, cut manually | Minor (`3.9.4` -> `3.10.0`) | The full-screen What's New wizard |
 
 The What's New wizard is unchanged: it is still triggered purely by entries in the
 desktop/mobile `VERSION_REGISTRY` (see `src/Components/WhatsNewWizard/`). A patch
@@ -89,19 +92,30 @@ newest first, and pick the right unread cursor by each item's `source`:
 - Mobile sheet: `src/Components/Viewer/MobileNotifications.jsx`
 - Mobile badge count: `src/Components/Viewer/MobileMenu.jsx`
 
-## How the pipeline chooses a channel
+## How the pipeline releases
 
-The issue-to-PR pipeline routes by an explicit, human-applied label:
+Issue-to-PR PRs always use the **release-note** channel, and the version bump and
+feed entry are applied **after merge**, not in the PR. This keeps release
+bookkeeping out of the feature branch, so several pipeline PRs can be open at once
+without colliding on the version number or on `releaseNotes.json`.
 
-- No `release:feature` label (the default) -> **note**: patch bump + one
-  `releaseNotes.json` entry, no wizard.
-- `release:feature` label present -> **feature**: minor bump + a What's New entry
-  (desktop + mobile).
+1. The agent writes one **fragment** to `changes/unreleased/<issue>.json` — just
+   `title`, `body`, and optional `severity` (no version, no timestamp). One file
+   per issue means two PRs never edit the same file. See `changes/README.md`.
+2. On merge to `main`, `.github/workflows/release.yml` runs (serialized via a
+   `release` concurrency group). For each pending fragment it calls
+   `.github/scripts/apply-release-fragment.mjs`, which bumps the **patch** version
+   in `package.json` and appends the entry to `src/data/releaseNotes.json` with
+   the assigned version and current timestamp. It then deletes the fragment,
+   commits `Release v<x.y.z>`, and tags.
+3. That commit is the only thing that changes `package.json`. Cloudflare Pages is
+   set with a **build watch path** of `package.json`, so production deploys on
+   release commits only — a merge that carries no fragment does not deploy.
 
-The `gate` job in `.github/workflows/issue-to-pr.yml` derives a `release_kind`
-output (`note` or `feature`) from the labels and passes it to the agent prompt as a
-`Release type` line. The agent follows `.github/issue-to-pr/prompt.md` ("Release
-the change").
+The full-screen **What's New** wizard is not produced by the pipeline. It is still
+triggered purely by `VERSION_REGISTRY` entries, and a human adds those (with a
+minor bump) when cutting a notable feature release. Patch notes are never lost —
+they remain in `releaseNotes.json` and the bell.
 
 ## Authoring a release note
 
