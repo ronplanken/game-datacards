@@ -1,0 +1,5 @@
+{
+  "title": "Sub-categories sync with their parent",
+  "body": "You used to be able to start syncing a sub-category on its own, even when the category it sits under wasn't synced yet, which never actually worked. Now a sub-category's sync button stays off until you sync its parent category first.",
+  "severity": "info"
+}
