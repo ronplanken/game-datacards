@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, BookOpen } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
-import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { getCardsForCardType, groupCardsBySubcategory } from "../../Helpers/customDatasource.helpers";
 import "./MobileCustomFaction.css";
 
 export const MobileCustomFaction = () => {
@@ -33,36 +33,15 @@ export const MobileCustomFaction = () => {
 
     return schema.cardTypes
       .map((ct) => {
-        const arrayName = getTargetArray(ct.key) || getTargetArray(ct.baseType);
-        const cards =
-          selectedFaction[arrayName]?.filter((c) => c.cardType === ct.key || c.cardType === ct.baseType) || [];
-        const sorted = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-        const hasSubcategory = !!ct?.schema?.metadata?.hasSubcategory;
-
-        if (hasSubcategory) {
-          const subGroups = [];
-          const subIndex = new Map();
-          for (const card of sorted) {
-            const key = card.subcategory || "";
-            if (!subIndex.has(key)) {
-              subIndex.set(key, subGroups.length);
-              subGroups.push({ label: key || "Uncategorized", key, cards: [] });
-            }
-            subGroups[subIndex.get(key)].cards.push(card);
-          }
-          const showHeaders = subGroups.length > 1 || (subGroups.length === 1 && subGroups[0].key !== "");
-          return {
-            key: ct.key,
-            label: ct.label,
-            cards: sorted,
-            subGroups: showHeaders ? subGroups : null,
-          };
-        }
-
+        const sorted = [...getCardsForCardType(selectedFaction, ct)].sort((a, b) =>
+          (a.name || "").localeCompare(b.name || ""),
+        );
+        const subGroups = ct?.schema?.metadata?.hasSubcategory ? groupCardsBySubcategory(sorted) : null;
         return {
           key: ct.key,
           label: ct.label,
           cards: sorted,
+          subGroups,
         };
       })
       .filter((section) => section.cards.length > 0);

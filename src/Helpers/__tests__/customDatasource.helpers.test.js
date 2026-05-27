@@ -5,6 +5,8 @@ import {
   generateDatasourceFilename,
   generateIdFromName,
   getTargetArray,
+  getCardsForCardType,
+  groupCardsBySubcategory,
   mapCardsToFactionStructure,
   extractCardsFromFaction,
   createDatasourceExport,
@@ -260,6 +262,70 @@ describe("getTargetArray", () => {
 
   it("defaults to datasheets for unknown types", () => {
     expect(getTargetArray("unknown-type")).toBe("datasheets");
+  });
+});
+
+describe("getCardsForCardType", () => {
+  const faction = {
+    datasheets: [
+      { id: "a", name: "Alpha", cardType: "infantry" },
+      { id: "b", name: "Beta", cardType: "elite" },
+      { id: "c", name: "Gamma", cardType: "infantry" },
+    ],
+    stratagems: [{ id: "s", name: "Strat", cardType: "strat" }],
+  };
+
+  it("collects cards from the resolved faction array matching the card type key", () => {
+    const cards = getCardsForCardType(faction, { key: "infantry", baseType: "unit" });
+    expect(cards.map((c) => c.id)).toEqual(["a", "c"]);
+  });
+
+  it("matches on baseType when the card's cardType equals the baseType", () => {
+    const f = { datasheets: [{ id: "x", name: "X", cardType: "unit" }] };
+    const cards = getCardsForCardType(f, { key: "custom-key", baseType: "unit" });
+    expect(cards.map((c) => c.id)).toEqual(["x"]);
+  });
+
+  it("returns an empty array when there are no matching cards", () => {
+    expect(getCardsForCardType(faction, { key: "missing", baseType: "unit" })).toEqual([]);
+  });
+
+  it("returns an empty array for null faction or card type", () => {
+    expect(getCardsForCardType(null, { key: "infantry" })).toEqual([]);
+    expect(getCardsForCardType(faction, null)).toEqual([]);
+  });
+});
+
+describe("groupCardsBySubcategory", () => {
+  it("groups cards by subcategory preserving first-seen order", () => {
+    const groups = groupCardsBySubcategory([
+      { id: "1", subcategory: "Core" },
+      { id: "2", subcategory: "Elite" },
+      { id: "3", subcategory: "Core" },
+    ]);
+    expect(groups.map((g) => g.label)).toEqual(["Core", "Elite"]);
+    expect(groups[0].cards.map((c) => c.id)).toEqual(["1", "3"]);
+  });
+
+  it("labels cards without a subcategory as Uncategorized", () => {
+    const groups = groupCardsBySubcategory([{ id: "1", subcategory: "Core" }, { id: "2" }]);
+    expect(groups.map((g) => g.label)).toEqual(["Core", "Uncategorized"]);
+    expect(groups[1].key).toBe("");
+  });
+
+  it("returns null when all cards share no subcategory (single empty group)", () => {
+    expect(groupCardsBySubcategory([{ id: "1" }, { id: "2" }])).toBeNull();
+  });
+
+  it("returns null for an empty or missing card list", () => {
+    expect(groupCardsBySubcategory([])).toBeNull();
+    expect(groupCardsBySubcategory(undefined)).toBeNull();
+  });
+
+  it("shows headers for a single non-empty subcategory", () => {
+    const groups = groupCardsBySubcategory([{ id: "1", subcategory: "Core" }]);
+    expect(groups).toHaveLength(1);
+    expect(groups[0].label).toBe("Core");
   });
 });
 

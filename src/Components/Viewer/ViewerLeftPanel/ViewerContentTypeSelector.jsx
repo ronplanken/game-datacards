@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { getCardsForCardType } from "../../../Helpers/customDatasource.helpers";
 import "./ViewerContentTypeSelector.css";
 
 const CONTENT_TYPES_40K = [
@@ -46,28 +47,36 @@ export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedCont
     }
   }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES, customContentTypes]);
 
-  // Get available content types based on faction data
-  const availableTypes = CONTENT_TYPES.filter((type) => {
-    if (type.key === "rules") {
-      // Rules have a different structure with army and detachment sub-arrays
-      const rules = selectedFaction?.rules;
-      return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
-    }
-    if (type.key === "warscrolls") {
-      const warscrolls = selectedFaction?.warscrolls;
-      return warscrolls && warscrolls.length > 0;
-    }
-    if (type.key === "manifestationLores") {
-      const manifestationLores = selectedFaction?.manifestationLores;
-      return manifestationLores && manifestationLores.length > 0;
-    }
-    if (type.key === "lores") {
-      const lores = selectedFaction?.lores;
-      return lores && lores.length > 0;
-    }
-    const data = selectedFaction?.[type.key];
-    return data && data.length > 0;
-  });
+  // Get available content types based on faction data. Custom datasource card
+  // types store their data in a faction array resolved from the card type
+  // key/baseType (e.g. "datasheets"), not under the type key itself, so they
+  // need the schema-aware lookup rather than `selectedFaction?.[type.key]`.
+  const availableTypes = customContentTypes
+    ? CONTENT_TYPES.filter((type) => {
+        const cardTypeDef = dataSource?.schema?.cardTypes?.find((ct) => ct.key === type.key);
+        return getCardsForCardType(selectedFaction, cardTypeDef).length > 0;
+      })
+    : CONTENT_TYPES.filter((type) => {
+        if (type.key === "rules") {
+          // Rules have a different structure with army and detachment sub-arrays
+          const rules = selectedFaction?.rules;
+          return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
+        }
+        if (type.key === "warscrolls") {
+          const warscrolls = selectedFaction?.warscrolls;
+          return warscrolls && warscrolls.length > 0;
+        }
+        if (type.key === "manifestationLores") {
+          const manifestationLores = selectedFaction?.manifestationLores;
+          return manifestationLores && manifestationLores.length > 0;
+        }
+        if (type.key === "lores") {
+          const lores = selectedFaction?.lores;
+          return lores && lores.length > 0;
+        }
+        const data = selectedFaction?.[type.key];
+        return data && data.length > 0;
+      });
 
   // Get the label for the selected content type
   const selectedLabel = CONTENT_TYPES.find((t) => t.value === selectedContentType)?.label || "Select a type";

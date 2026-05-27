@@ -6,7 +6,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useViewerNavigation } from "../../../Hooks/useViewerNavigation";
-import { getTargetArray } from "../../../Helpers/customDatasource.helpers";
+import { getCardsForCardType, groupCardsBySubcategory } from "../../../Helpers/customDatasource.helpers";
 
 // Group warscrolls by keywords (same as mobile)
 const groupWarscrollsByRole = (warscrolls) => {
@@ -81,10 +81,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
   if (isCustomDatasource && dataSource?.schema?.cardTypes?.length) {
     const cardTypeDef = dataSource.schema.cardTypes.find((ct) => ct.key === selectedContentType);
     if (cardTypeDef && selectedFaction) {
-      const targetArray = getTargetArray(cardTypeDef.key) || getTargetArray(cardTypeDef.baseType);
-      let cards = (selectedFaction[targetArray] || []).filter(
-        (c) => c.cardType === cardTypeDef.key || c.cardType === cardTypeDef.baseType,
-      );
+      let cards = getCardsForCardType(selectedFaction, cardTypeDef);
 
       if (searchText) {
         cards = cards.filter((c) => (c.name || "").toLowerCase().includes(searchText.toLowerCase()));
@@ -92,52 +89,25 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
 
       cards = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
-      const subcategoriesEnabled = !!cardTypeDef?.schema?.metadata?.hasSubcategory;
+      const decorate = (card) => ({
+        ...card,
+        cardType: cardTypeDef.key,
+        source: dataSource.id,
+        faction_id: selectedFaction.id,
+      });
 
-      if (subcategoriesEnabled) {
-        const groups = [];
-        const subcategoryIndex = new Map();
-        for (const card of cards) {
-          const key = card.subcategory || "";
-          if (!subcategoryIndex.has(key)) {
-            subcategoryIndex.set(key, groups.length);
-            groups.push({ label: key || "Uncategorized", key, cards: [] });
-          }
-          groups[subcategoryIndex.get(key)].cards.push(card);
-        }
+      const subGroups = cardTypeDef?.schema?.metadata?.hasSubcategory ? groupCardsBySubcategory(cards) : null;
 
-        const showHeaders = groups.length > 1 || (groups.length === 1 && groups[0].key !== "");
-
-        if (showHeaders) {
-          for (const group of groups) {
-            unitList.push({ type: "subcategory-header", name: group.label, count: group.cards.length });
-            for (const card of group.cards) {
-              unitList.push({
-                ...card,
-                cardType: cardTypeDef.key,
-                source: dataSource.id,
-                faction_id: selectedFaction.id,
-              });
-            }
-          }
-        } else {
-          for (const card of cards) {
-            unitList.push({
-              ...card,
-              cardType: cardTypeDef.key,
-              source: dataSource.id,
-              faction_id: selectedFaction.id,
-            });
+      if (subGroups) {
+        for (const group of subGroups) {
+          unitList.push({ type: "subcategory-header", name: group.label, count: group.cards.length });
+          for (const card of group.cards) {
+            unitList.push(decorate(card));
           }
         }
       } else {
         for (const card of cards) {
-          unitList.push({
-            ...card,
-            cardType: cardTypeDef.key,
-            source: dataSource.id,
-            faction_id: selectedFaction.id,
-          });
+          unitList.push(decorate(card));
         }
       }
     }
