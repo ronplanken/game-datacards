@@ -1,9 +1,9 @@
 [
   {
     "version": "3.10.1",
-    "title": "Sub-categories sync with their parent",
-    "body": "You used to be able to start syncing a sub-category on its own, even when the category it sits under wasn't synced yet, which never actually worked. Now a sub-category's sync button stays off until you sync its parent category first.",
+    "title": "Legends label no longer overlaps points",
+    "body": "When you mark a datasheet as Legends and show more than one points value, the Legends label used to sit on top of the points. Now it moves to the left and stays clear, however many values you show.",
     "severity": "info",
-    "timestamp": 1779860998
+    "timestamp": 1779861089
   }
 ]
