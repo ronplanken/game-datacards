@@ -24,12 +24,20 @@ human reviews and merges; nothing is auto-merged.
      version bump and What's New edits and fix anything they broke, so those
      late, post-check edits can't ship a failing tree. The workflow's own
      lint/test step is a reporting backstop on top of that.
+   - The DeepSeek model runs at maximum reasoning effort (`reasoningEffort: max`
+     in `opencode.json`), and after the run the workflow records the run's token
+     and cost totals via `opencode stats` — shown in the Actions job summary and
+     embedded in the PR (and issue comment).
 4. For each repo the agent changed, it pushes a branch named for the issue type
    and number — `feature/<n>-<slug>` for an enhancement, `bug/<n>-<slug>` for a
    bug (the `<slug>` is a short, sanitised form of the issue title) — and opens a
    **draft** PR, cross-linked to the issue. The branch name is computed once in
    the `gate` job; because both repos use the same name, the premium build links
    them automatically.
+   - The PR body is built by `create-prs.sh` from the agent's own plain-language
+     summary (written to `pr-summary.md`, outside both repos so it is never
+     committed), the actual `git diff --stat` of the change, the issue link
+     (`Closes #<n>` on the app PR), the lint/test status, and the OpenCode usage.
 5. The PRs are opened with a PAT, so `ci.yml` and `claude-review.yml` run on them
    automatically. The bot also comments the result back on the issue.
 

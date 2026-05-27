@@ -153,7 +153,8 @@ jobs:
             printf '\n\n## Repository locations\n\n'
             printf -- '- App (game-datacards), your working directory: %s\n' "$GITHUB_WORKSPACE/game-datacards"
             printf -- '- Premium package (gdc-premium): %s\n' "$GITHUB_WORKSPACE/gdc-premium"
-            printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each, plus the app (game-datacards) package.json version field for the patch bump described in the prompt.\n'
+            printf -- '- PR summary file (write your summary here as your final step): %s\n' "$GITHUB_WORKSPACE/pr-summary.md"
+            printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each, plus the app (game-datacards) package.json version field for the patch bump described in the prompt, plus the PR summary file above (see "Write the PR summary").\n'
             printf '\n## The issue to implement\n\n'
             printf 'Repository: %s\n' "$ISSUE_REPO"
             printf 'Issue number: #%s\n' "$ISSUE_NUMBER"
@@ -192,6 +193,29 @@ jobs:
             echo "result=tests FAILED (see workflow logs)" >> "$GITHUB_OUTPUT"
           fi
 
+      # Pull token/cost totals for this run from OpenCode's session store. The
+      # runner is ephemeral with a single session, so `opencode stats` totals are
+      # this run's usage. The result is shown in the job's step summary (the
+      # "used tokens at the end" view) and passed to the PR step for embedding.
+      - name: Collect OpenCode usage
+        if: always()
+        continue-on-error: true
+        run: |
+          export OPENCODE_CONFIG="$RUNNER_TEMP/opencode.json"
+          USAGE_FILE="$RUNNER_TEMP/usage.txt"
+          # Strip ANSI colour codes so the stats read cleanly inside a code block.
+          if ! opencode stats 2>&1 | perl -pe 's/\e\[[0-9;]*m//g' > "$USAGE_FILE"; then
+            echo "OpenCode usage stats unavailable for this run." > "$USAGE_FILE"
+          fi
+          echo "USAGE_FILE=$USAGE_FILE" >> "$GITHUB_ENV"
+          {
+            echo '## OpenCode usage'
+            echo
+            echo '```'
+            cat "$USAGE_FILE"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Open draft PR(s) and comment on issue
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
@@ -201,4 +225,7 @@ jobs:
           PREMIUM_REPO: ronplanken/gdc-premium
           CHECKS: ${{ steps.checks.outputs.result }}
           BRANCH: ${{ needs.gate.outputs.branch }}
+          # pr-summary.md is written by the agent; usage.txt by the step above.
+          SUMMARY_FILE: ${{ github.workspace }}/pr-summary.md
+          USAGE_FILE: ${{ env.USAGE_FILE }}
         run: bash game-datacards/.github/issue-to-pr/create-prs.sh

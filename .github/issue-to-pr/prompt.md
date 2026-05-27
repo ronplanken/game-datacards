@@ -54,10 +54,11 @@ These are the source of truth; this prompt only summarises them. Read and follow
 2. **Never read, print, embed, or commit secrets or environment variables**
    (API keys, tokens, `.env` files).
 3. **Only edit files under `src/` and `docs/`** in the app and in the premium
-   package. The one exception is the app's (`game-datacards`) `package.json`, and
-   only its `version` field, for the patch bump in "Release the change" below. Do
-   not touch CI workflows, build config, lockfiles, `.env*`, or any `package.json`
-   other than the app's version field.
+   package. There are two exceptions: the app's (`game-datacards`) `package.json`
+   `version` field, for the patch bump in "Release the change" below; and the PR
+   summary file at the path given under "Repository locations", for "Write the PR
+   summary" below. Do not touch CI workflows, build config, lockfiles, `.env*`, or
+   any `package.json` other than the app's version field.
 4. **Use Yarn, never npm.**
 5. **Match the existing code style**: Prettier with double quotes, 120-char
    width, 2-space indent. Follow the patterns of nearby files.
@@ -151,6 +152,28 @@ As your last action, after the release edits are in place, run `yarn lint:fix`,
 `yarn prettier:fix`, and `yarn test:ci` once more inside the app
 (`game-datacards`) directory, and resolve anything that broke. Only end your run
 once these pass on the full working tree, release changes included.
+
+## Write the PR summary
+
+After the checks pass, write a short summary of your change to the PR summary
+file whose absolute path is given under "Repository locations". This becomes the
+body of the pull request a human reviews, so make it useful and honest.
+
+Write it from what you actually did and the issue you were solving — not a
+restatement of the issue text. Markdown is fine. Cover, briefly:
+
+- **What changed**, in one or two plain sentences: the behaviour a user gets now
+  that they did not before, or the bug that no longer happens.
+- **How**, at a level a reviewer can follow: the main files or areas you touched
+  and the approach you took (e.g. "added a `useSubcategories` hook and wired it
+  into the tree view"). Name real paths you edited; do not invent any.
+- **Tests**: what you added or updated and what it covers.
+- **Anything a reviewer should check** — assumptions you made, edge cases you did
+  not cover, or follow-ups you deliberately left out.
+
+Keep it concise (a short paragraph or a few bullets), specific to this change,
+and free of marketing language and emojis — the same tone as the rest of this
+task. If you made no code changes, do not write the file.
 
 ## If you cannot do it well
 

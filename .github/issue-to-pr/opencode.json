@@ -11,6 +11,9 @@
       "models": {
         "deepseek-v4-pro": {
           "name": "DeepSeek V4 Pro",
+          "options": {
+            "reasoningEffort": "max"
+          },
           "limit": {
             "context": 1000000,
             "output": 65536
@@ -21,7 +24,8 @@
   },
   "permission": {
     "external_directory": {
-      "GDCWS/gdc-premium/**": "allow"
+      "GDCWS/gdc-premium/**": "allow",
+      "GDCWS/pr-summary.md": "allow"
     },
     "edit": {
       "*": "deny",
@@ -32,7 +36,8 @@
       "GDCWS/game-datacards/docs/**": "allow",
       "GDCWS/game-datacards/package.json": "allow",
       "GDCWS/gdc-premium/src/**": "allow",
-      "GDCWS/gdc-premium/docs/**": "allow"
+      "GDCWS/gdc-premium/docs/**": "allow",
+      "GDCWS/pr-summary.md": "allow"
     },
     "bash": {
       "*": "allow",
