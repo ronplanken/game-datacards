@@ -87,6 +87,7 @@ export const WelcomeWizard = () => {
         ...settings,
         wizardCompleted: import.meta.env.VITE_VERSION,
         lastMajorWizardVersion: import.meta.env.VITE_VERSION,
+        lastReadReleaseVersion: import.meta.env.VITE_VERSION,
       });
     }, 200);
   }, [settings, updateSettings, trackEvent]);

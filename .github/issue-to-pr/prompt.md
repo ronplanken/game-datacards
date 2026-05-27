@@ -54,10 +54,11 @@ These are the source of truth; this prompt only summarises them. Read and follow
 2. **Never read, print, embed, or commit secrets or environment variables**
    (API keys, tokens, `.env` files).
 3. **Only edit files under `src/` and `docs/`** in the app and in the premium
-   package. The one exception is the app's (`game-datacards`) `package.json`, and
-   only its `version` field, for the patch bump in "Release the change" below. Do
-   not touch CI workflows, build config, lockfiles, `.env*`, or any `package.json`
-   other than the app's version field.
+   package. There are two exceptions: the app's (`game-datacards`) `package.json`
+   `version` field, for the patch bump in "Release the change" below; and the PR
+   summary file at the path given under "Repository locations", for "Write the PR
+   summary" below. Do not touch CI workflows, build config, lockfiles, `.env*`, or
+   any `package.json` other than the app's version field.
 4. **Use Yarn, never npm.**
 5. **Match the existing code style**: Prettier with double quotes, 120-char
    width, 2-space indent. Follow the patterns of nearby files.
@@ -73,22 +74,63 @@ These are the source of truth; this prompt only summarises them. Read and follow
   works: the stubs in the app's `src/Premium/index.js` must still export everything
   the app imports.
 
-## Release the change: version bump and What's New entry
+## Release the change
 
 Once the feature or fix is implemented and the checks above pass, record it as a
 release. This always happens in the **app** (`game-datacards`), even for a
-premium-package feature, because the What's New wizard lives there.
+premium-package change, because both release channels live there.
 
 Skip this section only if you made no code changes (see "If you cannot do it
-well"). A no-op gets no version bump.
+well"). A no-op gets no release.
 
-### 1. Bump the patch version
+There are two release channels. The **"Release type"** line in "The issue to
+implement" below tells you which one to use:
 
-In the app's `package.json`, increase the **patch** number — the third part of
-the version — by one and change nothing else (e.g. `3.9.0` → `3.9.1`, or `3.9.4`
-→ `3.9.5`). This is the only edit allowed outside `src/`/`docs/`.
+- **`note`** (the default, used for most fixes and small changes) — add a short
+  entry to the notification feed. Users see a small note in the in-app
+  notification bell. Do **not** add a What's New wizard entry.
+- **`feature`** — a human decided this change is notable enough to interrupt with
+  the full-screen What's New wizard. Add a What's New entry as well.
 
-### 2. Add a What's New entry for that version
+Choosing the channel is not your call: follow the "Release type" line exactly. If
+that line is missing, treat it as `note`.
+
+### 1. Bump the version
+
+In the app's `package.json`, change only the `version` field. This is the only
+edit allowed outside `src/`/`docs/`.
+
+- For **`note`**, bump the **patch** number — the third part — by one (e.g.
+  `3.9.0` → `3.9.1`, or `3.9.4` → `3.9.5`).
+- For **`feature`**, bump the **minor** number — the second part — by one and
+  reset the patch to `0` (e.g. `3.9.4` → `3.10.0`).
+
+### 2a. Release type `note`: add a notification entry
+
+Append one object to the JSON array in `src/data/releaseNotes.json`, keeping the
+existing entries. Use this shape:
+
+```json
+{
+  "version": "3.9.1",
+  "title": "Keywords stay after saving",
+  "body": "Keywords you typed used to disappear after saving. Now they stay.",
+  "severity": "info",
+  "timestamp": 1716800000
+}
+```
+
+- `version` must match the version you just bumped to.
+- `timestamp` is the current Unix time in **seconds** (the output of `date +%s`),
+  not milliseconds. A note only shows as new for seven days, so it must be
+  roughly now.
+- `severity` is optional — one of `info`, `success`, `warning`, `error`. Use
+  `info` for an ordinary fix.
+- Write `title` and `body` with the rules in "How to write the release text"
+  below. No What's New folders, no registry edits, and no test — it is static
+  content.
+
+### 2b. Release type `feature`: add a What's New entry for that version
 
 The app shows a "What's New" wizard the first time someone opens it after an
 update. There is a desktop version and a mobile version, and you must add the new
@@ -113,11 +155,12 @@ copy the most recent existing version as a template, then replace its words.
   desktop step into the mobile folder. (This rule is also in `CLAUDE.md`.)
 - No test is required for the What's New entry itself; it is static content.
 
-### How to write the What's New text
+### How to write the release text
 
-This text is read by ordinary players, not developers, and it must not read like
-it was written by an AI or by a marketing team. Write the way someone on the team
-would jot a short, honest note to players. Distilled from the existing entries:
+This applies to both a notification entry and a What's New entry. The text is read
+by ordinary players, not developers, and it must not read like it was written by
+an AI or by a marketing team. Write the way someone on the team would jot a short,
+honest note to players. Distilled from the existing entries:
 
 - **Talk to the reader as "you", in the present tense.** Open with one plain
   sentence that says what changed and why it helps.
@@ -138,6 +181,41 @@ would jot a short, honest note to players. Distilled from the existing entries:
   AI-generated. Plain text, and at most a simple list, reads more human and is
   what we want here.
 - **Pick a short, plain `releaseName`** that names the change in a few words.
+
+## Final check before you finish
+
+The version bump and the release entry (a notification entry, or a What's New
+entry plus registry edits) land *after* the checks in "Definition of done"
+already ran, so they can break lint or tests on their own (malformed
+`releaseNotes.json`, a new step component with a lint error, a registry snapshot
+test that now sees an extra version, and so on). Do not finish on a stale check.
+
+As your last action, after the release edits are in place, run `yarn lint:fix`,
+`yarn prettier:fix`, and `yarn test:ci` once more inside the app
+(`game-datacards`) directory, and resolve anything that broke. Only end your run
+once these pass on the full working tree, release changes included.
+
+## Write the PR summary
+
+After the checks pass, write a short summary of your change to the PR summary
+file whose absolute path is given under "Repository locations". This becomes the
+body of the pull request a human reviews, so make it useful and honest.
+
+Write it from what you actually did and the issue you were solving — not a
+restatement of the issue text. Markdown is fine. Cover, briefly:
+
+- **What changed**, in one or two plain sentences: the behaviour a user gets now
+  that they did not before, or the bug that no longer happens.
+- **How**, at a level a reviewer can follow: the main files or areas you touched
+  and the approach you took (e.g. "added a `useSubcategories` hook and wired it
+  into the tree view"). Name real paths you edited; do not invent any.
+- **Tests**: what you added or updated and what it covers.
+- **Anything a reviewer should check** — assumptions you made, edge cases you did
+  not cover, or follow-ups you deliberately left out.
+
+Keep it concise (a short paragraph or a few bullets), specific to this change,
+and free of marketing language and emojis — the same tone as the rest of this
+task. If you made no code changes, do not write the file.
 
 ## If you cannot do it well
 

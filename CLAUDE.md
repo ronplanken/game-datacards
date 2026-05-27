@@ -26,6 +26,7 @@ For detailed documentation on card data formats, import features, components, an
 - **All new features require unit tests.** Write tests using Vitest before or alongside implementation.
 - **Use Chrome DevTools MCP to validate UI work.** Take snapshots and screenshots to verify visual changes render correctly in the browser.
 - **WhatsNew wizard mobile steps must use `mwnw-*` CSS classes.** Desktop wizard uses `wnw-*` classes, mobile uses `mwnw-*`. When adding a new version step to `MobileWhatsNewWizard/versions/`, use an existing mobile step (e.g., v3.7.0 `StepMobileEditor.jsx`) as the template, not the desktop counterpart.
+- **Two release channels: notification notes (default) vs the What's New wizard.** Routine fixes ship as a quiet entry appended to `src/data/releaseNotes.json` (shown in the notification bell, patch version bump) and add NO wizard entry. Only notable features get a full What's New wizard entry (minor version bump). See `docs/release-notifications.md`; the issue-to-PR pipeline routes by the `release:feature` label.
 
 ## Before Making Changes
 

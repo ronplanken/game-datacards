@@ -16,16 +16,33 @@ human reviews and merges; nothing is auto-merged.
    project root; the premium package is reachable via the `external_directory`
    grant in `opencode.json`.
    - As part of the prompt, after implementing the change the agent bumps the
-     app's patch version in `package.json` and adds a matching "What's New" entry
-     (desktop + mobile) so the update is announced in-app. This happens in
-     `game-datacards` even for premium-package features, so that repo always gets
-     a PR. A no-op run skips the bump.
+     app's `package.json` version and records the release in one of two channels,
+     chosen by the `gate` job from the issue labels and passed to the prompt as a
+     `Release type` line. By default (most fixes) it is a **note**: a patch bump
+     plus one entry appended to `src/data/releaseNotes.json`, which surfaces as a
+     small item in the in-app notification bell — no update modal. When a human
+     adds the **`release:feature`** label, it is a **feature**: a minor bump plus
+     a full "What's New" wizard entry (desktop + mobile). This happens in
+     `game-datacards` even for premium-package changes, so that repo always gets a
+     PR. A no-op run skips the release step.
+   - The prompt has the agent re-run `yarn lint:fix` + `yarn test:ci` *after* the
+     version bump and release edits and fix anything they broke, so those late,
+     post-check edits can't ship a failing tree. The workflow's own lint/test step
+     is a reporting backstop on top of that.
+   - The DeepSeek model runs at maximum reasoning effort (`reasoningEffort: max`
+     in `opencode.json`), and after the run the workflow records the run's token
+     and cost totals via `opencode stats` — shown in the Actions job summary and
+     embedded in the PR (and issue comment).
 4. For each repo the agent changed, it pushes a branch named for the issue type
    and number — `feature/<n>-<slug>` for an enhancement, `bug/<n>-<slug>` for a
    bug (the `<slug>` is a short, sanitised form of the issue title) — and opens a
    **draft** PR, cross-linked to the issue. The branch name is computed once in
    the `gate` job; because both repos use the same name, the premium build links
    them automatically.
+   - The PR body is built by `create-prs.sh` from the agent's own plain-language
+     summary (written to `pr-summary.md`, outside both repos so it is never
+     committed), the actual `git diff --stat` of the change, the issue link
+     (`Closes #<n>` on the app PR), the lint/test status, and the OpenCode usage.
 5. The PRs are opened with a PAT, so `ci.yml` and `claude-review.yml` run on them
    automatically. The bot also comments the result back on the issue.
 
@@ -48,6 +65,7 @@ retry, remove `ai-attempted` and re-add `ai-build`.
 | `ai-build` | Approver opt-in: attempt this issue. |
 | `ai-generated` | Applied to PRs the pipeline opens. |
 | `ai-attempted` | Set automatically; blocks re-runs. |
+| `release:feature` | Approver opt-in: announce this change with the full What's New wizard (minor version bump) instead of the default quiet notification note (patch bump). |
 
 The pipeline relies on the `from-discord` and `enhancement`/`bug` labels the
 idea-bot already applies.

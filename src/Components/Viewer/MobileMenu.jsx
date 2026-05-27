@@ -6,6 +6,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useAuth } from "../../Premium";
 import { getMessages } from "../../Helpers/external.helpers";
+import { countUnreadReleaseNotes } from "../../Helpers/releaseNotes";
 import { resolveMobileConfig } from "./mobileDatasourceConfig";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import { MobileNotifications } from "./MobileNotifications";
@@ -39,7 +40,9 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
     });
   }, []);
 
-  const unreadCount = messages.filter((m) => m.id > settings.serviceMessage).length;
+  const unreadCount =
+    messages.filter((m) => m.id > settings.serviceMessage).length +
+    countUnreadReleaseNotes(settings.lastReadReleaseVersion);
 
   const handleClose = () => setIsVisible(false);
 

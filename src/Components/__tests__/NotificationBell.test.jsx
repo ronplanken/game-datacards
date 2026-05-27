@@ -11,6 +11,12 @@ vi.mock("../../Helpers/external.helpers", () => ({
   getMessages: () => mockGetMessages(),
 }));
 
+// Isolate from bundled release notes; their merge is covered separately.
+vi.mock("../../Helpers/releaseNotes", () => ({
+  getReleaseNotes: () => [],
+  isReleaseNoteUnread: () => false,
+}));
+
 // Mock useSettingsStorage
 const mockUpdateSettings = vi.fn();
 let mockSettings = { serviceMessage: 0 };
@@ -160,7 +166,7 @@ describe("NotificationBell", () => {
 
     await user.click(screen.getByText("Mark all read"));
 
-    expect(mockUpdateSettings).toHaveBeenCalledWith({ serviceMessage: 3 });
+    expect(mockUpdateSettings).toHaveBeenCalledWith(expect.objectContaining({ serviceMessage: 3 }));
   });
 
   it("closes dropdown on Escape key", async () => {

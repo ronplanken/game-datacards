@@ -24,6 +24,8 @@ const defaultSettings = {
   wizardCompleted: "0.0.0",
   lastMajorWizardVersion: "0.0.0",
   serviceMessage: 0,
+  // Last app version whose release notes the user has marked read (notification bell)
+  lastReadReleaseVersion: "0.0.0",
   printSettings: {
     pageSize: "A4",
     pageOrientation: "portrait",
