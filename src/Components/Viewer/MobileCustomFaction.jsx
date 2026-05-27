@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, BookOpen } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { getMobileCardPath } from "../../Helpers/mobileRouting.helpers";
 import "./MobileCustomFaction.css";
 
 export const MobileCustomFaction = () => {
@@ -18,8 +19,7 @@ export const MobileCustomFaction = () => {
 
   const handleCardClick = (card, baseType) => {
     const cardSlug = card.name?.toLowerCase().replaceAll(" ", "-");
-    const typeSegment = ["enhancement", "stratagem", "rule"].includes(baseType) ? `/${baseType}` : "";
-    navigate(`/mobile/${factionSlug}${typeSegment}/${cardSlug}`);
+    navigate(getMobileCardPath(factionSlug, cardSlug, baseType));
   };
 
   const handleBrowseGlossary = () => {
