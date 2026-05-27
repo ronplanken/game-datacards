@@ -104,9 +104,16 @@ jobs:
       # Mark the issue before doing any work so a failed run never auto-retries.
       # Re-adding `ai-build` after `ai-attempted` is present is a no-op (the gate
       # fails), so this also prevents label loops.
+      #
+      # Use the default GITHUB_TOKEN (not GH_PAT) for this label edit on purpose:
+      # adding `ai-attempted` fires another `labeled` event, and PAT-authored
+      # events re-trigger this workflow (producing a wasted gate-skipped run that
+      # clutters the Actions list). Events authored by GITHUB_TOKEN do not
+      # re-trigger workflows, so this self-applied label stays silent. The job
+      # already grants `issues: write`, which is all the edit needs.
       - name: Mark attempted (prevent retries)
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ github.token }}
         run: gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label ai-attempted
 
       - name: Setup Node
