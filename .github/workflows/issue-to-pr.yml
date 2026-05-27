@@ -28,6 +28,7 @@ jobs:
     outputs:
       eligible: ${{ steps.check.outputs.eligible }}
       branch: ${{ steps.check.outputs.branch }}
+      release_kind: ${{ steps.check.outputs.release_kind }}
     steps:
       - name: Read current labels
         id: check
@@ -70,6 +71,17 @@ jobs:
             fi
             echo "branch=$branch" >> "$GITHUB_OUTPUT"
             echo "Branch: $branch"
+
+            # Release channel. Default is a quiet notification entry; the full
+            # What's New wizard is opt-in via an explicit `release:feature` label
+            # a human adds, so routine fixes never trigger an update modal.
+            if echo "$labels" | grep -q '"release:feature"'; then
+              release_kind="feature"
+            else
+              release_kind="note"
+            fi
+            echo "release_kind=$release_kind" >> "$GITHUB_OUTPUT"
+            echo "Release type: $release_kind"
           else
             echo "eligible=false" >> "$GITHUB_OUTPUT"
             echo "Not eligible: needs from-discord + (enhancement or bug) and must not be ai-attempted."
@@ -146,6 +158,7 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_REPO: ${{ github.repository }}
+          RELEASE_KIND: ${{ needs.gate.outputs.release_kind }}
         run: |
           PROMPT_FILE="$RUNNER_TEMP/prompt.txt"
           {
@@ -158,6 +171,7 @@ jobs:
             printf '\n## The issue to implement\n\n'
             printf 'Repository: %s\n' "$ISSUE_REPO"
             printf 'Issue number: #%s\n' "$ISSUE_NUMBER"
+            printf 'Release type: %s\n' "${RELEASE_KIND:-note}"
             printf 'Title: %s\n\n' "$ISSUE_TITLE"
             printf 'Body:\n'
             printf '%s\n' "$ISSUE_BODY"

@@ -112,6 +112,7 @@ export const MobileWelcomeWizard = () => {
         },
         wizardCompleted: import.meta.env.VITE_VERSION,
         lastMajorWizardVersion: import.meta.env.VITE_VERSION,
+        lastReadReleaseVersion: import.meta.env.VITE_VERSION,
       });
       setIsWizardVisible(false);
       setIsExiting(false);

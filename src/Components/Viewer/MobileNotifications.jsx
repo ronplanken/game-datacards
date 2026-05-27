@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { getMessages } from "../../Helpers/external.helpers";
+import { getReleaseNotes, isReleaseNoteUnread } from "../../Helpers/releaseNotes";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import "./MobileNotifications.css";
@@ -31,6 +32,7 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
   const [messages, setMessages] = useState([]);
   const [lastMessageId, setLastMessageId] = useState(0);
   const { settings, updateSettings } = useSettingsStorage();
+  const currentVersion = import.meta.env.VITE_VERSION;
 
   useEffect(() => {
     if (isVisible) {
@@ -43,11 +45,21 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
     }
   }, [isVisible]);
 
-  const isActiveUnread = (m) => m.active !== false && m.id > settings.serviceMessage && isRecentMessage(m.timestamp);
-  const unreadCount = messages.filter(isActiveUnread).length;
+  // Remote operational messages and bundled release notes share one feed, newest
+  // first. The `source` selects the right unread cursor (id vs last-read version).
+  const items = [
+    ...messages.map((m) => ({ ...m, source: "remote", key: `remote-${m.id}` })),
+    ...getReleaseNotes(),
+  ].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  const isActiveUnread = (item) =>
+    item.source === "release"
+      ? isReleaseNoteUnread(item, settings.lastReadReleaseVersion)
+      : item.active !== false && item.id > settings.serviceMessage && isRecentMessage(item.timestamp);
+  const unreadCount = items.filter(isActiveUnread).length;
 
   const markAllRead = () => {
-    updateSettings({ ...settings, serviceMessage: lastMessageId });
+    updateSettings({ ...settings, serviceMessage: lastMessageId, lastReadReleaseVersion: currentVersion });
   };
 
   return (
@@ -61,16 +73,16 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
           </div>
         )}
 
-        {messages.length === 0 ? (
+        {items.length === 0 ? (
           <div className="mobile-notifications-empty">
             <Bell size={32} strokeWidth={1.5} />
             <p>No notifications</p>
           </div>
         ) : (
           <div className="mobile-notifications-list">
-            {messages.map((msg) => (
+            {items.map((msg) => (
               <div
-                key={msg.id}
+                key={msg.key}
                 className={`mobile-notification-item ${isActiveUnread(msg) ? "mobile-notification-item--unread" : ""}`}>
                 <div className="mobile-notification-item-header">
                   <span className="mobile-notification-item-title">{msg.title}</span>
