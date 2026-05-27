@@ -20,6 +20,10 @@ human reviews and merges; nothing is auto-merged.
      (desktop + mobile) so the update is announced in-app. This happens in
      `game-datacards` even for premium-package features, so that repo always gets
      a PR. A no-op run skips the bump.
+   - The prompt has the agent re-run `yarn lint:fix` + `yarn test:ci` *after* the
+     version bump and What's New edits and fix anything they broke, so those
+     late, post-check edits can't ship a failing tree. The workflow's own
+     lint/test step is a reporting backstop on top of that.
 4. For each repo the agent changed, it pushes a branch named for the issue type
    and number — `feature/<n>-<slug>` for an enhancement, `bug/<n>-<slug>` for a
    bug (the `<slug>` is a short, sanitised form of the issue title) — and opens a

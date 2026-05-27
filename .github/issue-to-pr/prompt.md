@@ -139,6 +139,19 @@ would jot a short, honest note to players. Distilled from the existing entries:
   what we want here.
 - **Pick a short, plain `releaseName`** that names the change in a few words.
 
+## Final check before you finish
+
+The version bump and What's New entry add new files and edit the version
+registries *after* the checks in "Definition of done" already ran, so they can
+break lint or tests on their own (a new step component with a lint error, a
+registry snapshot test that now sees an extra version, and so on). Do not finish
+on a stale check.
+
+As your last action, after the release edits are in place, run `yarn lint:fix`,
+`yarn prettier:fix`, and `yarn test:ci` once more inside the app
+(`game-datacards`) directory, and resolve anything that broke. Only end your run
+once these pass on the full working tree, release changes included.
+
 ## If you cannot do it well
 
 If the issue is too vague, too large for a focused automated change, or out of
