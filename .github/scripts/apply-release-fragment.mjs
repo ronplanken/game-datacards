@@ -22,8 +22,8 @@ const NOTES_PATH = "src/data/releaseNotes.json";
 const ALLOWED_SEVERITY = new Set(["info", "success", "warning", "error"]);
 
 const fragment = JSON.parse(readFileSync(fragmentPath, "utf8"));
-if (!fragment.title || !fragment.body) {
-  console.error(`fragment ${fragmentPath} must have a "title" and a "body"`);
+if (!fragment.title || !fragment.body || !String(fragment.title).trim() || !String(fragment.body).trim()) {
+  console.error(`fragment ${fragmentPath} must have a non-empty "title" and "body"`);
   process.exit(1);
 }
 

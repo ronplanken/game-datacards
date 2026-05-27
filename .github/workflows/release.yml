@@ -58,18 +58,38 @@ jobs:
           git config user.name "gdc-release-bot"
           git config user.email "release-bot@users.noreply.github.com"
 
-          # Apply in a stable order; each fragment bumps the patch and appends its
-          # note, so several merged at once get sequential versions.
+          # Apply in a stable order. Each fragment is its own commit so every
+          # version gets a distinct commit (and, below, its own tag) even when
+          # several merge before this job fires; they still go out in one push,
+          # so Cloudflare builds once.
           mapfile -t sorted < <(printf '%s\n' "${frags[@]}" | sort)
+          versions=()
           for frag in "${sorted[@]}"; do
             node .github/scripts/apply-release-fragment.mjs "$frag"
-            git rm -q "$frag"
+            rm -f "$frag"
+            version="$(node -p "require('./package.json').version")"
+            git add -A
+            git commit -q -m "Release v${version}"
+            versions+=("$version")
           done
 
-          version="$(node -p "require('./package.json').version")"
-          git add -A
-          git commit -m "Release v${version}"
-          git push origin HEAD:main
-          git tag "v${version}"
-          git push origin "v${version}"
-          echo "Released v${version}"
+          # Land the release commit(s) on main. The release concurrency group
+          # serialises release runs against each other, but not against a manual
+          # push or a non-fragment merge that lands between our checkout and push,
+          # so rebase and retry on a non-fast-forward rejection.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              break
+            fi
+            echo "push rejected (attempt ${attempt}); rebasing on origin/main"
+            git pull --rebase origin main
+          done
+
+          # Tag each version at its commit, after the push, so a rebase above can
+          # never leave a tag pointing at an orphaned (pre-rebase) commit.
+          for version in "${versions[@]}"; do
+            commit="$(git rev-list --max-count=1 --grep="^Release v${version}$" HEAD)"
+            git tag "v${version}" "$commit"
+          done
+          git push origin --tags
+          echo "Released: ${versions[*]}"
