@@ -5,5 +5,12 @@
     "body": "When you mark a datasheet as Legends and show more than one points value, the Legends label used to sit on top of the points. Now it moves to the left and stays clear, however many values you show.",
     "severity": "info",
     "timestamp": 1779861089
+  },
+  {
+    "version": "3.10.2",
+    "title": "Patch notes take less space in notifications",
+    "body": "The date line under patch notes in the notification dropdown used to be too tall, making each entry take up more room than needed. Now the date sits tighter so you can scan the list faster.",
+    "severity": "info",
+    "timestamp": 1779869126
   }
 ]
