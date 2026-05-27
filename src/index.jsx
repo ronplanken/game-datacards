@@ -69,6 +69,7 @@ import { WhatsNewWizard } from "./Components/WhatsNewWizard";
 import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
 import { LocalDatasourceMigrationNotice } from "./Components/LocalDatasourceMigrationNotice";
 import { UpdateNotification } from "./Components/UpdateNotification";
+import { UpdateCheckProvider } from "./Hooks/useUpdateCheck";
 import { DevFab } from "./Components/DevFab/DevFab";
 import { HelpLayout, HelpLanding, HelpArticle } from "./Pages/Help";
 import { Col, Grid, Result, Row, Typography } from "antd";
@@ -351,18 +352,20 @@ const RootLayout = () => (
                       <SyncProvider>
                         <SyncDiagnosticsProvider>
                           <CloudCategoriesProvider>
-                            <Outlet />
-                            <ScrollRestoration />
-                            <UmamiSessionIdentifier />
-                            <WizardSelector />
-                            <WhatsNewWizardSelector />
-                            <CheckoutSuccessHandler />
-                            <ListForgeUrlHandler />
-                            <SyncConflictHandler />
-                            <DatasourceConflictHandler />
-                            <LocalDatasourceMigrationNotice />
-                            <UpdateNotification />
-                            {import.meta.env.MODE === "development" && <DevFab />}
+                            <UpdateCheckProvider>
+                              <Outlet />
+                              <ScrollRestoration />
+                              <UmamiSessionIdentifier />
+                              <WizardSelector />
+                              <WhatsNewWizardSelector />
+                              <CheckoutSuccessHandler />
+                              <ListForgeUrlHandler />
+                              <SyncConflictHandler />
+                              <DatasourceConflictHandler />
+                              <LocalDatasourceMigrationNotice />
+                              <UpdateNotification />
+                              {import.meta.env.MODE === "development" && <DevFab />}
+                            </UpdateCheckProvider>
                           </CloudCategoriesProvider>
                         </SyncDiagnosticsProvider>
                       </SyncProvider>

@@ -255,6 +255,27 @@
   color: var(--menu-text-muted);
 }
 
+/* Inline call-to-action, e.g. the "Reload" link on the update nudge */
+.notification-item-action {
+  margin: 0 0 8px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: var(--menu-radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.notification-item-action:hover {
+  background: rgba(59, 130, 246, 0.22);
+  border-color: rgba(59, 130, 246, 0.55);
+}
+
 /* Severity badges (dark variants) */
 .notification-item-severity {
   font-size: 11px;

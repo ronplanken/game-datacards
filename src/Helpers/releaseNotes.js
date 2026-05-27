@@ -16,7 +16,9 @@ const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
 // Older entries drop off the list; read state is still tracked by version.
 const MAX_DISPLAYED_RELEASE_NOTES = 15;
 
-const isRecent = (timestamp) => {
+// Shared recency window for the notification bell: release notes and remote
+// operational messages only surface as unread for seven days.
+export const isRecent = (timestamp) => {
   if (!timestamp) return false;
   return Date.now() / 1000 - timestamp < SEVEN_DAYS_IN_SECONDS;
 };

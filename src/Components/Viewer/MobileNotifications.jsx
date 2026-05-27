@@ -1,37 +1,23 @@
 import { useState, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { getMessages } from "../../Helpers/external.helpers";
-import { getReleaseNotes, isReleaseNoteUnread } from "../../Helpers/releaseNotes";
+import {
+  buildNotificationItems,
+  formatTimestamp,
+  getUpdateNotification,
+  isNotificationUnread,
+  markUpdateRead,
+} from "../../Helpers/notifications";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useUpdateCheck } from "../../Hooks/useUpdateCheck";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import "./MobileNotifications.css";
-
-// Format timestamp to relative time
-const formatTimestamp = (timestamp) => {
-  const now = Date.now() / 1000;
-  const diff = now - timestamp;
-
-  if (diff < 60) return "Just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleDateString();
-};
-
-// Check if a message timestamp is within the last 7 days
-const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
-const isRecentMessage = (timestamp) => {
-  if (!timestamp) return false;
-  const now = Date.now() / 1000;
-  return now - timestamp < SEVEN_DAYS_IN_SECONDS;
-};
 
 export const MobileNotifications = ({ isVisible, setIsVisible }) => {
   const [messages, setMessages] = useState([]);
   const [lastMessageId, setLastMessageId] = useState(0);
   const { settings, updateSettings } = useSettingsStorage();
+  const { updateKind, latestVersion, reload } = useUpdateCheck();
   const currentVersion = import.meta.env.VITE_VERSION;
 
   useEffect(() => {
@@ -45,21 +31,18 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
     }
   }, [isVisible]);
 
-  // Remote operational messages and bundled release notes share one feed, newest
-  // first. The `source` selects the right unread cursor (id vs last-read version).
-  const items = [
-    ...messages.map((m) => ({ ...m, source: "remote", key: `remote-${m.id}` })),
-    ...getReleaseNotes(),
-  ].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  // Remote messages, bundled release notes, and the client update nudge share one
+  // feed, newest first. The `source` selects the right unread cursor (id,
+  // last-read version, or the session update flag).
+  const updateItem = getUpdateNotification(updateKind);
+  const items = buildNotificationItems(messages, updateItem);
 
-  const isActiveUnread = (item) =>
-    item.source === "release"
-      ? isReleaseNoteUnread(item, settings.lastReadReleaseVersion)
-      : item.active !== false && item.id > settings.serviceMessage && isRecentMessage(item.timestamp);
+  const isActiveUnread = (item) => isNotificationUnread(item, settings, latestVersion);
   const unreadCount = items.filter(isActiveUnread).length;
 
   const markAllRead = () => {
     updateSettings({ ...settings, serviceMessage: lastMessageId, lastReadReleaseVersion: currentVersion });
+    if (updateItem) markUpdateRead(latestVersion);
   };
 
   return (
@@ -95,6 +78,11 @@ export const MobileNotifications = ({ isVisible, setIsVisible }) => {
                   {isActiveUnread(msg) && <span className="mobile-notification-item-badge">New</span>}
                 </div>
                 <p className="mobile-notification-item-body">{msg.body}</p>
+                {msg.source === "update" && (
+                  <button className="mobile-notification-item-action" onClick={reload}>
+                    Reload
+                  </button>
+                )}
                 <div className="mobile-notification-item-meta">
                   {msg.author && <span className="mobile-notification-item-author">{msg.author}</span>}
                   {msg.timestamp && (

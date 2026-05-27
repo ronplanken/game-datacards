@@ -3,54 +3,55 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { UpdateNotification } from "../UpdateNotification";
 
-const mockDismiss = vi.fn();
+const mockDismissBanner = vi.fn();
 const mockReload = vi.fn();
-let mockUpdateAvailable = false;
+let mockShowBanner = false;
 
-vi.mock("../../Hooks/useUpdateChecker", () => ({
-  useUpdateChecker: () => ({
-    updateAvailable: mockUpdateAvailable,
-    latestVersion: mockUpdateAvailable ? "3.6.0" : null,
-    dismiss: mockDismiss,
+vi.mock("../../Hooks/useUpdateCheck", () => ({
+  useUpdateCheck: () => ({
+    updateKind: mockShowBanner ? "minor" : "none",
+    latestVersion: mockShowBanner ? "3.11.0" : null,
+    showBanner: mockShowBanner,
+    dismissBanner: mockDismissBanner,
     reload: mockReload,
   }),
 }));
 
 describe("UpdateNotification", () => {
   afterEach(() => {
-    mockUpdateAvailable = false;
+    mockShowBanner = false;
     vi.clearAllMocks();
   });
 
-  it("renders nothing when no update is available", () => {
-    mockUpdateAvailable = false;
+  it("renders nothing when no feature release is available", () => {
+    mockShowBanner = false;
     const { container } = render(<UpdateNotification />);
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders the banner when an update is available", () => {
-    mockUpdateAvailable = true;
+  it("renders the banner for a feature release", () => {
+    mockShowBanner = true;
     render(<UpdateNotification />);
     expect(screen.getByText("A new version is available")).toBeInTheDocument();
     expect(screen.getByText("Update")).toBeInTheDocument();
   });
 
   it("calls reload when Update is clicked", () => {
-    mockUpdateAvailable = true;
+    mockShowBanner = true;
     render(<UpdateNotification />);
     fireEvent.click(screen.getByText("Update"));
     expect(mockReload).toHaveBeenCalledTimes(1);
   });
 
-  it("calls dismiss when X is clicked", () => {
-    mockUpdateAvailable = true;
+  it("calls dismissBanner when X is clicked", () => {
+    mockShowBanner = true;
     render(<UpdateNotification />);
     fireEvent.click(screen.getByLabelText("Dismiss"));
-    expect(mockDismiss).toHaveBeenCalledTimes(1);
+    expect(mockDismissBanner).toHaveBeenCalledTimes(1);
   });
 
   it("has role=alert for accessibility", () => {
-    mockUpdateAvailable = true;
+    mockShowBanner = true;
     render(<UpdateNotification />);
     expect(screen.getByRole("alert")).toBeInTheDocument();
   });

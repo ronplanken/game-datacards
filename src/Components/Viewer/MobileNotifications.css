@@ -109,6 +109,25 @@
   color: var(--menu-text-muted);
 }
 
+/* Inline call-to-action, e.g. the "Reload" link on the update nudge */
+.mobile-notification-item-action {
+  margin: 0 0 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  line-height: 1;
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.mobile-notification-item-action:active {
+  background: rgba(59, 130, 246, 0.22);
+}
+
 /* ===========================================
    SEVERITY BADGES (dark variants)
    =========================================== */

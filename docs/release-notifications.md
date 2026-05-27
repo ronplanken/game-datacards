@@ -9,6 +9,8 @@ related:
 file_locations:
   feed: src/data/releaseNotes.json
   helper: src/Helpers/releaseNotes.js
+  notifications_helper: src/Helpers/notifications.js
+  update_check: src/Hooks/useUpdateCheck.jsx
   bell: src/Components/NotificationBell.jsx
   mobile_sheet: src/Components/Viewer/MobileNotifications.jsx
   mobile_badge: src/Components/Viewer/MobileMenu.jsx
@@ -46,8 +48,21 @@ desktop/mobile `VERSION_REGISTRY` (see `src/Components/WhatsNewWizard/`). A patc
 bump that adds no registry entry shows **no** modal, which is exactly what the
 release-note channel relies on.
 
-The separate "new build available, reload" prompt (`src/Hooks/useUpdateChecker.js`)
-is unrelated to either channel — it is driven by `buildId` and fires on any deploy.
+The "reload to update" prompt (`src/Hooks/useUpdateCheck.jsx`) is a separate,
+client-detected cue rather than a content channel. It polls the deployed
+`version.json` and compares its `version` to the running build, so it no longer
+fires on every deploy:
+
+- a **minor/major** bump (a feature release) shows the loud `UpdateNotification`
+  banner;
+- a **patch** bump shows a quiet, temporary "A new version is available — reload"
+  line in the notification bell. It bumps the unread badge, carries a Reload
+  button, and disappears once the tab reloads (the running bundle then matches
+  the deployed version).
+
+The patch nudge bridges a gap: an already-loaded tab cannot see a freshly shipped
+release note until it reloads, so the nudge tells it to. The synthetic bell item
+and its read state live in `src/Helpers/notifications.js`.
 
 ## Release notes feed
 

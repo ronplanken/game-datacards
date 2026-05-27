@@ -11,10 +11,12 @@ vi.mock("../../Helpers/external.helpers", () => ({
   getMessages: () => mockGetMessages(),
 }));
 
-// Isolate from bundled release notes; their merge is covered separately.
+// Isolate from bundled release notes; their merge is covered separately. The
+// notifications helper reads isRecent from this module, so provide it too.
 vi.mock("../../Helpers/releaseNotes", () => ({
   getReleaseNotes: () => [],
   isReleaseNoteUnread: () => false,
+  isRecent: (timestamp) => !!timestamp && Date.now() / 1000 - timestamp < 7 * 24 * 60 * 60,
 }));
 
 // Mock useSettingsStorage

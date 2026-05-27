@@ -1,37 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import { getMessages } from "../Helpers/external.helpers";
-import { getReleaseNotes, isReleaseNoteUnread } from "../Helpers/releaseNotes";
+import {
+  buildNotificationItems,
+  formatTimestamp,
+  getUpdateNotification,
+  isNotificationUnread,
+  markUpdateRead,
+} from "../Helpers/notifications";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { useUpdateCheck } from "../Hooks/useUpdateCheck";
 import "./NotificationBell.css";
-
-// Format timestamp to relative time
-const formatTimestamp = (timestamp) => {
-  const now = Date.now() / 1000;
-  const diff = now - timestamp;
-
-  if (diff < 60) return "Just now";
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
-
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleDateString();
-};
-
-// Check if a message timestamp is within the last 7 days
-const SEVEN_DAYS_IN_SECONDS = 7 * 24 * 60 * 60;
-const isRecentMessage = (timestamp) => {
-  if (!timestamp) return false;
-  const now = Date.now() / 1000;
-  return now - timestamp < SEVEN_DAYS_IN_SECONDS;
-};
 
 export const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [lastMessageId, setLastMessageId] = useState(0);
   const { settings, updateSettings } = useSettingsStorage();
+  const { updateKind, latestVersion, reload } = useUpdateCheck();
   const containerRef = useRef(null);
   const currentVersion = import.meta.env.VITE_VERSION;
 
@@ -69,22 +55,18 @@ export const NotificationBell = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  // Remote operational messages and bundled release notes share one feed, newest
-  // first. Each carries a `source` so unread state uses the right cursor: remote
-  // messages track an id, release notes track the last version marked read.
-  const items = [
-    ...messages.map((m) => ({ ...m, source: "remote", key: `remote-${m.id}` })),
-    ...getReleaseNotes(),
-  ].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  // Remote operational messages, bundled release notes, and the client update
+  // nudge share one feed, newest first. Each carries a `source` so unread state
+  // uses the right cursor (id, last-read version, or the session update flag).
+  const updateItem = getUpdateNotification(updateKind);
+  const items = buildNotificationItems(messages, updateItem);
 
-  const isActiveUnread = (item) =>
-    item.source === "release"
-      ? isReleaseNoteUnread(item, settings.lastReadReleaseVersion)
-      : item.active !== false && item.id > settings.serviceMessage && isRecentMessage(item.timestamp);
+  const isActiveUnread = (item) => isNotificationUnread(item, settings, latestVersion);
   const unreadCount = items.filter(isActiveUnread).length;
 
   const markAllRead = () => {
     updateSettings({ ...settings, serviceMessage: lastMessageId, lastReadReleaseVersion: currentVersion });
+    if (updateItem) markUpdateRead(latestVersion);
     setIsOpen(false);
   };
 
@@ -129,6 +111,11 @@ export const NotificationBell = () => {
                   {isActiveUnread(msg) && <span className="notification-item-badge">New</span>}
                 </div>
                 <p className="notification-item-body">{msg.body}</p>
+                {msg.source === "update" && (
+                  <button className="notification-item-action" onClick={reload}>
+                    Reload
+                  </button>
+                )}
                 <div className="notification-item-meta">
                   {msg.author && <span className="notification-item-author">{msg.author}</span>}
                   {msg.timestamp && <span className="notification-item-time">{formatTimestamp(msg.timestamp)}</span>}
