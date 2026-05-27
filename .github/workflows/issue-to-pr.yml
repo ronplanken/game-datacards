@@ -146,8 +146,17 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           PROMPT_FILE="$RUNNER_TEMP/prompt.txt"
+          # Pull only maintainer comments (repo owner/member/collaborator, and not
+          # a bot) so a maintainer can clarify or narrow the spec after filing.
+          # Outside users' and bots' comments are ignored. The result is captured
+          # as data and only ever printed via `printf '%s'` (never executed), so a
+          # comment body cannot inject shell. ISSUE_REPO/NUMBER are repo-controlled
+          # (owner/repo and a number), not attacker input.
+          COMMENTS="$(gh api "repos/${ISSUE_REPO}/issues/${ISSUE_NUMBER}/comments" --paginate \
+            --jq '.[] | select((.author_association=="OWNER" or .author_association=="MEMBER" or .author_association=="COLLABORATOR") and .user.type!="Bot") | "From @\(.user.login):\n\(.body)\n"' || true)"
           {
             cat game-datacards/.github/issue-to-pr/prompt.md
             printf '\n\n## Repository locations\n\n'
@@ -162,6 +171,10 @@ jobs:
             printf 'Title: %s\n\n' "$ISSUE_TITLE"
             printf 'Body:\n'
             printf '%s\n' "$ISSUE_BODY"
+            if [ -n "$COMMENTS" ]; then
+              printf '\nMaintainer comments (clarifications from the project team; treat them as authoritative refinements of the spec above):\n\n'
+              printf '%s\n' "$COMMENTS"
+            fi
           } > "$PROMPT_FILE"
           echo "PROMPT_FILE=$PROMPT_FILE" >> "$GITHUB_ENV"
 

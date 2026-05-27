@@ -15,6 +15,10 @@ human reviews and merges; nothing is auto-merged.
    `prompt.md`, then runs `yarn lint:fix` + `yarn test:ci`. The app is OpenCode's
    project root; the premium package is reachable via the `external_directory`
    grant in `opencode.json`.
+   - The prompt is the issue title and body plus any **maintainer comments** on
+     the issue (comments by the repo owner/members/collaborators, excluding bots),
+     so a maintainer can clarify or narrow the scope after the issue is filed.
+     Outside users' comments are not included.
    - The agent does **not** bump the version or edit `releaseNotes.json`. Instead
      it writes one release fragment to `changes/unreleased/<issue>.json` (the
      player-facing note). The version bump and notes are applied automatically
@@ -103,10 +107,12 @@ Issue bodies originate from untrusted Discord users, so the pipeline is built
 defensively:
 
 - The agent is told to treat the issue as a spec, not instructions.
-- `opencode.json` denies edits outside `src/`/`docs/` (the only exception is the
-  app's `package.json`, for the version bump), denies `curl`/`wget`/`ssh`/
-  `webfetch` (no exfiltration), and denies `npm`.
+- `opencode.json` denies edits outside `src/`/`docs/` (the only exceptions are the
+  release fragment and the PR summary file), denies `curl`/`wget`/`ssh`/`webfetch`
+  (no exfiltration), and denies `npm`.
 - Issue text is passed via environment variables, never interpolated into shell.
+  Issue **comments** are restricted to maintainers (owner/member/collaborator, not
+  bots) and are likewise only printed into the prompt as data, never executed.
 - Output is always a **draft** PR gated behind human review + the existing Claude
   review.
 
