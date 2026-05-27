@@ -1,0 +1,75 @@
+name: Release
+
+# Issue-to-PR patches land on main carrying a release fragment in
+# changes/unreleased/. This job runs the release that the feature PR no longer
+# does: it assigns the next PATCH version ON main (so parallel PRs never collide
+# on the number), records the note in src/data/releaseNotes.json, deletes the
+# fragment, commits, and tags. The version bump is the only change to
+# package.json, which is what the Cloudflare Pages "build watch path" keys on to
+# deploy production — so routine merges that carry no fragment never deploy.
+#
+# Feature releases (the full What's New wizard + minor bump) are cut by a human,
+# not here.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "changes/unreleased/**"
+
+# One release at a time. Back-to-back merges queue, so each picks up the version
+# the previous one just committed and bumps from there.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release pending fragments
+    runs-on: ubuntu-latest
+    # The release commit below also touches changes/unreleased (it deletes the
+    # consumed fragment), which would re-fire this workflow; skip those so there
+    # is no loop. The fragment-presence guard in the step is a second backstop.
+    if: ${{ !startsWith(github.event.head_commit.message, 'Release v') }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Apply fragments, commit, and tag
+        run: |
+          shopt -s nullglob
+          frags=(changes/unreleased/*.json)
+          if [ "${#frags[@]}" -eq 0 ]; then
+            echo "No release fragments; nothing to release."
+            exit 0
+          fi
+
+          git config user.name "gdc-release-bot"
+          git config user.email "release-bot@users.noreply.github.com"
+
+          # Apply in a stable order; each fragment bumps the patch and appends its
+          # note, so several merged at once get sequential versions.
+          mapfile -t sorted < <(printf '%s\n' "${frags[@]}" | sort)
+          for frag in "${sorted[@]}"; do
+            node .github/scripts/apply-release-fragment.mjs "$frag"
+            git rm -q "$frag"
+          done
+
+          version="$(node -p "require('./package.json').version")"
+          git add -A
+          git commit -m "Release v${version}"
+          git push origin HEAD:main
+          git tag "v${version}"
+          git push origin "v${version}"
+          echo "Released v${version}"

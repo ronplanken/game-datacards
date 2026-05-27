@@ -26,7 +26,7 @@ For detailed documentation on card data formats, import features, components, an
 - **All new features require unit tests.** Write tests using Vitest before or alongside implementation.
 - **Use Chrome DevTools MCP to validate UI work.** Take snapshots and screenshots to verify visual changes render correctly in the browser.
 - **WhatsNew wizard mobile steps must use `mwnw-*` CSS classes.** Desktop wizard uses `wnw-*` classes, mobile uses `mwnw-*`. When adding a new version step to `MobileWhatsNewWizard/versions/`, use an existing mobile step (e.g., v3.7.0 `StepMobileEditor.jsx`) as the template, not the desktop counterpart.
-- **Two release channels: notification notes (default) vs the What's New wizard.** Routine fixes ship as a quiet entry appended to `src/data/releaseNotes.json` (shown in the notification bell, patch version bump) and add NO wizard entry. Only notable features get a full What's New wizard entry (minor version bump). See `docs/release-notifications.md`; the issue-to-PR pipeline routes by the `release:feature` label.
+- **Two release channels: notification notes (default) vs the What's New wizard.** Routine fixes ship as a quiet entry in `src/data/releaseNotes.json` (shown in the notification bell, patch version bump) and add NO wizard entry. Only notable features get a full What's New wizard entry (minor version bump). See `docs/release-notifications.md`. Issue-to-PR PRs do NOT bump the version or edit `releaseNotes.json` themselves: they drop a fragment in `changes/unreleased/`, and `.github/workflows/release.yml` applies the patch bump + note after merge. Feature/wizard releases are cut manually by a human.
 
 ## Before Making Changes
 
@@ -283,9 +283,11 @@ Feature flags (set in `.env`, all default to `true` if omitted):
 ## CI/CD Pipeline
 
 - **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 20)
+- **Release** (`.github/workflows/release.yml`): on merge to `main`, consumes any `changes/unreleased/` fragment, bumps the patch version, appends the release note, and tags. This is the only thing that changes `package.json`.
 - **Cloudflare Pages**: Automatically builds and deploys all branches
   - Preview URLs generated for each branch
   - Production deployment on `main` branch
+  - **Production builds are gated by a build watch path of `package.json`** so only release commits (the post-merge version bump) deploy — routine merges that carry no release fragment do not. Set this under Cloudflare Pages → Settings → Builds & deployments → Build watch paths.
 
 ## Cloudflare Pages Configuration
 

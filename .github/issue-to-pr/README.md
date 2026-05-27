@@ -15,20 +15,15 @@ human reviews and merges; nothing is auto-merged.
    `prompt.md`, then runs `yarn lint:fix` + `yarn test:ci`. The app is OpenCode's
    project root; the premium package is reachable via the `external_directory`
    grant in `opencode.json`.
-   - As part of the prompt, after implementing the change the agent bumps the
-     app's `package.json` version and records the release in one of two channels,
-     chosen by the `gate` job from the issue labels and passed to the prompt as a
-     `Release type` line. By default (most fixes) it is a **note**: a patch bump
-     plus one entry appended to `src/data/releaseNotes.json`, which surfaces as a
-     small item in the in-app notification bell — no update modal. When a human
-     adds the **`release:feature`** label, it is a **feature**: a minor bump plus
-     a full "What's New" wizard entry (desktop + mobile). This happens in
-     `game-datacards` even for premium-package changes, so that repo always gets a
-     PR. A no-op run skips the release step.
-   - The prompt has the agent re-run `yarn lint:fix` + `yarn test:ci` *after* the
-     version bump and release edits and fix anything they broke, so those late,
-     post-check edits can't ship a failing tree. The workflow's own lint/test step
-     is a reporting backstop on top of that.
+   - The agent does **not** bump the version or edit `releaseNotes.json`. Instead
+     it writes one release fragment to `changes/unreleased/<issue>.json` (the
+     player-facing note). The version bump and notes are applied automatically
+     **after merge** by `release.yml` (see "Releasing" below). This is what lets
+     several pipeline PRs be open at once without colliding on the version number
+     or the notes file. A no-op run writes no fragment.
+   - The prompt has the agent re-run `yarn lint:fix` + `yarn test:ci` *after*
+     writing the fragment and fix anything that broke. The workflow's own
+     lint/test step is a reporting backstop on top of that.
    - The DeepSeek model runs at maximum reasoning effort (`reasoningEffort: max`
      in `opencode.json`), and after the run the workflow records the run's token
      and cost totals via `opencode stats` — shown in the Actions job summary and
@@ -65,10 +60,30 @@ retry, remove `ai-attempted` and re-add `ai-build`.
 | `ai-build` | Approver opt-in: attempt this issue. |
 | `ai-generated` | Applied to PRs the pipeline opens. |
 | `ai-attempted` | Set automatically; blocks re-runs. |
-| `release:feature` | Approver opt-in: announce this change with the full What's New wizard (minor version bump) instead of the default quiet notification note (patch bump). |
 
 The pipeline relies on the `from-discord` and `enhancement`/`bug` labels the
-idea-bot already applies.
+idea-bot already applies. Pipeline PRs always ship as a **patch** (a quiet
+notification note); the full What's New wizard is reserved for feature releases a
+human cuts by hand.
+
+## Releasing
+
+The pipeline keeps release bookkeeping out of the feature PR so parallel PRs
+never conflict on it. Releasing happens after merge instead:
+
+- Each PR carries a fragment in `changes/unreleased/` (see `changes/README.md`).
+- When a PR merges to `main`, `release.yml` consumes the fragment(s): it bumps
+  the **patch** version in `package.json`, appends the note to
+  `src/data/releaseNotes.json`, deletes the fragment, commits, and tags
+  `v<x.y.z>`. Back-to-back merges queue (a `release` concurrency group) so each
+  gets a sequential version.
+- That version-bump commit is the **only** thing that changes `package.json`.
+  Cloudflare Pages is configured with a **build watch path** of `package.json`,
+  so production deploys only on release commits — routine merges that carry no
+  fragment never deploy.
+- **Feature releases** (the full What's New wizard + a minor bump) are cut
+  manually by a human; the pipeline never produces them. Old patch notes stay in
+  `releaseNotes.json`, so nothing is lost.
 
 ## Tuning
 
