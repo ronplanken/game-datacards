@@ -1,0 +1,5 @@
+{
+  "title": "Patch notes take less space in notifications",
+  "body": "The date line under patch notes in the notification dropdown used to be too tall, making each entry take up more room than needed. Now the date sits tighter so you can scan the list faster.",
+  "severity": "info"
+}

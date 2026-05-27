@@ -294,6 +294,7 @@
   gap: 8px;
   font-size: 11px;
   color: var(--menu-text-dim);
+  line-height: 1;
 }
 
 .notification-item-author {

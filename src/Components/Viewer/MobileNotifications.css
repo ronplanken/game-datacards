@@ -150,6 +150,7 @@
   gap: 8px;
   font-size: 12px;
   color: var(--menu-text-dim);
+  line-height: 1;
 }
 
 .mobile-notification-item-author {
