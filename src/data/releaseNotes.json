@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "version": "3.10.1",
+    "title": "Legends label no longer overlaps points",
+    "body": "When you mark a datasheet as Legends and show more than one points value, the Legends label used to sit on top of the points. Now it moves to the left and stays clear, however many values you show.",
+    "severity": "info",
+    "timestamp": 1779861089
+  }
+]
