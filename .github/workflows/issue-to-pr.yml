@@ -204,17 +204,21 @@ jobs:
           export OPENCODE_CONFIG="$RUNNER_TEMP/opencode.json"
           USAGE_FILE="$RUNNER_TEMP/usage.txt"
           # Strip ANSI colour codes so the stats read cleanly inside a code block.
-          if ! opencode stats 2>&1 | perl -pe 's/\e\[[0-9;]*m//g' > "$USAGE_FILE"; then
-            echo "OpenCode usage stats unavailable for this run." > "$USAGE_FILE"
+          # Only export USAGE_FILE on success with real output, so create-prs.sh's
+          # [ -s ] guard naturally skips the section when stats are unavailable
+          # rather than embedding a "stats unavailable" line into every PR body.
+          if opencode stats 2>&1 | perl -pe 's/\e\[[0-9;]*m//g' > "$USAGE_FILE" && [ -s "$USAGE_FILE" ]; then
+            echo "USAGE_FILE=$USAGE_FILE" >> "$GITHUB_ENV"
+            {
+              echo '## OpenCode usage'
+              echo
+              echo '```'
+              cat "$USAGE_FILE"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '## OpenCode usage\n\nUsage stats unavailable for this run.\n' >> "$GITHUB_STEP_SUMMARY"
           fi
-          echo "USAGE_FILE=$USAGE_FILE" >> "$GITHUB_ENV"
-          {
-            echo '## OpenCode usage'
-            echo
-            echo '```'
-            cat "$USAGE_FILE"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Open draft PR(s) and comment on issue
         env:
