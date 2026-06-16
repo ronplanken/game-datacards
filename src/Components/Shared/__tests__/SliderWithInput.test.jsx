@@ -91,7 +91,7 @@ describe("SliderWithInput", () => {
     expect(onChange).toHaveBeenCalledWith(-50);
   });
 
-  it("mirrors tooltip.formatter onto the input display", () => {
+  it("does not mirror tooltip.formatter onto the input — input shows the bare number", () => {
     render(
       <SliderWithInput
         min={-200}
@@ -102,7 +102,22 @@ describe("SliderWithInput", () => {
         onChange={() => {}}
       />,
     );
-    expect(screen.getByRole("spinbutton")).toHaveValue("+50px");
+    expect(screen.getByRole("spinbutton")).toHaveValue("50");
+  });
+
+  it("derives precision correctly for non-power-of-10 steps", async () => {
+    const onChange = vi.fn();
+    const user = userEvent.setup();
+    const { rerender } = render(<SliderWithInput min={0.5} max={2.5} step={0.25} value={1} onChange={onChange} />);
+
+    const input = screen.getByRole("spinbutton");
+    await user.clear(input);
+    await user.type(input, "1.75");
+    await user.tab();
+
+    expect(onChange).toHaveBeenCalledWith(1.75);
+    rerender(<SliderWithInput min={0.5} max={2.5} step={0.25} value={1.75} onChange={onChange} />);
+    expect(input).toHaveValue("1.75");
   });
 
   it("forwards disabled to both controls", () => {

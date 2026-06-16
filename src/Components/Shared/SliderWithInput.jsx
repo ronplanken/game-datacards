@@ -3,19 +3,19 @@ import React from "react";
 
 const derivePrecision = (step) => {
   if (!step || step >= 1) return 0;
-  const decimals = -Math.floor(Math.log10(step));
-  return Math.max(0, decimals);
+  const str = String(step);
+  const dot = str.indexOf(".");
+  return dot === -1 ? 0 : str.length - dot - 1;
 };
 
 /**
  * Slider paired with an InputNumber for precise manual entry.
  *
  * Drop-in replacement for antd's <Slider>: every standard Slider prop passes through,
- * and the InputNumber to the right is kept in sync with the same value.
- *
- * When `tooltip.formatter` is provided and no explicit `formatter` is passed, the
- * tooltip formatter is mirrored onto the InputNumber so the displayed value matches
- * the slider tooltip (e.g. "+12px", "150%").
+ * and the InputNumber to the right is kept in sync with the same value. The slider
+ * tooltip formatter (if any) is intentionally NOT mirrored onto the input — the input
+ * displays the bare number to keep editing unambiguous. Callers that want a unit label
+ * next to the input can pass inputProps={{ addonAfter: "px" }}.
  */
 export const SliderWithInput = ({
   min,
@@ -38,7 +38,6 @@ export const SliderWithInput = ({
     onChange?.(next);
   };
 
-  const inputFormatter = formatter || tooltip?.formatter;
   const resolvedPrecision = precision ?? derivePrecision(step);
 
   return (
@@ -65,7 +64,7 @@ export const SliderWithInput = ({
           onChange={handleChange}
           disabled={disabled}
           precision={resolvedPrecision}
-          formatter={inputFormatter}
+          formatter={formatter}
           parser={parser}
           size="small"
           style={{ width: inputWidth }}
