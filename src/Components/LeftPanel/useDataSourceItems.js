@@ -85,7 +85,9 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       let filteredSheets = [];
       if (
         selectedFaction &&
-        (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")
+        (settings.selectedDataSource === "40k-10e" ||
+          settings.selectedDataSource === "40k-10e-cp" ||
+          settings.selectedDataSource === "40k-11e")
       ) {
         try {
           filteredSheets = [
@@ -227,7 +229,13 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
 
     if (selectedContentType === "enhancements") {
       const filteredEnhancements = selectedFaction?.enhancements?.map((enhancement) => {
-        return { ...enhancement, cardType: "enhancement", source: "40k-10e" };
+        // Preserve the card's own source (e.g. "40k-11e") so it routes to the
+        // correct renderer; fall back to the faction/datasource source.
+        return {
+          ...enhancement,
+          cardType: "enhancement",
+          source: enhancement.source ?? selectedFaction?.source ?? "40k-10e",
+        };
       });
 
       const mainEnhancements = searchText
@@ -285,13 +293,14 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
         : detachmentRules;
 
       // Transform rules into card-compatible objects
+      const ruleSource = selectedFaction?.source ?? settings.selectedDataSource ?? "40k-10e";
       const armyRuleCards = filteredArmyRules.map((rule) => ({
         ...rule,
         id: `army-rule-${rule.name}`,
         cardType: "rule",
         ruleType: "army",
         faction_id: selectedFaction.id,
-        source: "40k-10e",
+        source: ruleSource,
       }));
 
       // Flatten detachment rules - each detachment can have multiple rules
@@ -304,7 +313,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
             ruleType: "detachment",
             detachment: detachmentRule.detachment,
             faction_id: selectedFaction.id,
-            source: "40k-10e",
+            source: ruleSource,
           }));
         }
         return [];

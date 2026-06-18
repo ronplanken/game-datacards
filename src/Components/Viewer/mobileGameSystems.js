@@ -12,6 +12,13 @@
 //   color     - hex used by the wizard for the accent bar / translucent fills
 export const PRIMARY_MOBILE_SYSTEMS = [
   {
+    id: "40k-11e",
+    name: "Warhammer 40,000",
+    meta: "11th Edition",
+    cssClass: "gss-option-40k",
+    color: "#8b2020",
+  },
+  {
     id: "40k-10e",
     name: "Warhammer 40,000",
     meta: "10th Edition",

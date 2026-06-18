@@ -1,5 +1,6 @@
 import clone from "just-clone";
 import { v4 as uuidv4 } from "uuid";
+import { localize } from "./localization.helpers";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -476,6 +477,118 @@ export const get40k10eData = async () => {
         basicStratagems: core?.stratagems?.map((strat) => {
           return { ...strat, cardType: "stratagem", source: "40k-10e" };
         }),
+      };
+    }),
+  };
+};
+
+// Resolve the language-keyed `name` of a rule (and its nested rules) to a plain
+// string so the existing rule-card pipeline (search/sort/id-synthesis in
+// useDataSourceItems) keeps working. Body text stays multilingual and is
+// localised at render time by RuleCard11e.
+const resolve11eRuleNames = (rules, language) => {
+  if (!rules) return rules;
+  const resolveArmy = (rule) => ({ ...rule, name: localize(rule.name, language) });
+  return {
+    ...rules,
+    army: rules.army?.map(resolveArmy),
+    detachment: rules.detachment?.map((det) => ({
+      ...det,
+      rules: det.rules?.map(resolveArmy),
+    })),
+  };
+};
+
+export const get40k11eData = async (language = "en") => {
+  const factions = [
+    "adeptasororitas",
+    "adeptuscustodes",
+    "adeptusmechanicus",
+    "aeldari",
+    "agents",
+    "astramilitarum",
+    "blacktemplar",
+    "bloodangels",
+    "chaos_spacemarines",
+    "chaosdaemons",
+    "chaosknights",
+    "darkangels",
+    "deathguard",
+    "deathwatch",
+    "drukhari",
+    "emperors_children",
+    "greyknights",
+    "gsc",
+    "imperialknights",
+    "necrons",
+    "orks",
+    "space_marines",
+    "spacewolves",
+    "tau",
+    "thousandsons",
+    "titan",
+    "tyranids",
+    "votann",
+    "worldeaters",
+  ];
+
+  const fetchData = async (faction) => {
+    const url = `${import.meta.env.VITE_DATASOURCE_11TH_URL}/${faction}.json?${new Date().getTime()}`;
+    const data = await readCsv(url);
+    return data;
+  };
+
+  const fetchAllData = async () => {
+    const sortedFactions = factions.sort();
+    const promises = sortedFactions.map((faction) => fetchData(faction));
+    const allData = await Promise.all(promises);
+    return allData;
+  };
+
+  const allFactionsData = await fetchAllData();
+
+  return {
+    version: import.meta.env.VITE_VERSION,
+    lastUpdated: allFactionsData[0].updated,
+    lastCheckedForUpdate: new Date().toISOString(),
+    // The language this cache was built for. useDataSourceStorage refetches when
+    // the user's selected language differs from this value.
+    language,
+    noDatasheetOptions: false,
+    noDatasheetByRole: true,
+    noStratagemOptions: false,
+    noSubfactionOptions: true,
+    noSecondaryOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: false,
+    data: allFactionsData.map((val) => {
+      return {
+        ...val,
+        // 11th edition datasheets/stratagems/rules carry no `cardType`; inject it
+        // here (mirroring get40k10eData) and resolve only the top-level `name`
+        // string so tree/list/search/sort keep working. Body fields stay
+        // multilingual for the dedicated 11e renderset.
+        datasheets: val?.datasheets?.map((datasheet) => {
+          return {
+            ...datasheet,
+            cardType: "DataCard",
+            source: "40k-11e",
+            name: localize(datasheet.name, language),
+          };
+        }),
+        stratagems: val?.stratagems?.map((strat) => {
+          return { ...strat, cardType: "stratagem", source: "40k-11e", name: localize(strat.name, language) };
+        }),
+        enhancements: val?.enhancements?.map((enhancement) => {
+          return {
+            ...enhancement,
+            cardType: "enhancement",
+            source: "40k-11e",
+            name: localize(enhancement.name, language),
+          };
+        }),
+        rules: resolve11eRuleNames(val?.rules, language),
+        basicStratagems: [],
       };
     }),
   };

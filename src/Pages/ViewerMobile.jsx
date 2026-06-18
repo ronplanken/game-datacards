@@ -116,7 +116,7 @@ export const ViewerMobile = ({
       return;
     }
     // Built-in systems don't need a schema
-    const builtIn = ["40k-10e", "40k", "aos", "necromunda", "basic"];
+    const builtIn = ["40k-10e", "40k-11e", "40k", "aos", "necromunda", "basic"];
     if (builtIn.includes(activeCard.source)) {
       setEditorSchema(null);
       return;

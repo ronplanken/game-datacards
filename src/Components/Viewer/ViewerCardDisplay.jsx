@@ -5,6 +5,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
 import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
@@ -45,6 +46,8 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
     switch (activeCard.source) {
       case "40k-10e":
         return <Warhammer40K10eCardDisplay side={side} type={type} />;
+      case "40k-11e":
+        return <Warhammer40K11eCardDisplay side={side} type={type} />;
       case "40k":
         return <Warhammer40KCardDisplay />;
       case "basic":
@@ -96,6 +99,8 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
     switch (activeCard.source) {
       case "40k-10e":
         return <Warhammer40K10eCardDisplay side={side} type={type} />;
+      case "40k-11e":
+        return <Warhammer40K11eCardDisplay side={side} type={type} />;
       case "40k":
         return <Warhammer40KCardDisplay />;
       case "basic":

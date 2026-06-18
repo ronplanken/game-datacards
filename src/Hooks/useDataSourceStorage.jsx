@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   get40KData,
   get40k10eData,
+  get40k11eData,
   get40k10eCombatPatrolData,
   getAoSData,
   getBasicData,
@@ -96,6 +97,22 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(dataFactions);
         setSelectedFaction(dataFactions.data[factionIndex]);
       }
+      if (settings.selectedDataSource === "40k-11e") {
+        const storedData = await dataStore.getItem("40k-11e");
+        // Cache is language-specific: top-level names are resolved at fetch time.
+        // Refetch when the user switched language since the cache was built.
+        if (storedData && storedData.language === settings.language) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[factionIndex]);
+          return;
+        }
+        setIsLoading(true);
+        const dataFactions = await get40k11eData(settings.language);
+
+        dataStore.setItem("40k-11e", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
       if (settings.selectedDataSource === "40k-10e-cp") {
         const storedData = await dataStore.getItem("40k-10e-cp");
         if (storedData) {
@@ -175,7 +192,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [settings.selectedDataSource]);
+  }, [settings.selectedDataSource, settings.language]);
 
   // Reload active custom/subscribed datasource when sync writes new data to localForage
   useEffect(() => {
@@ -219,6 +236,13 @@ export const DataSourceStorageProviderComponent = (props) => {
       if (settings.selectedDataSource === "40k-10e") {
         const dataFactions = await get40k10eData();
         dataStore.setItem("40k-10e", dataFactions);
+
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "40k-11e") {
+        const dataFactions = await get40k11eData(settings.language);
+        dataStore.setItem("40k-11e", dataFactions);
 
         setDataSource(dataFactions);
         setSelectedFaction(dataFactions.data[factionIndex]);
@@ -316,6 +340,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       selectedDataSource: "basic",
       selectedFactionIndex: {
         "40k-10e": 0,
+        "40k-11e": 0,
         aos: 0,
       },
     });

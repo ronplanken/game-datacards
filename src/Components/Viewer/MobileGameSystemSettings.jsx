@@ -31,6 +31,7 @@ export const MobileGameSystemSettings = ({ gameSystem, onContinue }) => {
       case "aos":
         return "Age of Sigmar";
       case "40k-10e":
+      case "40k-11e":
         return "Warhammer 40,000";
       default:
         return gameSystem;

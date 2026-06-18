@@ -1,0 +1,5 @@
+{
+  "title": "Warhammer 40,000 11th Edition",
+  "body": "11th Edition is now available as a built-in datasource. Use the new card-language selector in Settings to view card text in any supported language, falling back to English where a translation isn't available yet.",
+  "severity": "success"
+}

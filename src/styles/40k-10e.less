@@ -842,7 +842,11 @@
   }
 }
 
-.data-40k-10e {
+// The 11th edition renderset reuses the exact 10e card layout/look & feel, so it
+// shares this scoped block (it emits a `.data-40k-11e` wrapper). 11e-specific
+// additions live in src/styles/40k-11e.less.
+.data-40k-10e,
+.data-40k-11e {
   page-break-inside: avoid;
 
   .stratagem,
@@ -4542,7 +4546,8 @@
 }
 
 // Override centering and transform-origin when inside print-page (both screen preview and actual print)
-.print-page .data-40k-10e {
+.print-page .data-40k-10e,
+.print-page .data-40k-11e {
   .unit-card-full-wrapper,
   .unit-card-front-wrapper,
   .unit-card-back-wrapper {
