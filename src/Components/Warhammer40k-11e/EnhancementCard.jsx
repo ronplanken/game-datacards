@@ -37,7 +37,7 @@ export const EnhancementCard = ({
           </div>
           <div className="type">
             <ReactFitty maxSize={10} minSize={2}>
-              {enhancement.detachment}
+              {localize(enhancement.detachment, lang)}
             </ReactFitty>
           </div>
           <div className="content" style={{ fontSize: enhancement?.styling?.textSize ?? 16 }}>

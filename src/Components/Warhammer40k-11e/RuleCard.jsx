@@ -50,7 +50,9 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
   const lang = settings.language;
 
   const ruleTypeLabel =
-    rule.ruleType === "army" ? "Army Rule" : `Detachment Rule${rule.detachment ? ` - ${rule.detachment}` : ""}`;
+    rule.ruleType === "army"
+      ? "Army Rule"
+      : `Detachment Rule${rule.detachment ? ` - ${localize(rule.detachment, lang)}` : ""}`;
 
   // Determine if auto-height should be used (default to true for new cards)
   const useAutoHeight = rule.styling?.autoHeight !== false;

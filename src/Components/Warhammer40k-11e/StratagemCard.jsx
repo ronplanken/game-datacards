@@ -23,7 +23,11 @@ export const StratagemCard = ({
   const target = localize(stratagem.target, lang);
   const effect = localize(stratagem.effect, lang);
 
-  const lineHeight = screens.xs ? "default" : (`${stratagem?.styling?.lineHeight}rem` ?? "1rem");
+  const lineHeight = screens.xs
+    ? "default"
+    : stratagem?.styling?.lineHeight
+      ? `${stratagem.styling.lineHeight}rem`
+      : "1rem";
   return (
     <div
       style={{
@@ -56,7 +60,7 @@ export const StratagemCard = ({
           </div>
           <div className="type">
             <ReactFitty maxSize={14} minSize={2}>
-              {stratagem.detachment} - {localize(stratagem.type, lang)}
+              {localize(stratagem.detachment, lang)} - {localize(stratagem.type, lang)}
             </ReactFitty>
           </div>
           <div className="content" style={{ fontSize: stratagem?.styling?.textSize ?? 16 }}>
