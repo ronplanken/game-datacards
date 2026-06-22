@@ -59,7 +59,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
     if (!settings.selectedDataSource) {
       updateSettings({
         ...settings,
-        selectedDataSource: "40k-10e",
+        selectedDataSource: "40k-11e",
       });
     }
   }, []);
