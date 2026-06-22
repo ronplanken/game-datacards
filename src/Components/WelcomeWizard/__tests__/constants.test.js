@@ -5,9 +5,6 @@ describe("WelcomeWizard GAME_SYSTEMS", () => {
   it("features 11th edition first as a primary game system", () => {
     expect(GAME_SYSTEMS[0].id).toBe("40k-11e");
     expect(GAME_SYSTEMS[0].tier).toBe("primary");
-
-    const primary = GAME_SYSTEMS.filter((s) => s.tier === "primary");
-    expect(primary[0].id).toBe("40k-11e");
   });
 
   it("moves 10th edition into the legacy (secondary) options", () => {
