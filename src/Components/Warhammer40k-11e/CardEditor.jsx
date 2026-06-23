@@ -1,32 +1,45 @@
-import { Alert, Col, Typography } from "antd";
+import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { EnhancementEditor } from "./EnhancementEditor";
+import { RuleEditor } from "./RuleEditor";
+import { StratagemEditor } from "./StratagemEditor";
+import { UnitCardBackEditor } from "./UnitCardBackEditor";
+import { UnitCardEditor } from "./UnitCardEditor";
+import { UnitCardFullEditor } from "./UnitCardFullEditor";
 
-const { Paragraph } = Typography;
-
-// 11th edition cards are read-only in this version. The 10e editor mutates
-// flag-bearing fields (active/showAbility/...) that the multi-language 11e data
-// does not have, so field editing is deferred. Cards can still be added to a
-// category and printed/exported/shared.
+// 11th edition card editor. Mirrors the 10e routing (front / back / full unit
+// editors plus stratagem / enhancement / rule editors) but every editor edits
+// the active card language in place via the localisation helpers.
 export const Warhammer40K11eCardEditor = () => {
   const { activeCard } = useCardStorage();
+  const { settings } = useSettingsStorage();
 
   if (!activeCard) {
     return null;
   }
 
   return (
-    <Col span={24} className={`card-editor`} style={{ padding: 16 }}>
-      <Alert
-        type="info"
-        showIcon
-        message="11th Edition cards are read-only"
-        description={
-          <Paragraph style={{ marginBottom: 0 }}>
-            Editing of individual 11th Edition cards is not available yet. You can still add this card to a category and
-            print, export or share it. Use the language selector in Settings to switch the card language.
-          </Paragraph>
-        }
-      />
-    </Col>
+    <>
+      {settings.showCardsAsDoubleSided !== true && activeCard.variant !== "full" && (
+        <Col span={24} className={`card-editor`}>
+          {activeCard.cardType === "DataCard" && (activeCard.print_side === "front" || !activeCard.print_side) && (
+            <UnitCardEditor />
+          )}
+          {activeCard.cardType === "stratagem" && <StratagemEditor />}
+          {activeCard.cardType === "enhancement" && <EnhancementEditor />}
+          {activeCard.cardType === "rule" && <RuleEditor />}
+          {activeCard.cardType === "DataCard" && activeCard.print_side === "back" && <UnitCardBackEditor />}
+        </Col>
+      )}
+      {(settings.showCardsAsDoubleSided === true || activeCard.variant === "full") && (
+        <Col span={24} className={`card-editor`}>
+          {activeCard.cardType === "DataCard" && <UnitCardFullEditor />}
+          {activeCard.cardType === "stratagem" && <StratagemEditor />}
+          {activeCard.cardType === "rule" && <RuleEditor />}
+          {activeCard.cardType === "enhancement" && <EnhancementEditor />}
+        </Col>
+      )}
+    </>
   );
 };

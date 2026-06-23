@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { localize, getCardName, SUPPORTED_LANGUAGES, LANGUAGE_LABELS } from "../localization.helpers";
+import {
+  localize,
+  getCardName,
+  setLocalizedField,
+  setLocalizedArrayItem,
+  SUPPORTED_LANGUAGES,
+  LANGUAGE_LABELS,
+} from "../localization.helpers";
 
 describe("localize", () => {
   it("returns the requested language when present", () => {
@@ -39,6 +46,50 @@ describe("getCardName", () => {
 
   it("handles a missing card", () => {
     expect(getCardName(undefined, "en")).toBe("");
+  });
+});
+
+describe("setLocalizedField", () => {
+  it("merges into the active language and preserves the other languages", () => {
+    expect(setLocalizedField({ en: "A", de: "B" }, "de", "X")).toEqual({ en: "A", de: "X" });
+  });
+
+  it("adds a new language key without dropping the existing ones", () => {
+    expect(setLocalizedField({ en: "A" }, "fr", "X")).toEqual({ en: "A", fr: "X" });
+  });
+
+  it("keeps plain strings plain (never wraps a string into an object)", () => {
+    expect(setLocalizedField("plain", "de", "X")).toBe("X");
+  });
+
+  it("returns a plain string for nullish input", () => {
+    expect(setLocalizedField(null, "de", "X")).toBe("X");
+    expect(setLocalizedField(undefined, "de", "X")).toBe("X");
+  });
+
+  it("clears the active language but preserves siblings when value is empty", () => {
+    expect(setLocalizedField({ en: "A", de: "B" }, "de", "")).toEqual({ en: "A", de: "" });
+  });
+
+  it("does not treat arrays as language-keyed objects", () => {
+    expect(setLocalizedField(["a", "b"], "de", "X")).toBe("X");
+  });
+});
+
+describe("setLocalizedArrayItem", () => {
+  it("updates an object entry shape-preservingly", () => {
+    const arr = [{ en: "one" }, { en: "two", de: "zwei" }];
+    const result = setLocalizedArrayItem(arr, 1, "de", "ZWEI");
+    expect(result).toEqual([{ en: "one" }, { en: "two", de: "ZWEI" }]);
+    expect(result).not.toBe(arr);
+  });
+
+  it("keeps a plain string entry plain", () => {
+    expect(setLocalizedArrayItem(["a", "b"], 0, "de", "X")).toEqual(["X", "b"]);
+  });
+
+  it("returns a fresh array when the input is nullish", () => {
+    expect(setLocalizedArrayItem(undefined, 0, "de", "X")).toEqual(["X"]);
   });
 });
 

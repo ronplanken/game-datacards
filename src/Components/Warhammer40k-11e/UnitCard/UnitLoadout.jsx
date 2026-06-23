@@ -8,9 +8,12 @@ export const UnitLoadout = ({ unit }) => {
   const { settings } = useSettingsStorage();
   const lang = settings.language;
 
-  const composition = unit.composition?.map((entry) => localize(entry, lang)).filter(Boolean);
-  const loadout = localize(unit.loadout, lang);
-  const leader = localize(unit.leader, lang);
+  // Optional visibility flags let the editor hide a section without deleting
+  // data; an absent flag means shown.
+  const composition =
+    unit.showComposition !== false ? unit.composition?.map((entry) => localize(entry, lang)).filter(Boolean) : [];
+  const loadout = unit.showLoadout !== false ? localize(unit.loadout, lang) : "";
+  const leader = unit.showLeader !== false ? localize(unit.leader, lang) : "";
 
   return (
     <div className="extra">

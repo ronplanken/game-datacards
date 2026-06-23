@@ -12,7 +12,8 @@ export const UnitWargear = ({ unit }) => {
     .map((entry) => localize(entry, lang))
     .filter((entry) => entry && entry.trim().toLowerCase() !== "none");
 
-  if (items.length === 0) {
+  // An absent showWargear flag means shown.
+  if (unit.showWargear === false || items.length === 0) {
     return <div className="wargear_container" />;
   }
 

@@ -25,6 +25,7 @@ description: Table of contents for all Game Datacards documentation files
 
 | File | Description |
 |------|-------------|
+| [40k-11e-card-editing.md](40k-11e-card-editing.md) | How the 11th edition card editor edits language-keyed fields in place for the active card language (with per-field English fallback), which fields stay plain, and the optional show/hide flags |
 | [welcome-wizard-v2.md](welcome-wizard-v2.md) | Onboarding wizard (v2.0.0): 9-step flow, game system selection, interactive demos, component architecture |
 | [release-notifications.md](release-notifications.md) | How shipped changes reach users: quiet release notes in the notification bell for fixes (patch bump), the full What's New wizard for notable features (minor bump), and how the issue-to-PR pipeline routes between them |
 | [listforge-direct-read-import.md](listforge-direct-read-import.md) | ListForge/NewRecruit roster import with match and direct-read modes, format mapping reference |

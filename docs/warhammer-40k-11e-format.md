@@ -6,6 +6,7 @@ tags: [40k-11e, datasource, multi-language, i18n, localization, renderset]
 related:
   - card-data-formats.md
   - custom-datasource-format.md
+  - 40k-11e-card-editing.md
 file_locations:
   - src/Helpers/localization.helpers.js
   - src/Helpers/external.helpers.js

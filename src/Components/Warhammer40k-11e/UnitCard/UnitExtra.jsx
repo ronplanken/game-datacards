@@ -14,16 +14,24 @@ export const UnitExtra = ({ unit }) => {
   const lang = settings.language;
   const abilities = unit.abilities || {};
 
-  const core = abilities.core
-    ?.map((a) => localize(a.name, lang))
-    .filter(Boolean)
-    .join(", ");
-  const faction = abilities.faction
-    ?.map((a) => localize(a.name, lang))
-    .filter(Boolean)
-    .join(", ");
-  const other = abilities.other || [];
-  const damaged = abilities.damaged;
+  // Optional visibility flags let the editor hide a block without deleting data;
+  // an absent flag means shown.
+  const core =
+    unit.showAbilities?.core !== false
+      ? abilities.core
+          ?.map((a) => localize(a.name, lang))
+          .filter(Boolean)
+          .join(", ")
+      : "";
+  const faction =
+    unit.showAbilities?.faction !== false
+      ? abilities.faction
+          ?.map((a) => localize(a.name, lang))
+          .filter(Boolean)
+          .join(", ")
+      : "";
+  const other = unit.showAbilities?.other !== false ? abilities.other || [] : [];
+  const damaged = unit.showDamaged !== false ? abilities.damaged : null;
 
   const hasAbilities = core || faction || other.length > 0;
 

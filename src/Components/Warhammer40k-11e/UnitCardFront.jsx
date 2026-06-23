@@ -70,7 +70,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
           />
           <UnitStats stats={unit.stats} />
           <div className="stats_container" key={`stat-line-invul`}>
-            {unit.abilities?.invul?.value && <UnitInvulTop invul={unit.abilities?.invul} />}
+            {unit.showInvul !== false && unit.abilities?.invul?.value && <UnitInvulTop invul={unit.abilities?.invul} />}
           </div>
         </div>
         <div className="data_container">

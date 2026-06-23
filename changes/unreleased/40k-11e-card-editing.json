@@ -1,0 +1,5 @@
+{
+  "title": "Edit 11th Edition cards",
+  "body": "You can now fully edit 11th Edition cards - stats, weapons, abilities, points, keywords and the stratagem, enhancement and rule cards. Edits apply to the currently selected card language and leave the other languages untouched.",
+  "severity": "success"
+}
