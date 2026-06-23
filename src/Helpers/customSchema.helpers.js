@@ -1103,7 +1103,10 @@ export const filterGlossaryByScope = (glossary, scope) => {
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const PARAMETER_VALUE_PATTERN = String.raw`(?:(?:\d+D\d+|D\d+)(?:\+\d+)?|\d+\+|\d+(?:\+\d+)?)`;
+// A trailing parameter value: a dice expression, a save "N+", or a plain
+// integer, each optionally followed by an inch mark so distance-valued keywords
+// such as Scouts 6" / Fall Back and Shoot 6" resolve like their bare names do.
+const PARAMETER_VALUE_PATTERN = String.raw`(?:(?:(?:\d+D\d+|D\d+)(?:\+\d+)?|\d+\+|\d+(?:\+\d+)?)"?)`;
 const PARAMETER_WORD_PATTERN = String.raw`[A-Za-z][A-Za-z-]*`;
 const PARAMETER_TOKEN_PATTERN = String.raw`(?:${PARAMETER_WORD_PATTERN}\s+){0,3}${PARAMETER_VALUE_PATTERN}`;
 const TEXT_ONLY_PARAMETER_PATTERN = String.raw`${PARAMETER_WORD_PATTERN}(?:\s+${PARAMETER_WORD_PATTERN}){0,2}`;

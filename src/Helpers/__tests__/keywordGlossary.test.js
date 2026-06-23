@@ -144,6 +144,21 @@ describe("resolveKeywordEntry", () => {
     expect(resolveKeywordEntry("Melta 2D6+2", glossary, "weapons")?.key).toBe("melta");
   });
 
+  it("matches parameterized entries with inch-mark distance values", () => {
+    const scoped = [
+      {
+        key: "scouts",
+        name: "Scouts",
+        description: "Pre-battle move.",
+        matchType: "parameterized",
+        appliesTo: ["abilities"],
+      },
+    ];
+    expect(resolveKeywordEntry('Scouts 6"', scoped, "abilities")?.key).toBe("scouts");
+    expect(resolveKeywordEntry('Scouts 9"', scoped, "abilities")?.key).toBe("scouts");
+    expect(resolveKeywordEntry("Scouts", scoped, "abilities")?.key).toBe("scouts");
+  });
+
   it("matches a bare parameterized keyword name but not unrelated trailing text", () => {
     expect(resolveKeywordEntry("Sustained Hits", glossary, "weapons")?.key).toBe("sustained-hits");
     expect(resolveKeywordEntry("Sustained Hits in melee", glossary, "weapons")).toBeNull();
