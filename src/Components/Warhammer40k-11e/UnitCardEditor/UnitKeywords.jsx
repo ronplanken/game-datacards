@@ -92,12 +92,12 @@ export function UnitKeywords({ type, localized = false }) {
             onClick={() =>
               updateActiveCard(() => {
                 const newEntries = [...entries];
-                const label = `New keyword ${newEntries.length + 1}`;
+                const label = `New ${type === "keywords" ? "keyword" : "faction"} ${newEntries.length + 1}`;
                 newEntries.push(localized ? { [lang]: label } : label);
                 return { ...activeCard, [type]: newEntries };
               })
             }>
-            Add keyword
+            {type === "keywords" ? "Add keyword" : "Add faction"}
           </Button>
         </Card>
       </DragDropContext>
