@@ -15,6 +15,7 @@ export function UnitKeywords({ type, localized = false }) {
   const { settings } = useSettingsStorage();
   const lang = settings.language;
   const entries = activeCard[type] || [];
+  const typeLabel = type === "keywords" ? "keyword" : "faction";
 
   return (
     <>
@@ -92,12 +93,12 @@ export function UnitKeywords({ type, localized = false }) {
             onClick={() =>
               updateActiveCard(() => {
                 const newEntries = [...entries];
-                const label = `New ${type === "keywords" ? "keyword" : "faction"} ${newEntries.length + 1}`;
+                const label = `New ${typeLabel} ${newEntries.length + 1}`;
                 newEntries.push(localized ? { [lang]: label } : label);
                 return { ...activeCard, [type]: newEntries };
               })
             }>
-            {type === "keywords" ? "Add keyword" : "Add faction"}
+            {`Add ${typeLabel}`}
           </Button>
         </Card>
       </DragDropContext>
