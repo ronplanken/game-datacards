@@ -128,7 +128,7 @@ export function UnitPoints() {
         onClick={() =>
           updateActiveCard(() => {
             const newPoints = [...points];
-            newPoints.push({ models: 0, cost: 0 });
+            newPoints.push({ models: "", cost: "", keyword: "" });
             return { ...activeCard, points: newPoints };
           })
         }>

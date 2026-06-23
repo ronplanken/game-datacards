@@ -29,7 +29,7 @@ export function UnitKeywords({ type, localized = false }) {
         <Card
           type={"inner"}
           size={"small"}
-          title={<Typography.Text>{type} keywords</Typography.Text>}
+          title={<Typography.Text>{type === "keywords" ? "Keywords" : "Factions"}</Typography.Text>}
           style={{ marginBottom: "16px" }}>
           <div className="keywords_container" style={{ paddingBottom: "4px", paddingTop: "4px" }}>
             <Droppable droppableId={`droppable-keywords-${type}`}>
