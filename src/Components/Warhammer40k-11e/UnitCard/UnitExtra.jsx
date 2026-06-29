@@ -1,5 +1,6 @@
 import { UnitAbility } from "./UnitAbility";
 import { UnitAbilityDescription, MarkupText } from "./UnitAbilityDescription";
+import { UnitCoreAbilities } from "./UnitCoreAbilities";
 import { DamagedIcon } from "../../Icons/WeaponTypeIcon";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize } from "../../../Helpers/localization.helpers";
@@ -16,13 +17,9 @@ export const UnitExtra = ({ unit }) => {
 
   // Optional visibility flags let the editor hide a block without deleting data;
   // an absent flag means shown.
-  const core =
-    unit.showAbilities?.core !== false
-      ? abilities.core
-          ?.map((a) => localize(a.name, lang))
-          .filter(Boolean)
-          .join(", ")
-      : "";
+  // Core abilities keep their raw multilingual shape so UnitCoreAbilities can
+  // match each against the keyword glossary while still displaying them localised.
+  const coreAbilities = unit.showAbilities?.core !== false ? (abilities.core || []).filter((a) => a?.name) : [];
   const faction =
     unit.showAbilities?.faction !== false
       ? abilities.faction
@@ -33,7 +30,7 @@ export const UnitExtra = ({ unit }) => {
   const other = unit.showAbilities?.other !== false ? abilities.other || [] : [];
   const damaged = unit.showDamaged !== false ? abilities.damaged : null;
 
-  const hasAbilities = core || faction || other.length > 0;
+  const hasAbilities = coreAbilities.length > 0 || faction || other.length > 0;
 
   return (
     <div className="extra">
@@ -42,7 +39,7 @@ export const UnitExtra = ({ unit }) => {
           <div className="heading">
             <div className="title">Abilities</div>
           </div>
-          {core && <UnitAbility name={"core"} value={core} />}
+          <UnitCoreAbilities abilities={coreAbilities} />
           {faction && <UnitAbility name={"faction"} value={faction} />}
           {other.map((ability, index) => (
             <UnitAbilityDescription name={ability.name} description={ability?.description} key={`ability-${index}`} />

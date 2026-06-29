@@ -545,12 +545,29 @@ export const get40k11eData = async (language = "en") => {
     return allData;
   };
 
-  const allFactionsData = await fetchAllData();
+  // The 11e datasource ships a shared keyword glossary (weapon keywords + core
+  // abilities) as keywords.json. Fetch it alongside the factions so cards can
+  // show keyword/ability tooltips. Entries stay multilingual ({ key, category,
+  // name, description }) and are localised at render time. Older datasources may
+  // predate the file, so a failed fetch degrades to an empty glossary.
+  const fetchKeywordGlossary = async () => {
+    try {
+      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/keywords.json?${new Date().getTime()}`);
+      if (Array.isArray(data?.keywords)) return data.keywords;
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [allFactionsData, keywordGlossary] = await Promise.all([fetchAllData(), fetchKeywordGlossary()]);
 
   return {
     version: import.meta.env.VITE_VERSION,
     lastUpdated: allFactionsData[0].updated,
     lastCheckedForUpdate: new Date().toISOString(),
+    // Shared 11e keyword glossary (weapon keywords + core abilities), multilingual.
+    keywordGlossary,
     // The language this cache was built for. useDataSourceStorage refetches when
     // the user's selected language differs from this value.
     language,

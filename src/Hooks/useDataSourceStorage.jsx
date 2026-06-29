@@ -32,6 +32,13 @@ export function useDataSourceStorage() {
   return context;
 }
 
+// Non-throwing accessor for consumers that may legitimately render outside the
+// provider (e.g. isolated component tests or detached renders). Returns
+// `undefined` instead of throwing so callers can degrade gracefully.
+export function useOptionalDataSourceStorage() {
+  return React.useContext(DataSourceStorageContext);
+}
+
 var dataStore = localForage.createInstance({
   name: "data",
 });

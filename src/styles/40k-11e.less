@@ -25,4 +25,14 @@
       margin: 0;
     }
   }
+
+  // Weapon keywords / core abilities that resolve to a keyword-glossary entry
+  // get a subtle dotted underline (and a help cursor) to signal the hover
+  // tooltip carrying the localised rule text.
+  .keyword-button--has-info,
+  .keyword-info {
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    cursor: help;
+  }
 }

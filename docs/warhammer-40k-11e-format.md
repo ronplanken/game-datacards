@@ -10,7 +10,9 @@ related:
 file_locations:
   - src/Helpers/localization.helpers.js
   - src/Helpers/external.helpers.js
+  - src/Helpers/keyword11eGlossary.helpers.js
   - src/Hooks/useDataSourceStorage.jsx
+  - src/Hooks/use11eKeywordGlossary.js
   - src/Components/Warhammer40k-11e/
   - src/styles/40k-11e.less
 ---
@@ -44,6 +46,7 @@ detachments, rules).
 - [Data pipeline](#data-pipeline)
 - [The dedicated renderset](#the-dedicated-renderset)
 - [Rich-text markup](#rich-text-markup)
+- [Keyword glossary (tooltips)](#keyword-glossary-tooltips)
 - [Rule cards](#rule-cards)
 - [Faction colours and symbols](#faction-colours-and-symbols)
 - [Scope and limitations](#scope-and-limitations)
@@ -96,8 +99,45 @@ only adds the keyword/list bits for the new markup.
 class="gdc-keyword">`, normalises `\r` to `\n`, and puts `■` bullets on their own
 line; `MarkupText` then renders it through ReactMarkdown (with `rehype-raw` +
 sanitisation allowing `span[class]`, `strong`, `ul`, `li`). No keyword dictionary
-is needed because keywords are already explicitly tagged in the data — which also
-avoids the English-only regex the 10e renderer uses.
+is needed for this **highlighting** because keywords are already explicitly
+tagged in the data. Hover **explanations** for keywords and core abilities come
+from a separate glossary file — see [Keyword glossary](#keyword-glossary-tooltips).
+
+## Keyword glossary (tooltips)
+
+The 11e datasource ships a shared keyword glossary as `11th/gdc/keywords.json` (a
+card object: `{ source, cardType: "keywords", compatibleDataVersion, keywords: [] }`).
+Each entry is multilingual and tagged with a category:
+
+```json
+{
+  "key": "rapid-fire",
+  "category": "weapon",
+  "name": { "en": "Rapid Fire" },
+  "description": { "en": "Increase the Attacks characteristic by X when targeting units within half range." }
+}
+```
+
+- **Categories:** `weapon` (weapon-profile keywords such as `Assault`, `Rapid
+  Fire`, `Anti`) and `core` (unit core abilities such as `Deep Strike`, `Feel No
+  Pain`, `Scouts`).
+- **Fetch:** `get40k11eData` loads `keywords.json` alongside the faction files and
+  attaches it to the datasource as `keywordGlossary`. A failed fetch (e.g. an
+  older datasource that predates the file) degrades to an empty glossary.
+- **Delivery:** components read it through `use11eKeywordGlossary()`, a
+  non-throwing accessor over the data-source context, so a card rendered outside
+  the provider (or for a different datasource) simply shows no tooltips.
+- **Matching:** `resolve11eKeywordEntry(tag, glossary, category)` matches a card
+  tag against each entry's canonical **English** name (card tags are English
+  regardless of the selected card language). It accepts an optional trailing
+  parameter value (`Rapid Fire 1`, `Deadly Demise D3`, `Feel No Pain 5+`,
+  `Scouts 6"`) and the hyphenated `Anti-X` form, preferring the longest matching
+  name when several entries match.
+- **Rendering:** matched weapon keywords (`UnitWeaponKeyword.jsx`) and core
+  abilities (`UnitCoreAbilities.jsx`) get a dotted-underline affordance and a
+  hover tooltip whose **localised** description is rendered with the 11e
+  `MarkupText`/`LocalizedMarkup` engine (so `<k>`/`<b>` markup and the selected
+  card language are respected). Unmatched tags render plain, exactly as before.
 
 ## Rule cards
 

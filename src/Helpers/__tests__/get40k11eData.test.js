@@ -28,11 +28,30 @@ const faction = {
   },
 };
 
+// The shared keyword glossary file (keywords.json) the 11e datasource ships
+// alongside the faction files. Entries stay multilingual and are keyed by
+// category ("weapon" / "core").
+const keywordsFile = {
+  source: "40k-11e",
+  cardType: "keywords",
+  keywords: [
+    {
+      key: "rapid-fire",
+      category: "weapon",
+      name: { en: "Rapid Fire" },
+      description: { en: "Increase Attacks by X when targeting units within half range." },
+    },
+  ],
+};
+
 describe("get40k11eData", () => {
   beforeEach(() => {
     vi.stubEnv("VITE_DATASOURCE_11TH_URL", "https://example.test/11th");
     vi.stubEnv("VITE_VERSION", "9.9.9");
-    global.fetch = vi.fn(async () => ({ ok: true, text: async () => JSON.stringify(faction) }));
+    global.fetch = vi.fn(async (url) => ({
+      ok: true,
+      text: async () => JSON.stringify(url.includes("keywords.json") ? keywordsFile : faction),
+    }));
   });
 
   afterEach(() => {
@@ -74,10 +93,33 @@ describe("get40k11eData", () => {
     expect(typeof result.lastCheckedForUpdate).toBe("string");
   });
 
-  it("fetches one file per faction (29 factions)", async () => {
+  it("fetches one file per faction (29) plus the shared keywords.json", async () => {
     await get40k11eData("en");
-    expect(global.fetch).toHaveBeenCalledTimes(29);
-    const url = global.fetch.mock.calls[0][0];
-    expect(url).toMatch(/^https:\/\/example\.test\/11th\/[a-z_]+\.json\?\d+$/);
+    const factionCalls = global.fetch.mock.calls.filter(([u]) => !u.includes("keywords.json"));
+    const glossaryCalls = global.fetch.mock.calls.filter(([u]) => u.includes("keywords.json"));
+    expect(factionCalls).toHaveLength(29);
+    expect(glossaryCalls).toHaveLength(1);
+    expect(factionCalls[0][0]).toMatch(/^https:\/\/example\.test\/11th\/[a-z_]+\.json\?\d+$/);
+  });
+
+  it("attaches the multilingual keyword glossary from keywords.json", async () => {
+    const result = await get40k11eData("en");
+    expect(result.keywordGlossary).toHaveLength(1);
+    expect(result.keywordGlossary[0]).toMatchObject({ key: "rapid-fire", category: "weapon" });
+    // Entries stay multilingual here; localisation happens at render time.
+    expect(result.keywordGlossary[0].name).toEqual({ en: "Rapid Fire" });
+  });
+
+  it("degrades to an empty glossary when keywords.json is unavailable", async () => {
+    global.fetch = vi.fn(async (url) => ({
+      ok: !url.includes("keywords.json"),
+      status: url.includes("keywords.json") ? 404 : 200,
+      statusText: url.includes("keywords.json") ? "Not Found" : "OK",
+      text: async () => JSON.stringify(faction),
+    }));
+    const result = await get40k11eData("en");
+    expect(result.keywordGlossary).toEqual([]);
+    // Factions still load fine when the glossary file is missing.
+    expect(result.data).toHaveLength(29);
   });
 });
