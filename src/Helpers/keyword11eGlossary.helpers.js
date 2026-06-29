@@ -25,10 +25,18 @@ const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // A tag matches an entry name when it is the name, optionally extended by
 // hyphenated qualifier words (e.g. "Anti" → "Anti-Vehicle") and/or a trailing
-// parameter value (e.g. "4+"). Case-insensitive.
+// parameter value (e.g. "4+"). Case-insensitive. Compiled regexes are memoised
+// (bounded by the glossary size) so repeated card renders don't recompile the
+// same pattern for every entry on every lookup.
+const regexCache = new Map();
+
 const buildNameRegex = (name) => {
+  const cached = regexCache.get(name);
+  if (cached) return cached;
   const escaped = escapeRegExp(name.toLowerCase().trim());
-  return new RegExp(String.raw`^${escaped}(?:-[a-z]+)*(?:\s+${PARAMETER_VALUE})?$`, "i");
+  const regex = new RegExp(String.raw`^${escaped}(?:-[a-z]+)*(?:\s+${PARAMETER_VALUE})?$`, "i");
+  regexCache.set(name, regex);
+  return regex;
 };
 
 /**

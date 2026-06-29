@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Button } from "antd";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { LocalizedMarkup } from "./UnitAbilityDescription";
@@ -16,24 +17,22 @@ export const UnitWeaponKeywords = ({ keywords }) => {
       {keywords?.map((keyword, index) => {
         const entry = resolve11eKeywordEntry(keyword, glossary, "weapon");
         const button = (
-          <Button
-            type="text"
-            size="small"
-            className={`keyword-button${entry ? " keyword-button--has-info" : ""}`}
-            key={`${keyword}-${index}`}>
+          <Button type="text" size="small" className={`keyword-button${entry ? " keyword-button--has-info" : ""}`}>
             {keyword}
           </Button>
         );
 
-        if (!entry) return button;
-
+        // The keyed wrapper is the array child, so the button itself needs no key.
         return (
-          <Tooltip
-            key={`${keyword}-${index}`}
-            placement="bottom"
-            content={<LocalizedMarkup value={entry.description} />}>
-            {button}
-          </Tooltip>
+          <Fragment key={`${keyword}-${index}`}>
+            {entry ? (
+              <Tooltip placement="bottom" content={<LocalizedMarkup value={entry.description} />}>
+                {button}
+              </Tooltip>
+            ) : (
+              button
+            )}
+          </Fragment>
         );
       })}
     </span>
