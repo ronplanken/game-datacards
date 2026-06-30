@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { Button } from "antd";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { LocalizedMarkup } from "./UnitAbilityDescription";
-import { resolve11eKeywordEntry } from "../../../Helpers/keyword11eGlossary.helpers";
+import { resolveKeywordEntry } from "../../../Helpers/customSchema.helpers";
 import { use11eKeywordGlossary } from "../../../Hooks/use11eKeywordGlossary";
 
 // 11th edition weapon keywords. When the datasource ships a keyword glossary,
@@ -15,7 +15,7 @@ export const UnitWeaponKeywords = ({ keywords }) => {
   return (
     <span className="keyword">
       {keywords?.map((keyword, index) => {
-        const entry = resolve11eKeywordEntry(keyword, glossary, "weapon");
+        const entry = resolveKeywordEntry(keyword, glossary, "weapons");
         const button = (
           <Button type="text" size="small" className={`keyword-button${entry ? " keyword-button--has-info" : ""}`}>
             {keyword}
@@ -26,7 +26,9 @@ export const UnitWeaponKeywords = ({ keywords }) => {
         return (
           <Fragment key={`${keyword}-${index}`}>
             {entry ? (
-              <Tooltip placement="bottom" content={<LocalizedMarkup value={entry.description} />}>
+              <Tooltip
+                placement="bottom"
+                content={<LocalizedMarkup value={entry.descriptionLoc ?? entry.description} />}>
                 {button}
               </Tooltip>
             ) : (

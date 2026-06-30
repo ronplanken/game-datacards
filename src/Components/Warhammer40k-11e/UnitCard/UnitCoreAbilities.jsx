@@ -3,7 +3,7 @@ import { Tooltip } from "../../Tooltip/Tooltip";
 import { LocalizedMarkup } from "./UnitAbilityDescription";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize } from "../../../Helpers/localization.helpers";
-import { resolve11eKeywordEntry } from "../../../Helpers/keyword11eGlossary.helpers";
+import { resolveKeywordEntry } from "../../../Helpers/customSchema.helpers";
 import { use11eKeywordGlossary } from "../../../Hooks/use11eKeywordGlossary";
 
 // Core abilities row (e.g. "Deadly Demise D3, Deep Strike, Feel No Pain 5+").
@@ -24,12 +24,17 @@ export const UnitCoreAbilities = ({ abilities }) => {
       <span className="value">
         {items.map((name, index) => {
           const display = localize(name, settings.language);
-          const entry = resolve11eKeywordEntry(localize(name, "en"), glossary, "core");
+          // Match against the canonical English name; the glossary uses the
+          // custom-datasource shape (matchType + appliesTo), so reuse the shared
+          // resolver. "abilities" scope covers the core ability keywords.
+          const entry = resolveKeywordEntry(localize(name, "en"), glossary, "abilities");
           return (
             <Fragment key={`core-ability-${index}`}>
               {index > 0 && ", "}
               {entry ? (
-                <Tooltip placement="bottom" content={<LocalizedMarkup value={entry.description} />}>
+                <Tooltip
+                  placement="bottom"
+                  content={<LocalizedMarkup value={entry.descriptionLoc ?? entry.description} />}>
                   <span className="keyword-info">{display}</span>
                 </Tooltip>
               ) : (

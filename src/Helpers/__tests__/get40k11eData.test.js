@@ -29,17 +29,19 @@ const faction = {
 };
 
 // The shared keyword glossary file (keywords.json) the 11e datasource ships
-// alongside the faction files. Entries stay multilingual and are keyed by
-// category ("weapon" / "core").
+// alongside the faction files. Entries use the custom-datasource glossary shape
+// (name/description strings, matchType, appliesTo) with optional nameLoc/
+// descriptionLoc language maps for translated entries.
 const keywordsFile = {
   source: "40k-11e",
   cardType: "keywords",
   keywords: [
     {
       key: "rapid-fire",
-      category: "weapon",
-      name: { en: "Rapid Fire" },
-      description: { en: "Increase Attacks by X when targeting units within half range." },
+      name: "Rapid Fire",
+      description: "Increase the Attacks characteristic by X when targeting units within half range.",
+      matchType: "parameterized",
+      appliesTo: ["weapons"],
     },
   ],
 };
@@ -102,12 +104,15 @@ describe("get40k11eData", () => {
     expect(factionCalls[0][0]).toMatch(/^https:\/\/example\.test\/11th\/[a-z_]+\.json\?\d+$/);
   });
 
-  it("attaches the multilingual keyword glossary from keywords.json", async () => {
+  it("attaches the keyword glossary from keywords.json", async () => {
     const result = await get40k11eData("en");
     expect(result.keywordGlossary).toHaveLength(1);
-    expect(result.keywordGlossary[0]).toMatchObject({ key: "rapid-fire", category: "weapon" });
-    // Entries stay multilingual here; localisation happens at render time.
-    expect(result.keywordGlossary[0].name).toEqual({ en: "Rapid Fire" });
+    expect(result.keywordGlossary[0]).toMatchObject({
+      key: "rapid-fire",
+      name: "Rapid Fire",
+      matchType: "parameterized",
+      appliesTo: ["weapons"],
+    });
   });
 
   it("degrades to an empty glossary when keywords.json is unavailable", async () => {

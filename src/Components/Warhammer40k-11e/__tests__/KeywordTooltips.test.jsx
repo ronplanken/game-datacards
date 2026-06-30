@@ -7,12 +7,25 @@ vi.mock("../../../Hooks/useSettingsStorage", () => ({
   useSettingsStorage: () => ({ settings: { language: "en" } }),
 }));
 
-// Stub the glossary hook with a small fixture so the components resolve tooltips
-// without needing the data-source provider.
+// Stub the glossary hook with a small fixture in the custom-datasource glossary
+// shape (name/description strings, matchType, appliesTo) so the shared
+// resolveKeywordEntry matcher resolves tooltips without the data-source provider.
 vi.mock("../../../Hooks/use11eKeywordGlossary", () => ({
   use11eKeywordGlossary: () => [
-    { key: "rapid-fire", category: "weapon", name: { en: "Rapid Fire" }, description: { en: "Rapid Fire rule." } },
-    { key: "scouts", category: "core", name: { en: "Scouts" }, description: { en: "Scouts rule." } },
+    {
+      key: "rapid-fire",
+      name: "Rapid Fire",
+      description: "Rapid Fire rule.",
+      matchType: "parameterized",
+      appliesTo: ["weapons"],
+    },
+    {
+      key: "scouts",
+      name: "Scouts",
+      description: "Scouts rule.",
+      matchType: "parameterized",
+      appliesTo: ["abilities"],
+    },
   ],
 }));
 
