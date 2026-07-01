@@ -11,6 +11,7 @@ file_locations:
   - src/Helpers/localization.helpers.js
   - src/Helpers/external.helpers.js
   - src/Helpers/customSchema.helpers.js
+  - src/Helpers/listPoints.helpers.js
   - src/Hooks/useDataSourceStorage.jsx
   - src/Hooks/use11eKeywordGlossary.js
   - src/Components/Warhammer40k-11e/
@@ -47,6 +48,7 @@ detachments, rules).
 - [The dedicated renderset](#the-dedicated-renderset)
 - [Rich-text markup](#rich-text-markup)
 - [Keyword glossary (tooltips)](#keyword-glossary-tooltips)
+- [Points, unit sizes and roster surcharge](#points-unit-sizes-and-roster-surcharge)
 - [Rule cards](#rule-cards)
 - [Faction colours and symbols](#faction-colours-and-symbols)
 - [Scope and limitations](#scope-and-limitations)
@@ -143,6 +145,26 @@ add `nameLoc`/`descriptionLoc` language maps:
   hover tooltip whose description is localised (`descriptionLoc[lang]`, falling
   back to the English `description`) and rendered with the 11e
   `MarkupText`/`LocalizedMarkup` engine. Unmatched tags render plain.
+
+## Points, unit sizes and roster surcharge
+
+Each datasheet's `points` is an array of size tiers — `{ cost, models, keyword, detachment }`
+— plus (11e-only) an optional `additionalCost: { cost, afterSelections }`.
+
+- **Unit size (base cost):** in a list, a card's base cost is the chosen tier
+  (`card.unitSize`, picked via the unit config modal, which auto-selects when a
+  datasheet has a single tier). 11e cards that have not been configured default to
+  their **cheapest** tier so they always count.
+- **Roster surcharge (`additionalCost`):** a per-datasheet army-building
+  surcharge — _not_ a per-model cost. Each copy of a datasheet beyond
+  `afterSelections` selections adds `cost` to the list total. Example: Cerastus
+  Knight Atrapos is `405` for the first and `+20` for each additional
+  (`{ cost: "20", afterSelections: 1 }`).
+- **Where it is applied:** `computeCategoryPoints(cards)` in `listPoints.helpers.js`
+  sums base costs (+ enhancements) and adds the surcharge, grouping duplicates by
+  datasheet identity (`id` + `source`). It backs the tree category badge, the list
+  overview total (which shows the surcharge on its own line) and the text export,
+  so all three agree. 10e lists are unaffected (they carry no `additionalCost`).
 
 ## Rule cards
 

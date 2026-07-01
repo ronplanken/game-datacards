@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
 import { useSync, CategorySyncIcon } from "../../Premium";
 import { useUmami } from "../../Hooks/useUmami";
 import { List } from "../../Icons/List";
@@ -52,15 +53,9 @@ export function TreeCategory({
     message.success("Sub-category created.");
   };
 
-  const pointsTotal = category.cards?.reduce((total, card) => {
-    if (card?.source === "40k-10e" && card?.unitSize?.cost) {
-      if (card.selectedEnhancement) {
-        return total + Number(card?.unitSize?.cost) + Number(card.selectedEnhancement.cost);
-      }
-      return total + Number(card?.unitSize?.cost);
-    }
-    return total;
-  }, 0);
+  // Includes 10e (configured unit sizes), 11e (defaulting to the cheapest tier)
+  // and the 11e per-datasheet roster surcharge. See listPoints.helpers.
+  const pointsTotal = getCategoryPointsTotal(category.cards);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
