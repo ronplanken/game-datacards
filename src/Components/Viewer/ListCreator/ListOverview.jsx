@@ -538,9 +538,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 ))}
 
                 {pointsSurcharge > 0 && (
-                  <div className="list-overview-total list-overview-surcharge">
+                  <div className="list-overview-surcharge">
                     <span className="list-overview-total-label">Additional selections</span>
-                    <span className="list-overview-total-value">+{pointsSurcharge} pts</span>
+                    <span className="list-overview-surcharge-value">+{pointsSurcharge} pts</span>
                   </div>
                 )}
                 <div className="list-overview-total">
