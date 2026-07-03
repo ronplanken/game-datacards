@@ -243,6 +243,8 @@ Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem
 | template_subscriptions | Track template subscriptions |
 | category_shares | Publicly shared categories |
 | sync_metadata | Conflict resolution tracking |
+| dm_tracker_games | game-datamissions tracker games (one row per game, cross-app) |
+| dm_tracker_kv | game-datamissions per-user tracker preferences (cross-app) |
 
 ### Migration Overview
 
@@ -266,6 +268,7 @@ Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem
 | 016 | fix_search_path | Security hardening for search-path hijacking |
 | 017 | fix_rls_initplan | RLS performance optimization |
 | 018 | category_sharing | Enhanced category sharing with owned shares |
+| 028 | datamissions_tracker_sync | Cross-app tracker sync tables/RPCs for game-datamissions |
 
 ### Feature Flags
 
