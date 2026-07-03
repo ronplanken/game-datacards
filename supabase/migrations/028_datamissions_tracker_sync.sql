@@ -55,6 +55,7 @@ CREATE POLICY "Users can delete own dm tracker games"
 CREATE TABLE IF NOT EXISTS public.dm_tracker_kv (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  -- Allowed keys; must stay in sync with the p_key validation in sync_dm_tracker_kv below.
   key TEXT NOT NULL CHECK (key IN ('settings')),
   value JSONB NOT NULL,
   version INTEGER NOT NULL DEFAULT 1,
@@ -177,6 +178,7 @@ BEGIN
     RETURN jsonb_build_object('success', false, 'error', 'Not authenticated');
   END IF;
 
+  -- Must stay in sync with the CHECK constraint on dm_tracker_kv.key above.
   IF p_key IS NULL OR p_key NOT IN ('settings') THEN
     RETURN jsonb_build_object('success', false, 'error', 'Invalid key');
   END IF;
