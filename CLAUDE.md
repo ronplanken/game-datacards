@@ -269,6 +269,7 @@ Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem
 | 017 | fix_rls_initplan | RLS performance optimization |
 | 018 | category_sharing | Enhanced category sharing with owned shares |
 | 028 | datamissions_tracker_sync | Cross-app tracker sync tables/RPCs for game-datamissions |
+| 029 | signup_source | Track which app (datacards/datamissions) an account first signed in on |
 
 ### Feature Flags
 
