@@ -1,9 +1,11 @@
+{{- $app := "gd network" -}}
+{{- if .Data -}}{{- if eq (index .Data "signup_app") "game-datamissions" -}}{{- $app = "Game Datamissions" -}}{{- else if eq (index .Data "signup_app") "game-datacards" -}}{{- $app = "Game Datacards" -}}{{- end -}}{{- end -}}
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirm Your Email - gd network</title>
+  <title>Confirm Your Email - {{ $app }}</title>
   <!--[if mso]>
   <noscript>
     <xml>
@@ -27,7 +29,7 @@
   </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-  <div class="preheader">Confirm your email to start using gd network.&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;</div>
+  <div class="preheader">Confirm your email to start using {{ $app }}.&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;&#847;</div>
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" class="body-bg" style="background-color: #f4f4f5;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
@@ -35,7 +37,7 @@
           <!-- Header -->
           <tr>
             <td align="center" style="background: linear-gradient(135deg, #0a1628 0%, #0f1f35 100%); padding: 32px 40px;">
-              <img src="https://game-datacards.eu/logo192.png" alt="gd network" width="48" height="48" style="display: block; margin: 0 auto 16px; border-radius: 50%; border: 0;">
+              <img src="https://game-datacards.eu/logo192.png" alt="{{ $app }}" width="48" height="48" style="display: block; margin: 0 auto 16px; border-radius: 50%; border: 0;">
               <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #f1f5f9; letter-spacing: -0.02em;">Confirm Your Email</h1>
             </td>
           </tr>
@@ -43,7 +45,7 @@
           <tr>
             <td style="padding: 40px;">
               <p class="body-text" style="margin: 0 0 24px; font-size: 16px; line-height: 1.6; color: #374151;">
-                Thanks for signing up for gd network. We need to verify your email address before you can access your account.
+                Thanks for signing up for {{ $app }}. We need to verify your email address before you can access your account.
               </p>
               <p class="body-text" style="margin: 0 0 24px; font-size: 16px; line-height: 1.6; color: #374151;">
                 Use the button below to confirm your email address.
@@ -94,7 +96,7 @@
           <!-- Footer -->
           <tr>
             <td style="background-color: #0a1628; padding: 24px 40px; text-align: center;">
-              <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #f1f5f9;">gd network</p>
+              <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #f1f5f9;">{{ $app }}</p>
               <p style="margin: 0; font-size: 12px; color: #94a3b8;">
                 If you did not create this account, you can safely ignore this email.
               </p>
