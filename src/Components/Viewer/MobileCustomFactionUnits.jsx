@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { getCardsForCardType, groupCardsBySubcategory } from "../../Helpers/customDatasource.helpers";
 import "./MobileFactionUnits.css";
 
 export const MobileCustomFactionUnits = () => {
@@ -31,7 +31,7 @@ export const MobileCustomFactionUnits = () => {
     navigate(`/mobile/${factionSlug}/${cardSlug}`);
   };
 
-  // Collect all cards grouped by card type
+  // Collect all cards grouped by card type, with optional subcategory grouping
   const { grouped, allCards } = useMemo(() => {
     if (!schema?.cardTypes || !selectedFaction) return { grouped: [], allCards: [] };
 
@@ -39,14 +39,18 @@ export const MobileCustomFactionUnits = () => {
     const all = [];
 
     schema.cardTypes.forEach((ct) => {
-      const arrayName = getTargetArray(ct.key) || getTargetArray(ct.baseType);
-      const cards =
-        selectedFaction[arrayName]?.filter((c) => c.cardType === ct.key || c.cardType === ct.baseType) || [];
+      const cards = getCardsForCardType(selectedFaction, ct);
 
       if (cards.length > 0) {
         const sorted = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-        groups.push({ key: ct.key, label: ct.label, cards: sorted });
         all.push(...sorted);
+
+        const subGroups = ct?.schema?.metadata?.hasSubcategory ? groupCardsBySubcategory(sorted) : null;
+        if (subGroups) {
+          groups.push({ key: ct.key, label: ct.label, subGroups, hasSubcategory: true });
+        } else {
+          groups.push({ key: ct.key, label: ct.label, cards: sorted });
+        }
       }
     });
 
@@ -100,13 +104,31 @@ export const MobileCustomFactionUnits = () => {
               <div key={group.key} className="faction-units-section">
                 <div className="faction-units-section-header">
                   <span>{group.label}</span>
-                  <span className="faction-units-section-count">{group.cards.length}</span>
+                  <span className="faction-units-section-count">
+                    {group.hasSubcategory
+                      ? group.subGroups?.reduce((sum, sg) => sum + sg.cards.length, 0)
+                      : group.cards?.length || 0}
+                  </span>
                 </div>
-                {group.cards.map((card) => (
-                  <button key={card.id} className="faction-units-item" onClick={() => handleCardClick(card)}>
-                    <span className="faction-units-item-name">{card.name}</span>
-                  </button>
-                ))}
+                {group.hasSubcategory
+                  ? group.subGroups?.map((subGroup) => (
+                      <div key={subGroup.key || "__uncategorized__"} className="faction-units-subcategory">
+                        <div className="faction-units-subcategory-header">
+                          <span>{subGroup.label}</span>
+                          <span className="faction-units-subcategory-count">{subGroup.cards.length}</span>
+                        </div>
+                        {subGroup.cards.map((card) => (
+                          <button key={card.id} className="faction-units-item" onClick={() => handleCardClick(card)}>
+                            <span className="faction-units-item-name">{card.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    ))
+                  : group.cards?.map((card) => (
+                      <button key={card.id} className="faction-units-item" onClick={() => handleCardClick(card)}>
+                        <span className="faction-units-item-name">{card.name}</span>
+                      </button>
+                    ))}
               </div>
             ))}
           </>
