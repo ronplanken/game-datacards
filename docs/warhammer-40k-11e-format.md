@@ -76,7 +76,12 @@ the active datasource is `40k-11e`).
 - **Fetch:** `get40k11eData(language)` in `src/Helpers/external.helpers.js`
   fetches the 29 faction files, injects the missing `cardType` (`DataCard` for
   datasheets, `stratagem`, `enhancement`, leaves rule cards to the rules
-  pipeline) and stamps `source: "40k-11e"`.
+  pipeline) and stamps `source: "40k-11e"`. Alongside them it fetches the two
+  shared files: `keywords.json` (keyword glossary, see below) and `core.json` —
+  the core stratagems (Command Re-roll, Fire Overwatch, …), which are exposed on
+  every faction as `basicStratagems` and rendered under the "Basic stratagems"
+  header in the stratagem list, mirroring the 10e core.json flow. Both degrade
+  to empty when the datasource predates the file.
 - **Names resolved at load:** only each card's top-level `name` is resolved to a
   string for the selected language. Dozens of non-renderer consumers (faction
   tree, card list, tabs, search, sort, export filenames) read `card.name` as a

@@ -560,7 +560,27 @@ export const get40k11eData = async (language = "en") => {
     }
   };
 
-  const [allFactionsData, keywordGlossary] = await Promise.all([fetchAllData(), fetchKeywordGlossary()]);
+  // Core stratagems (Command Re-roll, Fire Overwatch, …) ship as core.json,
+  // mirroring the 10th edition core file. They become each faction's
+  // basicStratagems below; older datasources without the file degrade to none.
+  const fetchCoreStratagems = async () => {
+    try {
+      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/core.json?${new Date().getTime()}`);
+      return Array.isArray(data?.stratagems) ? data.stratagems : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [allFactionsData, keywordGlossary, coreStratagems] = await Promise.all([
+    fetchAllData(),
+    fetchKeywordGlossary(),
+    fetchCoreStratagems(),
+  ]);
+
+  const basicStratagems = coreStratagems.map((strat) => {
+    return { ...strat, cardType: "stratagem", source: "40k-11e", name: localize(strat.name, language) };
+  });
 
   return {
     version: import.meta.env.VITE_VERSION,
@@ -605,7 +625,9 @@ export const get40k11eData = async (language = "en") => {
           };
         }),
         rules: resolve11eRuleNames(val?.rules, language),
-        basicStratagems: [],
+        // The same core set is exposed on every faction, matching how the 10e
+        // datasource shares its core.json stratagems.
+        basicStratagems,
       };
     }),
   };
