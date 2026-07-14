@@ -218,6 +218,12 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
             )
           : (selectedFaction.basicStratagems ?? []);
 
+        // Datasources without core stratagems (e.g. 11th edition ships none yet)
+        // skip the Basic section entirely instead of rendering an empty header.
+        if (!basicStratagems || basicStratagems.length === 0) {
+          return [{ type: "header", name: "Faction stratagems" }, ...mainStratagems];
+        }
+
         return [
           { type: "header", name: "Basic stratagems" },
           ...basicStratagems,
