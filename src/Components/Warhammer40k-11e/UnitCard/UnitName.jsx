@@ -22,6 +22,7 @@ export const UnitName = ({
   name,
   subname,
   points,
+  additionalCost,
   legends,
   combatPatrol,
   externalImage,
@@ -83,7 +84,12 @@ export const UnitName = ({
       </div>
       {legends && <div className={`legends${hasMultiplePoints ? " legends--multi" : ""}`} style={legendsStyle} />}
       {combatPatrol && <div className="combatpatrol" />}
-      <UnitPoints points={points} showAllPoints={showAllPoints} showPointsModels={showPointsModels} />
+      <UnitPoints
+        points={points}
+        additionalCost={additionalCost}
+        showAllPoints={showAllPoints}
+        showPointsModels={showPointsModels}
+      />
     </HeaderContainer>
   );
 };

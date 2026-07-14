@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { getCardBaseCost, computeCategoryPoints, getCategoryPointsTotal } from "../listPoints.helpers";
+import {
+  getCardBaseCost,
+  computeCategoryPoints,
+  getCategoryPointsTotal,
+  getSelectablePointsTiers,
+} from "../listPoints.helpers";
 
 const atrapos = (over = {}) => ({
   id: "atrapos",
@@ -8,6 +13,33 @@ const atrapos = (over = {}) => ({
   points: [{ cost: "405", models: "1" }],
   additionalCost: { cost: "20", afterSelections: 1 },
   ...over,
+});
+
+describe("getSelectablePointsTiers", () => {
+  it("keeps 10e tiers flagged active and drops inactive ones", () => {
+    const card = {
+      points: [
+        { models: 5, cost: 90, active: true },
+        { models: 10, cost: 170, active: false },
+      ],
+    };
+    expect(getSelectablePointsTiers(card)).toEqual([{ models: 5, cost: 90, active: true }]);
+  });
+
+  it("keeps 11e tiers that carry no active flag at all", () => {
+    const card = {
+      points: [
+        { models: "1", cost: "405", keyword: null, detachment: null },
+        { models: "2", cost: "425", keyword: null, detachment: null },
+      ],
+    };
+    expect(getSelectablePointsTiers(card)).toHaveLength(2);
+  });
+
+  it("returns an empty array for missing points", () => {
+    expect(getSelectablePointsTiers({})).toEqual([]);
+    expect(getSelectablePointsTiers(undefined)).toEqual([]);
+  });
 });
 
 describe("getCardBaseCost", () => {

@@ -4,19 +4,35 @@ import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
+import { localize } from "../../../Helpers/localization.helpers";
 
 // 11th edition points have no active/primary flags: the first entry is the
-// primary cost and the rest are listed when "Show All Points" is on. Models,
-// cost and keyword are plain values.
+// primary cost and the rest are listed when "Show All Points" is on. Models and
+// cost are plain values; keyword may be language-keyed in the source data, so it
+// is localised for editing (edits write back a plain string). `additionalCost`
+// is the per-datasheet roster surcharge ({ cost, afterSelections }).
 export function UnitPoints() {
   const { activeCard, updateActiveCard } = useCardStorage();
   const points = activeCard.points || [];
+  const additionalCost = activeCard.additionalCost || null;
 
   const updatePoint = (index, field, value) => {
     updateActiveCard(() => {
       const newPoints = [...points];
       newPoints[index] = { ...newPoints[index], [field]: value };
       return { ...activeCard, points: newPoints };
+    });
+  };
+
+  const updateAdditionalCost = (field, value) => {
+    updateActiveCard(() => {
+      const next = { cost: "", afterSelections: 1, ...(additionalCost || {}), [field]: value };
+      // Clearing the cost removes the surcharge entirely.
+      if (field === "cost" && String(value).trim() === "") {
+        const { additionalCost: _removed, ...rest } = activeCard;
+        return rest;
+      }
+      return { ...activeCard, additionalCost: next };
     });
   };
 
@@ -105,7 +121,7 @@ export function UnitPoints() {
                               <Form.Item label={"Keyword"} style={{ marginBottom: 0 }}>
                                 <Input
                                   type={"text"}
-                                  value={point.keyword}
+                                  value={localize(point.keyword)}
                                   onChange={(e) => updatePoint(index, "keyword", e.target.value)}
                                 />
                               </Form.Item>
@@ -134,6 +150,30 @@ export function UnitPoints() {
         }>
         Add points
       </Button>
+      <Card
+        type={"inner"}
+        title="Additional selection cost"
+        size="small"
+        bodyStyle={{ padding: 16 }}
+        style={{ marginTop: 16 }}>
+        <Form size="small">
+          <Form.Item label={"Cost"} help="Points added per copy of this datasheet beyond the included selections.">
+            <Input
+              type={"text"}
+              value={additionalCost?.cost ?? ""}
+              onChange={(e) => updateAdditionalCost("cost", e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label={"Included selections"} style={{ marginBottom: 0 }}>
+            <Input
+              type={"number"}
+              value={additionalCost?.afterSelections ?? ""}
+              disabled={!additionalCost}
+              onChange={(e) => updateAdditionalCost("afterSelections", Number(e.target.value) || 0)}
+            />
+          </Form.Item>
+        </Form>
+      </Card>
     </>
   );
 }

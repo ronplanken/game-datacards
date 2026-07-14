@@ -152,9 +152,12 @@ Each datasheet's `points` is an array of size tiers — `{ cost, models, keyword
 — plus (11e-only) an optional `additionalCost: { cost, afterSelections }`.
 
 - **Unit size (base cost):** in a list, a card's base cost is the chosen tier
-  (`card.unitSize`, picked via the unit config modal, which auto-selects when a
-  datasheet has a single tier). 11e cards that have not been configured default to
-  their **cheapest** tier so they always count.
+  (`card.unitSize`, picked via the desktop unit config modal or the mobile
+  add/edit sheets; single-tier datasheets auto-select). The pickers list tiers via
+  `getSelectablePointsTiers` — only an explicit `active: false` hides a tier,
+  because 11e tiers carry no `active` flag at all (10e tiers do). Tier `keyword`
+  is language-keyed in 11e and localised for display. 11e cards that have not
+  been configured default to their **cheapest** tier so they always count.
 - **Roster surcharge (`additionalCost`):** a per-datasheet army-building
   surcharge — _not_ a per-model cost. Each copy of a datasheet beyond
   `afterSelections` selections adds `cost` to the list total. Example: Cerastus
@@ -165,6 +168,10 @@ Each datasheet's `points` is an array of size tiers — `{ cost, models, keyword
   datasheet identity (`id` + `source`). It backs the tree category badge, the list
   overview total (which shows the surcharge on its own line) and the text export,
   so all three agree. 10e lists are unaffected (they carry no `additionalCost`).
+- **Where it is shown:** the card's points popover / all-points row
+  (`UnitCard/UnitPoints.jsx`), the size pickers (desktop config modal, mobile
+  add/edit sheets) as a note under the tier options, and the card editor
+  (`UnitCardEditor/UnitPoints.jsx`), which can also edit the surcharge.
 
 ## Rule cards
 

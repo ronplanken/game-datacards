@@ -12,6 +12,17 @@
 // after that.
 
 /**
+ * The size tiers a user can pick for a card in a list. 10e tiers carry an
+ * explicit `active` flag (inactive tiers are hidden); 11e tiers carry no flag at
+ * all, so only an explicit `active: false` excludes a tier.
+ *
+ * @param {Object} card
+ * @returns {Array} The selectable entries of `card.points`
+ */
+export const getSelectablePointsTiers = (card) =>
+  Array.isArray(card?.points) ? card.points.filter((tier) => tier?.active !== false) : [];
+
+/**
  * The base points cost of a single card (excluding enhancements and the roster
  * surcharge).
  *

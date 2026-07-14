@@ -4,6 +4,8 @@ import { X, Crown, ChevronDown } from "lucide-react";
 import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
+import { getSelectablePointsTiers } from "../../Helpers/listPoints.helpers";
+import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import "./UnitConfigModal.css";
@@ -30,10 +32,9 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
       if (card.unitSize) {
         setSelectedUnitSize(card.unitSize);
-      } else if (card?.points?.length === 1) {
-        setSelectedUnitSize(card.points[0]);
       } else {
-        setSelectedUnitSize(undefined);
+        const tiers = getSelectablePointsTiers(card);
+        setSelectedUnitSize(tiers.length === 1 ? tiers[0] : undefined);
       }
 
       // Detachment selection
@@ -159,28 +160,32 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
           <div>
             <div className="ucm-section-label">Unit size</div>
             <div className="ucm-size-list">
-              {card?.points
-                ?.filter((p) => p.active)
-                .map((point) => {
-                  const isSelected =
-                    selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword;
-                  return (
-                    <div
-                      key={`${point.models}-${point.keyword || ""}`}
-                      className={classNames("ucm-size-option", { selected: isSelected })}
-                      onClick={() => setSelectedUnitSize(point)}>
-                      <div className={classNames("ucm-radio", { checked: isSelected })} />
-                      <div className="ucm-size-text">
-                        <span className="ucm-size-label">
-                          {point.models} {point.models > 1 ? "models" : "model"}
-                          {point.keyword ? ` (${point.keyword})` : ""}
-                        </span>
-                        <span className="ucm-size-cost">{point.cost} pts</span>
-                      </div>
+              {getSelectablePointsTiers(card).map((point) => {
+                const isSelected =
+                  selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword;
+                return (
+                  <div
+                    key={`${point.models}-${localize(point.keyword)}`}
+                    className={classNames("ucm-size-option", { selected: isSelected })}
+                    onClick={() => setSelectedUnitSize(point)}>
+                    <div className={classNames("ucm-radio", { checked: isSelected })} />
+                    <div className="ucm-size-text">
+                      <span className="ucm-size-label">
+                        {point.models} {point.models > 1 ? "models" : "model"}
+                        {point.keyword ? ` (${localize(point.keyword)})` : ""}
+                      </span>
+                      <span className="ucm-size-cost">{point.cost} pts</span>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })}
             </div>
+            {card?.additionalCost?.cost != null && (
+              <p className="ucm-additional-cost">
+                +{card.additionalCost.cost} pts for each copy of this datasheet beyond{" "}
+                {card.additionalCost.afterSelections} in your list.
+              </p>
+            )}
           </div>
 
           {/* Warlord */}

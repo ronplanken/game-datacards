@@ -137,7 +137,10 @@ export function TreeItem({
   };
 
   const isListItem =
-    category?.type === "list" && card?.source === "40k-10e" && card?.cardType === "DataCard" && !card?.unitSize;
+    category?.type === "list" &&
+    ["40k-10e", "40k-11e"].includes(card?.source) &&
+    card?.cardType === "DataCard" &&
+    !card?.unitSize;
 
   const getCardIcon = () => {
     switch (card.cardType) {
@@ -213,7 +216,7 @@ export function TreeItem({
               )}
             </div>
 
-            {category?.type === "list" && card?.source === "40k-10e" && card?.unitSize?.cost && (
+            {category?.type === "list" && ["40k-10e", "40k-11e"].includes(card?.source) && card?.unitSize?.cost && (
               <button
                 className="tree-item-points"
                 onClick={(e) => {

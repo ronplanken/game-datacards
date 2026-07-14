@@ -1,0 +1,5 @@
+{
+  "title": "11th Edition unit sizes in lists",
+  "body": "You can now pick a unit size for 11th Edition cards when adding them to a list, on both desktop and mobile - the size options were previously empty for 11th Edition datasheets. Cards, the card editor and the size pickers also show the additional cost for taking extra copies of the same datasheet.",
+  "severity": "success"
+}

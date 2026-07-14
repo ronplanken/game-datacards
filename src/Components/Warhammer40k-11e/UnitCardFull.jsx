@@ -60,6 +60,7 @@ export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }
             name={unit.name}
             subname={unit.subname}
             points={unit.points}
+            additionalCost={unit.additionalCost}
             legends={unit.legends}
             combatPatrol={unit.combatPatrol}
             externalImage={unit.externalImage}
