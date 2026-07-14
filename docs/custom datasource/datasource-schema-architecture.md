@@ -13,7 +13,7 @@ The `schema` property sits inside a datasource's top-level structure.
 ```js
 {
   version: "1.0.0",
-  baseSystem: "40k-10e" | "aos" | "starcraft-tmg" | "blank",
+  baseSystem: "40k-10e" | "40k-11e" | "aos" | "starcraft-tmg" | "blank",
   colours: {
     header: string,      // hex colour for card headers (default: "#1a1a2e")
     banner: string,      // hex colour for card banners (default: "#16213e")
@@ -44,6 +44,7 @@ Each base system wires the glossary through its own card renderer:
 | Base system | Weapons renderer | Abilities renderer | Keyword storage |
 |-------------|------------------|--------------------|-----------------|
 | `40k-10e` | `Ds40kUnitWeapons` | `Ds40kUnitExtra` | `profile.keywords` array |
+| `40k-11e` | `Ds40kUnitWeapons` (shared with 10e) | `Ds40kUnitExtra` (shared with 10e) | `profile.keywords` array |
 | `aos` | `DsAosWeapons` | `DsAosAbilities` | `profile.keywords` array |
 | `starcraft-tmg` | `StarcraftWeaponTable` | `StarcraftAbility` | comma-separated string column whose key is `keyword`/`keywords` |
 
@@ -96,7 +97,7 @@ keywordGlossary: [
 - A glossary entry only matters in a renderer if its `appliesTo` array contains that renderer's scope.
 - When multiple in-scope entries match the same keyword, the entry with the **longest `name`** wins, so specific entries (e.g. `Power Fist`) take precedence over shorter prefixes (e.g. `Power`).
 - Within a single renderer section, explanation rows are deduplicated — the same keyword across multiple weapons only renders one description block.
-- Datasources with `baseSystem: "40k-10e"` created via the wizard are pre-seeded with the official 10e keyword set (`One Shot`, `Devastating Wounds`, `Sustained Hits`, `Anti-`, etc.), each scoped to `["weapons"]`. The seed lives in `src/Helpers/keywordGlossaryDefaults.js`. The schema editor also exposes a "Restore defaults" button for 40k-10e datasources.
+- Datasources with `baseSystem: "40k-10e"` created via the wizard are pre-seeded with the official 10e keyword set (`One Shot`, `Devastating Wounds`, `Sustained Hits`, `Anti-`, etc.), each scoped to `["weapons"]`; the seed lives in `src/Helpers/keywordGlossaryDefaults.js`. Datasources with `baseSystem: "40k-11e"` are pre-seeded with the full 11th edition glossary (weapon keywords scoped `["weapons"]` **and** core abilities scoped `["abilities"]`, with parameterized matching) derived from the 11e datasource's `keywords.json`; that seed lives in `src/Helpers/keywordGlossary11eDefaults.js`. The schema editor also exposes a "Restore defaults" button for both 40K editions.
 - The Datasource Editor's premium `SchemaWeaponsEditor` uses glossary entries whose `appliesTo` includes `"weapons"` to populate an autocomplete dropdown when adding keywords to a weapon. Users can still free-type any value.
 
 ## Discriminated Union: `cardTypes`
@@ -283,7 +284,7 @@ Stat fields support the following types: `string`, `enum`, `boolean`. Each field
 
 #### AoS-specific stat properties
 
-When `baseSystem` is not `"40k-10e"` (i.e. AoS or blank), stat fields gain additional properties:
+When `baseSystem` is not a 40K edition (`40k-10e`/`40k-11e` — checked via `is40kBaseSystem`), stat fields gain additional properties:
 
 | Property   | Type   | Description                                                    |
 |------------|--------|----------------------------------------------------------------|
@@ -324,7 +325,7 @@ Each ability category supports these properties:
 
 #### AoS-specific ability properties
 
-When `baseSystem` is not `"40k-10e"`, ability categories gain additional toggles:
+When `baseSystem` is not a 40K edition (`40k-10e`/`40k-11e`), ability categories gain additional toggles:
 
 | Property   | Type    | Description                                                  |
 |------------|---------|--------------------------------------------------------------|
@@ -363,9 +364,9 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `factionKeywordsLabel` | string | Optional. Override the faction keywords bar label (defaults to `"Faction"`). |
 | `hasPoints`        | boolean | Include a points cost field on the card.                                |
 | `pointsFormat`     | string  | `"per-model"` or `"per-unit"`. Only applies when `hasPoints` is true.  |
-| `bannerType`       | string  | Controls the header banner text. Only applies when `baseSystem` is not `"40k-10e"`. |
+| `bannerType`       | string  | Controls the header banner text. Only applies when `baseSystem` is not a 40K edition. |
 | `bannerCustomText` | string  | Custom banner text. Only applies when `bannerType` is `"custom"`.       |
-| `hasAutoResize`    | boolean | Starcraft TMG and 40k-10e only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
+| `hasAutoResize`    | boolean | Starcraft TMG, 40k-10e and 40k-11e only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
 | `hasSubcategory`   | boolean | Exposes a per-card "Subcategory" text field in the Basic Information panel. When set, cards are grouped under their `subcategory` value (uncategorised cards under "Uncategorized") in the datasource editor card list. Toggled via the card type settings. |
 
 #### Banner type values (AoS / non-40k only)

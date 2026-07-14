@@ -177,7 +177,8 @@ The Datasource Editor (`/datasources`) is a community feature for creating custo
 ### Base Systems
 
 Datasources are created for a specific base system that determines rendering and available field types:
-- `40k-10e` - Warhammer 40K 10th Edition (units, stratagems, enhancements, rules)
+- `40k-11e` - Warhammer 40K 11th Edition (shares the 40K card structure/renderers with 10e; seeds the full 11e keyword glossary)
+- `40k-10e` - Warhammer 40K 10th Edition (units, stratagems, enhancements, rules) — legacy in the wizard
 - `aos` - Age of Sigmar (warscrolls)
 - `blank` / `custom` - Custom card format with fallback renderers
 

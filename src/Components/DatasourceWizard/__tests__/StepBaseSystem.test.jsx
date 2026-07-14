@@ -17,22 +17,48 @@ describe("StepBaseSystem", () => {
     expect(screen.getByText(/Select a starting template/)).toBeInTheDocument();
   });
 
-  it("renders three system cards", () => {
+  it("renders a card per system, with 11th edition first", () => {
     const wizard = createMockWizard();
     render(<StepBaseSystem wizard={wizard} />);
 
+    expect(screen.getByTestId("dsw-system-card-40k-11e")).toBeInTheDocument();
     expect(screen.getByTestId("dsw-system-card-40k-10e")).toBeInTheDocument();
     expect(screen.getByTestId("dsw-system-card-aos")).toBeInTheDocument();
     expect(screen.getByTestId("dsw-system-card-blank")).toBeInTheDocument();
+
+    const grid = screen.getByTestId("dsw-system-grid");
+    expect(grid.firstChild).toBe(screen.getByTestId("dsw-system-card-40k-11e"));
   });
 
   it("renders correct titles for each system", () => {
     const wizard = createMockWizard();
     render(<StepBaseSystem wizard={wizard} />);
 
-    expect(screen.getByText("Warhammer 40K")).toBeInTheDocument();
+    // Both 40K editions share the title; 11e and legacy 10e are separate cards.
+    expect(screen.getAllByText("Warhammer 40K")).toHaveLength(2);
+    expect(screen.getByText("11th Edition")).toBeInTheDocument();
+    expect(screen.getByText("10th Edition")).toBeInTheDocument();
     expect(screen.getByText("Age of Sigmar")).toBeInTheDocument();
     expect(screen.getByText("Blank Template")).toBeInTheDocument();
+  });
+
+  it("tags 10th edition as legacy and leaves 11th edition untagged", () => {
+    const wizard = createMockWizard();
+    render(<StepBaseSystem wizard={wizard} />);
+
+    const legacyTag = screen.getByText("Legacy");
+    expect(screen.getByTestId("dsw-system-card-40k-10e")).toContainElement(legacyTag);
+    expect(screen.getByTestId("dsw-system-card-40k-11e")).not.toContainElement(legacyTag);
+  });
+
+  it("calls updateStepData when the 11th edition card is clicked", () => {
+    const wizard = createMockWizard();
+    render(<StepBaseSystem wizard={wizard} />);
+
+    fireEvent.click(screen.getByTestId("dsw-system-card-40k-11e"));
+
+    const updater = wizard.updateStepData.mock.calls[0][1];
+    expect(updater({})).toEqual({ baseSystem: "40k-11e" });
   });
 
   it("shows no card as selected when no data exists", () => {
@@ -150,7 +176,8 @@ describe("StepBaseSystem", () => {
     const wizard = createMockWizard();
     render(<StepBaseSystem wizard={wizard} />);
 
-    expect(screen.getByText(/Pre-configured stat lines/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Pre-configured stat lines/)).toHaveLength(2);
+    expect(screen.getByText(/11th Edition keyword glossary/)).toBeInTheDocument();
     expect(screen.getByText(/Stat profiles for move/)).toBeInTheDocument();
     expect(screen.getByText(/empty schema with no pre-configured/)).toBeInTheDocument();
   });

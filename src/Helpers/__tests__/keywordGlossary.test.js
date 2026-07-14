@@ -366,6 +366,14 @@ describe("getDefaultKeywordGlossary", () => {
     expect(defaults.every((e) => e.appliesTo?.includes("weapons"))).toBe(true);
   });
 
+  it("returns the 11e seed (weapons + abilities scopes) for 40k-11e", () => {
+    const defaults = getDefaultKeywordGlossary("40k-11e");
+    expect(defaults.length).toBeGreaterThan(0);
+    expect(defaults.some((e) => e.appliesTo.includes("weapons"))).toBe(true);
+    expect(defaults.some((e) => e.appliesTo.includes("abilities"))).toBe(true);
+    expect(defaults.find((e) => e.name === "Rapid Fire")?.matchType).toBe("parameterized");
+  });
+
   it("returns an empty array for other base systems", () => {
     expect(getDefaultKeywordGlossary("aos")).toEqual([]);
     expect(getDefaultKeywordGlossary("blank")).toEqual([]);

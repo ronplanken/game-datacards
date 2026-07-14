@@ -14,7 +14,9 @@ import { DsStarcraftUnitCard } from "./DsStarcraftUnitCard";
  * @returns {React.ComponentType|null}
  */
 export const resolveDatasourceRenderer = (baseSystem, baseType) => {
-  if (baseSystem === "40k-10e") {
+  // Both 40K editions share the same card structure and visual language, so
+  // they resolve to the same renderers; 11e differs in its seeded glossary.
+  if (baseSystem === "40k-10e" || baseSystem === "40k-11e") {
     switch (baseType) {
       case "unit":
         return Ds40kUnitCard;

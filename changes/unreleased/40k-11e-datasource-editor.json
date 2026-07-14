@@ -1,0 +1,5 @@
+{
+  "title": "11th Edition custom datasources",
+  "body": "The Datasource Editor now supports Warhammer 40K 11th Edition as a base system. New 11th Edition datasources start with the full 11e keyword glossary (weapon keywords and core abilities with parameterized matching), and the creation wizard now lists 11th Edition first with 10th Edition marked as legacy.",
+  "severity": "success"
+}

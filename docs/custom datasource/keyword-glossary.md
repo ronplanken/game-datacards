@@ -1,8 +1,8 @@
 ---
 title: Keyword Glossary
-description: Datasource-level mapping from keyword tags to their rule explanations. Each entry declares the render scopes (weapons, abilities, …) it applies to so a single glossary feeds every renderer across 40k-10e, AoS, and Starcraft TMG.
+description: Datasource-level mapping from keyword tags to their rule explanations. Each entry declares the render scopes (weapons, abilities, …) it applies to so a single glossary feeds every renderer across 40k-10e, 40k-11e, AoS, and Starcraft TMG.
 category: custom-datasource
-tags: [keywords, glossary, rendering, 40k-10e, aos, starcraft-tmg, weapons, abilities]
+tags: [keywords, glossary, rendering, 40k-10e, 40k-11e, aos, starcraft-tmg, weapons, abilities]
 related:
   - datasource-schema-architecture.md
   - custom-datasource-format.md
@@ -24,7 +24,7 @@ The built-in Warhammer 40K 10th edition data cards render a short explanation li
 
 Custom datasources get the same behavior — and the same mechanism extends to other keyword sites on a card (ability text, the unit keywords bar, etc.) — through a **datasource-level glossary**. Define a keyword name, description, and the scopes it applies to once, and every renderer that consumes that scope auto-renders the explanation.
 
-The glossary is **base-system agnostic**: the `40k-10e`, `aos`, and `starcraft-tmg` datasource renderers all read the same `keywordGlossary` array and share the render logic in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx`.
+The glossary is **base-system agnostic**: the `40k-10e`, `40k-11e`, `aos`, and `starcraft-tmg` datasource renderers all read the same `keywordGlossary` array and share the render logic in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx`.
 
 ## Table of Contents
 
@@ -32,6 +32,7 @@ The glossary is **base-system agnostic**: the `40k-10e`, `aos`, and `starcraft-t
 - [Scopes](#scopes)
 - [Match resolution](#match-resolution)
 - [Default seed for 40k-10e](#default-seed-for-40k-10e)
+- [Default seed for 40k-11e](#default-seed-for-40k-11e)
 - [Editor UI](#editor-ui)
 - [Rendering](#rendering)
 
@@ -107,6 +108,10 @@ Within one renderer section, the same glossary entry is only rendered once even 
 
 When the Datasource Wizard creates a datasource with `baseSystem: "40k-10e"`, the schema is pre-seeded with the official 10e weapon keyword set from `src/Helpers/keywordGlossaryDefaults.js`. The list mirrors the keywords explained in the built-in `KeywordTooltip` component: `One Shot`, `Devastating Wounds`, `Sustained Hits`, `Lethal Hits`, `Anti-`, `Twin-linked`, `Heavy`, `Pistol`, `Rapid Fire`, `Assault`, `Blast`, `Hazardous`, `Indirect Fire`, `Melta`, `Precision`, `Torrent`, `Lance`, `Ignores Cover`, `Feel No Pain`, `Psychic`, `Extra Attacks`, `Plasma Warhead`, `Linked Fire`. Every seeded entry has `appliesTo: ["weapons"]`.
 
+## Default seed for 40k-11e
+
+When the Datasource Wizard creates a datasource with `baseSystem: "40k-11e"`, the schema is pre-seeded with the **full 11th edition glossary** from `src/Helpers/keywordGlossary11eDefaults.js` — derived from the 11e datasource's shared `keywords.json` (English fields, source markup stripped to plain text). Unlike the 10e seed it covers two scopes: weapon keywords (`Anti-`, `Rapid Fire`, `Sustained Hits`, …) scoped to `["weapons"]` and core abilities (`Deep Strike`, `Feel No Pain`, `Scouts`, `Deadly Demise`, …) scoped to `["abilities"]`, with `parameterized` matching on value-carrying entries so tags like `Rapid Fire 1`, `Anti-Vehicle 4+` and `Scouts 6"` resolve.
+
 Other base systems (`aos`, `starcraft-tmg`, `blank`) start with an empty glossary. The seed call is `getDefaultKeywordGlossary(baseSystem)`.
 
 ## Editor UI
@@ -121,7 +126,7 @@ The glossary editor lives in the Datasource Editor right panel, under the dataso
 - Multi-line description textarea
 - Trash button
 
-The section header has a "+" button to add a blank entry. 40k-10e datasources also get a "Restore defaults" button that replaces the glossary with the seeded set.
+The section header has a "+" button to add a blank entry. 40k-10e and 40k-11e datasources also get a "Restore defaults" button that replaces the glossary with the seeded set.
 
 The **premium `SchemaWeaponsEditor`** uses glossary entries whose `appliesTo` includes `"weapons"` to populate an `AutoComplete` dropdown when editing a weapon's keywords. Users can still type any free-form keyword — the autocomplete is a hint, not a constraint.
 
@@ -143,7 +148,7 @@ AoS and Starcraft TMG render glossary keywords through three system-neutral comp
 
 | Base system | Weapons | Abilities |
 |-------------|---------|-----------|
-| `40k-10e` | `Ds40kUnitWeapons` → `Ds40kWeaponKeywords` (inline tags) + a `<div class="special">` of `.ability` rows. Uses the 40K-native components rather than the shared ones. | `Ds40kUnitExtra` → `UnitAbilityDescription` (`glossaryOnly`). |
+| `40k-10e` / `40k-11e` | `Ds40kUnitWeapons` → `Ds40kWeaponKeywords` (inline tags) + a `<div class="special">` of `.ability` rows. Uses the 40K-native components rather than the shared ones. | `Ds40kUnitExtra` → `UnitAbilityDescription` (`glossaryOnly`). |
 | `aos` | `DsAosWeapons` → `GlossaryKeywordTags` replaces the plain `weapon-ability-badge` pills (desktop + mobile); `GlossaryExplanationRows` renders below the weapon table. Falls back to plain badges when no glossary is present. | `DsAosAbilities` → `GlossaryText` on `ability.description`, but only when there is an actual abilities-scoped tooltip match (otherwise the normal `MarkdownDisplay` path is kept so formatting survives). |
 | `starcraft-tmg` | `StarcraftWeaponTable` → the keyword column (any column whose `key` is `keyword`/`keywords`) is split with `splitKeywordString` and rendered via `GlossaryKeywordTags`; `GlossaryExplanationRows` renders below the table (desktop + mobile). | `StarcraftAbility` → `GlossaryText` on `ability.description`. |
 
