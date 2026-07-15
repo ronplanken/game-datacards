@@ -198,16 +198,18 @@ export function TreeItem({
             <span className="tree-item-name">{card.name}</span>
 
             <div className="tree-item-indicators">
-              {category?.type === "list" && card?.source === "40k-10e" && card?.selectedEnhancement && (
-                <Tooltip
-                  content={`${capitalizeSentence(card?.selectedEnhancement?.name)} (+${card?.selectedEnhancement?.cost}pts)`}
-                  placement="top">
-                  <span className="tree-item-indicator enhancement">
-                    <Flame size={12} />
-                  </span>
-                </Tooltip>
-              )}
-              {category?.type === "list" && card?.source === "40k-10e" && card?.isWarlord && (
+              {category?.type === "list" &&
+                ["40k-10e", "40k-11e"].includes(card?.source) &&
+                card?.selectedEnhancement && (
+                  <Tooltip
+                    content={`${capitalizeSentence(card?.selectedEnhancement?.name)} (+${card?.selectedEnhancement?.cost}pts)`}
+                    placement="top">
+                    <span className="tree-item-indicator enhancement">
+                      <Flame size={12} />
+                    </span>
+                  </Tooltip>
+                )}
+              {category?.type === "list" && ["40k-10e", "40k-11e"].includes(card?.source) && card?.isWarlord && (
                 <Tooltip content="Warlord - Army Commander" placement="top">
                   <span className="tree-item-indicator warlord">
                     <Crown size={12} fill="currentColor" />

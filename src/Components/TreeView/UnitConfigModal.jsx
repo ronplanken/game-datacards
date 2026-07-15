@@ -4,7 +4,7 @@ import { X, Crown, ChevronDown } from "lucide-react";
 import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
-import { getSelectablePointsTiers } from "../../Helpers/listPoints.helpers";
+import { getSelectablePointsTiers, isSamePointsTier } from "../../Helpers/listPoints.helpers";
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -161,8 +161,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
             <div className="ucm-section-label">Unit size</div>
             <div className="ucm-size-list">
               {getSelectablePointsTiers(card).map((point) => {
-                const isSelected =
-                  selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword;
+                const isSelected = isSamePointsTier(selectedUnitSize, point);
                 return (
                   <div
                     key={`${point.models}-${localize(point.keyword)}`}
@@ -172,7 +171,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
                     <div className="ucm-size-text">
                       <span className="ucm-size-label">
                         {point.models} {point.models > 1 ? "models" : "model"}
-                        {point.keyword ? ` (${localize(point.keyword)})` : ""}
+                        {point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
                       </span>
                       <span className="ucm-size-cost">{point.cost} pts</span>
                     </div>

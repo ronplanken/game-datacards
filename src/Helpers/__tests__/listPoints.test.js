@@ -4,6 +4,7 @@ import {
   computeCategoryPoints,
   getCategoryPointsTotal,
   getSelectablePointsTiers,
+  isSamePointsTier,
 } from "../listPoints.helpers";
 
 const atrapos = (over = {}) => ({
@@ -39,6 +40,29 @@ describe("getSelectablePointsTiers", () => {
   it("returns an empty array for missing points", () => {
     expect(getSelectablePointsTiers({})).toEqual([]);
     expect(getSelectablePointsTiers(undefined)).toEqual([]);
+  });
+});
+
+describe("isSamePointsTier", () => {
+  it("matches tiers by value across storage round-trips (different references)", () => {
+    const tier = { models: "2", cost: "425", keyword: { en: "Imperium" } };
+    const roundTripped = JSON.parse(JSON.stringify(tier));
+    expect(isSamePointsTier(roundTripped, tier)).toBe(true);
+  });
+
+  it("distinguishes tiers by models and by keyword", () => {
+    const base = { models: "1", cost: "100", keyword: null };
+    expect(isSamePointsTier(base, { models: "2", cost: "100", keyword: null })).toBe(false);
+    expect(isSamePointsTier(base, { models: "1", cost: "100", keyword: { en: "Imperium" } })).toBe(false);
+  });
+
+  it("treats plain-string and language-keyed keywords with the same text as equal", () => {
+    expect(isSamePointsTier({ models: 5, keyword: "Imperium" }, { models: 5, keyword: { en: "Imperium" } })).toBe(true);
+  });
+
+  it("is false when either side is missing", () => {
+    expect(isSamePointsTier(undefined, { models: 1 })).toBe(false);
+    expect(isSamePointsTier({ models: 1 }, undefined)).toBe(false);
   });
 });
 

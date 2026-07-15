@@ -2,17 +2,21 @@ import { Trash2 } from "lucide-react";
 import { Button, Card, Form, Input, Popconfirm, Space, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
-import { localize } from "../../../Helpers/localization.helpers";
+import { localize, setLocalizedField } from "../../../Helpers/localization.helpers";
 
 // 11th edition points have no active/primary flags: the first entry is the
 // primary cost and the rest are listed when "Show All Points" is on. Models and
 // cost are plain values; keyword may be language-keyed in the source data, so it
-// is localised for editing (edits write back a plain string). `additionalCost`
-// is the per-datasheet roster surcharge ({ cost, afterSelections }).
+// is shown in the active card language and edits merge into just that language
+// (like the other 11e field editors). `additionalCost` is the per-datasheet
+// roster surcharge ({ cost, afterSelections }).
 export function UnitPoints() {
   const { activeCard, updateActiveCard } = useCardStorage();
+  const { settings } = useSettingsStorage();
+  const language = settings.language || "en";
   const points = activeCard.points || [];
   const additionalCost = activeCard.additionalCost || null;
 
@@ -121,8 +125,14 @@ export function UnitPoints() {
                               <Form.Item label={"Keyword"} style={{ marginBottom: 0 }}>
                                 <Input
                                   type={"text"}
-                                  value={localize(point.keyword)}
-                                  onChange={(e) => updatePoint(index, "keyword", e.target.value)}
+                                  value={localize(point.keyword, language)}
+                                  onChange={(e) =>
+                                    updatePoint(
+                                      index,
+                                      "keyword",
+                                      setLocalizedField(point.keyword, language, e.target.value),
+                                    )
+                                  }
                                 />
                               </Form.Item>
                             </Form>

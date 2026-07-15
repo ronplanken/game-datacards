@@ -1,11 +1,14 @@
 import { Button, Popover } from "antd";
 import { localize } from "../../../Helpers/localization.helpers";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 
 // 11th edition points have no `active`/`primary` flags; treat the first entry as
 // primary and list the rest in a popover. Tier `keyword` is language-keyed in the
-// 11e data, so it is localised for display. `additionalCost` is the per-datasheet
-// roster surcharge ({ cost, afterSelections }) shown alongside the tiers.
+// 11e data, so it is localised to the selected card language. `additionalCost` is
+// the per-datasheet roster surcharge ({ cost, afterSelections }) shown alongside
+// the tiers.
 export const UnitPoints = ({ points, additionalCost, showAllPoints, showPointsModels }) => {
+  const { settings } = useSettingsStorage();
   const allPoints = points || [];
 
   if (allPoints.length === 0) {
@@ -16,7 +19,7 @@ export const UnitPoints = ({ points, additionalCost, showAllPoints, showPointsMo
   const surcharge = additionalCost?.cost != null ? additionalCost : null;
 
   const formatPointDisplay = (point) => {
-    const keyword = localize(point.keyword);
+    const keyword = localize(point.keyword, settings.language);
     if (showPointsModels) {
       return `${point.models}${keyword ? ` (${keyword})` : ""}: ${point.cost} pts`;
     }
@@ -54,7 +57,7 @@ export const UnitPoints = ({ points, additionalCost, showAllPoints, showPointsMo
             </thead>
             <tbody>
               {allPoints.map((point, index) => {
-                const keyword = localize(point.keyword);
+                const keyword = localize(point.keyword, settings.language);
                 return (
                   <tr className="points" key={`points-${index}`}>
                     <td>{`${point.models}${keyword ? ` (${keyword})` : ""}`}</td>

@@ -1,3 +1,5 @@
+import { localize } from "./localization.helpers";
+
 // Points maths for lists/categories.
 //
 // A card's base cost is the selected size tier (`unitSize`, chosen via the unit
@@ -21,6 +23,21 @@
  */
 export const getSelectablePointsTiers = (card) =>
   Array.isArray(card?.points) ? card.points.filter((tier) => tier?.active !== false) : [];
+
+/**
+ * Whether two size tiers describe the same option. Compared by value, not by
+ * reference: a card's saved `unitSize` is a different object instance from the
+ * entries in `card.points` once the card round-trips through storage, and 11e
+ * tier keywords are language-keyed objects, so both are normalised first.
+ *
+ * @param {Object|undefined} a
+ * @param {Object|undefined} b
+ * @returns {boolean}
+ */
+export const isSamePointsTier = (a, b) => {
+  if (!a || !b) return false;
+  return a.models === b.models && localize(a.keyword) === localize(b.keyword);
+};
 
 /**
  * The base points cost of a single card (excluding enhancements and the roster

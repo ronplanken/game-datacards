@@ -5,7 +5,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
-import { getSelectablePointsTiers } from "../../../Helpers/listPoints.helpers";
+import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useUmami } from "../../../Hooks/useUmami";
 import { useMobileList } from "../useMobileList";
@@ -146,14 +146,10 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
               {getSelectablePointsTiers(activeCard).map((point) => (
                 <button
                   key={`${point.models}-${localize(point.keyword)}`}
-                  className={`list-add-option ${
-                    selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword
-                      ? "selected"
-                      : ""
-                  }`}
+                  className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
                   onClick={() => setSelectedUnitSize(point)}>
                   <span className="option-label">
-                    {point.models} models{point.keyword ? ` (${localize(point.keyword)})` : ""}
+                    {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
                   </span>
                   <span className="option-value">{point.cost} pts</span>
                 </button>
