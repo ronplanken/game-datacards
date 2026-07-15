@@ -106,7 +106,10 @@ export const ViewerMobile = ({
   const listCard = location.state?.listCard;
   const cloudCard = location.state?.cloudCard;
   const editableCard = listCard || cloudCard;
-  const isEditableCard = !!editableCard;
+  // 11th edition cards are desktop-edit only for now: the mobile editor has no
+  // 40k-11e resolver, and its generic fallback would overwrite language-keyed
+  // fields with plain strings.
+  const isEditableCard = !!editableCard && activeCard?.source !== "40k-11e";
 
   // Load custom datasource schema for the editor (only when editing a custom DS card)
   const [editorSchema, setEditorSchema] = useState(null);
