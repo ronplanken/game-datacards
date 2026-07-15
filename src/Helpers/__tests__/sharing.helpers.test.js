@@ -29,8 +29,9 @@ function createMockSupabase(rpcResult = { data: null, error: null }) {
 describe("sharing.helpers", () => {
   describe("constants", () => {
     it("GAME_SYSTEMS has expected entries", () => {
-      expect(GAME_SYSTEMS).toHaveLength(7);
-      expect(GAME_SYSTEMS[0]).toEqual({ value: "40k-10e", label: "Warhammer 40k (10th Edition)" });
+      expect(GAME_SYSTEMS).toHaveLength(8);
+      expect(GAME_SYSTEMS[0]).toEqual({ value: "40k-11e", label: "Warhammer 40k (11th Edition)" });
+      expect(GAME_SYSTEMS[1]).toEqual({ value: "40k-10e", label: "Warhammer 40k (10th Edition)" });
       expect(GAME_SYSTEMS.map((g) => g.value)).toContain("other");
     });
 
