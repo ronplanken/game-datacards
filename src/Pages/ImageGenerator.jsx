@@ -5,6 +5,7 @@ import { captureToBlob } from "../Helpers/screenshot.helpers";
 import { useEffect, useRef, useState } from "react";
 import "../App.css";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Components/Warhammer40k-11e/CardDisplay";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import logo from "../Images/logo.png";
 
@@ -13,103 +14,18 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 import JSZip from "jszip";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { buildUniqueFilenames } from "../Helpers/export.helpers";
+import { assignBucketRef, IMAGE_GENERATOR_EDITIONS, resolveInitialEdition } from "../Helpers/imageGenerator.helpers";
 
 const { useBreakpoint } = Grid;
 const { Option } = Select;
 export const ImageGenerator = () => {
-  const cardsFrontRef = useRef({
-    AS: [],
-    AC: [],
-    AdM: [],
-    AE: [],
-    AoI: [],
-    AM: [],
-    CHBT: [],
-    CHBA: [],
-    CSM: [],
-    CD: [],
-    QT: [],
-    CHDA: [],
-    DG: [],
-    LGEC: [],
-    CHDW: [],
-    DRU: [],
-    GK: [],
-    GSC: [],
-    QI: [],
-    NEC: [],
-    ORK: [],
-    SM: [],
-    CHSW: [],
-    TAU: [],
-    TS: [],
-    TYR: [],
-    UN: [],
-    LoV: [],
-    WE: [],
-  });
-  const cardsBackRef = useRef({
-    AS: [],
-    AC: [],
-    AdM: [],
-    AE: [],
-    AoI: [],
-    AM: [],
-    CHBT: [],
-    CHBA: [],
-    CSM: [],
-    CD: [],
-    QT: [],
-    CHDA: [],
-    DG: [],
-    LGEC: [],
-    CHDW: [],
-    DRU: [],
-    GK: [],
-    GSC: [],
-    QI: [],
-    NEC: [],
-    ORK: [],
-    SM: [],
-    CHSW: [],
-    TAU: [],
-    TS: [],
-    TYR: [],
-    UN: [],
-    LoV: [],
-    WE: [],
-  });
-  const cardsStratagems = useRef({
-    AS: [],
-    AC: [],
-    AdM: [],
-    AE: [],
-    AoI: [],
-    AM: [],
-    CHBT: [],
-    CHBA: [],
-    CSM: [],
-    CD: [],
-    QT: [],
-    CHDA: [],
-    DG: [],
-    LGEC: [],
-    CHDW: [],
-    DRU: [],
-    GK: [],
-    GSC: [],
-    QI: [],
-    NEC: [],
-    ORK: [],
-    SM: [],
-    CHSW: [],
-    TAU: [],
-    TS: [],
-    TYR: [],
-    UN: [],
-    LoV: [],
-    WE: [],
-  });
+  // Ref buckets are keyed by faction id and created on demand (see
+  // assignBucketRef). They must not be a hardcoded faction list: faction ids
+  // are data-driven, so any missing id (e.g. Adeptus Titanicus / "AT", or 11th
+  // edition factions) would otherwise crash the page when its ref callback fires.
+  const cardsFrontRef = useRef({});
+  const cardsBackRef = useRef({});
+  const cardsStratagems = useRef({});
   const basicStratagems = useRef([]);
   const overlayRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -190,12 +106,23 @@ export const ImageGenerator = () => {
 
   const { dataSource } = useDataSourceStorage();
 
+  // Keep the current datasource when it is a supported 40K edition (10e or
+  // 11e) so users arriving with 11th edition selected can generate 11e cards;
+  // otherwise fall back to 10e so the faction list and renderers always match.
   useEffect(() => {
-    updateSettings({
-      ...settings,
-      selectedDataSource: "40k-10e",
-    });
+    updateSettings((prev) => ({
+      ...prev,
+      selectedDataSource: resolveInitialEdition(prev.selectedDataSource),
+    }));
   }, []);
+
+  const handleEditionChange = (edition) => {
+    setSelectedFactions([]);
+    cardsFrontRef.current = {};
+    cardsBackRef.current = {};
+    cardsStratagems.current = {};
+    updateSettings((prev) => ({ ...prev, selectedDataSource: edition }));
+  };
 
   return (
     <Layout>
@@ -215,6 +142,16 @@ export const ImageGenerator = () => {
               </Typography.Title>
               <Typography.Title level={3} style={{ color: "white", marginBottom: 0, lineHeight: "4rem" }}>
                 <Space>
+                  <Select
+                    style={{ minWidth: "180px" }}
+                    value={settings.selectedDataSource}
+                    onChange={handleEditionChange}>
+                    {IMAGE_GENERATOR_EDITIONS.map((edition) => (
+                      <Option value={edition.id} key={edition.id}>
+                        {edition.title}
+                      </Option>
+                    ))}
+                  </Select>
                   <Select
                     mode="multiple"
                     style={{ minWidth: "650px" }}
@@ -295,7 +232,7 @@ export const ImageGenerator = () => {
                               "--banner-colour": faction?.colours?.banner,
                               "--header-colour": faction?.colours?.header,
                             }}
-                            key={faction.id}>
+                            key={`${faction.id}-${card.name}-${index}`}>
                             <Col
                               key={`${card.name}-${index}`}
                               className={`data-${card?.source ? card?.source : "40k"}`}>
@@ -304,7 +241,7 @@ export const ImageGenerator = () => {
                                   key={`${card.name}-${index}`}
                                   className={`data-${card?.source ? card?.source : "40k"}`}>
                                   <div
-                                    ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
+                                    ref={(el) => assignBucketRef(cardsFrontRef.current, faction.id, index, el)}
                                     style={{
                                       "--banner-colour": faction?.colours?.banner,
                                       "--header-colour": faction?.colours?.header,
@@ -312,15 +249,21 @@ export const ImageGenerator = () => {
                                     {card?.source === "40k-10e" && (
                                       <Warhammer40K10eCardDisplay card={card} side={"front"} />
                                     )}
+                                    {card?.source === "40k-11e" && (
+                                      <Warhammer40K11eCardDisplay card={card} side={"front"} />
+                                    )}
                                   </div>
                                   <div
-                                    ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
+                                    ref={(el) => assignBucketRef(cardsBackRef.current, faction.id, index, el)}
                                     style={{
                                       "--banner-colour": faction?.colours?.banner,
                                       "--header-colour": faction?.colours?.header,
                                     }}>
                                     {card?.source === "40k-10e" && settings.showCardsAsDoubleSided !== true && (
                                       <Warhammer40K10eCardDisplay card={card} side={"back"} />
+                                    )}
+                                    {card?.source === "40k-11e" && settings.showCardsAsDoubleSided !== true && (
+                                      <Warhammer40K11eCardDisplay card={card} side={"back"} />
                                     )}
                                   </div>
                                 </Col>
@@ -338,12 +281,13 @@ export const ImageGenerator = () => {
                                 key={`${card.name}-${index}`}
                                 className={`data-${card?.source ? card?.source : "40k"}`}>
                                 <div
-                                  ref={(el) => (cardsStratagems.current[faction.id][index] = el)}
+                                  ref={(el) => assignBucketRef(cardsStratagems.current, faction.id, index, el)}
                                   style={{
                                     "--banner-colour": faction?.colours?.banner,
                                     "--header-colour": faction?.colours?.header,
                                   }}>
                                   {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
+                                  {card?.source === "40k-11e" && <Warhammer40K11eCardDisplay card={card} />}
                                 </div>
                               </Col>
                             </Row>
