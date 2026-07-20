@@ -7,13 +7,23 @@ import { Circle, CheckCircle, Crosshair, Shield, FileText, Rocket } from "lucide
  */
 const BASE_SYSTEMS = [
   {
+    id: "40k-11e",
+    title: "Warhammer 40K",
+    subtitle: "11th Edition",
+    description:
+      "Pre-configured stat lines, weapon tables, abilities, and the full 11th Edition keyword glossary with hover explanations.",
+    icon: Crosshair,
+    color: "#e53e3e",
+  },
+  {
     id: "40k-10e",
     title: "Warhammer 40K",
     subtitle: "10th Edition",
+    tag: "Legacy",
     description:
       "Pre-configured stat lines, weapon tables, abilities, and keywords matching the 40K 10th Edition format.",
     icon: Crosshair,
-    color: "#e53e3e",
+    color: "#a0aec0",
   },
   {
     id: "aos",
@@ -102,6 +112,7 @@ export const StepBaseSystem = ({ wizard }) => {
                 <div className="dsw-system-card-header">
                   <h4 className="dsw-system-card-title">{system.title}</h4>
                   {system.subtitle && <span className="dsw-system-card-subtitle">{system.subtitle}</span>}
+                  {system.tag && <span className="dsw-system-card-tag">{system.tag}</span>}
                 </div>
                 <p className="dsw-system-card-desc">{system.description}</p>
               </div>

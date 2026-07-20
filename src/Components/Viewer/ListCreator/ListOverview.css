@@ -742,6 +742,26 @@
   letter-spacing: -0.01em;
 }
 
+/* Secondary row shown directly above the Total. Deliberately NOT sticky — only
+   the final Total row sticks to the bottom; sharing the sticky class would make
+   the two overlap at the same bottom offset. */
+.list-overview-surcharge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  margin: 0 -20px;
+  background: #ffffff;
+  border-top: 1px solid var(--bs-border);
+  font-weight: 600;
+}
+
+.list-overview-surcharge-value {
+  font-size: 14px;
+  color: var(--bs-text-secondary);
+  font-weight: 700;
+}
+
 /* ===========================================
    CLOUD CATEGORY STYLES
    =========================================== */

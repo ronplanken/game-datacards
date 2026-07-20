@@ -85,7 +85,9 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       let filteredSheets = [];
       if (
         selectedFaction &&
-        (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")
+        (settings.selectedDataSource === "40k-10e" ||
+          settings.selectedDataSource === "40k-10e-cp" ||
+          settings.selectedDataSource === "40k-11e")
       ) {
         try {
           filteredSheets = [
@@ -216,6 +218,12 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
             )
           : (selectedFaction.basicStratagems ?? []);
 
+        // Datasources without core stratagems (e.g. 11th edition ships none yet)
+        // skip the Basic section entirely instead of rendering an empty header.
+        if (!basicStratagems || basicStratagems.length === 0) {
+          return [{ type: "header", name: "Faction stratagems" }, ...mainStratagems];
+        }
+
         return [
           { type: "header", name: "Basic stratagems" },
           ...basicStratagems,
@@ -227,7 +235,13 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
 
     if (selectedContentType === "enhancements") {
       const filteredEnhancements = selectedFaction?.enhancements?.map((enhancement) => {
-        return { ...enhancement, cardType: "enhancement", source: "40k-10e" };
+        // Preserve the card's own source (e.g. "40k-11e") so it routes to the
+        // correct renderer; fall back to the faction/datasource source.
+        return {
+          ...enhancement,
+          cardType: "enhancement",
+          source: enhancement.source ?? selectedFaction?.source ?? "40k-10e",
+        };
       });
 
       const mainEnhancements = searchText
@@ -285,13 +299,14 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
         : detachmentRules;
 
       // Transform rules into card-compatible objects
+      const ruleSource = selectedFaction?.source ?? settings.selectedDataSource ?? "40k-10e";
       const armyRuleCards = filteredArmyRules.map((rule) => ({
         ...rule,
         id: `army-rule-${rule.name}`,
         cardType: "rule",
         ruleType: "army",
         faction_id: selectedFaction.id,
-        source: "40k-10e",
+        source: ruleSource,
       }));
 
       // Flatten detachment rules - each detachment can have multiple rules
@@ -304,7 +319,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
             ruleType: "detachment",
             detachment: detachmentRule.detachment,
             faction_id: selectedFaction.id,
-            source: "40k-10e",
+            source: ruleSource,
           }));
         }
         return [];

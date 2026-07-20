@@ -17,6 +17,7 @@ const BASE_TYPE_CONFIG = {
  */
 const BASE_SYSTEM_LABELS = {
   "40k-10e": "Warhammer 40K 10th Edition",
+  "40k-11e": "Warhammer 40K 11th Edition",
   aos: "Age of Sigmar",
   blank: "Blank Template",
 };

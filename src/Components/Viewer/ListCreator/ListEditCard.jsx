@@ -4,6 +4,8 @@ import { message } from "../../Toast/message";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
+import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
+import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
@@ -131,24 +133,24 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           <div className="list-add-section">
             <h4 className="list-add-section-title">Unit Size</h4>
             <div className="list-add-options">
-              {card?.points
-                ?.filter((p) => p.active)
-                .map((point) => (
-                  <button
-                    key={`${point.models}-${point.keyword || ""}`}
-                    className={`list-add-option ${
-                      selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword
-                        ? "selected"
-                        : ""
-                    }`}
-                    onClick={() => setSelectedUnitSize(point)}>
-                    <span className="option-label">
-                      {point.models} models{point.keyword ? ` (${point.keyword})` : ""}
-                    </span>
-                    <span className="option-value">{point.cost} pts</span>
-                  </button>
-                ))}
+              {getSelectablePointsTiers(card).map((point) => (
+                <button
+                  key={`${point.models}-${localize(point.keyword)}`}
+                  className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
+                  onClick={() => setSelectedUnitSize(point)}>
+                  <span className="option-label">
+                    {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                  </span>
+                  <span className="option-value">{point.cost} pts</span>
+                </button>
+              ))}
             </div>
+            {card?.additionalCost?.cost != null && (
+              <p className="list-add-additional-cost">
+                +{card.additionalCost.cost} pts for each copy of this datasheet beyond{" "}
+                {card.additionalCost.afterSelections} in your list.
+              </p>
+            )}
           </div>
 
           {/* Warlord Section */}

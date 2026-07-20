@@ -1,0 +1,5 @@
+{
+  "title": "11th Edition keyword tooltips",
+  "body": "11th Edition cards now show hover explanations for weapon keywords and core abilities, pulled from the edition's keyword glossary. Matched keywords get a dotted underline, and the explanation appears in your selected card language (falling back to English).",
+  "severity": "success"
+}

@@ -231,6 +231,39 @@ describe("UnitConfigModal", () => {
     expect(screen.queryByText("This Epic Hero has already been added to this list")).not.toBeInTheDocument();
   });
 
+  it("highlights the saved 11e tier when reopening a configured card (storage round-trip)", () => {
+    const points = [
+      { models: "1", cost: "405", keyword: null, detachment: null },
+      { models: "2", cost: "425", keyword: { en: "Imperium" }, detachment: null },
+    ];
+    const card = {
+      ...baseCard,
+      source: "40k-11e",
+      points,
+      // Saved unitSize is a clone (different object references), as after localForage.
+      unitSize: JSON.parse(JSON.stringify(points[1])),
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    expect(screen.getByText("2 models (Imperium)").closest(".ucm-size-option")).toHaveClass("selected");
+    expect(screen.getByText("1 model").closest(".ucm-size-option")).not.toHaveClass("selected");
+  });
+
+  it("renders 11e size tiers (no active flags) with localised keywords and the surcharge note", () => {
+    const card = {
+      ...baseCard,
+      source: "40k-11e",
+      points: [
+        { models: "1", cost: "405", keyword: null, detachment: null },
+        { models: "2", cost: "425", keyword: { en: "Imperium" }, detachment: null },
+      ],
+      additionalCost: { cost: "20", afterSelections: 1 },
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    expect(screen.getByText("1 model")).toBeInTheDocument();
+    expect(screen.getByText("2 models (Imperium)")).toBeInTheDocument();
+    expect(screen.getByText(/\+20 pts for each copy of this datasheet beyond 1/)).toBeInTheDocument();
+  });
+
   it("disables enhancement already taken by another card in the category", () => {
     const card = {
       ...baseCard,

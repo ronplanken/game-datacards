@@ -25,6 +25,14 @@
   margin: 0 4px;
 }
 
+/* Note under the Unit Size options for datasheets that carry an 11e roster
+   surcharge (additionalCost). */
+.list-add-additional-cost {
+  font-size: 12px;
+  color: var(--bs-text-muted);
+  margin: 8px 4px 0;
+}
+
 /* ===========================================
    OPTIONS (Unit Size, Enhancements)
    =========================================== */

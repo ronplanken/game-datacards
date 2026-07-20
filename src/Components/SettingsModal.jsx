@@ -1,5 +1,6 @@
 import { Settings, Database, Trash2, Printer, History, Plus } from "lucide-react";
-import { Popconfirm } from "antd";
+import { Popconfirm, Select } from "antd";
+import { SUPPORTED_LANGUAGES, LANGUAGE_LABELS } from "../Helpers/localization.helpers";
 import { message } from "./Toast/message";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback, useState } from "react";
@@ -298,6 +299,7 @@ export const SettingsModal = () => {
                         // Otherwise show built-in datasource
                         const datasources = [
                           { id: "basic", title: "Basic Cards", hasUpdate: false },
+                          { id: "40k-11e", title: "40k 11th Edition import", hasUpdate: true },
                           { id: "40k-10e", title: "40k 10th Edition import", hasUpdate: true },
                           { id: "40k-10e-cp", title: "40k 10th Combat Patrol import", hasUpdate: true },
                           { id: "40k", title: "Wahapedia data import 9th edition", hasUpdate: true },
@@ -320,6 +322,26 @@ export const SettingsModal = () => {
                         );
                       })()}
                     </div>
+
+                    {/* Card language (multi-language datasources, e.g. 40k-11e) */}
+                    {settings.selectedDataSource === "40k-11e" && (
+                      <div className="datasource-section">
+                        <h3 className="datasource-section-title">Card language</h3>
+                        <p className="datasource-empty-text">
+                          Choose the language used for 11th Edition card text. Falls back to English where a translation
+                          is unavailable.
+                        </p>
+                        <Select
+                          value={settings.language || "en"}
+                          style={{ width: "100%", maxWidth: 280 }}
+                          onChange={(value) => updateSettings({ ...settings, language: value })}
+                          options={SUPPORTED_LANGUAGES.map((code) => ({
+                            value: code,
+                            label: LANGUAGE_LABELS[code] || code,
+                          }))}
+                        />
+                      </div>
+                    )}
 
                     {/* Custom Datasources Section */}
                     <div className="datasource-section">
@@ -365,6 +387,7 @@ export const SettingsModal = () => {
                       {(() => {
                         const datasources = [
                           { id: "basic", title: "Basic Cards", hasUpdate: false },
+                          { id: "40k-11e", title: "40k 11th Edition import", hasUpdate: true },
                           { id: "40k-10e", title: "40k 10th Edition import", hasUpdate: true },
                           { id: "40k-10e-cp", title: "40k 10th Combat Patrol import", hasUpdate: true },
                           { id: "40k", title: "Wahapedia data import 9th edition", hasUpdate: true },

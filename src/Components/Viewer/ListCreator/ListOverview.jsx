@@ -25,6 +25,7 @@ import { useAuth } from "../../../Premium";
 import { useCategorySharing } from "../../../Hooks/useCategorySharing";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
+import { computeCategoryPoints } from "../../../Helpers/listPoints.helpers";
 import {
   categorize40kUnits,
   categorizeAoSUnits,
@@ -429,16 +430,12 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
     }
   };
 
-  // Calculate total points (only for local lists)
-  const totalPoints = isCloudCategory
-    ? 0
-    : currentCards.reduce((acc, val) => {
-        let cost = acc + Number(val.unitSize?.cost || 0);
-        if (!isAoS && val.selectedEnhancement) {
-          cost = cost + Number(val.selectedEnhancement.cost || 0);
-        }
-        return cost;
-      }, 0);
+  // Calculate total points (only for local lists). Includes 11e cards (defaulting
+  // to their cheapest tier) and the per-datasheet roster surcharge; see
+  // listPoints.helpers.
+  const { surcharge: pointsSurcharge, total: totalPoints } = isCloudCategory
+    ? { surcharge: 0, total: 0 }
+    : computeCategoryPoints(currentCards);
 
   const isEmpty = currentCards.length === 0;
 
@@ -540,6 +537,12 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                   />
                 ))}
 
+                {pointsSurcharge > 0 && (
+                  <div className="list-overview-surcharge">
+                    <span className="list-overview-total-label">Additional selections</span>
+                    <span className="list-overview-surcharge-value">+{pointsSurcharge} pts</span>
+                  </div>
+                )}
                 <div className="list-overview-total">
                   <span className="list-overview-total-label">Total</span>
                   <span className="list-overview-total-value">{totalPoints} pts</span>

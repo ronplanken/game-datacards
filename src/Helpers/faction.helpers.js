@@ -1,5 +1,8 @@
+import { localize } from "./localization.helpers";
+
 /**
- * Get the name from a detachment (handles both old string format and new object format)
+ * Get the name from a detachment (handles the old string format, the object
+ * format, and the 11th edition format where `name` is a language-keyed object)
  * @param {string|object} detachment - Detachment as string or object with name/faction
  * @returns {string} The detachment name
  */
@@ -7,7 +10,7 @@ export const getDetachmentName = (detachment) => {
   if (typeof detachment === "string") {
     return detachment;
   }
-  return detachment?.name || "";
+  return localize(detachment?.name) || "";
 };
 
 /**

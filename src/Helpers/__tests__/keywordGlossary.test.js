@@ -144,6 +144,21 @@ describe("resolveKeywordEntry", () => {
     expect(resolveKeywordEntry("Melta 2D6+2", glossary, "weapons")?.key).toBe("melta");
   });
 
+  it("matches parameterized entries with inch-mark distance values", () => {
+    const scoped = [
+      {
+        key: "scouts",
+        name: "Scouts",
+        description: "Pre-battle move.",
+        matchType: "parameterized",
+        appliesTo: ["abilities"],
+      },
+    ];
+    expect(resolveKeywordEntry('Scouts 6"', scoped, "abilities")?.key).toBe("scouts");
+    expect(resolveKeywordEntry('Scouts 9"', scoped, "abilities")?.key).toBe("scouts");
+    expect(resolveKeywordEntry("Scouts", scoped, "abilities")?.key).toBe("scouts");
+  });
+
   it("matches a bare parameterized keyword name but not unrelated trailing text", () => {
     expect(resolveKeywordEntry("Sustained Hits", glossary, "weapons")?.key).toBe("sustained-hits");
     expect(resolveKeywordEntry("Sustained Hits in melee", glossary, "weapons")).toBeNull();
@@ -349,6 +364,14 @@ describe("getDefaultKeywordGlossary", () => {
     expect(defaults.length).toBeGreaterThan(0);
     expect(defaults.find((e) => e.name === "One Shot")).toBeTruthy();
     expect(defaults.every((e) => e.appliesTo?.includes("weapons"))).toBe(true);
+  });
+
+  it("returns the 11e seed (weapons + abilities scopes) for 40k-11e", () => {
+    const defaults = getDefaultKeywordGlossary("40k-11e");
+    expect(defaults.length).toBeGreaterThan(0);
+    expect(defaults.some((e) => e.appliesTo.includes("weapons"))).toBe(true);
+    expect(defaults.some((e) => e.appliesTo.includes("abilities"))).toBe(true);
+    expect(defaults.find((e) => e.name === "Rapid Fire")?.matchType).toBe("parameterized");
   });
 
   it("returns an empty array for other base systems", () => {

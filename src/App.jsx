@@ -10,6 +10,7 @@ import { LeftPanel } from "./Components/LeftPanel";
 import { AgeOfSigmarCardEditor } from "./Components/AgeOfSigmar/CardEditor";
 import { NecromundaCardEditor } from "./Components/Necromunda/CardEditor";
 import { Warhammer40K10eCardEditor } from "./Components/Warhammer40k-10e/CardEditor";
+import { Warhammer40K11eCardEditor } from "./Components/Warhammer40k-11e/CardEditor";
 import { Warhammer40KCardEditor } from "./Components/Warhammer40k/CardEditor";
 import { MiddlePanel, getEffectiveMiddleView } from "./Components/MiddlePanel";
 import { useCardStorage } from "./Hooks/useCardStorage";
@@ -130,6 +131,7 @@ function App() {
                 className={`${isCustomDatasource || activeCard?.source === "starcraft-tmg" ? "data-custom" : `data-${activeCard?.source}`}`}>
                 {activeCard?.source === "40k" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "40k-10e" && <Warhammer40K10eCardEditor />}
+                {activeCard?.source === "40k-11e" && <Warhammer40K11eCardEditor />}
                 {activeCard?.source === "basic" && <Warhammer40KCardEditor />}
                 {activeCard?.source === "necromunda" && <NecromundaCardEditor />}
                 {activeCard?.source === "aos" && <AgeOfSigmarCardEditor />}

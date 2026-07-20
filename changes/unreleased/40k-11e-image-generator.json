@@ -1,0 +1,5 @@
+{
+  "title": "Image Generator supports 11th Edition",
+  "body": "The bulk Image Generator now works with 11th Edition. Pick the edition (10th or 11th) at the top of the page, then select factions to export their datasheets and stratagems as images. Faction cards are now tracked on demand, so factions such as Adeptus Titanicus no longer crash the generator.",
+  "severity": "success"
+}

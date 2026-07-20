@@ -1,4 +1,5 @@
 import { capitalizeSentence } from "./external.helpers";
+import { getCardBaseCost } from "./listPoints.helpers";
 
 // ===========================================
 // 40K-10e Section Configuration
@@ -141,7 +142,7 @@ export const format40kListText = (sortedCards, sections) => {
     if (cards.length === 0) return;
     listText += `\n\n${clipboardLabel}`;
     sortCards(cards).forEach((val) => {
-      const totalCost = Number(val?.unitSize?.cost) + (Number(val.selectedEnhancement?.cost) || 0) || "?";
+      const totalCost = getCardBaseCost(val) + (Number(val.selectedEnhancement?.cost) || 0) || "?";
       listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${totalCost} pts)`;
       if (val.isWarlord) {
         listText += `\n   • Warlord`;

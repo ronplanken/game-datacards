@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { migrateListsToCategories } from "../../Helpers/listMigration.helpers";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
 
 const MobileListContext = React.createContext(undefined);
 
@@ -244,17 +245,7 @@ export const MobileListProvider = (props) => {
     return true;
   };
 
-  const getListPoints = (listIndex) => {
-    const list = lists[listIndex];
-    if (!list?.cards) return 0;
-    return list.cards.reduce((acc, val) => {
-      let cost = acc + Number(val.unitSize?.cost || 0);
-      if (val.selectedEnhancement) {
-        cost = cost + Number(val.selectedEnhancement.cost || 0);
-      }
-      return cost;
-    }, 0);
-  };
+  const getListPoints = (listIndex) => getCategoryPointsTotal(lists[listIndex]?.cards);
 
   const context = {
     lists,

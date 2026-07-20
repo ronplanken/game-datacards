@@ -1,0 +1,5 @@
+{
+  "title": "11th Edition list points",
+  "body": "11th Edition cards now count towards list totals (defaulting to their cheapest unit size), and lists apply the 11th Edition per-datasheet surcharge for repeated selections - each extra copy of a datasheet beyond its included number adds its listed additional cost, shown as a separate line in the list overview.",
+  "severity": "success"
+}

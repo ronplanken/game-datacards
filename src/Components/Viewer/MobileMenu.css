@@ -49,6 +49,21 @@
   cursor: pointer;
 }
 
+/* Row with a select control (e.g. Card language) instead of a toggle. */
+.settings-row-select {
+  cursor: default;
+}
+
+.settings-select {
+  border: 1px solid var(--bs-border, #d9d9d9);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  background: var(--bs-surface, #ffffff);
+  color: inherit;
+  max-width: 55%;
+}
+
 .settings-row:active {
   background-color: var(--bs-surface-hover);
 }

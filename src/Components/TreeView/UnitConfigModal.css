@@ -166,6 +166,15 @@
   position: relative;
 }
 
+/* Note under the unit-size list for datasheets that carry an 11e roster
+   surcharge (additionalCost). */
+.ucm-additional-cost {
+  font-size: 11px;
+  color: var(--text-secondary, var(--text-primary));
+  opacity: 0.75;
+  margin: 8px 0 0;
+}
+
 .ucm-section-label::after {
   content: "";
   position: absolute;
