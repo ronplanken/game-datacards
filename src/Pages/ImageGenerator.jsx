@@ -305,6 +305,7 @@ export const ImageGenerator = () => {
                       <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
                         <div ref={(el) => (basicStratagems.current[index] = el)}>
                           {card?.source === "40k-10e" && <Warhammer40K10eCardDisplay card={card} />}
+                          {card?.source === "40k-11e" && <Warhammer40K11eCardDisplay card={card} />}
                         </div>
                       </Col>
                     </Row>
