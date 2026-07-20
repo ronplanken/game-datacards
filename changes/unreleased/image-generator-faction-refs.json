@@ -1,0 +1,5 @@
+{
+  "title": "Image Generator fix for newer factions",
+  "body": "The Image Generator no longer breaks when selecting factions such as Adeptus Titanicus. Card capture now works for every faction in the datasource, including ones added after the page was first built.",
+  "severity": "success"
+}
