@@ -611,6 +611,10 @@ export const get40k11eData = async (language = "en") => {
             cardType: "DataCard",
             source: "40k-11e",
             name: localize(datasheet.name, language),
+            // Canonical English name kept alongside the localised one so leader
+            // attachment (attachesTo targets are English datasheet names) matches
+            // regardless of the user's card language.
+            nameEn: localize(datasheet.name, "en"),
           };
         }),
         stratagems: val?.stratagems?.map((strat) => {
