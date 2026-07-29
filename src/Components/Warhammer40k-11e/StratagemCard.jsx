@@ -22,6 +22,7 @@ export const StratagemCard = ({
   const when = localize(stratagem.when, lang);
   const target = localize(stratagem.target, lang);
   const effect = localize(stratagem.effect, lang);
+  const restrictions = localize(stratagem.restrictions, lang);
 
   const lineHeight = screens.xs
     ? "default"
@@ -85,6 +86,14 @@ export const StratagemCard = ({
                 <span className="title">effect:</span>
                 <span className="text">
                   <MarkupText content={effect} />
+                </span>
+              </div>
+            )}
+            {restrictions && (
+              <div className="section" style={{ lineHeight: `${lineHeight}` }}>
+                <span className="title">restrictions:</span>
+                <span className="text">
+                  <MarkupText content={restrictions} />
                 </span>
               </div>
             )}

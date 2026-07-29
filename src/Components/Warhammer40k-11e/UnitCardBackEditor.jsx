@@ -6,6 +6,7 @@ import { UnitComposition } from "./UnitCardEditor/UnitComposition";
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
 import { UnitLeader } from "./UnitCardEditor/UnitLeader";
 import { UnitLoadout } from "./UnitCardEditor/UnitLoadout";
+import { UnitTransport } from "./UnitCardEditor/UnitTransport";
 import { UnitWargearOptions } from "./UnitCardEditor/UnitWargearOptions";
 
 const { Panel } = Collapse;
@@ -74,6 +75,20 @@ export const UnitCardBackEditor = () => {
           />
         }>
         {activeCard.showLeader !== false && <UnitLeader />}
+      </Panel>
+      <Panel
+        header="Transport"
+        style={{ width: "100%" }}
+        key="transport"
+        collapsible={activeCard.showTransport === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showTransport !== false}
+            onClick={(value, e) => handleSimpleVisibilityChange("showTransport", "transport", value, e)}
+          />
+        }>
+        {activeCard.showTransport !== false && <UnitTransport />}
       </Panel>
       <Panel header="Keywords" style={{ width: "100%" }} key="10">
         <UnitKeywords type={"keywords"} localized />

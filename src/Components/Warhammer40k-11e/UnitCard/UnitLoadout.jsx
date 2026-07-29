@@ -14,6 +14,7 @@ export const UnitLoadout = ({ unit }) => {
     unit.showComposition !== false ? unit.composition?.map((entry) => localize(entry, lang)).filter(Boolean) : [];
   const loadout = unit.showLoadout !== false ? localize(unit.loadout, lang) : "";
   const leader = unit.showLeader !== false ? localize(unit.leader, lang) : "";
+  const transport = unit.showTransport !== false ? localize(unit.transport, lang) : "";
 
   return (
     <div className="extra">
@@ -47,6 +48,18 @@ export const UnitLoadout = ({ unit }) => {
             <div className="leader">
               <span className="description">
                 <MarkupText content={leader} />
+              </span>
+            </div>
+          </>
+        )}
+        {transport && (
+          <>
+            <div className="heading">
+              <div className="title">Transport</div>
+            </div>
+            <div className="transport">
+              <span className="description">
+                <MarkupText content={transport} />
               </span>
             </div>
           </>

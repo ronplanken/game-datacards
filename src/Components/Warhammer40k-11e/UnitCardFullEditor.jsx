@@ -13,6 +13,7 @@ import { UnitLoadout } from "./UnitCardEditor/UnitLoadout";
 import { UnitPoints } from "./UnitCardEditor/UnitPoints";
 import { UnitStats } from "./UnitCardEditor/UnitStats";
 import { UnitStylingInfo } from "./UnitCardEditor/UnitStylingInfo";
+import { UnitTransport } from "./UnitCardEditor/UnitTransport";
 import { UnitWargearOptions } from "./UnitCardEditor/UnitWargearOptions";
 import { UnitWeapons } from "./UnitCardEditor/UnitWeapons";
 
@@ -195,6 +196,20 @@ export const UnitCardFullEditor = () => {
           />
         }>
         {activeCard.showLeader !== false && <UnitLeader />}
+      </Panel>
+      <Panel
+        header="Transport"
+        style={{ width: "100%" }}
+        key="transport"
+        collapsible={activeCard.showTransport === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showTransport !== false}
+            onClick={(value, e) => handleSimpleVisibilityChange("showTransport", "transport", value, e)}
+          />
+        }>
+        {activeCard.showTransport !== false && <UnitTransport />}
       </Panel>
       <Panel header="Keywords" style={{ width: "100%" }} key="10">
         <UnitKeywords type={"keywords"} localized />
