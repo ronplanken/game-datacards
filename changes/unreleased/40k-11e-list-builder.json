@@ -1,0 +1,5 @@
+{
+  "title": "Build 11th Edition army lists",
+  "body": "The list builder now works with 11th Edition: add datasheets at the size you want, pick a detachment and enhancements for your characters, and see a running points total with the per-datasheet surcharge. Characters with the Leader ability can be attached to eligible squads already in your list.",
+  "severity": "success"
+}

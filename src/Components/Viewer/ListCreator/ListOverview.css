@@ -662,6 +662,14 @@
   padding-left: 20px;
 }
 
+.list-overview-item-attachment {
+  font-size: 12px;
+  color: var(--bs-text-secondary);
+  font-style: italic;
+  margin-top: 2px;
+  padding-left: 20px;
+}
+
 .list-overview-item-points {
   font-size: 14px;
   color: var(--bs-text-secondary);

@@ -6,6 +6,7 @@ import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
 import { cardHasKeyword, cardHasKeywordOrFaction } from "../../../Helpers/listCategories.helpers";
+import { getEligibleSquads, isAttachableLeader } from "../../../Helpers/listAttachments.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
@@ -23,7 +24,7 @@ const Toggle = ({ checked, onChange, disabled }) => (
 );
 
 export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
-  const { lists, selectedList, updateDatacard } = useMobileList();
+  const { lists, selectedList, updateDatacard, setCardAttachment } = useMobileList();
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
@@ -31,6 +32,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const [isWarlord, setIsWarlord] = useState(false);
   const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
   const [selectedUnitSize, setSelectedUnitSize] = useState();
+  const [selectedAttachment, setSelectedAttachment] = useState();
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
@@ -60,6 +62,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
       setSelectedUnitSize(card.unitSize || undefined);
       setSelectedEnhancement(card.selectedEnhancement || undefined);
       setIsWarlord(card.isWarlord || false);
+      setSelectedAttachment(card.attachedTo || undefined);
     }
   }, [isVisible, card]);
 
@@ -76,6 +79,9 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
 
   const handleSave = () => {
     updateDatacard(card.uuid, selectedUnitSize, selectedEnhancement, isWarlord);
+    if (isAttachableLeader(card)) {
+      setCardAttachment(card.uuid, selectedAttachment);
+    }
     handleClose();
     message.success(`${card.name} updated`);
   };
@@ -116,6 +122,8 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const showWarlord = isCharacter || isEpicHero;
   const showEnhancements = isCharacter && !isEpicHero;
   const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
+  // Leaders/support units can attach to eligible squads already in this list.
+  const eligibleSquads = isAttachableLeader(card) ? getEligibleSquads(card, lists[selectedList]?.cards || []) : [];
 
   if (!card || !Array.isArray(card?.points)) return null;
 
@@ -192,6 +200,28 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
                     </button>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* Attach-to Section (leaders / support units) */}
+          {eligibleSquads.length > 0 && (
+            <div className="list-add-section">
+              <h4 className="list-add-section-title">Attach to unit</h4>
+              <div className="list-add-options">
+                <button
+                  className={`list-add-option ${!selectedAttachment ? "selected" : ""}`}
+                  onClick={() => setSelectedAttachment(undefined)}>
+                  <span className="option-label">Not attached</span>
+                </button>
+                {eligibleSquads.map((squad) => (
+                  <button
+                    key={squad.uuid}
+                    className={`list-add-option ${selectedAttachment === squad.uuid ? "selected" : ""}`}
+                    onClick={() => setSelectedAttachment(squad.uuid)}>
+                    <span className="option-label">{squad.name}</span>
+                  </button>
+                ))}
               </div>
             </div>
           )}

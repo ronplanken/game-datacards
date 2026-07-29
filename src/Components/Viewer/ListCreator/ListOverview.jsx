@@ -129,11 +129,16 @@ const ListHeader = ({
 };
 
 // Single list item component (local lists - with delete)
-const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS }) => {
+const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS, allCards = [] }) => {
   const isUnconfigured = !item.unitSize;
   const totalCost = isAoS
     ? Number(item.unitSize?.cost) || 0
     : (Number(item.unitSize?.cost) || 0) + (Number(item.selectedEnhancement?.cost) || 0);
+
+  // Leader/support attachment indicators (11e): the squad this unit is attached
+  // to, and any leaders attached to this squad.
+  const attachedSquadName = item.attachedTo ? allCards.find((c) => c.uuid === item.attachedTo)?.name : null;
+  const hostedLeaders = allCards.filter((c) => c.attachedTo === item.uuid).map((c) => c.name);
 
   return (
     <div className="list-overview-item">
@@ -144,6 +149,10 @@ const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS }) => {
         </div>
         {!isAoS && item.selectedEnhancement && (
           <div className="list-overview-item-enhancement">{capitalizeSentence(item.selectedEnhancement.name)}</div>
+        )}
+        {attachedSquadName && <div className="list-overview-item-attachment">Attached to {attachedSquadName}</div>}
+        {hostedLeaders.length > 0 && (
+          <div className="list-overview-item-attachment">Led by {hostedLeaders.join(", ")}</div>
         )}
       </div>
       {isUnconfigured ? (
@@ -176,7 +185,7 @@ const CloudListItem = ({ card, onNavigate }) => (
 );
 
 // Section renderer component
-const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, isAoS }) => {
+const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, isAoS, allCards }) => {
   if (!cards || cards.length === 0) return null;
 
   return (
@@ -190,6 +199,7 @@ const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, i
           onDelete={onDelete}
           onEdit={onEdit}
           isAoS={isAoS}
+          allCards={allCards}
         />
       ))}
     </>
@@ -534,6 +544,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                     onDelete={removeDatacard}
                     onEdit={setEditingCard}
                     isAoS={isAoS}
+                    allCards={currentCards}
                   />
                 ))}
 

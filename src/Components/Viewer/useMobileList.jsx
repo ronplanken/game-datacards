@@ -181,6 +181,27 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
+  // Attach (or detach, when squadUuid is falsy) a leader/support card to a squad
+  // already in the current list. Stored as `attachedTo` on the leader card.
+  const setCardAttachment = (uuid, squadUuid) => {
+    if (!uuid) return;
+    const category = lists[selectedList];
+    if (!category) return;
+    const updatedCards = category.cards.map((card) =>
+      card.uuid !== uuid ? card : { ...card, attachedTo: squadUuid || undefined },
+    );
+    updateCategory({ ...category, cards: updatedCards }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
+  // Set the army-level detachment for the current list (stored on the category).
+  const setListDetachment = (detachment) => {
+    const category = lists[selectedList];
+    if (!category) return;
+    updateCategory({ ...category, detachment: detachment || undefined }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
   const createList = (name) => {
     const listName = name?.trim() || "New List";
     importCategory({
@@ -255,6 +276,8 @@ export const MobileListProvider = (props) => {
     removeDatacard,
     updateDatacard,
     updateCardData,
+    setCardAttachment,
+    setListDetachment,
     createList,
     createListWithCards,
     renameList,
