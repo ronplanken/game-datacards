@@ -1,5 +1,44 @@
 import { capitalizeSentence } from "./external.helpers";
 import { getCardBaseCost } from "./listPoints.helpers";
+import { localize } from "./localization.helpers";
+
+// ===========================================
+// Keyword helpers (edition-agnostic)
+// ===========================================
+// 10th edition stores keywords as plain strings ("Character"); 11th edition
+// stores them as language-keyed objects ({ en: "Character", de: ... }). Matching
+// against the canonical English keyword via localize() therefore works for both,
+// so list logic (categorisation, character/enhancement eligibility) does not
+// silently break on 11e object-keywords.
+
+/**
+ * True when a card carries the given keyword, comparing against the canonical
+ * English form (case-insensitive). Works for 10e string keywords and 11e
+ * language-keyed object keywords.
+ * @param {Object} card - card with a `keywords` array
+ * @param {string} keyword - English keyword to test (e.g. "Character")
+ */
+export const cardHasKeyword = (card, keyword) => {
+  if (!card?.keywords || !keyword) return false;
+  const target = String(keyword).toLowerCase();
+  return card.keywords.some((k) => localize(k, "en").toLowerCase() === target);
+};
+
+/**
+ * True when a card carries the given token as a keyword or a faction. Enhancement
+ * eligibility keys off either (an enhancement's `keywords` can name a faction).
+ * The token may be a plain string or a language-keyed object; array/empty tokens
+ * never match (preserves the legacy no-op for oddly-shaped exclude entries).
+ * @param {Object} card - card with `keywords` and/or `factions`
+ * @param {string|Object} token - English keyword or faction name (or {lang} object)
+ */
+export const cardHasKeywordOrFaction = (card, token) => {
+  const name = localize(token, "en");
+  if (!name) return false;
+  if (cardHasKeyword(card, name)) return true;
+  const target = name.toLowerCase();
+  return (card?.factions || []).some((f) => localize(f, "en").toLowerCase() === target);
+};
 
 // ===========================================
 // 40K-10e Section Configuration
@@ -42,11 +81,11 @@ export const categorize40kUnits = (datacards) => {
       // Allied units go to their own section (check first!)
       if (card?._isAllied) {
         cats.allied.push(card);
-      } else if (card?.keywords?.includes("Character")) {
+      } else if (cardHasKeyword(card, "Character")) {
         cats.characters.push(card);
-      } else if (card?.keywords?.includes("Battleline")) {
+      } else if (cardHasKeyword(card, "Battleline")) {
         cats.battleline.push(card);
-      } else if (card?.keywords?.includes("Dedicated Transport")) {
+      } else if (cardHasKeyword(card, "Dedicated Transport")) {
         cats.transports.push(card);
       } else {
         cats.other.push(card);

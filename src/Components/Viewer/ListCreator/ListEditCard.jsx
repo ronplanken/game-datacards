@@ -5,6 +5,7 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
+import { cardHasKeyword, cardHasKeywordOrFaction } from "../../../Helpers/listCategories.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
@@ -104,21 +105,14 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
       )
       .filter((enhancement) => {
-        let isActiveEnhancement = false;
-        enhancement.keywords?.forEach((keyword) => {
-          if (card?.keywords?.includes(keyword)) isActiveEnhancement = true;
-          if (card?.factions?.includes(keyword)) isActiveEnhancement = true;
-        });
-        enhancement?.excludes?.forEach((exclude) => {
-          if (card?.keywords?.includes(exclude)) isActiveEnhancement = false;
-          if (card?.factions?.includes(exclude)) isActiveEnhancement = false;
-        });
-        return isActiveEnhancement;
+        const included = (enhancement.keywords || []).some((kw) => cardHasKeywordOrFaction(card, kw));
+        const excluded = (enhancement.excludes || []).some((ex) => cardHasKeywordOrFaction(card, ex));
+        return included && !excluded;
       });
   };
 
-  const isCharacter = card?.keywords?.includes("Character");
-  const isEpicHero = card?.keywords?.includes("Epic Hero");
+  const isCharacter = cardHasKeyword(card, "Character");
+  const isEpicHero = cardHasKeyword(card, "Epic Hero");
   const showWarlord = isCharacter || isEpicHero;
   const showEnhancements = isCharacter && !isEpicHero;
   const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];

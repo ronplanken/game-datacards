@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../Helpers/listPoints.helpers";
+import { cardHasKeyword, cardHasKeywordOrFaction } from "../../Helpers/listCategories.helpers";
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -81,11 +82,11 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   const warlordAlreadyAdded = category?.cards?.find((c) => c.isWarlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
-    return foundCard.uuid !== card?.uuid && card?.keywords?.includes("Epic Hero") && card?.id === foundCard?.id;
+    return foundCard.uuid !== card?.uuid && cardHasKeyword(card, "Epic Hero") && card?.id === foundCard?.id;
   });
 
-  const isCharacter = card?.keywords?.includes("Character");
-  const isEpicHero = card?.keywords?.includes("Epic Hero");
+  const isCharacter = cardHasKeyword(card, "Character");
+  const isEpicHero = cardHasKeyword(card, "Epic Hero");
   const showWarlord = isCharacter || isEpicHero;
   const showEnhancements = isCharacter && !isEpicHero;
   const showDetachments = showEnhancements && detachments?.length > 1;
@@ -117,24 +118,9 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
         enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
     )
     ?.filter((enhancement) => {
-      let isActiveEnhancement = false;
-      enhancement.keywords.forEach((keyword) => {
-        if (card?.keywords?.includes(keyword)) {
-          isActiveEnhancement = true;
-        }
-        if (card?.factions?.includes(keyword)) {
-          isActiveEnhancement = true;
-        }
-      });
-      enhancement?.excludes?.forEach((exclude) => {
-        if (card?.keywords?.includes(exclude)) {
-          isActiveEnhancement = false;
-        }
-        if (card?.factions?.includes(exclude)) {
-          isActiveEnhancement = false;
-        }
-      });
-      return isActiveEnhancement;
+      const included = (enhancement.keywords || []).some((kw) => cardHasKeywordOrFaction(card, kw));
+      const excluded = (enhancement.excludes || []).some((ex) => cardHasKeywordOrFaction(card, ex));
+      return included && !excluded;
     });
 
   const isEnhancementDisabled = (enhancement) => {
