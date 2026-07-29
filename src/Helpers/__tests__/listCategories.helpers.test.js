@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { cardHasKeyword, cardHasKeywordOrFaction, categorize40kUnits } from "../listCategories.helpers";
+import {
+  cardHasKeyword,
+  cardHasKeywordOrFaction,
+  categorize40kUnits,
+  isUnitEnhancementEligible,
+} from "../listCategories.helpers";
 
 describe("cardHasKeyword (edition-agnostic)", () => {
   it("matches 10e plain-string keywords", () => {
@@ -68,5 +73,42 @@ describe("categorize40kUnits with 11e object keywords", () => {
   it("still categorizes 10e string keywords", () => {
     const result = categorize40kUnits([{ name: "Captain", keywords: ["Character"] }]);
     expect(result.characters).toHaveLength(1);
+  });
+});
+
+describe("isUnitEnhancementEligible", () => {
+  const character = { keywords: [{ en: "Character" }, { en: "Infantry" }], factions: ["Adeptus Custodes"] };
+  const walker = { keywords: [{ en: "Walker" }], factions: ["Adeptus Custodes"] };
+  const epicHero = { keywords: [{ en: "Character" }, { en: "Epic Hero" }], factions: ["Adeptus Custodes"] };
+
+  const regularEnhancement = { name: "Superior Creation", keywords: ["Adeptus Custodes"] };
+  const upgrade = { name: "Auramite Sarcophagus (Upgrade)", keywords: ["Walker"], equipableByNonCharacter: true };
+
+  it("lets a character take a matching regular enhancement", () => {
+    expect(isUnitEnhancementEligible(character, regularEnhancement)).toBe(true);
+  });
+
+  it("does NOT let a non-character take a regular (non-upgrade) enhancement", () => {
+    expect(isUnitEnhancementEligible(walker, { name: "X", keywords: ["Walker"] })).toBe(false);
+  });
+
+  it("lets a non-character take a matching upgrade (equipableByNonCharacter)", () => {
+    expect(isUnitEnhancementEligible(walker, upgrade)).toBe(true);
+  });
+
+  it("does not offer an upgrade whose keyword the unit lacks", () => {
+    expect(isUnitEnhancementEligible({ keywords: [{ en: "Infantry" }] }, upgrade)).toBe(false);
+  });
+
+  it("never offers enhancements or upgrades to Epic Heroes", () => {
+    expect(isUnitEnhancementEligible(epicHero, regularEnhancement)).toBe(false);
+    expect(
+      isUnitEnhancementEligible({ ...epicHero, keywords: [...epicHero.keywords, { en: "Walker" }] }, upgrade),
+    ).toBe(false);
+  });
+
+  it("respects excludes", () => {
+    const excluded = { name: "Y", keywords: ["Adeptus Custodes"], excludes: [{ en: "Infantry" }] };
+    expect(isUnitEnhancementEligible(character, excluded)).toBe(false);
   });
 });

@@ -5,7 +5,7 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
-import { cardHasKeyword, cardHasKeywordOrFaction } from "../../../Helpers/listCategories.helpers";
+import { cardHasKeyword, isUnitEnhancementEligible } from "../../../Helpers/listCategories.helpers";
 import { getEligibleSquads, isAttachableLeader } from "../../../Helpers/listAttachments.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
@@ -101,27 +101,26 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
     );
   };
 
-  // Filter enhancements for current detachment and card
+  const isCharacter = cardHasKeyword(card, "Character");
+  const isEpicHero = cardHasKeyword(card, "Epic Hero");
+  const showWarlord = isCharacter || isEpicHero;
+
+  // Characters take regular enhancements; non-character units can take upgrades
+  // (equipableByNonCharacter). Epic Heroes take neither.
   const getAvailableEnhancements = () => {
-    if (!cardFaction?.enhancements) return [];
+    if (!cardFaction?.enhancements || isEpicHero) return [];
 
     return cardFaction.enhancements
       .filter(
         (enhancement) =>
           enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
       )
-      .filter((enhancement) => {
-        const included = (enhancement.keywords || []).some((kw) => cardHasKeywordOrFaction(card, kw));
-        const excluded = (enhancement.excludes || []).some((ex) => cardHasKeywordOrFaction(card, ex));
-        return included && !excluded;
-      });
+      .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
   };
 
-  const isCharacter = cardHasKeyword(card, "Character");
-  const isEpicHero = cardHasKeyword(card, "Epic Hero");
-  const showWarlord = isCharacter || isEpicHero;
-  const showEnhancements = isCharacter && !isEpicHero;
-  const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
+  const availableEnhancements = getAvailableEnhancements();
+  const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
+  const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
   // Leaders/support units can attach to eligible squads already in this list.
   const eligibleSquads = isAttachableLeader(card) ? getEligibleSquads(card, lists[selectedList]?.cards || []) : [];
 
@@ -180,10 +179,10 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
             </div>
           )}
 
-          {/* Enhancements Section */}
+          {/* Enhancements / Upgrades Section */}
           {showEnhancements && availableEnhancements.length > 0 && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Enhancement</h4>
+              <h4 className="list-add-section-title">{enhancementLabel}</h4>
               <div className="list-add-options">
                 {availableEnhancements.map((enhancement) => {
                   const disabled = isEnhancementDisabled(enhancement);

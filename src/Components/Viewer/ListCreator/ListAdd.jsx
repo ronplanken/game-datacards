@@ -6,7 +6,7 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
-import { cardHasKeyword, cardHasKeywordOrFaction } from "../../../Helpers/listCategories.helpers";
+import { cardHasKeyword, isUnitEnhancementEligible } from "../../../Helpers/listCategories.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useUmami } from "../../../Hooks/useUmami";
 import { useMobileList } from "../useMobileList";
@@ -104,27 +104,27 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     return lists[selectedList]?.cards?.some((card) => card?.selectedEnhancement?.name === enhancement?.name);
   };
 
-  // Filter enhancements for current detachment and card
+  const isCharacter = cardHasKeyword(activeCard, "Character");
+  const isEpicHero = cardHasKeyword(activeCard, "Epic Hero");
+  const showWarlord = isCharacter || isEpicHero;
+
+  // Filter enhancements for current detachment and card. Characters take regular
+  // enhancements; non-character units can take enhancements flagged as upgrades
+  // (equipableByNonCharacter). Epic Heroes take neither.
   const getAvailableEnhancements = () => {
-    if (!cardFaction?.enhancements) return [];
+    if (!cardFaction?.enhancements || isEpicHero) return [];
 
     return cardFaction.enhancements
       .filter(
         (enhancement) =>
           enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
       )
-      .filter((enhancement) => {
-        const included = (enhancement.keywords || []).some((kw) => cardHasKeywordOrFaction(activeCard, kw));
-        const excluded = (enhancement.excludes || []).some((ex) => cardHasKeywordOrFaction(activeCard, ex));
-        return included && !excluded;
-      });
+      .filter((enhancement) => isUnitEnhancementEligible(activeCard, enhancement));
   };
 
-  const isCharacter = cardHasKeyword(activeCard, "Character");
-  const isEpicHero = cardHasKeyword(activeCard, "Epic Hero");
-  const showWarlord = isCharacter || isEpicHero;
-  const showEnhancements = isCharacter && !isEpicHero;
-  const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
+  const availableEnhancements = getAvailableEnhancements();
+  const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
+  const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
 
   // Don't show for cards without array-based points (e.g., AoS warscrolls)
   if (!activeCard || !Array.isArray(activeCard?.points)) return null;
@@ -182,10 +182,10 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
             </div>
           )}
 
-          {/* Enhancements Section */}
+          {/* Enhancements / Upgrades Section */}
           {showEnhancements && availableEnhancements.length > 0 && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Enhancement</h4>
+              <h4 className="list-add-section-title">{enhancementLabel}</h4>
               <div className="list-add-options">
                 {availableEnhancements.map((enhancement) => {
                   const disabled = isEnhancementDisabled(enhancement);

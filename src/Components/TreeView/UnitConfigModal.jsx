@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../Helpers/listPoints.helpers";
-import { cardHasKeyword, cardHasKeywordOrFaction } from "../../Helpers/listCategories.helpers";
+import { cardHasKeyword, isUnitEnhancementEligible } from "../../Helpers/listCategories.helpers";
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -88,8 +88,21 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   const isCharacter = cardHasKeyword(card, "Character");
   const isEpicHero = cardHasKeyword(card, "Epic Hero");
   const showWarlord = isCharacter || isEpicHero;
-  const showEnhancements = isCharacter && !isEpicHero;
+
+  // Characters take regular enhancements; non-character units can take upgrades
+  // (equipableByNonCharacter). Epic Heroes take neither.
+  const filteredEnhancements = isEpicHero
+    ? []
+    : cardFaction?.enhancements
+        ?.filter(
+          (enhancement) =>
+            enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
+        )
+        ?.filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
+
+  const showEnhancements = !isEpicHero && (filteredEnhancements?.length || 0) > 0;
   const showDetachments = showEnhancements && detachments?.length > 1;
+  const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
 
   const selectEnhancement = (enhancement) => {
     if (selectedEnhancement?.name === enhancement?.name) {
@@ -111,17 +124,6 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   const handleSubmit = () => {
     onSave({ ...card, unitSize: selectedUnitSize, selectedEnhancement, isWarlord });
   };
-
-  const filteredEnhancements = cardFaction?.enhancements
-    ?.filter(
-      (enhancement) =>
-        enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-    )
-    ?.filter((enhancement) => {
-      const included = (enhancement.keywords || []).some((kw) => cardHasKeywordOrFaction(card, kw));
-      const excluded = (enhancement.excludes || []).some((ex) => cardHasKeywordOrFaction(card, ex));
-      return included && !excluded;
-    });
 
   const isEnhancementDisabled = (enhancement) => {
     return category?.cards?.some((c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid);
@@ -223,10 +225,10 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
             </div>
           )}
 
-          {/* Enhancements */}
+          {/* Enhancements / Upgrades */}
           {showEnhancements && filteredEnhancements?.length > 0 && (
             <div>
-              <div className="ucm-section-label">Enhancements</div>
+              <div className="ucm-section-label">{enhancementLabel}s</div>
               <div className="ucm-enhancement-list">
                 {filteredEnhancements.map((enhancement) => {
                   const disabled = isEnhancementDisabled(enhancement);

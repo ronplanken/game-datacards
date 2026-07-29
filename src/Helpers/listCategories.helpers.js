@@ -40,6 +40,28 @@ export const cardHasKeywordOrFaction = (card, token) => {
   return (card?.factions || []).some((f) => localize(f, "en").toLowerCase() === target);
 };
 
+/**
+ * Whether a unit may take a given enhancement/upgrade, ignoring detachment
+ * (the caller applies the selected-detachment filter separately).
+ *
+ * - Epic Heroes take neither enhancements nor upgrades.
+ * - Characters take regular enhancements; non-character units take only
+ *   enhancements flagged `equipableByNonCharacter` (11e "(Upgrade)" entries).
+ * - The enhancement's `keywords` must match one of the unit's keywords/factions
+ *   and its `excludes` must not.
+ *
+ * @param {Object} card - the unit
+ * @param {Object} enhancement - the enhancement/upgrade
+ */
+export const isUnitEnhancementEligible = (card, enhancement) => {
+  if (!enhancement) return false;
+  if (cardHasKeyword(card, "Epic Hero")) return false;
+  if (!cardHasKeyword(card, "Character") && !enhancement.equipableByNonCharacter) return false;
+  const included = (enhancement.keywords || []).some((kw) => cardHasKeywordOrFaction(card, kw));
+  const excluded = (enhancement.excludes || []).some((ex) => cardHasKeywordOrFaction(card, ex));
+  return included && !excluded;
+};
+
 // ===========================================
 // 40K-10e Section Configuration
 // ===========================================
