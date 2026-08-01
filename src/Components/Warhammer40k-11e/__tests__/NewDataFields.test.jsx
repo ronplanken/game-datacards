@@ -83,7 +83,7 @@ describe("11e UnitExtra: wargear / special abilities", () => {
   });
 });
 
-describe("11e UnitWeapons: primarch abilities", () => {
+describe("11e UnitWeapons: primarch abilities and list enhancements", () => {
   it("renders primarch ability groups and their sub-abilities below the weapons", () => {
     const unit = {
       abilities: {
@@ -110,6 +110,43 @@ describe("11e UnitWeapons: primarch abilities", () => {
     };
     const { queryByText } = render(<UnitWeapons unit={unit} />);
     expect(queryByText("Warmaster")).not.toBeInTheDocument();
+  });
+
+  it("renders a list-selected enhancement as a primarch-style block", () => {
+    const unit = {
+      selectedEnhancement: {
+        name: "Perfervid Haste",
+        description: { en: "Add 2 to the Move characteristic.", de: "Addiere 2 zur Bewegung." },
+        cost: "15",
+      },
+    };
+    const { container, getByText } = render(<UnitWeapons unit={unit} />);
+    expect(getByText("Perfervid Haste")).toBeInTheDocument();
+    expect(getByText(/Add 2 to the Move characteristic/)).toBeInTheDocument();
+    expect(container.querySelector(".special.primarch.selected-enhancement")).toBeInTheDocument();
+  });
+
+  it("renders the enhancement heading when it carries no description", () => {
+    const unit = { selectedEnhancement: { name: "Clarion of Urgency" } };
+    const { container, getByText } = render(<UnitWeapons unit={unit} />);
+    expect(getByText("Clarion of Urgency")).toBeInTheDocument();
+    expect(container.querySelector(".description-container")).not.toBeInTheDocument();
+  });
+
+  it("renders nothing extra when the unit carries no enhancement", () => {
+    const { container } = render(<UnitWeapons unit={{ abilities: {} }} />);
+    expect(container.querySelector(".selected-enhancement")).not.toBeInTheDocument();
+  });
+
+  it("renders the enhancement after the primarch groups", () => {
+    const unit = {
+      selectedEnhancement: { name: "Perfervid Haste", description: { en: "Add 2 to Move." } },
+      abilities: { primarch: [{ name: { en: "Warmaster" }, abilities: [] }] },
+    };
+    const { container } = render(<UnitWeapons unit={unit} />);
+    const blocks = [...container.querySelectorAll(".weapons > .special")];
+    expect(blocks).toHaveLength(2);
+    expect(blocks[1]).toHaveClass("selected-enhancement");
   });
 
   it("renders primarch groups after the weapon tables", () => {

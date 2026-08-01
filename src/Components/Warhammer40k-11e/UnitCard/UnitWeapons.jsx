@@ -1,10 +1,11 @@
 import { UnitPrimarchAbilities } from "./UnitPrimarchAbilities";
+import { UnitSelectedEnhancement } from "./UnitSelectedEnhancement";
 import { UnitWeaponsType } from "./UnitWeaponsType";
 
 // Render ranged and melee weapons whenever present, followed by any primarch
-// ability groups (which share this wide column, as in 10e). The optional
-// showWeapons flags let the editor hide a section without deleting the data; an
-// absent flag means shown.
+// ability groups and the list-selected enhancement (which share this wide
+// column, as in 10e). The optional showWeapons flags let the editor hide a
+// section without deleting the data; an absent flag means shown.
 export const UnitWeapons = ({ unit }) => {
   const showRanged = unit.showWeapons?.rangedWeapons !== false;
   const showMelee = unit.showWeapons?.meleeWeapons !== false;
@@ -23,6 +24,7 @@ export const UnitWeapons = ({ unit }) => {
         />
       )}
       <UnitPrimarchAbilities unit={unit} />
+      <UnitSelectedEnhancement unit={unit} />
     </div>
   );
 };
