@@ -17,7 +17,18 @@ import { localize } from "./localization.helpers";
  * (doubled for Battleline / Dedicated Transport; Epic Heroes are always 1).
  */
 export const BATTLE_SIZES = [
-  { key: "incursion", label: "Incursion", points: 1000, dp: 2, enhancementLimit: 2, unitLimit: 2 },
+  {
+    key: "incursion",
+    label: "Incursion",
+    points: 1000,
+    dp: 2,
+    enhancementLimit: 2,
+    unitLimit: 2,
+    // "If you are playing an Incursion battle, you can select a 3DP detachment
+    // as your only detachment" — the one case where a detachment may cost more
+    // than the DP budget.
+    allowsSoloOverBudgetDetachment: true,
+  },
   { key: "strikeForce", label: "Strike Force", points: 2000, dp: 3, enhancementLimit: 4, unitLimit: 3 },
 ];
 
@@ -48,18 +59,18 @@ export const isDetachmentSelected = (detachments, detachment) =>
  * Whether a detachment can be added: not already selected (the same detachment
  * cannot be taken twice) and its cost fits the remaining DP budget.
  *
- * Exception from the core rules: a detachment that costs more than the whole
- * budget may still be taken as the army's *only* detachment — "if you are
- * playing an Incursion battle, you can select a 3DP detachment as your only
- * detachment". Once taken it fills the budget, so nothing else can be added.
+ * Exception from the core rules: at a battle size that allows it (Incursion),
+ * a detachment costing more than the whole budget may still be taken as the
+ * army's *only* detachment. Once taken it fills the budget, so nothing else
+ * can be added.
  */
 export const canAddDetachment = (detachments, detachment, battleSizeKey) => {
   if (!detachment) return false;
   if (isDetachmentSelected(detachments, detachment)) return false;
-  const budget = getBattleSize(battleSizeKey).dp;
+  const battleSize = getBattleSize(battleSizeKey);
   const spent = getSpentDetachmentPoints(detachments);
-  if (spent + getDetachmentCost(detachment) <= budget) return true;
-  return spent === 0;
+  if (spent + getDetachmentCost(detachment) <= battleSize.dp) return true;
+  return spent === 0 && Boolean(battleSize.allowsSoloOverBudgetDetachment);
 };
 
 /** Add or remove a detachment, respecting the DP budget. Returns a new array. */

@@ -133,6 +133,14 @@ describe("Incursion 3DP exception", () => {
     // 1 DP spent, budget 2: a 3DP detachment no longer fits and is not solo.
     expect(canAddDetachment([oneDp], threeDp, "incursion")).toBe(false);
   });
+
+  it("is scoped to Incursion — other battle sizes get no solo over-budget pick", () => {
+    // Not reachable with today's data (nothing costs more than Strike Force's
+    // 3 DP), but the allowance must not leak to other battle sizes.
+    const fourDp = det("Oversized", 4, "d-over");
+    expect(canAddDetachment([], fourDp, "incursion")).toBe(true);
+    expect(canAddDetachment([], fourDp, "strikeForce")).toBe(false);
+  });
 });
 
 describe("enhancement usage counting", () => {
