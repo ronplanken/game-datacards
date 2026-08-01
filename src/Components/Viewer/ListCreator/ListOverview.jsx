@@ -36,7 +36,9 @@ import {
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
 import { requiresAttachment } from "../../../Helpers/listAttachments.helpers";
+import { getBattleSize, getForceDispositions, getSpentDetachmentPoints } from "../../../Helpers/listRoster.helpers";
 import { MobileModal } from "../Mobile/MobileModal";
+import { ArmyRosterSheet } from "../Mobile/ArmyRosterSheet";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter, MobileListForgeImporter } from "../MobileImporter";
@@ -342,7 +344,8 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
 };
 
 export const ListOverview = ({ isVisible, setIsVisible }) => {
-  const { lists, selectedList, removeDatacard, selectedCloudCategoryId } = useMobileList();
+  const { lists, selectedList, removeDatacard, selectedCloudCategoryId, setListDetachments, setListBattleSize } =
+    useMobileList();
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const { categories: cloudCategories } = useCloudCategories();
@@ -353,6 +356,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const [activeImporter, setActiveImporter] = useState(null); // null | "gw" | "listforge"
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
+  const [isRosterSheetVisible, setIsRosterSheetVisible] = useState(false);
   const [urlPayload, setUrlPayload] = useState(null);
 
   // Consume ListForge URL payload from router state
@@ -383,11 +387,24 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   // Detect game system
   const isAoS = settings.selectedDataSource === "aos";
   const is40k = settings.selectedDataSource === "40k-10e";
+  // 11e armies buy several detachments with Detachment Points, so they get the
+  // army roster sheet (battle size + detachments + force dispositions).
+  const is11e = settings.selectedDataSource === "40k-11e";
 
   // Get current list data (local or cloud)
   const currentList = lists[selectedList];
   const currentListName = isCloudCategory ? selectedCloudCategory.name : currentList?.name || "List";
   const currentCards = isCloudCategory ? selectedCloudCategory.cards : currentList?.cards || [];
+
+  // Army-wide roster settings (11e): battle size, detachments and their DP.
+  const armyDetachments = currentList?.detachments || [];
+  const armyBattleSize = getBattleSize(currentList?.battleSize);
+  const spentDetachmentPoints = getSpentDetachmentPoints(armyDetachments);
+  const forceDispositions = getForceDispositions(armyDetachments, settings.language);
+  // Detachments available to this army come from the faction of the cards in the
+  // list (a list is built from one faction).
+  const listFactionId = currentCards.find((card) => card?.faction_id)?.faction_id;
+  const availableDetachments = dataSource.data.find((faction) => faction.id === listFactionId)?.detachments || [];
 
   // Get appropriate sections and categorization (only for local lists)
   const sections = isAoS ? SECTIONS_AOS : SECTIONS_40K;
@@ -542,6 +559,25 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
             ) : (
               /* Local list cards - categorized with delete buttons */
               <div className="list-overview-items">
+                {is11e && (
+                  <button className="list-overview-roster" onClick={() => setIsRosterSheetVisible(true)} type="button">
+                    <span className="list-overview-roster-main">
+                      <span className="list-overview-roster-label">
+                        {armyBattleSize.label} · {spentDetachmentPoints}/{armyBattleSize.dp} DP
+                      </span>
+                      <span className="list-overview-roster-detachments">
+                        {armyDetachments.length === 0
+                          ? "Select detachments"
+                          : forceDispositions
+                              .map((entry) =>
+                                entry.disposition ? `${entry.detachment} (${entry.disposition})` : entry.detachment,
+                              )
+                              .join(", ")}
+                      </span>
+                    </span>
+                    <ChevronRight size={18} />
+                  </button>
+                )}
                 {sections.map((section) => (
                   <ListSection
                     key={section.key}
@@ -564,7 +600,13 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 )}
                 <div className="list-overview-total">
                   <span className="list-overview-total-label">Total</span>
-                  <span className="list-overview-total-value">{totalPoints} pts</span>
+                  <span
+                    className={`list-overview-total-value ${
+                      is11e && totalPoints > armyBattleSize.points ? "list-overview-total-value--over" : ""
+                    }`}>
+                    {totalPoints}
+                    {is11e ? ` / ${armyBattleSize.points}` : ""} pts
+                  </span>
                 </div>
               </div>
             )}
@@ -573,6 +615,17 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       </MobileModal>
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
+
+      <ArmyRosterSheet
+        isOpen={isRosterSheetVisible}
+        onClose={() => setIsRosterSheetVisible(false)}
+        detachments={availableDetachments}
+        selectedDetachments={armyDetachments}
+        battleSize={currentList?.battleSize}
+        onChangeBattleSize={setListBattleSize}
+        onChangeDetachments={setListDetachments}
+        language={settings.language}
+      />
 
       <MobileGwImporter isOpen={activeImporter === "gw"} onClose={() => setActiveImporter(null)} />
 

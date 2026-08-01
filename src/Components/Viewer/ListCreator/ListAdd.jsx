@@ -11,6 +11,7 @@ import {
   isEnhancementSingleUse,
   isUnitEnhancementEligible,
 } from "../../../Helpers/listCategories.helpers";
+import { isEnhancementInDetachments } from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useUmami } from "../../../Hooks/useUmami";
 import { useMobileList } from "../useMobileList";
@@ -44,6 +45,8 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   });
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+  // 11e armies hold several detachments; enhancements from any of them are available.
+  const armyDetachments = lists[selectedList]?.detachments || [];
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   const warlordAlreadyAdded = lists[selectedList]?.cards?.find((card) => card.isWarlord);
   const epicHeroAlreadyAdded = lists[selectedList]?.cards?.find((card) => {
@@ -121,10 +124,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     if (!cardFaction?.enhancements || isEpicHero) return [];
 
     return cardFaction.enhancements
-      .filter(
-        (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-      )
+      .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
       .filter((enhancement) => isUnitEnhancementEligible(activeCard, enhancement));
   };
 

@@ -676,6 +676,47 @@
   font-style: normal;
 }
 
+/* 11e army roster row: battle size, Detachment Points and force dispositions. */
+.list-overview-roster {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: var(--bs-text);
+}
+
+.list-overview-roster-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.list-overview-roster-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.list-overview-roster-detachments {
+  font-size: 12px;
+  color: var(--bs-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-overview-total-value--over {
+  color: var(--bs-danger, #dc3545);
+}
+
 .list-overview-item-points {
   font-size: 14px;
   color: var(--bs-text-secondary);

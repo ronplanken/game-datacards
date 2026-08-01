@@ -194,11 +194,20 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
-  // Set the army-level detachment for the current list (stored on the category).
-  const setListDetachment = (detachment) => {
+  // Army-wide roster settings for the current list (stored on the category):
+  // 11e armies hold several detachments at once, bought with the battle size's
+  // Detachment Points budget.
+  const setListDetachments = (detachments) => {
     const category = lists[selectedList];
     if (!category) return;
-    updateCategory({ ...category, detachment: detachment || undefined }, category.uuid);
+    updateCategory({ ...category, detachments: detachments?.length ? detachments : undefined }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
+  const setListBattleSize = (battleSize) => {
+    const category = lists[selectedList];
+    if (!category) return;
+    updateCategory({ ...category, battleSize: battleSize || undefined }, category.uuid);
     markCategoryPending(category.uuid);
   };
 
@@ -277,7 +286,8 @@ export const MobileListProvider = (props) => {
     updateDatacard,
     updateCardData,
     setCardAttachment,
-    setListDetachment,
+    setListDetachments,
+    setListBattleSize,
     createList,
     createListWithCards,
     renameList,

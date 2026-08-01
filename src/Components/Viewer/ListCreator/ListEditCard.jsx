@@ -16,6 +16,7 @@ import {
   isAttachableLeader,
   requiresAttachment,
 } from "../../../Helpers/listAttachments.helpers";
+import { isEnhancementInDetachments } from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
@@ -44,6 +45,8 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const [selectedAttachment, setSelectedAttachment] = useState();
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+  // 11e armies hold several detachments; enhancements from any of them are available.
+  const armyDetachments = lists[selectedList]?.detachments || [];
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
 
   // Check warlord — exclude current card's uuid
@@ -122,10 +125,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
     if (!cardFaction?.enhancements || isEpicHero) return [];
 
     return cardFaction.enhancements
-      .filter(
-        (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-      )
+      .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
       .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
   };
 
