@@ -1,5 +1,0 @@
-{
-  "title": "Pick 11th Edition detachments up front",
-  "body": "A new 11th Edition list now remembers the faction you were browsing, so the army roster - battle size, Detachment Points and detachments - can be set before you add a single unit, on both mobile and desktop. Choosing or changing a detachment reprices the units already in the list when their points are scoped to a detachment or faction, with a toast naming what changed.",
-  "severity": "success"
-}
