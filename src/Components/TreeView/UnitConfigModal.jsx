@@ -182,6 +182,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
             <div className="ucm-size-list">
               {availableTiers.map((point) => {
                 const isSelected = isSamePointsTier(selectedUnitSize, point);
+                const restrictionLabel = getPointsTierRestrictionLabel(point, settings.language);
                 return (
                   <div
                     key={`${point.models}-${localize(point.keyword)}`}
@@ -192,11 +193,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
                       <span className="ucm-size-label">
                         {point.models} {point.models > 1 ? "models" : "model"}
                         {point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
-                        {getPointsTierRestrictionLabel(point, settings.language) && (
-                          <span className="ucm-size-sublabel">
-                            {getPointsTierRestrictionLabel(point, settings.language)}
-                          </span>
-                        )}
+                        {restrictionLabel && <span className="ucm-size-sublabel">{restrictionLabel}</span>}
                       </span>
                       <span className="ucm-size-cost">{point.cost} pts</span>
                     </div>

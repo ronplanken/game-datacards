@@ -173,20 +173,21 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           <div className="list-add-section">
             <h4 className="list-add-section-title">Unit Size</h4>
             <div className="list-add-options">
-              {availableTiers.map((point) => (
-                <button
-                  key={`${point.models}-${localize(point.keyword)}`}
-                  className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
-                  onClick={() => setSelectedUnitSize(point)}>
-                  <span className="option-label">
-                    {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
-                    {getPointsTierRestrictionLabel(point, settings.language) && (
-                      <span className="option-sublabel">{getPointsTierRestrictionLabel(point, settings.language)}</span>
-                    )}
-                  </span>
-                  <span className="option-value">{point.cost} pts</span>
-                </button>
-              ))}
+              {availableTiers.map((point) => {
+                const restrictionLabel = getPointsTierRestrictionLabel(point, settings.language);
+                return (
+                  <button
+                    key={`${point.models}-${localize(point.keyword)}`}
+                    className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
+                    onClick={() => setSelectedUnitSize(point)}>
+                    <span className="option-label">
+                      {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                      {restrictionLabel && <span className="option-sublabel">{restrictionLabel}</span>}
+                    </span>
+                    <span className="option-value">{point.cost} pts</span>
+                  </button>
+                );
+              })}
             </div>
             {card?.additionalCost?.cost != null && (
               <p className="list-add-additional-cost">
