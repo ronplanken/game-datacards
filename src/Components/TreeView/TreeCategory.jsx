@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus } from "lucide-react";
+import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus, SlidersHorizontal } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -10,7 +10,6 @@ import {
   getArmyContext,
   getBattleSize,
   getEnhancementUsage,
-  getForceDispositions,
   getListFactionId,
   getSpentDetachmentPoints,
   repriceListCards,
@@ -69,7 +68,6 @@ export function TreeCategory({
   const armyDetachments = category.detachments || [];
   const armyBattleSize = getBattleSize(category.battleSize);
   const enhancementUsage = getEnhancementUsage(category.cards, category.battleSize);
-  const forceDispositions = getForceDispositions(armyDetachments, settings.language);
 
   const handleChangeBattleSize = (battleSize) => {
     updateCategory({ ...category, battleSize: battleSize || undefined }, category.uuid);
@@ -240,27 +238,23 @@ export function TreeCategory({
       </div>
 
       {!category.closed && showRoster && (
-        <button
-          className="tree-roster-row"
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsRosterModalOpen(true);
-          }}>
-          <span className="tree-roster-label">
-            {armyBattleSize.label} · {getSpentDetachmentPoints(armyDetachments)}/{armyBattleSize.dp} DP ·{" "}
-            <span className={enhancementUsage.exceeded ? "tree-roster-over" : ""}>
-              {enhancementUsage.used}/{enhancementUsage.limit} enh
+        <div className="tree-roster-wrapper">
+          <button
+            className="tree-roster-button"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsRosterModalOpen(true);
+            }}>
+            <SlidersHorizontal size={12} />
+            <span>
+              {armyBattleSize.label} · {getSpentDetachmentPoints(armyDetachments)}/{armyBattleSize.dp} DP ·{" "}
+              <span className={enhancementUsage.exceeded ? "tree-roster-over" : ""}>
+                {enhancementUsage.used}/{enhancementUsage.limit} enh
+              </span>
             </span>
-          </span>
-          <span className="tree-roster-detachments">
-            {armyDetachments.length === 0
-              ? "Select detachments"
-              : forceDispositions
-                  .map((entry) => (entry.disposition ? `${entry.detachment} (${entry.disposition})` : entry.detachment))
-                  .join(", ")}
-          </span>
-        </button>
+          </button>
+        </div>
       )}
 
       {!category.closed && children}

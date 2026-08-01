@@ -72,39 +72,37 @@
   text-align: center;
 }
 
-/* Army roster summary row (11e lists): battle size, Detachment Points and the
-   selected detachments. Sits between the category header and its cards. */
-.tree-roster-row {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  width: 100%;
-  padding: 4px 8px 4px 28px;
-  border: none;
-  border-left: 2px solid #e6f4ff;
-  background: #fafafa;
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
-  transition: background 0.2s ease;
+/* Army roster button (11e lists): opens the battle size / Detachment Points
+   picker. Sits between the category header and its cards, indented to line up
+   with them, and reads as a control rather than another list row. */
+.tree-roster-wrapper {
+  padding: 3px 8px 3px 28px;
 }
 
-.tree-roster-row:hover {
-  background: #f0f0f0;
-}
-
-.tree-roster-label {
+.tree-roster-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.65);
   font-size: 11px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.65);
+  font-family: inherit;
+  line-height: 18px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
 }
 
-.tree-roster-detachments {
-  font-size: 11px;
-  color: rgba(0, 0, 0, 0.45);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.tree-roster-button:hover {
+  border-color: #1677ff;
+  background: #e6f4ff;
+  color: #1677ff;
 }
 
 .tree-roster-over {

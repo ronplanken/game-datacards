@@ -29,6 +29,9 @@ export const ArmyRosterSheet = ({
   onChangeBattleSize,
   onChangeDetachments,
   language = "en",
+  // Opened from inside the list overview modal, so the sheet has to clear that
+  // layer or it renders behind it.
+  elevated = true,
 }) => {
   const size = getBattleSize(battleSize);
   const spent = getSpentDetachmentPoints(selectedDetachments);
@@ -39,7 +42,7 @@ export const ArmyRosterSheet = ({
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Army Roster">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title="Army Roster" elevated={elevated}>
       <div className="army-roster">
         <div className="army-roster-section">
           <h4 className="army-roster-title">Battle size</h4>

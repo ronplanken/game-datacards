@@ -7,6 +7,7 @@ vi.mock("react-swipeable", () => ({ useSwipeable: () => ({}) }));
 
 import { BottomSheet } from "../BottomSheet";
 import { DetachmentPicker } from "../DetachmentPicker";
+import { ArmyRosterSheet } from "../ArmyRosterSheet";
 
 describe("BottomSheet elevation", () => {
   it("renders at the default layer without the elevated flag", () => {
@@ -45,5 +46,36 @@ describe("DetachmentPicker elevation", () => {
       <DetachmentPicker isOpen onClose={() => {}} detachments={detachments} selected="" onSelect={() => {}} elevated />,
     );
     expect(container.querySelector(".bottom-sheet")).toHaveClass("bottom-sheet--elevated");
+  });
+});
+
+describe("ArmyRosterSheet elevation", () => {
+  const detachments = [{ name: { en: "Gladius Task Force" }, detachmentPoints: 1 }];
+
+  const renderSheet = (props = {}) =>
+    render(
+      <ArmyRosterSheet
+        isOpen
+        onClose={() => {}}
+        detachments={detachments}
+        selectedDetachments={[]}
+        battleSize="strikeForce"
+        onChangeBattleSize={() => {}}
+        onChangeDetachments={() => {}}
+        {...props}
+      />,
+    );
+
+  it("clears the list overview modal it is opened from", () => {
+    // Regression: the roster sheet rendered behind the modal because it never
+    // forwarded elevation to the BottomSheet.
+    const { container } = renderSheet();
+    expect(container.querySelector(".bottom-sheet")).toHaveClass("bottom-sheet--elevated");
+    expect(container.querySelector(".bottom-sheet-backdrop")).toHaveClass("bottom-sheet-backdrop--elevated");
+  });
+
+  it("can still be dropped to the default layer", () => {
+    const { container } = renderSheet({ elevated: false });
+    expect(container.querySelector(".bottom-sheet")).not.toHaveClass("bottom-sheet--elevated");
   });
 });
