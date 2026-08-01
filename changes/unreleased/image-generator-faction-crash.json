@@ -1,0 +1,5 @@
+{
+  "title": "Image Generator no longer crashes on certain factions",
+  "body": "Selecting factions such as Adeptus Titanicus in the Image Generator no longer throws a \"something went wrong\" error. Each faction's cards are now tracked on demand, so any faction can be generated.",
+  "severity": "info"
+}

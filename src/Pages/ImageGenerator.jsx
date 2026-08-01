@@ -13,103 +13,18 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 import JSZip from "jszip";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { buildUniqueFilenames } from "../Helpers/export.helpers";
+import { assignBucketRef } from "../Helpers/imageGenerator.helpers";
 
 const { useBreakpoint } = Grid;
 const { Option } = Select;
 export const ImageGenerator = () => {
-  const cardsFrontRef = useRef({
-    AS: [],
-    AC: [],
-    AdM: [],
-    AE: [],
-    AoI: [],
-    AM: [],
-    CHBT: [],
-    CHBA: [],
-    CSM: [],
-    CD: [],
-    QT: [],
-    CHDA: [],
-    DG: [],
-    LGEC: [],
-    CHDW: [],
-    DRU: [],
-    GK: [],
-    GSC: [],
-    QI: [],
-    NEC: [],
-    ORK: [],
-    SM: [],
-    CHSW: [],
-    TAU: [],
-    TS: [],
-    TYR: [],
-    UN: [],
-    LoV: [],
-    WE: [],
-  });
-  const cardsBackRef = useRef({
-    AS: [],
-    AC: [],
-    AdM: [],
-    AE: [],
-    AoI: [],
-    AM: [],
-    CHBT: [],
-    CHBA: [],
-    CSM: [],
-    CD: [],
-    QT: [],
-    CHDA: [],
-    DG: [],
-    LGEC: [],
-    CHDW: [],
-    DRU: [],
-    GK: [],
-    GSC: [],
-    QI: [],
-    NEC: [],
-    ORK: [],
-    SM: [],
-    CHSW: [],
-    TAU: [],
-    TS: [],
-    TYR: [],
-    UN: [],
-    LoV: [],
-    WE: [],
-  });
-  const cardsStratagems = useRef({
-    AS: [],
-    AC: [],
-    AdM: [],
-    AE: [],
-    AoI: [],
-    AM: [],
-    CHBT: [],
-    CHBA: [],
-    CSM: [],
-    CD: [],
-    QT: [],
-    CHDA: [],
-    DG: [],
-    LGEC: [],
-    CHDW: [],
-    DRU: [],
-    GK: [],
-    GSC: [],
-    QI: [],
-    NEC: [],
-    ORK: [],
-    SM: [],
-    CHSW: [],
-    TAU: [],
-    TS: [],
-    TYR: [],
-    UN: [],
-    LoV: [],
-    WE: [],
-  });
+  // Ref buckets are keyed by faction id and created on demand (see
+  // assignBucketRef). They must not be a hardcoded faction list: faction ids
+  // are data-driven, so any missing id (e.g. Adeptus Titanicus / "AT") would
+  // otherwise crash the page when its ref callback fires.
+  const cardsFrontRef = useRef({});
+  const cardsBackRef = useRef({});
+  const cardsStratagems = useRef({});
   const basicStratagems = useRef([]);
   const overlayRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -295,7 +210,7 @@ export const ImageGenerator = () => {
                               "--banner-colour": faction?.colours?.banner,
                               "--header-colour": faction?.colours?.header,
                             }}
-                            key={faction.id}>
+                            key={`${faction.id}-${card.name}-${index}`}>
                             <Col
                               key={`${card.name}-${index}`}
                               className={`data-${card?.source ? card?.source : "40k"}`}>
@@ -304,7 +219,7 @@ export const ImageGenerator = () => {
                                   key={`${card.name}-${index}`}
                                   className={`data-${card?.source ? card?.source : "40k"}`}>
                                   <div
-                                    ref={(el) => (cardsFrontRef.current[faction.id][index] = el)}
+                                    ref={(el) => assignBucketRef(cardsFrontRef.current, faction.id, index, el)}
                                     style={{
                                       "--banner-colour": faction?.colours?.banner,
                                       "--header-colour": faction?.colours?.header,
@@ -314,7 +229,7 @@ export const ImageGenerator = () => {
                                     )}
                                   </div>
                                   <div
-                                    ref={(el) => (cardsBackRef.current[faction.id][index] = el)}
+                                    ref={(el) => assignBucketRef(cardsBackRef.current, faction.id, index, el)}
                                     style={{
                                       "--banner-colour": faction?.colours?.banner,
                                       "--header-colour": faction?.colours?.header,
@@ -338,7 +253,7 @@ export const ImageGenerator = () => {
                                 key={`${card.name}-${index}`}
                                 className={`data-${card?.source ? card?.source : "40k"}`}>
                                 <div
-                                  ref={(el) => (cardsStratagems.current[faction.id][index] = el)}
+                                  ref={(el) => assignBucketRef(cardsStratagems.current, faction.id, index, el)}
                                   style={{
                                     "--banner-colour": faction?.colours?.banner,
                                     "--header-colour": faction?.colours?.header,
