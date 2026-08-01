@@ -1,9 +1,17 @@
 import { useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import { useSwipeable } from "react-swipeable";
 import "./BottomSheet.css";
 
-// `elevated` lifts the sheet above the MobileModal layer. Use it when the sheet
-// is opened from inside a modal, otherwise it renders behind that modal.
+// The sheet portals to `#modal-root`, the same layer MobileModal uses, so both
+// overlay systems share one stacking context. Without the portal the sheet
+// renders inline wherever it is mounted (e.g. inside MobileNav's position:fixed
+// wrapper), and that wrapper's stacking context traps the sheet below any modal
+// no matter its z-index.
+//
+// `elevated` lifts the sheet above the MobileModal layer. Sheets are the newest
+// user interaction, so they default to elevated; pass `elevated={false}` only
+// if a sheet must stay under an open modal.
 export const BottomSheet = ({
   isOpen,
   onClose,
@@ -12,7 +20,7 @@ export const BottomSheet = ({
   children,
   maxHeight = "80vh",
   dark = false,
-  elevated = false,
+  elevated = true,
 }) => {
   const contentRef = useRef(null);
 
@@ -60,7 +68,9 @@ export const BottomSheet = ({
     return null;
   }
 
-  return (
+  const modalRoot = document.getElementById("modal-root");
+
+  return ReactDOM.createPortal(
     <>
       {/* Backdrop */}
       <div className={`bottom-sheet-backdrop ${elevated ? "bottom-sheet-backdrop--elevated" : ""}`} onClick={onClose} />
@@ -88,6 +98,7 @@ export const BottomSheet = ({
           {children}
         </div>
       </div>
-    </>
+    </>,
+    modalRoot,
   );
 };
