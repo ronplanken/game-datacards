@@ -344,6 +344,29 @@ describe("UnitConfigModal 11e attachments", () => {
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: "squad-1" }));
   });
 
+  it("blocks saving a Support unit until it is attached", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+
+    // Unit size auto-selects (single tier), so the attachment is the only blocker.
+    const submit = screen.getByText("Set unit values");
+    expect(submit).toBeDisabled();
+    fireEvent.click(submit);
+    expect(onSave).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText("Intercessor Squad"));
+    expect(submit).not.toBeDisabled();
+    fireEvent.click(submit);
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: "squad-1" }));
+  });
+
+  it("does not block saving a leader that is left unattached", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: undefined }));
+  });
+
   it("does not show the attach section for a unit with no attachesTo", () => {
     render(<UnitConfigModal isOpen card={baseCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />);
     expect(screen.queryByText("Attach to unit")).not.toBeInTheDocument();
