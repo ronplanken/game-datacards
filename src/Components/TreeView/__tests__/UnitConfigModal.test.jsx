@@ -279,3 +279,73 @@ describe("UnitConfigModal", () => {
     expect(enhancement1).toHaveClass("disabled");
   });
 });
+
+describe("UnitConfigModal 11e attachments", () => {
+  let modalRoot;
+
+  beforeEach(() => {
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(modalRoot);
+    vi.clearAllMocks();
+  });
+
+  const squad = { uuid: "squad-1", name: "Intercessor Squad", nameEn: "Intercessor Squad", keywords: [] };
+
+  const leaderCard = {
+    ...baseCard,
+    uuid: "leader-1",
+    name: "Captain",
+    nameEn: "Captain",
+    source: "40k-11e",
+    keywords: [{ en: "Character" }],
+    // Single size tier so it auto-selects and the submit button is enabled.
+    points: [{ models: 1, cost: 80 }],
+    attachesTo: [{ type: "leader", target: "Intercessor Squad", targetType: "datasheet" }],
+  };
+
+  const supportCard = {
+    ...leaderCard,
+    uuid: "sup-1",
+    name: "Lieutenant",
+    nameEn: "Lieutenant",
+    attachesTo: [{ type: "support", target: "Intercessor Squad", targetType: "datasheet" }],
+  };
+
+  const categoryWithSquad = { ...baseCategory, cards: [squad] };
+
+  it("offers eligible squads for a leader, plus a Not attached option", () => {
+    render(
+      <UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />,
+    );
+    expect(screen.getByText("Attach to unit")).toBeInTheDocument();
+    expect(screen.getByText("Not attached")).toBeInTheDocument();
+    expect(screen.getByText("Intercessor Squad")).toBeInTheDocument();
+  });
+
+  it("marks the attachment required for a Support unit and drops Not attached", () => {
+    render(
+      <UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />,
+    );
+    expect(screen.getByText("Attach to unit (required)")).toBeInTheDocument();
+    expect(screen.queryByText("Not attached")).not.toBeInTheDocument();
+    expect(screen.getByText("This Support unit must be attached to a unit.")).toBeInTheDocument();
+  });
+
+  it("saves the chosen attachment on the card", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByText("Intercessor Squad"));
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: "squad-1" }));
+  });
+
+  it("does not show the attach section for a unit with no attachesTo", () => {
+    render(<UnitConfigModal isOpen card={baseCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.queryByText("Attach to unit")).not.toBeInTheDocument();
+  });
+});

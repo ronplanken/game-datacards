@@ -10,6 +10,8 @@ import {
   isEnhancementSingleUse,
   isUnitEnhancementEligible,
 } from "../../Helpers/listCategories.helpers";
+import { getEligibleSquads, isAttachableLeader, requiresAttachment } from "../../Helpers/listAttachments.helpers";
+import { isEnhancementInDetachments } from "../../Helpers/listRoster.helpers";
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -27,12 +29,16 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   const [selectedEnhancement, setSelectedEnhancement] = useState(undefined);
   const [selectedDetachment, setSelectedDetachment] = useState(undefined);
   const [detachmentOpen, setDetachmentOpen] = useState(false);
+  const [selectedAttachment, setSelectedAttachment] = useState(undefined);
 
-  // Reset state when modal opens
+  // Reset the card's own selections when the modal opens for a (different) card.
+  // Keyed on the card's uuid rather than the object so an unrelated re-render
+  // (e.g. a fresh datasource array) cannot wipe an in-progress selection.
   useEffect(() => {
     if (isOpen && card) {
       setIsWarlord(card?.isWarlord || false);
       setSelectedEnhancement(card?.selectedEnhancement);
+      setSelectedAttachment(card?.attachedTo);
       setDetachmentOpen(false);
 
       if (card.unitSize) {
@@ -41,23 +47,21 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
         const tiers = getSelectablePointsTiers(card);
         setSelectedUnitSize(tiers.length === 1 ? tiers[0] : undefined);
       }
-
-      // Detachment selection
-      if (card?.detachment) {
-        setSelectedDetachment(card.detachment);
-      } else if (settings?.selectedDetachment?.[card?.faction_id]) {
-        const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
-        const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
-        if (isStillValid) {
-          setSelectedDetachment(savedDetachment);
-        } else {
-          setSelectedDetachment(getDetachmentName(detachments?.[0]));
-        }
-      } else {
-        setSelectedDetachment(getDetachmentName(detachments?.[0]));
-      }
     }
-  }, [isOpen, card, settings?.selectedDetachment, detachments]);
+  }, [isOpen, card?.uuid]);
+
+  // Resolve the detachment separately: it depends on settings and the faction's
+  // detachment list, which can arrive/refresh independently of the card.
+  useEffect(() => {
+    if (!isOpen || !card) return;
+    if (card?.detachment) {
+      setSelectedDetachment(card.detachment);
+      return;
+    }
+    const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
+    const isStillValid = savedDetachment && detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+    setSelectedDetachment(isStillValid ? savedDetachment : getDetachmentName(detachments?.[0]));
+  }, [isOpen, card?.uuid, card?.detachment, card?.faction_id, settings?.selectedDetachment, detachments]);
 
   // Handle escape key
   useEffect(() => {
@@ -98,15 +102,18 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   const filteredEnhancements = isEpicHero
     ? []
     : cardFaction?.enhancements
-        ?.filter(
-          (enhancement) =>
-            enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-        )
+        ?.filter((enhancement) => isEnhancementInDetachments(enhancement, category?.detachments, selectedDetachment))
         ?.filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
 
   const showEnhancements = !isEpicHero && (filteredEnhancements?.length || 0) > 0;
   const showDetachments = showEnhancements && detachments?.length > 1;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
+  // Leaders may stand alone; Support units must be attached to an eligible squad
+  // that is already in this list.
+  const mustAttach = requiresAttachment(card);
+  const eligibleSquads = isAttachableLeader(card)
+    ? getEligibleSquads(card, category?.cards || [], { detachment: selectedDetachment })
+    : [];
 
   const selectEnhancement = (enhancement) => {
     if (selectedEnhancement?.name === enhancement?.name) {
@@ -126,7 +133,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   };
 
   const handleSubmit = () => {
-    onSave({ ...card, unitSize: selectedUnitSize, selectedEnhancement, isWarlord });
+    onSave({ ...card, unitSize: selectedUnitSize, selectedEnhancement, isWarlord, attachedTo: selectedAttachment });
   };
 
   // Character enhancements are once per army; unit upgrades can be repeated.
@@ -256,6 +263,46 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {/* Attach to unit (leaders / support) */}
+          {isAttachableLeader(card) && (
+            <div>
+              <div className="ucm-section-label">{mustAttach ? "Attach to unit (required)" : "Attach to unit"}</div>
+              <div className="ucm-enhancement-list">
+                {!mustAttach && (
+                  <div
+                    className={classNames("ucm-enhancement-option", { selected: !selectedAttachment })}
+                    onClick={() => setSelectedAttachment(undefined)}>
+                    <div className={classNames("ucm-radio", { checked: !selectedAttachment })} />
+                    <div className="ucm-enhancement-text">
+                      <span className="ucm-enhancement-name">Not attached</span>
+                    </div>
+                  </div>
+                )}
+                {eligibleSquads.map((squad) => {
+                  const isSelected = selectedAttachment === squad.uuid;
+                  return (
+                    <div
+                      key={squad.uuid}
+                      className={classNames("ucm-enhancement-option", { selected: isSelected })}
+                      onClick={() => setSelectedAttachment(squad.uuid)}>
+                      <div className={classNames("ucm-radio", { checked: isSelected })} />
+                      <div className="ucm-enhancement-text">
+                        <span className="ucm-enhancement-name">{squad.name}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {mustAttach && !selectedAttachment && (
+                <span className="ucm-epic-hero-warning">
+                  {eligibleSquads.length > 0
+                    ? "This Support unit must be attached to a unit."
+                    : "This Support unit must be attached, but no eligible unit is in this list yet."}
+                </span>
+              )}
             </div>
           )}
         </div>
