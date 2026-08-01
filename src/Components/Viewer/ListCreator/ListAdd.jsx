@@ -6,7 +6,11 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
-import { cardHasKeyword, isUnitEnhancementEligible } from "../../../Helpers/listCategories.helpers";
+import {
+  cardHasKeyword,
+  isEnhancementSingleUse,
+  isUnitEnhancementEligible,
+} from "../../../Helpers/listCategories.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useUmami } from "../../../Hooks/useUmami";
 import { useMobileList } from "../useMobileList";
@@ -100,7 +104,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   };
 
   // Check if enhancement is already used
+  // Character enhancements are once per army; unit upgrades can be repeated.
   const isEnhancementDisabled = (enhancement) => {
+    if (!isEnhancementSingleUse(enhancement)) return false;
     return lists[selectedList]?.cards?.some((card) => card?.selectedEnhancement?.name === enhancement?.name);
   };
 

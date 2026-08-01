@@ -53,6 +53,15 @@ export const cardHasKeywordOrFaction = (card, token) => {
  * @param {Object} card - the unit
  * @param {Object} enhancement - the enhancement/upgrade
  */
+/**
+ * Whether an enhancement may only be taken once per army. Character enhancements
+ * are unique; unit upgrades (`equipableByNonCharacter`) can be handed out to any
+ * number of eligible units, so they are not single-use.
+ *
+ * @param {Object} enhancement
+ */
+export const isEnhancementSingleUse = (enhancement) => !enhancement?.equipableByNonCharacter;
+
 export const isUnitEnhancementEligible = (card, enhancement) => {
   if (!enhancement) return false;
   if (cardHasKeyword(card, "Epic Hero")) return false;

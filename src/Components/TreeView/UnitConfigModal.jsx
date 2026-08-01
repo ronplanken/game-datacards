@@ -5,7 +5,11 @@ import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../Helpers/listPoints.helpers";
-import { cardHasKeyword, isUnitEnhancementEligible } from "../../Helpers/listCategories.helpers";
+import {
+  cardHasKeyword,
+  isEnhancementSingleUse,
+  isUnitEnhancementEligible,
+} from "../../Helpers/listCategories.helpers";
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -125,7 +129,9 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     onSave({ ...card, unitSize: selectedUnitSize, selectedEnhancement, isWarlord });
   };
 
+  // Character enhancements are once per army; unit upgrades can be repeated.
   const isEnhancementDisabled = (enhancement) => {
+    if (!isEnhancementSingleUse(enhancement)) return false;
     return category?.cards?.some((c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid);
   };
 

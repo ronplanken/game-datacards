@@ -34,6 +34,26 @@ describe("11e UnitExtra: wargear / special / primarch abilities", () => {
     expect(queryByText("Wargear abilities")).not.toBeInTheDocument();
   });
 
+  it("renders the Support attach text for support characters (lives in abilities.special)", () => {
+    // Support units carry no top-level `leader` field; their "can be attached to"
+    // text is a special ability, so it must render from there.
+    const unit = {
+      abilities: {
+        core: [{ name: { en: "Support" } }],
+        special: [
+          {
+            name: { en: "Support" },
+            description: { en: "This model can be attached to the following units:\n\n■ **GUARDIAN DEFENDERS**" },
+          },
+        ],
+      },
+    };
+    const { getAllByText, getByText } = render(<UnitExtra unit={unit} />);
+    // Shown twice: as a core-ability chip and as the special-ability heading.
+    expect(getAllByText("Support").length).toBeGreaterThanOrEqual(1);
+    expect(getByText(/can be attached to the following units/)).toBeInTheDocument();
+  });
+
   it("renders special abilities", () => {
     const unit = {
       abilities: { special: [{ name: { en: "Jetbike Outriders" }, description: { en: "Can be attached instead." } }] },

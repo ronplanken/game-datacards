@@ -670,6 +670,12 @@
   padding-left: 20px;
 }
 
+/* Support units that are not attached to a unit are an illegal selection. */
+.list-overview-item-attachment--warning {
+  color: var(--bs-danger, #dc3545);
+  font-style: normal;
+}
+
 .list-overview-item-points {
   font-size: 14px;
   color: var(--bs-text-secondary);

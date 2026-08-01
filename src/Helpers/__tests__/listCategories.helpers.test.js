@@ -3,6 +3,7 @@ import {
   cardHasKeyword,
   cardHasKeywordOrFaction,
   categorize40kUnits,
+  isEnhancementSingleUse,
   isUnitEnhancementEligible,
 } from "../listCategories.helpers";
 
@@ -110,5 +111,15 @@ describe("isUnitEnhancementEligible", () => {
   it("respects excludes", () => {
     const excluded = { name: "Y", keywords: ["Adeptus Custodes"], excludes: [{ en: "Infantry" }] };
     expect(isUnitEnhancementEligible(character, excluded)).toBe(false);
+  });
+});
+
+describe("isEnhancementSingleUse", () => {
+  it("treats character enhancements as once-per-army", () => {
+    expect(isEnhancementSingleUse({ name: "Superior Creation" })).toBe(true);
+  });
+
+  it("lets unit upgrades be handed out multiple times", () => {
+    expect(isEnhancementSingleUse({ name: "Vexilla (Upgrade)", equipableByNonCharacter: true })).toBe(false);
   });
 });

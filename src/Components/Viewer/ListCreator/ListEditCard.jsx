@@ -5,8 +5,17 @@ import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
-import { cardHasKeyword, isUnitEnhancementEligible } from "../../../Helpers/listCategories.helpers";
-import { getEligibleSquads, isAttachableLeader } from "../../../Helpers/listAttachments.helpers";
+import {
+  cardHasKeyword,
+  isEnhancementSingleUse,
+  isUnitEnhancementEligible,
+} from "../../../Helpers/listCategories.helpers";
+import {
+  getAttachmentType,
+  getEligibleSquads,
+  isAttachableLeader,
+  requiresAttachment,
+} from "../../../Helpers/listAttachments.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
@@ -94,8 +103,10 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
     }
   };
 
-  // Check if enhancement is already used — exclude current card's uuid
+  // Character enhancements are once per army (excluding this card); unit upgrades
+  // can be repeated across units.
   const isEnhancementDisabled = (enhancement) => {
+    if (!isEnhancementSingleUse(enhancement)) return false;
     return lists[selectedList]?.cards?.some(
       (c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid,
     );
@@ -122,7 +133,12 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
   // Leaders/support units can attach to eligible squads already in this list.
-  const eligibleSquads = isAttachableLeader(card) ? getEligibleSquads(card, lists[selectedList]?.cards || []) : [];
+  // Support units MUST be attached; leaders may stand alone.
+  const attachmentType = getAttachmentType(card);
+  const mustAttach = requiresAttachment(card);
+  const eligibleSquads = isAttachableLeader(card)
+    ? getEligibleSquads(card, lists[selectedList]?.cards || [], { detachment: selectedDetachment })
+    : [];
 
   if (!card || !Array.isArray(card?.points)) return null;
 
@@ -204,15 +220,26 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           )}
 
           {/* Attach-to Section (leaders / support units) */}
-          {eligibleSquads.length > 0 && (
+          {isAttachableLeader(card) && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Attach to unit</h4>
+              <h4 className="list-add-section-title">
+                {attachmentType === "support" ? "Attach to unit (required)" : "Attach to unit"}
+              </h4>
+              {mustAttach && !selectedAttachment && (
+                <p className="list-add-warning">
+                  {eligibleSquads.length > 0
+                    ? "This Support unit must be attached to a unit."
+                    : "This Support unit must be attached, but no eligible unit is in your list yet."}
+                </p>
+              )}
               <div className="list-add-options">
-                <button
-                  className={`list-add-option ${!selectedAttachment ? "selected" : ""}`}
-                  onClick={() => setSelectedAttachment(undefined)}>
-                  <span className="option-label">Not attached</span>
-                </button>
+                {!mustAttach && (
+                  <button
+                    className={`list-add-option ${!selectedAttachment ? "selected" : ""}`}
+                    onClick={() => setSelectedAttachment(undefined)}>
+                    <span className="option-label">Not attached</span>
+                  </button>
+                )}
                 {eligibleSquads.map((squad) => (
                   <button
                     key={squad.uuid}

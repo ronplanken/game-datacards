@@ -35,6 +35,7 @@ import {
   SECTIONS_40K,
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
+import { requiresAttachment } from "../../../Helpers/listAttachments.helpers";
 import { MobileModal } from "../Mobile/MobileModal";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
@@ -136,9 +137,11 @@ const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS, allCards = [] }) 
     : (Number(item.unitSize?.cost) || 0) + (Number(item.selectedEnhancement?.cost) || 0);
 
   // Leader/support attachment indicators (11e): the squad this unit is attached
-  // to, and any leaders attached to this squad.
+  // to, and any leaders attached to this squad. Support units must be attached,
+  // so flag them when they are not.
   const attachedSquadName = item.attachedTo ? allCards.find((c) => c.uuid === item.attachedTo)?.name : null;
   const hostedLeaders = allCards.filter((c) => c.attachedTo === item.uuid).map((c) => c.name);
+  const needsAttachment = requiresAttachment(item) && !attachedSquadName;
 
   return (
     <div className="list-overview-item">
@@ -153,6 +156,11 @@ const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS, allCards = [] }) 
         {attachedSquadName && <div className="list-overview-item-attachment">Attached to {attachedSquadName}</div>}
         {hostedLeaders.length > 0 && (
           <div className="list-overview-item-attachment">Led by {hostedLeaders.join(", ")}</div>
+        )}
+        {needsAttachment && (
+          <div className="list-overview-item-attachment list-overview-item-attachment--warning">
+            Must be attached to a unit
+          </div>
         )}
       </div>
       {isUnconfigured ? (
