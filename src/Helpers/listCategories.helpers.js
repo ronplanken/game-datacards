@@ -53,14 +53,41 @@ export const cardHasKeywordOrFaction = (card, token) => {
  * @param {Object} card - the unit
  * @param {Object} enhancement - the enhancement/upgrade
  */
+/** How many copies of the same Upgrade an army may include (core rules). */
+export const MAX_UPGRADE_COPIES = 3;
+
 /**
- * Whether an enhancement may only be taken once per army. Character enhancements
- * are unique; unit upgrades (`equipableByNonCharacter`) can be handed out to any
- * number of eligible units, so they are not single-use.
+ * Whether an enhancement is an "Upgrade" — the tagged subset that, unlike other
+ * enhancements, may be given to non-Character units and taken up to three times.
  *
  * @param {Object} enhancement
  */
-export const isEnhancementSingleUse = (enhancement) => !enhancement?.equipableByNonCharacter;
+export const isUpgradeEnhancement = (enhancement) => Boolean(enhancement?.equipableByNonCharacter);
+
+/**
+ * How many copies of this enhancement the army may include: one for a regular
+ * enhancement ("your army cannot include more than one of the same enhancement"),
+ * three for an Upgrade.
+ *
+ * @param {Object} enhancement
+ */
+export const getEnhancementCopyLimit = (enhancement) => (isUpgradeEnhancement(enhancement) ? MAX_UPGRADE_COPIES : 1);
+
+/**
+ * Whether the army already holds as many copies of this enhancement as the rules
+ * allow, so it cannot be given to another unit.
+ *
+ * @param {Object} enhancement
+ * @param {Array} cards - the list's cards
+ * @param {string} [excludeUuid] - card being edited, so its own copy is not counted
+ */
+export const isEnhancementAtCopyLimit = (enhancement, cards, excludeUuid) => {
+  if (!enhancement?.name) return false;
+  const used = (cards || []).filter(
+    (card) => card?.uuid !== excludeUuid && card?.selectedEnhancement?.name === enhancement.name,
+  ).length;
+  return used >= getEnhancementCopyLimit(enhancement);
+};
 
 export const isUnitEnhancementEligible = (card, enhancement) => {
   if (!enhancement) return false;

@@ -7,7 +7,7 @@ import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
-  isEnhancementSingleUse,
+  isEnhancementAtCopyLimit,
   isUnitEnhancementEligible,
 } from "../../Helpers/listCategories.helpers";
 import { getEligibleSquads, isAttachableLeader, requiresAttachment } from "../../Helpers/listAttachments.helpers";
@@ -136,11 +136,9 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     onSave({ ...card, unitSize: selectedUnitSize, selectedEnhancement, isWarlord, attachedTo: selectedAttachment });
   };
 
-  // Character enhancements are once per army; unit upgrades can be repeated.
-  const isEnhancementDisabled = (enhancement) => {
-    if (!isEnhancementSingleUse(enhancement)) return false;
-    return category?.cards?.some((c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid);
-  };
+  // Regular enhancements are once per army; Upgrades may be taken up to three
+  // times (core rules, Select Enhancements). This card's own copy is excluded.
+  const isEnhancementDisabled = (enhancement) => isEnhancementAtCopyLimit(enhancement, category?.cards, card?.uuid);
 
   const modalRoot = document.getElementById("modal-root");
 

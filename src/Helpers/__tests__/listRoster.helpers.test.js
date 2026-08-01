@@ -114,3 +114,52 @@ describe("enhancement limit", () => {
     expect(getEnhancementUsage([...cards, { selectedEnhancement: { name: "C" } }], "incursion").exceeded).toBe(true);
   });
 });
+
+describe("Incursion 3DP exception", () => {
+  const threeDp = det("Talons of the Emperor", 3, "d-talons");
+  const oneDp = det("Shield Host", 1, "d-shield");
+
+  it("allows a 3DP detachment as the army's only detachment at Incursion", () => {
+    // Incursion has a 2 DP budget, but a single 3DP detachment is allowed.
+    expect(canAddDetachment([], threeDp, "incursion")).toBe(true);
+    expect(getSpentDetachmentPoints(toggleDetachment([], threeDp, "incursion"))).toBe(3);
+  });
+
+  it("blocks anything else once the over-budget detachment is taken", () => {
+    expect(canAddDetachment([threeDp], oneDp, "incursion")).toBe(false);
+  });
+
+  it("still blocks a second detachment that would exceed the budget", () => {
+    // 1 DP spent, budget 2: a 3DP detachment no longer fits and is not solo.
+    expect(canAddDetachment([oneDp], threeDp, "incursion")).toBe(false);
+  });
+});
+
+describe("enhancement usage counting", () => {
+  const regular = (name) => ({ name });
+  const upgrade = (name) => ({ name, equipableByNonCharacter: true });
+  const card = (enhancement) => ({ selectedEnhancement: enhancement });
+
+  it("counts each regular enhancement", () => {
+    const cards = [card(regular("A")), card(regular("B"))];
+    expect(getEnhancementUsage(cards, "strikeForce").used).toBe(2);
+  });
+
+  it("counts repeated Upgrades only once", () => {
+    // "the second and third instances of the same Upgrade do not count towards
+    // the total number of enhancements in your army"
+    const cards = [card(upgrade("Vexilla")), card(upgrade("Vexilla")), card(upgrade("Vexilla"))];
+    expect(getEnhancementUsage(cards, "strikeForce").used).toBe(1);
+  });
+
+  it("counts distinct Upgrades separately", () => {
+    const cards = [card(upgrade("Vexilla")), card(upgrade("Sarcophagus")), card(upgrade("Vexilla"))];
+    expect(getEnhancementUsage(cards, "strikeForce").used).toBe(2);
+  });
+
+  it("flags exceeding the battle size limit", () => {
+    const cards = [card(regular("A")), card(regular("B")), card(regular("C"))];
+    expect(getEnhancementUsage(cards, "incursion").exceeded).toBe(true);
+    expect(getEnhancementUsage(cards, "strikeForce").exceeded).toBe(false);
+  });
+});

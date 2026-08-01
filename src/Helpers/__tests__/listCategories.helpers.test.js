@@ -3,7 +3,9 @@ import {
   cardHasKeyword,
   cardHasKeywordOrFaction,
   categorize40kUnits,
-  isEnhancementSingleUse,
+  isEnhancementAtCopyLimit,
+  isUpgradeEnhancement,
+  getEnhancementCopyLimit,
   isUnitEnhancementEligible,
 } from "../listCategories.helpers";
 
@@ -114,12 +116,35 @@ describe("isUnitEnhancementEligible", () => {
   });
 });
 
-describe("isEnhancementSingleUse", () => {
-  it("treats character enhancements as once-per-army", () => {
-    expect(isEnhancementSingleUse({ name: "Superior Creation" })).toBe(true);
+describe("enhancement copy limits", () => {
+  const regular = { name: "Superior Creation" };
+  const upgrade = { name: "Vexilla (Upgrade)", equipableByNonCharacter: true };
+  const withEnh = (uuid, enhancement) => ({ uuid, selectedEnhancement: enhancement });
+
+  it("identifies Upgrades", () => {
+    expect(isUpgradeEnhancement(upgrade)).toBe(true);
+    expect(isUpgradeEnhancement(regular)).toBe(false);
   });
 
-  it("lets unit upgrades be handed out multiple times", () => {
-    expect(isEnhancementSingleUse({ name: "Vexilla (Upgrade)", equipableByNonCharacter: true })).toBe(false);
+  it("allows one regular enhancement and three copies of an Upgrade", () => {
+    expect(getEnhancementCopyLimit(regular)).toBe(1);
+    expect(getEnhancementCopyLimit(upgrade)).toBe(3);
+  });
+
+  it("blocks a regular enhancement once the army already has it", () => {
+    expect(isEnhancementAtCopyLimit(regular, [])).toBe(false);
+    expect(isEnhancementAtCopyLimit(regular, [withEnh("a", regular)])).toBe(true);
+  });
+
+  it("allows up to three copies of the same Upgrade, then blocks", () => {
+    const cards = [withEnh("a", upgrade), withEnh("b", upgrade)];
+    expect(isEnhancementAtCopyLimit(upgrade, cards)).toBe(false);
+    cards.push(withEnh("c", upgrade));
+    expect(isEnhancementAtCopyLimit(upgrade, cards)).toBe(true);
+  });
+
+  it("does not count the card being edited against its own limit", () => {
+    const cards = [withEnh("a", regular)];
+    expect(isEnhancementAtCopyLimit(regular, cards, "a")).toBe(false);
   });
 });

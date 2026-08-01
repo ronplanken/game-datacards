@@ -47,12 +47,19 @@ export const isDetachmentSelected = (detachments, detachment) =>
 /**
  * Whether a detachment can be added: not already selected (the same detachment
  * cannot be taken twice) and its cost fits the remaining DP budget.
+ *
+ * Exception from the core rules: a detachment that costs more than the whole
+ * budget may still be taken as the army's *only* detachment — "if you are
+ * playing an Incursion battle, you can select a 3DP detachment as your only
+ * detachment". Once taken it fills the budget, so nothing else can be added.
  */
 export const canAddDetachment = (detachments, detachment, battleSizeKey) => {
   if (!detachment) return false;
   if (isDetachmentSelected(detachments, detachment)) return false;
   const budget = getBattleSize(battleSizeKey).dp;
-  return getSpentDetachmentPoints(detachments) + getDetachmentCost(detachment) <= budget;
+  const spent = getSpentDetachmentPoints(detachments);
+  if (spent + getDetachmentCost(detachment) <= budget) return true;
+  return spent === 0;
 };
 
 /** Add or remove a detachment, respecting the DP budget. Returns a new array. */
@@ -101,11 +108,26 @@ export const isEnhancementInDetachments = (enhancement, detachments, fallbackDet
 
 /**
  * How many enhancements the army currently uses, and whether that exceeds the
- * battle size's limit. Upgrades on non-character units count as enhancements
- * too ("no unit can have more than one enhancement").
+ * battle size's limit.
+ *
+ * Upgrades count only once each: "the second and third instances of the same
+ * Upgrade do not count towards the total number of enhancements in your army"
+ * (their points are still paid every time — see computeCategoryPoints).
  */
 export const getEnhancementUsage = (cards, battleSizeKey) => {
-  const used = (cards || []).filter((card) => card?.selectedEnhancement).length;
+  const countedUpgrades = new Set();
+  let used = 0;
+
+  for (const card of cards || []) {
+    const enhancement = card?.selectedEnhancement;
+    if (!enhancement) continue;
+    if (enhancement.equipableByNonCharacter) {
+      if (countedUpgrades.has(enhancement.name)) continue;
+      countedUpgrades.add(enhancement.name);
+    }
+    used += 1;
+  }
+
   const limit = getBattleSize(battleSizeKey).enhancementLimit;
   return { used, limit, exceeded: used > limit };
 };

@@ -8,7 +8,7 @@ import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
-  isEnhancementSingleUse,
+  isEnhancementAtCopyLimit,
   isUnitEnhancementEligible,
 } from "../../../Helpers/listCategories.helpers";
 import { isEnhancementInDetachments } from "../../../Helpers/listRoster.helpers";
@@ -106,12 +106,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     }
   };
 
-  // Check if enhancement is already used
-  // Character enhancements are once per army; unit upgrades can be repeated.
-  const isEnhancementDisabled = (enhancement) => {
-    if (!isEnhancementSingleUse(enhancement)) return false;
-    return lists[selectedList]?.cards?.some((card) => card?.selectedEnhancement?.name === enhancement?.name);
-  };
+  // Regular enhancements are once per army; Upgrades may be taken up to three
+  // times (core rules, Select Enhancements).
+  const isEnhancementDisabled = (enhancement) => isEnhancementAtCopyLimit(enhancement, lists[selectedList]?.cards);
 
   const isCharacter = cardHasKeyword(activeCard, "Character");
   const isEpicHero = cardHasKeyword(activeCard, "Epic Hero");
