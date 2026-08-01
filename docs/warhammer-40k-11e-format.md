@@ -15,6 +15,7 @@ file_locations:
   - src/Hooks/useDataSourceStorage.jsx
   - src/Hooks/use11eKeywordGlossary.js
   - src/Components/Warhammer40k-11e/
+  - src/Components/Viewer/useMobileList.jsx
   - src/styles/40k-11e.less
 ---
 
@@ -46,6 +47,7 @@ detachments, rules).
 - [Language resolution](#language-resolution)
 - [Data pipeline](#data-pipeline)
 - [The dedicated renderset](#the-dedicated-renderset)
+- [Datasheet column layout](#datasheet-column-layout)
 - [Rich-text markup](#rich-text-markup)
 - [Keyword glossary (tooltips)](#keyword-glossary-tooltips)
 - [Points, unit sizes and roster surcharge](#points-unit-sizes-and-roster-surcharge)
@@ -98,6 +100,43 @@ shape directly via `localize(...)`. It emits a `data-40k-11e` style scope. The
 card visual language is shared: `src/styles/40k-10e.less` applies its scoped
 block to both `.data-40k-10e` and `.data-40k-11e`; `src/styles/40k-11e.less`
 only adds the keyword/list bits for the new markup.
+
+## Datasheet column layout
+
+The unit card splits into a wide left column (`UnitCard/UnitWeapons.jsx`) and a
+narrow abilities column (`UnitCard/UnitExtra.jsx`). Three blocks render in the
+left column, in this order:
+
+1. The ranged and melee weapon tables.
+2. **Primarch abilities** (`UnitCard/UnitPrimarchAbilities.jsx`) — groups of
+   named sub-abilities from `abilities.primarch`, rendered as a `.special`
+   block. They sit here rather than in the abilities column (matching 10e)
+   because the grouped rule text needs the extra width.
+3. The **list-selected enhancement**
+   (`UnitCard/UnitSelectedEnhancement.jsx`), described below.
+
+Everything else — core/faction/other/wargear/special abilities and the damaged
+profile — stays in the abilities column.
+
+### The list-selected enhancement
+
+An enhancement picked in the list builder is stored on the *list card* as
+`selectedEnhancement` (written by `addDatacard` / `updateDatacard` in
+`src/Components/Viewer/useMobileList.jsx`), alongside `unitSize` and
+`isWarlord`. It is never merged into the datasheet's `abilities`, so it has no
+editor panel and no show/hide flag.
+
+Because every display path (tree preview, print, viewer) passes the list card
+object straight to the renderer, `UnitSelectedEnhancement` can read the field
+directly and render it read-only, reusing the primarch block styling with an
+extra `.selected-enhancement` class. The enhancement name is the block heading —
+Upgrade names already carry their "(Upgrade)" suffix in the datasource, so no
+extra label is added. Cards outside a list have no `selectedEnhancement` and the
+component renders nothing.
+
+Note the shape asymmetry: `get40k11eData` resolves each enhancement's top-level
+`name` to a plain string at load time while `description` stays language-keyed,
+so the component localises both through `localize(...)`.
 
 ## Rich-text markup
 

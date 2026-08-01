@@ -64,10 +64,12 @@ them raw (and some are concatenated into `data-*` attributes):
 
 Everything else is **language-keyed** and edited in place: stat profile `name`;
 weapon profile `name`; `abilities.core[].name` / `faction[].name` /
-`other[].name` / `other[].description`; `abilities.damaged.range` /
-`description`; `composition[]`, `loadout`, `leader`, `wargear[]`; unit
-`keywords[]`; **stratagem** `name`/`when`/`target`/`effect`/`detachment`/`type`;
-**enhancement** `name`/`description`/`detachment`; **rule**
+`other[].name` / `other[].description`; `abilities.primarch[].name` and its
+nested `abilities.primarch[].abilities[].name` / `.description`;
+`abilities.damaged.range` / `description`; `composition[]`, `loadout`, `leader`,
+`wargear[]`; unit `keywords[]`; **stratagem**
+`name`/`when`/`target`/`effect`/`detachment`/`type`; **enhancement**
+`name`/`description`/`detachment`; **rule**
 `name`/`detachment`/`rules[].title`/`rules[].text`.
 
 > Note the asymmetry: a **unit's** top-level `name` is plain, but
