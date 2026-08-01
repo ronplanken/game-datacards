@@ -9,4 +9,15 @@ describe("PRIMARY_MOBILE_SYSTEMS", () => {
   it("still offers 10th edition", () => {
     expect(PRIMARY_MOBILE_SYSTEMS.some((s) => s.id === "40k-10e")).toBe(true);
   });
+
+  it("lists 10th edition last, flagged as legacy", () => {
+    const last = PRIMARY_MOBILE_SYSTEMS[PRIMARY_MOBILE_SYSTEMS.length - 1];
+    expect(last.id).toBe("40k-10e");
+    expect(last.legacy).toBe(true);
+  });
+
+  it("flags no current-edition system as legacy", () => {
+    const legacy = PRIMARY_MOBILE_SYSTEMS.filter((s) => s.legacy).map((s) => s.id);
+    expect(legacy).toEqual(["40k-10e"]);
+  });
 });

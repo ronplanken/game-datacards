@@ -29,4 +29,14 @@ describe("Mobile WhatsNewWizard v3.11.0 config", () => {
   it("marks the last step as thankYou", () => {
     expect(MOBILE_VERSION_CONFIG.steps[MOBILE_VERSION_CONFIG.steps.length - 1].isThankYou).toBe(true);
   });
+
+  it("marks only the last step as thankYou so the earlier steps always show", () => {
+    const flagged = MOBILE_VERSION_CONFIG.steps.filter((s) => s.isThankYou);
+    expect(flagged).toHaveLength(1);
+    expect(flagged[0]).toBe(MOBILE_VERSION_CONFIG.steps[MOBILE_VERSION_CONFIG.steps.length - 1]);
+  });
+
+  it("covers the edition and the list builder", () => {
+    expect(MOBILE_VERSION_CONFIG.steps.map((s) => s.key)).toEqual(["3.11.0-11th-edition", "3.11.0-lists"]);
+  });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Crosshair } from "lucide-react";
+import { BookOpen, Crosshair, Languages, Swords } from "lucide-react";
 
 export const Step11thEdition = () => (
   <div className="wnw-step-subscription">
@@ -12,16 +12,47 @@ export const Step11thEdition = () => (
       </div>
     </div>
     <p className="wnw-feature-description">
-      11th edition is now fully supported and is the new default game system. All factions are included, with
-      datasheets, stratagems, enhancements and detachment rules.
+      11th edition is here, and it is the new default game system. 10th edition stays available as a legacy option.
     </p>
-    <p className="wnw-feature-description">
-      Card text is available in 8 languages. You can pick your card language in Settings.
-    </p>
-    <p className="wnw-feature-description">
-      Keywords now show their rules. Hover over a weapon keyword or core ability to read what it does, in your chosen
-      language.
-    </p>
+
+    <div className="wnw-feature-highlights">
+      <div className="wnw-highlight-item">
+        <div className="wnw-highlight-dot" />
+        <div>
+          <strong>
+            <Swords size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
+            Every faction, fully carded
+          </strong>
+          <p>
+            Datasheets, stratagems, enhancements and detachment rules, plus the core stratagems like Command Re-roll and
+            Fire Overwatch under every faction&apos;s Basic stratagems.
+          </p>
+        </div>
+      </div>
+      <div className="wnw-highlight-item">
+        <div className="wnw-highlight-dot" />
+        <div>
+          <strong>
+            <Languages size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
+            Card text in 8 languages
+          </strong>
+          <p>Pick your card language in Settings. Anything not translated yet falls back to English, field by field.</p>
+        </div>
+      </div>
+      <div className="wnw-highlight-item">
+        <div className="wnw-highlight-dot" />
+        <div>
+          <strong>
+            <BookOpen size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
+            Keywords that explain themselves
+          </strong>
+          <p>
+            Weapon keywords and core abilities get a dotted underline. Hover one to read what it does, in your chosen
+            language.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 );
 

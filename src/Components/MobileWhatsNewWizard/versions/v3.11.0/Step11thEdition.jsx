@@ -8,7 +8,9 @@ export const Step11thEdition = () => (
         <Crosshair size={28} />
       </div>
       <h2 className="mwnw-features-title">Warhammer 40,000: 11th Edition</h2>
-      <p className="mwnw-features-subtitle">11th edition is now fully supported and is the new default game system.</p>
+      <p className="mwnw-features-subtitle">
+        11th edition is here and is the new default game system. 10th edition stays available as a legacy option.
+      </p>
     </header>
 
     <div className="mwnw-features-list">
@@ -17,9 +19,9 @@ export const Step11thEdition = () => (
           <Swords size={20} />
         </div>
         <div className="mwnw-feature-item-content">
-          <span className="mwnw-feature-item-title">All factions</span>
+          <span className="mwnw-feature-item-title">Every faction</span>
           <span className="mwnw-feature-item-desc">
-            Datasheets, stratagems, enhancements and detachment rules for every faction
+            Datasheets, stratagems, enhancements and detachment rules, plus the core stratagems
           </span>
         </div>
       </div>
