@@ -713,7 +713,8 @@
   text-overflow: ellipsis;
 }
 
-.list-overview-total-value--over {
+.list-overview-total-value--over,
+.list-overview-roster-over {
   color: var(--bs-danger, #dc3545);
 }
 

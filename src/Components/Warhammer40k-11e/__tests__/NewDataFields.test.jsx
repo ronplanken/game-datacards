@@ -54,6 +54,26 @@ describe("11e UnitExtra: wargear / special / primarch abilities", () => {
     expect(getByText(/can be attached to the following units/)).toBeInTheDocument();
   });
 
+  it("hides special abilities when showAbilities.special is false", () => {
+    const unit = {
+      abilities: { special: [{ name: { en: "Jetbike Outriders" }, description: { en: "Attach instead." } }] },
+      showAbilities: { special: false },
+    };
+    const { queryByText } = render(<UnitExtra unit={unit} />);
+    expect(queryByText("Jetbike Outriders")).not.toBeInTheDocument();
+  });
+
+  it("hides primarch abilities when showAbilities.primarch is false", () => {
+    const unit = {
+      abilities: {
+        primarch: [{ name: { en: "Warmaster" }, abilities: [{ name: { en: "X" }, description: { en: "Y" } }] }],
+      },
+      showAbilities: { primarch: false },
+    };
+    const { queryByText } = render(<UnitExtra unit={unit} />);
+    expect(queryByText("Warmaster")).not.toBeInTheDocument();
+  });
+
   it("renders special abilities", () => {
     const unit = {
       abilities: { special: [{ name: { en: "Jetbike Outriders" }, description: { en: "Can be attached instead." } }] },

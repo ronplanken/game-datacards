@@ -107,6 +107,12 @@ export const getAttachedSquad = (leaderCard, listCards) => {
   return (listCards || []).find((card) => card?.uuid === leaderCard.attachedTo) || null;
 };
 
+/** The leader/support units attached to a given squad. */
+export const getAttachedLeaders = (squadCard, listCards) => {
+  if (!squadCard?.uuid) return [];
+  return (listCards || []).filter((card) => card?.attachedTo === squadCard.uuid);
+};
+
 /**
  * Group a list's cards for display: each squad that hosts attached leaders is
  * returned with its leaders; leaders are removed from the flat list so they are

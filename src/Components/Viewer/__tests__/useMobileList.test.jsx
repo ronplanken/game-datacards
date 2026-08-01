@@ -522,3 +522,89 @@ describe("useMobileList", () => {
     });
   });
 });
+
+describe("useMobileList 11e roster and attachments", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock.clear();
+    mockSettings.selectedDataSource = "40k-11e";
+    mockCategories = [
+      {
+        uuid: "list-1",
+        name: "My 11e List",
+        type: "list",
+        dataSource: "40k-11e",
+        cards: [
+          { uuid: "card-1", name: "Captain", unitSize: { models: 1, cost: 80 } },
+          { uuid: "squad-1", name: "Intercessor Squad" },
+        ],
+      },
+    ];
+  });
+
+  const wrapper = ({ children }) => <MobileListProvider>{children}</MobileListProvider>;
+
+  it("writes unit size, enhancement and attachment in a single category update", () => {
+    // Regression: these used to be two chained updateCategory calls, and because
+    // updateCategory replaces the whole category the second overwrote the first.
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.updateDatacard("card-1", { models: 1, cost: 90 }, { name: "Relic" }, true, {
+        attachedTo: "squad-1",
+      });
+    });
+
+    expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+    const saved = mockUpdateCategory.mock.calls[0][0].cards.find((c) => c.uuid === "card-1");
+    expect(saved.unitSize).toEqual({ models: 1, cost: 90 });
+    expect(saved.selectedEnhancement).toEqual({ name: "Relic" });
+    expect(saved.isWarlord).toBe(true);
+    expect(saved.attachedTo).toBe("squad-1");
+  });
+
+  it("leaves attachedTo untouched when no attachment option is passed", () => {
+    mockCategories[0].cards[0].attachedTo = "squad-1";
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.updateDatacard("card-1", { models: 1, cost: 90 }, undefined, false);
+    });
+    const saved = mockUpdateCategory.mock.calls[0][0].cards.find((c) => c.uuid === "card-1");
+    expect(saved.attachedTo).toBe("squad-1");
+  });
+
+  it("clears the attachment when attachedTo is empty", () => {
+    mockCategories[0].cards[0].attachedTo = "squad-1";
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.updateDatacard("card-1", { models: 1, cost: 90 }, undefined, false, { attachedTo: undefined });
+    });
+    const saved = mockUpdateCategory.mock.calls[0][0].cards.find((c) => c.uuid === "card-1");
+    expect(saved.attachedTo).toBeUndefined();
+  });
+
+  it("stores the army detachments on the list category", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    const detachments = [{ id: "d1", name: { en: "Lions of the Emperor" }, detachmentPoints: 2 }];
+    act(() => {
+      result.current.setListDetachments(detachments);
+    });
+    expect(mockUpdateCategory).toHaveBeenCalledWith(expect.objectContaining({ detachments }), "list-1");
+    expect(mockMarkCategoryPending).toHaveBeenCalledWith("list-1");
+  });
+
+  it("clears the detachments when given an empty selection", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.setListDetachments([]);
+    });
+    expect(mockUpdateCategory).toHaveBeenCalledWith(expect.objectContaining({ detachments: undefined }), "list-1");
+  });
+
+  it("stores the battle size on the list category", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.setListBattleSize("incursion");
+    });
+    expect(mockUpdateCategory).toHaveBeenCalledWith(expect.objectContaining({ battleSize: "incursion" }), "list-1");
+  });
+});

@@ -315,7 +315,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
           <button
             className="ucm-submit"
             onClick={handleSubmit}
-            disabled={!selectedUnitSize || epicHeroAlreadyAdded}
+            disabled={!selectedUnitSize || epicHeroAlreadyAdded || (mustAttach && !selectedAttachment)}
             type="button">
             Set unit values
           </button>

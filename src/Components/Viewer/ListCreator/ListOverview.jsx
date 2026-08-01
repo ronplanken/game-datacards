@@ -35,8 +35,13 @@ import {
   SECTIONS_40K,
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
-import { requiresAttachment } from "../../../Helpers/listAttachments.helpers";
-import { getBattleSize, getForceDispositions, getSpentDetachmentPoints } from "../../../Helpers/listRoster.helpers";
+import { getAttachedLeaders, getAttachedSquad, requiresAttachment } from "../../../Helpers/listAttachments.helpers";
+import {
+  getBattleSize,
+  getEnhancementUsage,
+  getForceDispositions,
+  getSpentDetachmentPoints,
+} from "../../../Helpers/listRoster.helpers";
 import { MobileModal } from "../Mobile/MobileModal";
 import { ArmyRosterSheet } from "../Mobile/ArmyRosterSheet";
 import { ListSelector } from "./ListSelector";
@@ -140,9 +145,10 @@ const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS, allCards = [] }) 
 
   // Leader/support attachment indicators (11e): the squad this unit is attached
   // to, and any leaders attached to this squad. Support units must be attached,
-  // so flag them when they are not.
-  const attachedSquadName = item.attachedTo ? allCards.find((c) => c.uuid === item.attachedTo)?.name : null;
-  const hostedLeaders = allCards.filter((c) => c.attachedTo === item.uuid).map((c) => c.name);
+  // so flag them when they are not. Uses the shared (tested) helpers so stale
+  // `attachedTo` handling stays in one place.
+  const attachedSquadName = getAttachedSquad(item, allCards)?.name || null;
+  const hostedLeaders = getAttachedLeaders(item, allCards).map((c) => c.name);
   const needsAttachment = requiresAttachment(item) && !attachedSquadName;
 
   return (
@@ -401,6 +407,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const armyBattleSize = getBattleSize(currentList?.battleSize);
   const spentDetachmentPoints = getSpentDetachmentPoints(armyDetachments);
   const forceDispositions = getForceDispositions(armyDetachments, settings.language);
+  const enhancementUsage = getEnhancementUsage(currentCards, currentList?.battleSize);
   // Detachments available to this army come from the faction of the cards in the
   // list (a list is built from one faction).
   const listFactionId = currentCards.find((card) => card?.faction_id)?.faction_id;
@@ -563,7 +570,10 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                   <button className="list-overview-roster" onClick={() => setIsRosterSheetVisible(true)} type="button">
                     <span className="list-overview-roster-main">
                       <span className="list-overview-roster-label">
-                        {armyBattleSize.label} · {spentDetachmentPoints}/{armyBattleSize.dp} DP
+                        {armyBattleSize.label} · {spentDetachmentPoints}/{armyBattleSize.dp} DP ·{" "}
+                        <span className={enhancementUsage.exceeded ? "list-overview-roster-over" : ""}>
+                          {enhancementUsage.used}/{enhancementUsage.limit} enhancements
+                        </span>
                       </span>
                       <span className="list-overview-roster-detachments">
                         {armyDetachments.length === 0

@@ -94,9 +94,9 @@ The editor's panel toggles introduce optional visibility flags on the card so a
 section can be hidden without deleting its data:
 
 - `showWeapons: { rangedWeapons, meleeWeapons }`
-- `showAbilities: { core, faction, other }`
+- `showAbilities: { core, faction, other, wargear, special, primarch }`
 - top-level booleans: `showDamaged`, `showInvul`, `showWargear`,
-  `showComposition`, `showLoadout`, `showLeader`.
+  `showComposition`, `showLoadout`, `showLeader`, `showTransport`.
 
 The 11e renderers honour these with **absent = shown** semantics (gated with
 `!== false`), so cards created before this feature — which have none of these

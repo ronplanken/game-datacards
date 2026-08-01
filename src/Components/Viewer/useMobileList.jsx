@@ -158,13 +158,25 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
-  const updateDatacard = (uuid, unitSize, enhancement, isWarlord) => {
+  /**
+   * Update a list card's configuration. `options.attachedTo` (when the key is
+   * present) also sets the leader/support attachment.
+   *
+   * Every field is written in a single updateCategory call on purpose:
+   * updateCategory replaces the whole category object, so chaining two of these
+   * mutators from one handler would make the second overwrite the first with a
+   * pre-update snapshot, silently dropping the first edit.
+   */
+  const updateDatacard = (uuid, unitSize, enhancement, isWarlord, options = {}) => {
     if (!uuid) return;
     const category = lists[selectedList];
     if (!category) return;
-    const updatedCards = category.cards.map((card) =>
-      card.uuid !== uuid ? card : { ...card, unitSize, selectedEnhancement: enhancement, isWarlord },
-    );
+    const updatedCards = category.cards.map((card) => {
+      if (card.uuid !== uuid) return card;
+      const next = { ...card, unitSize, selectedEnhancement: enhancement, isWarlord };
+      if ("attachedTo" in options) next.attachedTo = options.attachedTo || undefined;
+      return next;
+    });
     updateCategory({ ...category, cards: updatedCards }, category.uuid);
     markCategoryPending(category.uuid);
   };
@@ -176,19 +188,6 @@ export const MobileListProvider = (props) => {
     if (!category) return;
     const updatedCards = category.cards.map((card) =>
       card.uuid !== uuid ? card : { ...updatedCard, uuid: card.uuid },
-    );
-    updateCategory({ ...category, cards: updatedCards }, category.uuid);
-    markCategoryPending(category.uuid);
-  };
-
-  // Attach (or detach, when squadUuid is falsy) a leader/support card to a squad
-  // already in the current list. Stored as `attachedTo` on the leader card.
-  const setCardAttachment = (uuid, squadUuid) => {
-    if (!uuid) return;
-    const category = lists[selectedList];
-    if (!category) return;
-    const updatedCards = category.cards.map((card) =>
-      card.uuid !== uuid ? card : { ...card, attachedTo: squadUuid || undefined },
     );
     updateCategory({ ...category, cards: updatedCards }, category.uuid);
     markCategoryPending(category.uuid);
@@ -285,7 +284,6 @@ export const MobileListProvider = (props) => {
     removeDatacard,
     updateDatacard,
     updateCardData,
-    setCardAttachment,
     setListDetachments,
     setListBattleSize,
     createList,

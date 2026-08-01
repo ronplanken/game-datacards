@@ -34,7 +34,7 @@ const Toggle = ({ checked, onChange, disabled }) => (
 );
 
 export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
-  const { lists, selectedList, updateDatacard, setCardAttachment } = useMobileList();
+  const { lists, selectedList, updateDatacard } = useMobileList();
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
@@ -90,10 +90,15 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   };
 
   const handleSave = () => {
-    updateDatacard(card.uuid, selectedUnitSize, selectedEnhancement, isWarlord);
-    if (isAttachableLeader(card)) {
-      setCardAttachment(card.uuid, selectedAttachment);
-    }
+    // Single write: passing the attachment through updateDatacard avoids a second
+    // whole-category update that would overwrite this save's other changes.
+    updateDatacard(
+      card.uuid,
+      selectedUnitSize,
+      selectedEnhancement,
+      isWarlord,
+      isAttachableLeader(card) ? { attachedTo: selectedAttachment } : {},
+    );
     handleClose();
     message.success(`${card.name} updated`);
   };
