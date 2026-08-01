@@ -1,16 +1,17 @@
 import { describe, it, expect } from "vitest";
 import {
   BATTLE_SIZES,
+  canAddDetachment,
+  getArmyFactionKeywords,
   getBattleSize,
   getDetachmentCost,
+  getDetachmentNamesEn,
+  getEnhancementUsage,
+  getForceDispositions,
   getSpentDetachmentPoints,
   isDetachmentSelected,
-  canAddDetachment,
-  toggleDetachment,
-  getForceDispositions,
-  getDetachmentNamesEn,
   isEnhancementInDetachments,
-  getEnhancementUsage,
+  toggleDetachment,
 } from "../listRoster.helpers";
 
 const det = (name, points, id, disposition) => ({
@@ -169,5 +170,26 @@ describe("enhancement usage counting", () => {
     const cards = [card(regular("A")), card(regular("B")), card(regular("C"))];
     expect(getEnhancementUsage(cards, "incursion").exceeded).toBe(true);
     expect(getEnhancementUsage(cards, "strikeForce").exceeded).toBe(false);
+  });
+});
+
+describe("getArmyFactionKeywords", () => {
+  it("collects every faction keyword in the list, deduplicated", () => {
+    const cards = [
+      { factions: ["Adeptus Astartes"] },
+      { factions: ["Adeptus Astartes", "Blood Angels"] },
+      { factions: ["Blood Angels"] },
+    ];
+    expect(getArmyFactionKeywords(cards).sort()).toEqual(["Adeptus Astartes", "Blood Angels"]);
+  });
+
+  it("resolves language-keyed keywords to English", () => {
+    expect(getArmyFactionKeywords([{ factions: [{ en: "Blood Angels", de: "Blutengel" }] }])).toEqual(["Blood Angels"]);
+  });
+
+  it("returns nothing for an empty or missing list", () => {
+    expect(getArmyFactionKeywords([])).toEqual([]);
+    expect(getArmyFactionKeywords(undefined)).toEqual([]);
+    expect(getArmyFactionKeywords([{}, { factions: [] }])).toEqual([]);
   });
 });

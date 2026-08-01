@@ -5,13 +5,22 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
-import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
+import {
+  filterPointsTiersForArmy,
+  getPointsTierRestrictionLabel,
+  getSelectablePointsTiers,
+  isSamePointsTier,
+} from "../../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
   isEnhancementAtCopyLimit,
   isUnitEnhancementEligible,
 } from "../../../Helpers/listCategories.helpers";
-import { isEnhancementInDetachments } from "../../../Helpers/listRoster.helpers";
+import {
+  getArmyFactionKeywords,
+  getDetachmentNamesEn,
+  isEnhancementInDetachments,
+} from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useUmami } from "../../../Hooks/useUmami";
 import { useMobileList } from "../useMobileList";
@@ -36,17 +45,31 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
-  const [selectedEnhancement, setSelectedEnhancement] = useState();
-  const [isWarlord, setIsWarlord] = useState(false);
-  const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
-  const [selectedUnitSize, setSelectedUnitSize] = useState(() => {
-    const tiers = getSelectablePointsTiers(activeCard);
-    return tiers.length === 1 ? tiers[0] : undefined;
-  });
-
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   // 11e armies hold several detachments; enhancements from any of them are available.
   const armyDetachments = lists[selectedList]?.detachments || [];
+  // Restricted prices (a detachment or a faction keyword) only apply to armies
+  // that match them. The card being added counts towards the army's keywords too,
+  // so the first card of a chapter-specific list already prices correctly.
+  const army = useMemo(
+    () => ({
+      detachments: getDetachmentNamesEn(armyDetachments),
+      factions: getArmyFactionKeywords([...(lists[selectedList]?.cards || []), activeCard]),
+    }),
+    [armyDetachments, lists, selectedList, activeCard],
+  );
+  const availableTiers = useMemo(
+    () => filterPointsTiersForArmy(getSelectablePointsTiers(activeCard), army),
+    [activeCard, army],
+  );
+
+  const [selectedEnhancement, setSelectedEnhancement] = useState();
+  const [isWarlord, setIsWarlord] = useState(false);
+  const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
+  const [selectedUnitSize, setSelectedUnitSize] = useState(() =>
+    availableTiers.length === 1 ? availableTiers[0] : undefined,
+  );
+
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   const warlordAlreadyAdded = lists[selectedList]?.cards?.find((card) => card.isWarlord);
   const epicHeroAlreadyAdded = lists[selectedList]?.cards?.find((card) => {
@@ -75,10 +98,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     if (isVisible) {
       setSelectedEnhancement(undefined);
       setIsWarlord(false);
-      const tiers = getSelectablePointsTiers(activeCard);
-      setSelectedUnitSize(tiers.length === 1 ? tiers[0] : undefined);
+      setSelectedUnitSize(availableTiers.length === 1 ? availableTiers[0] : undefined);
     }
-  }, [isVisible, activeCard]);
+  }, [isVisible, activeCard, availableTiers]);
 
   const handleClose = () => setIsVisible(false);
 
@@ -140,13 +162,16 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
           <div className="list-add-section">
             <h4 className="list-add-section-title">Unit Size</h4>
             <div className="list-add-options">
-              {getSelectablePointsTiers(activeCard).map((point) => (
+              {availableTiers.map((point) => (
                 <button
                   key={`${point.models}-${localize(point.keyword)}`}
                   className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
                   onClick={() => setSelectedUnitSize(point)}>
                   <span className="option-label">
                     {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                    {getPointsTierRestrictionLabel(point, settings.language) && (
+                      <span className="option-sublabel">{getPointsTierRestrictionLabel(point, settings.language)}</span>
+                    )}
                   </span>
                   <span className="option-value">{point.cost} pts</span>
                 </button>

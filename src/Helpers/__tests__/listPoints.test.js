@@ -1,9 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
   computeCategoryPoints,
+  filterPointsTiersForArmy,
   getCardBaseCost,
   getCardDisplayCost,
   getCategoryPointsTotal,
+  getPointsTierRestrictionLabel,
   getSelectablePointsTiers,
   isSamePointsTier,
 } from "../listPoints.helpers";
@@ -203,5 +205,69 @@ describe("getCardDisplayCost", () => {
     const plain = { uuid: "a", unitSize: { cost: "100" } };
     expect(getCardDisplayCost(plain, undefined)).toBe(100);
     expect(getCardDisplayCost(knight("a"), undefined)).toBe(400);
+  });
+});
+
+describe("filterPointsTiersForArmy", () => {
+  const generic = { models: "5", cost: "75" };
+  const bloodAngels = { models: "5", cost: "80", faction: { en: "Blood Angels" } };
+  const tenGeneric = { models: "10", cost: "150" };
+  const ctanGeneric = { models: "1", cost: "330" };
+  const ctanPantheon = { models: "1", cost: "375", detachment: { en: "Pantheon of Woe" } };
+
+  it("leaves unrestricted tiers untouched", () => {
+    const tiers = [tenGeneric, generic];
+    expect(filterPointsTiersForArmy(tiers, { detachments: [], factions: [] })).toEqual(tiers);
+  });
+
+  it("hides a faction price the army does not have", () => {
+    const result = filterPointsTiersForArmy([tenGeneric, generic, bloodAngels], {
+      factions: ["Adeptus Astartes"],
+    });
+    expect(result).toEqual([tenGeneric, generic]);
+  });
+
+  it("shows only the faction price when the army has that keyword", () => {
+    const result = filterPointsTiersForArmy([tenGeneric, generic, bloodAngels], {
+      factions: ["Adeptus Astartes", "Blood Angels"],
+    });
+    expect(result).toEqual([tenGeneric, bloodAngels]);
+  });
+
+  it("applies the same rule to detachment-scoped prices", () => {
+    expect(filterPointsTiersForArmy([ctanGeneric, ctanPantheon], { detachments: [] })).toEqual([ctanGeneric]);
+    expect(filterPointsTiersForArmy([ctanGeneric, ctanPantheon], { detachments: ["Pantheon of Woe"] })).toEqual([
+      ctanPantheon,
+    ]);
+  });
+
+  it("matches names case-insensitively", () => {
+    const result = filterPointsTiersForArmy([generic, bloodAngels], { factions: ["blood angels"] });
+    expect(result).toEqual([bloodAngels]);
+  });
+
+  it("only replaces within the same tier, leaving other sizes alone", () => {
+    const result = filterPointsTiersForArmy([tenGeneric, generic, bloodAngels], { factions: ["Blood Angels"] });
+    expect(result).toContain(tenGeneric);
+  });
+
+  it("keeps a tier that would otherwise have no option left", () => {
+    // A datasheet priced only inside a detachment must not become unselectable.
+    const onlyRestricted = [{ models: "1", cost: "115", detachment: { en: "Veiled Blade Elimination Force" } }];
+    expect(filterPointsTiersForArmy(onlyRestricted, { detachments: [] })).toEqual(onlyRestricted);
+  });
+
+  it("treats a missing army as having nothing selected", () => {
+    expect(filterPointsTiersForArmy([generic, bloodAngels])).toEqual([generic]);
+  });
+});
+
+describe("getPointsTierRestrictionLabel", () => {
+  it("prefers the detachment, then the faction, in the reader's language", () => {
+    expect(
+      getPointsTierRestrictionLabel({ detachment: { en: "Pantheon of Woe", de: "Pantheon des Wehs" } }, "de"),
+    ).toBe("Pantheon des Wehs");
+    expect(getPointsTierRestrictionLabel({ faction: { en: "Blood Angels" } }, "en")).toBe("Blood Angels");
+    expect(getPointsTierRestrictionLabel({ models: "5", cost: "75" }, "en")).toBe("");
   });
 });

@@ -286,6 +286,15 @@
   transition: color var(--transition-fast);
 }
 
+/* Why this price differs from the generic one: the detachment or faction
+   keyword it is restricted to. */
+.ucm-size-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
 .ucm-size-cost {
   font-size: 13px;
   font-weight: 500;

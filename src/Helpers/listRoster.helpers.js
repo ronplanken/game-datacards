@@ -104,6 +104,30 @@ export const getDetachmentNamesEn = (detachments) =>
   (detachments || []).map((d) => localize(d?.name, "en")).filter(Boolean);
 
 /**
+ * The faction keywords this army fields, used to match faction-scoped points
+ * tiers (11e prices some shared datasheets differently in e.g. a Blood Angels
+ * army — see filterPointsTiersForArmy).
+ *
+ * Collected from the `factions` of every card in the list, because the shared
+ * datasheet itself only carries the parent keyword ("Adeptus Astartes"); it is
+ * the chapter-specific cards alongside it that identify the army. A list holding
+ * none of those reads as the generic faction and gets the generic prices.
+ *
+ * @param {Array} cards
+ * @returns {Array<string>} English faction keywords, deduplicated
+ */
+export const getArmyFactionKeywords = (cards) => {
+  const names = new Set();
+  for (const card of Array.isArray(cards) ? cards : []) {
+    for (const faction of card?.factions || []) {
+      const name = localize(faction, "en");
+      if (name) names.add(name);
+    }
+  }
+  return [...names];
+};
+
+/**
  * Whether an enhancement belongs to one of the army's detachments. Enhancements
  * with no detachment are always available. When the army has no detachments yet,
  * `fallbackDetachment` (the legacy single-detachment selection) is used so 10e

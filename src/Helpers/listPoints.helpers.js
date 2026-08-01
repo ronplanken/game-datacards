@@ -25,6 +25,82 @@ export const getSelectablePointsTiers = (card) =>
   Array.isArray(card?.points) ? card.points.filter((tier) => tier?.active !== false) : [];
 
 /**
+ * What a points tier is restricted to, resolved to English (the language both
+ * axes are matched in), or empty for the generic tiers.
+ *
+ * 11th edition scopes a price two ways:
+ *   `detachment` — the C'tan Shards cost more in Pantheon of Woe.
+ *   `faction`    — a faction keyword: Assault Intercessors are 75 for 5, but 80
+ *                  in a Blood Angels army.
+ * A tier carries at most one of them.
+ *
+ * @param {Object} tier
+ * @returns {{ axis: "detachment"|"faction"|null, name: string }}
+ */
+export const getPointsTierRestriction = (tier) => {
+  const detachment = localize(tier?.detachment, "en");
+  if (detachment) return { axis: "detachment", name: detachment };
+  const faction = localize(tier?.faction, "en");
+  if (faction) return { axis: "faction", name: faction };
+  return { axis: null, name: "" };
+};
+
+/** The restriction label to show under a tier, in the reader's language. */
+export const getPointsTierRestrictionLabel = (tier, language) =>
+  localize(tier?.detachment, language) || localize(tier?.faction, language) || "";
+
+/** Tier identity for grouping: the same pair isSamePointsTier compares. */
+const tierKey = (tier) => `${tier?.models ?? ""}::${localize(tier?.keyword)}`;
+
+const lower = (values) =>
+  (Array.isArray(values) ? values : []).filter(Boolean).map((value) => String(value).toLowerCase());
+
+/**
+ * Narrow size tiers to the ones this army can actually take.
+ *
+ * Within each tier — same models + keyword — a restricted entry replaces the
+ * generic one when the army matches its restriction, and is hidden otherwise.
+ * So a Blood Angels list sees only the 80 pt entry for 5 Assault Intercessors
+ * and everyone else only the 75 pt one.
+ *
+ * Filtering per tier rather than across the whole list means matching a
+ * restriction can never remove an unrelated size option. A tier that would end
+ * up with nothing left is kept as-is, so a datasheet priced *only* under a
+ * restriction never becomes unselectable.
+ *
+ * @param {Array} tiers - tiers from getSelectablePointsTiers
+ * @param {{ detachments?: Array<string>, factions?: Array<string> }} army
+ *   English detachment names and faction keywords the army has
+ * @returns {Array}
+ */
+export const filterPointsTiersForArmy = (tiers, army = {}) => {
+  const list = Array.isArray(tiers) ? tiers : [];
+  if (!list.some((tier) => getPointsTierRestriction(tier).axis)) return list;
+
+  const pools = { detachment: lower(army.detachments), faction: lower(army.factions) };
+  const matchesArmy = (tier) => {
+    const { axis, name } = getPointsTierRestriction(tier);
+    if (!axis) return true;
+    return pools[axis].includes(name.toLowerCase());
+  };
+
+  const groups = new Map();
+  for (const tier of list) {
+    const key = tierKey(tier);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(tier);
+  }
+
+  return list.filter((tier) => {
+    const available = groups.get(tierKey(tier)).filter(matchesArmy);
+    if (available.length === 0) return true;
+    // A matched restriction's price wins over the generic one for this tier.
+    const restricted = available.filter((entry) => getPointsTierRestriction(entry).axis);
+    return (restricted.length > 0 ? restricted : available).includes(tier);
+  });
+};
+
+/**
  * Whether two size tiers describe the same option. Compared by value, not by
  * reference: a card's saved `unitSize` is a different object instance from the
  * entries in `card.points` once the card round-trips through storage, and 11e

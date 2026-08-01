@@ -4,14 +4,23 @@ import { X, Crown, ChevronDown } from "lucide-react";
 import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
-import { getSelectablePointsTiers, isSamePointsTier } from "../../Helpers/listPoints.helpers";
+import {
+  filterPointsTiersForArmy,
+  getPointsTierRestrictionLabel,
+  getSelectablePointsTiers,
+  isSamePointsTier,
+} from "../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
   isEnhancementAtCopyLimit,
   isUnitEnhancementEligible,
 } from "../../Helpers/listCategories.helpers";
 import { getEligibleSquads, isAttachableLeader, requiresAttachment } from "../../Helpers/listAttachments.helpers";
-import { isEnhancementInDetachments } from "../../Helpers/listRoster.helpers";
+import {
+  getArmyFactionKeywords,
+  getDetachmentNamesEn,
+  isEnhancementInDetachments,
+} from "../../Helpers/listRoster.helpers";
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -23,6 +32,16 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
+  // Restricted prices (a detachment or a faction keyword) only apply to armies
+  // that match them.
+  const army = useMemo(
+    () => ({
+      detachments: getDetachmentNamesEn(category?.detachments),
+      factions: getArmyFactionKeywords(category?.cards),
+    }),
+    [category?.detachments, category?.cards],
+  );
+  const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
 
   const [selectedUnitSize, setSelectedUnitSize] = useState(undefined);
   const [isWarlord, setIsWarlord] = useState(false);
@@ -44,8 +63,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
       if (card.unitSize) {
         setSelectedUnitSize(card.unitSize);
       } else {
-        const tiers = getSelectablePointsTiers(card);
-        setSelectedUnitSize(tiers.length === 1 ? tiers[0] : undefined);
+        setSelectedUnitSize(availableTiers.length === 1 ? availableTiers[0] : undefined);
       }
     }
   }, [isOpen, card?.uuid]);
@@ -159,7 +177,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
           <div>
             <div className="ucm-section-label">Unit size</div>
             <div className="ucm-size-list">
-              {getSelectablePointsTiers(card).map((point) => {
+              {availableTiers.map((point) => {
                 const isSelected = isSamePointsTier(selectedUnitSize, point);
                 return (
                   <div
@@ -171,6 +189,11 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
                       <span className="ucm-size-label">
                         {point.models} {point.models > 1 ? "models" : "model"}
                         {point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                        {getPointsTierRestrictionLabel(point, settings.language) && (
+                          <span className="ucm-size-sublabel">
+                            {getPointsTierRestrictionLabel(point, settings.language)}
+                          </span>
+                        )}
                       </span>
                       <span className="ucm-size-cost">{point.cost} pts</span>
                     </div>

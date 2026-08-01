@@ -4,7 +4,12 @@ import { message } from "../../Toast/message";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
-import { getSelectablePointsTiers, isSamePointsTier } from "../../../Helpers/listPoints.helpers";
+import {
+  filterPointsTiersForArmy,
+  getPointsTierRestrictionLabel,
+  getSelectablePointsTiers,
+  isSamePointsTier,
+} from "../../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
   isEnhancementAtCopyLimit,
@@ -16,7 +21,11 @@ import {
   isAttachableLeader,
   requiresAttachment,
 } from "../../../Helpers/listAttachments.helpers";
-import { isEnhancementInDetachments } from "../../../Helpers/listRoster.helpers";
+import {
+  getArmyFactionKeywords,
+  getDetachmentNamesEn,
+  isEnhancementInDetachments,
+} from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
@@ -48,6 +57,16 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   // 11e armies hold several detachments; enhancements from any of them are available.
   const armyDetachments = lists[selectedList]?.detachments || [];
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
+  // Restricted prices (a detachment or a faction keyword) only apply to armies
+  // that match them.
+  const army = useMemo(
+    () => ({
+      detachments: getDetachmentNamesEn(armyDetachments),
+      factions: getArmyFactionKeywords(lists[selectedList]?.cards),
+    }),
+    [armyDetachments, lists, selectedList],
+  );
+  const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
 
   // Check warlord — exclude current card's uuid
   const warlordAlreadyAdded = lists[selectedList]?.cards?.find((c) => c.isWarlord && c.uuid !== card?.uuid);
@@ -151,13 +170,16 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           <div className="list-add-section">
             <h4 className="list-add-section-title">Unit Size</h4>
             <div className="list-add-options">
-              {getSelectablePointsTiers(card).map((point) => (
+              {availableTiers.map((point) => (
                 <button
                   key={`${point.models}-${localize(point.keyword)}`}
                   className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
                   onClick={() => setSelectedUnitSize(point)}>
                   <span className="option-label">
                     {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                    {getPointsTierRestrictionLabel(point, settings.language) && (
+                      <span className="option-sublabel">{getPointsTierRestrictionLabel(point, settings.language)}</span>
+                    )}
                   </span>
                   <span className="option-value">{point.cost} pts</span>
                 </button>

@@ -77,6 +77,15 @@
   color: var(--bs-text);
 }
 
+/* Why this price differs from the generic one: the detachment or faction
+   keyword it is restricted to. */
+.option-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--bs-text-muted);
+}
+
 .option-value {
   color: var(--bs-text-secondary);
   font-weight: 500;
