@@ -346,7 +346,9 @@ describe("UnitConfigModal 11e attachments", () => {
 
   it("blocks saving a Support unit until it is attached", () => {
     const onSave = vi.fn();
-    render(<UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+    render(
+      <UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />,
+    );
 
     // Unit size auto-selects (single tier), so the attachment is the only blocker.
     const submit = screen.getByText("Set unit values");
