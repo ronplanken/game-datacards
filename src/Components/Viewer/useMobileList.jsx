@@ -4,6 +4,7 @@ import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { migrateListsToCategories } from "../../Helpers/listMigration.helpers";
 import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
+import { getArmyContext, repriceListCards } from "../../Helpers/listRoster.helpers";
 
 const MobileListContext = React.createContext(undefined);
 
@@ -196,11 +197,26 @@ export const MobileListProvider = (props) => {
   // Army-wide roster settings for the current list (stored on the category):
   // 11e armies hold several detachments at once, bought with the battle size's
   // Detachment Points budget.
-  const setListDetachments = (detachments) => {
+  //
+  // Changing them can change what the units cost — 11e prices some datasheets
+  // differently per detachment — so every card is re-resolved against the new
+  // army context in the same write. The changed rows are returned so the caller
+  // can tell the user why the points moved.
+  //
+  // `options.faction` is the faction the list belongs to; it seeds the army's
+  // faction keywords and is recorded on the list when it does not have one yet
+  // (older lists were created before the faction was tracked).
+  const setListDetachments = (detachments, options = {}) => {
     const category = lists[selectedList];
-    if (!category) return;
-    updateCategory({ ...category, detachments: detachments?.length ? detachments : undefined }, category.uuid);
+    if (!category) return [];
+
+    const next = { ...category, detachments: detachments?.length ? detachments : undefined };
+    if (!next.factionId && options.faction?.id) next.factionId = options.faction.id;
+
+    const { cards, changes } = repriceListCards(category.cards, getArmyContext(next, options.faction));
+    updateCategory({ ...next, cards }, category.uuid);
     markCategoryPending(category.uuid);
+    return changes;
   };
 
   const setListBattleSize = (battleSize) => {
@@ -210,13 +226,17 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
-  const createList = (name) => {
+  // `options.factionId` records the faction the list is built for, so its
+  // detachments (and faction-scoped prices) are available before the first unit
+  // is added.
+  const createList = (name, options = {}) => {
     const listName = name?.trim() || "New List";
     importCategory({
       uuid: uuidv4(),
       name: listName,
       type: "list",
       dataSource,
+      factionId: options.factionId || undefined,
       cards: [],
     });
     // Select the newly created list (it will be appended at the end)

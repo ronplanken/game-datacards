@@ -320,6 +320,18 @@ describe("useMobileList", () => {
       );
     });
 
+    it("should record the faction the list is built for", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Default", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.createList("Blood Angels", { factionId: "BA" });
+      });
+
+      expect(mockImportCategory).toHaveBeenCalledWith(expect.objectContaining({ factionId: "BA" }));
+    });
+
     it("should default name to 'New List' when name is empty", () => {
       mockCategories = [{ uuid: "cat-1", name: "Default", type: "list", dataSource: "40k-10e", cards: [] }];
 
@@ -606,5 +618,104 @@ describe("useMobileList 11e roster and attachments", () => {
       result.current.setListBattleSize("incursion");
     });
     expect(mockUpdateCategory).toHaveBeenCalledWith(expect.objectContaining({ battleSize: "incursion" }), "list-1");
+  });
+});
+
+describe("useMobileList detachment repricing", () => {
+  // A datasheet priced 100 generally and 120 in the Lions of the Emperor
+  // detachment — 11e scopes some prices to a detachment.
+  const detachment = { id: "d1", name: { en: "Lions of the Emperor" }, detachmentPoints: 2 };
+  const tiers = [
+    { models: 5, cost: 100 },
+    { models: 5, cost: 120, detachment: { en: "Lions of the Emperor" } },
+    { models: 10, cost: 200 },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock.clear();
+    mockSettings.selectedDataSource = "40k-11e";
+    mockCategories = [
+      {
+        uuid: "list-1",
+        name: "My 11e List",
+        type: "list",
+        dataSource: "40k-11e",
+        cards: [
+          { uuid: "card-1", name: "Intercessor Squad", points: tiers, unitSize: { models: 5, cost: 100 } },
+          { uuid: "card-2", name: "Unconfigured Squad", points: tiers },
+        ],
+      },
+    ];
+  });
+
+  const wrapper = ({ children }) => <MobileListProvider>{children}</MobileListProvider>;
+
+  it("reprices configured units for the chosen detachment and reports the change", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    let changes;
+    act(() => {
+      changes = result.current.setListDetachments([detachment]);
+    });
+
+    // One write only: detachments and repriced cards go in together.
+    expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+    const saved = mockUpdateCategory.mock.calls[0][0];
+    expect(saved.cards.find((c) => c.uuid === "card-1").unitSize.cost).toBe(120);
+    expect(changes).toEqual([{ name: "Intercessor Squad", from: 100, to: 120 }]);
+  });
+
+  it("restores the generic price when the detachment is removed", () => {
+    mockCategories[0].detachments = [detachment];
+    mockCategories[0].cards[0].unitSize = { models: 5, cost: 120, detachment: { en: "Lions of the Emperor" } };
+
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    let changes;
+    act(() => {
+      changes = result.current.setListDetachments([]);
+    });
+
+    const saved = mockUpdateCategory.mock.calls[0][0];
+    expect(saved.detachments).toBeUndefined();
+    expect(saved.cards.find((c) => c.uuid === "card-1").unitSize.cost).toBe(100);
+    expect(changes).toEqual([{ name: "Intercessor Squad", from: 120, to: 100 }]);
+  });
+
+  it("leaves unconfigured units alone and reports nothing when no price moves", () => {
+    mockCategories[0].cards = [{ uuid: "card-2", name: "Unconfigured Squad", points: tiers }];
+
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    let changes;
+    act(() => {
+      changes = result.current.setListDetachments([detachment]);
+    });
+
+    expect(changes).toEqual([]);
+    expect(mockUpdateCategory.mock.calls[0][0].cards[0].unitSize).toBeUndefined();
+  });
+
+  it("records the faction on a list that does not have one yet", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    act(() => {
+      result.current.setListDetachments([detachment], { faction: { id: "BA", name: "Blood Angels" } });
+    });
+
+    expect(mockUpdateCategory.mock.calls[0][0].factionId).toBe("BA");
+  });
+
+  it("keeps a faction the list already has", () => {
+    mockCategories[0].factionId = "SM";
+
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    act(() => {
+      result.current.setListDetachments([detachment], { faction: { id: "BA", name: "Blood Angels" } });
+    });
+
+    expect(mockUpdateCategory.mock.calls[0][0].factionId).toBe("SM");
   });
 });

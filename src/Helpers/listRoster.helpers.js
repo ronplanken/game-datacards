@@ -10,6 +10,7 @@
 
 import { localize } from "./localization.helpers";
 import { isUpgradeEnhancement } from "./listCategories.helpers";
+import { filterPointsTiersForArmy, getSelectablePointsTiers, isSamePointsTier } from "./listPoints.helpers";
 
 /**
  * Battle sizes for 11th edition. `points` is the army points total, `dp` the
@@ -116,8 +117,12 @@ export const getDetachmentNamesEn = (detachments) =>
  * @param {Array} cards
  * @returns {Array<string>} English faction keywords, deduplicated
  */
-export const getArmyFactionKeywords = (cards) => {
+export const getArmyFactionKeywords = (cards, factionName) => {
   const names = new Set();
+  // The list's own faction counts from the start, so faction-scoped prices apply
+  // to the very first unit rather than only once a chapter-specific card is added.
+  const own = localize(factionName, "en");
+  if (own) names.add(own);
   for (const card of Array.isArray(cards) ? cards : []) {
     for (const faction of card?.factions || []) {
       const name = localize(faction, "en");
@@ -125,6 +130,79 @@ export const getArmyFactionKeywords = (cards) => {
     }
   }
   return [...names];
+};
+
+/**
+ * The faction a list is built for. Recorded on the list when it is created, so
+ * detachments can be chosen before any unit is added. Older lists (and imports)
+ * carry no `factionId`, so fall back to the first card that has one.
+ *
+ * @param {Object} category - the list category
+ * @returns {string|undefined}
+ */
+export const getListFactionId = (category) =>
+  category?.factionId || (category?.cards || []).find((card) => card?.faction_id)?.faction_id;
+
+/**
+ * The army context used to resolve points tiers: the detachments the army has
+ * taken and the faction keywords it fields, both as English names.
+ *
+ * @param {Object} category - the list category
+ * @param {Object} [faction] - the faction object the list belongs to
+ * @returns {{ detachments: Array<string>, factions: Array<string> }}
+ */
+export const getArmyContext = (category, faction) => ({
+  detachments: getDetachmentNamesEn(category?.detachments),
+  factions: getArmyFactionKeywords(category?.cards, faction?.name),
+});
+
+/**
+ * Re-resolve every card's chosen size against the army context, so prices that
+ * are scoped to a detachment or faction keyword follow a change of detachment.
+ *
+ * A card keeps its size (same models + keyword); only the priced entry swaps
+ * between the generic and the restricted one. Cards whose price is unaffected
+ * are returned untouched, so this is safe to run on every change.
+ *
+ * @param {Array} cards
+ * @param {{ detachments?: Array<string>, factions?: Array<string> }} army
+ * @returns {{ cards: Array, changes: Array<{ name: string, from: number, to: number }> }}
+ */
+export const repriceListCards = (cards, army) => {
+  const list = Array.isArray(cards) ? cards : [];
+  const changes = [];
+
+  const repriced = list.map((card) => {
+    if (!card?.unitSize) return card;
+    const tiers = filterPointsTiersForArmy(getSelectablePointsTiers(card), army);
+    const match = tiers.find((tier) => isSamePointsTier(tier, card.unitSize));
+    if (!match) return card;
+
+    const from = Number(card.unitSize.cost);
+    const to = Number(match.cost);
+    if (!Number.isFinite(to) || from === to) return card;
+
+    changes.push({ name: card.name, from, to });
+    return { ...card, unitSize: { ...match } };
+  });
+
+  return { cards: changes.length > 0 ? repriced : list, changes };
+};
+
+/**
+ * A short summary of a repriceListCards result, for the toast that explains why
+ * unit costs changed. Empty when nothing changed.
+ *
+ * @param {Array<{ name: string, from: number, to: number }>} changes
+ * @returns {string}
+ */
+export const describeRepricedCards = (changes) => {
+  const list = Array.isArray(changes) ? changes : [];
+  if (list.length === 0) return "";
+  const parts = list.map((change) => `${change.name} ${change.from} to ${change.to} pts`);
+  const shown = parts.slice(0, 3).join(", ");
+  const rest = parts.length - 3;
+  return rest > 0 ? `Points updated: ${shown} and ${rest} more` : `Points updated: ${shown}`;
 };
 
 /**

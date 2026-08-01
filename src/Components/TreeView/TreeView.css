@@ -72,6 +72,45 @@
   text-align: center;
 }
 
+/* Army roster summary row (11e lists): battle size, Detachment Points and the
+   selected detachments. Sits between the category header and its cards. */
+.tree-roster-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  padding: 4px 8px 4px 28px;
+  border: none;
+  border-left: 2px solid #e6f4ff;
+  background: #fafafa;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.2s ease;
+}
+
+.tree-roster-row:hover {
+  background: #f0f0f0;
+}
+
+.tree-roster-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.tree-roster-detachments {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-roster-over {
+  color: #dc3545;
+}
+
 /* Drag handle - hidden by default, visible on hover */
 .tree-drag-handle {
   display: flex;

@@ -1,0 +1,69 @@
+/* ArmyRosterModal.css - battle size / Detachment Points bits layered on the
+   ucm-* glass modal shell. */
+
+.arm-battle-sizes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.arm-battle-size {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-border-subtle);
+  background: var(--glass-bg-subtle);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+}
+
+.arm-battle-size:hover {
+  border-color: var(--accent-secondary);
+}
+
+.arm-battle-size.selected {
+  border-color: var(--accent-primary);
+  background: var(--accent-ultra-light);
+}
+
+.arm-battle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.arm-battle-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.arm-dp {
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.arm-disposition {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.arm-check {
+  margin-left: 6px;
+  vertical-align: middle;
+  color: var(--accent-primary);
+}
+
+.arm-empty,
+.arm-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}

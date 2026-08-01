@@ -19,6 +19,7 @@ import { getEligibleSquads, isAttachableLeader, requiresAttachment } from "../..
 import {
   getArmyFactionKeywords,
   getDetachmentNamesEn,
+  getListFactionId,
   isEnhancementInDetachments,
 } from "../../Helpers/listRoster.helpers";
 import { localize } from "../../Helpers/localization.helpers";
@@ -32,14 +33,16 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
+  // The faction the list is built for, which its faction-scoped prices key off.
+  const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(category));
   // Restricted prices (a detachment or a faction keyword) only apply to armies
   // that match them.
   const army = useMemo(
     () => ({
       detachments: getDetachmentNamesEn(category?.detachments),
-      factions: getArmyFactionKeywords(category?.cards),
+      factions: getArmyFactionKeywords(category?.cards, listFaction?.name),
     }),
-    [category?.detachments, category?.cards],
+    [category?.detachments, category?.cards, listFaction?.name],
   );
   const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
 

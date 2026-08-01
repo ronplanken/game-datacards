@@ -37,9 +37,11 @@ import {
 } from "../../../Helpers/listCategories.helpers";
 import { getAttachedLeaders, getAttachedSquad, requiresAttachment } from "../../../Helpers/listAttachments.helpers";
 import {
+  describeRepricedCards,
   getBattleSize,
   getEnhancementUsage,
   getForceDispositions,
+  getListFactionId,
   getSpentDetachmentPoints,
 } from "../../../Helpers/listRoster.helpers";
 import { MobileModal } from "../Mobile/MobileModal";
@@ -352,7 +354,7 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
 export const ListOverview = ({ isVisible, setIsVisible }) => {
   const { lists, selectedList, removeDatacard, selectedCloudCategoryId, setListDetachments, setListBattleSize } =
     useMobileList();
-  const { dataSource } = useDataSourceStorage();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const { categories: cloudCategories } = useCloudCategories();
   const navigate = useNavigate();
@@ -408,10 +410,19 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const spentDetachmentPoints = getSpentDetachmentPoints(armyDetachments);
   const forceDispositions = getForceDispositions(armyDetachments, settings.language);
   const enhancementUsage = getEnhancementUsage(currentCards, currentList?.battleSize);
-  // Detachments available to this army come from the faction of the cards in the
-  // list (a list is built from one faction).
-  const listFactionId = currentCards.find((card) => card?.faction_id)?.faction_id;
-  const availableDetachments = dataSource.data.find((faction) => faction.id === listFactionId)?.detachments || [];
+  // The list's own faction, so detachments can be picked before the first unit is
+  // added. Lists made before the faction was recorded fall back to their cards,
+  // and a list with neither to the faction being browsed.
+  const listFactionId = getListFactionId(currentList) || selectedFaction?.id;
+  const listFaction = dataSource.data.find((faction) => faction.id === listFactionId);
+  const availableDetachments = listFaction?.detachments || [];
+
+  // Detachments can change what units cost, so the list is repriced in the same
+  // write and the affected units are named in a toast.
+  const handleChangeDetachments = (detachments) => {
+    const summary = describeRepricedCards(setListDetachments(detachments, { faction: listFaction }));
+    if (summary) message.info(summary);
+  };
 
   // Get appropriate sections and categorization (only for local lists)
   const sections = isAoS ? SECTIONS_AOS : SECTIONS_40K;
@@ -546,6 +557,31 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
               />
             </div>
 
+            {/* Army roster (11e): shown before any unit is added, so the army's
+                detachments are chosen up front. */}
+            {is11e && !isCloudCategory && (
+              <button className="list-overview-roster" onClick={() => setIsRosterSheetVisible(true)} type="button">
+                <span className="list-overview-roster-main">
+                  <span className="list-overview-roster-label">
+                    {armyBattleSize.label} · {spentDetachmentPoints}/{armyBattleSize.dp} DP ·{" "}
+                    <span className={enhancementUsage.exceeded ? "list-overview-roster-over" : ""}>
+                      {enhancementUsage.used}/{enhancementUsage.limit} enhancements
+                    </span>
+                  </span>
+                  <span className="list-overview-roster-detachments">
+                    {armyDetachments.length === 0
+                      ? "Select detachments"
+                      : forceDispositions
+                          .map((entry) =>
+                            entry.disposition ? `${entry.detachment} (${entry.disposition})` : entry.detachment,
+                          )
+                          .join(", ")}
+                  </span>
+                </span>
+                <ChevronRight size={18} />
+              </button>
+            )}
+
             {isEmpty ? (
               <div className="list-overview-empty">
                 {isCloudCategory ? <Cloud size={48} /> : <List size={48} />}
@@ -566,28 +602,6 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
             ) : (
               /* Local list cards - categorized with delete buttons */
               <div className="list-overview-items">
-                {is11e && (
-                  <button className="list-overview-roster" onClick={() => setIsRosterSheetVisible(true)} type="button">
-                    <span className="list-overview-roster-main">
-                      <span className="list-overview-roster-label">
-                        {armyBattleSize.label} · {spentDetachmentPoints}/{armyBattleSize.dp} DP ·{" "}
-                        <span className={enhancementUsage.exceeded ? "list-overview-roster-over" : ""}>
-                          {enhancementUsage.used}/{enhancementUsage.limit} enhancements
-                        </span>
-                      </span>
-                      <span className="list-overview-roster-detachments">
-                        {armyDetachments.length === 0
-                          ? "Select detachments"
-                          : forceDispositions
-                              .map((entry) =>
-                                entry.disposition ? `${entry.detachment} (${entry.disposition})` : entry.detachment,
-                              )
-                              .join(", ")}
-                      </span>
-                    </span>
-                    <ChevronRight size={18} />
-                  </button>
-                )}
                 {sections.map((section) => (
                   <ListSection
                     key={section.key}
@@ -633,7 +647,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
         selectedDetachments={armyDetachments}
         battleSize={currentList?.battleSize}
         onChangeBattleSize={setListBattleSize}
-        onChangeDetachments={setListDetachments}
+        onChangeDetachments={handleChangeDetachments}
         language={settings.language}
       />
 

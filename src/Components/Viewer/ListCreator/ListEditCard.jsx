@@ -24,6 +24,7 @@ import {
 import {
   getArmyFactionKeywords,
   getDetachmentNamesEn,
+  getListFactionId,
   isEnhancementInDetachments,
 } from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
@@ -57,14 +58,16 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   // 11e armies hold several detachments; enhancements from any of them are available.
   const armyDetachments = lists[selectedList]?.detachments || [];
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
+  // The faction the list is built for, which its faction-scoped prices key off.
+  const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(lists[selectedList]));
   // Restricted prices (a detachment or a faction keyword) only apply to armies
   // that match them.
   const army = useMemo(
     () => ({
       detachments: getDetachmentNamesEn(armyDetachments),
-      factions: getArmyFactionKeywords(lists[selectedList]?.cards),
+      factions: getArmyFactionKeywords(lists[selectedList]?.cards, listFaction?.name),
     }),
-    [armyDetachments, lists, selectedList],
+    [armyDetachments, lists, selectedList, listFaction?.name],
   );
   const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
 

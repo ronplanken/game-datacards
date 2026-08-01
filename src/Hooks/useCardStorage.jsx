@@ -203,7 +203,10 @@ export const CardStorageProviderComponent = (props) => {
       };
     });
   };
-  const addCategory = (categoryName, type = "category", dataSource) => {
+  // `options.factionId` records the faction a list is built for, so its
+  // detachments (and faction-scoped prices) are available before the first unit
+  // is added.
+  const addCategory = (categoryName, type = "category", dataSource, options = {}) => {
     if (!categoryName) {
       return;
     }
@@ -218,6 +221,9 @@ export const CardStorageProviderComponent = (props) => {
       };
       if (dataSource) {
         category.dataSource = dataSource;
+      }
+      if (options.factionId) {
+        category.factionId = options.factionId;
       }
       newStorage.categories.push(category);
       return {
