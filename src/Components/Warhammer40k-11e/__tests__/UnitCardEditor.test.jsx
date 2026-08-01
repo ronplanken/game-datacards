@@ -26,6 +26,9 @@ vi.mock("../UnitCardEditor/UnitBasicAbility", () => ({
 vi.mock("../UnitCardEditor/UnitExtendedAbilities", () => ({
   UnitExtendedAbilities: ({ type }) => <div data-testid={`extended-${type}`} />,
 }));
+vi.mock("../UnitCardEditor/UnitPrimarchAbilities", () => ({
+  UnitPrimarchAbilities: () => <div data-testid="primarch" />,
+}));
 vi.mock("../UnitCardEditor/UnitDamageTable", () => ({ UnitDamageTable: () => <div data-testid="damaged" /> }));
 vi.mock("../UnitCardEditor/UnitInvulnerableSave", () => ({ UnitInvulnerableSave: () => <div data-testid="invul" /> }));
 vi.mock("../UnitCardEditor/UnitKeywords", () => ({
@@ -66,15 +69,16 @@ describe("UnitCardEditor (11e)", () => {
       "Core abilities",
       "Faction abilities",
       "Other abilities",
+      "Primarch ability",
       "Damaged ability",
       "Invulnerable save",
       "Keywords",
     ].forEach((label) => expect(screen.getByText(label)).toBeInTheDocument());
   });
 
-  it("renders 7 visibility toggles", () => {
+  it("renders 8 visibility toggles", () => {
     const { container } = render(<UnitCardEditor />);
-    expect(container.querySelectorAll(".ant-collapse-extra .ant-switch").length).toBe(7);
+    expect(container.querySelectorAll(".ant-collapse-extra .ant-switch").length).toBe(8);
   });
 
   it("defaults every visibility toggle to checked when no flags are set", () => {
@@ -95,8 +99,15 @@ describe("UnitCardEditor (11e)", () => {
     mockActiveCard.ref = { showDamaged: false, showInvul: false };
     const { container } = render(<UnitCardEditor />);
     const panels = container.querySelectorAll(".ant-collapse-item");
-    // Damaged ability (9) and Invulnerable save (10)
-    expect(panels[9].classList.contains("ant-collapse-item-disabled")).toBe(true);
+    // Damaged ability (10) and Invulnerable save (11)
     expect(panels[10].classList.contains("ant-collapse-item-disabled")).toBe(true);
+    expect(panels[11].classList.contains("ant-collapse-item-disabled")).toBe(true);
+  });
+
+  it("disables the primarch panel when showAbilities.primarch is false", () => {
+    mockActiveCard.ref = { showAbilities: { primarch: false } };
+    const { container } = render(<UnitCardEditor />);
+    const panels = container.querySelectorAll(".ant-collapse-item");
+    expect(panels[9].classList.contains("ant-collapse-item-disabled")).toBe(true);
   });
 });

@@ -13,9 +13,10 @@ vi.mock("antd", async (importOriginal) => {
 
 import { UnitExtra } from "../UnitCard/UnitExtra";
 import { UnitLoadout } from "../UnitCard/UnitLoadout";
+import { UnitWeapons } from "../UnitCard/UnitWeapons";
 import { StratagemCard } from "../StratagemCard";
 
-describe("11e UnitExtra: wargear / special / primarch abilities", () => {
+describe("11e UnitExtra: wargear / special abilities", () => {
   it("renders wargear abilities under their own heading", () => {
     const unit = {
       abilities: { wargear: [{ name: { en: "Vexilla" }, description: { en: "Add 1 to Objective Control." } }] },
@@ -63,17 +64,6 @@ describe("11e UnitExtra: wargear / special / primarch abilities", () => {
     expect(queryByText("Jetbike Outriders")).not.toBeInTheDocument();
   });
 
-  it("hides primarch abilities when showAbilities.primarch is false", () => {
-    const unit = {
-      abilities: {
-        primarch: [{ name: { en: "Warmaster" }, abilities: [{ name: { en: "X" }, description: { en: "Y" } }] }],
-      },
-      showAbilities: { primarch: false },
-    };
-    const { queryByText } = render(<UnitExtra unit={unit} />);
-    expect(queryByText("Warmaster")).not.toBeInTheDocument();
-  });
-
   it("renders special abilities", () => {
     const unit = {
       abilities: { special: [{ name: { en: "Jetbike Outriders" }, description: { en: "Can be attached instead." } }] },
@@ -82,7 +72,19 @@ describe("11e UnitExtra: wargear / special / primarch abilities", () => {
     expect(getByText("Jetbike Outriders")).toBeInTheDocument();
   });
 
-  it("renders primarch ability groups and their sub-abilities", () => {
+  it("does not render primarch abilities in the abilities column", () => {
+    const unit = {
+      abilities: {
+        primarch: [{ name: { en: "Warmaster" }, abilities: [{ name: { en: "X" }, description: { en: "Y" } }] }],
+      },
+    };
+    const { queryByText } = render(<UnitExtra unit={unit} />);
+    expect(queryByText("Warmaster")).not.toBeInTheDocument();
+  });
+});
+
+describe("11e UnitWeapons: primarch abilities", () => {
+  it("renders primarch ability groups and their sub-abilities below the weapons", () => {
     const unit = {
       abilities: {
         primarch: [
@@ -93,9 +95,33 @@ describe("11e UnitExtra: wargear / special / primarch abilities", () => {
         ],
       },
     };
-    const { getByText } = render(<UnitExtra unit={unit} />);
+    const { getByText } = render(<UnitWeapons unit={unit} />);
     expect(getByText("Warmaster")).toBeInTheDocument();
     expect(getByText(/Paragon of Hatred/)).toBeInTheDocument();
+    expect(getByText(/Re-roll the hit roll/)).toBeInTheDocument();
+  });
+
+  it("hides primarch abilities when showAbilities.primarch is false", () => {
+    const unit = {
+      abilities: {
+        primarch: [{ name: { en: "Warmaster" }, abilities: [{ name: { en: "X" }, description: { en: "Y" } }] }],
+      },
+      showAbilities: { primarch: false },
+    };
+    const { queryByText } = render(<UnitWeapons unit={unit} />);
+    expect(queryByText("Warmaster")).not.toBeInTheDocument();
+  });
+
+  it("renders primarch groups after the weapon tables", () => {
+    const unit = {
+      meleeWeapons: [{ name: { en: "Chainsword" }, profiles: [{ name: { en: "Chainsword" }, keywords: [] }] }],
+      abilities: {
+        primarch: [{ name: { en: "Warmaster" }, abilities: [] }],
+      },
+    };
+    const { container } = render(<UnitWeapons unit={unit} />);
+    const blocks = container.querySelectorAll(".weapons > *");
+    expect(blocks[blocks.length - 1]).toHaveClass("primarch");
   });
 });
 

@@ -11,6 +11,7 @@ import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
 import { UnitLeader } from "./UnitCardEditor/UnitLeader";
 import { UnitLoadout } from "./UnitCardEditor/UnitLoadout";
 import { UnitPoints } from "./UnitCardEditor/UnitPoints";
+import { UnitPrimarchAbilities } from "./UnitCardEditor/UnitPrimarchAbilities";
 import { UnitStats } from "./UnitCardEditor/UnitStats";
 import { UnitStylingInfo } from "./UnitCardEditor/UnitStylingInfo";
 import { UnitTransport } from "./UnitCardEditor/UnitTransport";
@@ -126,6 +127,20 @@ export const UnitCardFullEditor = () => {
           />
         }>
         {activeCard.showAbilities?.other !== false && <UnitExtendedAbilities type={"other"} />}
+      </Panel>
+      <Panel
+        header="Primarch ability"
+        style={{ width: "100%" }}
+        key="7"
+        collapsible={activeCard.showAbilities?.primarch === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.primarch !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("primarch", "7", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.primarch !== false && <UnitPrimarchAbilities />}
       </Panel>
       <Panel
         header="Damaged ability"

@@ -32,8 +32,7 @@ export const UnitExtra = ({ unit }) => {
   // shape of `other`; the 11e data has no per-ability UI flags.
   const wargear = unit.showAbilities?.wargear !== false ? (abilities.wargear || []).filter((a) => a?.name) : [];
   const special = unit.showAbilities?.special !== false ? (abilities.special || []).filter((a) => a?.name) : [];
-  // Primarch abilities nest a set of sub-abilities under a named group.
-  const primarch = unit.showAbilities?.primarch !== false ? (abilities.primarch || []).filter((a) => a?.name) : [];
+  // Primarch abilities render in the wide left column, see UnitPrimarchAbilities.
   const damaged = unit.showDamaged !== false ? abilities.damaged : null;
 
   const hasAbilities = coreAbilities.length > 0 || faction || other.length > 0;
@@ -74,22 +73,6 @@ export const UnitExtra = ({ unit }) => {
               </span>
             </div>
           )}
-        </div>
-      ))}
-      {primarch.map((group, index) => (
-        <div className="special primarch" key={`primarch-${index}`}>
-          <div className="heading">
-            <div className="title">{localize(group.name, lang)}</div>
-          </div>
-          {(group.abilities || []).map((ability, aIndex) => (
-            <div className="description-container" key={`primarch-${index}-${aIndex}`}>
-              <span className="description">
-                <MarkupText
-                  content={`<k>${localize(ability.name, lang)}:</k> ${localize(ability.description, lang)}`}
-                />
-              </span>
-            </div>
-          ))}
         </div>
       ))}
       {damaged && (damaged.range || damaged.description) && (

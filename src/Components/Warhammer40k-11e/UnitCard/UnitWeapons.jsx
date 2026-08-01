@@ -1,8 +1,10 @@
+import { UnitPrimarchAbilities } from "./UnitPrimarchAbilities";
 import { UnitWeaponsType } from "./UnitWeaponsType";
 
-// 11th edition has no separate primarch ability block; render ranged and melee
-// weapons whenever present. The optional showWeapons flags let the editor hide a
-// section without deleting the data; an absent flag means shown.
+// Render ranged and melee weapons whenever present, followed by any primarch
+// ability groups (which share this wide column, as in 10e). The optional
+// showWeapons flags let the editor hide a section without deleting the data; an
+// absent flag means shown.
 export const UnitWeapons = ({ unit }) => {
   const showRanged = unit.showWeapons?.rangedWeapons !== false;
   const showMelee = unit.showWeapons?.meleeWeapons !== false;
@@ -20,6 +22,7 @@ export const UnitWeapons = ({ unit }) => {
           weapons={unit.meleeWeapons}
         />
       )}
+      <UnitPrimarchAbilities unit={unit} />
     </div>
   );
 };
