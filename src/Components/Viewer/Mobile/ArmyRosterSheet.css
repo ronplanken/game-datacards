@@ -108,3 +108,9 @@
   font-size: 13px;
   color: var(--bs-text-secondary);
 }
+
+/* Over the battle size's DP budget (usually after lowering the battle size). */
+.army-roster-dp--over,
+.army-roster-hint--over {
+  color: var(--bs-danger, #dc3545);
+}

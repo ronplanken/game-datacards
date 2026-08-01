@@ -98,3 +98,24 @@ describe("ArmyRosterSheet detachments", () => {
     expect(screen.getByText("This faction has no detachments.")).toBeInTheDocument();
   });
 });
+
+describe("ArmyRosterSheet over-budget warning", () => {
+  it("stays quiet while the selection fits", () => {
+    renderSheet({ selectedDetachments: [shield] });
+    expect(screen.queryByText(/more than/)).not.toBeInTheDocument();
+    expect(screen.getByText("2 DP remaining.")).toBeInTheDocument();
+  });
+
+  it("warns when a lowered battle size can no longer pay for the selection", () => {
+    // Picked at Strike Force (3 DP), then switched to Incursion (2 DP).
+    renderSheet({ selectedDetachments: [lions, shield], battleSize: "incursion" });
+    expect(screen.getByText(/This selection costs 3 DP, more than Incursion allows/)).toBeInTheDocument();
+    expect(screen.getByText("3/2 DP")).toHaveClass("army-roster-dp--over");
+  });
+
+  it("does not warn about the legal Incursion solo 3DP detachment", () => {
+    renderSheet({ selectedDetachments: [talons], battleSize: "incursion" });
+    expect(screen.queryByText(/more than/)).not.toBeInTheDocument();
+    expect(screen.getByText("3/2 DP")).not.toHaveClass("army-roster-dp--over");
+  });
+});

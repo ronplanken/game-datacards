@@ -9,6 +9,7 @@ import {
   getDetachmentCost,
   getSpentDetachmentPoints,
   isDetachmentSelected,
+  isDetachmentSelectionOverBudget,
   toggleDetachment,
 } from "../../Helpers/listRoster.helpers";
 import { localize } from "../../Helpers/localization.helpers";
@@ -46,6 +47,9 @@ export const ArmyRosterModal = ({
   const size = getBattleSize(battleSize);
   const spent = getSpentDetachmentPoints(selectedDetachments);
   const remaining = size.dp - spent;
+  // Dropping to a smaller battle size can leave detachments the new budget
+  // cannot pay for. They are kept — the user chose them — but flagged.
+  const overBudget = isDetachmentSelectionOverBudget(selectedDetachments, size.key);
 
   const handleToggle = (detachment) => {
     onChangeDetachments(toggleDetachment(selectedDetachments, detachment, size.key));
@@ -85,7 +89,7 @@ export const ArmyRosterModal = ({
           <div>
             <div className="ucm-section-label">
               Detachments
-              <span className="arm-dp">
+              <span className={classNames("arm-dp", { "arm-dp--over": overBudget })}>
                 {spent}/{size.dp} DP
               </span>
             </div>
@@ -122,7 +126,14 @@ export const ArmyRosterModal = ({
                 })}
               </div>
             )}
-            {remaining > 0 && selectedDetachments.length > 0 && <p className="arm-hint">{remaining} DP remaining.</p>}
+            {overBudget && (
+              <p className="arm-hint arm-hint--over">
+                This selection costs {spent} DP, more than {size.label} allows. Remove a detachment.
+              </p>
+            )}
+            {!overBudget && remaining > 0 && selectedDetachments.length > 0 && (
+              <p className="arm-hint">{remaining} DP remaining.</p>
+            )}
           </div>
         </div>
 

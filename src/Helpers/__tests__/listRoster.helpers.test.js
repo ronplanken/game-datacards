@@ -11,6 +11,7 @@ import {
   getForceDispositions,
   getSpentDetachmentPoints,
   isDetachmentSelected,
+  isDetachmentSelectionOverBudget,
   isEnhancementInDetachments,
   toggleDetachment,
   getListFactionId,
@@ -313,5 +314,33 @@ describe("describeRepricedCards", () => {
     expect(summary).toContain("C 10 to 20 pts");
     expect(summary).not.toContain("D 10 to 20 pts");
     expect(summary).toContain("and 2 more");
+  });
+});
+
+describe("isDetachmentSelectionOverBudget", () => {
+  const twoDp = det("Lions of the Emperor", 2, "a");
+  const oneDp = det("Shield Host", 1, "b");
+  const threeDp = det("Talons of the Emperor", 3, "c");
+
+  it("is false for a selection that fits", () => {
+    expect(isDetachmentSelectionOverBudget([twoDp, oneDp], "strikeForce")).toBe(false);
+    expect(isDetachmentSelectionOverBudget([], "incursion")).toBe(false);
+  });
+
+  it("flags a selection left over from a bigger battle size", () => {
+    // Picked at Strike Force (3 DP), then dropped to Incursion (2 DP).
+    expect(isDetachmentSelectionOverBudget([twoDp, oneDp], "incursion")).toBe(true);
+  });
+
+  it("does not flag the legal Incursion solo over-budget detachment", () => {
+    // A lone 3DP detachment is allowed at Incursion even though 3 > 2.
+    expect(isDetachmentSelectionOverBudget([threeDp], "incursion")).toBe(false);
+    // Two detachments over budget is not covered by that exception.
+    expect(isDetachmentSelectionOverBudget([threeDp, oneDp], "incursion")).toBe(true);
+  });
+
+  it("does not extend the solo allowance to other battle sizes", () => {
+    const fourDp = det("Oversized", 4, "d");
+    expect(isDetachmentSelectionOverBudget([fourDp], "strikeForce")).toBe(true);
   });
 });

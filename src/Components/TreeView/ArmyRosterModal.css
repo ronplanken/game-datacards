@@ -67,3 +67,8 @@
   font-size: 12px;
   color: var(--text-muted);
 }
+
+.arm-dp--over,
+.arm-hint--over {
+  color: #dc3545;
+}

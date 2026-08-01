@@ -12,6 +12,7 @@ import {
   getEnhancementUsage,
   getListFactionId,
   getSpentDetachmentPoints,
+  isDetachmentSelectionOverBudget,
   repriceListCards,
 } from "../../Helpers/listRoster.helpers";
 import { useSync, CategorySyncIcon } from "../../Premium";
@@ -254,7 +255,14 @@ export function TreeCategory({
             }}>
             <SlidersHorizontal size={12} />
             <span>
-              {armyBattleSize.label} · {getSpentDetachmentPoints(armyDetachments)}/{armyBattleSize.dp} DP ·{" "}
+              {armyBattleSize.label} ·{" "}
+              <span
+                className={
+                  isDetachmentSelectionOverBudget(armyDetachments, category.battleSize) ? "tree-roster-over" : ""
+                }>
+                {getSpentDetachmentPoints(armyDetachments)}/{armyBattleSize.dp} DP
+              </span>{" "}
+              ·{" "}
               <span className={enhancementUsage.exceeded ? "tree-roster-over" : ""}>
                 {enhancementUsage.used}/{enhancementUsage.limit} enh
               </span>

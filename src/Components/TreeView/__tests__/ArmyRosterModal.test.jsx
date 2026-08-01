@@ -101,6 +101,19 @@ describe("ArmyRosterModal", () => {
     expect(screen.getByText("This faction has no detachments.")).toBeInTheDocument();
   });
 
+  it("warns when a lowered battle size can no longer pay for the selection", () => {
+    // Picked at Strike Force (3 DP), then switched to Incursion (2 DP).
+    renderModal({ selectedDetachments: [lions, shield], battleSize: "incursion" });
+    expect(screen.getByText(/This selection costs 3 DP, more than Incursion allows/)).toBeInTheDocument();
+    expect(screen.getByText("3/2 DP")).toHaveClass("arm-dp--over");
+  });
+
+  it("does not warn about the legal Incursion solo 3DP detachment", () => {
+    renderModal({ selectedDetachments: [talons], battleSize: "incursion" });
+    expect(screen.queryByText(/more than/)).not.toBeInTheDocument();
+    expect(screen.getByText("3/2 DP")).not.toHaveClass("arm-dp--over");
+  });
+
   it("closes on the Done button", () => {
     const onClose = vi.fn();
     renderModal({ onClose });

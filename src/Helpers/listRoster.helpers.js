@@ -86,6 +86,23 @@ export const toggleDetachment = (detachments, detachment, battleSizeKey) => {
 };
 
 /**
+ * Whether the current selection could not legally be assembled at this battle
+ * size — which happens when the battle size is lowered after the detachments
+ * were picked (Strike Force's 3 DP down to Incursion's 2).
+ *
+ * Not simply `spent > dp`: a lone detachment taken under the Incursion
+ * over-budget exception is legal even though it costs more than the budget.
+ * Nothing is dropped automatically, so this only drives the warning.
+ */
+export const isDetachmentSelectionOverBudget = (detachments, battleSizeKey) => {
+  const list = detachments || [];
+  if (list.length === 0) return false;
+  const battleSize = getBattleSize(battleSizeKey);
+  if (getSpentDetachmentPoints(list) <= battleSize.dp) return false;
+  return !(list.length === 1 && battleSize.allowsSoloOverBudgetDetachment);
+};
+
+/**
  * The force dispositions the army has access to — one per selected detachment.
  * @returns {Array<{ detachment: string, disposition: string }>} localized pairs
  */

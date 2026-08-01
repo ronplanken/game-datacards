@@ -43,6 +43,7 @@ import {
   getForceDispositions,
   getListFactionId,
   getSpentDetachmentPoints,
+  isDetachmentSelectionOverBudget,
 } from "../../../Helpers/listRoster.helpers";
 import { MobileModal } from "../Mobile/MobileModal";
 import { ArmyRosterSheet } from "../Mobile/ArmyRosterSheet";
@@ -408,6 +409,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const armyDetachments = currentList?.detachments || [];
   const armyBattleSize = getBattleSize(currentList?.battleSize);
   const spentDetachmentPoints = getSpentDetachmentPoints(armyDetachments);
+  // Lowering the battle size can leave detachments the new budget cannot pay
+  // for; nothing is dropped automatically, so flag it instead.
+  const detachmentsOverBudget = isDetachmentSelectionOverBudget(armyDetachments, currentList?.battleSize);
   const forceDispositions = getForceDispositions(armyDetachments, settings.language);
   const enhancementUsage = getEnhancementUsage(currentCards, currentList?.battleSize);
   // The list's own faction, so detachments can be picked before the first unit is
@@ -563,7 +567,11 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
               <button className="list-overview-roster" onClick={() => setIsRosterSheetVisible(true)} type="button">
                 <span className="list-overview-roster-main">
                   <span className="list-overview-roster-label">
-                    {armyBattleSize.label} · {spentDetachmentPoints}/{armyBattleSize.dp} DP ·{" "}
+                    {armyBattleSize.label} ·{" "}
+                    <span className={detachmentsOverBudget ? "list-overview-roster-over" : ""}>
+                      {spentDetachmentPoints}/{armyBattleSize.dp} DP
+                    </span>{" "}
+                    ·{" "}
                     <span className={enhancementUsage.exceeded ? "list-overview-roster-over" : ""}>
                       {enhancementUsage.used}/{enhancementUsage.limit} enhancements
                     </span>
