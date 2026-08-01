@@ -58,6 +58,45 @@ export const getCardBaseCost = (card) => {
   return 0;
 };
 
+/** Datasheet identity used to group duplicate selections. */
+const datasheetKey = (card) => `${card?.source ?? ""}::${card?.id ?? card?.name ?? ""}`;
+
+/** Whether two list entries are the same card (by uuid, else by reference). */
+const isSameCard = (a, b) => (a?.uuid != null && b?.uuid != null ? a.uuid === b.uuid : a === b);
+
+/**
+ * The points a single card contributes to its list: its base cost, its
+ * enhancement, and — for the copies beyond `additionalCost.afterSelections` —
+ * that datasheet's roster surcharge.
+ *
+ * The surcharge is an army-level rule, but it has to be attributed to a row so
+ * the displayed unit costs add up to the list total (e.g. two Knight Castellans
+ * at 400 with "+20 for each copy beyond 1" read as 400 and 420, totalling 820).
+ * Copies are ordered as they appear in the list, so the surcharge lands on the
+ * later ones.
+ *
+ * @param {Object} card
+ * @param {Array} cards - every card in the list (for duplicate detection)
+ * @returns {number}
+ */
+export const getCardDisplayCost = (card, cards) => {
+  let cost = getCardBaseCost(card);
+
+  const enhancement = Number(card?.selectedEnhancement?.cost);
+  if (Number.isFinite(enhancement)) cost += enhancement;
+
+  const additional = card?.additionalCost;
+  if (additional?.cost != null && Array.isArray(cards)) {
+    const key = datasheetKey(card);
+    const copies = cards.filter((entry) => entry?.additionalCost?.cost != null && datasheetKey(entry) === key);
+    const position = copies.findIndex((entry) => isSameCard(entry, card));
+    const afterSelections = Number(additional.afterSelections) || 0;
+    if (position >= afterSelections) cost += Number(additional.cost) || 0;
+  }
+
+  return cost;
+};
+
 /**
  * Total points for a set of cards, split into the base total (sum of unit sizes
  * + enhancements) and the roster surcharge from duplicated datasheets that carry
@@ -80,7 +119,7 @@ export const computeCategoryPoints = (cards) => {
 
     const additional = card?.additionalCost;
     if (additional && additional.cost != null) {
-      const key = `${card?.source ?? ""}::${card?.id ?? card?.name ?? ""}`;
+      const key = datasheetKey(card);
       const group = groups.get(key);
       if (group) {
         group.count += 1;

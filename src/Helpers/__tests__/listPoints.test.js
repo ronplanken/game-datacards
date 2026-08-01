@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
-  getCardBaseCost,
   computeCategoryPoints,
+  getCardBaseCost,
+  getCardDisplayCost,
   getCategoryPointsTotal,
   getSelectablePointsTiers,
   isSamePointsTier,
@@ -144,5 +145,63 @@ describe("computeCategoryPoints", () => {
 describe("getCategoryPointsTotal", () => {
   it("returns the grand total including surcharge", () => {
     expect(getCategoryPointsTotal([atrapos(), atrapos()])).toBe(830);
+  });
+});
+
+describe("getCardDisplayCost", () => {
+  const knight = (uuid) => ({
+    uuid,
+    name: "Knight Castellan",
+    id: "knight-castellan",
+    source: "40k-11e",
+    unitSize: { models: 1, cost: "400" },
+    additionalCost: { cost: "20", afterSelections: 1 },
+  });
+
+  it("shows the plain cost for the first copy", () => {
+    const cards = [knight("a")];
+    expect(getCardDisplayCost(cards[0], cards)).toBe(400);
+  });
+
+  it("adds the surcharge to copies beyond the included number", () => {
+    // Ron's case: two Knight Castellans, +20 for each copy beyond 1.
+    const cards = [knight("a"), knight("b")];
+    expect(getCardDisplayCost(cards[0], cards)).toBe(400);
+    expect(getCardDisplayCost(cards[1], cards)).toBe(420);
+  });
+
+  it("keeps the displayed rows summing to the list total", () => {
+    const cards = [knight("a"), knight("b"), knight("c")];
+    const rows = cards.map((card) => getCardDisplayCost(card, cards));
+    expect(rows).toEqual([400, 420, 420]);
+    expect(rows.reduce((sum, n) => sum + n, 0)).toBe(getCategoryPointsTotal(cards));
+  });
+
+  it("respects a higher afterSelections threshold", () => {
+    const castigator = (uuid) => ({
+      uuid,
+      id: "castigator",
+      source: "40k-11e",
+      unitSize: { models: 1, cost: "150" },
+      additionalCost: { cost: "10", afterSelections: 2 },
+    });
+    const cards = [castigator("a"), castigator("b"), castigator("c")];
+    expect(cards.map((c) => getCardDisplayCost(c, cards))).toEqual([150, 150, 160]);
+  });
+
+  it("includes the enhancement cost", () => {
+    const card = { uuid: "a", unitSize: { cost: "80" }, selectedEnhancement: { cost: "15" } };
+    expect(getCardDisplayCost(card, [card])).toBe(95);
+  });
+
+  it("does not surcharge different datasheets that each appear once", () => {
+    const cards = [knight("a"), { ...knight("b"), id: "knight-valiant", name: "Knight Valiant" }];
+    expect(cards.map((c) => getCardDisplayCost(c, cards))).toEqual([400, 400]);
+  });
+
+  it("is safe without a list and for cards with no surcharge", () => {
+    const plain = { uuid: "a", unitSize: { cost: "100" } };
+    expect(getCardDisplayCost(plain, undefined)).toBe(100);
+    expect(getCardDisplayCost(knight("a"), undefined)).toBe(400);
   });
 });

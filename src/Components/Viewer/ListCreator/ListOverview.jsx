@@ -25,7 +25,7 @@ import { useAuth } from "../../../Premium";
 import { useCategorySharing } from "../../../Hooks/useCategorySharing";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
-import { computeCategoryPoints } from "../../../Helpers/listPoints.helpers";
+import { computeCategoryPoints, getCardDisplayCost } from "../../../Helpers/listPoints.helpers";
 import {
   categorize40kUnits,
   categorizeAoSUnits,
@@ -139,9 +139,9 @@ const ListHeader = ({
 // Single list item component (local lists - with delete)
 const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS, allCards = [] }) => {
   const isUnconfigured = !item.unitSize;
-  const totalCost = isAoS
-    ? Number(item.unitSize?.cost) || 0
-    : (Number(item.unitSize?.cost) || 0) + (Number(item.selectedEnhancement?.cost) || 0);
+  // 40K rows include the enhancement and this copy's share of the datasheet
+  // surcharge, so the rows add up to the list total.
+  const totalCost = isAoS ? Number(item.unitSize?.cost) || 0 : getCardDisplayCost(item, allCards);
 
   // Leader/support attachment indicators (11e): the squad this unit is attached
   // to, and any leaders attached to this squad. Support units must be attached,

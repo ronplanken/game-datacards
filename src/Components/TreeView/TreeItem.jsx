@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
+import { getCardDisplayCost } from "../../Helpers/listPoints.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { Datacard } from "../../Icons/Datacard";
 import { Datacard10e } from "../../Icons/Datacard10e";
@@ -225,7 +226,7 @@ export function TreeItem({
                   e.stopPropagation();
                   setModalVisible(true);
                 }}>
-                {Number(card?.unitSize?.cost) + (Number(card.selectedEnhancement?.cost) || 0)}
+                {getCardDisplayCost(card, category?.cards)}
               </button>
             )}
 
