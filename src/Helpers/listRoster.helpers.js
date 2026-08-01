@@ -9,6 +9,7 @@
 // "Select Detachments" (25.04).
 
 import { localize } from "./localization.helpers";
+import { isUpgradeEnhancement } from "./listCategories.helpers";
 
 /**
  * Battle sizes for 11th edition. `points` is the army points total, `dp` the
@@ -132,7 +133,7 @@ export const getEnhancementUsage = (cards, battleSizeKey) => {
   for (const card of cards || []) {
     const enhancement = card?.selectedEnhancement;
     if (!enhancement) continue;
-    if (enhancement.equipableByNonCharacter) {
+    if (isUpgradeEnhancement(enhancement)) {
       if (countedUpgrades.has(enhancement.name)) continue;
       countedUpgrades.add(enhancement.name);
     }
