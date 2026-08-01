@@ -64,6 +64,12 @@
   animation: bsBackdropIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* A sheet opened from inside a MobileModal (z-index 1000/1001) has to clear that
+   modal, otherwise it slides up behind it. See BottomSheet's `elevated` prop. */
+.bottom-sheet-backdrop--elevated {
+  z-index: 1100;
+}
+
 @keyframes bsBackdropIn {
   to {
     opacity: 1;
@@ -95,6 +101,11 @@
   overflow: hidden;
   max-width: 600px;
   margin: 0 auto;
+}
+
+/* Must come after `.bottom-sheet` — same specificity, so source order decides. */
+.bottom-sheet--elevated {
+  z-index: 1101;
 }
 
 /* Desktop adjustments */

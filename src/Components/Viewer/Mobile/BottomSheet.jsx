@@ -2,7 +2,18 @@ import { useEffect, useRef } from "react";
 import { useSwipeable } from "react-swipeable";
 import "./BottomSheet.css";
 
-export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, maxHeight = "80vh", dark = false }) => {
+// `elevated` lifts the sheet above the MobileModal layer. Use it when the sheet
+// is opened from inside a modal, otherwise it renders behind that modal.
+export const BottomSheet = ({
+  isOpen,
+  onClose,
+  title,
+  headerRight,
+  children,
+  maxHeight = "80vh",
+  dark = false,
+  elevated = false,
+}) => {
   const contentRef = useRef(null);
 
   // Handle escape key
@@ -52,10 +63,13 @@ export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, max
   return (
     <>
       {/* Backdrop */}
-      <div className="bottom-sheet-backdrop" onClick={onClose} />
+      <div className={`bottom-sheet-backdrop ${elevated ? "bottom-sheet-backdrop--elevated" : ""}`} onClick={onClose} />
 
       {/* Sheet */}
-      <div className={`bottom-sheet ${dark ? "bottom-sheet--dark" : ""}`} style={{ maxHeight }} {...swipeHandlers}>
+      <div
+        className={`bottom-sheet ${dark ? "bottom-sheet--dark" : ""} ${elevated ? "bottom-sheet--elevated" : ""}`}
+        style={{ maxHeight }}
+        {...swipeHandlers}>
         {/* Drag handle */}
         <div className="bottom-sheet-handle-container">
           <div className="bottom-sheet-handle" />

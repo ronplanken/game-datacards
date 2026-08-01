@@ -177,10 +177,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
           {/* Detachment Section */}
           {showEnhancements && detachments?.length > 1 && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Detachment</h4>
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
                 <span>{selectedDetachment || "Select detachment"}</span>
-                <ChevronRight size={18} />
+                <ChevronRight size={16} />
               </button>
             </div>
           )}
@@ -229,6 +228,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
         detachments={detachments}
         selected={selectedDetachment}
         onSelect={handleDetachmentSelect}
+        elevated
       />
     </>
   );
