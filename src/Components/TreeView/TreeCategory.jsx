@@ -43,6 +43,7 @@ export function TreeCategory({
     updateCategory,
     addSubCategory,
     getSubCategories,
+    markCategoryPending,
   } = useCardStorage();
   const { deleteFromCloud } = useSync();
   const { trackEvent } = useUmami();
@@ -69,8 +70,12 @@ export function TreeCategory({
   const armyBattleSize = getBattleSize(category.battleSize);
   const enhancementUsage = getEnhancementUsage(category.cards, category.battleSize);
 
+  // updateCategory is the one storage mutator that does not flag the category
+  // itself, so a synced list needs the explicit markCategoryPending — same as
+  // the mobile roster path.
   const handleChangeBattleSize = (battleSize) => {
     updateCategory({ ...category, battleSize: battleSize || undefined }, category.uuid);
+    markCategoryPending(category.uuid);
   };
 
   // Detachments can change what units cost, so the list is repriced in the same
@@ -81,6 +86,7 @@ export function TreeCategory({
 
     const { cards, changes } = repriceListCards(category.cards, getArmyContext(next, listFaction));
     updateCategory({ ...next, cards }, category.uuid);
+    markCategoryPending(category.uuid);
 
     const summary = describeRepricedCards(changes);
     if (summary) message.info(summary);
