@@ -36,11 +36,7 @@ describe("Desktop WhatsNewWizard v3.11.0 config", () => {
     expect(flagged[0]).toBe(VERSION_CONFIG.steps[VERSION_CONFIG.steps.length - 1]);
   });
 
-  it("walks through the edition, lists and customisation", () => {
-    expect(VERSION_CONFIG.steps.map((s) => s.key)).toEqual([
-      "3.11.0-11th-edition",
-      "3.11.0-lists",
-      "3.11.0-make-it-yours",
-    ]);
+  it("has a single edition step", () => {
+    expect(VERSION_CONFIG.steps.map((s) => s.key)).toEqual(["3.11.0-11th-edition"]);
   });
 });

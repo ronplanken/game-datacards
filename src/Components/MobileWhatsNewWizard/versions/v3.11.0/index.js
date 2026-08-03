@@ -1,6 +1,5 @@
-import { Crosshair, ListChecks } from "lucide-react";
+import { Crosshair } from "lucide-react";
 import { Step11thEdition } from "./Step11thEdition";
-import { StepLists } from "./StepLists";
 
 export const MOBILE_VERSION_CONFIG = {
   version: "3.11.0",
@@ -11,12 +10,6 @@ export const MOBILE_VERSION_CONFIG = {
       title: "11th Edition",
       icon: Crosshair,
       component: Step11thEdition,
-    },
-    {
-      key: "3.11.0-lists",
-      title: "Army Lists",
-      icon: ListChecks,
-      component: StepLists,
       isThankYou: true,
     },
   ],
