@@ -139,36 +139,75 @@ export const getCardBaseCost = (card) => {
   return 0;
 };
 
+/** A wargear group's identity: its instruction plus the options it offers. */
+const wargearGroupKey = (instruction, options) =>
+  `${localize(instruction, "en")}::${options.map((option) => `${localize(option.name, "en")}@${option.cost}`).join("|")}`;
+
+/**
+ * Every wargear choice a card offers, free ones included, ready to show on the
+ * card back and in the editor.
+ *
+ * The 11e data repeats an identical option group once per model in the unit (a
+ * Terminator Assault Squad lists the same thunder hammer swap twice), which
+ * reads as noise on a card, so identical groups — same instruction, same
+ * options at the same prices — are collapsed into one.
+ *
+ * Groups that offer nothing are dropped; a bare instruction has nothing to
+ * choose from.
+ *
+ * @param {Object} card
+ * @returns {Array<{ instruction: string|Object, options: Array<{ name: string|Object, cost: number }> }>}
+ *   `instruction` and `name` keep their stored (possibly language-keyed) shape
+ *   so callers can localise them; `cost` is normalised to a number (0 when the
+ *   data has none).
+ */
+export const getWargearOptionGroups = (card) => {
+  const groups = Array.isArray(card?.wargearOptions) ? card.wargearOptions : [];
+  const seen = new Set();
+  const result = [];
+
+  for (const group of groups) {
+    const options = (Array.isArray(group?.options) ? group.options : []).map((option) => {
+      const cost = Number(option?.cost);
+      return { name: option?.name, cost: Number.isFinite(cost) ? cost : 0 };
+    });
+    if (options.length === 0) continue;
+
+    // Matched in English, the one language every entry is guaranteed to have.
+    const key = wargearGroupKey(group?.instruction, options);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push({ instruction: group?.instruction, options });
+  }
+
+  return result;
+};
+
 /**
  * The wargear options a card charges points for, ready to offer in the list
- * builder. Free options (cost "0", the overwhelming majority) are dropped as
+ * builder. Free options (cost 0, the overwhelming majority) are dropped as
  * noise — they change the model's loadout, not its price.
  *
- * The 11e data repeats an identical option group once per model in the unit
- * (a Terminator Assault Squad lists the same thunder hammer swap twice), so
- * options are deduplicated by name + cost. That collapses those literal
- * duplicates and, incidentally, the same paid item offered under two different
- * instructions — for pricing purposes they are one choice with a quantity.
+ * On top of the group-level deduplication of getWargearOptionGroups, options
+ * are deduplicated by name + cost. That also collapses the same paid item
+ * offered under two different instructions — for pricing purposes they are one
+ * choice with a quantity.
  *
  * @param {Object} card
  * @returns {Array<{ name: string|Object, cost: number }>} `name` keeps its
  *   stored (possibly language-keyed) shape so callers can localise it.
  */
 export const getPaidWargearOptions = (card) => {
-  const groups = Array.isArray(card?.wargearOptions) ? card.wargearOptions : [];
   const seen = new Set();
   const paid = [];
 
-  for (const group of groups) {
-    const options = Array.isArray(group?.options) ? group.options : [];
-    for (const option of options) {
-      const cost = Number(option?.cost);
-      if (!Number.isFinite(cost) || cost <= 0) continue;
-      // Matched in English, the one language every entry is guaranteed to have.
-      const key = `${localize(option?.name, "en")}::${cost}`;
+  for (const group of getWargearOptionGroups(card)) {
+    for (const option of group.options) {
+      if (option.cost <= 0) continue;
+      const key = `${localize(option.name, "en")}::${option.cost}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      paid.push({ name: option?.name, cost });
+      paid.push({ name: option.name, cost: option.cost });
     }
   }
 

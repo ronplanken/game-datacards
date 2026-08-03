@@ -9,6 +9,7 @@ import {
   getPaidWargearOptions,
   getPointsTierRestrictionLabel,
   getSelectablePointsTiers,
+  getWargearOptionGroups,
   getWargearQuantity,
   getWargearQuantityMax,
   isSamePointsTier,
@@ -210,6 +211,55 @@ describe("getCardDisplayCost", () => {
     const plain = { uuid: "a", unitSize: { cost: "100" } };
     expect(getCardDisplayCost(plain, undefined)).toBe(100);
     expect(getCardDisplayCost(knight("a"), undefined)).toBe(400);
+  });
+});
+
+describe("getWargearOptionGroups", () => {
+  const group = {
+    instruction: { en: "Any number of models can each have their power fist replaced." },
+    options: [
+      { name: { en: "Thunder hammer" }, cost: "5" },
+      { name: { en: "Lightning claw" }, cost: "0" },
+    ],
+  };
+
+  it("keeps free options as well as paid ones, with numeric costs", () => {
+    expect(getWargearOptionGroups({ wargearOptions: [group] })).toEqual([
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: 5 },
+          { name: { en: "Lightning claw" }, cost: 0 },
+        ],
+      },
+    ]);
+  });
+
+  it("collapses the identical groups the 11e data repeats per model", () => {
+    expect(getWargearOptionGroups({ wargearOptions: [group, { ...group }] })).toHaveLength(1);
+  });
+
+  it("keeps groups that differ in their instruction or in their prices", () => {
+    const other = { ...group, instruction: { en: "One model can be equipped with:" } };
+    const dearer = { ...group, options: [{ name: { en: "Thunder hammer" }, cost: "10" }] };
+    expect(getWargearOptionGroups({ wargearOptions: [group, other, dearer] })).toHaveLength(3);
+  });
+
+  it("keeps the language-keyed shape of instructions and names", () => {
+    const localized = {
+      wargearOptions: [
+        { instruction: { en: "Replace:", de: "Ersetze:" }, options: [{ name: { en: "Axe", de: "Axt" } }] },
+      ],
+    };
+    const [only] = getWargearOptionGroups(localized);
+    expect(only.instruction).toEqual({ en: "Replace:", de: "Ersetze:" });
+    expect(only.options[0]).toEqual({ name: { en: "Axe", de: "Axt" }, cost: 0 });
+  });
+
+  it("drops groups that offer nothing, and is safe on cards without wargear", () => {
+    expect(getWargearOptionGroups({ wargearOptions: [{ instruction: { en: "Nothing to pick" } }] })).toEqual([]);
+    expect(getWargearOptionGroups({ source: "40k-10e" })).toEqual([]);
+    expect(getWargearOptionGroups(undefined)).toEqual([]);
   });
 });
 
