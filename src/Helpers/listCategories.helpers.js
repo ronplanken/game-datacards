@@ -1,5 +1,5 @@
 import { capitalizeSentence } from "./external.helpers";
-import { getCardBaseCost } from "./listPoints.helpers";
+import { getCardBaseCost, getCardWargearCost } from "./listPoints.helpers";
 import { localize } from "./localization.helpers";
 
 // ===========================================
@@ -239,7 +239,8 @@ export const format40kListText = (sortedCards, sections) => {
     if (cards.length === 0) return;
     listText += `\n\n${clipboardLabel}`;
     sortCards(cards).forEach((val) => {
-      const totalCost = getCardBaseCost(val) + (Number(val.selectedEnhancement?.cost) || 0) || "?";
+      const totalCost =
+        getCardBaseCost(val) + (Number(val.selectedEnhancement?.cost) || 0) + getCardWargearCost(val) || "?";
       listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${totalCost} pts)`;
       if (val.isWarlord) {
         listText += `\n   • Warlord`;
@@ -247,6 +248,10 @@ export const format40kListText = (sortedCards, sections) => {
       if (val.selectedEnhancement) {
         listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${val.selectedEnhancement?.cost} pts)`;
       }
+      (val.selectedWargear || []).forEach((entry) => {
+        const quantity = Number(entry?.quantity) > 1 ? `${entry.quantity}x ` : "";
+        listText += `\n   • Wargear: ${quantity}${localize(entry?.name)} (+${getCardWargearCost({ selectedWargear: [entry] })} pts)`;
+      });
     });
   };
 

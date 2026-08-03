@@ -25,6 +25,7 @@ import { useAuth } from "../../../Premium";
 import { useCategorySharing } from "../../../Hooks/useCategorySharing";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
+import { localize } from "../../../Helpers/localization.helpers";
 import { computeCategoryPoints, getCardDisplayCost } from "../../../Helpers/listPoints.helpers";
 import {
   categorize40kUnits,
@@ -163,6 +164,13 @@ const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS, allCards = [] }) 
         </div>
         {!isAoS && item.selectedEnhancement && (
           <div className="list-overview-item-enhancement">{capitalizeSentence(item.selectedEnhancement.name)}</div>
+        )}
+        {!isAoS && item.selectedWargear?.length > 0 && (
+          <div className="list-overview-item-enhancement">
+            {item.selectedWargear
+              .map((entry) => `${entry?.quantity > 1 ? `${entry.quantity}x ` : ""}${localize(entry?.name)}`)
+              .join(", ")}
+          </div>
         )}
         {attachedSquadName && <div className="list-overview-item-attachment">Attached to {attachedSquadName}</div>}
         {hostedLeaders.length > 0 && (

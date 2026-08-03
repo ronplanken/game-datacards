@@ -1,14 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
-import { X, Crown, ChevronDown } from "lucide-react";
+import { X, Crown, ChevronDown, Minus, Plus } from "lucide-react";
 import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
 import {
   filterPointsTiersForArmy,
+  getPaidWargearOptions,
   getPointsTierRestrictionLabel,
   getSelectablePointsTiers,
+  getWargearQuantity,
+  getWargearQuantityMax,
   isSamePointsTier,
+  setWargearQuantity,
 } from "../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
@@ -45,6 +49,9 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     [category?.detachments, category?.cards, listFaction?.name],
   );
   const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
+  // Only the wargear this datasheet actually charges for; free swaps are noise
+  // here. Empty for every non-11e card, which hides the section entirely.
+  const paidWargear = useMemo(() => getPaidWargearOptions(card), [card]);
 
   const [selectedUnitSize, setSelectedUnitSize] = useState(undefined);
   const [isWarlord, setIsWarlord] = useState(false);
@@ -52,6 +59,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   const [selectedDetachment, setSelectedDetachment] = useState(undefined);
   const [detachmentOpen, setDetachmentOpen] = useState(false);
   const [selectedAttachment, setSelectedAttachment] = useState(undefined);
+  const [selectedWargear, setSelectedWargear] = useState([]);
 
   // Reset the card's own selections when the modal opens for a (different) card.
   // Keyed on the card's uuid rather than the object so an unrelated re-render
@@ -61,6 +69,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
       setIsWarlord(card?.isWarlord || false);
       setSelectedEnhancement(card?.selectedEnhancement);
       setSelectedAttachment(card?.attachedTo);
+      setSelectedWargear(Array.isArray(card?.selectedWargear) ? card.selectedWargear : []);
       setDetachmentOpen(false);
 
       if (card.unitSize) {
@@ -153,8 +162,18 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     });
   };
 
+  const changeWargearQuantity = (option, quantity) =>
+    setSelectedWargear((current) => setWargearQuantity(current, option, quantity));
+
   const handleSubmit = () => {
-    onSave({ ...card, unitSize: selectedUnitSize, selectedEnhancement, isWarlord, attachedTo: selectedAttachment });
+    onSave({
+      ...card,
+      unitSize: selectedUnitSize,
+      selectedEnhancement,
+      isWarlord,
+      attachedTo: selectedAttachment,
+      selectedWargear,
+    });
   };
 
   // Regular enhancements are once per army; Upgrades may be taken up to three
@@ -279,6 +298,49 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
                       <div className="ucm-enhancement-text">
                         <span className="ucm-enhancement-name">{enhancement.name}</span>
                         <span className="ucm-enhancement-cost">{enhancement.cost} pts</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Wargear that costs points (11e) */}
+          {paidWargear.length > 0 && (
+            <div>
+              <div className="ucm-section-label">Wargear</div>
+              <div className="ucm-enhancement-list">
+                {paidWargear.map((option) => {
+                  const name = localize(option.name, settings.language);
+                  const quantity = getWargearQuantity(selectedWargear, option);
+                  const max = getWargearQuantityMax(selectedUnitSize);
+                  return (
+                    <div
+                      key={`${localize(option.name)}-${option.cost}`}
+                      className={classNames("ucm-wargear-option", { selected: quantity > 0 })}>
+                      <div className="ucm-wargear-text">
+                        <span className="ucm-enhancement-name">{name}</span>
+                        <span className="ucm-enhancement-cost">+{option.cost} pts each</span>
+                      </div>
+                      <div className="ucm-wargear-stepper">
+                        <button
+                          className="ucm-wargear-step"
+                          type="button"
+                          aria-label={`Remove one ${name}`}
+                          disabled={quantity <= 0}
+                          onClick={() => changeWargearQuantity(option, quantity - 1)}>
+                          <Minus size={14} />
+                        </button>
+                        <span className="ucm-wargear-quantity">{quantity}</span>
+                        <button
+                          className="ucm-wargear-step"
+                          type="button"
+                          aria-label={`Add one ${name}`}
+                          disabled={quantity >= max}
+                          onClick={() => changeWargearQuantity(option, quantity + 1)}>
+                          <Plus size={14} />
+                        </button>
                       </div>
                     </div>
                   );

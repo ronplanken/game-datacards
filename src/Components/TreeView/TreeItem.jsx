@@ -64,6 +64,7 @@ export function TreeItem({
       name: `${card.name} Copy`,
       unitSize: undefined,
       selectedEnhancement: undefined,
+      selectedWargear: undefined,
       isWarlord: undefined,
       isCustom: true,
       uuid: uuidv4(),
