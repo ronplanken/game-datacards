@@ -7,6 +7,7 @@
  */
 
 import { WARHAMMER_40K_10E_KEYWORD_GLOSSARY } from "./keywordGlossaryDefaults";
+import { WARHAMMER_40K_11E_KEYWORD_GLOSSARY } from "./keywordGlossary11eDefaults";
 
 // Valid base types for card type definitions
 export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
@@ -27,7 +28,12 @@ export const VALID_GLOSSARY_SCOPES = ["weapons", "abilities", "unit-keywords", "
 export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
 
 // Valid base systems
-export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "starcraft-tmg", "blank"];
+export const VALID_BASE_SYSTEMS = ["40k-10e", "40k-11e", "aos", "starcraft-tmg", "blank"];
+
+// Both Warhammer 40K editions share the fixed 40K card structure (locked stat
+// lines, weapon tables, ability sections) and the same editor behaviour; the
+// editions differ in the seeded keyword glossary, not in schema capabilities.
+export const is40kBaseSystem = (baseSystem) => baseSystem === "40k-10e" || baseSystem === "40k-11e";
 
 // Valid ability formats
 export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
@@ -81,7 +87,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  */
 
 /**
- * @typedef {"40k-10e" | "aos" | "blank"} BaseSystem
+ * @typedef {"40k-10e" | "40k-11e" | "aos" | "starcraft-tmg" | "blank"} BaseSystem
  */
 
 /**
@@ -515,11 +521,13 @@ export const getPresetStepDefaults = (baseSystem, baseType) => {
   const preset =
     baseSystem === "40k-10e"
       ? create40kPreset()
-      : baseSystem === "aos"
-        ? createAoSPreset()
-        : baseSystem === "starcraft-tmg"
-          ? createStarcraftTmgPreset()
-          : null;
+      : baseSystem === "40k-11e"
+        ? create40k11ePreset()
+        : baseSystem === "aos"
+          ? createAoSPreset()
+          : baseSystem === "starcraft-tmg"
+            ? createStarcraftTmgPreset()
+            : null;
   if (!preset) return null;
 
   const cardType = preset.cardTypes.find((ct) => ct.baseType === baseType);
@@ -1103,7 +1111,10 @@ export const filterGlossaryByScope = (glossary, scope) => {
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const PARAMETER_VALUE_PATTERN = String.raw`(?:(?:\d+D\d+|D\d+)(?:\+\d+)?|\d+\+|\d+(?:\+\d+)?)`;
+// A trailing parameter value: a dice expression, a save "N+", or a plain
+// integer, each optionally followed by an inch mark so distance-valued keywords
+// such as Scouts 6" / Fall Back and Shoot 6" resolve like their bare names do.
+const PARAMETER_VALUE_PATTERN = String.raw`(?:(?:(?:\d+D\d+|D\d+)(?:\+\d+)?|\d+\+|\d+(?:\+\d+)?)"?)`;
 const PARAMETER_WORD_PATTERN = String.raw`[A-Za-z][A-Za-z-]*`;
 const PARAMETER_TOKEN_PATTERN = String.raw`(?:${PARAMETER_WORD_PATTERN}\s+){0,3}${PARAMETER_VALUE_PATTERN}`;
 const TEXT_ONLY_PARAMETER_PATTERN = String.raw`${PARAMETER_WORD_PATTERN}(?:\s+${PARAMETER_WORD_PATTERN}){0,2}`;
@@ -1286,18 +1297,24 @@ export const resolveKeywordStyle = (entry) => {
 
 /**
  * Returns the default seeded keyword glossary for the given base system.
- * Currently only `40k-10e` ships a seed; every other system starts empty.
+ * The 40K editions ship seeds (10e: weapon-keyword explanations; 11e: the full
+ * weapon + core-ability glossary from the edition's keywords.json); every other
+ * system starts empty.
  * @param {BaseSystem} baseSystem
  * @returns {object[]} A fresh copy of the seed array (safe to mutate)
  */
 export const getDefaultKeywordGlossary = (baseSystem) => {
-  if (baseSystem === "40k-10e") {
-    return WARHAMMER_40K_10E_KEYWORD_GLOSSARY.map((entry) => ({
-      ...entry,
-      appliesTo: [...entry.appliesTo],
-    }));
-  }
-  return [];
+  const seed =
+    baseSystem === "40k-10e"
+      ? WARHAMMER_40K_10E_KEYWORD_GLOSSARY
+      : baseSystem === "40k-11e"
+        ? WARHAMMER_40K_11E_KEYWORD_GLOSSARY
+        : null;
+  if (!seed) return [];
+  return seed.map((entry) => ({
+    ...entry,
+    appliesTo: [...entry.appliesTo],
+  }));
 };
 
 // --- Migration Helpers ---
@@ -1820,4 +1837,20 @@ export const create40kPreset = () => ({
       },
     },
   ],
+});
+
+// --- Preset: Warhammer 40K 11th Edition ---
+
+/**
+ * Creates a schema preset matching the Warhammer 40K 11th Edition format.
+ * 11th edition cards share the 10th edition card structure (stat line, weapon
+ * tables, ability sections), so the preset reuses the 40K card types and only
+ * differs in its base system and the seeded keyword glossary, which carries the
+ * full 11e weapon + core-ability glossary with parameterized matching.
+ * @returns {DatasourceSchema}
+ */
+export const create40k11ePreset = () => ({
+  ...create40kPreset(),
+  baseSystem: "40k-11e",
+  keywordGlossary: getDefaultKeywordGlossary("40k-11e"),
 });

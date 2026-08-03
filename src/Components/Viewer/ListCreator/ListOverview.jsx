@@ -25,6 +25,7 @@ import { useAuth } from "../../../Premium";
 import { useCategorySharing } from "../../../Hooks/useCategorySharing";
 import { useMobileList } from "../useMobileList";
 import { capitalizeSentence } from "../../../Helpers/external.helpers";
+import { computeCategoryPoints, getCardDisplayCost } from "../../../Helpers/listPoints.helpers";
 import {
   categorize40kUnits,
   categorizeAoSUnits,
@@ -34,7 +35,18 @@ import {
   SECTIONS_40K,
   SECTIONS_AOS,
 } from "../../../Helpers/listCategories.helpers";
+import { getAttachedLeaders, getAttachedSquad, requiresAttachment } from "../../../Helpers/listAttachments.helpers";
+import {
+  describeRepricedCards,
+  getBattleSize,
+  getEnhancementUsage,
+  getForceDispositions,
+  getListFactionId,
+  getSpentDetachmentPoints,
+  isDetachmentSelectionOverBudget,
+} from "../../../Helpers/listRoster.helpers";
 import { MobileModal } from "../Mobile/MobileModal";
+import { ArmyRosterSheet } from "../Mobile/ArmyRosterSheet";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter, MobileListForgeImporter } from "../MobileImporter";
@@ -128,11 +140,19 @@ const ListHeader = ({
 };
 
 // Single list item component (local lists - with delete)
-const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS }) => {
+const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS, allCards = [] }) => {
   const isUnconfigured = !item.unitSize;
-  const totalCost = isAoS
-    ? Number(item.unitSize?.cost) || 0
-    : (Number(item.unitSize?.cost) || 0) + (Number(item.selectedEnhancement?.cost) || 0);
+  // 40K rows include the enhancement and this copy's share of the datasheet
+  // surcharge, so the rows add up to the list total.
+  const totalCost = isAoS ? Number(item.unitSize?.cost) || 0 : getCardDisplayCost(item, allCards);
+
+  // Leader/support attachment indicators (11e): the squad this unit is attached
+  // to, and any leaders attached to this squad. Support units must be attached,
+  // so flag them when they are not. Uses the shared (tested) helpers so stale
+  // `attachedTo` handling stays in one place.
+  const attachedSquadName = getAttachedSquad(item, allCards)?.name || null;
+  const hostedLeaders = getAttachedLeaders(item, allCards).map((c) => c.name);
+  const needsAttachment = requiresAttachment(item) && !attachedSquadName;
 
   return (
     <div className="list-overview-item">
@@ -143,6 +163,15 @@ const ListItem = ({ item, onNavigate, onDelete, onEdit, isAoS }) => {
         </div>
         {!isAoS && item.selectedEnhancement && (
           <div className="list-overview-item-enhancement">{capitalizeSentence(item.selectedEnhancement.name)}</div>
+        )}
+        {attachedSquadName && <div className="list-overview-item-attachment">Attached to {attachedSquadName}</div>}
+        {hostedLeaders.length > 0 && (
+          <div className="list-overview-item-attachment">Led by {hostedLeaders.join(", ")}</div>
+        )}
+        {needsAttachment && (
+          <div className="list-overview-item-attachment list-overview-item-attachment--warning">
+            Must be attached to a unit
+          </div>
         )}
       </div>
       {isUnconfigured ? (
@@ -175,7 +204,7 @@ const CloudListItem = ({ card, onNavigate }) => (
 );
 
 // Section renderer component
-const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, isAoS }) => {
+const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, isAoS, allCards }) => {
   if (!cards || cards.length === 0) return null;
 
   return (
@@ -189,6 +218,7 @@ const ListSection = ({ sectionKey, label, cards, onNavigate, onDelete, onEdit, i
           onDelete={onDelete}
           onEdit={onEdit}
           isAoS={isAoS}
+          allCards={allCards}
         />
       ))}
     </>
@@ -323,8 +353,9 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
 };
 
 export const ListOverview = ({ isVisible, setIsVisible }) => {
-  const { lists, selectedList, removeDatacard, selectedCloudCategoryId } = useMobileList();
-  const { dataSource } = useDataSourceStorage();
+  const { lists, selectedList, removeDatacard, selectedCloudCategoryId, setListDetachments, setListBattleSize } =
+    useMobileList();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const { categories: cloudCategories } = useCloudCategories();
   const navigate = useNavigate();
@@ -334,6 +365,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const [activeImporter, setActiveImporter] = useState(null); // null | "gw" | "listforge"
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
+  const [isRosterSheetVisible, setIsRosterSheetVisible] = useState(false);
   const [urlPayload, setUrlPayload] = useState(null);
 
   // Consume ListForge URL payload from router state
@@ -364,11 +396,37 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   // Detect game system
   const isAoS = settings.selectedDataSource === "aos";
   const is40k = settings.selectedDataSource === "40k-10e";
+  // 11e armies buy several detachments with Detachment Points, so they get the
+  // army roster sheet (battle size + detachments + force dispositions).
+  const is11e = settings.selectedDataSource === "40k-11e";
 
   // Get current list data (local or cloud)
   const currentList = lists[selectedList];
   const currentListName = isCloudCategory ? selectedCloudCategory.name : currentList?.name || "List";
   const currentCards = isCloudCategory ? selectedCloudCategory.cards : currentList?.cards || [];
+
+  // Army-wide roster settings (11e): battle size, detachments and their DP.
+  const armyDetachments = currentList?.detachments || [];
+  const armyBattleSize = getBattleSize(currentList?.battleSize);
+  const spentDetachmentPoints = getSpentDetachmentPoints(armyDetachments);
+  // Lowering the battle size can leave detachments the new budget cannot pay
+  // for; nothing is dropped automatically, so flag it instead.
+  const detachmentsOverBudget = isDetachmentSelectionOverBudget(armyDetachments, currentList?.battleSize);
+  const forceDispositions = getForceDispositions(armyDetachments, settings.language);
+  const enhancementUsage = getEnhancementUsage(currentCards, currentList?.battleSize);
+  // The list's own faction, so detachments can be picked before the first unit is
+  // added. Lists made before the faction was recorded fall back to their cards,
+  // and a list with neither to the faction being browsed.
+  const listFactionId = getListFactionId(currentList) || selectedFaction?.id;
+  const listFaction = dataSource.data.find((faction) => faction.id === listFactionId);
+  const availableDetachments = listFaction?.detachments || [];
+
+  // Detachments can change what units cost, so the list is repriced in the same
+  // write and the affected units are named in a toast.
+  const handleChangeDetachments = (detachments) => {
+    const summary = describeRepricedCards(setListDetachments(detachments, { faction: listFaction }));
+    if (summary) message.info(summary);
+  };
 
   // Get appropriate sections and categorization (only for local lists)
   const sections = isAoS ? SECTIONS_AOS : SECTIONS_40K;
@@ -429,16 +487,12 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
     }
   };
 
-  // Calculate total points (only for local lists)
-  const totalPoints = isCloudCategory
-    ? 0
-    : currentCards.reduce((acc, val) => {
-        let cost = acc + Number(val.unitSize?.cost || 0);
-        if (!isAoS && val.selectedEnhancement) {
-          cost = cost + Number(val.selectedEnhancement.cost || 0);
-        }
-        return cost;
-      }, 0);
+  // Calculate total points (only for local lists). Includes 11e cards (defaulting
+  // to their cheapest tier) and the per-datasheet roster surcharge; see
+  // listPoints.helpers.
+  const { surcharge: pointsSurcharge, total: totalPoints } = isCloudCategory
+    ? { surcharge: 0, total: 0 }
+    : computeCategoryPoints(currentCards);
 
   const isEmpty = currentCards.length === 0;
 
@@ -507,6 +561,35 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
               />
             </div>
 
+            {/* Army roster (11e): shown before any unit is added, so the army's
+                detachments are chosen up front. */}
+            {is11e && !isCloudCategory && (
+              <button className="list-overview-roster" onClick={() => setIsRosterSheetVisible(true)} type="button">
+                <span className="list-overview-roster-main">
+                  <span className="list-overview-roster-label">
+                    {armyBattleSize.label} ·{" "}
+                    <span className={detachmentsOverBudget ? "list-overview-roster-over" : ""}>
+                      {spentDetachmentPoints}/{armyBattleSize.dp} DP
+                    </span>{" "}
+                    ·{" "}
+                    <span className={enhancementUsage.exceeded ? "list-overview-roster-over" : ""}>
+                      {enhancementUsage.used}/{enhancementUsage.limit} enhancements
+                    </span>
+                  </span>
+                  <span className="list-overview-roster-detachments">
+                    {armyDetachments.length === 0
+                      ? "Select detachments"
+                      : forceDispositions
+                          .map((entry) =>
+                            entry.disposition ? `${entry.detachment} (${entry.disposition})` : entry.detachment,
+                          )
+                          .join(", ")}
+                  </span>
+                </span>
+                <ChevronRight size={18} />
+              </button>
+            )}
+
             {isEmpty ? (
               <div className="list-overview-empty">
                 {isCloudCategory ? <Cloud size={48} /> : <List size={48} />}
@@ -537,12 +620,25 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                     onDelete={removeDatacard}
                     onEdit={setEditingCard}
                     isAoS={isAoS}
+                    allCards={currentCards}
                   />
                 ))}
 
+                {pointsSurcharge > 0 && (
+                  <div className="list-overview-surcharge">
+                    <span className="list-overview-total-label">Additional selections</span>
+                    <span className="list-overview-surcharge-value">+{pointsSurcharge} pts</span>
+                  </div>
+                )}
                 <div className="list-overview-total">
                   <span className="list-overview-total-label">Total</span>
-                  <span className="list-overview-total-value">{totalPoints} pts</span>
+                  <span
+                    className={`list-overview-total-value ${
+                      is11e && totalPoints > armyBattleSize.points ? "list-overview-total-value--over" : ""
+                    }`}>
+                    {totalPoints}
+                    {is11e ? ` / ${armyBattleSize.points}` : ""} pts
+                  </span>
                 </div>
               </div>
             )}
@@ -551,6 +647,17 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
       </MobileModal>
 
       <ListSelector isVisible={isListSelectorVisible} setIsVisible={setIsListSelectorVisible} />
+
+      <ArmyRosterSheet
+        isOpen={isRosterSheetVisible}
+        onClose={() => setIsRosterSheetVisible(false)}
+        detachments={availableDetachments}
+        selectedDetachments={armyDetachments}
+        battleSize={currentList?.battleSize}
+        onChangeBattleSize={setListBattleSize}
+        onChangeDetachments={handleChangeDetachments}
+        language={settings.language}
+      />
 
       <MobileGwImporter isOpen={activeImporter === "gw"} onClose={() => setActiveImporter(null)} />
 

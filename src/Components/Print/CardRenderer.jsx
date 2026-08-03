@@ -1,6 +1,7 @@
 import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { CustomCardDisplay } from "../Custom/CustomCardDisplay";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -25,6 +26,17 @@ export const CardRenderer = ({ card, cardScaling, printSide, backgrounds, forceP
     case "40k-10e":
       return (
         <Warhammer40K10eCardDisplay
+          card={card}
+          type="print"
+          cardScaling={cardScaling}
+          side={effectiveSide}
+          backgrounds={backgrounds}
+        />
+      );
+
+    case "40k-11e":
+      return (
+        <Warhammer40K11eCardDisplay
           card={card}
           type="print"
           cardScaling={cardScaling}

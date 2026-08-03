@@ -5,6 +5,24 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
+import {
+  filterPointsTiersForArmy,
+  getPointsTierRestrictionLabel,
+  getSelectablePointsTiers,
+  isSamePointsTier,
+} from "../../../Helpers/listPoints.helpers";
+import {
+  cardHasKeyword,
+  isEnhancementAtCopyLimit,
+  isUnitEnhancementEligible,
+} from "../../../Helpers/listCategories.helpers";
+import {
+  getArmyFactionKeywords,
+  getDetachmentNamesEn,
+  getListFactionId,
+  isEnhancementInDetachments,
+} from "../../../Helpers/listRoster.helpers";
+import { localize } from "../../../Helpers/localization.helpers";
 import { useUmami } from "../../../Hooks/useUmami";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
@@ -28,21 +46,37 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
+  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+  // 11e armies hold several detachments; enhancements from any of them are available.
+  const armyDetachments = lists[selectedList]?.detachments || [];
+  // The faction the list is built for, which its faction-scoped prices key off.
+  const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(lists[selectedList]));
+  // Restricted prices (a detachment or a faction keyword) only apply to armies
+  // that match them. The card being added counts towards the army's keywords too,
+  // so the first card of a chapter-specific list already prices correctly.
+  const army = useMemo(
+    () => ({
+      detachments: getDetachmentNamesEn(armyDetachments),
+      factions: getArmyFactionKeywords([...(lists[selectedList]?.cards || []), activeCard], listFaction?.name),
+    }),
+    [armyDetachments, lists, selectedList, activeCard, listFaction?.name],
+  );
+  const availableTiers = useMemo(
+    () => filterPointsTiersForArmy(getSelectablePointsTiers(activeCard), army),
+    [activeCard, army],
+  );
+
   const [selectedEnhancement, setSelectedEnhancement] = useState();
   const [isWarlord, setIsWarlord] = useState(false);
   const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
-  const [selectedUnitSize, setSelectedUnitSize] = useState(() => {
-    if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
-      return activeCard.points[0];
-    }
-    return undefined;
-  });
+  const [selectedUnitSize, setSelectedUnitSize] = useState(() =>
+    availableTiers.length === 1 ? availableTiers[0] : undefined,
+  );
 
-  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   const warlordAlreadyAdded = lists[selectedList]?.cards?.find((card) => card.isWarlord);
   const epicHeroAlreadyAdded = lists[selectedList]?.cards?.find((card) => {
-    return activeCard?.keywords?.includes("Epic Hero") && activeCard.id === card.id;
+    return cardHasKeyword(activeCard, "Epic Hero") && activeCard.id === card.id;
   });
 
   const [selectedDetachment, setSelectedDetachment] = useState();
@@ -67,13 +101,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     if (isVisible) {
       setSelectedEnhancement(undefined);
       setIsWarlord(false);
-      if (Array.isArray(activeCard?.points) && activeCard.points.length === 1) {
-        setSelectedUnitSize(activeCard.points[0]);
-      } else {
-        setSelectedUnitSize(undefined);
-      }
+      setSelectedUnitSize(availableTiers.length === 1 ? availableTiers[0] : undefined);
     }
-  }, [isVisible, activeCard]);
+  }, [isVisible, activeCard, availableTiers]);
 
   const handleClose = () => setIsVisible(false);
 
@@ -101,39 +131,28 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     }
   };
 
-  // Check if enhancement is already used
-  const isEnhancementDisabled = (enhancement) => {
-    return lists[selectedList]?.cards?.some((card) => card?.selectedEnhancement?.name === enhancement?.name);
-  };
+  // Regular enhancements are once per army; Upgrades may be taken up to three
+  // times (core rules, Select Enhancements).
+  const isEnhancementDisabled = (enhancement) => isEnhancementAtCopyLimit(enhancement, lists[selectedList]?.cards);
 
-  // Filter enhancements for current detachment and card
+  const isCharacter = cardHasKeyword(activeCard, "Character");
+  const isEpicHero = cardHasKeyword(activeCard, "Epic Hero");
+  const showWarlord = isCharacter || isEpicHero;
+
+  // Filter enhancements for current detachment and card. Characters take regular
+  // enhancements; non-character units can take enhancements flagged as upgrades
+  // (equipableByNonCharacter). Epic Heroes take neither.
   const getAvailableEnhancements = () => {
-    if (!cardFaction?.enhancements) return [];
+    if (!cardFaction?.enhancements || isEpicHero) return [];
 
     return cardFaction.enhancements
-      .filter(
-        (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-      )
-      .filter((enhancement) => {
-        let isActiveEnhancement = false;
-        enhancement.keywords?.forEach((keyword) => {
-          if (activeCard?.keywords?.includes(keyword)) isActiveEnhancement = true;
-          if (activeCard?.factions?.includes(keyword)) isActiveEnhancement = true;
-        });
-        enhancement?.excludes?.forEach((exclude) => {
-          if (activeCard?.keywords?.includes(exclude)) isActiveEnhancement = false;
-          if (activeCard?.factions?.includes(exclude)) isActiveEnhancement = false;
-        });
-        return isActiveEnhancement;
-      });
+      .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
+      .filter((enhancement) => isUnitEnhancementEligible(activeCard, enhancement));
   };
 
-  const isCharacter = activeCard?.keywords?.includes("Character");
-  const isEpicHero = activeCard?.keywords?.includes("Epic Hero");
-  const showWarlord = isCharacter || isEpicHero;
-  const showEnhancements = isCharacter && !isEpicHero;
-  const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
+  const availableEnhancements = getAvailableEnhancements();
+  const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
+  const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
 
   // Don't show for cards without array-based points (e.g., AoS warscrolls)
   if (!activeCard || !Array.isArray(activeCard?.points)) return null;
@@ -146,24 +165,28 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
           <div className="list-add-section">
             <h4 className="list-add-section-title">Unit Size</h4>
             <div className="list-add-options">
-              {activeCard?.points
-                ?.filter((p) => p.active)
-                .map((point) => (
+              {availableTiers.map((point) => {
+                const restrictionLabel = getPointsTierRestrictionLabel(point, settings.language);
+                return (
                   <button
-                    key={`${point.models}-${point.keyword || ""}`}
-                    className={`list-add-option ${
-                      selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword
-                        ? "selected"
-                        : ""
-                    }`}
+                    key={`${point.models}-${localize(point.keyword)}`}
+                    className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
                     onClick={() => setSelectedUnitSize(point)}>
                     <span className="option-label">
-                      {point.models} models{point.keyword ? ` (${point.keyword})` : ""}
+                      {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                      {restrictionLabel && <span className="option-sublabel">{restrictionLabel}</span>}
                     </span>
                     <span className="option-value">{point.cost} pts</span>
                   </button>
-                ))}
+                );
+              })}
             </div>
+            {activeCard?.additionalCost?.cost != null && (
+              <p className="list-add-additional-cost">
+                +{activeCard.additionalCost.cost} pts for each copy of this datasheet beyond{" "}
+                {activeCard.additionalCost.afterSelections} in your list.
+              </p>
+            )}
           </div>
 
           {/* Warlord Section */}
@@ -183,18 +206,17 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
           {/* Detachment Section */}
           {showEnhancements && detachments?.length > 1 && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Detachment</h4>
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
                 <span>{selectedDetachment || "Select detachment"}</span>
-                <ChevronRight size={18} />
+                <ChevronRight size={16} />
               </button>
             </div>
           )}
 
-          {/* Enhancements Section */}
+          {/* Enhancements / Upgrades Section */}
           {showEnhancements && availableEnhancements.length > 0 && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Enhancement</h4>
+              <h4 className="list-add-section-title">{enhancementLabel}</h4>
               <div className="list-add-options">
                 {availableEnhancements.map((enhancement) => {
                   const disabled = isEnhancementDisabled(enhancement);
@@ -235,6 +257,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
         detachments={detachments}
         selected={selectedDetachment}
         onSelect={handleDetachmentSelect}
+        elevated
       />
     </>
   );

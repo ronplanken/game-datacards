@@ -19,10 +19,10 @@ export const WIZARD_STEPS = [
 // `tier: "primary"` cards are featured prominently, `tier: "secondary"` render as compact buttons
 export const GAME_SYSTEMS = [
   {
-    id: "40k-10e",
+    id: "40k-11e",
     title: "Warhammer 40K",
-    subtitle: "10th Edition",
-    description: "Community-maintained datacards for 10th edition games",
+    subtitle: "11th Edition",
+    description: "Community-maintained datacards for 11th edition games",
     color: "#dc2626",
     tag: "Popular",
     tier: "primary",
@@ -44,6 +44,15 @@ export const GAME_SYSTEMS = [
     color: "#7c3aed",
     tag: "New",
     tier: "primary",
+  },
+  {
+    id: "40k-10e",
+    title: "Warhammer 40K",
+    subtitle: "10th Edition",
+    description: "Community-maintained datacards for 10th edition games",
+    color: "#dc2626",
+    tag: "Legacy",
+    tier: "secondary",
   },
   {
     id: "40k-10e-cp",
@@ -87,7 +96,7 @@ export const GAME_SYSTEMS = [
 export const FEATURE_HIGHLIGHTS = [
   {
     id: "systems",
-    title: "7 Game Systems",
+    title: "8 Game Systems",
     description: "40K, Age of Sigmar, Starcraft 2 TMG, and more",
     icon: "Gamepad2",
   },

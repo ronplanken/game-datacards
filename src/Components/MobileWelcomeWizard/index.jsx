@@ -43,7 +43,7 @@ const STEP_TITLES = {
 export const MobileWelcomeWizard = () => {
   const [isWizardVisible, setIsWizardVisible] = useState(false);
   const [step, setStep] = useState(STEPS.WELCOME);
-  const [selectedSystem, setSelectedSystem] = useState(null);
+  const [selectedSystem, setSelectedSystem] = useState("40k-11e");
   const [isExiting, setIsExiting] = useState(false);
   const [isStepTransitioning, setIsStepTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState("forward");

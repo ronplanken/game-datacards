@@ -38,7 +38,7 @@ export const MobileGameSystemSelector = ({
           {SELECTOR_SYSTEMS.map((system) => (
             <button
               key={system.id}
-              className={`gss-option ${system.cssClass}`}
+              className={`gss-option ${system.cssClass} ${system.legacy ? "gss-option--legacy" : ""}`}
               onClick={() => onSelect(system.id)}
               type="button">
               <div className="gss-option-marker" />

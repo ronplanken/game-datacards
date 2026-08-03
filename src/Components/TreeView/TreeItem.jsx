@@ -6,6 +6,7 @@ import classNames from "classnames";
 import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
+import { getCardDisplayCost } from "../../Helpers/listPoints.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { Datacard } from "../../Icons/Datacard";
 import { Datacard10e } from "../../Icons/Datacard10e";
@@ -137,7 +138,10 @@ export function TreeItem({
   };
 
   const isListItem =
-    category?.type === "list" && card?.source === "40k-10e" && card?.cardType === "DataCard" && !card?.unitSize;
+    category?.type === "list" &&
+    ["40k-10e", "40k-11e"].includes(card?.source) &&
+    card?.cardType === "DataCard" &&
+    !card?.unitSize;
 
   const getCardIcon = () => {
     switch (card.cardType) {
@@ -195,16 +199,18 @@ export function TreeItem({
             <span className="tree-item-name">{card.name}</span>
 
             <div className="tree-item-indicators">
-              {category?.type === "list" && card?.source === "40k-10e" && card?.selectedEnhancement && (
-                <Tooltip
-                  content={`${capitalizeSentence(card?.selectedEnhancement?.name)} (+${card?.selectedEnhancement?.cost}pts)`}
-                  placement="top">
-                  <span className="tree-item-indicator enhancement">
-                    <Flame size={12} />
-                  </span>
-                </Tooltip>
-              )}
-              {category?.type === "list" && card?.source === "40k-10e" && card?.isWarlord && (
+              {category?.type === "list" &&
+                ["40k-10e", "40k-11e"].includes(card?.source) &&
+                card?.selectedEnhancement && (
+                  <Tooltip
+                    content={`${capitalizeSentence(card?.selectedEnhancement?.name)} (+${card?.selectedEnhancement?.cost}pts)`}
+                    placement="top">
+                    <span className="tree-item-indicator enhancement">
+                      <Flame size={12} />
+                    </span>
+                  </Tooltip>
+                )}
+              {category?.type === "list" && ["40k-10e", "40k-11e"].includes(card?.source) && card?.isWarlord && (
                 <Tooltip content="Warlord - Army Commander" placement="top">
                   <span className="tree-item-indicator warlord">
                     <Crown size={12} fill="currentColor" />
@@ -213,14 +219,14 @@ export function TreeItem({
               )}
             </div>
 
-            {category?.type === "list" && card?.source === "40k-10e" && card?.unitSize?.cost && (
+            {category?.type === "list" && ["40k-10e", "40k-11e"].includes(card?.source) && card?.unitSize?.cost && (
               <button
                 className="tree-item-points"
                 onClick={(e) => {
                   e.stopPropagation();
                   setModalVisible(true);
                 }}>
-                {Number(card?.unitSize?.cost) + (Number(card.selectedEnhancement?.cost) || 0)}
+                {getCardDisplayCost(card, category?.cards)}
               </button>
             )}
 

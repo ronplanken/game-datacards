@@ -30,7 +30,7 @@ describe("customSchema.helpers - constants", () => {
   });
 
   it("defines valid base systems", () => {
-    expect(VALID_BASE_SYSTEMS).toEqual(["40k-10e", "aos", "starcraft-tmg", "blank"]);
+    expect(VALID_BASE_SYSTEMS).toEqual(["40k-10e", "40k-11e", "aos", "starcraft-tmg", "blank"]);
   });
 
   it("defines valid ability formats", () => {

@@ -10,11 +10,13 @@
 //   longMeta  - optional fuller subtitle, used by the welcome wizard
 //   cssClass  - per-system class consumed by selector CSS (gss-option-*)
 //   color     - hex used by the wizard for the accent bar / translucent fills
+//   legacy    - superseded system; listed last and rendered as a compact,
+//               de-emphasised card on the mobile selector
 export const PRIMARY_MOBILE_SYSTEMS = [
   {
-    id: "40k-10e",
+    id: "40k-11e",
     name: "Warhammer 40,000",
-    meta: "10th Edition",
+    meta: "11th Edition",
     cssClass: "gss-option-40k",
     color: "#8b2020",
   },
@@ -33,5 +35,14 @@ export const PRIMARY_MOBILE_SYSTEMS = [
     longMeta: "Tabletop Miniatures Game",
     cssClass: "gss-option-starcraft",
     color: "#7c3aed",
+  },
+  // Superseded by 11th edition — kept available, but last and compact.
+  {
+    id: "40k-10e",
+    name: "Warhammer 40,000",
+    meta: "10th Edition",
+    cssClass: "gss-option-40k",
+    color: "#8b2020",
+    legacy: true,
   },
 ];

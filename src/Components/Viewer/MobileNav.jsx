@@ -4,6 +4,7 @@ import { Button, Col, Row, Space } from "antd";
 import { message } from "../Toast/message";
 import { useState, useEffect } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
 import { useAuth, useSubscription, useSync, useCloudCategories, usePremiumFeatures, getAvatarUrl } from "../../Premium";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
@@ -96,16 +97,7 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
                     {selectedCloudCategory.cardCount} cards
                   </>
                 ) : (
-                  <>
-                    {(lists[selectedList]?.cards || []).reduce((acc, val) => {
-                      let cost = acc + Number(val.unitSize?.cost || 0);
-                      if (val.selectedEnhancement) {
-                        cost = cost + Number(val.selectedEnhancement.cost);
-                      }
-                      return cost;
-                    }, 0)}{" "}
-                    pts
-                  </>
+                  <>{getCategoryPointsTotal(lists[selectedList]?.cards)} pts</>
                 )}
               </span>
             </Button>

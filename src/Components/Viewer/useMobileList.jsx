@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { migrateListsToCategories } from "../../Helpers/listMigration.helpers";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
+import { getArmyContext, repriceListCards } from "../../Helpers/listRoster.helpers";
 
 const MobileListContext = React.createContext(undefined);
 
@@ -157,13 +159,25 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
-  const updateDatacard = (uuid, unitSize, enhancement, isWarlord) => {
+  /**
+   * Update a list card's configuration. `options.attachedTo` (when the key is
+   * present) also sets the leader/support attachment.
+   *
+   * Every field is written in a single updateCategory call on purpose:
+   * updateCategory replaces the whole category object, so chaining two of these
+   * mutators from one handler would make the second overwrite the first with a
+   * pre-update snapshot, silently dropping the first edit.
+   */
+  const updateDatacard = (uuid, unitSize, enhancement, isWarlord, options = {}) => {
     if (!uuid) return;
     const category = lists[selectedList];
     if (!category) return;
-    const updatedCards = category.cards.map((card) =>
-      card.uuid !== uuid ? card : { ...card, unitSize, selectedEnhancement: enhancement, isWarlord },
-    );
+    const updatedCards = category.cards.map((card) => {
+      if (card.uuid !== uuid) return card;
+      const next = { ...card, unitSize, selectedEnhancement: enhancement, isWarlord };
+      if ("attachedTo" in options) next.attachedTo = options.attachedTo || undefined;
+      return next;
+    });
     updateCategory({ ...category, cards: updatedCards }, category.uuid);
     markCategoryPending(category.uuid);
   };
@@ -180,13 +194,49 @@ export const MobileListProvider = (props) => {
     markCategoryPending(category.uuid);
   };
 
-  const createList = (name) => {
+  // Army-wide roster settings for the current list (stored on the category):
+  // 11e armies hold several detachments at once, bought with the battle size's
+  // Detachment Points budget.
+  //
+  // Changing them can change what the units cost — 11e prices some datasheets
+  // differently per detachment — so every card is re-resolved against the new
+  // army context in the same write. The changed rows are returned so the caller
+  // can tell the user why the points moved.
+  //
+  // `options.faction` is the faction the list belongs to; it seeds the army's
+  // faction keywords and is recorded on the list when it does not have one yet
+  // (older lists were created before the faction was tracked).
+  const setListDetachments = (detachments, options = {}) => {
+    const category = lists[selectedList];
+    if (!category) return [];
+
+    const next = { ...category, detachments: detachments?.length ? detachments : undefined };
+    if (!next.factionId && options.faction?.id) next.factionId = options.faction.id;
+
+    const { cards, changes } = repriceListCards(category.cards, getArmyContext(next, options.faction));
+    updateCategory({ ...next, cards }, category.uuid);
+    markCategoryPending(category.uuid);
+    return changes;
+  };
+
+  const setListBattleSize = (battleSize) => {
+    const category = lists[selectedList];
+    if (!category) return;
+    updateCategory({ ...category, battleSize: battleSize || undefined }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
+  // `options.factionId` records the faction the list is built for, so its
+  // detachments (and faction-scoped prices) are available before the first unit
+  // is added.
+  const createList = (name, options = {}) => {
     const listName = name?.trim() || "New List";
     importCategory({
       uuid: uuidv4(),
       name: listName,
       type: "list",
       dataSource,
+      factionId: options.factionId || undefined,
       cards: [],
     });
     // Select the newly created list (it will be appended at the end)
@@ -244,17 +294,7 @@ export const MobileListProvider = (props) => {
     return true;
   };
 
-  const getListPoints = (listIndex) => {
-    const list = lists[listIndex];
-    if (!list?.cards) return 0;
-    return list.cards.reduce((acc, val) => {
-      let cost = acc + Number(val.unitSize?.cost || 0);
-      if (val.selectedEnhancement) {
-        cost = cost + Number(val.selectedEnhancement.cost || 0);
-      }
-      return cost;
-    }, 0);
-  };
+  const getListPoints = (listIndex) => getCategoryPointsTotal(lists[listIndex]?.cards);
 
   const context = {
     lists,
@@ -264,6 +304,8 @@ export const MobileListProvider = (props) => {
     removeDatacard,
     updateDatacard,
     updateCardData,
+    setListDetachments,
+    setListBattleSize,
     createList,
     createListWithCards,
     renameList,

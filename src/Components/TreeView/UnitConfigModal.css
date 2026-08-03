@@ -166,6 +166,15 @@
   position: relative;
 }
 
+/* Note under the unit-size list for datasheets that carry an 11e roster
+   surcharge (additionalCost). */
+.ucm-additional-cost {
+  font-size: 11px;
+  color: var(--text-secondary, var(--text-primary));
+  opacity: 0.75;
+  margin: 8px 0 0;
+}
+
 .ucm-section-label::after {
   content: "";
   position: absolute;
@@ -275,6 +284,15 @@
   font-weight: 500;
   color: var(--text-primary);
   transition: color var(--transition-fast);
+}
+
+/* Why this price differs from the generic one: the detachment or faction
+   keyword it is restricted to. */
+.ucm-size-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
 }
 
 .ucm-size-cost {

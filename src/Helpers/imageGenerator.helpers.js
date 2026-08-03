@@ -21,3 +21,24 @@ export const assignBucketRef = (buckets, factionId, index, el) => {
   }
   buckets[factionId][index] = el;
 };
+
+// Editions the Image Generator can render. Both share the 40K card structure,
+// so the same faction-grouped export (datasheets front/back, stratagems by
+// detachment) works for either. Ordered newest-first for the edition picker.
+export const IMAGE_GENERATOR_EDITIONS = [
+  { id: "40k-11e", title: "40k 11th Edition" },
+  { id: "40k-10e", title: "40k 10th Edition" },
+];
+
+/**
+ * Pick the datasource the generator should start on: keep the user's current
+ * selection when it is a supported 40K edition, otherwise fall back to the
+ * default (10th edition) so the faction list and renderers always match.
+ *
+ * @param {string|undefined} selectedDataSource - settings.selectedDataSource
+ * @returns {string} a supported edition id
+ */
+export const resolveInitialEdition = (selectedDataSource) => {
+  const isSupported = IMAGE_GENERATOR_EDITIONS.some((e) => e.id === selectedDataSource);
+  return isSupported ? selectedDataSource : "40k-10e";
+};

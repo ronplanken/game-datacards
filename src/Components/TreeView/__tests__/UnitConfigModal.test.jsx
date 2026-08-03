@@ -231,6 +231,39 @@ describe("UnitConfigModal", () => {
     expect(screen.queryByText("This Epic Hero has already been added to this list")).not.toBeInTheDocument();
   });
 
+  it("highlights the saved 11e tier when reopening a configured card (storage round-trip)", () => {
+    const points = [
+      { models: "1", cost: "405", keyword: null, detachment: null },
+      { models: "2", cost: "425", keyword: { en: "Imperium" }, detachment: null },
+    ];
+    const card = {
+      ...baseCard,
+      source: "40k-11e",
+      points,
+      // Saved unitSize is a clone (different object references), as after localForage.
+      unitSize: JSON.parse(JSON.stringify(points[1])),
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    expect(screen.getByText("2 models (Imperium)").closest(".ucm-size-option")).toHaveClass("selected");
+    expect(screen.getByText("1 model").closest(".ucm-size-option")).not.toHaveClass("selected");
+  });
+
+  it("renders 11e size tiers (no active flags) with localised keywords and the surcharge note", () => {
+    const card = {
+      ...baseCard,
+      source: "40k-11e",
+      points: [
+        { models: "1", cost: "405", keyword: null, detachment: null },
+        { models: "2", cost: "425", keyword: { en: "Imperium" }, detachment: null },
+      ],
+      additionalCost: { cost: "20", afterSelections: 1 },
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    expect(screen.getByText("1 model")).toBeInTheDocument();
+    expect(screen.getByText("2 models (Imperium)")).toBeInTheDocument();
+    expect(screen.getByText(/\+20 pts for each copy of this datasheet beyond 1/)).toBeInTheDocument();
+  });
+
   it("disables enhancement already taken by another card in the category", () => {
     const card = {
       ...baseCard,
@@ -244,5 +277,100 @@ describe("UnitConfigModal", () => {
     render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
     const enhancement1 = screen.getByText("Enhancement 1").closest(".ucm-enhancement-option");
     expect(enhancement1).toHaveClass("disabled");
+  });
+});
+
+describe("UnitConfigModal 11e attachments", () => {
+  let modalRoot;
+
+  beforeEach(() => {
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(modalRoot);
+    vi.clearAllMocks();
+  });
+
+  const squad = { uuid: "squad-1", name: "Intercessor Squad", nameEn: "Intercessor Squad", keywords: [] };
+
+  const leaderCard = {
+    ...baseCard,
+    uuid: "leader-1",
+    name: "Captain",
+    nameEn: "Captain",
+    source: "40k-11e",
+    keywords: [{ en: "Character" }],
+    // Single size tier so it auto-selects and the submit button is enabled.
+    points: [{ models: 1, cost: 80 }],
+    attachesTo: [{ type: "leader", target: "Intercessor Squad", targetType: "datasheet" }],
+  };
+
+  const supportCard = {
+    ...leaderCard,
+    uuid: "sup-1",
+    name: "Lieutenant",
+    nameEn: "Lieutenant",
+    attachesTo: [{ type: "support", target: "Intercessor Squad", targetType: "datasheet" }],
+  };
+
+  const categoryWithSquad = { ...baseCategory, cards: [squad] };
+
+  it("offers eligible squads for a leader, plus a Not attached option", () => {
+    render(
+      <UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />,
+    );
+    expect(screen.getByText("Attach to unit")).toBeInTheDocument();
+    expect(screen.getByText("Not attached")).toBeInTheDocument();
+    expect(screen.getByText("Intercessor Squad")).toBeInTheDocument();
+  });
+
+  it("marks the attachment required for a Support unit and drops Not attached", () => {
+    render(
+      <UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />,
+    );
+    expect(screen.getByText("Attach to unit (required)")).toBeInTheDocument();
+    expect(screen.queryByText("Not attached")).not.toBeInTheDocument();
+    expect(screen.getByText("This Support unit must be attached to a unit.")).toBeInTheDocument();
+  });
+
+  it("saves the chosen attachment on the card", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByText("Intercessor Squad"));
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: "squad-1" }));
+  });
+
+  it("blocks saving a Support unit until it is attached", () => {
+    const onSave = vi.fn();
+    render(
+      <UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />,
+    );
+
+    // Unit size auto-selects (single tier), so the attachment is the only blocker.
+    const submit = screen.getByText("Set unit values");
+    expect(submit).toBeDisabled();
+    fireEvent.click(submit);
+    expect(onSave).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText("Intercessor Squad"));
+    expect(submit).not.toBeDisabled();
+    fireEvent.click(submit);
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: "squad-1" }));
+  });
+
+  it("does not block saving a leader that is left unattached", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: undefined }));
+  });
+
+  it("does not show the attach section for a unit with no attachesTo", () => {
+    render(<UnitConfigModal isOpen card={baseCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.queryByText("Attach to unit")).not.toBeInTheDocument();
   });
 });

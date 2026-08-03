@@ -64,6 +64,7 @@ const STYLE_CONTROLS = [
 
 const BASE_SYSTEM_DEFAULTS_LABELS = {
   "40k-10e": "Import 40K 10e defaults",
+  "40k-11e": "Import 40K 11e defaults",
 };
 
 const isValidDisplayMode = (value) => VALID_GLOSSARY_DISPLAY_MODES.includes(value);

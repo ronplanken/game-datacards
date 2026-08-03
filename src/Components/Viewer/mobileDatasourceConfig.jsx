@@ -1,5 +1,6 @@
 import React from "react";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
 import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
@@ -22,6 +23,21 @@ const MobileCustomFactionUnits = React.lazy(() =>
  * Each entry defines everything the mobile viewer needs to render a game system.
  */
 export const BUILTIN_CONFIGS = {
+  "40k-11e": {
+    label: "Warhammer 40K 11th Edition",
+    labelShort: "Warhammer 40,000",
+    labelMeta: "11th Edition",
+    cssClass: "data-40k-11e",
+    selectorCssClass: "gss-option-40k",
+    renderCard: (type, { onBack } = {}) => <Warhammer40K11eCardDisplay type={type} />,
+    FactionComponent: MobileFaction,
+    FactionUnitsComponent: MobileFactionUnits,
+    extraRouteViews: [],
+    SettingsSection: MobileSettings40k,
+    GameSystemSettingsScreen: null,
+    useScrollRevealHeader: false,
+    scrollRevealTargetSelector: null,
+  },
   "40k-10e": {
     label: "Warhammer 40K 10th Edition",
     labelShort: "Warhammer 40,000",

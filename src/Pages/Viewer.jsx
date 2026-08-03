@@ -17,6 +17,7 @@ import { useAutoFitScale } from "../Hooks/useAutoFitScale";
 import { useViewerNavigation } from "../Hooks/useViewerNavigation";
 import { useMobileSharing } from "../Hooks/useMobileSharing";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Components/Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
@@ -58,7 +59,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
     if (!settings.selectedDataSource) {
       updateSettings({
         ...settings,
-        selectedDataSource: "40k-10e",
+        selectedDataSource: "40k-11e",
       });
     }
   }, []);
@@ -93,6 +94,8 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
     switch (activeCard.source) {
       case "40k-10e":
         return <Warhammer40K10eCardDisplay side={side} />;
+      case "40k-11e":
+        return <Warhammer40K11eCardDisplay side={side} />;
       case "40k":
         return <Warhammer40KCardDisplay />;
       case "basic":
@@ -180,6 +183,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
           className={`${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
           <Row style={{ overflow: "hidden" }}>
             {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
+            {activeCard?.source === "40k-11e" && <Warhammer40K11eCardDisplay side={side} />}
             {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
@@ -203,6 +207,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
           className={`${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
           <Row style={{ overflow: "hidden" }}>
             {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} type="viewer" />}
+            {activeCard?.source === "40k-11e" && <Warhammer40K11eCardDisplay side={side} type="viewer" />}
             {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}

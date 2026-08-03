@@ -5,6 +5,7 @@ import { message } from "../Components/Toast/message";
 // ============================================
 
 export const GAME_SYSTEMS = [
+  { value: "40k-11e", label: "Warhammer 40k (11th Edition)" },
   { value: "40k-10e", label: "Warhammer 40k (10th Edition)" },
   { value: "40k", label: "Warhammer 40k (Legacy)" },
   { value: "aos", label: "Age of Sigmar" },

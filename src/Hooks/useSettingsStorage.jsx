@@ -6,14 +6,19 @@ const SettingsStorageContext = React.createContext(undefined);
 const defaultSettings = {
   version: import.meta.env.VITE_VERSION,
   selectedDataSource: undefined,
+  // Preferred language for multi-language datasource content (e.g. 40k-11e).
+  // Only affects card content; the app UI stays in English. Falls back to "en".
+  language: "en",
   // Per-datasource selected faction index
   selectedFactionIndex: {
     "40k-10e": 0,
+    "40k-11e": 0,
     aos: 0,
   },
   // Tracks whether user has explicitly selected a faction (per datasource)
   hasFactionSelected: {
     "40k-10e": false,
+    "40k-11e": false,
     aos: false,
   },
   ignoredSubFactions: [],
@@ -66,6 +71,7 @@ export const SettingsStorageProviderComponent = (props) => {
         if (typeof merged.selectedFactionIndex === "number") {
           merged.selectedFactionIndex = {
             "40k-10e": merged.selectedFactionIndex,
+            "40k-11e": 0,
             aos: 0,
           };
         }

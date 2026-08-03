@@ -17,6 +17,7 @@ import {
 import { Section, CompactInput, CollapsibleFieldItem } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
+import { is40kBaseSystem } from "../../../Helpers/customSchema.helpers";
 
 const FIELD_TYPES = [
   { value: "string", label: "Text" },
@@ -155,7 +156,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                   ))}
                 </select>
               </div>
-              {baseSystem !== "40k-10e" && (
+              {!is40kBaseSystem(baseSystem) && (
                 <div className="props-compact-input">
                   <Tooltip content="Position" placement="top">
                     <span className="props-compact-label">
@@ -177,7 +178,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
             </div>
             {(field.type === "enum" ||
               field.type === "boolean" ||
-              (field.type === "string" && baseSystem !== "40k-10e")) && (
+              (field.type === "string" && !is40kBaseSystem(baseSystem))) && (
               <div className="props-tree-children">
                 {field.type === "enum" && (
                   <div className="props-tree-child">
@@ -231,7 +232,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                     </div>
                   </>
                 )}
-                {field.type === "string" && baseSystem !== "40k-10e" && (
+                {field.type === "string" && !is40kBaseSystem(baseSystem) && (
                   <div className="props-tree-child">
                     <div className="props-compact-input">
                       <Tooltip content="Width" placement="top">
@@ -254,7 +255,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                 )}
               </div>
             )}
-            {baseSystem !== "40k-10e" && (
+            {!is40kBaseSystem(baseSystem) && (
               <div className="props-compact-input">
                 <Tooltip content="Badge size" placement="top">
                   <span className="props-compact-label">
@@ -271,7 +272,7 @@ export const StatsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                 </select>
               </div>
             )}
-            {baseSystem !== "40k-10e" && (
+            {!is40kBaseSystem(baseSystem) && (
               <CompactInput
                 label={<IconPalette size={10} stroke={1.5} />}
                 ariaLabel="Badge color"

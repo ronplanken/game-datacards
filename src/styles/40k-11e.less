@@ -1,0 +1,45 @@
+// 11th edition specific styling.
+//
+// The shared card layout / look & feel is provided by the `.data-40k-11e`
+// selectors added to 40k-10e.less (the renderset reuses the 10e card visual
+// language). This file only adds the 11e-specific rich-text bits: keyword
+// highlighting and bullet lists produced by the new <k>/<ul>/■ markup.
+.data-40k-11e {
+  // Keywords highlighted via <k>...</k> in ability / stratagem / enhancement
+  // / rule text. Rendered as a dedicated class so it does not clash with the
+  // weapon-row `.keyword` layout styling.
+  .gdc-keyword {
+    font-weight: 700;
+  }
+
+  // Bullet lists inside descriptions and rule parts (11e authors use <ul><li>).
+  .description,
+  .text,
+  .rule-part-text,
+  .rule-part-accordion {
+    ul {
+      margin: 2px 0;
+      padding-left: 1.1em;
+    }
+    li {
+      margin: 0;
+    }
+  }
+
+  // Weapon keywords / core abilities that resolve to a keyword-glossary entry
+  // get a subtle dotted underline (and a help cursor) to signal the hover
+  // tooltip carrying the localised rule text.
+  .keyword-button--has-info,
+  .keyword-info {
+    text-decoration: underline dotted;
+    text-underline-offset: 2px;
+    cursor: help;
+  }
+
+  // The per-datasheet roster surcharge (additionalCost) shown next to the size
+  // tiers in the points display — slightly muted so the real tiers read first.
+  .points--additional {
+    opacity: 0.8;
+    font-style: italic;
+  }
+}

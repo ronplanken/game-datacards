@@ -4,6 +4,30 @@ import { message } from "../../Toast/message";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
+import {
+  filterPointsTiersForArmy,
+  getPointsTierRestrictionLabel,
+  getSelectablePointsTiers,
+  isSamePointsTier,
+} from "../../../Helpers/listPoints.helpers";
+import {
+  cardHasKeyword,
+  isEnhancementAtCopyLimit,
+  isUnitEnhancementEligible,
+} from "../../../Helpers/listCategories.helpers";
+import {
+  getAttachmentType,
+  getEligibleSquads,
+  isAttachableLeader,
+  requiresAttachment,
+} from "../../../Helpers/listAttachments.helpers";
+import {
+  getArmyFactionKeywords,
+  getDetachmentNamesEn,
+  getListFactionId,
+  isEnhancementInDetachments,
+} from "../../../Helpers/listRoster.helpers";
+import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
 import { MobileModal } from "../Mobile/MobileModal";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
@@ -28,9 +52,24 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const [isWarlord, setIsWarlord] = useState(false);
   const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
   const [selectedUnitSize, setSelectedUnitSize] = useState();
+  const [selectedAttachment, setSelectedAttachment] = useState();
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+  // 11e armies hold several detachments; enhancements from any of them are available.
+  const armyDetachments = lists[selectedList]?.detachments || [];
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
+  // The faction the list is built for, which its faction-scoped prices key off.
+  const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(lists[selectedList]));
+  // Restricted prices (a detachment or a faction keyword) only apply to armies
+  // that match them.
+  const army = useMemo(
+    () => ({
+      detachments: getDetachmentNamesEn(armyDetachments),
+      factions: getArmyFactionKeywords(lists[selectedList]?.cards, listFaction?.name),
+    }),
+    [armyDetachments, lists, selectedList, listFaction?.name],
+  );
+  const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
 
   // Check warlord — exclude current card's uuid
   const warlordAlreadyAdded = lists[selectedList]?.cards?.find((c) => c.isWarlord && c.uuid !== card?.uuid);
@@ -57,6 +96,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
       setSelectedUnitSize(card.unitSize || undefined);
       setSelectedEnhancement(card.selectedEnhancement || undefined);
       setIsWarlord(card.isWarlord || false);
+      setSelectedAttachment(card.attachedTo || undefined);
     }
   }, [isVisible, card]);
 
@@ -72,7 +112,15 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   };
 
   const handleSave = () => {
-    updateDatacard(card.uuid, selectedUnitSize, selectedEnhancement, isWarlord);
+    // Single write: passing the attachment through updateDatacard avoids a second
+    // whole-category update that would overwrite this save's other changes.
+    updateDatacard(
+      card.uuid,
+      selectedUnitSize,
+      selectedEnhancement,
+      isWarlord,
+      isAttachableLeader(card) ? { attachedTo: selectedAttachment } : {},
+    );
     handleClose();
     message.success(`${card.name} updated`);
   };
@@ -85,41 +133,35 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
     }
   };
 
-  // Check if enhancement is already used — exclude current card's uuid
-  const isEnhancementDisabled = (enhancement) => {
-    return lists[selectedList]?.cards?.some(
-      (c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid,
-    );
-  };
+  // Regular enhancements are once per army; Upgrades may be taken up to three
+  // times (core rules, Select Enhancements). This card's own copy is excluded.
+  const isEnhancementDisabled = (enhancement) =>
+    isEnhancementAtCopyLimit(enhancement, lists[selectedList]?.cards, card?.uuid);
 
-  // Filter enhancements for current detachment and card
+  const isCharacter = cardHasKeyword(card, "Character");
+  const isEpicHero = cardHasKeyword(card, "Epic Hero");
+  const showWarlord = isCharacter || isEpicHero;
+
+  // Characters take regular enhancements; non-character units can take upgrades
+  // (equipableByNonCharacter). Epic Heroes take neither.
   const getAvailableEnhancements = () => {
-    if (!cardFaction?.enhancements) return [];
+    if (!cardFaction?.enhancements || isEpicHero) return [];
 
     return cardFaction.enhancements
-      .filter(
-        (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-      )
-      .filter((enhancement) => {
-        let isActiveEnhancement = false;
-        enhancement.keywords?.forEach((keyword) => {
-          if (card?.keywords?.includes(keyword)) isActiveEnhancement = true;
-          if (card?.factions?.includes(keyword)) isActiveEnhancement = true;
-        });
-        enhancement?.excludes?.forEach((exclude) => {
-          if (card?.keywords?.includes(exclude)) isActiveEnhancement = false;
-          if (card?.factions?.includes(exclude)) isActiveEnhancement = false;
-        });
-        return isActiveEnhancement;
-      });
+      .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
+      .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
   };
 
-  const isCharacter = card?.keywords?.includes("Character");
-  const isEpicHero = card?.keywords?.includes("Epic Hero");
-  const showWarlord = isCharacter || isEpicHero;
-  const showEnhancements = isCharacter && !isEpicHero;
-  const availableEnhancements = showEnhancements ? getAvailableEnhancements() : [];
+  const availableEnhancements = getAvailableEnhancements();
+  const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
+  const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
+  // Leaders/support units can attach to eligible squads already in this list.
+  // Support units MUST be attached; leaders may stand alone.
+  const attachmentType = getAttachmentType(card);
+  const mustAttach = requiresAttachment(card);
+  const eligibleSquads = isAttachableLeader(card)
+    ? getEligibleSquads(card, lists[selectedList]?.cards || [], { detachment: selectedDetachment })
+    : [];
 
   if (!card || !Array.isArray(card?.points)) return null;
 
@@ -131,24 +173,28 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           <div className="list-add-section">
             <h4 className="list-add-section-title">Unit Size</h4>
             <div className="list-add-options">
-              {card?.points
-                ?.filter((p) => p.active)
-                .map((point) => (
+              {availableTiers.map((point) => {
+                const restrictionLabel = getPointsTierRestrictionLabel(point, settings.language);
+                return (
                   <button
-                    key={`${point.models}-${point.keyword || ""}`}
-                    className={`list-add-option ${
-                      selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword
-                        ? "selected"
-                        : ""
-                    }`}
+                    key={`${point.models}-${localize(point.keyword)}`}
+                    className={`list-add-option ${isSamePointsTier(selectedUnitSize, point) ? "selected" : ""}`}
                     onClick={() => setSelectedUnitSize(point)}>
                     <span className="option-label">
-                      {point.models} models{point.keyword ? ` (${point.keyword})` : ""}
+                      {point.models} models{point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                      {restrictionLabel && <span className="option-sublabel">{restrictionLabel}</span>}
                     </span>
                     <span className="option-value">{point.cost} pts</span>
                   </button>
-                ))}
+                );
+              })}
             </div>
+            {card?.additionalCost?.cost != null && (
+              <p className="list-add-additional-cost">
+                +{card.additionalCost.cost} pts for each copy of this datasheet beyond{" "}
+                {card.additionalCost.afterSelections} in your list.
+              </p>
+            )}
           </div>
 
           {/* Warlord Section */}
@@ -168,18 +214,17 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           {/* Detachment Section */}
           {showEnhancements && detachments?.length > 1 && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Detachment</h4>
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
                 <span>{selectedDetachment || "Select detachment"}</span>
-                <ChevronRight size={18} />
+                <ChevronRight size={16} />
               </button>
             </div>
           )}
 
-          {/* Enhancements Section */}
+          {/* Enhancements / Upgrades Section */}
           {showEnhancements && availableEnhancements.length > 0 && (
             <div className="list-add-section">
-              <h4 className="list-add-section-title">Enhancement</h4>
+              <h4 className="list-add-section-title">{enhancementLabel}</h4>
               <div className="list-add-options">
                 {availableEnhancements.map((enhancement) => {
                   const disabled = isEnhancementDisabled(enhancement);
@@ -200,6 +245,39 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
             </div>
           )}
 
+          {/* Attach-to Section (leaders / support units) */}
+          {isAttachableLeader(card) && (
+            <div className="list-add-section">
+              <h4 className="list-add-section-title">
+                {attachmentType === "support" ? "Attach to unit (required)" : "Attach to unit"}
+              </h4>
+              {mustAttach && !selectedAttachment && (
+                <p className="list-add-warning">
+                  {eligibleSquads.length > 0
+                    ? "This Support unit must be attached to a unit."
+                    : "This Support unit must be attached, but no eligible unit is in your list yet."}
+                </p>
+              )}
+              <div className="list-add-options">
+                {!mustAttach && (
+                  <button
+                    className={`list-add-option ${!selectedAttachment ? "selected" : ""}`}
+                    onClick={() => setSelectedAttachment(undefined)}>
+                    <span className="option-label">Not attached</span>
+                  </button>
+                )}
+                {eligibleSquads.map((squad) => (
+                  <button
+                    key={squad.uuid}
+                    className={`list-add-option ${selectedAttachment === squad.uuid ? "selected" : ""}`}
+                    onClick={() => setSelectedAttachment(squad.uuid)}>
+                    <span className="option-label">{squad.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Save Button */}
           <button className="list-add-submit" onClick={handleSave} disabled={!selectedUnitSize}>
             Save Changes
@@ -214,6 +292,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
         detachments={detachments}
         selected={selectedDetachment}
         onSelect={handleDetachmentSelect}
+        elevated
       />
     </>
   );

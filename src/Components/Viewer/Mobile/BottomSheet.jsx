@@ -1,8 +1,27 @@
 import { useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import { useSwipeable } from "react-swipeable";
 import "./BottomSheet.css";
 
-export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, maxHeight = "80vh", dark = false }) => {
+// The sheet portals to `#modal-root`, the same layer MobileModal uses, so both
+// overlay systems share one stacking context. Without the portal the sheet
+// renders inline wherever it is mounted (e.g. inside MobileNav's position:fixed
+// wrapper), and that wrapper's stacking context traps the sheet below any modal
+// no matter its z-index.
+//
+// `elevated` lifts the sheet above the MobileModal layer. Sheets are the newest
+// user interaction, so they default to elevated; pass `elevated={false}` only
+// if a sheet must stay under an open modal.
+export const BottomSheet = ({
+  isOpen,
+  onClose,
+  title,
+  headerRight,
+  children,
+  maxHeight = "80vh",
+  dark = false,
+  elevated = true,
+}) => {
   const contentRef = useRef(null);
 
   // Handle escape key
@@ -49,13 +68,18 @@ export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, max
     return null;
   }
 
-  return (
+  const modalRoot = document.getElementById("modal-root");
+
+  return ReactDOM.createPortal(
     <>
       {/* Backdrop */}
-      <div className="bottom-sheet-backdrop" onClick={onClose} />
+      <div className={`bottom-sheet-backdrop ${elevated ? "bottom-sheet-backdrop--elevated" : ""}`} onClick={onClose} />
 
       {/* Sheet */}
-      <div className={`bottom-sheet ${dark ? "bottom-sheet--dark" : ""}`} style={{ maxHeight }} {...swipeHandlers}>
+      <div
+        className={`bottom-sheet ${dark ? "bottom-sheet--dark" : ""} ${elevated ? "bottom-sheet--elevated" : ""}`}
+        style={{ maxHeight }}
+        {...swipeHandlers}>
         {/* Drag handle */}
         <div className="bottom-sheet-handle-container">
           <div className="bottom-sheet-handle" />
@@ -74,6 +98,7 @@ export const BottomSheet = ({ isOpen, onClose, title, headerRight, children, max
           {children}
         </div>
       </div>
-    </>
+    </>,
+    modalRoot,
   );
 };

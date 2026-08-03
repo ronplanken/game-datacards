@@ -11,7 +11,7 @@ const BASE_TYPE_LABELS = {
   stratagem: "Stratagem",
 };
 
-const AUTO_RESIZE_SYSTEMS = ["starcraft-tmg", "40k-10e"];
+const AUTO_RESIZE_SYSTEMS = ["starcraft-tmg", "40k-10e", "40k-11e"];
 
 /**
  * Editor for card type identity: name, template assignment, and the
