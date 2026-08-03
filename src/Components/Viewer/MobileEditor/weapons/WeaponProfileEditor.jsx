@@ -5,9 +5,16 @@ import { EditorSelectField } from "../shared/EditorSelectField";
 import { EditorTagInput } from "../shared/EditorTagInput";
 import { EditorToggle } from "../shared/EditorToggle";
 import { getWeaponsArray, setWeaponsOnCard } from "./weaponHelpers";
+import { isReservedWeaponProfileKey, normalizeKeywords } from "../../../../Helpers/weaponProfile.helpers";
 
 // Columns that store arrays and need special handling
 const ARRAY_COLUMNS = new Set(["abilities"]);
+
+// A schema column may collide with a reserved weapon profile field (e.g. a
+// column keyed `keywords`). Rendering a generic text input over it would
+// overwrite the real value with a string, so those columns are skipped here —
+// the dedicated editors below own those fields.
+const editableColumns = (columns) => (columns || []).filter((col) => !isReservedWeaponProfileKey(col.key));
 
 /**
  * Render a single weapon column input using the schema field type so enum
@@ -134,7 +141,7 @@ const ProfileWeaponEditor = ({ weapons, weaponIndex, profileIndex, columns, conf
       />
 
       <div className="mobile-editor-profile-grid">
-        {columns?.map((col) => (
+        {editableColumns(columns).map((col) => (
           <ColumnInput
             key={col.key}
             column={col}
@@ -153,7 +160,7 @@ const ProfileWeaponEditor = ({ weapons, weaponIndex, profileIndex, columns, conf
       {hasKeywords && (
         <EditorTagInput
           label="Keywords"
-          tags={profile.keywords || []}
+          tags={normalizeKeywords(profile.keywords)}
           onChange={(tags) => updateProfile("keywords", tags)}
         />
       )}
@@ -214,8 +221,8 @@ const FlatWeaponEditor = ({ weapons, weaponIndex, columns, config, setWeapons })
       />
 
       <div className="mobile-editor-profile-grid">
-        {columns
-          ?.filter((col) => !ARRAY_COLUMNS.has(col.key))
+        {editableColumns(columns)
+          .filter((col) => !ARRAY_COLUMNS.has(col.key))
           .map((col) => (
             <ColumnInput
               key={col.key}
@@ -226,8 +233,8 @@ const FlatWeaponEditor = ({ weapons, weaponIndex, columns, config, setWeapons })
           ))}
       </div>
 
-      {columns
-        ?.filter((col) => ARRAY_COLUMNS.has(col.key))
+      {editableColumns(columns)
+        .filter((col) => ARRAY_COLUMNS.has(col.key))
         .map((col) => {
           const arr = weapon[col.key];
           return (
@@ -258,7 +265,7 @@ const FlatWeaponEditor = ({ weapons, weaponIndex, columns, config, setWeapons })
       {config?.hasKeywords && (
         <EditorTagInput
           label="Keywords"
-          tags={weapon.keywords || []}
+          tags={normalizeKeywords(weapon.keywords)}
           onChange={(tags) => updateWeapon("keywords", tags)}
         />
       )}

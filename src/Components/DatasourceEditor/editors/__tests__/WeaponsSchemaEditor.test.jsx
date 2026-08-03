@@ -433,4 +433,53 @@ describe("WeaponsSchemaEditor", () => {
     expect(screen.queryByLabelText("Display label")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Visual style")).not.toBeInTheDocument();
   });
+
+  // A column keyed after a reserved weapon profile field makes the card editors
+  // render a plain text input over that field, so the first keystroke replaces
+  // e.g. the keywords array with a string and the card can no longer render.
+  describe("reserved column keys", () => {
+    it("rejects a column key that collides with a reserved profile field", () => {
+      const onChange = vi.fn();
+      render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+      expandColumn("Range");
+      fireEvent.change(screen.getByDisplayValue("range"), { target: { value: "keywords" } });
+      expect(onChange).not.toHaveBeenCalled();
+      expect(screen.getByRole("alert")).toHaveTextContent(/reserved key/i);
+    });
+
+    it("rejects reserved keys case-insensitively", () => {
+      const onChange = vi.fn();
+      render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+      expandColumn("Range");
+      const keyInput = screen.getByDisplayValue("range");
+      ["Keywords", "NAME", "active", "upgrade"].forEach((reserved) => {
+        fireEvent.change(keyInput, { target: { value: reserved } });
+      });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("clears the hint and applies the value once the key is no longer reserved", () => {
+      const onChange = vi.fn();
+      render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+      expandColumn("Range");
+      const keyInput = screen.getByDisplayValue("range");
+      fireEvent.change(keyInput, { target: { value: "keywords" } });
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+
+      fireEvent.change(keyInput, { target: { value: "keyword_note" } });
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          weaponTypes: expect.objectContaining({
+            types: expect.arrayContaining([
+              expect.objectContaining({
+                key: "ranged",
+                columns: expect.arrayContaining([expect.objectContaining({ key: "keyword_note" })]),
+              }),
+            ]),
+          }),
+        }),
+      );
+    });
+  });
 });

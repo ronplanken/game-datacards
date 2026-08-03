@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { nanoid } from "nanoid";
 import { Swords, Plus, X, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import {
@@ -19,6 +19,9 @@ import {
 import { Section, CompactInput, CollapsibleFieldItem } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
+import { RESERVED_WEAPON_PROFILE_KEYS, isReservedWeaponProfileKey } from "../../../Helpers/weaponProfile.helpers";
+
+const RESERVED_KEY_HINT = `Reserved key — pick another. The weapon profile owns: ${RESERVED_WEAPON_PROFILE_KEYS.join(", ")}.`;
 
 const COLUMN_TYPES = [
   { value: "string", label: "Text" },
@@ -49,8 +52,14 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const weaponTypes = schema?.weaponTypes;
   if (!weaponTypes) return null;
 
-  const types = ensureIds(weaponTypes.types);
+  // Memoised so the generated `_id`s stay stable while this component
+  // re-renders on its own state — otherwise every keystroke would hand the
+  // collapsible column rows a fresh React key and snap them shut.
+  const types = useMemo(() => ensureIds(weaponTypes.types), [weaponTypes.types]);
   const [activeTab, setActiveTab] = useState(0);
+  // "<typeIndex>:<colIndex>" of columns whose last key edit was rejected for
+  // colliding with a reserved profile field, so the hint shows under that input.
+  const [reservedKeyColumns, setReservedKeyColumns] = useState({});
   const abilityCategoryOptions = (schema?.abilities?.categories || []).map((c) => ({ value: c.key, label: c.label }));
   const showPhaseFields = baseSystem === "starcraft-tmg";
 
@@ -89,6 +98,22 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   // Column operations for the active weapon type
   const updateColumn = (typeIndex, colIndex, key, value) => {
     const columns = types[typeIndex].columns || [];
+    // A column keyed after a reserved profile field (e.g. `keywords`) would make
+    // the card editors render a plain text input over that field and overwrite
+    // its real value with a string, corrupting saved cards. Reject the edit and
+    // explain why instead of applying it.
+    if (key === "key") {
+      const rejected = isReservedWeaponProfileKey(value);
+      const slot = `${typeIndex}:${colIndex}`;
+      setReservedKeyColumns((prev) => {
+        if (!!prev[slot] === rejected) return prev;
+        const next = { ...prev };
+        if (rejected) next[slot] = true;
+        else delete next[slot];
+        return next;
+      });
+      if (rejected) return;
+    }
     const updatedCols = columns.map((c, i) => (i === colIndex ? { ...c, [key]: value } : c));
     updateType(typeIndex, { columns: updatedCols });
   };
@@ -121,7 +146,8 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   };
 
   const rawActiveType = types[activeTab];
-  const activeType = rawActiveType ? { ...rawActiveType, columns: ensureIds(rawActiveType.columns) } : undefined;
+  const activeColumns = useMemo(() => ensureIds(rawActiveType?.columns), [rawActiveType?.columns]);
+  const activeType = rawActiveType ? { ...rawActiveType, columns: activeColumns } : undefined;
 
   return (
     <Section title="Weapon Types" icon={Swords} defaultOpen={true}>
@@ -342,6 +368,11 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                   value={col.key}
                   onChange={(val) => updateColumn(activeTab, colIndex, "key", val)}
                 />
+                {reservedKeyColumns[`${activeTab}:${colIndex}`] && (
+                  <div className="props-field-error" role="alert">
+                    {RESERVED_KEY_HINT}
+                  </div>
+                )}
                 <CompactInput
                   label={<IconTag size={10} stroke={1.5} />}
                   ariaLabel="Label"

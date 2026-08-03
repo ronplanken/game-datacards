@@ -1,5 +1,6 @@
 import React from "react";
 import { GlossaryExplanationRows, GlossaryKeywordTags, getKeywordExplanations } from "../shared/GlossaryKeywords";
+import { normalizeKeywords } from "../../../../Helpers/weaponProfile.helpers";
 
 /**
  * Resolves display value for a weapon column, handling booleans.
@@ -79,7 +80,7 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
   // Renders a weapon profile's keyword tags — glossary-styled when a glossary
   // is present, otherwise the plain badge treatment.
   const renderKeywords = (keywords) => {
-    if (!keywords?.length) return null;
+    if (!keywords.length) return null;
     if (hasGlossary) {
       return <GlossaryKeywordTags keywords={keywords} glossary={glossary} scope="weapons" />;
     }
@@ -101,7 +102,11 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
       weapon.profiles
         .filter((p) => p.active !== false)
         .forEach((profile) => {
-          rows.push({ ...profile, keywords: profile.keywords || weapon.keywords });
+          // Saved cards can carry a string here (see normalizeKeywords), so the
+          // row's keywords are normalised once and every consumer below reads
+          // the array form.
+          const keywords = normalizeKeywords(profile.keywords);
+          rows.push({ ...profile, keywords: keywords.length ? keywords : normalizeKeywords(weapon.keywords) });
         });
     }
   });
@@ -111,7 +116,7 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
   // Glossary explanation rows for every keyword across this weapon section.
   const explanationEntries = hasGlossary
     ? getKeywordExplanations(
-        rows.flatMap((profile) => profile.keywords || []),
+        rows.flatMap((profile) => profile.keywords),
         glossary,
         "weapons",
       )
@@ -135,7 +140,7 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
               ))}
             </div>
             <RowFields profile={profile} rowCols={rowCols} altBg={false} />
-            {profile.keywords?.length > 0 && (
+            {profile.keywords.length > 0 && (
               <div className="weapon-card-abilities">{renderKeywords(profile.keywords)}</div>
             )}
           </div>
@@ -170,7 +175,7 @@ export const DsAosWeapons = ({ weapons, weaponTypeDef, grandAlliance, maxColumns
           <div className={`weapon-row ${index % 2 === 1 ? "alt-bg" : ""}`}>
             <span className="w-name">
               {profile.name}
-              {profile.keywords?.length > 0 && (
+              {profile.keywords.length > 0 && (
                 <div className="weapon-abilities-list">{renderKeywords(profile.keywords)}</div>
               )}
             </span>

@@ -1,4 +1,5 @@
 import { WeaponTypeIcon } from "../Icons/WeaponTypeIcon";
+import { normalizeKeywords } from "../../Helpers/weaponProfile.helpers";
 
 /**
  * Renders a single weapon's profiles with schema-defined columns.
@@ -14,28 +15,32 @@ const CustomWeaponProfiles = ({ weapon, columns, hasKeywords, columnTemplate }) 
     <>
       {weapon.profiles
         ?.filter((profile) => profile.active !== false)
-        ?.map((profile, index, profiles) => (
-          <div
-            className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
-            key={`weapon-profile-${index}`}
-            data-name={profile.name}>
-            <div className="line" style={{ gridTemplateColumns: columnTemplate }}>
-              <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
-                <span>{profile.name}</span>
-                {hasKeywords && profile.keywords?.length > 0 && (
-                  <span style={{ paddingLeft: "4px" }}>
-                    [<span className="weapon-keywords">{profile.keywords.join(", ")}</span>]
-                  </span>
-                )}
-              </div>
-              {columns.map((col) => (
-                <div className="value center" key={col.key}>
-                  {profile[col.key] || "-"}
+        ?.map((profile, index, profiles) => {
+          // Saved cards can carry a string here (see normalizeKeywords).
+          const keywords = normalizeKeywords(profile.keywords);
+          return (
+            <div
+              className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
+              key={`weapon-profile-${index}`}
+              data-name={profile.name}>
+              <div className="line" style={{ gridTemplateColumns: columnTemplate }}>
+                <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
+                  <span>{profile.name}</span>
+                  {hasKeywords && keywords.length > 0 && (
+                    <span style={{ paddingLeft: "4px" }}>
+                      [<span className="weapon-keywords">{keywords.join(", ")}</span>]
+                    </span>
+                  )}
                 </div>
-              ))}
+                {columns.map((col) => (
+                  <div className="value center" key={col.key}>
+                    {profile[col.key] || "-"}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       {weapon?.abilities?.length > 0 && (
         <div className="special">
           {weapon.abilities

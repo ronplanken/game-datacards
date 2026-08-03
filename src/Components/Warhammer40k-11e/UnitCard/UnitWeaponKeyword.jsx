@@ -4,6 +4,7 @@ import { Tooltip } from "../../Tooltip/Tooltip";
 import { LocalizedMarkup } from "./UnitAbilityDescription";
 import { resolveKeywordEntry } from "../../../Helpers/customSchema.helpers";
 import { use11eKeywordGlossary } from "../../../Hooks/use11eKeywordGlossary";
+import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
 // 11th edition weapon keywords. When the datasource ships a keyword glossary,
 // keywords that resolve to an entry get a hover tooltip with the localised
@@ -14,7 +15,7 @@ export const UnitWeaponKeywords = ({ keywords }) => {
 
   return (
     <span className="keyword">
-      {keywords?.map((keyword, index) => {
+      {normalizeKeywords(keywords).map((keyword, index) => {
         const entry = resolveKeywordEntry(keyword, glossary, "weapons");
         const button = (
           <Button type="text" size="small" className={`keyword-button${entry ? " keyword-button--has-info" : ""}`}>

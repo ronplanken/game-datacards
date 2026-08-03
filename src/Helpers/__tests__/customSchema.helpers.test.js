@@ -18,6 +18,7 @@ import {
   validateSchema,
   getDefaultValueForType,
   migrateCardToSchema,
+  stripReservedWeaponColumns,
 } from "../customSchema.helpers";
 
 describe("customSchema.helpers - constants", () => {
@@ -1879,5 +1880,88 @@ describe("customSchema.helpers - migrateCardToSchema", () => {
       expect(result.sections["new-section"]).toEqual([]);
       expect(result.sections["old-section"]).toBeUndefined();
     });
+  });
+});
+
+// A weapon column keyed after a reserved weapon profile field makes the card
+// editors render a generic text input over that field, so the first keystroke
+// replaces e.g. the keywords array with a string and the card stops rendering.
+describe("customSchema.helpers - stripReservedWeaponColumns", () => {
+  const schemaWithColumns = (columns) => ({
+    version: SCHEMA_VERSION,
+    baseSystem: "blank",
+    cardTypes: [
+      {
+        key: "unit",
+        label: "Unit",
+        baseType: "unit",
+        schema: {
+          weaponTypes: {
+            label: "Weapons",
+            allowMultiple: true,
+            types: [{ key: "ranged", label: "Ranged", hasKeywords: true, hasProfiles: true, columns }],
+          },
+        },
+      },
+    ],
+  });
+
+  const columnsOf = (schema) => schema.cardTypes[0].schema.weaponTypes.types[0].columns;
+
+  it("drops a column keyed after a reserved profile field", () => {
+    const schema = schemaWithColumns([
+      { key: "range", label: "Range", type: "string" },
+      { key: "keywords", label: "Keywords", type: "string" },
+    ]);
+    const result = stripReservedWeaponColumns(schema);
+    expect(columnsOf(result).map((c) => c.key)).toEqual(["range"]);
+  });
+
+  it("drops reserved keys regardless of casing", () => {
+    const schema = schemaWithColumns([
+      { key: "range", label: "Range", type: "string" },
+      { key: "Keywords", label: "Keywords", type: "string" },
+      { key: "NAME", label: "Name", type: "string" },
+      { key: "Active", label: "Active", type: "boolean" },
+      { key: "upgrade", label: "Upgrade", type: "boolean" },
+    ]);
+    expect(columnsOf(stripReservedWeaponColumns(schema)).map((c) => c.key)).toEqual(["range"]);
+  });
+
+  it("keeps columns whose keys merely resemble reserved fields", () => {
+    const schema = schemaWithColumns([
+      { key: "keyword", label: "Keyword", type: "string" },
+      { key: "keywordsNote", label: "Keywords note", type: "string" },
+    ]);
+    expect(columnsOf(stripReservedWeaponColumns(schema)).map((c) => c.key)).toEqual(["keyword", "keywordsNote"]);
+  });
+
+  it("returns the same reference when there is nothing to strip", () => {
+    const schema = schemaWithColumns([{ key: "range", label: "Range", type: "string" }]);
+    expect(stripReservedWeaponColumns(schema)).toBe(schema);
+  });
+
+  it("does not mutate the input schema", () => {
+    const schema = schemaWithColumns([
+      { key: "range", label: "Range", type: "string" },
+      { key: "keywords", label: "Keywords", type: "string" },
+    ]);
+    stripReservedWeaponColumns(schema);
+    expect(columnsOf(schema)).toHaveLength(2);
+  });
+
+  it("leaves a sanitised schema valid", () => {
+    const schema = schemaWithColumns([{ key: "keywords", label: "Keywords", type: "string" }]);
+    expect(() => stripReservedWeaponColumns(schema)).not.toThrow();
+    expect(columnsOf(stripReservedWeaponColumns(schema))).toEqual([]);
+  });
+
+  it("handles schemas with no card types or weapon types", () => {
+    expect(stripReservedWeaponColumns(null)).toBe(null);
+    expect(stripReservedWeaponColumns(undefined)).toBe(undefined);
+    const noCardTypes = { version: SCHEMA_VERSION, baseSystem: "blank" };
+    expect(stripReservedWeaponColumns(noCardTypes)).toBe(noCardTypes);
+    const noWeapons = { version: SCHEMA_VERSION, baseSystem: "blank", cardTypes: [{ key: "r", schema: {} }] };
+    expect(stripReservedWeaponColumns(noWeapons)).toBe(noWeapons);
   });
 });

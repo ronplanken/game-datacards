@@ -15,6 +15,7 @@ import {
   formatCardBreakdown,
   exportDatasourceSchema,
   downloadJsonFile,
+  prepareDatasourceForImport,
 } from "../customDatasource.helpers";
 
 // Helper to create a minimal valid datasource
@@ -525,5 +526,61 @@ describe("downloadJsonFile", () => {
     removeChildSpy.mockRestore();
     URL.createObjectURL = originalCreateObjectURL;
     URL.revokeObjectURL = originalRevokeObjectURL;
+  });
+});
+
+describe("prepareDatasourceForImport - reserved weapon columns", () => {
+  const datasourceWithColumn = (key) => ({
+    name: "Imported",
+    version: "1.0.0",
+    data: [],
+    schema: {
+      version: "1.0.0",
+      baseSystem: "blank",
+      cardTypes: [
+        {
+          key: "unit",
+          label: "Unit",
+          baseType: "unit",
+          schema: {
+            weaponTypes: {
+              label: "Weapons",
+              allowMultiple: true,
+              types: [
+                {
+                  key: "ranged",
+                  label: "Ranged",
+                  hasKeywords: true,
+                  hasProfiles: true,
+                  columns: [
+                    { key: "range", label: "Range", type: "string" },
+                    { key, label: "Extra", type: "string" },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  });
+
+  const importedColumns = (datasource) =>
+    prepareDatasourceForImport(datasource, "local").schema.cardTypes[0].schema.weaponTypes.types[0].columns;
+
+  // A weapon column keyed after a reserved profile field corrupts card data as
+  // soon as it is edited, so imports drop it instead of failing.
+  it("strips a weapon column that collides with a reserved profile field", () => {
+    expect(importedColumns(datasourceWithColumn("keywords")).map((c) => c.key)).toEqual(["range"]);
+  });
+
+  it("keeps ordinary weapon columns", () => {
+    expect(importedColumns(datasourceWithColumn("ap")).map((c) => c.key)).toEqual(["range", "ap"]);
+  });
+
+  it("imports a datasource without a schema unchanged", () => {
+    const result = prepareDatasourceForImport({ name: "No schema", version: "1.0.0", data: [] }, "local");
+    expect(result.schema).toBeUndefined();
+    expect(result.name).toBe("No schema");
   });
 });
