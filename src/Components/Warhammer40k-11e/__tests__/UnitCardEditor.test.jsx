@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 
 const mockUpdateActiveCard = vi.fn();
@@ -69,6 +69,8 @@ describe("UnitCardEditor (11e)", () => {
       "Core abilities",
       "Faction abilities",
       "Other abilities",
+      "Wargear abilities",
+      "Special abilities",
       "Primarch ability",
       "Damaged ability",
       "Invulnerable save",
@@ -76,9 +78,9 @@ describe("UnitCardEditor (11e)", () => {
     ].forEach((label) => expect(screen.getByText(label)).toBeInTheDocument());
   });
 
-  it("renders 8 visibility toggles", () => {
+  it("renders 10 visibility toggles", () => {
     const { container } = render(<UnitCardEditor />);
-    expect(container.querySelectorAll(".ant-collapse-extra .ant-switch").length).toBe(8);
+    expect(container.querySelectorAll(".ant-collapse-extra .ant-switch").length).toBe(10);
   });
 
   it("defaults every visibility toggle to checked when no flags are set", () => {
@@ -99,15 +101,54 @@ describe("UnitCardEditor (11e)", () => {
     mockActiveCard.ref = { showDamaged: false, showInvul: false };
     const { container } = render(<UnitCardEditor />);
     const panels = container.querySelectorAll(".ant-collapse-item");
-    // Damaged ability (10) and Invulnerable save (11)
-    expect(panels[10].classList.contains("ant-collapse-item-disabled")).toBe(true);
-    expect(panels[11].classList.contains("ant-collapse-item-disabled")).toBe(true);
+    // Damaged ability (12) and Invulnerable save (13)
+    expect(panels[12].classList.contains("ant-collapse-item-disabled")).toBe(true);
+    expect(panels[13].classList.contains("ant-collapse-item-disabled")).toBe(true);
   });
 
   it("disables the primarch panel when showAbilities.primarch is false", () => {
     mockActiveCard.ref = { showAbilities: { primarch: false } };
     const { container } = render(<UnitCardEditor />);
     const panels = container.querySelectorAll(".ant-collapse-item");
-    expect(panels[9].classList.contains("ant-collapse-item-disabled")).toBe(true);
+    expect(panels[11].classList.contains("ant-collapse-item-disabled")).toBe(true);
+  });
+
+  // Wargear and special abilities both render on the card (UnitCard/UnitExtra)
+  // but had no editor panel, so they could not be edited or hidden.
+  describe.each([
+    { label: "Wargear abilities", type: "wargear", panelIndex: 9, switchIndex: 5 },
+    { label: "Special abilities", type: "special", panelIndex: 10, switchIndex: 6 },
+  ])("$label panel", ({ label, type, panelIndex, switchIndex }) => {
+    it("edits its ability list when expanded", () => {
+      render(<UnitCardEditor />);
+      fireEvent.click(screen.getByText(label));
+      expect(screen.getByTestId(`extended-${type}`)).toBeInTheDocument();
+    });
+
+    it("writes its visibility flag when the toggle is switched off", () => {
+      const { container } = render(<UnitCardEditor />);
+      fireEvent.click(container.querySelectorAll(".ant-collapse-extra .ant-switch")[switchIndex]);
+      expect(mockUpdateActiveCard).toHaveBeenCalledWith(
+        expect.objectContaining({ showAbilities: expect.objectContaining({ [type]: false }) }),
+      );
+    });
+
+    it("disables the panel when its flag is false", () => {
+      mockActiveCard.ref = { showAbilities: { [type]: false } };
+      const { container } = render(<UnitCardEditor />);
+      const panels = container.querySelectorAll(".ant-collapse-item");
+      expect(panels[panelIndex].classList.contains("ant-collapse-item-disabled")).toBe(true);
+      const toggle = container.querySelectorAll(".ant-collapse-extra .ant-switch")[switchIndex];
+      expect(toggle.classList.contains("ant-switch-checked")).toBe(false);
+    });
+  });
+
+  it("orders the ability panels the way the card renders them", () => {
+    const { container } = render(<UnitCardEditor />);
+    const headers = [...container.querySelectorAll(".ant-collapse-header")].map((h) => h.textContent);
+    expect(headers[8]).toContain("Other abilities");
+    expect(headers[9]).toContain("Wargear abilities");
+    expect(headers[10]).toContain("Special abilities");
+    expect(headers[11]).toContain("Primarch ability");
   });
 });
