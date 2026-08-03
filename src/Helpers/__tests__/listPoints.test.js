@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  clampWargearQuantities,
   computeCategoryPoints,
   filterPointsTiersForArmy,
   getCardBaseCost,
@@ -378,6 +379,45 @@ describe("getWargearQuantityMax", () => {
     expect(getWargearQuantityMax(undefined)).toBe(10);
     expect(getWargearQuantityMax({ models: "0" })).toBe(10);
     expect(getWargearQuantityMax({ models: "?" })).toBe(10);
+  });
+});
+
+describe("clampWargearQuantities", () => {
+  const thunderHammer = { name: { en: "Thunder hammer" }, cost: 5 };
+
+  it("caps a quantity that exceeds the new tier's model count", () => {
+    const selected = [{ ...thunderHammer, quantity: 10 }];
+    expect(clampWargearQuantities(selected, { models: "5" })).toEqual([{ ...thunderHammer, quantity: 5 }]);
+  });
+
+  it("leaves a quantity the tier still allows untouched", () => {
+    const selected = [{ ...thunderHammer, quantity: 3 }];
+    expect(clampWargearQuantities(selected, { models: "5" })).toBe(selected);
+  });
+
+  it("caps every entry independently", () => {
+    const selected = [
+      { ...thunderHammer, quantity: 8 },
+      { name: { en: "Storm shield" }, cost: 10, quantity: 2 },
+    ];
+    expect(clampWargearQuantities(selected, { models: "5" })).toEqual([
+      { ...thunderHammer, quantity: 5 },
+      { name: { en: "Storm shield" }, cost: 10, quantity: 2 },
+    ]);
+  });
+
+  it("treats a missing quantity as one, so it never gets capped", () => {
+    const selected = [thunderHammer];
+    expect(clampWargearQuantities(selected, { models: "1" })).toBe(selected);
+  });
+
+  it("uses the fallback cap when the tier says nothing useful", () => {
+    const selected = [{ ...thunderHammer, quantity: 25 }];
+    expect(clampWargearQuantities(selected, undefined)).toEqual([{ ...thunderHammer, quantity: 10 }]);
+  });
+
+  it("is safe for a card with no selection", () => {
+    expect(clampWargearQuantities(undefined, { models: "5" })).toEqual([]);
   });
 });
 

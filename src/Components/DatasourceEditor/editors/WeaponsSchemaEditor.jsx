@@ -96,7 +96,9 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   };
 
   // Column operations for the active weapon type
-  const updateColumn = (typeIndex, colIndex, key, value) => {
+  // `colId` is the column's stable `_id`: the hint has to follow the column
+  // itself, since moving or removing a column shifts every index above it.
+  const updateColumn = (typeIndex, colIndex, key, value, colId) => {
     const columns = types[typeIndex].columns || [];
     // A column keyed after a reserved profile field (e.g. `keywords`) would make
     // the card editors render a plain text input over that field and overwrite
@@ -104,12 +106,11 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
     // explain why instead of applying it.
     if (key === "key") {
       const rejected = isReservedWeaponProfileKey(value);
-      const slot = `${typeIndex}:${colIndex}`;
       setReservedKeyColumns((prev) => {
-        if (!!prev[slot] === rejected) return prev;
+        if (!!prev[colId] === rejected) return prev;
         const next = { ...prev };
-        if (rejected) next[slot] = true;
-        else delete next[slot];
+        if (rejected) next[colId] = true;
+        else delete next[colId];
         return next;
       });
       if (rejected) return;
@@ -366,9 +367,9 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
                   tooltip="Key"
                   type="text"
                   value={col.key}
-                  onChange={(val) => updateColumn(activeTab, colIndex, "key", val)}
+                  onChange={(val) => updateColumn(activeTab, colIndex, "key", val, col._id)}
                 />
-                {reservedKeyColumns[`${activeTab}:${colIndex}`] && (
+                {reservedKeyColumns[col._id] && (
                   <div className="props-field-error" role="alert">
                     {RESERVED_KEY_HINT}
                   </div>

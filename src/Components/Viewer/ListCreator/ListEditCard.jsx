@@ -9,6 +9,7 @@ import {
   getPaidWargearOptions,
   getPointsTierRestrictionLabel,
   getSelectablePointsTiers,
+  clampWargearQuantities,
   getWargearQuantity,
   getWargearQuantityMax,
   isSamePointsTier,
@@ -108,6 +109,13 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
       setSelectedWargear(Array.isArray(card.selectedWargear) ? card.selectedWargear : []);
     }
   }, [isVisible, card]);
+
+  // Wargear is priced per model, so a smaller size tier lowers the ceiling on an
+  // already-picked quantity. Cap the selection whenever the tier changes,
+  // otherwise switching down would keep pricing the larger unit.
+  useEffect(() => {
+    setSelectedWargear((current) => clampWargearQuantities(current, selectedUnitSize));
+  }, [selectedUnitSize]);
 
   const handleClose = () => setIsVisible(false);
 

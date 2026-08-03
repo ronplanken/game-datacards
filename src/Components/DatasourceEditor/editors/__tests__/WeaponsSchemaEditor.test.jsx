@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { WeaponsSchemaEditor } from "../WeaponsSchemaEditor";
 
@@ -480,6 +481,26 @@ describe("WeaponsSchemaEditor", () => {
           }),
         }),
       );
+    });
+
+    // The hint belongs to a column, not to a position: moving a column shifts
+    // every index above it, so a position-keyed hint would resurface under an
+    // unrelated column.
+    it("does not leave the hint behind on another column after a reorder", () => {
+      const ControlledEditor = () => {
+        const [schema, setSchema] = useState(mockSchema);
+        return <WeaponsSchemaEditor schema={schema} onChange={setSchema} />;
+      };
+      render(<ControlledEditor />);
+
+      expandColumn("Range");
+      fireEvent.change(screen.getByDisplayValue("range"), { target: { value: "keywords" } });
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+
+      // Range moves to second place, so "A" now sits where Range was.
+      fireEvent.click(screen.getByLabelText("Move Range down"));
+      expandColumn("A");
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
   });
 });

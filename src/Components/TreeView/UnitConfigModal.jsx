@@ -9,6 +9,7 @@ import {
   getPaidWargearOptions,
   getPointsTierRestrictionLabel,
   getSelectablePointsTiers,
+  clampWargearQuantities,
   getWargearQuantity,
   getWargearQuantityMax,
   isSamePointsTier,
@@ -79,6 +80,13 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
       }
     }
   }, [isOpen, card?.uuid]);
+
+  // Wargear is priced per model, so a smaller size tier lowers the ceiling on an
+  // already-picked quantity. Cap the selection whenever the tier changes,
+  // otherwise switching down would keep pricing the larger unit.
+  useEffect(() => {
+    setSelectedWargear((current) => clampWargearQuantities(current, selectedUnitSize));
+  }, [selectedUnitSize]);
 
   // Resolve the detachment separately: it depends on settings and the faction's
   // detachment list, which can arrive/refresh independently of the card.

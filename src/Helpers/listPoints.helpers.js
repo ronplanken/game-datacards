@@ -279,6 +279,34 @@ export const getWargearQuantityMax = (unitSize) => {
 };
 
 /**
+ * Cap every selected quantity at what the given size tier allows, so switching
+ * to a smaller tier after picking wargear cannot leave a selection that prices
+ * more models than the unit has.
+ *
+ * Returns the original array when nothing needed capping, so callers can store
+ * the result without triggering a needless re-render.
+ *
+ * @param {Array|undefined} selected - a card's `selectedWargear`
+ * @param {Object|undefined} unitSize - the selected points tier
+ * @returns {Array}
+ */
+export const clampWargearQuantities = (selected, unitSize) => {
+  const list = Array.isArray(selected) ? selected : [];
+  const max = getWargearQuantityMax(unitSize);
+  let capped = false;
+
+  const next = list.map((entry) => {
+    const quantity = Number(entry?.quantity);
+    const current = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+    if (current <= max) return entry;
+    capped = true;
+    return { ...entry, quantity: max };
+  });
+
+  return capped ? next : list;
+};
+
+/**
  * The points a card's selected wargear adds. An entry without a usable quantity
  * counts once, so a selection saved before quantities existed still prices.
  *

@@ -370,6 +370,34 @@ describe("UnitConfigModal 11e wargear", () => {
     expect(screen.getByText("5")).toBeInTheDocument();
     expect(add).toBeDisabled();
   });
+
+  // Wargear is priced per model, so switching down to a smaller tier has to pull
+  // an already-chosen quantity down with it, or the list total keeps charging
+  // for models the unit no longer has.
+  it("lowers an already-chosen quantity when a smaller size tier is picked", () => {
+    const onSave = vi.fn();
+    const twoTiers = {
+      ...terminators,
+      points: [
+        { models: 10, cost: 340 },
+        { models: 5, cost: 170 },
+      ],
+      selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 10 }],
+      unitSize: { models: 10, cost: 340 },
+    };
+    render(<UnitConfigModal isOpen card={twoTiers} category={baseCategory} onClose={vi.fn()} onSave={onSave} />);
+    expect(screen.getByText("10")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("5 models"));
+    expect(screen.getByText("5")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 5 }],
+      }),
+    );
+  });
 });
 
 describe("UnitConfigModal 11e attachments", () => {
