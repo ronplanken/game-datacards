@@ -36,7 +36,7 @@ describe("Mobile WhatsNewWizard v3.11.0 config", () => {
     expect(flagged[0]).toBe(MOBILE_VERSION_CONFIG.steps[MOBILE_VERSION_CONFIG.steps.length - 1]);
   });
 
-  it("covers the edition and the list builder", () => {
-    expect(MOBILE_VERSION_CONFIG.steps.map((s) => s.key)).toEqual(["3.11.0-11th-edition", "3.11.0-lists"]);
+  it("has a single edition step", () => {
+    expect(MOBILE_VERSION_CONFIG.steps.map((s) => s.key)).toEqual(["3.11.0-11th-edition"]);
   });
 });

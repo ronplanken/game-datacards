@@ -1,5 +1,5 @@
 import React from "react";
-import { BookOpen, Crosshair, Languages, Swords } from "lucide-react";
+import { BookOpen, Crosshair, Languages, Sparkles, Swords } from "lucide-react";
 
 export const Step11thEdition = () => (
   <div className="wnw-step-subscription">
@@ -12,7 +12,7 @@ export const Step11thEdition = () => (
       </div>
     </div>
     <p className="wnw-feature-description">
-      11th edition is here, and it is the new default game system. 10th edition stays available as a legacy option.
+      11th edition is now the default game system. 10th edition stays available as a legacy option.
     </p>
 
     <div className="wnw-feature-highlights">
@@ -21,11 +21,11 @@ export const Step11thEdition = () => (
         <div>
           <strong>
             <Swords size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
-            Every faction, fully carded
+            All factions
           </strong>
           <p>
-            Datasheets, stratagems, enhancements and detachment rules, plus the core stratagems like Command Re-roll and
-            Fire Overwatch under every faction&apos;s Basic stratagems.
+            Datasheets, stratagems, enhancements and detachment rules for every faction. The core stratagems, such as
+            Command Re-roll and Fire Overwatch, are listed under the Basic stratagems of each faction.
           </p>
         </div>
       </div>
@@ -36,7 +36,7 @@ export const Step11thEdition = () => (
             <Languages size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
             Card text in 8 languages
           </strong>
-          <p>Pick your card language in Settings. Anything not translated yet falls back to English, field by field.</p>
+          <p>Set the card language in Settings. Fields that are not translated yet fall back to English.</p>
         </div>
       </div>
       <div className="wnw-highlight-item">
@@ -44,12 +44,22 @@ export const Step11thEdition = () => (
         <div>
           <strong>
             <BookOpen size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
-            Keywords that explain themselves
+            Keyword explanations
           </strong>
           <p>
-            Weapon keywords and core abilities get a dotted underline. Hover one to read what it does, in your chosen
+            Weapon keywords and core abilities have a dotted underline. Hover over one to read the rule in the selected
             language.
           </p>
+        </div>
+      </div>
+      <div className="wnw-highlight-item">
+        <div className="wnw-highlight-dot" />
+        <div>
+          <strong>
+            <Sparkles size={14} style={{ verticalAlign: -2, marginRight: 6 }} />
+            Premium
+          </strong>
+          <p>A premium subscription adds cloud sync, the Card Designer and publishing your own datasources.</p>
         </div>
       </div>
     </div>
