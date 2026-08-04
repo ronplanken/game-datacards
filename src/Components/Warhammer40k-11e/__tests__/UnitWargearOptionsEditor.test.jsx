@@ -59,8 +59,9 @@ const card = (over = {}) => ({
   ...over,
 });
 
-const byLabel = (container, label) =>
-  Array.from(container.querySelectorAll(".ant-form-item")).find((item) => item.textContent.includes(label));
+// Option rows are a plain two-column list, not labelled form rows, so they are
+// found by their aria-label.
+const byLabel = (container, label) => container.querySelector(`[aria-label="${label}"]`);
 
 const buttonNamed = (getAllByText, text) => getAllByText(text)[0].closest("button");
 
@@ -146,10 +147,25 @@ describe("11e wargear options editor", () => {
     expect(original[0].options).toHaveLength(1);
   });
 
-  it("still edits the flat wargear text", () => {
+  // Only one wargear editor is ever on screen: the structured groups while the
+  // card has any, the flat sentences otherwise.
+  it("hides the flat wargear text while the card has structured groups", () => {
     mockActiveCard.ref = card({ wargear: [{ en: "None" }] });
+    const { queryByTestId } = render(<UnitWargearOptions />);
+    expect(queryByTestId("md")).toBeNull();
+  });
+
+  it("edits the flat wargear text on a card without structured groups", () => {
+    mockActiveCard.ref = card({ wargear: [{ en: "None" }], wargearOptions: [] });
     const { getByTestId } = render(<UnitWargearOptions />);
     fireEvent.change(getByTestId("md"), { target: { value: "Nimm eine Plasmapistole." } });
     expect(capturedCard.wargear).toEqual([{ en: "None", de: "Nimm eine Plasmapistole." }]);
+  });
+
+  it("can still promote a text-only card to structured options", () => {
+    mockActiveCard.ref = card({ wargear: [{ en: "None" }], wargearOptions: [] });
+    const { getAllByText } = render(<UnitWargearOptions />);
+    fireEvent.click(buttonNamed(getAllByText, "Add wargear option"));
+    expect(capturedCard.wargearOptions).toEqual([{ instruction: { de: "" }, options: [] }]);
   });
 });

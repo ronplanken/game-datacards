@@ -229,26 +229,36 @@ Each datasheet's `points` is an array of size tiers —
 
 ## Wargear options
 
-11e datasheets carry their wargear twice:
+11e datasheets carry their wargear twice, with the same content in both:
 
-- `wargear` — an array of language-keyed sentences, which in the 11e data dump
-  is usually just `"None"`.
-- `wargearOptions` — the structured groups the datasheet really offers:
+- `wargearOptions` — the structured groups the datasheet offers:
   `{ instruction, options: [{ name, cost }] }`, with `instruction` and `name`
   language-keyed and `cost` a string (mostly `"0"`).
+- `wargear` — an array of language-keyed sentences: the same instructions
+  flattened, with their options appended as `◦` bullets, or just `"None"` on the
+  datasheets that offer nothing.
+
+Every datasheet in the shipped data that has real wargear has it as groups
+(the handful without groups — Drop Pod, Aegis Defence Line, Spore Mines and so
+on — have `wargear: ["None"]`), so **the groups are the source of truth and the
+sentences are only a fallback**. Rendering both printed every instruction
+twice.
 
 The data repeats an identical group once per model in the unit, so
 `getWargearOptionGroups(card)` (`listPoints.helpers.js`) collapses groups that
 are identical in instruction and in options-at-prices. `getPaidWargearOptions`
 builds on it for the list builder, keeping only the options that cost points.
 
-`UnitCard/UnitWargear.jsx` renders both, sentences first, and appends
-`(+N pts)` to an option that costs points. A lone `"None"` is dropped, so a
-datasheet with real options is never described as having none; when neither
-half has anything to say the section disappears. `showWargear === false` hides
-it outright. `UnitCardEditor/UnitWargearOptions.jsx` edits both halves in the
-one "Wargear Options" panel, and keeps costs as strings — the shape the
-datasource uses and the points helpers coerce.
+`UnitCard/UnitWargear.jsx` renders the groups, appending `(+N pts)` to an option
+that costs points, and falls back to the sentences (minus a lone `"None"`) only
+when a card has no groups at all — hand-made cards and older imports. When
+neither has anything to say the section disappears; `showWargear === false`
+hides it outright. `UnitCardEditor/UnitWargearOptions.jsx` follows the same
+rule in the one "Wargear Options" panel: the group editor while the card has
+groups, the sentence editor otherwise, plus an "Add wargear option" button so a
+text-only card can move up to structured options (and deleting the last group
+brings the sentences back). Costs stay strings — the shape the datasource uses
+and the points helpers coerce.
 
 ## Rule cards
 

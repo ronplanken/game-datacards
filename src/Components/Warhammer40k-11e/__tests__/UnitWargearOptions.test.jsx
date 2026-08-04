@@ -37,13 +37,15 @@ describe("11e card back wargear options", () => {
     expect(container.textContent).toContain("Twin lascannon (+5 pts)");
   });
 
-  it("shows the flat text first when both have real content", () => {
+  // The source data flattens the same instructions into both fields, so showing
+  // both printed every sentence twice.
+  it("drops the flat text entirely when there are structured options", () => {
     const { container } = render(
       <UnitWargear unit={{ wargear: [{ en: "Take a plasma pistol." }], wargearOptions: [grav] }} />,
     );
-    const items = Array.from(container.querySelectorAll(".content > .item"));
-    expect(items[0].textContent).toContain("Take a plasma pistol.");
-    expect(items[1].textContent).toContain("Twin lascannon (+5 pts)");
+    expect(container.textContent).not.toContain("Take a plasma pistol.");
+    expect(container.textContent).toContain("Twin lascannon (+5 pts)");
+    expect(container.querySelectorAll(".content > .item")).toHaveLength(1);
   });
 
   it("falls back to the flat text alone when there are no structured options", () => {
