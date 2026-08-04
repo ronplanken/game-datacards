@@ -3,26 +3,30 @@ import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize } from "../../../Helpers/localization.helpers";
 import { getWargearOptionGroups } from "../../../Helpers/listPoints.helpers";
 
-// 11th edition carries wargear two ways:
+// 11th edition carries wargear two ways, and the source data fills both with
+// the same content:
 //
-//   `wargear`       — an array of language-keyed sentences, which in the 11e
-//                     data is usually just "None".
-//   `wargearOptions` — the structured groups the datasheet really offers:
-//                     an instruction plus the swaps it allows, some of which
-//                     cost points.
+//   `wargearOptions` — the structured groups the datasheet offers: an
+//                      instruction plus the swaps it allows, some of which cost
+//                      points.
+//   `wargear`        — those same instructions flattened into sentences, or
+//                      just "None" on the datasheets that offer nothing.
 //
-// Both are rendered when both have content (the sentences first), and "None"
-// alone is dropped so a datasheet with real options is not described as having
-// none. The section disappears entirely when neither has anything to say.
+// Rendering both printed every instruction twice, so the structured groups win.
+// The sentences are only a fallback, for cards that carry no groups at all
+// (hand-made cards and older imports). The section disappears entirely when
+// neither has anything to say.
 export const UnitWargear = ({ unit }) => {
   const { settings } = useSettingsStorage();
   const lang = settings.language;
 
-  const items = (unit.wargear || [])
-    .map((entry) => localize(entry, lang))
-    .filter((entry) => entry && entry.trim().toLowerCase() !== "none");
-
   const groups = getWargearOptionGroups(unit);
+
+  const items = groups.length
+    ? []
+    : (unit.wargear || [])
+        .map((entry) => localize(entry, lang))
+        .filter((entry) => entry && entry.trim().toLowerCase() !== "none");
 
   // An absent showWargear flag means shown.
   if (unit.showWargear === false || (items.length === 0 && groups.length === 0)) {

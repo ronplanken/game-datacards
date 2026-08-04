@@ -8,18 +8,20 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize, setLocalizedArrayItem, setLocalizedField } from "../../../Helpers/localization.helpers";
 
-// The wargear panel edits both halves of a card's wargear:
+// A card's wargear lives in two fields, and the panel only ever edits the one
+// the card actually renders (see UnitCard/UnitWargear):
 //
-//   `wargear`        — free-form language-keyed markdown sentences (WargearText).
 //   `wargearOptions` — the structured groups the card back and the list builder
 //                      read: an instruction plus the swaps it offers, each with
-//                      a points cost (WargearGroups).
+//                      a points cost (WargearGroups). These win when present.
+//   `wargear`        — free-form language-keyed markdown sentences
+//                      (WargearText), the fallback for cards without groups.
 //
-// Costs stay strings, the shape the source datasource uses; the points helpers
-// coerce them.
+// Showing both at once meant editing the same wargear in two places, where only
+// one of them reached the card. Costs stay strings, the shape the source
+// datasource uses; the points helpers coerce them.
 
-// The free-form sentences. In the 11e data this is usually just "None", so it is
-// the structured groups below that carry the real content.
+// The free-form sentences, edited only while a card has no structured groups.
 function WargearText() {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
@@ -111,6 +113,9 @@ function WargearText() {
   );
 }
 
+// Shared look for the small captions that stand in for form labels.
+const CAPTION = { fontSize: 12, opacity: 0.65, paddingBottom: 4 };
+
 // The structured groups: what the card back lists and what the list builder
 // charges points for.
 function WargearGroups() {
@@ -152,62 +157,77 @@ function WargearGroups() {
               </Popconfirm>
             </Space>
           }>
-          <Form size="small">
-            <Form.Item label={"Instruction"}>
-              <Input.TextArea
-                rows={2}
-                value={localize(group?.instruction, lang)}
+          {/* Captions above the fields rather than antd's horizontal form
+              labels: the side editor is narrow enough that a label column left
+              the instruction one character wide. Instructions run to a full
+              sentence, so the box also grows with them instead of hiding them
+              behind a scrollbar. */}
+          <div style={CAPTION} className="wargear-caption">
+            Instruction
+          </div>
+          <Input.TextArea
+            size="small"
+            style={{ marginBottom: 12 }}
+            autoSize={{ minRows: 2, maxRows: 6 }}
+            value={localize(group?.instruction, lang)}
+            onChange={(e) =>
+              updateGroups((next) => {
+                next[groupIndex].instruction = setLocalizedField(next[groupIndex].instruction, lang, e.target.value);
+              })
+            }
+          />
+          {/* The options are a two-column list rather than labelled form rows.
+              A per-row "Option N" label plus an addon-suffixed cost field left
+              only a sliver for either input; column headers carry the same
+              meaning and cost nothing per row. */}
+          <div style={{ ...CAPTION, display: "flex", gap: 8 }}>
+            <span style={{ flex: "1 1 auto" }}>Options</span>
+            <span style={{ flex: "0 0 64px" }}>Points</span>
+            <span style={{ flex: "0 0 24px" }} />
+          </div>
+          {(group?.options || []).map((option, optionIndex) => (
+            <div
+              key={`wargear-group-${groupIndex}-option-${optionIndex}`}
+              aria-label={`Option ${optionIndex + 1}`}
+              style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <Input
+                size="small"
+                type={"text"}
+                style={{ flex: "1 1 auto", minWidth: 0 }}
+                placeholder={`Option ${optionIndex + 1}`}
+                value={localize(option?.name, lang)}
                 onChange={(e) =>
-                  updateGroups((next) => {
-                    next[groupIndex].instruction = setLocalizedField(
-                      next[groupIndex].instruction,
-                      lang,
-                      e.target.value,
-                    );
+                  updateOption(groupIndex, optionIndex, {
+                    name: setLocalizedField(option?.name, lang, e.target.value),
                   })
                 }
               />
-            </Form.Item>
-            {(group?.options || []).map((option, optionIndex) => (
-              <Form.Item key={`wargear-group-${groupIndex}-option-${optionIndex}`} label={`Option ${optionIndex + 1}`}>
-                <Space.Compact style={{ width: "100%" }}>
-                  <Input
-                    type={"text"}
-                    placeholder="Name"
-                    value={localize(option?.name, lang)}
-                    onChange={(e) =>
-                      updateOption(groupIndex, optionIndex, {
-                        name: setLocalizedField(option?.name, lang, e.target.value),
-                      })
-                    }
-                  />
-                  <Input
-                    type={"text"}
-                    style={{ width: "90px" }}
-                    placeholder="Cost"
-                    addonAfter="pts"
-                    value={option?.cost ?? ""}
-                    onChange={(e) => updateOption(groupIndex, optionIndex, { cost: e.target.value })}
-                  />
-                  <Button
-                    type="icon"
-                    icon={<Trash2 size={14} />}
-                    onClick={() => updateGroups((next) => next[groupIndex].options.splice(optionIndex, 1))}
-                  />
-                </Space.Compact>
-              </Form.Item>
-            ))}
-            <Form.Item style={{ marginBottom: 0 }}>
+              <Input
+                size="small"
+                type={"text"}
+                inputMode="numeric"
+                style={{ flex: "0 0 64px", width: 64 }}
+                placeholder="0"
+                value={option?.cost ?? ""}
+                onChange={(e) => updateOption(groupIndex, optionIndex, { cost: e.target.value })}
+              />
               <Button
-                type="dashed"
-                style={{ width: "100%" }}
-                onClick={() =>
-                  updateGroups((next) => next[groupIndex].options.push({ name: { [lang]: "" }, cost: "0" }))
-                }>
-                Add option
-              </Button>
-            </Form.Item>
-          </Form>
+                type="icon"
+                shape="circle"
+                size="small"
+                style={{ flex: "0 0 24px" }}
+                icon={<Trash2 size={14} />}
+                onClick={() => updateGroups((next) => next[groupIndex].options.splice(optionIndex, 1))}
+              />
+            </div>
+          ))}
+          <Button
+            type="dashed"
+            size="small"
+            style={{ width: "100%" }}
+            onClick={() => updateGroups((next) => next[groupIndex].options.push({ name: { [lang]: "" }, cost: "0" }))}>
+            Add option
+          </Button>
         </Card>
       ))}
       <Button
@@ -220,13 +240,24 @@ function WargearGroups() {
   );
 }
 
+// Groups are what the card renders once it has any, so they are the only thing
+// shown then. A card without groups edits its sentences instead, and keeps the
+// "Add wargear option" button so it can move up to structured options —
+// deleting the last group brings the sentences back.
 export function UnitWargearOptions() {
+  const { activeCard } = useCardStorage();
+  const hasGroups = (activeCard?.wargearOptions || []).length > 0;
+
+  if (hasGroups) {
+    return <WargearGroups />;
+  }
+
   return (
     <>
-      <WargearGroups />
-      <Card type={"inner"} size={"small"} title="Wargear text" style={{ marginTop: "16px" }} bodyStyle={{ padding: 8 }}>
+      <Card type={"inner"} size={"small"} title="Wargear text" bodyStyle={{ padding: 8 }} style={{ marginBottom: 16 }}>
         <WargearText />
       </Card>
+      <WargearGroups />
     </>
   );
 }
