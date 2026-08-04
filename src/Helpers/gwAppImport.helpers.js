@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+import { v4 as uuidv4 } from "uuid";
 
 // All valid section headers
 const SECTION_HEADERS = [
@@ -71,7 +72,7 @@ const parseEnhancement = (text) => {
  * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines with indentation
  * @returns {{modelCount: number, modelIndentLevel: number|null}} Object with model count and indent level
  */
-const analyzeModelCount = (bulletLines) => {
+export const analyzeModelCount = (bulletLines) => {
   if (bulletLines.length === 0) {
     return { modelCount: 1, modelIndentLevel: null };
   }
@@ -106,6 +107,41 @@ const analyzeModelCount = (bulletLines) => {
  */
 const removeInvisibleChars = (text) => {
   return text.replace(/[\u2060\u200B\uFEFF\u200C\u200D]/g, "");
+};
+
+/**
+ * Finalize a unit by extracting weapons from bullet lines and calculating model count.
+ * This is a shared helper used when saving units (at section headers, unit headers, or end of parsing).
+ *
+ * @param {Object} unit - The current unit being parsed
+ * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines
+ * @returns {Object} Finalized unit with models and weapons
+ */
+export const finalizeUnit = (unit, bulletLines) => {
+  const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
+  const weapons = [];
+
+  if (modelIndentLevel !== null) {
+    // Nested structure: weapons are bullets with indent > model indent level
+    for (const bullet of bulletLines) {
+      if (bullet.indent > modelIndentLevel) {
+        weapons.push(bullet.text);
+      }
+    }
+  } else {
+    // Flat structure: all non-metadata bullets are weapons
+    for (const bullet of bulletLines) {
+      if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
+        weapons.push(bullet.text);
+      }
+    }
+  }
+
+  return {
+    ...unit,
+    models: modelCount,
+    weapons,
+  };
 };
 
 /**
@@ -212,27 +248,7 @@ export const parseGwAppText = (text) => {
     if (SECTION_HEADERS.includes(upperTrimmed)) {
       // Save previous unit if exists
       if (currentUnit) {
-        const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
-        const weapons = [];
-        if (modelIndentLevel !== null) {
-          for (const bullet of bulletLines) {
-            if (bullet.indent > modelIndentLevel) {
-              weapons.push(bullet.text);
-            }
-          }
-        } else {
-          for (const bullet of bulletLines) {
-            if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
-              weapons.push(bullet.text);
-            }
-          }
-        }
-
-        units.push({
-          ...currentUnit,
-          models: modelCount,
-          weapons,
-        });
+        units.push(finalizeUnit(currentUnit, bulletLines));
         currentUnit = null;
         bulletLines = [];
       }
@@ -261,27 +277,7 @@ export const parseGwAppText = (text) => {
     if (unitHeaderMatch) {
       // Save previous unit if exists
       if (currentUnit) {
-        const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
-        const weapons = [];
-        if (modelIndentLevel !== null) {
-          for (const bullet of bulletLines) {
-            if (bullet.indent > modelIndentLevel) {
-              weapons.push(bullet.text);
-            }
-          }
-        } else {
-          for (const bullet of bulletLines) {
-            if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
-              weapons.push(bullet.text);
-            }
-          }
-        }
-
-        units.push({
-          ...currentUnit,
-          models: modelCount,
-          weapons,
-        });
+        units.push(finalizeUnit(currentUnit, bulletLines));
       }
 
       // Start new unit
@@ -330,32 +326,22 @@ export const parseGwAppText = (text) => {
 
       // Otherwise it's equipment/weapons
       bulletLines.push({ indent: indentation, quantity: 1, text: cleanText });
+      continue;
+    }
+
+    // Parse quantity lines WITHOUT bullet points (e.g., "9x Bolt rifle")
+    // These are continuation weapons in a model's equipment list
+    const noBulletQuantityMatch = trimmed.match(/^(\d+)x\s+(.+)/);
+    if (noBulletQuantityMatch && currentUnit) {
+      const quantity = parseInt(noBulletQuantityMatch[1], 10);
+      const text = noBulletQuantityMatch[2].trim();
+      bulletLines.push({ indent: indentation, quantity, text });
     }
   }
 
   // Save last unit
   if (currentUnit) {
-    const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
-    const weapons = [];
-    if (modelIndentLevel !== null) {
-      for (const bullet of bulletLines) {
-        if (bullet.indent > modelIndentLevel) {
-          weapons.push(bullet.text);
-        }
-      }
-    } else {
-      for (const bullet of bulletLines) {
-        if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
-          weapons.push(bullet.text);
-        }
-      }
-    }
-
-    units.push({
-      ...currentUnit,
-      models: modelCount,
-      weapons,
-    });
+    units.push(finalizeUnit(currentUnit, bulletLines));
   }
 
   if (!factionName) {
@@ -461,7 +447,7 @@ const getAlliedDatasheets = (faction, allFactions) => {
             _isAllied: true,
             _alliedFactionId: alliedId,
             _alliedFactionName: alliedFaction.name,
-          }))
+          })),
         );
       }
     });
@@ -478,7 +464,7 @@ const getAlliedDatasheets = (faction, allFactions) => {
           _alliedFactionId: subfaction.id,
           _alliedFactionName: subfaction.name,
           _isSubfaction: true,
-        }))
+        })),
       );
     }
   });
@@ -487,7 +473,36 @@ const getAlliedDatasheets = (faction, allFactions) => {
 };
 
 /**
+ * Get datasheets from parent faction (for subfactions)
+ * @param {Object} faction - The subfaction object
+ * @param {Array} allFactions - All available factions
+ * @returns {Array} Array of parent faction datasheets with metadata
+ */
+const getParentDatasheets = (faction, allFactions) => {
+  if (!faction?.is_subfaction || !faction?.parent_id || !allFactions?.length) {
+    return [];
+  }
+
+  const parentFaction = allFactions.find((f) => f.id === faction.parent_id);
+  if (!parentFaction?.datasheets) return [];
+
+  // Filter to only include datasheets that belong to the parent keyword
+  const filteredDatasheets = parentFaction.datasheets.filter(
+    (val) => val.factions?.length === 1 && val.factions?.includes(faction.parent_keyword),
+  );
+
+  return filteredDatasheets.map((sheet) => ({
+    ...sheet,
+    _isAllied: true,
+    _alliedFactionId: parentFaction.id,
+    _alliedFactionName: parentFaction.name,
+    _isParent: true,
+  }));
+};
+
+/**
  * Match parsed units to datasheets in the faction
+ * For subfactions, also searches parent faction datasheets as fallback
  * For units in ALLIED UNITS section, also searches allied faction datasheets
  * @param {Array} units - Parsed units from GW App text
  * @param {Object} faction - The matched faction object with datasheets
@@ -501,14 +516,14 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
 
   // Get allied datasheets for ALLIED UNITS section matching
   const alliedDatasheets = getAlliedDatasheets(faction, allFactions);
+  // Get parent faction datasheets for subfaction fallback
+  const parentDatasheets = getParentDatasheets(faction, allFactions);
 
   return units.map((unit) => {
-    // For ALLIED UNITS section, include allied faction datasheets in search
     const isAlliedUnit = unit.section === "ALLIED UNITS";
-    const searchableSheets = isAlliedUnit ? [...faction.datasheets, ...alliedDatasheets] : faction.datasheets;
 
-    // First try exact match
-    const exactMatch = searchableSheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
+    // PASS 1: Search in selected faction's datasheets first
+    const exactMatch = faction.datasheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
 
     if (exactMatch) {
       return {
@@ -516,12 +531,51 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
         matchStatus: "exact",
         matchedCard: exactMatch,
         alternatives: [],
-        alliedFactionId: exactMatch._alliedFactionId || null,
-        alliedFactionName: exactMatch._alliedFactionName || null,
+        alliedFactionId: null,
+        alliedFactionName: null,
       };
     }
 
-    // Fuzzy search
+    // PASS 2: For subfactions, try parent faction datasheets
+    if (parentDatasheets.length > 0) {
+      const parentMatch = parentDatasheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
+      if (parentMatch) {
+        return {
+          ...unit,
+          matchStatus: "exact",
+          matchedCard: parentMatch,
+          alternatives: [],
+          alliedFactionId: parentMatch._alliedFactionId,
+          alliedFactionName: parentMatch._alliedFactionName,
+        };
+      }
+    }
+
+    // PASS 3: For ALLIED UNITS section, try allied faction datasheets
+    if (isAlliedUnit && alliedDatasheets.length > 0) {
+      const alliedMatch = alliedDatasheets.find((d) => d.name.toLowerCase() === unit.originalName.toLowerCase());
+      if (alliedMatch) {
+        return {
+          ...unit,
+          matchStatus: "exact",
+          matchedCard: alliedMatch,
+          alternatives: [],
+          alliedFactionId: alliedMatch._alliedFactionId,
+          alliedFactionName: alliedMatch._alliedFactionName,
+        };
+      }
+    }
+
+    // FUZZY SEARCH: Build searchable sheets with priority ordering
+    // Selected faction first, then parent (for subfactions), then allied (for ALLIED UNITS)
+    let searchableSheets = [...faction.datasheets];
+    if (parentDatasheets.length > 0) {
+      searchableSheets = [...searchableSheets, ...parentDatasheets];
+    }
+    if (isAlliedUnit) {
+      searchableSheets = [...searchableSheets, ...alliedDatasheets];
+    }
+
     const fuse = new Fuse(searchableSheets, {
       keys: ["name"],
       threshold: 0.4,
@@ -535,7 +589,7 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
         ...unit,
         matchStatus: "none",
         matchedCard: null,
-        alternatives: searchableSheets.slice(0, 10), // Show first 10 as options
+        alternatives: searchableSheets.slice(0, 10),
         alliedFactionId: null,
         alliedFactionName: null,
       };
@@ -543,8 +597,6 @@ export const matchUnitsToDatasheets = (units, faction, allFactions = []) => {
 
     const bestMatch = results[0];
     const status = classifyMatchScore(bestMatch.score);
-
-    // For ambiguous matches, include alternatives
     const alternatives = status === "ambiguous" ? results.slice(1, 5).map((r) => r.item) : [];
 
     return {
@@ -577,7 +629,7 @@ export const countMatchStatuses = (units) => {
       }
       return counts;
     },
-    { ready: 0, needsReview: 0, notMatched: 0, skipped: 0 }
+    { ready: 0, needsReview: 0, notMatched: 0, skipped: 0 },
   );
 };
 
@@ -603,6 +655,7 @@ const normalizeWeaponName = (name) => {
   return name
     .toLowerCase()
     .trim()
+    .replace(/^➤\s*/, "") // "➤ Hellforged weapons - strike" -> "Hellforged weapons - strike"
     .replace(/^\d+x\s+/i, "") // "2x Storm bolter" -> "Storm bolter"
     .replace(/\s+x\d+$/i, "") // "Storm bolter x2" -> "Storm bolter"
     .trim();
@@ -642,6 +695,31 @@ const doesWeaponMatch = (importedWeapon, profileName) => {
   return false;
 };
 
+// Fuzzy match threshold for weapon names (tighter than unit matching to avoid false positives)
+const WEAPON_FUZZY_THRESHOLD = 0.3;
+
+/**
+ * Check if a datasheet weapon profile matches any imported weapon, using fuzzy search as fallback.
+ * Tries deterministic matching first (exact, variant, parent), then falls back to Fuse.js fuzzy match.
+ * @param {string} profileName - Weapon profile name from the datasheet
+ * @param {string[]} importedWeapons - Array of imported weapon names
+ * @param {Fuse|null} weaponFuse - Pre-built Fuse index over normalized imported weapon names
+ * @returns {boolean} True if the profile matches any imported weapon
+ */
+const doesWeaponMatchAny = (profileName, importedWeapons, weaponFuse) => {
+  // Try deterministic matching first
+  if (importedWeapons.some((w) => doesWeaponMatch(w, profileName))) return true;
+
+  // Fallback: fuzzy match against imported weapon names
+  if (weaponFuse) {
+    const normalizedProfile = normalizeDashes(normalizeWeaponName(profileName));
+    const results = weaponFuse.search(normalizedProfile);
+    if (results.length > 0 && results[0].score <= WEAPON_FUZZY_THRESHOLD) return true;
+  }
+
+  return false;
+};
+
 /**
  * Filter weapons on a card based on imported weapon list
  * Sets active: false on weapon profiles NOT in the import list
@@ -657,6 +735,14 @@ export const filterCardWeapons = (card, importedWeapons) => {
     return card;
   }
 
+  // Build a Fuse index over normalized imported weapon names for fuzzy fallback
+  const normalizedImports = importedWeapons.map((w) => ({ name: normalizeDashes(normalizeWeaponName(w)) }));
+  const weaponFuse = new Fuse(normalizedImports, {
+    keys: ["name"],
+    threshold: WEAPON_FUZZY_THRESHOLD,
+    includeScore: true,
+  });
+
   const filteredCard = { ...card };
   filteredCard.showWeapons = { ...card.showWeapons };
 
@@ -666,13 +752,13 @@ export const filterCardWeapons = (card, importedWeapons) => {
       ...weapon,
       profiles: weapon.profiles?.map((profile) => ({
         ...profile,
-        active: importedWeapons.some((w) => doesWeaponMatch(w, profile.name)),
+        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse),
       })),
     }));
 
     // Hide section if no ranged weapons are active
     const hasActiveRanged = filteredCard.rangedWeapons.some((weapon) =>
-      weapon.profiles?.some((profile) => profile.active)
+      weapon.profiles?.some((profile) => profile.active),
     );
     if (!hasActiveRanged) {
       filteredCard.showWeapons.rangedWeapons = false;
@@ -685,13 +771,13 @@ export const filterCardWeapons = (card, importedWeapons) => {
       ...weapon,
       profiles: weapon.profiles?.map((profile) => ({
         ...profile,
-        active: importedWeapons.some((w) => doesWeaponMatch(w, profile.name)),
+        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse),
       })),
     }));
 
     // Hide section if no melee weapons are active
     const hasActiveMelee = filteredCard.meleeWeapons.some((weapon) =>
-      weapon.profiles?.some((profile) => profile.active)
+      weapon.profiles?.some((profile) => profile.active),
     );
     if (!hasActiveMelee) {
       filteredCard.showWeapons.meleeWeapons = false;
@@ -711,4 +797,105 @@ export const filterCardWeapons = (card, importedWeapons) => {
   }
 
   return filteredCard;
+};
+
+/**
+ * Match enhancement names from parsed units to faction enhancement data.
+ * Tries: detachment-scoped exact match → name-only exact match → fuzzy match.
+ * @param {Array} units - Parsed units with enhancement data
+ * @param {Object} faction - The matched faction object with enhancements
+ * @param {string} listDetachment - The list's detachment name for scoped matching
+ * @returns {Array} Units with matched enhancement data
+ */
+export const matchEnhancementsToFaction = (units, faction, listDetachment) => {
+  if (!faction?.enhancements?.length) return units;
+
+  return units.map((unit) => {
+    if (!unit.enhancement) return unit;
+
+    const enhancements = faction.enhancements;
+    let factionEnhancement = null;
+
+    if (listDetachment) {
+      factionEnhancement = enhancements.find(
+        (e) =>
+          e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
+          e.detachment?.toLowerCase() === listDetachment.toLowerCase(),
+      );
+    }
+
+    if (!factionEnhancement) {
+      factionEnhancement = enhancements.find((e) => e.name.toLowerCase() === unit.enhancement.name.toLowerCase());
+    }
+
+    if (!factionEnhancement) {
+      const enhancementFuse = new Fuse(enhancements, {
+        keys: ["name"],
+        threshold: 0.4,
+        includeScore: true,
+      });
+      const results = enhancementFuse.search(unit.enhancement.name);
+      if (results.length > 0) {
+        factionEnhancement = results[0].item;
+      }
+    }
+
+    if (factionEnhancement) {
+      return {
+        ...unit,
+        enhancement: {
+          ...unit.enhancement,
+          ...factionEnhancement,
+          cost: unit.enhancement.cost || factionEnhancement.cost,
+          matched: true,
+        },
+        detachment: factionEnhancement.detachment,
+      };
+    }
+
+    return unit;
+  });
+};
+
+/**
+ * Build import-ready card objects from matched units.
+ * Assigns UUIDs, sets points/models, applies enhancements, and filters weapons.
+ * @param {Array} units - Units with matchedCard data
+ * @returns {Array} Array of card objects ready for import
+ */
+export const buildCardsFromUnits = (units) => {
+  return units.map((unit) => {
+    let card = { ...unit.matchedCard };
+    card.uuid = uuidv4();
+    card.isCustom = true;
+
+    if (unit.points) {
+      card.unitSize = {
+        ...(card.unitSize || {}),
+        cost: unit.points - (unit.enhancement?.cost || 0),
+        models: unit.models || 1,
+      };
+    }
+
+    if (unit.isWarlord) {
+      card.isWarlord = true;
+    }
+
+    if (unit.enhancement) {
+      card.selectedEnhancement = {
+        name: unit.enhancement.name,
+        cost: unit.enhancement.cost || 0,
+        ...(unit.enhancement.matched ? unit.enhancement : {}),
+      };
+      if (unit.detachment) {
+        card.detachment = unit.detachment;
+      }
+    }
+
+    if (unit.weapons?.length && !card._directRead) {
+      card = filterCardWeapons(card, unit.weapons);
+    }
+
+    return card;
+  });
 };

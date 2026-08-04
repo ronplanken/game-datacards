@@ -1,0 +1,34 @@
+## Defining Fields
+
+Each card type has a set of fields that define what data it holds. Select a card type in the left panel to open its field editor in the right panel.
+
+For **unit** card types, you get specialized editors for stats, weapons, abilities, sections, and metadata. For **rule**, **enhancement**, and **stratagem** types, you get a general-purpose field editor.
+
+### Field properties
+
+Every field has three core properties:
+
+| Property | Description |
+|----------|-------------|
+| **Key** | Internal identifier (e.g., `m` for Movement). Not shown on the card. Must be unique within its collection. |
+| **Label** | Display name shown on the card (e.g., "Movement"). |
+| **Type** | What kind of data the field holds. See field types below. |
+
+### Field types
+
+| Type | Description | Available in |
+|------|-------------|-------------|
+| **Text** | Plain single-line text input. | All editors |
+| **Rich text** | Multi-line text with formatting support. | Fields editor only (not stats or weapon columns) |
+| **Enum** | Dropdown list with predefined options. Shows a comma-separated input where you define the allowed values. | All editors |
+| **Boolean** | True/false toggle. Lets you set custom display values (e.g., "Yes"/"No" or "Active"/"Inactive"). Defaults to "Yes" and "No" if not set. | All editors |
+
+### Field editor for non-unit cards
+
+**Rule** cards have top-level fields plus a nested rules collection. Each rule entry has its own fields (typically title, description, and format).
+
+**Enhancement** cards have top-level fields plus a keywords collection.
+
+**Stratagem** cards have top-level fields only.
+
+You can add, remove, and reorder fields using the controls in the field editor. Each field can be configured with a key, label, and type. Enum fields show an additional input for defining the allowed options.

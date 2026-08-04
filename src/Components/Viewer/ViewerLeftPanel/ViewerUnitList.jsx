@@ -45,7 +45,7 @@ const groupWarscrollsByRole = (warscrolls) => {
       factionTerrain: [],
       manifestations: [],
       other: [],
-    }
+    },
   );
 };
 
@@ -81,6 +81,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
   }
 
   if (selectedContentType === "stratagems" && selectedFaction) {
+    // Filter by subfaction
     const filteredStratagems = selectedFaction?.stratagems?.filter((stratagem) => {
       return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
     });
@@ -91,7 +92,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
 
     const basicStratagems = searchText
       ? selectedFaction.basicStratagems?.filter((stratagem) =>
-          stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+          stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
         )
       : selectedFaction.basicStratagems;
 

@@ -1,0 +1,41 @@
+## Data Binding
+
+Connect your template to real game data so cards fill in automatically. Data binding replaces placeholder text with actual values from your datasheets.
+
+### Binding syntax
+
+Wrap any field path in double curly braces inside a text element:
+
+- `{{name}}` — Shows the unit name
+- `{{stats[0].m}}` — Shows the first stat profile's Movement value
+
+### Available bindings — Warhammer 40K
+
+| Category | Bindings |
+|----------|----------|
+| **Basic** | `name`, `subname`, `description`, `faction_id` |
+| **Stats** | `stats[0].m`, `stats[0].t`, `stats[0].sv`, `stats[0].w`, `stats[0].ld`, `stats[0].oc`, `stats[0].invul` |
+| **Ranged weapons** | `rangedWeapons[N].name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage` |
+| **Melee weapons** | `meleeWeapons[N].name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage` |
+| **Abilities** | `abilities[N].name`, `abilities[N].description` |
+| **Keywords** | `keywords[N].keyword` |
+| **Other** | `composition`, `loadout`, `transport` |
+
+Replace `[N]` with an index (0, 1, 2...) to access specific items in a list.
+
+### Available bindings — Age of Sigmar
+
+| Category | Bindings |
+|----------|----------|
+| **Stats** | `stats.move`, `stats.save`, `stats.control`, `stats.health`, `stats.ward`, `stats.wizard`, `stats.priest` |
+| **Weapons** | `weapons.ranged[N]` / `weapons.melee[N]` with `.name`, `.hit`, `.wound`, `.rend`, `.damage` |
+
+### Preview mode
+
+Toggle preview mode in the toolbar to see your template with real unit data. Select a datasheet from the dropdown to populate all bound fields. This lets you check layout and sizing before finalizing your design.
+
+The original template text is preserved — preview mode only affects the display. Switch back to edit mode to continue working on your template.
+
+### Binding modal
+
+Click the binding icon on any text element to open the binding browser. Bindings are organized by category and searchable. Click a binding to insert it at the cursor position.

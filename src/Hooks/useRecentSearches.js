@@ -69,7 +69,7 @@ export function useRecentSearches() {
         const currentSearches = prev[dataSource] || [];
         // Remove any existing entry for the same unit
         const filtered = currentSearches.filter(
-          (entry) => !(entry.unitId === unit.id && entry.factionId === factionId)
+          (entry) => !(entry.unitId === unit.id && entry.factionId === factionId),
         );
 
         // Add new entry at the beginning and limit to max
@@ -79,7 +79,7 @@ export function useRecentSearches() {
         };
       });
     },
-    [dataSource]
+    [dataSource],
   );
 
   /**

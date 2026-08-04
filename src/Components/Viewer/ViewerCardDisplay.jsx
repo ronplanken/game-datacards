@@ -5,13 +5,15 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
 import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
+import { CustomCardDisplay } from "../Custom/CustomCardDisplay";
 
 export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
   const { activeCard } = useCardStorage();
-  const { dataSource } = useDataSourceStorage();
+  const { dataSource, isCustomDatasource } = useDataSourceStorage();
   const { settings } = useSettingsStorage();
 
   const internalRef = useRef(null);
@@ -44,6 +46,8 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
     switch (activeCard.source) {
       case "40k-10e":
         return <Warhammer40K10eCardDisplay side={side} type={type} />;
+      case "40k-11e":
+        return <Warhammer40K11eCardDisplay side={side} type={type} />;
       case "40k":
         return <Warhammer40KCardDisplay />;
       case "basic":
@@ -52,10 +56,18 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
         return <NecromundaCardDisplay />;
       case "aos":
         return <AgeOfSigmarCardDisplay />;
+      case "starcraft-tmg":
+        return <CustomCardDisplay />;
       default:
+        if (isCustomDatasource) {
+          return <CustomCardDisplay type="viewer" />;
+        }
         return null;
     }
   };
+
+  const useCustomScope = isCustomDatasource || activeCard?.source === "starcraft-tmg";
+  const cssClass = useCustomScope ? "data-custom" : `data-${activeCard?.source}`;
 
   return (
     <div
@@ -68,7 +80,7 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
         "--banner-colour": cardFaction?.colours?.banner,
         "--header-colour": cardFaction?.colours?.header,
       }}
-      className={`data-${activeCard?.source}`}>
+      className={cssClass}>
       <Row style={{ overflow: "hidden", justifyContent: "center" }}>{renderCard()}</Row>
     </div>
   );
@@ -77,7 +89,7 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
 // Hidden card display for image export/sharing
 export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ side = "front", type }, ref) {
   const { activeCard } = useCardStorage();
-  const { dataSource } = useDataSourceStorage();
+  const { dataSource, isCustomDatasource } = useDataSourceStorage();
 
   const cardFaction = dataSource?.data?.find((faction) => faction.id === activeCard?.faction_id);
 
@@ -87,6 +99,8 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
     switch (activeCard.source) {
       case "40k-10e":
         return <Warhammer40K10eCardDisplay side={side} type={type} />;
+      case "40k-11e":
+        return <Warhammer40K11eCardDisplay side={side} type={type} />;
       case "40k":
         return <Warhammer40KCardDisplay />;
       case "basic":
@@ -95,10 +109,18 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
         return <NecromundaCardDisplay />;
       case "aos":
         return <AgeOfSigmarCardDisplay />;
+      case "starcraft-tmg":
+        return <CustomCardDisplay />;
       default:
+        if (isCustomDatasource) {
+          return <CustomCardDisplay />;
+        }
         return null;
     }
   };
+
+  const useCustomScope = isCustomDatasource || activeCard?.source === "starcraft-tmg";
+  const hiddenCssClass = useCustomScope ? "data-custom" : `data-${activeCard?.source}`;
 
   return (
     <div
@@ -113,7 +135,7 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
         top: "0px",
         left: "0px",
       }}
-      className={`data-${activeCard?.source}`}>
+      className={hiddenCssClass}>
       <Row style={{ overflow: "hidden" }}>{renderCard()}</Row>
     </div>
   );

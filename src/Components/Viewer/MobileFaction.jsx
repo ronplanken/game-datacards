@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { List, ChevronRight, ChevronDown, ChevronUp } from "lucide-react";
+import { List, ChevronRight, ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
+import { getDetachmentName } from "../../Helpers/faction.helpers";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
+import { StratagemCard as StratagemCard11e } from "../Warhammer40k-11e/StratagemCard";
+import { MarkupText } from "../Warhammer40k-11e/UnitCard/UnitAbilityDescription";
+import { localize } from "../../Helpers/localization.helpers";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import "./MobileFaction.css";
 
@@ -21,7 +26,7 @@ const ExpandableItem = ({ title, cost, costLabel = "CP", children, defaultOpen =
             {cost} {costLabel}
           </span>
         )}
-        {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        <ChevronDown size={18} className={`expandable-item-chevron ${isOpen ? "open" : ""}`} />
       </button>
       {isOpen && <div className="expandable-item-content">{children}</div>}
     </div>
@@ -35,8 +40,10 @@ const formatRuleText = (text) => {
   return text?.replace(/\n/g, "\n\n").replace(/\n\n\n\n/g, "\n\n") || "";
 };
 
-// Rule content component for rendering rule parts with different types
-const RuleContent = ({ rules }) => (
+// Rule content component for rendering rule parts with different types.
+// `lang` resolves language-keyed text for multi-language datasources (e.g.
+// 40k-11e); localize() passes plain strings through unchanged for 40k-10e.
+const RuleContent = ({ rules, lang = "en" }) => (
   <div className="rule-content">
     {[...rules]
       .sort((a, b) => a.order - b.order)
@@ -45,18 +52,18 @@ const RuleContent = ({ rules }) => (
         if (part.type === "quote" || part.type === "textItalic") {
           return null;
         }
-        const formattedText = formatRuleText(part.text);
+        const formattedText = formatRuleText(localize(part.text, lang));
         switch (part.type) {
           case "header":
             return (
               <h4 key={index} className="rule-header">
-                {part.text}
+                {localize(part.text, lang)}
               </h4>
             );
           case "accordion":
             return (
               <div key={index} className="rule-accordion-item">
-                {part.title && <h5 className="rule-accordion-title">{part.title}</h5>}
+                {part.title && <h5 className="rule-accordion-title">{localize(part.title, lang)}</h5>}
                 <MarkdownDisplay content={formattedText} />
               </div>
             );
@@ -85,20 +92,33 @@ export const MobileFaction = () => {
   const [showDetachmentPicker, setShowDetachmentPicker] = useState(false);
   const [stratagemTab, setStratagemTab] = useState("faction");
   const { settings, updateSettings } = useSettingsStorage();
+  const { datasheets: combinedDatasheets } = useCombinedDatasheets();
 
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
+
+  // Multi-language datasource (40k-11e) needs language resolution + the 11e cards.
+  const is11e = settings.selectedDataSource === "40k-11e";
+  const lang = settings.language || "en";
 
   const handleBrowseUnits = () => {
     navigate(`/mobile/${factionSlug}/units`);
   };
 
+  const detachments = useMemo(() => selectedFaction?.detachments || [], [selectedFaction?.detachments]);
+
   useEffect(() => {
     if (settings?.selectedDetachment?.[selectedFaction?.id]) {
-      setSelectedDetachment(settings?.selectedDetachment?.[selectedFaction?.id]);
+      const savedDetachment = settings?.selectedDetachment?.[selectedFaction?.id];
+      const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+      if (isStillValid) {
+        setSelectedDetachment(savedDetachment);
+      } else {
+        setSelectedDetachment(getDetachmentName(detachments?.[0]));
+      }
     } else {
-      setSelectedDetachment(selectedFaction?.detachments?.[0]);
+      setSelectedDetachment(getDetachmentName(detachments?.[0]));
     }
-  }, [selectedFaction, settings]);
+  }, [selectedFaction, settings, detachments]);
 
   const handleSelectDetachment = (detachment) => {
     setSelectedDetachment(detachment);
@@ -109,26 +129,27 @@ export const MobileFaction = () => {
     setShowDetachmentPicker(false);
   };
 
-  // Filter stratagems by detachment
+  // Filter stratagems by selected detachment
   const factionStratagems =
     selectedFaction?.stratagems?.filter(
-      (stratagem) => stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment
+      (stratagem) =>
+        stratagem?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !stratagem.detachment,
     ) || [];
 
   const coreStratagems = selectedFaction?.basicStratagems || [];
 
-  // Filter enhancements by detachment
+  // Filter enhancements by selected detachment
   const enhancements = Array.isArray(selectedFaction?.enhancements)
     ? selectedFaction.enhancements.filter(
         (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment
+          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
       )
     : [];
 
-  // Filter detachment rules by selected detachment
+  // Get detachment rules for selected detachment
   const detachmentRules =
     selectedFaction?.rules?.detachment?.find(
-      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase()
+      (rule) => rule.detachment?.toLowerCase() === selectedDetachment?.toLowerCase(),
     ) || [];
 
   return (
@@ -147,12 +168,12 @@ export const MobileFaction = () => {
       <button className="mobile-faction-units-button" onClick={handleBrowseUnits}>
         <List size={18} />
         <span>Browse All Units</span>
-        <span className="units-count">{selectedFaction?.datasheets?.length || 0}</span>
+        <span className="units-count">{combinedDatasheets?.length || 0}</span>
         <ChevronRight size={18} />
       </button>
 
       {/* Detachment Picker */}
-      {selectedFaction?.detachments?.length > 1 && (
+      {detachments?.length > 1 && (
         <div className="mobile-faction-detachment">
           <SectionHeader title="Detachment" />
           <button className="detachment-selector" onClick={() => setShowDetachmentPicker(true)}>
@@ -169,7 +190,7 @@ export const MobileFaction = () => {
           <div className="rules-list">
             {selectedFaction.rules.army.map((rule) => (
               <ExpandableItem key={rule.name} title={rule.name}>
-                <RuleContent rules={rule.rules} />
+                <RuleContent rules={rule.rules} lang={lang} />
               </ExpandableItem>
             ))}
           </div>
@@ -184,7 +205,7 @@ export const MobileFaction = () => {
             {detachmentRules?.rules?.map((rule) => {
               return (
                 <ExpandableItem key={rule.name} title={rule.name}>
-                  <RuleContent rules={rule.rules} />
+                  <RuleContent rules={rule.rules} lang={lang} />
                 </ExpandableItem>
               );
             })}
@@ -221,9 +242,15 @@ export const MobileFaction = () => {
                     title={stratagem.name}
                     cost={stratagem.cost}
                     costLabel="CP">
-                    <div className="data-40k-10e">
-                      <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="mobile" />
-                    </div>
+                    {is11e ? (
+                      <div className="data-40k-11e">
+                        <StratagemCard11e stratagem={stratagem} paddingTop="0" containerClass="mobile" />
+                      </div>
+                    ) : (
+                      <div className="data-40k-10e">
+                        <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="mobile" />
+                      </div>
+                    )}
                   </ExpandableItem>
                 ))
               ) : (
@@ -236,9 +263,15 @@ export const MobileFaction = () => {
             <>
               {coreStratagems.map((stratagem) => (
                 <ExpandableItem key={stratagem.name} title={stratagem.name} cost={stratagem.cost} costLabel="CP">
-                  <div className="data-40k-10e">
-                    <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="stratagem mobile" />
-                  </div>
+                  {is11e ? (
+                    <div className="data-40k-11e">
+                      <StratagemCard11e stratagem={stratagem} paddingTop="0" containerClass="stratagem mobile" />
+                    </div>
+                  ) : (
+                    <div className="data-40k-10e">
+                      <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="stratagem mobile" />
+                    </div>
+                  )}
                 </ExpandableItem>
               ))}
             </>
@@ -259,7 +292,13 @@ export const MobileFaction = () => {
                 cost={enhancement.cost}
                 costLabel="pts">
                 <div className="enhancement-description">
-                  <MarkdownDisplay content={enhancement.description.replaceAll("■", "\n ■")} />
+                  {is11e ? (
+                    <div className="data-40k-11e">
+                      <MarkupText content={localize(enhancement.description, lang)} />
+                    </div>
+                  ) : (
+                    <MarkdownDisplay content={enhancement.description.replaceAll("■", "\n ■")} />
+                  )}
                 </div>
               </ExpandableItem>
             ))
@@ -275,15 +314,18 @@ export const MobileFaction = () => {
         onClose={() => setShowDetachmentPicker(false)}
         title="Select Detachment">
         <div className="detachment-picker-list">
-          {selectedFaction?.detachments?.map((detachment) => (
-            <button
-              key={detachment}
-              className={`detachment-picker-item ${selectedDetachment === detachment ? "selected" : ""}`}
-              onClick={() => handleSelectDetachment(detachment)}>
-              <span>{detachment}</span>
-              {selectedDetachment === detachment && <span className="detachment-check">✓</span>}
-            </button>
-          ))}
+          {detachments?.map((detachment) => {
+            const detachmentName = getDetachmentName(detachment);
+            return (
+              <button
+                key={detachmentName}
+                className={`detachment-picker-item ${selectedDetachment === detachmentName ? "selected" : ""}`}
+                onClick={() => handleSelectDetachment(detachmentName)}>
+                <span>{detachmentName}</span>
+                {selectedDetachment === detachmentName && <span className="detachment-check">✓</span>}
+              </button>
+            );
+          })}
         </div>
       </BottomSheet>
     </div>

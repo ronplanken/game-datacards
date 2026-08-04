@@ -1,20 +1,15 @@
-import { Download, Hash, Copy } from "lucide-react";
-import { Button, message, Input } from "antd";
+import { Download, Copy, FileJson, Gamepad2, X } from "lucide-react";
+import { Button } from "antd";
+import { message } from "../Toast/message";
 import { Tooltip } from "../Tooltip/Tooltip";
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { useFirebase } from "../../Hooks/useFirebase";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
-import {
-  createDatasourceExport,
-  generateDatasourceFilename,
-  generateIdFromName,
-  countCardsByType,
-  formatCardBreakdown,
-} from "../../Helpers/customDatasource.helpers";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
+import { useUmami } from "../../Hooks/useUmami";
 import "./ImportExport.css";
 
 const modalRoot = document.getElementById("modal-root");
@@ -33,95 +28,17 @@ const getAllCategoryCards = (category, allCategories) => {
 export const Exporter = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("json");
-  const { logScreenView } = useFirebase();
   const { activeCategory, cardStorage } = useCardStorage();
   const { settings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
 
   // Preview state
   const [jsonPreview, setJsonPreview] = useState("");
   const [gwAppPreview, setGwAppPreview] = useState("");
 
-  // Datasource export state
-  const [dsName, setDsName] = useState("");
-  const [dsId, setDsId] = useState("");
-  const [dsVersion, setDsVersion] = useState("1.0.0");
-  const [dsAuthor, setDsAuthor] = useState("");
-  const [dsHeaderColor, setDsHeaderColor] = useState("#1a1a1a");
-  const [dsBannerColor, setDsBannerColor] = useState("#4a4a4a");
-
-  // Initialize datasource form when modal opens or category changes
-  useEffect(() => {
-    if (isModalVisible && activeCategory) {
-      setDsName(activeCategory.name || "");
-      setDsId(generateIdFromName(activeCategory.name || ""));
-      setDsVersion("1.0.0");
-      setDsAuthor("");
-      setDsHeaderColor("#1a1a1a");
-      setDsBannerColor("#4a4a4a");
-    }
-  }, [isModalVisible, activeCategory]);
-
-  // Auto-generate ID when name changes
-  useEffect(() => {
-    if (dsName) {
-      setDsId(generateIdFromName(dsName));
-    }
-  }, [dsName]);
-
   const handleClose = () => {
     setIsModalVisible(false);
     setActiveTab("json");
-  };
-
-  // Get all cards for datasource export
-  const allCategoryCards = useMemo(() => {
-    return getAllCategoryCards(activeCategory, cardStorage.categories);
-  }, [activeCategory, cardStorage.categories]);
-
-  const { counts: cardCounts, total: cardTotal } = useMemo(
-    () => countCardsByType(allCategoryCards),
-    [allCategoryCards]
-  );
-  const cardBreakdown = useMemo(() => formatCardBreakdown(cardCounts), [cardCounts]);
-
-  const isDatasourceValid = dsName.trim() && dsVersion.trim();
-
-  const handleExportDatasource = () => {
-    if (!isDatasourceValid) return;
-
-    try {
-      const datasource = createDatasourceExport({
-        name: dsName.trim(),
-        id: dsId.trim() || generateIdFromName(dsName),
-        version: dsVersion.trim(),
-        author: dsAuthor.trim() || undefined,
-        cards: allCategoryCards,
-        factionName: activeCategory.name,
-        colours: {
-          header: dsHeaderColor,
-          banner: dsBannerColor,
-        },
-      });
-
-      const json = JSON.stringify(datasource, null, 2);
-      const blob = new Blob([json], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const filename = generateDatasourceFilename(dsName);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      message.success(`Datasource exported as ${filename}`);
-      handleClose();
-    } catch (error) {
-      message.error("Failed to export datasource");
-      console.error("Export error:", error);
-    }
   };
 
   // Generate JSON export string
@@ -162,7 +79,7 @@ export const Exporter = () => {
       category: exportCategory,
       subCategories: exportSubCategories.length > 0 ? exportSubCategories : undefined,
       createdAt: new Date().toISOString(),
-      version: process.env.REACT_APP_VERSION,
+      version: import.meta.env.VITE_VERSION,
       website: "https://game-datacards.eu",
     };
 
@@ -180,12 +97,14 @@ export const Exporter = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    trackEvent("export-json", { method: "download" });
     message.success("JSON file downloaded");
   };
 
   const handleCopyJson = () => {
     if (!jsonPreview) return;
     navigator.clipboard.writeText(jsonPreview);
+    trackEvent("export-json", { method: "clipboard" });
     message.success("JSON copied to clipboard");
   };
 
@@ -196,12 +115,8 @@ export const Exporter = () => {
     // Get all cards including sub-category cards
     const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
 
-    // Calculate total points
-    const totalPoints = allCards?.reduce((sum, card) => {
-      const unitCost = Number(card?.unitSize?.cost) || 0;
-      const enhancementCost = Number(card?.selectedEnhancement?.cost) || 0;
-      return sum + unitCost + enhancementCost;
-    }, 0);
+    // Calculate total points (includes 11e cheapest-tier default + roster surcharge).
+    const totalPoints = getCategoryPointsTotal(allCards);
 
     // Sort cards into sections
     const sortedCards = allCards?.reduce(
@@ -221,7 +136,7 @@ export const Exporter = () => {
         }
         return exportCards;
       },
-      { characters: [], battleline: [], transports: [], other: [], allied: [] }
+      { characters: [], battleline: [], transports: [], other: [], allied: [] },
     );
 
     // Helper to format a unit entry
@@ -300,6 +215,7 @@ export const Exporter = () => {
   const handleCopyGwApp = () => {
     if (!gwAppPreview) return;
     navigator.clipboard.writeText(gwAppPreview);
+    trackEvent("export-gw-list");
     message.success("List copied to clipboard");
   };
 
@@ -326,32 +242,38 @@ export const Exporter = () => {
           <div className="import-export-modal-overlay" onClick={handleClose}>
             <div className="import-export-modal" onClick={(e) => e.stopPropagation()}>
               <div className="import-export-modal-header">
-                <h2 className="import-export-modal-title">Export</h2>
+                <span className="import-export-modal-title">
+                  <Download size={18} />
+                  Export
+                </span>
+                <button className="import-export-modal-close" onClick={handleClose}>
+                  <X size={18} />
+                </button>
               </div>
               <div className="import-export-modal-body">
-                <div className="import-export-tabs">
+                {/* Sidebar */}
+                <nav className="import-export-sidebar">
                   <div
-                    className={`import-export-tab ${activeTab === "json" ? "active" : ""}`}
+                    className={`import-export-nav-item ${activeTab === "json" ? "active" : ""}`}
                     onClick={() => setActiveTab("json")}>
-                    GDC JSON
+                    <FileJson size={16} className="import-export-nav-icon" />
+                    <span>GDC JSON</span>
                   </div>
                   <Tooltip
                     content={isGwAppDisabled ? "Only available for 10th Edition 40k lists" : ""}
-                    placement="bottom">
+                    placement="right">
                     <div
-                      className={`import-export-tab ${activeTab === "gwapp" ? "active" : ""} ${
+                      className={`import-export-nav-item ${activeTab === "gwapp" ? "active" : ""} ${
                         isGwAppDisabled ? "disabled" : ""
                       }`}
                       onClick={() => !isGwAppDisabled && setActiveTab("gwapp")}>
-                      GW 40k App
+                      <Gamepad2 size={16} className="import-export-nav-icon" />
+                      <span>GW 40k App</span>
                     </div>
                   </Tooltip>
-                  <div
-                    className={`import-export-tab ${activeTab === "datasource" ? "active" : ""}`}
-                    onClick={() => setActiveTab("datasource")}>
-                    Datasource
-                  </div>
-                </div>
+                </nav>
+
+                {/* Content */}
                 <div className="import-export-content">
                   {activeTab === "json" && (
                     <>
@@ -384,101 +306,6 @@ export const Exporter = () => {
                       </div>
                     </>
                   )}
-                  {activeTab === "datasource" && (
-                    <div className="ie-datasource-tab">
-                      <p className="import-export-description">
-                        Export this category as a standalone datasource that can be imported and shared with others.
-                      </p>
-                      <div className="ie-ds-summary">
-                        <span className="ie-ds-category">
-                          Category: <strong>{activeCategory?.name}</strong>
-                        </span>
-                        <span className="ie-ds-count">
-                          {cardTotal} card{cardTotal !== 1 ? "s" : ""}
-                          {cardBreakdown && ` (${cardBreakdown})`}
-                        </span>
-                      </div>
-                      <div className="ie-ds-form">
-                        <div className="ie-ds-field">
-                          <label className="ie-ds-label">
-                            Datasource Name <span className="ie-ds-required">*</span>
-                          </label>
-                          <Input
-                            value={dsName}
-                            onChange={(e) => setDsName(e.target.value)}
-                            placeholder="My Custom Army"
-                            size="small"
-                          />
-                        </div>
-                        <div className="ie-ds-row">
-                          <div className="ie-ds-field ie-ds-half">
-                            <label className="ie-ds-label">
-                              Version <span className="ie-ds-required">*</span>
-                            </label>
-                            <Input
-                              value={dsVersion}
-                              onChange={(e) => setDsVersion(e.target.value)}
-                              placeholder="1.0.0"
-                              size="small"
-                            />
-                          </div>
-                          <div className="ie-ds-field ie-ds-half">
-                            <label className="ie-ds-label">Author</label>
-                            <Input
-                              value={dsAuthor}
-                              onChange={(e) => setDsAuthor(e.target.value)}
-                              placeholder="Your name"
-                              size="small"
-                            />
-                          </div>
-                        </div>
-                        <div className="ie-ds-field">
-                          <label className="ie-ds-label">Datasource ID</label>
-                          <Input
-                            value={dsId}
-                            onChange={(e) => setDsId(e.target.value)}
-                            placeholder="my-custom-army"
-                            size="small"
-                            prefix={<Hash size={14} style={{ color: "rgba(0,0,0,0.45)" }} />}
-                          />
-                          <span className="ie-ds-help">Used for linking updates to this datasource</span>
-                        </div>
-                        <div className="ie-ds-field">
-                          <label className="ie-ds-label">Faction Colors</label>
-                          <div className="ie-ds-color-row">
-                            <div className="ie-ds-color-picker">
-                              <span className="ie-ds-color-label">Header</span>
-                              <div className="ie-ds-color-input-wrapper">
-                                <input
-                                  type="color"
-                                  value={dsHeaderColor}
-                                  onChange={(e) => setDsHeaderColor(e.target.value)}
-                                  className="ie-ds-color-input"
-                                />
-                                <span className="ie-ds-color-value">{dsHeaderColor}</span>
-                              </div>
-                            </div>
-                            <div className="ie-ds-color-picker">
-                              <span className="ie-ds-color-label">Banner</span>
-                              <div className="ie-ds-color-input-wrapper">
-                                <input
-                                  type="color"
-                                  value={dsBannerColor}
-                                  onChange={(e) => setDsBannerColor(e.target.value)}
-                                  className="ie-ds-color-input"
-                                />
-                                <span className="ie-ds-color-value">{dsBannerColor}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <button className="ie-action-btn" onClick={handleExportDatasource} disabled={!isDatasourceValid}>
-                        <Download size={14} />
-                        Export Datasource JSON
-                      </button>
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="import-export-modal-footer">
@@ -488,16 +315,16 @@ export const Exporter = () => {
               </div>
             </div>
           </div>,
-          modalRoot
+          modalRoot,
         )}
-      <Tooltip content={activeCategory ? "Export category" : "Select a category first"} placement="bottom-start">
+      <Tooltip
+        content={activeCategory ? "Export data as JSON or text" : "Select a category first"}
+        placement="bottom-start">
         <Button
-          type={"text"}
-          shape={"circle"}
-          icon={<Download size={14} />}
+          type="text"
+          icon={<Download size={16} />}
           disabled={!activeCategory}
           onClick={() => {
-            logScreenView("Export Category");
             setIsModalVisible(true);
           }}
         />

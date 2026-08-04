@@ -1,19 +1,17 @@
 import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Spin } from "antd";
-import { toBlob } from "html-to-image";
+import { captureToBlob } from "../Helpers/screenshot.helpers";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
 import "../Components/Print/Print.css";
 import { AppHeader } from "../Components/AppHeader";
-import { AgeOfSigmarCardDisplay } from "../Components/AgeOfSigmar/CardDisplay";
-import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
-import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
-import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
+import { CardRenderer } from "../Components/Print/CardRenderer";
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 import JSZip from "jszip";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { buildUniqueFilenames } from "../Helpers/export.helpers";
 
 // Helper to get all cards from a category including sub-categories
 const getAllCategoryCards = (category, allCategories) => {
@@ -51,34 +49,33 @@ export const ImageExport = () => {
     overlayRef.current.style.display = "inline-flex";
     await sleep(100);
 
-    const files = cardsFrontRef?.current?.map(async (card, index) => {
-      const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
-      return data;
-    });
+    const uniqueNames = buildUniqueFilenames(allCards);
+    for (let index = 0; index < cardsFrontRef.current.length; index++) {
+      const card = cardsFrontRef.current[index];
+      if (!card) continue;
+      const blob = await captureToBlob(card, { scale: pixelScaling });
+      const hasBack = cardsBackRef.current[index] != null;
+      const suffix =
+        !hasBack || allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false
+          ? ".png"
+          : "-front.png";
+      zip.file(`${category.name}/${uniqueNames[index]}${suffix}`, blob);
+    }
 
-    files?.forEach(async (file, index) => {
-      zip.file(
-        `${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}${
-          allCards[index]?.variant === "full" || settings.showCardsAsDoubleSided !== false ? ".png" : "-front.png"
-        }`,
-        file
-      );
-    });
     if (settings.showCardsAsDoubleSided !== true) {
-      const backFiles = cardsBackRef?.current?.map(async (card, index) => {
-        const data = await toBlob(card, { cacheBust: false, pixelRatio: pixelScaling });
-        return data;
-      });
-
-      backFiles?.forEach(async (file, index) => {
-        zip.file(`${category.name}/${allCards[index].name.replaceAll(" ", "_").toLowerCase()}-back.png`, file);
-      });
+      for (let index = 0; index < cardsBackRef.current.length; index++) {
+        const card = cardsBackRef.current[index];
+        if (!card) continue;
+        const blob = await captureToBlob(card, { scale: pixelScaling });
+        zip.file(`${category.name}/${uniqueNames[index]}-back.png`, blob);
+      }
     }
 
     zip.generateAsync({ type: "blob" }).then((content) => {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
-      link.download = `datacards_${category.name.toLowerCase()}.zip`;
+      const categoryName = category?.name || "untitled";
+      link.download = `datacards_${categoryName.toLowerCase()}.zip`;
       link.click();
       overlayRef.current.style.display = "none";
     });
@@ -86,13 +83,7 @@ export const ImageExport = () => {
   if (CategoryId && CategoryId < cardStorage?.categories?.length) {
     return (
       <Layout>
-        <AppHeader
-          showModals={false}
-          pageTitle="Image Export"
-          showNav={false}
-          showActions={false}
-          className="no-print"
-        />
+        <AppHeader pageTitle="Image Export" showNav={false} showActions={false} className="no-print" />
         <Layout>
           <div
             ref={overlayRef}
@@ -182,38 +173,18 @@ export const ImageExport = () => {
                         <Row>
                           <Col key={`${card.name}-${index}`} className={`data-${card?.source ? card?.source : "40k"}`}>
                             <div ref={(el) => (cardsFrontRef.current[index] = el)}>
-                              {card?.source === "40k" && <Warhammer40KCardDisplay card={card} type="print" />}
-                              {card?.source === "40k-10e" && (
-                                <Warhammer40K10eCardDisplay
-                                  card={card}
-                                  type="print"
-                                  side={"front"}
-                                  backgrounds={backgrounds}
-                                  cardScaling={100}
-                                />
-                              )}
-                              {card?.source === "basic" && <Warhammer40KCardDisplay card={card} type="print" />}
-                              {card?.source === "necromunda" && <NecromundaCardDisplay card={card} type="print" />}
-                              {(card?.source === "aos" || card?.cardType === "warscroll") && (
-                                <AgeOfSigmarCardDisplay
-                                  card={card}
-                                  type="print"
-                                  cardScaling={100}
-                                  backgrounds={backgrounds}
-                                />
-                              )}
+                              <CardRenderer card={card} cardScaling={100} printSide="front" backgrounds={backgrounds} />
                             </div>
                             {card?.source === "40k-10e" &&
                               settings.showCardsAsDoubleSided !== true &&
                               card?.cardType === "DataCard" &&
                               card?.variant !== "full" && (
                                 <div ref={(el) => (cardsBackRef.current[index] = el)}>
-                                  <Warhammer40K10eCardDisplay
+                                  <CardRenderer
                                     card={card}
-                                    type="print"
-                                    side={"back"}
-                                    backgrounds={backgrounds}
                                     cardScaling={100}
+                                    printSide="back"
+                                    backgrounds={backgrounds}
                                   />
                                 </div>
                               )}

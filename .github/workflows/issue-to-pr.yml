@@ -1,0 +1,250 @@
+name: Issue to PR
+
+# Opt-in pipeline: when an approver adds the `ai-build` label to a from-discord
+# enhancement or bug issue, an OpenCode agent implements it and opens a draft PR
+# in each repo it changed. See .github/issue-to-pr/README.md.
+
+on:
+  issues:
+    types: [labeled]
+
+# One run per issue; don't cancel an in-flight implementation if the event refires.
+concurrency:
+  group: issue-to-pr-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  # Fire only when an approver adds `ai-build`, then re-read the issue's CURRENT
+  # labels to confirm eligibility. Reading the supporting labels from the
+  # triggering event is unreliable: when several labels are applied together, the
+  # `ai-build` event's payload may not yet include `from-discord`/`enhancement`/
+  # `bug` (they can arrive in a later event), which would wrongly skip the run.
+  gate:
+    name: Check eligibility
+    if: github.event.label.name == 'ai-build'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    outputs:
+      eligible: ${{ steps.check.outputs.eligible }}
+      branch: ${{ steps.check.outputs.branch }}
+    steps:
+      - name: Read current labels
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          labels="$(gh issue view "$ISSUE_NUMBER" \
+            --repo "${{ github.repository }}" --json labels --jq '[.labels[].name]')"
+          echo "Current labels: $labels"
+          if echo "$labels" | grep -q '"from-discord"' \
+             && { echo "$labels" | grep -q '"enhancement"' || echo "$labels" | grep -q '"bug"'; } \
+             && ! echo "$labels" | grep -q '"ai-attempted"'; then
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+            echo "Eligible: proceeding to implementation."
+
+            # Branch type from labels: enhancement -> feature, otherwise bug.
+            if echo "$labels" | grep -q '"enhancement"'; then
+              type="feature"
+            else
+              type="bug"
+            fi
+
+            # Short, git-safe slug from the issue title. The title is untrusted, so
+            # it is read from the environment as data (never interpolated into the
+            # script) and reduced to lowercase a-z0-9 plus single hyphens, max 40
+            # chars. Result is e.g. feature/123-add-keyword-glossary.
+            slug="$(printf '%s' "$ISSUE_TITLE" \
+              | tr '[:upper:]' '[:lower:]' \
+              | tr -c 'a-z0-9' '-' \
+              | sed -E 's/-+/-/g; s/^-//; s/-$//' \
+              | cut -c1-40 \
+              | sed -E 's/-$//')"
+
+            if [ -n "$slug" ]; then
+              branch="${type}/${ISSUE_NUMBER}-${slug}"
+            else
+              branch="${type}/${ISSUE_NUMBER}"
+            fi
+            echo "branch=$branch" >> "$GITHUB_OUTPUT"
+            echo "Branch: $branch"
+          else
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            echo "Not eligible: needs from-discord + (enhancement or bug) and must not be ai-attempted."
+          fi
+
+  implement:
+    name: Implement issue
+    needs: gate
+    if: needs.gate.outputs.eligible == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout game-datacards
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          path: game-datacards
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Checkout gdc-premium (sibling)
+        uses: actions/checkout@v4
+        with:
+          repository: ronplanken/gdc-premium
+          path: gdc-premium
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      # Mark the issue before doing any work so a failed run never auto-retries.
+      # Re-adding `ai-build` after `ai-attempted` is present is a no-op (the gate
+      # fails), so this also prevents label loops.
+      #
+      # Use the default GITHUB_TOKEN (not GH_PAT) for this label edit on purpose:
+      # adding `ai-attempted` fires another `labeled` event, and PAT-authored
+      # events re-trigger this workflow (producing a wasted gate-skipped run that
+      # clutters the Actions list). Events authored by GITHUB_TOKEN do not
+      # re-trigger workflows, so this self-applied label stays silent. The job
+      # already grants `issues: write`, which is all the edit needs.
+      - name: Mark attempted (prevent retries)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue edit "${{ github.event.issue.number }}" --repo "${{ github.repository }}" --add-label ai-attempted
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: |
+          (cd game-datacards && yarn install --immutable)
+          (cd gdc-premium && yarn install --frozen-lockfile)
+
+      - name: Install OpenCode
+        run: npm install -g opencode-ai@1.15.10
+
+      - name: Create working branches
+        env:
+          BRANCH: ${{ needs.gate.outputs.branch }}
+        run: |
+          git -C game-datacards checkout -b "$BRANCH"
+          git -C gdc-premium checkout -b "$BRANCH"
+
+      # Build the agent prompt from the committed template plus the issue. Issue
+      # title/body are passed via env (never interpolated into the script) so a
+      # malicious issue cannot inject shell commands. The repository locations are
+      # appended as absolute paths so the agent uses them verbatim.
+      - name: Assemble prompt
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PROMPT_FILE="$RUNNER_TEMP/prompt.txt"
+          # Pull only maintainer comments (repo owner/member/collaborator, and not
+          # a bot) so a maintainer can clarify or narrow the spec after filing.
+          # Outside users' and bots' comments are ignored. The result is captured
+          # as data and only ever printed via `printf '%s'` (never executed), so a
+          # comment body cannot inject shell. ISSUE_REPO/NUMBER are repo-controlled
+          # (owner/repo and a number), not attacker input.
+          COMMENTS="$(gh api "repos/${ISSUE_REPO}/issues/${ISSUE_NUMBER}/comments" --paginate \
+            --jq '.[] | select((.author_association=="OWNER" or .author_association=="MEMBER" or .author_association=="COLLABORATOR") and .user.type!="Bot") | "From @\(.user.login):\n\(.body)\n"' || true)"
+          {
+            cat game-datacards/.github/issue-to-pr/prompt.md
+            printf '\n\n## Repository locations\n\n'
+            printf -- '- App (game-datacards), your working directory: %s\n' "$GITHUB_WORKSPACE/game-datacards"
+            printf -- '- Premium package (gdc-premium): %s\n' "$GITHUB_WORKSPACE/gdc-premium"
+            printf -- '- PR summary file (write your summary here as your final step): %s\n' "$GITHUB_WORKSPACE/game-datacards/pr-summary.md"
+            printf -- '- Release fragment file (write the release note here): %s\n' "$GITHUB_WORKSPACE/game-datacards/changes/unreleased/${ISSUE_NUMBER}.json"
+            printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each, plus the release fragment and PR summary files above (see "Record the change" and "Write the PR summary"). Do NOT edit package.json or any other release bookkeeping; the version bump and release notes happen automatically after merge.\n'
+            printf '\n## The issue to implement\n\n'
+            printf 'Repository: %s\n' "$ISSUE_REPO"
+            printf 'Issue number: #%s\n' "$ISSUE_NUMBER"
+            printf 'Title: %s\n\n' "$ISSUE_TITLE"
+            printf 'Body:\n'
+            printf '%s\n' "$ISSUE_BODY"
+            if [ -n "$COMMENTS" ]; then
+              printf '\nMaintainer comments (clarifications from the project team; treat them as authoritative refinements of the spec above):\n\n'
+              printf '%s\n' "$COMMENTS"
+            fi
+          } > "$PROMPT_FILE"
+          echo "PROMPT_FILE=$PROMPT_FILE" >> "$GITHUB_ENV"
+
+      # The committed opencode.json uses the GDCWS placeholder for the runner
+      # workspace; substitute the real absolute path before running so the
+      # permission globs (and external_directory access to gdc-premium) resolve.
+      - name: Run OpenCode
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          CONFIG="$RUNNER_TEMP/opencode.json"
+          sed "s#GDCWS#${GITHUB_WORKSPACE}#g" \
+            game-datacards/.github/issue-to-pr/opencode.json > "$CONFIG"
+          export OPENCODE_CONFIG="$CONFIG"
+          opencode run \
+            --dir "${GITHUB_WORKSPACE}/game-datacards" \
+            --model deepseek/deepseek-v4-pro \
+            "$(cat "$PROMPT_FILE")"
+
+      - name: Lint and test (game-datacards)
+        id: checks
+        continue-on-error: true
+        run: |
+          cd game-datacards
+          yarn lint:fix || true
+          yarn prettier:fix || true
+          if yarn test:ci; then
+            echo "result=tests passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "result=tests FAILED (see workflow logs)" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pull token/cost totals for this run from OpenCode's session store. The
+      # runner is ephemeral with a single session, so `opencode stats` totals are
+      # this run's usage. The result is shown in the job's step summary (the
+      # "used tokens at the end" view) and passed to the PR step for embedding.
+      - name: Collect OpenCode usage
+        if: always()
+        continue-on-error: true
+        run: |
+          export OPENCODE_CONFIG="$RUNNER_TEMP/opencode.json"
+          USAGE_FILE="$RUNNER_TEMP/usage.txt"
+          # Strip ANSI colour codes so the stats read cleanly inside a code block.
+          # Only export USAGE_FILE on success with real output, so create-prs.sh's
+          # [ -s ] guard naturally skips the section when stats are unavailable
+          # rather than embedding a "stats unavailable" line into every PR body.
+          if opencode stats 2>&1 | perl -pe 's/\e\[[0-9;]*m//g' > "$USAGE_FILE" && [ -s "$USAGE_FILE" ]; then
+            echo "USAGE_FILE=$USAGE_FILE" >> "$GITHUB_ENV"
+            {
+              echo '## OpenCode usage'
+              echo
+              echo '```'
+              cat "$USAGE_FILE"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '## OpenCode usage\n\nUsage stats unavailable for this run.\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Open draft PR(s) and comment on issue
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          GAME_REPO: ${{ github.repository }}
+          PREMIUM_REPO: ronplanken/gdc-premium
+          CHECKS: ${{ steps.checks.outputs.result }}
+          BRANCH: ${{ needs.gate.outputs.branch }}
+          # pr-summary.md is written by the agent inside the app repo; usage.txt
+          # by the step above. create-prs.sh deletes the summary before committing.
+          SUMMARY_FILE: ${{ github.workspace }}/game-datacards/pr-summary.md
+          USAGE_FILE: ${{ env.USAGE_FILE }}
+        run: bash game-datacards/.github/issue-to-pr/create-prs.sh

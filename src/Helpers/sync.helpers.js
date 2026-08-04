@@ -1,0 +1,93 @@
+/**
+ * Parse subscription limit error from database trigger.
+ * Returns { resource, current, limit, tier } or null.
+ */
+export const parseSubscriptionLimitError = (errorMessage) => {
+  if (!errorMessage) return null;
+  const match = errorMessage.match(/SUBSCRIPTION_LIMIT_EXCEEDED:(\w+):(\d+):(\d+);(\w+)/);
+  if (match) {
+    return {
+      resource: match[1],
+      current: parseInt(match[2], 10),
+      limit: parseInt(match[3], 10),
+      tier: match[4],
+    };
+  }
+  return null;
+};
+
+/**
+ * Generate or retrieve a persistent device ID for filtering own realtime events.
+ * Uses localStorage so the ID persists across page reloads, avoiding false
+ * version conflicts when the user refreshes.
+ *
+ * Tolerates environments where localStorage is missing, broken, or throws
+ * (private-mode browsers, SSR, test runners without jsdom). Falls back to an
+ * in-memory id that lives only for the current page/session.
+ */
+let memoryDeviceId = null;
+const newDeviceId = () => `device-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
+export const getDeviceId = () => {
+  try {
+    if (typeof localStorage !== "undefined" && localStorage) {
+      let deviceId = localStorage.getItem("gdc-device-id");
+      if (!deviceId) {
+        deviceId = newDeviceId();
+        localStorage.setItem("gdc-device-id", deviceId);
+      }
+      return deviceId;
+    }
+  } catch {
+    // localStorage exists but threw (e.g. private mode, quota, disabled storage)
+  }
+  if (!memoryDeviceId) {
+    memoryDeviceId = newDeviceId();
+  }
+  return memoryDeviceId;
+};
+
+/**
+ * Run a debounced sync for items that match a pending predicate.
+ * Tracks which items are pending via pendingRef (a Set), and only
+ * triggers syncFn when new pending items appear.
+ *
+ * Call inside a useEffect, return the cleanup function it returns.
+ *
+ * @param {Object} opts
+ * @param {Array} opts.items - Array of items to check
+ * @param {Function} opts.isPending - Predicate: (item) => boolean
+ * @param {Function} opts.getKey - Extract unique key: (item) => string
+ * @param {Function} opts.syncFn - Function to call after debounce
+ * @param {React.MutableRefObject} opts.timeoutRef - Ref holding setTimeout id
+ * @param {React.MutableRefObject} opts.pendingRef - Ref holding Set of pending keys
+ * @param {number} opts.delay - Debounce delay in ms
+ * @returns {Function} cleanup function to clear timeout
+ */
+export function runDebouncedSync({ items, isPending, getKey, syncFn, timeoutRef, pendingRef, delay }) {
+  const pendingItems = items.filter(isPending);
+  const currentPending = new Set(pendingItems.map(getKey));
+
+  const hasNewPending = [...currentPending].some((key) => !pendingRef.current.has(key));
+
+  // Schedule sync when new pending items appear, OR when pending items exist
+  // but the timeout was cleared by React effect cleanup (timeoutRef.current is null)
+  if (pendingItems.length > 0 && (hasNewPending || !timeoutRef.current)) {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null;
+      syncFn();
+    }, delay);
+  }
+
+  pendingRef.current = currentPending;
+
+  return () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+}

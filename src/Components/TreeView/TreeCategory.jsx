@@ -1,16 +1,38 @@
 import React, { useState } from "react";
-import { ChevronRight, Trash2, FolderOpen, Folder, Plus, Database } from "lucide-react";
-import { message } from "antd";
+import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus, SlidersHorizontal } from "lucide-react";
+import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
+import {
+  describeRepricedCards,
+  getArmyContext,
+  getBattleSize,
+  getEnhancementUsage,
+  getListFactionId,
+  getSpentDetachmentPoints,
+  isDetachmentSelectionOverBudget,
+  repriceListCards,
+} from "../../Helpers/listRoster.helpers";
+import { useSync, CategorySyncIcon } from "../../Premium";
+import { useUmami } from "../../Hooks/useUmami";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
-import { ExportDatasourceModal } from "../CustomDatasource";
+import { ArmyRosterModal } from "./ArmyRosterModal";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import "./TreeView.css";
 
-export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex, children, isSubCategory = false }) {
+export function TreeCategory({
+  category,
+  selectedTreeIndex,
+  setSelectedTreeIndex,
+  children,
+  isSubCategory = false,
+  dragHandleProps = null,
+}) {
   const {
     cardStorage,
     setActiveCard,
@@ -22,34 +44,72 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     updateCategory,
     addSubCategory,
     getSubCategories,
+    markCategoryPending,
   } = useCardStorage();
+  const { deleteFromCloud } = useSync();
+  const { trackEvent } = useUmami();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
-  const [isExportDatasourceModalOpen, setIsExportDatasourceModalOpen] = useState(false);
+  const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+
+  // Army roster (11e): battle size, Detachment Points and the detachments the
+  // list holds. Only offered while the 11e datasource is loaded, since the
+  // faction's detachments come from it.
+  const isEleventhEditionList =
+    category.type === "list" && (category.dataSource || category.cards?.[0]?.source) === "40k-11e";
+  const showRoster = isEleventhEditionList && settings.selectedDataSource === "40k-11e";
+  // The faction the list is built for. Lists made before the faction was
+  // recorded fall back to their cards, an empty one to the faction being browsed.
+  const listFaction = dataSource?.data?.find(
+    (faction) => faction.id === (getListFactionId(category) || selectedFaction?.id),
+  );
+  const armyDetachments = category.detachments || [];
+  const armyBattleSize = getBattleSize(category.battleSize);
+  const enhancementUsage = getEnhancementUsage(category.cards, category.battleSize);
+
+  // updateCategory is the one storage mutator that does not flag the category
+  // itself, so a synced list needs the explicit markCategoryPending — same as
+  // the mobile roster path.
+  const handleChangeBattleSize = (battleSize) => {
+    updateCategory({ ...category, battleSize: battleSize || undefined }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
+  // Detachments can change what units cost, so the list is repriced in the same
+  // write and the affected units are named in a toast.
+  const handleChangeDetachments = (detachments) => {
+    const next = { ...category, detachments: detachments?.length ? detachments : undefined };
+    if (!next.factionId && listFaction?.id) next.factionId = listFaction.id;
+
+    const { cards, changes } = repriceListCards(category.cards, getArmyContext(next, listFaction));
+    updateCategory({ ...next, cards }, category.uuid);
+    markCategoryPending(category.uuid);
+
+    const summary = describeRepricedCards(changes);
+    if (summary) message.info(summary);
+  };
 
   const handleRename = (newName) => {
     renameCategory(category.uuid, newName);
     setIsRenameModalOpen(false);
-    message.success("Category has been renamed.");
+    trackEvent("category-rename");
+    message.success("Category renamed.");
   };
 
   const handleAddSubCategory = (name) => {
     addSubCategory(name, category.uuid);
     setIsSubCategoryModalOpen(false);
-    message.success("Sub-category has been created.");
+    trackEvent("subcategory-create");
+    message.success("Sub-category created.");
   };
 
-  const pointsTotal = category.cards?.reduce((total, card) => {
-    if (card?.source === "40k-10e" && card?.unitSize?.cost) {
-      if (card.selectedEnhancement) {
-        return total + Number(card?.unitSize?.cost) + Number(card.selectedEnhancement.cost);
-      }
-      return total + Number(card?.unitSize?.cost);
-    }
-    return total;
-  }, 0);
+  // Includes 10e (configured unit sizes), 11e (defaulting to the cheapest tier)
+  // and the 11e per-datasheet roster surcharge. See listPoints.helpers.
+  const pointsTotal = getCategoryPointsTotal(category.cards);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -61,14 +121,19 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
     const subCategories = getSubCategories(category.uuid);
     const hasSubCategories = subCategories.length > 0;
     const deleteMessage = hasSubCategories
-      ? "This action cannot be undone and will delete all cards and sub-categories in this category."
-      : "This action cannot be undone and will delete all cards in the category.";
+      ? "All cards and sub-categories will be permanently deleted."
+      : "All cards in this category will be permanently deleted.";
 
     deleteConfirmDialog({
-      title: "Are you sure you want to delete this category?",
+      title: `Delete '${category.name}'?`,
       content: deleteMessage,
-      onConfirm: () => {
-        message.success("Category has been removed.");
+      onConfirm: async () => {
+        // If synced, also delete from cloud
+        if (category.syncEnabled) {
+          await deleteFromCloud(category.uuid);
+        }
+        trackEvent("category-delete");
+        message.success("Category deleted.");
         removeCategory(category.uuid);
       },
     });
@@ -99,16 +164,6 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
       key: "rename",
       label: "Rename",
       onClick: () => setIsRenameModalOpen(true),
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "export-datasource",
-      label: "Export as Datasource",
-      icon: <Database size={14} />,
-      onClick: () => setIsExportDatasourceModalOpen(true),
-      disabled: !category.cards || category.cards.length === 0,
     },
     {
       type: "divider",
@@ -169,6 +224,15 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
   return (
     <>
       <div className={categoryClasses} onClick={handleClick} onContextMenu={handleContextMenu}>
+        {dragHandleProps && (
+          <span
+            className="tree-drag-handle"
+            {...dragHandleProps}
+            aria-label="Drag to reorder"
+            onClick={(e) => e.stopPropagation()}>
+            <GripVertical size={12} />
+          </span>
+        )}
         <div className={`tree-category-toggle ${!category.closed ? "expanded" : ""}`} onClick={handleToggle}>
           <ChevronRight size={10} />
         </div>
@@ -176,8 +240,36 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
           {category.type === "list" ? <List /> : isSubCategory ? <FolderOpen size={14} /> : <Folder size={14} />}
         </div>
         <span className="tree-category-name">{category.name}</span>
+        <CategorySyncIcon category={category} />
         {category.type === "list" && <span className="tree-category-badge">{pointsTotal}</span>}
       </div>
+
+      {!category.closed && showRoster && (
+        <div className="tree-roster-wrapper">
+          <button
+            className="tree-roster-button"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsRosterModalOpen(true);
+            }}>
+            <SlidersHorizontal size={12} />
+            <span>
+              {armyBattleSize.label} ·{" "}
+              <span
+                className={
+                  isDetachmentSelectionOverBudget(armyDetachments, category.battleSize) ? "tree-roster-over" : ""
+                }>
+                {getSpentDetachmentPoints(armyDetachments)}/{armyBattleSize.dp} DP
+              </span>{" "}
+              ·{" "}
+              <span className={enhancementUsage.exceeded ? "tree-roster-over" : ""}>
+                {enhancementUsage.used}/{enhancementUsage.limit} enh
+              </span>
+            </span>
+          </button>
+        </div>
+      )}
 
       {!category.closed && children}
 
@@ -206,10 +298,15 @@ export function TreeCategory({ category, selectedTreeIndex, setSelectedTreeIndex
         onCancel={() => setIsSubCategoryModalOpen(false)}
       />
 
-      <ExportDatasourceModal
-        isOpen={isExportDatasourceModalOpen}
-        onClose={() => setIsExportDatasourceModalOpen(false)}
-        category={category}
+      <ArmyRosterModal
+        isOpen={isRosterModalOpen}
+        onClose={() => setIsRosterModalOpen(false)}
+        detachments={listFaction?.detachments || []}
+        selectedDetachments={armyDetachments}
+        battleSize={category.battleSize}
+        onChangeBattleSize={handleChangeBattleSize}
+        onChangeDetachments={handleChangeDetachments}
+        language={settings.language}
       />
     </>
   );

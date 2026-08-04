@@ -1,39 +1,16 @@
 import { Trash2 } from "lucide-react";
-import { Button, Card, Form, Popconfirm, Select, Space, Switch } from "antd";
+import { Button, Card, Form, Popconfirm, Space } from "antd";
 import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 
-const { Option } = Select;
-
 export function UnitComposition() {
   const { activeCard, updateActiveCard } = useCardStorage();
 
   return (
     <>
-      <Card
-        type={"inner"}
-        size={"small"}
-        title={`Unit Composition section visibility`}
-        style={{ marginBottom: "16px" }}
-        bodyStyle={{ padding: 0 }}
-        extra={
-          <Space>
-            <Switch
-              checked={activeCard.showComposition !== false}
-              onChange={(value) => {
-                updateActiveCard(() => {
-                  return {
-                    ...activeCard,
-                    showComposition: value,
-                  };
-                });
-              }}
-            />
-          </Space>
-        }></Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {

@@ -1,29 +1,68 @@
-import { Database, ChevronDown, RefreshCw, Plus, Globe, FileText, Check } from "lucide-react";
+import { Database, ChevronDown, RefreshCw, Plus, Globe, Check, Link, Users } from "lucide-react";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
+import { compare } from "compare-versions";
+import moment from "moment";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
-import { CustomDatasourceModal } from "../CustomDatasource";
+import { CustomDatasourceModal, CommunityBrowserModal } from "../../Premium";
+import { useFeatureFlags } from "../../Hooks/useFeatureFlags";
 import "./DatasourceSelector.css";
 
 const BUILT_IN_DATASOURCES = [
   { id: "basic", title: "Basic Cards" },
+  { id: "40k-11e", title: "40k 11th Edition" },
   { id: "40k-10e", title: "40k 10th Edition" },
   { id: "40k-10e-cp", title: "40k Combat Patrol" },
   { id: "40k", title: "Wahapedia 9th Edition" },
   { id: "necromunda", title: "Necromunda" },
   { id: "aos", title: "Age of Sigmar" },
+  { id: "starcraft-tmg", title: "Starcraft TMG" },
 ];
 
 export const DatasourceSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [isBrowseModalOpen, setIsBrowseModalOpen] = useState(false);
+  const [needsUpdate, setNeedsUpdate] = useState(false);
   const buttonRef = useRef(null);
   const dropdownRef = useRef(null);
 
   const { settings, updateSettings } = useSettingsStorage();
-  const { checkForUpdate } = useDataSourceStorage();
+  const { dataSource, checkForUpdate } = useDataSourceStorage();
+  const { communityBrowserEnabled } = useFeatureFlags();
+
+  // Separate custom datasources into subscribed and non-subscribed
+  const customDatasources = settings.customDatasources || [];
+  const subscribedDatasources = customDatasources.filter((ds) => ds.isSubscribed);
+  const ownedDatasources = customDatasources.filter((ds) => !ds.isSubscribed);
+
+  // Check if datasource needs update (same logic as UpdateReminder)
+  useEffect(() => {
+    // Don't show update indicator for local custom datasources (they can't be auto-updated)
+    const isCustomDatasource = settings.selectedDataSource?.startsWith("custom-");
+    if (isCustomDatasource) {
+      const customDs = settings.customDatasources?.find((ds) => ds.id === settings.selectedDataSource);
+      if (customDs?.sourceType === "local") {
+        setNeedsUpdate(false);
+        return;
+      }
+    }
+
+    // Check if we have valid versions to compare
+    const appVersion = import.meta.env.VITE_VERSION;
+    const hasVersionInfo = dataSource.version && appVersion;
+
+    if (
+      (dataSource.lastCheckedForUpdate && moment().diff(moment(dataSource.lastCheckedForUpdate), "days") > 2) ||
+      (hasVersionInfo && compare(dataSource.version, appVersion, "<"))
+    ) {
+      setNeedsUpdate(true);
+    } else {
+      setNeedsUpdate(false);
+    }
+  }, [dataSource, settings.selectedDataSource, settings.customDatasources]);
 
   // Get display name for current datasource
   const getCurrentDatasourceName = () => {
@@ -105,86 +144,144 @@ export const DatasourceSelector = () => {
   };
 
   const currentId = settings.selectedDataSource || "basic";
-  const customDatasources = settings.customDatasources || [];
   const position = getDropdownPosition();
+
+  // Determine faction type for theming
+  const getFactionType = () => {
+    if (currentId.startsWith("40k")) return "40k";
+    if (currentId === "aos") return "aos";
+    if (currentId === "necromunda") return "necromunda";
+    return null;
+  };
+  const factionType = getFactionType();
+
+  // Check if current datasource is a custom or subscribed datasource (they have their own sync)
+  const isCustomOrLocalDatasource = currentId.startsWith("custom-") || currentId.startsWith("subscribed-");
 
   return (
     <>
       <button
         ref={buttonRef}
         className={`ds-selector-btn ${isOpen ? "active" : ""}`}
+        data-type={factionType}
         onClick={() => setIsOpen(!isOpen)}>
         <Database size={16} />
         <span className="ds-selector-text">{getCurrentDatasourceName()}</span>
         <ChevronDown size={14} className={`ds-selector-chevron ${isOpen ? "rotated" : ""}`} />
+        {needsUpdate && !isCustomOrLocalDatasource && <span className="ds-update-dot" />}
       </button>
 
       {isOpen &&
         ReactDOM.createPortal(
           <div className="ds-dropdown-overlay">
-            <div ref={dropdownRef} className="ds-dropdown" style={{ top: position.top, left: position.left }}>
-              {/* Check for updates */}
-              <button
-                className="ds-dropdown-item ds-dropdown-update"
-                onClick={handleCheckForUpdates}
-                disabled={isUpdating}>
-                <RefreshCw size={16} className={isUpdating ? "spinning" : ""} />
-                <span>{isUpdating ? "Checking..." : "Check for updates"}</span>
-              </button>
+            <div
+              ref={dropdownRef}
+              className="ds-dropdown dark-dropdown ds-dropdown--open"
+              style={{ top: position.top, left: position.left }}>
+              <div className="ds-dropdown-scroll">
+                {/* Check for updates - only show for built-in datasources */}
+                {!isCustomOrLocalDatasource && (
+                  <>
+                    <button
+                      className={`ds-dropdown-item ds-dropdown-update ${needsUpdate ? "needs-update" : ""}`}
+                      onClick={handleCheckForUpdates}
+                      disabled={isUpdating}>
+                      <RefreshCw size={16} className={isUpdating ? "spinning" : ""} />
+                      <span>{isUpdating ? "Checking..." : "Check for updates"}</span>
+                    </button>
 
-              <div className="ds-dropdown-divider" />
+                    <div className="ds-dropdown-divider" />
+                  </>
+                )}
 
-              {/* Built-in datasources */}
-              <div className="ds-dropdown-section">
-                <span className="ds-dropdown-section-title">Datasources</span>
-                {BUILT_IN_DATASOURCES.map((ds) => (
+                {/* Built-in datasources */}
+                <div className="ds-dropdown-section">
+                  <span className="ds-dropdown-section-title">Datasources</span>
+                  {BUILT_IN_DATASOURCES.map((ds) => (
+                    <button
+                      key={ds.id}
+                      className={`ds-dropdown-item ${currentId === ds.id ? "selected" : ""}`}
+                      onClick={() => handleSelectDatasource(ds.id)}>
+                      <span className="ds-dropdown-item-text">{ds.title}</span>
+                      {currentId === ds.id && <Check size={16} className="ds-dropdown-check" />}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Subscribed datasources */}
+                {subscribedDatasources.length > 0 && (
+                  <>
+                    <div className="ds-dropdown-divider" />
+                    <div className="ds-dropdown-section">
+                      <span className="ds-dropdown-section-title">Subscribed</span>
+                      {subscribedDatasources.map((ds) => (
+                        <button
+                          key={ds.id}
+                          className={`ds-dropdown-item ${currentId === ds.id ? "selected" : ""}`}
+                          onClick={() => handleSelectDatasource(ds.id)}>
+                          <Link size={14} className="ds-dropdown-item-icon ds-subscribed-icon" />
+                          <span className="ds-dropdown-item-text">{ds.name}</span>
+                          {currentId === ds.id && <Check size={16} className="ds-dropdown-check" />}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Custom datasources (owned) */}
+                {ownedDatasources.length > 0 && (
+                  <>
+                    <div className="ds-dropdown-divider" />
+                    <div className="ds-dropdown-section">
+                      <span className="ds-dropdown-section-title">Custom</span>
+                      {ownedDatasources.map((ds) => (
+                        <button
+                          key={ds.id}
+                          className={`ds-dropdown-item ${currentId === ds.id ? "selected" : ""}`}
+                          onClick={() => handleSelectDatasource(ds.id)}>
+                          {ds.sourceType === "url" ? (
+                            <Globe size={14} className="ds-dropdown-item-icon" />
+                          ) : (
+                            <Database size={14} className="ds-dropdown-item-icon" />
+                          )}
+                          <span className="ds-dropdown-item-text">{ds.name}</span>
+                          {currentId === ds.id && <Check size={16} className="ds-dropdown-check" />}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                <div className="ds-dropdown-divider" />
+
+                {/* Browse community */}
+                {communityBrowserEnabled && (
                   <button
-                    key={ds.id}
-                    className={`ds-dropdown-item ${currentId === ds.id ? "selected" : ""}`}
-                    onClick={() => handleSelectDatasource(ds.id)}>
-                    <span className="ds-dropdown-item-text">{ds.title}</span>
-                    {currentId === ds.id && <Check size={16} className="ds-dropdown-check" />}
+                    className="ds-dropdown-item ds-dropdown-browse"
+                    onClick={() => {
+                      setIsOpen(false);
+                      setIsBrowseModalOpen(true);
+                    }}>
+                    <Users size={16} />
+                    <span>Browse Community</span>
                   </button>
-                ))}
+                )}
+
+                {/* Add external datasource */}
+                <button className="ds-dropdown-item ds-dropdown-add" onClick={handleAddExternal}>
+                  <Plus size={16} />
+                  <span>Add external datasource</span>
+                </button>
               </div>
-
-              {/* Custom datasources */}
-              {customDatasources.length > 0 && (
-                <>
-                  <div className="ds-dropdown-divider" />
-                  <div className="ds-dropdown-section">
-                    <span className="ds-dropdown-section-title">Custom</span>
-                    {customDatasources.map((ds) => (
-                      <button
-                        key={ds.id}
-                        className={`ds-dropdown-item ${currentId === ds.id ? "selected" : ""}`}
-                        onClick={() => handleSelectDatasource(ds.id)}>
-                        {ds.sourceType === "url" ? (
-                          <Globe size={14} className="ds-dropdown-item-icon" />
-                        ) : (
-                          <FileText size={14} className="ds-dropdown-item-icon" />
-                        )}
-                        <span className="ds-dropdown-item-text">{ds.name}</span>
-                        {currentId === ds.id && <Check size={16} className="ds-dropdown-check" />}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              <div className="ds-dropdown-divider" />
-
-              {/* Add external datasource */}
-              <button className="ds-dropdown-item ds-dropdown-add" onClick={handleAddExternal}>
-                <Plus size={16} />
-                <span>Add external datasource</span>
-              </button>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
 
       <CustomDatasourceModal isOpen={isCustomModalOpen} onClose={() => setIsCustomModalOpen(false)} />
+      {communityBrowserEnabled && (
+        <CommunityBrowserModal isOpen={isBrowseModalOpen} onClose={() => setIsBrowseModalOpen(false)} />
+      )}
     </>
   );
 };

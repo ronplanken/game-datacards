@@ -15,36 +15,43 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
  * @param {Function} props.onFinish - Callback for Finish button click (final step)
  * @returns {JSX.Element} Footer component with navigation buttons
  */
-export const WizardFooter = ({ step, totalSteps, onPrevious, onNext, onFinish }) => (
-  <footer className="wnw-footer">
-    <div className="wnw-footer-left">
-      {step > 0 && step < totalSteps - 1 && (
-        <button className="wnw-btn wnw-btn--secondary" onClick={onPrevious}>
-          <ChevronLeft size={16} />
-          Previous
-        </button>
-      )}
-    </div>
-    <div className="wnw-footer-right">
-      {step === 0 && (
-        <button className="wnw-btn wnw-btn--primary" onClick={onNext}>
-          See what&apos;s new
-          <ChevronRight size={16} />
-        </button>
-      )}
-      {step > 0 && step < totalSteps - 1 && (
-        <button className="wnw-btn wnw-btn--primary" onClick={onNext}>
-          Next
-          <ChevronRight size={16} />
-        </button>
-      )}
-      {step === totalSteps - 1 && (
-        <button className="wnw-btn wnw-btn--primary wnw-btn--finish" onClick={onFinish}>
-          Get Started
-        </button>
-      )}
-    </div>
-  </footer>
-);
+export const WizardFooter = ({ step, totalSteps, onPrevious, onNext, onFinish }) => {
+  const isSingleStep = totalSteps === 1;
+  const isFirstStep = step === 0;
+  const isLastStep = step === totalSteps - 1;
+  const isMiddleStep = step > 0 && step < totalSteps - 1;
+
+  return (
+    <footer className="wnw-footer">
+      <div className="wnw-footer-left">
+        {isMiddleStep && (
+          <button className="wnw-btn wnw-btn--secondary" onClick={onPrevious}>
+            <ChevronLeft size={16} />
+            Previous
+          </button>
+        )}
+      </div>
+      <div className="wnw-footer-right">
+        {isFirstStep && !isSingleStep && (
+          <button className="wnw-btn wnw-btn--primary" onClick={onNext}>
+            See what&apos;s new
+            <ChevronRight size={16} />
+          </button>
+        )}
+        {isMiddleStep && (
+          <button className="wnw-btn wnw-btn--primary" onClick={onNext}>
+            Next
+            <ChevronRight size={16} />
+          </button>
+        )}
+        {isLastStep && (
+          <button className="wnw-btn wnw-btn--primary wnw-btn--finish" onClick={onFinish}>
+            {isSingleStep ? "Close" : "Get Started"}
+          </button>
+        )}
+      </div>
+    </footer>
+  );
+};
 
 export default WizardFooter;

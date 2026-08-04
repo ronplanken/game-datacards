@@ -43,7 +43,7 @@ const groupWarscrollsByRole = (warscrolls) => {
       factionTerrain: [],
       manifestations: [],
       other: [],
-    }
+    },
   );
 };
 
@@ -71,11 +71,23 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
   const { settings } = useSettingsStorage();
 
   const getDataSourceItems = () => {
+    // Custom datasource: read cards from selectedFaction arrays
+    if (settings.selectedDataSource?.startsWith("custom-")) {
+      const cards = selectedFaction?.[selectedContentType] || [];
+      const sorted = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      if (searchText) {
+        return sorted.filter((card) => card.name?.toLowerCase().includes(searchText.toLowerCase()));
+      }
+      return sorted;
+    }
+
     if (selectedContentType === "datasheets") {
       let filteredSheets = [];
       if (
         selectedFaction &&
-        (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")
+        (settings.selectedDataSource === "40k-10e" ||
+          settings.selectedDataSource === "40k-10e-cp" ||
+          settings.selectedDataSource === "40k-11e")
       ) {
         try {
           filteredSheets = [
@@ -189,7 +201,8 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "stratagems") {
-      const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
+      // Filter by subfaction
+      const filteredStratagems = selectedFaction?.stratagems?.filter((stratagem) => {
         return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
       });
       const mainStratagems = searchText
@@ -201,9 +214,15 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       } else {
         const basicStratagems = searchText
           ? selectedFaction.basicStratagems?.filter((stratagem) =>
-              stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+              stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
             )
-          : selectedFaction.basicStratagems ?? [];
+          : (selectedFaction.basicStratagems ?? []);
+
+        // Datasources without core stratagems (e.g. 11th edition ships none yet)
+        // skip the Basic section entirely instead of rendering an empty header.
+        if (!basicStratagems || basicStratagems.length === 0) {
+          return [{ type: "header", name: "Faction stratagems" }, ...mainStratagems];
+        }
 
         return [
           { type: "header", name: "Basic stratagems" },
@@ -215,13 +234,19 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "enhancements") {
-      const filteredEnhancements = selectedFaction?.enhancements.map((enhancement) => {
-        return { ...enhancement, cardType: "enhancement", source: "40k-10e" };
+      const filteredEnhancements = selectedFaction?.enhancements?.map((enhancement) => {
+        // Preserve the card's own source (e.g. "40k-11e") so it routes to the
+        // correct renderer; fall back to the faction/datasource source.
+        return {
+          ...enhancement,
+          cardType: "enhancement",
+          source: enhancement.source ?? selectedFaction?.source ?? "40k-10e",
+        };
       });
 
       const mainEnhancements = searchText
         ? filteredEnhancements?.filter((enhancement) =>
-            enhancement.name.toLowerCase().includes(searchText.toLowerCase())
+            enhancement.name.toLowerCase().includes(searchText.toLowerCase()),
           )
         : filteredEnhancements;
       return mainEnhancements;
@@ -236,9 +261,9 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       } else {
         const basicSecondaries = searchText
           ? selectedFaction.basicSecondaries?.filter((secondary) =>
-              secondary.name.toLowerCase().includes(searchText.toLowerCase())
+              secondary.name.toLowerCase().includes(searchText.toLowerCase()),
             )
-          : selectedFaction.basicSecondaries ?? [];
+          : (selectedFaction.basicSecondaries ?? []);
 
         return [
           { type: "header", name: "Basic secondaries" },
@@ -274,13 +299,14 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
         : detachmentRules;
 
       // Transform rules into card-compatible objects
+      const ruleSource = selectedFaction?.source ?? settings.selectedDataSource ?? "40k-10e";
       const armyRuleCards = filteredArmyRules.map((rule) => ({
         ...rule,
         id: `army-rule-${rule.name}`,
         cardType: "rule",
         ruleType: "army",
         faction_id: selectedFaction.id,
-        source: "40k-10e",
+        source: ruleSource,
       }));
 
       // Flatten detachment rules - each detachment can have multiple rules
@@ -293,7 +319,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
             ruleType: "detachment",
             detachment: detachmentRule.detachment,
             faction_id: selectedFaction.id,
-            source: "40k-10e",
+            source: ruleSource,
           }));
         }
         return [];
@@ -344,7 +370,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               cardType: "warscroll",
               source: "aos",
               faction_id: w.faction_id || selectedFaction.id,
-            }))
+            })),
           );
         }
       });
@@ -384,7 +410,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               loreName: lore.name,
               source: "aos",
               faction_id: lore.faction_id || selectedFaction.id,
-            }))
+            })),
           );
         }
       });
@@ -417,7 +443,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               loreName: lore.name,
               source: "aos",
               faction_id: selectedFaction.id,
-            }))
+            })),
           );
         }
       });

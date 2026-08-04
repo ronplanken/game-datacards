@@ -1,0 +1,244 @@
+import { Fragment } from "react";
+import { Button } from "antd";
+import { UnitWeapon } from "../../../Warhammer40k-10e/UnitCard/UnitWeapon";
+import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
+import { UnitWeaponKeywords } from "../../../Warhammer40k-10e/UnitCard/UnitWeaponKeyword";
+import { KeywordTooltip, tooltipProps as keywordTooltipProps } from "../../../Warhammer40k-10e/UnitCard/KeywordTooltip";
+import { Tooltip } from "../../../Tooltip/Tooltip";
+import { WeaponTypeIcon } from "../../../Icons/WeaponTypeIcon";
+import { Ds40kUnitSections } from "./Ds40kUnitSections";
+import {
+  collectKeywordExplanations,
+  resolveKeywordEntry,
+  resolveKeywordStyle,
+} from "../../../../Helpers/customSchema.helpers";
+import { normalizeKeywords } from "../../../../Helpers/weaponProfile.helpers";
+
+/**
+ * Inline weapon keyword tag renderer that consults the datasource glossary
+ * for hover tooltips and per-keyword presentation. Glossary entries with
+ * `displayMode: "tooltip"` show their description on hover via antd Tooltip;
+ * entries in explanation mode bypass the tooltip entirely (their description
+ * shows in the row below the weapon table). Keywords with no glossary match
+ * fall through to the built-in `KeywordTooltip` dictionary.
+ *
+ * Each keyword's caps/brackets/weight come from its glossary entry's `style`
+ * (see `resolveKeywordStyle`); unmatched keywords use the default look.
+ * Brackets and the `, ` separator are rendered as text nodes here, and the
+ * `.keyword-styled` wrapper suppresses the group-level pseudo-elements so the
+ * per-keyword treatment wins.
+ */
+const Ds40kWeaponKeywords = ({ keywords, glossary }) => (
+  <span className="keyword keyword-styled">
+    {keywords.map((keyword, index) => {
+      const entry = resolveKeywordEntry(keyword, glossary, "weapons");
+      const style = resolveKeywordStyle(entry);
+      const isTooltip = entry?.displayMode === "tooltip" && !!entry.description;
+
+      const classes = ["keyword-button"];
+      // `has-info` draws the dotted underline that signals a hover tooltip.
+      if (isTooltip) classes.push("has-info");
+      if (style.casing !== "uppercase") classes.push("kw-no-caps");
+      if (style.weight !== "bold") classes.push("kw-no-bold");
+      const className = classes.join(" ");
+
+      let node;
+      if (isTooltip) {
+        node = (
+          <Tooltip {...keywordTooltipProps} content={entry.description}>
+            <Button type="text" size="small" className={className}>{`${keyword}`}</Button>
+          </Tooltip>
+        );
+      } else if (entry) {
+        // Glossary match in explanation mode: no hover tooltip — the
+        // description shows in the row below the weapon table, so the
+        // inline tag stays plain (no `has-info` underline).
+        node = <Button type="text" size="small" className={className}>{`${keyword}`}</Button>;
+      } else {
+        node = <KeywordTooltip keyword={keyword} />;
+      }
+
+      return (
+        <Fragment key={`${keyword}-${index}`}>
+          {index > 0 && ", "}
+          {style.brackets === "square" ? (
+            <>
+              {"["}
+              {node}
+              {"]"}
+            </>
+          ) : (
+            node
+          )}
+        </Fragment>
+      );
+    })}
+  </span>
+);
+
+/**
+ * Schema-driven weapon type section using native 40K CSS structure.
+ * Reads column headers from schema weapon type definition.
+ */
+const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
+  const columns = weaponTypeDef.columns || [];
+  const iconType = weaponTypeDef.key === "melee" ? "melee" : "ranged";
+  const skillColumn = columns.find((c) => c.key === "skill");
+
+  const glossaryExplanations = (() => {
+    if (!Array.isArray(glossary) || glossary.length === 0 || !weapons?.length) return [];
+    const allKeywords = [];
+    weapons.forEach((weapon) => {
+      weapon.profiles?.forEach((profile) => {
+        if (profile.active === false) return;
+        normalizeKeywords(profile.keywords).forEach((kw) => allKeywords.push(kw));
+      });
+    });
+    // `displayMode: "tooltip"` entries are rendered as hover tooltips on the
+    // inline keyword tag instead of an explanation row below the profile.
+    return collectKeywordExplanations(allKeywords, glossary, "weapons").filter(
+      (entry) => entry.displayMode !== "tooltip",
+    );
+  })();
+
+  return (
+    <div className={weaponTypeDef.key}>
+      <div className="weapon-type-icon">
+        <WeaponTypeIcon type={iconType} color="white" />
+      </div>
+      <div className="heading">
+        <div className="title">{weaponTypeDef.label}</div>
+        {columns.map((col) => (
+          <div className="title center" key={col.key}>
+            {col.label}
+          </div>
+        ))}
+      </div>
+      {weapons?.map((weapon, index) => (
+        <Ds40kWeaponProfiles weapon={weapon} columns={columns} glossary={glossary} key={`weapon-${index}`} />
+      ))}
+      {/* Weapon abilities — glossary-driven explanations + per-weapon abilities,
+          rendered as flat `.ability` rows inside a single `.special` block to match
+          the built-in UnitWeapon CSS structure ("One Shot: …" compact rows). */}
+      {(glossaryExplanations.length > 0 || weapons?.some((w) => w.abilities?.some((a) => a.showAbility))) && (
+        <div className="special">
+          {glossaryExplanations.map((entry) => (
+            <UnitAbilityDescription
+              key={`weapon-glossary-${entry.key}`}
+              name={entry.name}
+              description={entry.description}
+              showDescription={true}
+              keywordGlossary={glossary}
+              glossaryOnly
+            />
+          ))}
+          {weapons?.flatMap((weapon, wIdx) =>
+            (weapon.abilities || [])
+              .filter((ability) => ability.showAbility)
+              .map((ability, aIdx) => (
+                <UnitAbilityDescription
+                  key={`weapon-ability-${wIdx}-${aIdx}-${ability.name}`}
+                  name={ability.name}
+                  description={ability.description}
+                  showDescription={ability.showDescription}
+                  keywordGlossary={glossary}
+                  glossaryOnly
+                />
+              )),
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Renders weapon profiles using schema-defined columns.
+ * Adapts the native UnitWeapon structure for dynamic columns.
+ */
+const Ds40kWeaponProfiles = ({ weapon, columns, glossary }) => {
+  return (
+    <>
+      {weapon.profiles
+        ?.filter((profile) => profile.active !== false)
+        ?.map((profile, index, profiles) => {
+          // Saved cards can carry a string here (see normalizeKeywords).
+          const keywords = normalizeKeywords(profile.keywords);
+          return (
+            <div
+              className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
+              key={`weapon-profile-${index}`}
+              data-name={profile.name}>
+              <div className="line">
+                <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
+                  <span>{profile.name}</span>
+                  {keywords.length > 0 && (
+                    <span style={{ paddingLeft: "4px" }}>
+                      {Array.isArray(glossary) && glossary.length > 0 ? (
+                        <Ds40kWeaponKeywords keywords={keywords} glossary={glossary} />
+                      ) : (
+                        <UnitWeaponKeywords keywords={keywords} />
+                      )}
+                    </span>
+                  )}
+                </div>
+                {columns.map((col) => {
+                  const displayValue =
+                    col.type === "boolean"
+                      ? profile[col.key]
+                        ? col.onValue || "Yes"
+                        : col.offValue || "No"
+                      : profile[col.key] || "-";
+                  return (
+                    <div className="value center" key={col.key}>
+                      {displayValue}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+    </>
+  );
+};
+
+/**
+ * Schema-driven weapons renderer using native 40K CSS structure.
+ * Reads weapon types from schema.weaponTypes.types[] instead of hardcoded ranged/melee.
+ *
+ * @param {Object} props
+ * @param {Object} props.unit - The card data
+ * @param {Object} props.weaponTypes - The weaponTypes schema definition
+ * @param {Object} [props.sectionsSchema] - The sections schema definition
+ * @param {Array} [props.keywordGlossary] - Datasource-level keyword glossary; the weapons
+ *   renderer consumes entries whose `appliesTo` includes "weapons".
+ */
+export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, keywordGlossary }) => {
+  if (!weaponTypes?.types?.length) {
+    return null;
+  }
+
+  return (
+    <div className="weapons">
+      {weaponTypes.types.map((weaponTypeDef) => {
+        const weapons =
+          unit.weapons?.[weaponTypeDef.key] || unit[weaponTypeDef.key] || unit[`${weaponTypeDef.key}Weapons`] || [];
+
+        if (!weapons.length || unit.showWeapons?.[weaponTypeDef.key] === false) {
+          return null;
+        }
+
+        return (
+          <Ds40kWeaponType
+            weaponTypeDef={weaponTypeDef}
+            weapons={weapons}
+            glossary={keywordGlossary}
+            key={weaponTypeDef.key}
+          />
+        );
+      })}
+      {sectionsSchema && <Ds40kUnitSections unit={unit} sectionsSchema={sectionsSchema} />}
+    </div>
+  );
+};

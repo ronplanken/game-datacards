@@ -1,56 +1,180 @@
 import React from "react";
-import { KeywordTooltip } from "./KeywordTooltip";
+import { Button } from "antd";
+import { KeywordTooltip, tooltipProps as keywordTooltipProps } from "./KeywordTooltip";
 import { RuleTooltip } from "./RuleTooltip";
+import { Tooltip } from "../../Tooltip/Tooltip";
 import { MarkdownSpanWrapDisplay } from "../../MarkdownSpanWrapDisplay";
-export function replaceKeywords(inputString) {
+import { findGlossaryMatchesInText, resolveKeywordStyle } from "../../../Helpers/customSchema.helpers";
+const RULE_KEYWORDS = [
+  "feel no pain",
+  "leader",
+  "deadly demise",
+  "deep strike",
+  "firing deck",
+  "scouts",
+  "fights first",
+  "infiltrators",
+  "stealth",
+  "lone operative",
+];
+
+function isRuleKeyword(keyword) {
+  const kw = keyword.toLowerCase();
+  return RULE_KEYWORDS.some((rule) => kw.includes(rule));
+}
+
+function isPartOfPhrase(text, matchStart) {
+  if (matchStart > 0) {
+    const textBefore = text.slice(0, matchStart);
+    if (/[A-Z][a-z]+\s$/.test(textBefore)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Parses an ability/weapon description into renderable React nodes, wrapping
+ * recognised keywords with tooltips.
+ *
+ * @param {string} inputString - The raw description text
+ * @param {Array} [glossary] - Datasource keyword glossary; "abilities"-scoped
+ *   tooltip entries get an underline + hover tooltip
+ * @param {boolean} [glossaryOnly=false] - When true, the built-in 40K keyword
+ *   dictionary (bracket tags, rule keywords, weapon keywords) is skipped and
+ *   only the datasource glossary drives parsing. Used by custom datasource
+ *   cards so they are not parsed against hard-coded 40K rules.
+ */
+export function replaceKeywords(inputString, glossary, glossaryOnly = false) {
   if (!inputString) {
     return;
   }
-  const keywordRegex = /\[(.*?)\]/g;
-  const listRegex =
-    /(Stealth|\bLeader\b|Deep Strike|Infiltrators|Deadly Demise \d+|Firing Deck \d+|Deadly Demise D\d+|Scouts \d+"|Fights First|Lone Operative|Feel No Pain \d+\+)/g;
-  const matches = inputString.match(keywordRegex) || [];
-  const listMatches = inputString.match(listRegex) || [];
 
-  const components = [];
-  let currentIndex = 0;
-  let remainingText = inputString;
-
-  matches?.forEach((match, index) => {
-    const keyword = match.slice(1, -1);
-    const startIndex = remainingText.indexOf(match);
-    const endIndex = startIndex + match.length;
-    const textBefore = remainingText.slice(0, startIndex);
-    remainingText = remainingText.slice(endIndex);
-    components.push(
-      <React.Fragment key={`keyword-${index}`}>
-        {textBefore}
-        <span className="keyword">
-          <KeywordTooltip keyword={keyword.toLowerCase()} />
-        </span>
-      </React.Fragment>
-    );
+  // Step 1: Extract escaped keywords (\Word) and replace with placeholders
+  const escapeRegex = /\\([A-Za-z]\w*)/g;
+  const escapedSegments = [];
+  let processedString = inputString.replace(escapeRegex, (match, word) => {
+    const placeholder = `\x00ESC${escapedSegments.length}\x00`;
+    escapedSegments.push(word);
+    return placeholder;
   });
 
-  listMatches?.forEach((match, index) => {
-    const startIndex = remainingText.indexOf(match);
-    const endIndex = startIndex + match.length;
-    const textBefore = remainingText.slice(0, startIndex);
-    remainingText = remainingText.slice(endIndex);
-    components.push(
-      <React.Fragment key={`rule-${index}`}>
-        {textBefore}
-        <span className="rule">
-          <RuleTooltip keyword={match.toLowerCase()} />
-        </span>
-      </React.Fragment>
-    );
-  });
+  const bracketRegex = /\[(.*?)\]/g;
+  const ruleRegex =
+    /(\bStealth\b|\bLeader\b|\bDeep Strike\b|\bInfiltrators\b|\bDeadly Demise \d*D?\d+(?:\+\d+)?\b|\bFiring Deck \d+\b|\bScouts \d+"|\bFights First\b|\bLone Operative\b|\bFeel No Pain \d+\+)/g;
+  const weaponKeywordRegex =
+    /(\bSustained Hits \d+\b|\bLethal Hits\b|\bDevastating Wounds\b|\bAnti-.+? \d+\+|\bTorrent\b|\bBlast\b|\bRapid Fire \d+\b|\bTwin-linked\b|\bHazardous\b|\bMelta \d+\b|\bLance\b|\bIgnores Cover\b|\bIndirect Fire\b|\bPrecision\b|\bExtra Attacks\b|\bPsychic\b|\bOne Shot\b|\bLinked Fire\b)/g;
 
-  if (remainingText.length > 0) {
-    components.push(remainingText);
+  // Collect all matches with their positions and types
+  const allMatches = [];
+  let m;
+  // The built-in 40K keyword dictionary is skipped entirely in glossary-only
+  // mode so custom datasource cards rely solely on their own glossary.
+  if (!glossaryOnly) {
+    while ((m = bracketRegex.exec(processedString)) !== null) {
+      allMatches.push({ type: "bracket", keyword: m[1], start: m.index, end: m.index + m[0].length });
+    }
+    while ((m = ruleRegex.exec(processedString)) !== null) {
+      if (!isPartOfPhrase(processedString, m.index)) {
+        allMatches.push({ type: "rule", keyword: m[0], start: m.index, end: m.index + m[0].length });
+      }
+    }
+    while ((m = weaponKeywordRegex.exec(processedString)) !== null) {
+      if (!isPartOfPhrase(processedString, m.index)) {
+        allMatches.push({ type: "weapon", keyword: m[0], start: m.index, end: m.index + m[0].length });
+      }
+    }
   }
+  // Datasource glossary entries scoped to abilities that carry a hover tooltip.
+  findGlossaryMatchesInText(processedString, glossary, "abilities").forEach((gm) => {
+    allMatches.push({ type: "glossary", keyword: gm.text, entry: gm.entry, start: gm.start, end: gm.end });
+  });
+
+  // Sort by position; at the same position prefer explicit bracket tags, then
+  // glossary matches, then the built-in keyword dictionary.
+  const matchTypeRank = { bracket: 0, glossary: 1 };
+  allMatches.sort((a, b) => a.start - b.start || (matchTypeRank[a.type] ?? 2) - (matchTypeRank[b.type] ?? 2));
+
+  // Remove overlapping matches (keep the first/prioritized one)
+  const filteredMatches = [];
+  let lastEnd = 0;
+  for (const match of allMatches) {
+    if (match.start >= lastEnd) {
+      filteredMatches.push(match);
+      lastEnd = match.end;
+    }
+  }
+
+  // Build components in a single pass
+  const components = [];
+  let currentPos = 0;
+
+  filteredMatches.forEach((match, index) => {
+    const textBefore = processedString.slice(currentPos, match.start);
+
+    if (match.type === "glossary") {
+      const kwStyle = resolveKeywordStyle(match.entry);
+      const btnClasses = ["keyword-button", "has-info"];
+      if (kwStyle.casing !== "uppercase") btnClasses.push("kw-no-caps");
+      if (kwStyle.weight !== "bold") btnClasses.push("kw-no-bold");
+      const showBrackets = kwStyle.brackets === "square";
+      components.push(
+        <React.Fragment key={`glossary-${index}`}>
+          {textBefore}
+          <span className="keyword keyword-styled">
+            {showBrackets && "["}
+            <Tooltip {...keywordTooltipProps} content={match.entry.description}>
+              <Button type="text" size="small" className={btnClasses.join(" ")}>
+                {match.keyword}
+              </Button>
+            </Tooltip>
+            {showBrackets && "]"}
+          </span>
+        </React.Fragment>,
+      );
+      currentPos = match.end;
+      return;
+    }
+
+    // For bracket matches, check inner content to decide weapon vs rule style
+    const useWeaponStyle = match.type === "weapon" || (match.type === "bracket" && !isRuleKeyword(match.keyword));
+
+    if (useWeaponStyle) {
+      components.push(
+        <React.Fragment key={`weapon-${index}`}>
+          {textBefore}
+          <span className="keyword">
+            <KeywordTooltip keyword={match.keyword.toLowerCase()} />
+          </span>
+        </React.Fragment>,
+      );
+    } else {
+      components.push(
+        <React.Fragment key={`rule-${index}`}>
+          {textBefore}
+          <span className="rule">
+            <RuleTooltip keyword={match.keyword.toLowerCase()} />
+          </span>
+        </React.Fragment>,
+      );
+    }
+    currentPos = match.end;
+  });
+
+  if (currentPos < processedString.length) {
+    components.push(processedString.slice(currentPos));
+  }
+
+  // Restore escaped segments (render without backslash, no keyword styling)
+  const restorePlaceholders = (str) => {
+    if (typeof str !== "string") return str;
+    return escapedSegments.reduce((s, word, i) => s.replace(`\x00ESC${i}\x00`, word), str);
+  };
+
   return components.map((component, index) => {
+    if (typeof component === "string") {
+      component = restorePlaceholders(component);
+    }
     // Check if the component has children and if it's a string
 
     if (typeof component === "string") {
@@ -69,12 +193,13 @@ export function replaceKeywords(inputString) {
       }
       return <MarkdownSpanWrapDisplay content={component} key={index} />;
     } else if (React.isValidElement(component) && typeof component.props.children === "string") {
+      const restoredChildren = restorePlaceholders(component.props.children);
       // Replace "■" with newline components
-      if (component.props.children.includes("■")) {
-        const newChildren = component.props.children.split("■").map((segment, i) => (
+      if (restoredChildren.includes("■")) {
+        const newChildren = restoredChildren.split("■").map((segment, i) => (
           <React.Fragment key={i}>
             {<MarkdownSpanWrapDisplay content={segment} />}
-            {i !== component.props.children.split("■").length - 1 && (
+            {i !== restoredChildren.split("■").length - 1 && (
               <>
                 <br /> ■
               </>
@@ -86,17 +211,18 @@ export function replaceKeywords(inputString) {
         return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
       }
 
-      const newChildren = <MarkdownSpanWrapDisplay content={component.props.children} />;
+      const newChildren = <MarkdownSpanWrapDisplay content={restoredChildren} />;
       return React.cloneElement(component, { ...component.props, key: index, children: newChildren });
     } else if (React.isValidElement(component) && component.props.children.length > 0) {
       // Loop over all children and check if they are strings
       const newChildren = component.props.children.map((child, i) => {
+        const restoredChild = restorePlaceholders(child);
         // Replace "■" with newline components
-        if (typeof child === "string" && child.includes("■")) {
-          return child.split("■").map((segment, j) => (
+        if (typeof restoredChild === "string" && restoredChild.includes("■")) {
+          return restoredChild.split("■").map((segment, j) => (
             <React.Fragment key={j}>
               {<MarkdownSpanWrapDisplay content={segment} />}
-              {j !== child.split("■").length - 1 && (
+              {j !== restoredChild.split("■").length - 1 && (
                 <>
                   <br /> ■
                 </>
@@ -105,8 +231,8 @@ export function replaceKeywords(inputString) {
           ));
         }
         // if it doesnt containt a newline character, return as a MarkDownSpanDisplay
-        if (typeof child === "string") {
-          return <MarkdownSpanWrapDisplay content={child} key={i} />;
+        if (typeof restoredChild === "string") {
+          return <MarkdownSpanWrapDisplay content={restoredChild} key={i} />;
         }
 
         // Return the component as is if it doesn't meet the criteria
@@ -121,11 +247,19 @@ export function replaceKeywords(inputString) {
   });
 }
 
-export const UnitAbilityDescription = ({ name, description, showDescription }) => {
+export const UnitAbilityDescription = ({
+  name,
+  description,
+  showDescription,
+  keywordGlossary,
+  glossaryOnly = false,
+}) => {
   return (
     <div className="ability">
       <span className="name">{name}</span>
-      {showDescription && <span className="description">{replaceKeywords(description)}</span>}
+      {showDescription && (
+        <span className="description">{replaceKeywords(description, keywordGlossary, glossaryOnly)}</span>
+      )}
     </div>
   );
 };

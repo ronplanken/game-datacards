@@ -1,0 +1,108 @@
+.legal-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #1a1a1a;
+  line-height: 1.7;
+}
+
+.legal-page h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #111;
+}
+
+.legal-page .legal-updated {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.legal-page h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 36px;
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.legal-page p {
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.legal-page ul {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.legal-page li {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.legal-page a {
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.legal-page a:hover {
+  text-decoration: underline;
+}
+
+.legal-page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.legal-page th,
+.legal-page td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.legal-page th {
+  font-weight: 600;
+  color: #333;
+  background: #fafafa;
+}
+
+.legal-page .legal-back {
+  display: inline-block;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #666;
+  text-decoration: none;
+}
+
+.legal-page .legal-back:hover {
+  color: #1890ff;
+}
+
+@media (max-width: 600px) {
+  .legal-page {
+    padding: 24px 16px 60px;
+  }
+
+  .legal-page h1 {
+    font-size: 24px;
+  }
+
+  .legal-page h2 {
+    font-size: 18px;
+  }
+
+  .legal-page table {
+    font-size: 13px;
+  }
+
+  .legal-page th,
+  .legal-page td {
+    padding: 8px;
+  }
+}

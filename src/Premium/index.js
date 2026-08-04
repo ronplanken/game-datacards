@@ -1,0 +1,505 @@
+/**
+ * Premium Feature Stubs
+ *
+ * This file contains stub exports for premium features.
+ * In the public/community version, these stubs provide no-op implementations.
+ * In the official build, webpack aliases replace this with the @gdc/premium package.
+ *
+ * All cloud features (auth, sync, subscriptions) are premium-only.
+ * The public version works with local storage only.
+ */
+
+// =====================================================
+// PROVIDERS - No-op providers that just render children
+// =====================================================
+
+export const AuthProvider = ({ children }) => children;
+export const SyncProvider = ({ children }) => children;
+export const SubscriptionProvider = ({ children }) => children;
+export const CloudCategoriesProvider = ({ children }) => children;
+
+// =====================================================
+// HOOKS - Return safe defaults / disabled state
+// =====================================================
+
+const EMPTY_ERROR_MAP = new Map();
+
+/**
+ * Stub for useAuth - no authentication in public version
+ */
+export const useAuth = () => ({
+  user: null,
+  session: null,
+  profile: null,
+  loading: false,
+  isAuthenticated: false,
+  // Auth methods - all return failure
+  signUp: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  signIn: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  signInWithOAuth: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  signOut: () => Promise.resolve({ success: true }),
+  resetPassword: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  updatePassword: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  updateUserMetadata: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  fetchUserProfile: () => Promise.resolve(),
+  // Email confirmation methods - all return failure
+  resendConfirmation: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  verifyOtp: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  // Auth redirect error
+  authRedirectError: null,
+  clearAuthRedirectError: () => {},
+  // 2FA methods - all return failure
+  enroll2FA: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  verify2FAEnrollment: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  challenge2FA: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  verify2FA: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  unenroll2FA: () => Promise.resolve({ success: false, error: "Not available in community version" }),
+  getFactors: () => Promise.resolve({ success: true, factors: [], totpFactors: [] }),
+});
+
+/**
+ * Stub for useSync - sync disabled in public version
+ */
+export const useSync = () => ({
+  // Category Actions
+  uploadCategory: () => Promise.resolve({ success: false }),
+  downloadCategories: () => Promise.resolve({ success: false, data: [] }),
+  enableSync: () => Promise.resolve({ success: false }),
+  disableSync: () => Promise.resolve({ success: false }),
+  syncAll: () => Promise.resolve({ success: false }),
+  checkConflicts: () => Promise.resolve({ success: false, conflicts: [] }),
+  resolveConflict: () => Promise.resolve({ success: false }),
+  deleteFromCloud: () => Promise.resolve({ success: false }),
+  // Local Datasource Actions
+  uploadLocalDatasource: () => Promise.resolve({ success: false }),
+  downloadLocalDatasources: () => Promise.resolve({ success: false, data: [] }),
+  syncAllDatasources: () => Promise.resolve({ success: false }),
+  syncDatasourcesFromCloud: () => Promise.resolve({ success: false, imported: 0 }),
+  deleteLocalDatasourceFromCloud: () => Promise.resolve({ success: false }),
+  disableDatasourceSync: () => Promise.resolve({ success: false }),
+  // Template Sync Actions
+  uploadTemplate: () => Promise.resolve({ success: false }),
+  downloadTemplates: () => Promise.resolve({ success: false, data: [] }),
+  enableTemplateSync: () => Promise.resolve({ success: false }),
+  disableTemplateSync: () => Promise.resolve({ success: false }),
+  syncAllTemplates: () => Promise.resolve({ success: false }),
+  deleteTemplateFromCloud: () => Promise.resolve({ success: false }),
+  // State
+  isSyncing: false,
+  isOnline: true,
+  lastSyncTime: null,
+  conflicts: [],
+  globalSyncStatus: "disabled",
+  syncedCount: 0,
+  syncedCategoryCount: 0,
+  syncedDatasourceCount: 0,
+  syncedTemplateCount: 0,
+  pendingCount: 0,
+  errorCount: 0,
+  conflictCount: 0,
+  // Diagnostics
+  syncEvents: [],
+  lastErrorByItemId: EMPTY_ERROR_MAP,
+  clearSyncEvents: () => {},
+  recordSyncEvent: () => {},
+});
+
+/**
+ * Stub for useSubscription - always "free" tier with unlimited local storage
+ */
+export const useSubscription = () => ({
+  // State
+  subscription: null,
+  loading: false,
+  usage: { categories: 0, datasources: 0, templates: 0 },
+  // Utilities - local actions always allowed
+  getTier: () => "free",
+  getLimits: () => ({
+    categories: 0, // No cloud sync in free
+    datasources: 0,
+    templates: 0,
+    canUploadDatasources: false,
+    canAccessShares: false,
+  }),
+  canPerformAction: () => true, // Local actions always allowed
+  getRemainingQuota: () => Infinity, // Unlimited local categories
+  isOverQuota: () => false,
+  // Actions - all no-ops
+  startCheckout: (/* productId, discountCode */) => Promise.resolve({ success: false }),
+  checkDiscountCode: () => Promise.resolve({ valid: false }),
+  openCustomerPortal: () => Promise.resolve({ success: false }),
+  refreshSubscription: () => Promise.resolve(),
+  fetchUsage: () => Promise.resolve(),
+  // Feature flags
+  isPaidTierEnabled: false,
+});
+
+/**
+ * Stub for useCloudCategories - empty in public version
+ */
+export const useCloudCategories = () => ({
+  categories: [],
+  isLoading: false,
+  error: null,
+  refresh: () => Promise.resolve(),
+  lastFetchTime: null,
+});
+
+/**
+ * Stub for usePremiumFeatures - check if premium features are available
+ */
+export const usePremiumFeatures = () => ({
+  hasPremium: false,
+  hasSync: false,
+  hasAuth: false,
+  hasSubscription: false,
+  hasCustomDatasources: false,
+  hasDatasourceBrowser: false,
+  hasCardDesigner: false,
+});
+
+/**
+ * Stub for useProducts - product catalog for checkout
+ */
+export const useProducts = () => ({
+  products: null,
+  loading: false,
+  error: null,
+  getTierByProductId: () => null,
+  getDiscountForProduct: () => null,
+  getActivePromoCode: () => null,
+  formatDiscountedPrice: () => null,
+});
+
+// =====================================================
+// SUBSCRIPTION LIMITS CONSTANT
+// =====================================================
+
+// Import from shared constants (single source of truth)
+export { SUBSCRIPTION_LIMITS } from "./constants";
+
+// =====================================================
+// UTILITIES
+// =====================================================
+
+export const getAvatarUrl = () => null;
+
+// =====================================================
+// DESKTOP AUTH COMPONENTS - All render null
+// =====================================================
+
+export const AccountButton = () => null;
+export const LoginModal = () => null;
+export const SignupModal = () => null;
+export const TwoFactorPrompt = () => null;
+export const TwoFactorSetup = () => null;
+export const AccountSettingsModal = () => null;
+export const ResetPasswordPage = () => null;
+
+// =====================================================
+// MOBILE AUTH COMPONENTS - All render null
+// =====================================================
+
+export const MobileLoginPage = () => null;
+export const MobileSignupPage = () => null;
+export const MobilePasswordResetPage = () => null;
+export const MobileTwoFactorPage = () => null;
+
+// =====================================================
+// ACCOUNT COMPONENTS - All render null
+// =====================================================
+
+export const MobileAccountSheet = () => null;
+export const MobileAccountSettingsSheet = () => null;
+
+// =====================================================
+// SYNC COMPONENTS - All render null
+// =====================================================
+
+export const MobileSyncSheet = () => null;
+export const CloudCategorySheet = () => null;
+export const CategorySyncIcon = () => null;
+export const DatasourcePublishIcon = () => null;
+export const DatasourceSyncIcon = () => null;
+export const TemplateSyncIcon = () => null;
+export const TemplatePublishIcon = () => null;
+export const SyncClaimModal = () => null;
+export const SyncConflictModal = () => null;
+export const SyncConflictHandler = () => null;
+export const DatasourceConflictModal = () => null;
+export const DatasourceConflictHandler = () => null;
+export const SyncStatusIndicator = () => null;
+export const SyncDiagnosticsModal = () => null;
+export const SyncDiagnosticsProvider = ({ children }) => children;
+export const useSyncDiagnostics = () => ({
+  isOpen: false,
+  open: () => {},
+  close: () => {},
+});
+export const ListSyncButton = () => null;
+
+// =====================================================
+// SUBSCRIPTION COMPONENTS - All render null
+// =====================================================
+
+export const CheckoutSuccessModal = () => null;
+export const DatasourceUpdateBadge = () => null;
+export const UpgradeModal = () => null;
+export const UsageIndicator = () => null;
+export const SubscriptionBadge = () => null;
+export const PremiumUpgradeButton = () => null;
+
+// =====================================================
+// CUSTOM DATASOURCE COMPONENTS - All render null
+// =====================================================
+
+export const CustomDatasourceModal = () => null;
+export const EditDatasourceMetadataModal = () => null;
+export const ExportDatasourceModal = () => null;
+
+// =====================================================
+// SHARING COMPONENTS - All render null
+// =====================================================
+
+export const MySharedListsModal = () => null;
+export const MobileSharedListsModal = () => null;
+
+// =====================================================
+// SUPPORT COMPONENTS - All render null
+// =====================================================
+
+export const SupportModal = () => null;
+
+// =====================================================
+// WELCOME WIZARD COMPONENTS - All render null
+// =====================================================
+
+export const StepSubscription = () => null;
+
+// =====================================================
+// DESIGNER COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for DesignerPage - returns null (route hidden in community version)
+ */
+export const DesignerPage = () => null;
+
+/**
+ * Stub for TemplateStorageProvider - renders children only
+ */
+export const TemplateStorageProvider = ({ children }) => children;
+
+/**
+ * Stub for useTemplateStorage - no templates in public version
+ */
+export const useTemplateStorage = () => ({
+  // State
+  templateStorage: { version: "1.0.0", templates: [] },
+  activeTemplate: null,
+  templateModified: false,
+  saveStatus: "saved",
+  // Template operations - all no-ops
+  setActiveTemplate: () => {},
+  createTemplate: () => null,
+  saveTemplate: () => {},
+  updateActiveTemplate: () => {},
+  deleteTemplate: () => {},
+  duplicateTemplate: () => {},
+  renameTemplate: () => {},
+  exportTemplate: () => null,
+  importTemplate: () => null,
+  // Element operations - all no-ops
+  addElement: () => {},
+  updateElement: () => {},
+  removeElement: () => {},
+  reorderElements: () => {},
+  syncElementsFromCanvas: () => {},
+  // Canvas settings - no-op
+  updateCanvasSettings: () => {},
+  // Frame operations - all no-ops
+  moveElementToFrame: () => {},
+  moveElementToRoot: () => {},
+  getElementChildren: () => [],
+  buildElementTree: () => [],
+  // Sync operations - all no-ops
+  markTemplatePending: () => {},
+  updateTemplateSyncStatus: () => {},
+  setTemplateSyncEnabled: () => {},
+  bulkUpdateTemplates: () => {},
+  getTemplate: () => null,
+});
+
+/**
+ * Stub for useDataBinding - minimal implementation
+ */
+export const useDataBinding = () => ({
+  getAvailableBindings: () => null,
+  resolveBinding: (template) => template,
+  hasBindings: () => false,
+  extractBindings: () => [],
+  validateBinding: () => false,
+  createBindingString: (path) => `{{${path}}}`,
+  availableFormats: [],
+});
+
+/**
+ * Template presets constant (for compatibility)
+ */
+export { TEMPLATE_PRESETS } from "./constants";
+
+// =====================================================
+// TEMPLATE RENDERING COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for useTemplateRenderer - no-op in public version
+ */
+export const useTemplateRenderer = () => ({
+  renderTemplate: () => Promise.resolve(null),
+  isRendering: false,
+  error: null,
+  clearCache: () => {},
+  getTemplate: () => null,
+});
+
+/**
+ * Stub for TemplateRenderer - returns null (templates not available in community version)
+ */
+export const TemplateRenderer = () => null;
+
+/**
+ * Stub for TemplateSelector - returns null (templates not available in community version)
+ */
+export const TemplateSelector = () => null;
+
+// =====================================================
+// TEMPLATE SHARING COMPONENTS & HOOKS - Premium only
+// =====================================================
+
+/**
+ * Stub for TemplateSharingProvider - renders children only
+ */
+export const TemplateSharingProvider = ({ children }) => children;
+
+/**
+ * Stub for useTemplateSharing - template sharing disabled in public version
+ */
+export const useTemplateSharing = () => ({
+  // Browse
+  publicTemplates: [],
+  isLoadingPublic: false,
+  browseFilters: { gameSystem: null, search: "", sortBy: "popular" },
+  pagination: { offset: 0, hasMore: false },
+  browsePublicTemplates: () => Promise.resolve([]),
+  getFeaturedTemplates: () => Promise.resolve([]),
+  getTemplateByShareCode: () => Promise.resolve(null),
+  setBrowseFilters: () => {},
+  // Subscriptions
+  subscriptions: [],
+  availableUpdates: [],
+  isLoadingSubscriptions: false,
+  fetchMySubscriptions: () => Promise.resolve([]),
+  subscribeToTemplate: () => Promise.resolve({ success: false }),
+  unsubscribeFromTemplate: () => Promise.resolve({ success: false }),
+  // Publishing
+  myTemplates: [],
+  isLoadingMine: false,
+  fetchMyTemplates: () => Promise.resolve([]),
+  publishTemplate: () => Promise.resolve({ success: false }),
+  pushTemplateUpdate: () => Promise.resolve({ success: false }),
+  unpublishTemplate: () => Promise.resolve({ success: false }),
+  deleteTemplate: () => Promise.resolve({ success: false }),
+  updateTemplateMetadata: () => Promise.resolve({ success: false }),
+  getMyPublishedWorks: () => Promise.resolve({ datasources: [], templates: [] }),
+  updateCount: 0,
+});
+
+/**
+ * Game system options constant for templates (re-exported from shared helpers)
+ */
+export {
+  GAME_SYSTEMS as TEMPLATE_GAME_SYSTEMS,
+  SORT_OPTIONS as TEMPLATE_SORT_OPTIONS,
+} from "../Helpers/sharing.helpers";
+
+// =====================================================
+// CUSTOM CARD EDITOR - Premium only
+// =====================================================
+
+/**
+ * Stub for CustomCardEditor - returns null (premium feature)
+ * Premium implementation provides schema-driven card editing
+ */
+export const CustomCardEditor = () => null;
+
+/**
+ * Stub for CardEditProvider - renders children only (premium feature)
+ */
+export const CardEditProvider = ({ children }) => children;
+
+/**
+ * Stub for CustomUnitEditor - returns null (premium feature)
+ */
+export const CustomUnitEditor = () => null;
+
+/**
+ * Stub for CustomFieldEditor - returns null (premium feature)
+ */
+export const CustomFieldEditor = () => null;
+
+// =====================================================
+// ADMIN COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for AdminPage - returns null (route hidden in community version)
+ */
+export const AdminPage = () => null;
+
+/**
+ * Stub for useAdmin - admin features disabled in public version
+ */
+export const useAdmin = () => ({
+  isAdmin: false,
+  users: [],
+  stats: null,
+  loading: false,
+  listUsers: () => Promise.resolve({ data: [], total: 0 }),
+  getUserDetail: () => Promise.resolve(null),
+  updateUserTier: () => Promise.resolve({ success: false }),
+  updateUserStatus: () => Promise.resolve({ success: false }),
+  getPlatformStats: () => Promise.resolve(null),
+  sendEmail: () => Promise.resolve({ success: false }),
+  auditLog: [],
+  fetchAuditLog: () => Promise.resolve({ data: [], total: 0 }),
+});
+
+// =====================================================
+// COMMUNITY BROWSER COMPONENTS - Premium only
+// =====================================================
+
+/**
+ * Stub for CommunityBrowserModal - returns null (premium feature)
+ */
+export const CommunityBrowserModal = () => null;
+
+/**
+ * Stub for TemplateCard - returns null (premium feature)
+ */
+export const TemplateCard = () => null;
+
+/**
+ * Stub for TemplateDetailModal - returns null (premium feature)
+ */
+export const TemplateDetailModal = () => null;
+
+/**
+ * Stub for MyWorksTab - returns null (premium feature)
+ */
+export const MyWorksTab = () => null;
+
+/**
+ * Stub for PublishTemplateModal - returns null (premium feature)
+ */
+export const PublishTemplateModal = () => null;

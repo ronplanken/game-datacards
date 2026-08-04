@@ -1,0 +1,43 @@
+/* dropdown-tokens.css - Shared design tokens for dark dropdown menus */
+
+.dark-dropdown {
+  /* Premium gold palette */
+  --menu-gold: #c9a227;
+  --menu-gold-light: #e3c65c;
+  --menu-gold-dark: #a68419;
+  --menu-gold-glow: rgba(201, 162, 39, 0.15);
+
+  /* Creator copper palette */
+  --menu-rose: #cd7f32;
+  --menu-rose-light: #daa06d;
+  --menu-rose-dark: #a66528;
+  --menu-rose-glow: rgba(205, 127, 50, 0.15);
+
+  /* Navy base */
+  --menu-navy: #001529;
+  --menu-navy-light: #002140;
+  --menu-bg: #0a1628;
+  --menu-bg-item: #0f1f35;
+  --menu-bg-hover: #162a46;
+
+  /* Text hierarchy */
+  --menu-text-main: #f1f5f9;
+  --menu-text-muted: #94a3b8;
+  --menu-text-dim: #64748b;
+
+  /* Status colors */
+  --menu-success: #22c55e;
+  --menu-danger: #ef4444;
+  --menu-warning: #f59e0b;
+  --menu-info: #3b82f6;
+
+  /* Borders & effects */
+  --menu-border: rgba(255, 255, 255, 0.08);
+  --menu-border-gold: rgba(201, 162, 39, 0.25);
+  --menu-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+
+  /* Radius */
+  --menu-radius: 12px;
+  --menu-radius-sm: 8px;
+  --menu-radius-xs: 6px;
+}

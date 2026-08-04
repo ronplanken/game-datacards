@@ -1,11 +1,31 @@
 /* ListOverview.css - Modern Light Theme (High Contrast & Compact) */
 
 /* ===========================================
-   TOP SECTION (Import + Divider + List Header)
+   IMPORT SECTION
    =========================================== */
-.list-overview-top-section {
+.list-overview-import-section {
+  margin: -16px -20px 0;
+  padding: 16px 20px 12px;
+  background: var(--bs-glass-bg, rgba(255, 255, 255, 0.82));
+  backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+}
+
+/* ===========================================
+   STICKY HEADER (List Selector + Actions)
+   =========================================== */
+.list-overview-header-sticky {
   margin: 0 -20px;
   padding: 0 20px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--bs-border);
+  position: sticky;
+  top: -16px;
+  z-index: 10;
+  background: var(--bs-glass-bg, rgba(255, 255, 255, 0.82));
+  backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--bs-blur, 20px)) saturate(180%);
 }
 
 /* ===========================================
@@ -27,8 +47,9 @@
   color: var(--bs-text);
   text-align: left;
   transition: all 0.15s ease;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8),
-              0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .list-overview-import-action:active {
@@ -52,7 +73,9 @@
   flex-shrink: 0;
   color: var(--bs-text-muted);
   opacity: 0.5;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .list-overview-import-action:active svg:last-child {
@@ -61,12 +84,107 @@
 }
 
 /* ===========================================
+   IMPORT PICKER (Inline step in MobileModal)
+   =========================================== */
+.import-picker-step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.import-picker-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-accent);
+  transition: opacity 0.15s ease;
+}
+
+.import-picker-back:active {
+  opacity: 0.7;
+}
+
+.import-picker-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.import-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.import-picker-option:first-child {
+  border-radius: 10px 10px 0 0;
+}
+
+.import-picker-option:last-child {
+  border-radius: 0 0 10px 10px;
+}
+
+.import-picker-option + .import-picker-option {
+  border-top: none;
+}
+
+.import-picker-option:active {
+  background: var(--bs-surface-hover);
+  transform: scale(0.99);
+}
+
+.import-picker-option > svg:first-child {
+  flex-shrink: 0;
+  color: var(--bs-accent);
+  opacity: 0.7;
+}
+
+.import-picker-option-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.import-picker-option-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-text);
+}
+
+.import-picker-option-desc {
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+}
+
+.import-picker-option > svg:last-child {
+  flex-shrink: 0;
+  color: var(--bs-text-muted);
+  opacity: 0.5;
+}
+
+/* ===========================================
    DIVIDER
    =========================================== */
 .list-overview-divider {
   height: 1px;
   background: var(--bs-border);
-  margin: 16px -20px;
+  margin: 12px -20px;
 }
 
 /* ===========================================
@@ -85,8 +203,8 @@
    =========================================== */
 .list-overview-list-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
@@ -99,12 +217,16 @@
   gap: 6px;
   padding: 8px 12px;
   background: var(--bs-surface);
-  border: 1px solid var(--bs-border-light);
+  border: 1px solid var(--bs-border);
   border-radius: 8px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  flex: 1;
+  min-width: 0;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .list-overview-name-selector:active {
@@ -129,9 +251,22 @@
 }
 
 /* ===========================================
-   COPY BUTTON
+   HEADER ACTIONS (Sync + Copy buttons)
    =========================================== */
-.list-overview-copy-button {
+.list-overview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===========================================
+   MORE ACTIONS BUTTON & MENU
+   =========================================== */
+.list-overview-more-wrapper {
+  position: relative;
+}
+
+.list-overview-more-button {
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -146,10 +281,284 @@
   flex-shrink: 0;
 }
 
-.list-overview-copy-button:active {
+.list-overview-more-button:active {
   background: var(--bs-surface-hover);
   color: var(--bs-text);
   border-color: var(--bs-text-muted);
+}
+
+.list-overview-more-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.list-overview-more-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 180px;
+  background: #ffffff;
+  border: 1px solid var(--bs-border);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.06);
+  z-index: 51;
+  overflow: visible;
+  animation: listMoreMenuIn 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.list-overview-more-menu::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 12px;
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border-top: 1px solid var(--bs-border);
+  border-left: 1px solid var(--bs-border);
+  transform: rotate(45deg);
+}
+
+@keyframes listMoreMenuIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.list-overview-more-item:first-child {
+  border-radius: 10px 10px 0 0;
+}
+
+.list-overview-more-item:last-child {
+  border-radius: 0 0 10px 10px;
+}
+
+.list-overview-more-item:only-child {
+  border-radius: 10px;
+}
+
+.list-overview-more-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 44px;
+  background: transparent;
+  border: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--bs-text);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.list-overview-more-item:active {
+  background: var(--bs-surface-hover);
+}
+
+.list-overview-more-item + .list-overview-more-item {
+  border-top: 1px solid var(--bs-border);
+}
+
+.list-overview-more-item svg {
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   LIST SHARE SHEET
+   =========================================== */
+.list-share-sheet {
+  padding: 0 16px 16px;
+}
+
+.list-share-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.list-share-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bs-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.list-share-meta {
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Visibility Toggle */
+.list-share-visibility {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.list-share-visibility-label {
+  font-size: 14px;
+  color: var(--bs-text);
+}
+
+.list-share-visibility-toggle {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--bs-surface-hover, rgba(148, 163, 184, 0.3));
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  padding: 0;
+}
+
+.list-share-visibility-toggle.active {
+  background: #1677ff;
+}
+
+.list-share-visibility-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.list-share-visibility-toggle.active .list-share-visibility-thumb {
+  transform: translateX(20px);
+}
+
+/* Share Result */
+.list-share-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bs-surface-hover, rgba(148, 163, 184, 0.1));
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.list-share-result-url {
+  flex: 1;
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.list-share-result-copy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #1677ff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.list-share-result-copy:active {
+  opacity: 0.85;
+}
+
+/* Share Button */
+.list-share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #1677ff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.list-share-btn:active {
+  opacity: 0.85;
+}
+
+.list-share-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.list-share-btn--secondary {
+  background: transparent;
+  color: var(--bs-text-secondary);
+  border: 1px solid var(--bs-border, rgba(148, 163, 184, 0.25));
+  margin-top: 8px;
+}
+
+.list-share-btn--secondary:active {
+  background: var(--bs-surface-hover, rgba(148, 163, 184, 0.1));
+}
+
+/* Share Actions */
+.list-share-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Loading */
+.list-share-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  color: var(--bs-text-secondary);
+  font-size: 14px;
+}
+
+/* Spinner */
+.list-share-spinner {
+  animation: listShareSpin 1s linear infinite;
+}
+
+@keyframes listShareSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ===========================================
@@ -202,7 +611,6 @@
 .list-overview-items {
   display: flex;
   flex-direction: column;
-  padding-bottom: 72px;
 }
 
 .list-overview-item {
@@ -254,12 +662,89 @@
   padding-left: 20px;
 }
 
+.list-overview-item-attachment {
+  font-size: 12px;
+  color: var(--bs-text-secondary);
+  font-style: italic;
+  margin-top: 2px;
+  padding-left: 20px;
+}
+
+/* Support units that are not attached to a unit are an illegal selection. */
+.list-overview-item-attachment--warning {
+  color: var(--bs-danger, #dc3545);
+  font-style: normal;
+}
+
+/* 11e army roster row: battle size, Detachment Points and force dispositions. */
+.list-overview-roster {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  color: var(--bs-text);
+}
+
+.list-overview-roster-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.list-overview-roster-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.list-overview-roster-detachments {
+  font-size: 12px;
+  color: var(--bs-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.list-overview-total-value--over,
+.list-overview-roster-over {
+  color: var(--bs-danger, #dc3545);
+}
+
 .list-overview-item-points {
   font-size: 14px;
   color: var(--bs-text-secondary);
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+/* Configure button for unconfigured cards */
+.list-overview-item-configure {
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--bs-accent);
+  background: var(--bs-accent-light, #e6f4ff);
+  color: var(--bs-accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.list-overview-item-configure:active {
+  background: var(--bs-accent);
+  color: #fff;
 }
 
 .list-overview-item-delete {
@@ -291,16 +776,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
-  margin: 0;
-  background: var(--bs-surface);
-  border-top: 1px solid var(--bs-border); /* High contrast border */
+  margin: 0 -20px;
+  background: #ffffff;
+  border-top: 1px solid var(--bs-border);
   font-weight: 600;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: sticky;
+  bottom: -24px;
   z-index: 10;
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08); /* Slightly clearer shadow */
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .list-overview-total-label {
@@ -313,4 +796,198 @@
   color: var(--bs-text);
   font-weight: 700;
   letter-spacing: -0.01em;
+}
+
+/* Secondary row shown directly above the Total. Deliberately NOT sticky — only
+   the final Total row sticks to the bottom; sharing the sticky class would make
+   the two overlap at the same bottom offset. */
+.list-overview-surcharge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  margin: 0 -20px;
+  background: #ffffff;
+  border-top: 1px solid var(--bs-border);
+  font-weight: 600;
+}
+
+.list-overview-surcharge-value {
+  font-size: 14px;
+  color: var(--bs-text-secondary);
+  font-weight: 700;
+}
+
+/* ===========================================
+   CLOUD CATEGORY STYLES
+   =========================================== */
+
+/* Cloud icon in header */
+.list-overview-cloud-icon {
+  color: var(--bs-accent);
+  flex-shrink: 0;
+}
+
+/* Game system badge in header */
+.list-overview-cloud-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-left: 4px;
+}
+
+.list-overview-cloud-badge--40k {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.list-overview-cloud-badge--aos {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+}
+
+.list-overview-cloud-badge--necro {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.list-overview-cloud-badge--custom {
+  background: rgba(100, 116, 139, 0.15);
+  color: #64748b;
+}
+
+/* Cloud category items container */
+.list-overview-items--cloud {
+}
+
+/* Cloud item styling (read-only, no delete) */
+.list-overview-item--cloud {
+  cursor: pointer;
+}
+
+.list-overview-item--cloud .list-overview-item-main {
+  flex: 1;
+}
+
+.list-overview-item-arrow {
+  color: var(--bs-text-muted);
+  flex-shrink: 0;
+  margin-right: -4px;
+}
+
+/* Cloud footer (card count instead of points total) */
+.list-overview-cloud-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  margin: 0 -20px;
+  background: #ffffff;
+  border-top: 1px solid var(--bs-border);
+  position: sticky;
+  bottom: -24px;
+  z-index: 10;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.list-overview-cloud-count {
+  font-size: 14px;
+  color: var(--bs-text-secondary);
+  font-weight: 500;
+}
+
+/* ===========================================
+   ENTRANCE ANIMATIONS
+   =========================================== */
+@keyframes listItemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes listFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes listEmptyFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* List items slide in from right */
+.list-overview-item {
+  animation: listItemSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.list-overview-item:nth-child(1) {
+  animation-delay: 0.03s;
+}
+.list-overview-item:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.list-overview-item:nth-child(3) {
+  animation-delay: 0.09s;
+}
+.list-overview-item:nth-child(4) {
+  animation-delay: 0.12s;
+}
+.list-overview-item:nth-child(5) {
+  animation-delay: 0.15s;
+}
+.list-overview-item:nth-child(n + 6) {
+  animation-delay: 0.18s;
+}
+
+/* Section headers fade in */
+.list-overview-section {
+  animation: listFadeSlideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Empty state icon float */
+.list-overview-empty svg {
+  animation: listEmptyFloat 3s ease-in-out infinite;
+}
+
+/* Empty state text fade in */
+.list-overview-empty-text {
+  animation: listFadeSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .list-overview-item,
+  .list-overview-section,
+  .list-overview-empty-text,
+  .list-overview-more-menu,
+  .list-share-spinner {
+    animation: none;
+  }
+
+  .list-overview-empty svg {
+    animation: none;
+  }
 }

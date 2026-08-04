@@ -1,6 +1,26 @@
 import compareVersions, { compare } from "compare-versions";
 import v300Config from "./v3.0.0";
 import v310Config from "./v3.1.0";
+import v311Config from "./v3.1.1";
+import v312Config from "./v3.1.2";
+import v313Config from "./v3.1.3";
+import v320Config from "./v3.2.0";
+import v321Config from "./v3.2.1";
+import v322Config from "./v3.2.2";
+import v330Config from "./v3.3.0";
+import v340Config from "./v3.4.0";
+import v341Config from "./v3.4.1";
+import v342Config from "./v3.4.2";
+import v350Config from "./v3.5.0";
+import v352Config from "./v3.5.2";
+import v360Config from "./v3.6.0";
+import v370Config from "./v3.7.0";
+import v371Config from "./v3.7.1";
+import v372Config from "./v3.7.2";
+import v380Config from "./v3.8.0";
+import v390Config from "./v3.9.0";
+import v3100Config from "./v3.10.0";
+import v3110Config from "./v3.11.0";
 
 /**
  * Registry of all version wizard configurations
@@ -11,7 +31,30 @@ import v310Config from "./v3.1.0";
  * 2. Create step components and index.js with VERSION_CONFIG
  * 3. Import and add to VERSION_REGISTRY array below
  */
-export const VERSION_REGISTRY = [v300Config, v310Config]
+export const VERSION_REGISTRY = [
+  v300Config,
+  v310Config,
+  v311Config,
+  v312Config,
+  v313Config,
+  v320Config,
+  v321Config,
+  v322Config,
+  v330Config,
+  v340Config,
+  v341Config,
+  v342Config,
+  v350Config,
+  v352Config,
+  v360Config,
+  v370Config,
+  v371Config,
+  v372Config,
+  v380Config,
+  v390Config,
+  v3100Config,
+  v3110Config,
+]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));
 
@@ -36,7 +79,6 @@ export const getLatestWizardVersion = () => VERSION_REGISTRY[VERSION_REGISTRY.le
 
 /**
  * Helper to find the applicable major version for the current app version
- * Used by WhatsNew.jsx for backwards compatibility
  *
  * @param {string} currentVersion - Current app version
  * @returns {string|undefined} The highest version that applies
@@ -97,6 +139,6 @@ export const mergeVersionSteps = (versions) => {
 export const getUnseenVersions = (lastSeenVersion, currentVersion) => {
   if (!lastSeenVersion || !currentVersion) return [];
   return VERSION_REGISTRY.filter(
-    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<=")
+    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<="),
   );
 };

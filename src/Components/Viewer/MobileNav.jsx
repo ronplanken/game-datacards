@@ -1,14 +1,63 @@
-import { Settings, Share2 } from "lucide-react";
-import { Button, Col, Row, Space, message } from "antd";
-import { useState } from "react";
+import { Settings, Share2, User, Cloud } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button, Col, Row, Space } from "antd";
+import { message } from "../Toast/message";
+import { useState, useEffect } from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
+import { useAuth, useSubscription, useSync, useCloudCategories, usePremiumFeatures, getAvatarUrl } from "../../Premium";
 import { AddCard } from "../../Icons/AddCard";
 import { ListOverview } from "./ListCreator/ListOverview";
 import { useMobileList } from "./useMobileList";
 
-export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible }) => {
+// Get initials from user
+const getInitials = (user, profile) => {
+  const displayName = profile?.display_name || user?.user_metadata?.display_name;
+  if (displayName) {
+    const parts = displayName.trim().split(" ");
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return displayName.slice(0, 2).toUpperCase();
+  }
+  if (user?.email) {
+    return user.email.slice(0, 2).toUpperCase();
+  }
+  return "??";
+};
+
+export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible, setAccountVisible }) => {
+  const navigate = useNavigate();
   const { activeCard } = useCardStorage();
-  const { lists, selectedList, addDatacard } = useMobileList();
+  const { lists, selectedList, selectedCloudCategoryId, addDatacard } = useMobileList();
+  const { categories: cloudCategories } = useCloudCategories();
+  const { user, profile } = useAuth();
+  const { subscription } = useSubscription();
+  const { globalSyncStatus, syncedCategoryCount } = useSync();
+  const { hasAuth } = usePremiumFeatures();
+
+  // Get selected cloud category if one is selected
+  const selectedCloudCategory = selectedCloudCategoryId
+    ? cloudCategories.find((c) => c.uuid === selectedCloudCategoryId)
+    : null;
+  const isCloudCategory = !!selectedCloudCategory;
+
+  // Get tier for avatar border styling
+  const tier = subscription?.tier || "free";
+
+  // Avatar image
+  const [imgError, setImgError] = useState(false);
+  const avatarUrl = getAvatarUrl(user);
+  const showImage = !!avatarUrl && !imgError;
+
+  // Reset imgError when avatar URL changes
+  useEffect(() => {
+    setImgError(false);
+  }, [avatarUrl]);
+
+  // Sync badge - only show if user has synced items and status is noteworthy
+  const showSyncBadge = user && syncedCategoryCount > 0 && globalSyncStatus !== "idle" && globalSyncStatus !== "synced";
+  const syncStatusClass = showSyncBadge ? `mobile-account-avatar-btn--${globalSyncStatus}` : "";
 
   // Check if current card is AoS (has scalar points, not array)
   const isAoS = activeCard?.source === "aos";
@@ -35,33 +84,33 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
               type="ghost"
               size="large"
               className="button-bar"
-              shape="round"
+              style={{ borderRadius: 8 }}
               onClick={() =>
                 setShowList((val) => {
                   return showList ? false : true;
                 })
               }>
-              <span ref={parent}>
-                {lists[selectedList].datacards.reduce((acc, val) => {
-                  let cost = acc + Number(val.points.cost);
-                  if (val.enhancement) {
-                    cost = cost + Number(val.enhancement.cost);
-                  }
-                  return cost;
-                }, 0)}{" "}
-                pts
+              <span ref={parent} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                {isCloudCategory ? (
+                  <>
+                    <Cloud size={14} />
+                    {selectedCloudCategory.cardCount} cards
+                  </>
+                ) : (
+                  <>{getCategoryPointsTotal(lists[selectedList]?.cards)} pts</>
+                )}
               </span>
             </Button>
           </Space.Compact>
         </Col>
-        <Col span={8}>
+        <Col span={8} className="mobile-add-card-btn">
           <Space align="center" style={{ width: "100%", justifyContent: "center" }}>
             {activeCard && activeCard.points && (
               <Button
                 icon={<AddCard />}
                 type="ghost"
                 size="large"
-                shape="round"
+                style={{ borderRadius: 8 }}
                 className="button-bar mobile-icon-button"
                 onClick={() => {
                   if (isAoS) {
@@ -96,6 +145,36 @@ export const MobileNav = ({ setMenuVisible, setSharingVisible, setAddListvisible
               onClick={() => setMenuVisible(true)}
               icon={<Settings size={14} />}
             />
+            {hasAuth &&
+              (user ? (
+                <button
+                  className={`mobile-account-avatar-btn mobile-account-avatar-btn--${tier}${showImage ? " mobile-account-avatar-btn--has-image" : ""} ${syncStatusClass}`}
+                  onClick={() => setAccountVisible(true)}
+                  type="button"
+                  aria-label="Account"
+                  style={{ marginRight: "8px" }}>
+                  {showImage ? (
+                    <img
+                      className="mobile-account-avatar-img"
+                      src={avatarUrl}
+                      alt=""
+                      onError={() => setImgError(true)}
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <span className="mobile-account-avatar-initials">{getInitials(user, profile)}</span>
+                  )}
+                </button>
+              ) : (
+                <button
+                  className="mobile-account-avatar-btn mobile-account-avatar-btn--guest"
+                  onClick={() => navigate("/mobile/login")}
+                  type="button"
+                  aria-label="Sign In"
+                  style={{ marginRight: "8px" }}>
+                  <User size={16} strokeWidth={2.5} />
+                </button>
+              ))}
           </Space>
         </Col>
       </Row>

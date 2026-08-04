@@ -1,20 +1,25 @@
 import localForage from "localforage";
 import React, { useEffect, useCallback } from "react";
+import { message } from "../Components/Toast/message";
+import { v4 as uuidv4 } from "uuid";
 import {
   get40KData,
   get40k10eData,
+  get40k11eData,
   get40k10eCombatPatrolData,
   getAoSData,
   getBasicData,
   getNecromundaBasicData,
+  getStarcraftData,
 } from "../Helpers/external.helpers";
 import {
   validateCustomDatasource,
   prepareDatasourceForImport,
   createRegistryEntry,
   compareVersions,
+  getTargetArray,
 } from "../Helpers/customDatasource.helpers";
-import { useFirebase } from "./useFirebase";
+import { DEFAULT_DATASOURCE_COLOURS } from "../Helpers/customSchema.helpers";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
@@ -27,6 +32,13 @@ export function useDataSourceStorage() {
   return context;
 }
 
+// Non-throwing accessor for consumers that may legitimately render outside the
+// provider (e.g. isolated component tests or detached renders). Returns
+// `undefined` instead of throwing so callers can degrade gracefully.
+export function useOptionalDataSourceStorage() {
+  return React.useContext(DataSourceStorageContext);
+}
+
 var dataStore = localForage.createInstance({
   name: "data",
 });
@@ -34,9 +46,8 @@ var dataStore = localForage.createInstance({
 export const DataSourceStorageProviderComponent = (props) => {
   const { settings, updateSettings } = useSettingsStorage();
 
-  const { logLocalEvent } = useFirebase();
-
   const [dataSource, setDataSource] = React.useState(getBasicData());
+  const [isLoading, setIsLoading] = React.useState(false);
   const [selectedFaction, setSelectedFaction] = React.useState(null);
   const [selectedSubFactions, setSelectedSubFactions] = React.useState([]);
   const [selectedFactionIndex, setSelectedFactionIndex] = React.useState(0);
@@ -51,17 +62,16 @@ export const DataSourceStorageProviderComponent = (props) => {
     const index = settings.selectedFactionIndex?.[ds];
     // Handle migration from old format (number) to new format (object)
     if (typeof settings.selectedFactionIndex === "number") {
-      return settings.selectedFactionIndex;
+      return Math.max(0, settings.selectedFactionIndex);
     }
-    return typeof index === "number" ? index : 0;
+    return typeof index === "number" && index >= 0 ? index : 0;
   };
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchData = async () => {
       if (!dataStore) {
         return;
       }
-      logLocalEvent("select_datasource", { dataSource: settings.selectedDataSource });
       const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
 
       if (settings.selectedDataSource === "40k") {
@@ -72,11 +82,13 @@ export const DataSourceStorageProviderComponent = (props) => {
           return;
         }
 
+        setIsLoading(true);
         const dataFactions = await get40KData();
 
         dataStore.setItem("40k", dataFactions);
 
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (settings.selectedDataSource === "40k-10e") {
         const storedData = await dataStore.getItem("40k-10e");
@@ -85,10 +97,28 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
+        setIsLoading(true);
         const dataFactions = await get40k10eData();
 
         dataStore.setItem("40k-10e", dataFactions);
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "40k-11e") {
+        const storedData = await dataStore.getItem("40k-11e");
+        // Cache is language-specific: top-level names are resolved at fetch time.
+        // Refetch when the user switched language since the cache was built.
+        if (storedData && storedData.language === settings.language) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[factionIndex]);
+          return;
+        }
+        setIsLoading(true);
+        const dataFactions = await get40k11eData(settings.language);
+
+        dataStore.setItem("40k-11e", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (settings.selectedDataSource === "40k-10e-cp") {
         const storedData = await dataStore.getItem("40k-10e-cp");
@@ -97,10 +127,12 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
+        setIsLoading(true);
         const dataFactions = await get40k10eCombatPatrolData();
 
         dataStore.setItem("40k-10e-cp", dataFactions);
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (settings.selectedDataSource === "basic") {
         const basicData = getBasicData();
@@ -119,10 +151,26 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
+        setIsLoading(true);
         const dataFactions = await getAoSData();
 
         dataStore.setItem("aos", dataFactions);
         setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "starcraft-tmg") {
+        const storedData = await dataStore.getItem("starcraft-tmg");
+        if (storedData) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
+          return;
+        }
+        setIsLoading(true);
+        const dataFactions = await getStarcraftData();
+
+        dataStore.setItem("starcraft-tmg", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex] || dataFactions.data[0]);
       }
 
       // Handle custom datasources (prefixed with "custom-")
@@ -133,9 +181,45 @@ export const DataSourceStorageProviderComponent = (props) => {
           setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
         }
       }
+
+      // Handle subscribed datasources (prefixed with "subscribed-")
+      if (settings.selectedDataSource?.startsWith("subscribed-")) {
+        const storedData = await dataStore.getItem(settings.selectedDataSource);
+        if (storedData) {
+          setDataSource(storedData);
+          setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
+        }
+      }
     };
-    fetch();
-  }, [settings.selectedDataSource]);
+    fetchData()
+      .catch((error) => {
+        console.error("Failed to load datasource:", error);
+        message.error("Failed to load datasource. Please try refreshing the page.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [settings.selectedDataSource, settings.language]);
+
+  // Reload active custom/subscribed datasource when sync writes new data to localForage
+  useEffect(() => {
+    if (!settings.datasourceSyncTrigger) return;
+    if (
+      !settings.selectedDataSource?.startsWith("custom-") &&
+      !settings.selectedDataSource?.startsWith("subscribed-")
+    ) {
+      return;
+    }
+    const reload = async () => {
+      const storedData = await dataStore.getItem(settings.selectedDataSource);
+      if (storedData) {
+        const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
+        setDataSource(storedData);
+        setSelectedFaction(storedData.data[factionIndex] || storedData.data[0]);
+      }
+    };
+    reload();
+  }, [settings.datasourceSyncTrigger]);
 
   /**
    * Check for updates and refresh the currently selected datasource
@@ -146,40 +230,64 @@ export const DataSourceStorageProviderComponent = (props) => {
     if (!dataStore) {
       return;
     }
-    if (settings.selectedDataSource === "40k") {
-      const dataFactions = await get40KData();
+    const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
+    try {
+      if (settings.selectedDataSource === "40k") {
+        const dataFactions = await get40KData();
 
-      dataStore.setItem("40k", dataFactions);
+        dataStore.setItem("40k", dataFactions);
 
-      setDataSource(dataFactions);
-    }
-    if (settings.selectedDataSource === "40k-10e") {
-      const dataFactions = await get40k10eData();
-      dataStore.setItem("40k-10e", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "40k-10e") {
+        const dataFactions = await get40k10eData();
+        dataStore.setItem("40k-10e", dataFactions);
 
-      setDataSource(dataFactions);
-    }
-    if (settings.selectedDataSource === "40k-10e-cp") {
-      const dataFactions = await get40k10eCombatPatrolData();
-      dataStore.setItem("40k-10e-cp", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "40k-11e") {
+        const dataFactions = await get40k11eData(settings.language);
+        dataStore.setItem("40k-11e", dataFactions);
 
-      setDataSource(dataFactions);
-    }
-    if (settings.selectedDataSource === "basic") {
-      const basicData = getBasicData();
-      setDataSource(basicData);
-      setSelectedFaction(basicData.data[0]);
-    }
-    if (settings.selectedDataSource === "necromunda") {
-      const basicData = getNecromundaBasicData();
-      setDataSource(basicData);
-      setSelectedFaction(basicData.data[0]);
-    }
-    if (settings.selectedDataSource === "aos") {
-      const dataFactions = await getAoSData();
-      dataStore.setItem("aos", dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "40k-10e-cp") {
+        const dataFactions = await get40k10eCombatPatrolData();
+        dataStore.setItem("40k-10e-cp", dataFactions);
 
-      setDataSource(dataFactions);
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "basic") {
+        const basicData = getBasicData();
+        setDataSource(basicData);
+        setSelectedFaction(basicData.data[0]);
+      }
+      if (settings.selectedDataSource === "necromunda") {
+        const basicData = getNecromundaBasicData();
+        setDataSource(basicData);
+        setSelectedFaction(basicData.data[0]);
+      }
+      if (settings.selectedDataSource === "aos") {
+        const dataFactions = await getAoSData();
+        dataStore.setItem("aos", dataFactions);
+
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex]);
+      }
+      if (settings.selectedDataSource === "starcraft-tmg") {
+        const dataFactions = await getStarcraftData();
+        dataStore.setItem("starcraft-tmg", dataFactions);
+
+        setDataSource(dataFactions);
+        setSelectedFaction(dataFactions.data[factionIndex] || dataFactions.data[0]);
+      }
+    } catch (error) {
+      console.error("Failed to check for updates:", error);
+      message.error("Failed to check for updates. Please try again.");
     }
   };
 
@@ -192,7 +300,6 @@ export const DataSourceStorageProviderComponent = (props) => {
    * @param {Object} faction - The faction object to select
    */
   const updateSelectedFaction = (faction) => {
-    logLocalEvent("select_faction", { faction: faction?.name, dataSource: settings.selectedDataSource });
     setSelectedFaction(faction);
     const newIndex = dataSource?.data?.findIndex((f) => f?.id === faction?.id);
     // Update the per-datasource faction index
@@ -240,6 +347,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       selectedDataSource: "basic",
       selectedFactionIndex: {
         "40k-10e": 0,
+        "40k-11e": 0,
         aos: 0,
       },
     });
@@ -280,23 +388,48 @@ export const DataSourceStorageProviderComponent = (props) => {
         customDatasources: [...currentCustomDatasources, registryEntry],
       });
 
-      logLocalEvent("import_custom_datasource", {
-        name: preparedDatasource.name,
-        displayFormat: preparedDatasource.displayFormat,
-        sourceType,
-      });
-
       return { success: true, id: preparedDatasource.id };
     },
-    [settings, updateSettings, logLocalEvent]
+    [settings, updateSettings],
+  );
+
+  /**
+   * Register a custom datasource in the settings registry (e.g. after cloud import)
+   * @param {string} id - The datasource storage ID
+   * @param {string} name - The datasource name
+   * @param {string} cloudId - The cloud database row ID
+   */
+  const registerCustomDatasource = useCallback(
+    (id, name, cloudId) => {
+      const registry = settings.customDatasources || [];
+      const existing = registry.find((ds) => ds.id === id);
+      if (existing) {
+        if (existing.name !== name || existing.cloudId !== cloudId) {
+          updateSettings({
+            ...settings,
+            customDatasources: registry.map((ds) => (ds.id === id ? { ...ds, name, cloudId } : ds)),
+          });
+        }
+      } else {
+        updateSettings({
+          ...settings,
+          customDatasources: [...registry, { id, name, cloudId }],
+        });
+      }
+    },
+    [settings, updateSettings],
   );
 
   /**
    * Remove a custom datasource
    * @param {string} datasourceId - The datasource ID to remove
+   * @returns {Promise<{cloudId?: string, syncEnabled?: boolean}>} Metadata for caller to handle cloud cleanup
    */
   const removeCustomDatasource = useCallback(
     async (datasourceId) => {
+      const datasource = await dataStore.getItem(datasourceId);
+      const registryEntry = (settings.customDatasources || []).find((ds) => ds.id === datasourceId);
+
       // Remove from localForage
       await dataStore.removeItem(datasourceId);
 
@@ -321,9 +454,13 @@ export const DataSourceStorageProviderComponent = (props) => {
         setSelectedFaction(basicData.data[0]);
       }
 
-      logLocalEvent("remove_custom_datasource", { datasourceId });
+      // Return metadata for caller to handle cloud cleanup
+      return {
+        cloudId: registryEntry?.cloudId || datasource?.cloudId,
+        syncEnabled: datasource?.syncEnabled,
+      };
     },
-    [settings, updateSettings, logLocalEvent]
+    [settings, updateSettings],
   );
 
   /**
@@ -362,7 +499,7 @@ export const DataSourceStorageProviderComponent = (props) => {
 
         // Update lastCheckedForUpdate in settings
         const updatedCustomDatasources = (settings.customDatasources || []).map((ds) =>
-          ds.id === datasourceId ? { ...ds, lastCheckedForUpdate: new Date().toISOString() } : ds
+          ds.id === datasourceId ? { ...ds, lastCheckedForUpdate: new Date().toISOString() } : ds,
         );
 
         updateSettings({
@@ -379,7 +516,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         return { hasUpdate: false, error: error.message };
       }
     },
-    [settings, updateSettings]
+    [settings, updateSettings],
   );
 
   /**
@@ -413,7 +550,7 @@ export const DataSourceStorageProviderComponent = (props) => {
               lastUpdated: newData.lastUpdated || new Date().toISOString(),
               lastCheckedForUpdate: new Date().toISOString(),
             }
-          : ds
+          : ds,
       );
 
       updateSettings({
@@ -427,14 +564,9 @@ export const DataSourceStorageProviderComponent = (props) => {
         setSelectedFaction(preparedDatasource.data[0]);
       }
 
-      logLocalEvent("update_custom_datasource", {
-        datasourceId,
-        newVersion: newData.version,
-      });
-
       return { success: true };
     },
-    [settings, updateSettings, logLocalEvent]
+    [settings, updateSettings],
   );
 
   /**
@@ -446,9 +578,218 @@ export const DataSourceStorageProviderComponent = (props) => {
     return await dataStore.getItem(datasourceId);
   }, []);
 
+  /**
+   * Update sync-related fields on an editor datasource in localForage
+   * @param {string} datasourceId - The datasource storage ID (e.g. "custom-xxx")
+   * @param {Object} syncFields - Fields to merge (syncEnabled, syncStatus, lastSyncedAt, syncError, cloudId, editVersion, isUploaded, isPublished, shareCode, publishedVersion)
+   * @returns {Promise<Object|null>} The updated datasource, or null if not found
+   */
+  const updateDatasourceSyncState = useCallback(
+    async (datasourceId, syncFields) => {
+      const datasource = await dataStore.getItem(datasourceId);
+      // If item doesn't exist, store the syncFields as a complete new entry (for cloud import)
+      const updated = datasource ? { ...datasource, ...syncFields } : { id: datasourceId, ...syncFields };
+      await dataStore.setItem(datasourceId, updated);
+
+      // Bump trigger counter on any sync status change so auto-sync and stats effects re-run
+      // Uses functional update to avoid stale closure when called multiple times rapidly
+      if (syncFields.syncStatus) {
+        updateSettings((prev) => ({
+          ...prev,
+          datasourceSyncTrigger: (prev.datasourceSyncTrigger || 0) + 1,
+        }));
+      }
+
+      return updated;
+    },
+    [updateSettings],
+  );
+
+  /**
+   * Load all custom datasources from localForage
+   * @returns {Promise<Object[]>} Array of full datasource objects
+   */
+  const getAllCustomDatasources = useCallback(async () => {
+    const registry = settings.customDatasources || [];
+    const results = [];
+    for (const entry of registry) {
+      const data = await dataStore.getItem(entry.id);
+      if (data) results.push(data);
+    }
+    return results;
+  }, [settings.customDatasources]);
+
+  /**
+   * Create a new custom datasource from wizard output
+   * @param {Object} metadata - Datasource metadata { name, version, author }
+   * @param {Object} schema - The schema definition from the wizard
+   * @returns {Promise<{success: boolean, id?: string, error?: string}>}
+   */
+  const createCustomDatasource = useCallback(
+    async (metadata, schema) => {
+      if (!metadata?.name || typeof metadata.name !== "string" || metadata.name.trim() === "") {
+        return { success: false, error: "Datasource name is required" };
+      }
+
+      if (!schema || typeof schema !== "object") {
+        return { success: false, error: "Schema is required" };
+      }
+
+      const storageId = `custom-${uuidv4()}`;
+      const now = new Date().toISOString();
+
+      // Create default faction with datasource name
+      const defaultFaction = {
+        id: `${storageId}-default`,
+        name: metadata.name,
+        colours: {
+          header: schema.colours?.header || DEFAULT_DATASOURCE_COLOURS.header,
+          banner: schema.colours?.banner || DEFAULT_DATASOURCE_COLOURS.banner,
+        },
+      };
+
+      // Build the datasource object
+      const datasource = {
+        id: storageId,
+        uuid: uuidv4(),
+        name: metadata.name,
+        version: metadata.version || "1.0.0",
+        author: metadata.author || null,
+        lastUpdated: now,
+        sourceType: "local",
+        syncEnabled: false,
+        syncStatus: "local",
+        lastSyncedAt: null,
+        syncError: null,
+        cloudId: null,
+        editVersion: 0,
+        isUploaded: false,
+        isPublished: false,
+        shareCode: null,
+        publishedVersion: null,
+        schema: {
+          version: schema.version || "1.0.0",
+          baseSystem: schema.baseSystem || "blank",
+          cardTypes: schema.cardTypes || [],
+          ...(schema.colours ? { colours: schema.colours } : {}),
+        },
+        data: [defaultFaction],
+      };
+
+      // Store in localForage
+      await dataStore.setItem(storageId, datasource);
+
+      // Create registry entry and update settings
+      const registryEntry = {
+        id: storageId,
+        name: datasource.name,
+        cardCount: 0,
+        sourceType: "local",
+        sourceUrl: null,
+        version: datasource.version,
+        author: datasource.author,
+        lastUpdated: now,
+        lastCheckedForUpdate: null,
+      };
+
+      const currentCustomDatasources = settings.customDatasources || [];
+
+      updateSettings({
+        ...settings,
+        customDatasources: [...currentCustomDatasources, registryEntry],
+        selectedDataSource: storageId,
+      });
+
+      // Switch active datasource to the new one
+      setDataSource(datasource);
+      setSelectedFaction(defaultFaction);
+
+      return { success: true, id: storageId };
+    },
+    [settings, updateSettings],
+  );
+
+  // Whether the currently selected datasource is a custom one
+  const isCustomDatasource = settings.selectedDataSource?.startsWith("custom-") || false;
+
+  /**
+   * Add a card to the current custom datasource
+   * @param {Object} card - The card to add (must have cardType)
+   * @returns {Promise<void>}
+   */
+  const addCardToDatasource = useCallback(
+    async (card) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(card.cardType);
+      const updatedFaction = {
+        ...selectedFaction,
+        [arrayName]: [...(selectedFaction[arrayName] || []), card],
+      };
+
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
+  /**
+   * Update an existing card in the current custom datasource
+   * @param {Object} card - The updated card (matched by id)
+   * @returns {Promise<void>}
+   */
+  const updateCardInDatasource = useCallback(
+    async (card) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(card.cardType);
+      const existingArray = selectedFaction[arrayName] || [];
+      const updatedArray = existingArray.map((c) => (c.id === card.id ? card : c));
+
+      const updatedFaction = { ...selectedFaction, [arrayName]: updatedArray };
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
+  /**
+   * Delete a card from the current custom datasource
+   * @param {string} cardId - The card ID to delete
+   * @param {string} cardType - The card type (to find correct array)
+   * @returns {Promise<void>}
+   */
+  const deleteCardFromDatasource = useCallback(
+    async (cardId, cardType) => {
+      if (!isCustomDatasource || !selectedFaction) return;
+
+      const arrayName = getTargetArray(cardType);
+      const existingArray = selectedFaction[arrayName] || [];
+      const updatedArray = existingArray.filter((c) => c.id !== cardId);
+
+      const updatedFaction = { ...selectedFaction, [arrayName]: updatedArray };
+      const updatedData = dataSource.data.map((f) => (f.id === selectedFaction.id ? updatedFaction : f));
+      const updatedDatasource = { ...dataSource, data: updatedData };
+
+      setDataSource(updatedDatasource);
+      setSelectedFaction(updatedFaction);
+      await dataStore.setItem(settings.selectedDataSource, updatedDatasource);
+    },
+    [isCustomDatasource, selectedFaction, dataSource, settings.selectedDataSource],
+  );
+
   const context = {
     dataSource,
     setDataSource,
+    isLoading,
     selectedFactionIndex,
     selectedFaction,
     updateSelectedFaction,
@@ -459,11 +800,19 @@ export const DataSourceStorageProviderComponent = (props) => {
     checkForUpdate,
     clearData,
     // Custom datasource functions
+    isCustomDatasource,
+    createCustomDatasource,
     importCustomDatasource,
+    registerCustomDatasource,
     removeCustomDatasource,
     checkCustomDatasourceUpdate,
     applyCustomDatasourceUpdate,
     getCustomDatasourceData,
+    updateDatasourceSyncState,
+    getAllCustomDatasources,
+    addCardToDatasource,
+    updateCardInDatasource,
+    deleteCardFromDatasource,
   };
 
   return <DataSourceStorageContext.Provider value={context}>{props.children}</DataSourceStorageContext.Provider>;

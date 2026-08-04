@@ -1,19 +1,24 @@
-import { message } from "antd";
+import { message } from "../Components/Toast/message";
 import React from "react";
 
 const SettingsStorageContext = React.createContext(undefined);
 
 const defaultSettings = {
-  version: process.env.REACT_APP_VERSION,
+  version: import.meta.env.VITE_VERSION,
   selectedDataSource: undefined,
+  // Preferred language for multi-language datasource content (e.g. 40k-11e).
+  // Only affects card content; the app UI stays in English. Falls back to "en".
+  language: "en",
   // Per-datasource selected faction index
   selectedFactionIndex: {
     "40k-10e": 0,
+    "40k-11e": 0,
     aos: 0,
   },
   // Tracks whether user has explicitly selected a faction (per datasource)
   hasFactionSelected: {
     "40k-10e": false,
+    "40k-11e": false,
     aos: false,
   },
   ignoredSubFactions: [],
@@ -24,6 +29,8 @@ const defaultSettings = {
   wizardCompleted: "0.0.0",
   lastMajorWizardVersion: "0.0.0",
   serviceMessage: 0,
+  // Last app version whose release notes the user has marked read (notification bell)
+  lastReadReleaseVersion: "0.0.0",
   printSettings: {
     pageSize: "A4",
     pageOrientation: "portrait",
@@ -36,6 +43,8 @@ const defaultSettings = {
   zoom: 100,
   useFancyFonts: true,
   showGenericManifestations: false,
+  designerBetaAccepted: false,
+  datasourceBetaAccepted: false,
   aosStatDisplayMode: "wheel", // "wheel" | "badges"
   // Custom datasources registry - stores metadata for user-imported datasources
   // Full data is stored in localForage with key pattern: custom-{uuid}
@@ -62,6 +71,7 @@ export const SettingsStorageProviderComponent = (props) => {
         if (typeof merged.selectedFactionIndex === "number") {
           merged.selectedFactionIndex = {
             "40k-10e": merged.selectedFactionIndex,
+            "40k-11e": 0,
             aos: 0,
           };
         }
@@ -75,9 +85,17 @@ export const SettingsStorageProviderComponent = (props) => {
     }
   });
 
-  const updateSettings = (newSettings) => {
-    setLocalSettings(newSettings);
-    localStorage.setItem("settings", JSON.stringify(newSettings));
+  const updateSettings = (newSettingsOrFn) => {
+    if (typeof newSettingsOrFn === "function") {
+      setLocalSettings((prev) => {
+        const next = newSettingsOrFn(prev);
+        localStorage.setItem("settings", JSON.stringify(next));
+        return next;
+      });
+    } else {
+      setLocalSettings(newSettingsOrFn);
+      localStorage.setItem("settings", JSON.stringify(newSettingsOrFn));
+    }
   };
 
   const context = {

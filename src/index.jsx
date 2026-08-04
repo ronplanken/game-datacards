@@ -1,0 +1,475 @@
+import React from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+
+import {
+  createBrowserRouter,
+  RouterProvider,
+  ScrollRestoration,
+  Outlet,
+  Navigate,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import {
+  AuthProvider,
+  SubscriptionProvider,
+  SyncProvider,
+  SyncDiagnosticsProvider,
+  CloudCategoriesProvider,
+  CheckoutSuccessModal,
+  SyncConflictHandler,
+  DatasourceConflictHandler,
+  MobileLoginPage,
+  MobileSignupPage,
+  MobilePasswordResetPage,
+  MobileTwoFactorPage,
+  ResetPasswordPage,
+  useProducts,
+  useAuth,
+  useSubscription,
+  DesignerPage,
+  AdminPage,
+  usePremiumFeatures,
+  useAdmin,
+  TemplateStorageProvider,
+} from "./Premium";
+import { useFeatureFlags } from "./Hooks/useFeatureFlags";
+import { useUmami } from "./Hooks/useUmami";
+import { isListForgeHash, decodeListForgeUrlPayload, cleanListForgeHash } from "./Helpers/listforgeUrl.helpers";
+import { validateListforgeJson } from "./Helpers/listforgeImport.helpers";
+import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
+import { DataSourceStorageProviderComponent } from "./Hooks/useDataSourceStorage";
+import { DatasourceSharingProvider } from "./Hooks/useDatasourceSharing";
+import { CategorySharingProvider } from "./Hooks/useCategorySharing";
+import { SettingsStorageProviderComponent, useSettingsStorage } from "./Hooks/useSettingsStorage";
+import { UserProviderComponent } from "./Hooks/useUser";
+
+import { message } from "./Components/Toast/message";
+import App from "./App";
+import { ImageExport } from "./Pages/ImageExport";
+import { ImageGenerator } from "./Pages/ImageGenerator";
+import { LegacyPrint } from "./Pages/LegacyPrint";
+import { Print } from "./Pages/Print";
+import { Shared } from "./Pages/Shared";
+import { TermsOfService } from "./Pages/TermsOfService";
+import { PrivacyPolicy } from "./Pages/PrivacyPolicy";
+import { NotFound } from "./Pages/NotFound";
+import { RouteErrorBoundary } from "./Pages/RouteErrorBoundary";
+import { DatasourceEditorPage } from "./Pages/DatasourceEditor";
+import { Viewer } from "./Pages/Viewer";
+import { ViewerMobile } from "./Pages/ViewerMobile";
+import { DesignerBetaModal } from "./Components/DesignerBetaModal";
+import { DatasourceBetaModal } from "./Components/DatasourceBetaModal";
+import { WelcomeWizard } from "./Components/WelcomeWizard";
+import { MobileWelcomeWizard } from "./Components/MobileWelcomeWizard";
+import { WhatsNewWizard } from "./Components/WhatsNewWizard";
+import { MobileWhatsNewWizard } from "./Components/MobileWhatsNewWizard";
+import { LocalDatasourceMigrationNotice } from "./Components/LocalDatasourceMigrationNotice";
+import { UpdateNotification } from "./Components/UpdateNotification";
+import { DevFab } from "./Components/DevFab/DevFab";
+import { HelpLayout, HelpLanding, HelpArticle } from "./Pages/Help";
+import { Col, Grid, Result, Row, Typography } from "antd";
+import { ErrorBoundary } from "react-error-boundary";
+
+const { Paragraph, Text } = Typography;
+const { useBreakpoint } = Grid;
+
+function ErrorFallback({ error }) {
+  const screens = useBreakpoint();
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <Result
+        status="error"
+        title="Sorry, something went wrong."
+        subTitle={error.message}
+        style={{ width: screens.xs ? "100%" : "50%" }}>
+        <div className="desc">
+          <Paragraph>
+            <Row style={{ padding: "16px" }} justify={"center"}>
+              <Col span={16}>
+                <Text
+                  strong
+                  style={{
+                    fontSize: 16,
+                  }}>
+                  Please refresh the page and try again. If you keep receiving this error let us know on Discord.
+                </Text>
+              </Col>
+            </Row>
+          </Paragraph>
+          <Paragraph>
+            <Row style={{ padding: "16px" }} justify={"center"}>
+              <Col span={16}>
+                <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: "more" }}>{error.stack}</Paragraph>
+              </Col>
+            </Row>
+          </Paragraph>
+          <Paragraph>
+            <Row style={{ padding: "4px", textAlign: "center" }} justify={"center"}>
+              <Col span={24}>
+                <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
+                  <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
+                </a>
+              </Col>
+            </Row>
+          </Paragraph>
+        </div>
+      </Result>
+    </div>
+  );
+}
+
+// Component to select wizard based on current route
+const WizardSelector = () => {
+  const location = useLocation();
+  const isMobileRoute = location.pathname.startsWith("/mobile");
+
+  return isMobileRoute ? <MobileWelcomeWizard /> : <WelcomeWizard />;
+};
+
+// Component to select What's New wizard based on current route
+const WhatsNewWizardSelector = () => {
+  const location = useLocation();
+  const isMobileRoute = location.pathname.startsWith("/mobile");
+
+  return isMobileRoute ? <MobileWhatsNewWizard /> : <WhatsNewWizard />;
+};
+
+// Conditional Designer route - only renders if premium feature is available, flag is on,
+// user is authenticated, and has accepted the beta disclaimer.
+const DesignerRoute = () => {
+  const { hasCardDesigner } = usePremiumFeatures();
+  const { designerEnabled } = useFeatureFlags();
+  const { isAuthenticated } = useAuth();
+  const { settings, updateSettings } = useSettingsStorage();
+  const navigate = useNavigate();
+
+  if (!hasCardDesigner || !designerEnabled || !isAuthenticated) return null;
+
+  return (
+    <>
+      <DesignerPage />
+      <DesignerBetaModal
+        visible={!settings.designerBetaAccepted}
+        onAccept={() => updateSettings({ ...settings, designerBetaAccepted: true })}
+        onDecline={() => navigate("/")}
+      />
+    </>
+  );
+};
+
+// Admin route - requires admin tier, auth, and feature flag
+const AdminRoute = () => {
+  const { isAdmin } = useAdmin();
+  const { adminEnabled } = useFeatureFlags();
+  const { isAuthenticated } = useAuth();
+
+  if (!adminEnabled || !isAuthenticated || !isAdmin) return null;
+
+  return <AdminPage />;
+};
+
+// Datasource editor route with beta disclaimer
+const DatasourceRoute = () => {
+  const { settings, updateSettings } = useSettingsStorage();
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <DatasourceEditorPage />
+      <DatasourceBetaModal
+        visible={!settings.datasourceBetaAccepted}
+        onAccept={() => updateSettings({ ...settings, datasourceBetaAccepted: true })}
+        onDecline={() => navigate("/")}
+      />
+    </>
+  );
+};
+
+// Component to handle checkout success redirect
+// Creem redirects with: checkout_id, order_id, customer_id, subscription_id, product_id, signature
+const CheckoutSuccessHandler = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [showSuccess, setShowSuccess] = React.useState(false);
+  const [tier, setTier] = React.useState("premium");
+  const [pendingProductId, setPendingProductId] = React.useState(null);
+  const { products, loading, getTierByProductId } = useProducts();
+
+  // Step 1: Detect checkout params and store product_id, then clean URL
+  React.useEffect(() => {
+    const checkoutId = searchParams.get("checkout_id");
+    const productId = searchParams.get("product_id");
+
+    if (checkoutId) {
+      // Store product_id for tier lookup once products load
+      setPendingProductId(productId);
+
+      // Remove Creem query parameters from URL without refresh
+      searchParams.delete("checkout_id");
+      searchParams.delete("order_id");
+      searchParams.delete("customer_id");
+      searchParams.delete("subscription_id");
+      searchParams.delete("product_id");
+      searchParams.delete("signature");
+      // Also clean up legacy params if present
+      searchParams.delete("checkout");
+      searchParams.delete("tier");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // Step 2: Once products are loaded, determine tier and show modal
+  React.useEffect(() => {
+    if (pendingProductId && !loading) {
+      // Try dynamic lookup first (supports multiple product IDs per tier)
+      let detectedTier = getTierByProductId(pendingProductId);
+
+      // Fallback to static env vars if products failed to load
+      if (!detectedTier && !products) {
+        const creatorProductId = import.meta.env.VITE_CREEM_PRODUCT_ID_CREATOR;
+        detectedTier = pendingProductId === creatorProductId ? "creator" : "premium";
+      }
+
+      setTier(detectedTier || "premium");
+      setShowSuccess(true);
+      setPendingProductId(null); // Clear pending state
+    }
+  }, [pendingProductId, loading, products, getTierByProductId]);
+
+  return <CheckoutSuccessModal visible={showSuccess} onClose={() => setShowSuccess(false)} tier={tier} />;
+};
+
+// Wrappers that connect sharing providers to auth/subscription context.
+// Avoids circular module dependency: @gdc/premium barrel -> premium components -> main app hooks -> @gdc/premium barrel
+const ConnectedCategorySharingProvider = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return <CategorySharingProvider isAuthenticated={isAuthenticated}>{children}</CategorySharingProvider>;
+};
+
+const ConnectedDatasourceSharingProvider = ({ children }) => {
+  const { user } = useAuth();
+  const { canPerformAction } = useSubscription();
+  return (
+    <DatasourceSharingProvider user={user} canPerformAction={canPerformAction}>
+      {children}
+    </DatasourceSharingProvider>
+  );
+};
+
+// Handles ListForge URL payload imports via hash fragment
+// Reads #/listforge/{base64_payload} from the URL, decodes it, cleans the hash,
+// and navigates with the payload in router state for the appropriate view to consume.
+const ListForgeUrlHandler = () => {
+  const navigate = useNavigate();
+  const { trackEvent } = useUmami();
+  const { settings, updateSettings } = useSettingsStorage();
+  const settingsRef = React.useRef(settings);
+  settingsRef.current = settings;
+
+  React.useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash;
+      if (!isListForgeHash(hash)) return;
+
+      // Clean hash immediately to prevent re-trigger on refresh
+      cleanListForgeHash();
+
+      const { data, error } = decodeListForgeUrlPayload(hash);
+
+      if (error || !data) {
+        message.error(error || "Failed to decode ListForge URL payload");
+        trackEvent("import-listforge-url-error", { error: error || "unknown" });
+        return;
+      }
+
+      const validation = validateListforgeJson(data);
+      if (!validation.isValid) {
+        message.error(`Invalid ListForge data: ${validation.errors.join(", ")}`);
+        trackEvent("import-listforge-url-error", { error: "validation-failed" });
+        return;
+      }
+
+      // ListForge only supports 40k — force-switch if another datasource is active
+      if (settingsRef.current.selectedDataSource !== "40k-10e") {
+        updateSettings({ ...settingsRef.current, selectedDataSource: "40k-10e" });
+        message.info("Switched to Warhammer 40k datasource for ListForge import");
+      }
+
+      trackEvent("import-listforge-url");
+
+      // Navigate to the current path with the payload in router state
+      // The target view (App for desktop, ViewerMobile for mobile) will pick it up
+      const targetPath = isMobile ? "/mobile" : "/";
+      navigate(targetPath, {
+        replace: true,
+        state: { listForgePayload: data },
+      });
+    };
+
+    handleHash(); // Check on mount (handles fresh page loads)
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  return null;
+};
+
+// Preserves hash fragment when redirecting mobile users to /mobile
+const MobileRedirect = () => {
+  const hash = window.location.hash;
+  return <Navigate to={hash ? { pathname: "/mobile", hash } : "/mobile"} replace />;
+};
+
+// Sends session-level context to Umami on mount
+const UmamiSessionIdentifier = () => {
+  const { identify } = useUmami();
+  React.useEffect(() => {
+    identify({
+      appVersion: import.meta.env.VITE_VERSION || "unknown",
+      device: isMobile ? "mobile" : "desktop",
+    });
+  }, [identify]);
+  return null;
+};
+
+// Layout component that wraps all routes with providers
+const RootLayout = () => (
+  <ErrorBoundary FallbackComponent={ErrorFallback}>
+    <SettingsStorageProviderComponent>
+      <AuthProvider>
+        <SubscriptionProvider>
+          <UserProviderComponent>
+            <ConnectedCategorySharingProvider>
+              <DataSourceStorageProviderComponent>
+                <ConnectedDatasourceSharingProvider>
+                  <CardStorageProviderComponent>
+                    <TemplateStorageProvider>
+                      <SyncProvider>
+                        <SyncDiagnosticsProvider>
+                          <CloudCategoriesProvider>
+                            <Outlet />
+                            <ScrollRestoration />
+                            <UmamiSessionIdentifier />
+                            <WizardSelector />
+                            <WhatsNewWizardSelector />
+                            <CheckoutSuccessHandler />
+                            <ListForgeUrlHandler />
+                            <SyncConflictHandler />
+                            <DatasourceConflictHandler />
+                            <LocalDatasourceMigrationNotice />
+                            <UpdateNotification />
+                            {import.meta.env.MODE === "development" && <DevFab />}
+                          </CloudCategoriesProvider>
+                        </SyncDiagnosticsProvider>
+                      </SyncProvider>
+                    </TemplateStorageProvider>
+                  </CardStorageProviderComponent>
+                </ConnectedDatasourceSharingProvider>
+              </DataSourceStorageProviderComponent>
+            </ConnectedCategorySharingProvider>
+          </UserProviderComponent>
+        </SubscriptionProvider>
+      </AuthProvider>
+    </SettingsStorageProviderComponent>
+  </ErrorBoundary>
+);
+
+const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+
+const router = createBrowserRouter([
+  {
+    element: <RootLayout />,
+    errorElement: <RouteErrorBoundary />,
+    children: [
+      // Root route - redirect based on device
+      { path: "/", element: isMobile ? <MobileRedirect /> : <App /> },
+      // Designer routes (premium only)
+      { path: "designer", element: <DesignerRoute /> },
+      // Admin routes (admin tier only)
+      { path: "admin", element: <AdminRoute /> },
+      { path: "admin/:tab", element: <AdminRoute /> },
+      // Datasource editor (community feature)
+      { path: "datasources", element: <DatasourceRoute /> },
+      // Unified help page with landing + per-article routes
+      {
+        path: "help",
+        element: <HelpLayout />,
+        children: [
+          { index: true, element: <HelpLanding /> },
+          { path: ":category/:slug", element: <HelpArticle /> },
+        ],
+      },
+      {
+        path: "designer/help",
+        element: <Navigate to="/help/card-designer/getting-started" replace />,
+      },
+      {
+        path: "datasources/help",
+        element: <Navigate to="/help/datasource-editor/getting-started" replace />,
+      },
+      // Legal pages
+      { path: "terms", element: <TermsOfService /> },
+      { path: "privacy", element: <PrivacyPolicy /> },
+      // Password recovery landing (Supabase redirects recovery links here)
+      { path: "reset-password", element: <ResetPasswordPage /> },
+      // Shared card view
+      { path: "shared/:Id", element: <Shared /> },
+      // Desktop viewer routes
+      { path: "viewer/:faction/manifestation-lores", element: <Viewer showManifestationLores /> },
+      { path: "viewer/:faction/manifestation-lore/:spell", element: <Viewer /> },
+      { path: "viewer/:faction/spell-lores", element: <Viewer showSpellLores /> },
+      { path: "viewer/:faction/spell-lore/:spell", element: <Viewer /> },
+      { path: "viewer/:faction?/:unit?", element: <Viewer /> },
+      { path: "viewer/:faction?/stratagem/:stratagem?", element: <Viewer /> },
+      { path: "viewer/:faction?/allied/:alliedFaction?/:alliedUnit?", element: <Viewer /> },
+      // Mobile auth routes
+      { path: "mobile/login", element: <MobileLoginPage /> },
+      { path: "mobile/signup", element: <MobileSignupPage /> },
+      { path: "mobile/forgot-password", element: <MobilePasswordResetPage /> },
+      { path: "mobile/verify-2fa", element: <MobileTwoFactorPage /> },
+      // Mobile viewer routes
+      { path: "mobile", element: <ViewerMobile /> },
+      { path: "mobile/:faction/units", element: <ViewerMobile showUnits /> },
+      { path: "mobile/:faction/glossary", element: <ViewerMobile showGlossary /> },
+      { path: "mobile/:faction/manifestation-lores", element: <ViewerMobile showManifestationLores /> },
+      { path: "mobile/:faction/manifestation-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction/spell-lores", element: <ViewerMobile showSpellLores /> },
+      { path: "mobile/:faction/spell-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction/enhancement/:enhancement", element: <ViewerMobile /> },
+      { path: "mobile/:faction/rule/:rule", element: <ViewerMobile /> },
+      { path: "mobile/:faction/stratagem/:stratagem", element: <ViewerMobile /> },
+      { path: "mobile/:faction/allied/:alliedFaction/:alliedUnit?", element: <ViewerMobile /> },
+      { path: "mobile/:faction?/:unit?", element: <ViewerMobile /> },
+      // Print and export routes
+      { path: "print/:CategoryId", element: <Print /> },
+      { path: "legacy-print/:CategoryId", element: <LegacyPrint /> },
+      { path: "image-generator", element: <ImageGenerator /> },
+      { path: "image-export/:CategoryId", element: <ImageExport /> },
+      // Catch-all: render a branded 404 instead of the router's default error
+      { path: "*", element: <NotFound /> },
+    ],
+  },
+]);
+
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(<RouterProvider router={router} />);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+// Register service worker for PWA functionality (mobile only)
+if ("serviceWorker" in navigator && isMobile) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      // Service Worker registration failed
+    });
+  });
+}

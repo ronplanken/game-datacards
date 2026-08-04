@@ -1,0 +1,39 @@
+# Game Datacards
+
+> Open-source tabletop wargaming datacard tool for viewing, customizing, and printing datacards, with data powered by Wahapedia.
+
+Game Datacards lets you browse, customize, and print datacards for multiple tabletop wargaming systems. It supports importing army lists from roster builders (ListForge, NewRecruit, BattleScribe, GW App), exporting cards as images or JSON, and creating fully custom datasources with your own cards.
+
+## Game Systems
+
+Supported game systems and their card types:
+
+- **Warhammer 40,000 10th Edition** (`source: "40k-10e"`): DataCards (unit datasheets), Stratagems, Enhancements, Rules
+- **Age of Sigmar** (`source: "aos"`): Warscrolls, Spells
+- **Warhammer 40,000 9th Edition** (`source: "40k"`, legacy): Datasheets, Stratagems, Secondaries, Psychic Powers
+- **Necromunda** (`source: "necromunda"`): Gangers (fighters), Vehicles
+- **Basic** (`source: "basic"`): General-purpose cards using 9th edition format
+
+## Data Formats
+
+- [Card Data Formats](https://github.com/ronplanken/game-datacards/blob/main/docs/card-data-formats.md): JSON schemas for all card types across all game systems
+- [Custom Datasource Format](https://github.com/ronplanken/game-datacards/blob/main/docs/custom-datasource-format.md): How to create and share custom datasources with validation rules, hosting, and update support
+
+## Import Formats
+
+- [ListForge/NewRecruit Import](https://github.com/ronplanken/game-datacards/blob/main/docs/listforge-direct-read-import.md): Roster import with match mode (datasource lookup) and direct-read mode (build cards from export data)
+- **GW App**: Text-based army list import via copy-paste
+- **BattleScribe**: XML roster file (.rosz) import
+- **GDC JSON**: Native format for full-fidelity import/export of categories and cards
+
+## Export Formats
+
+- GDC JSON (full category/card export)
+- PNG images (individual card export)
+- Bulk ZIP archives (all cards as images)
+- Print layouts (browser print with configurable page sizes)
+- Custom datasource JSON (shareable card collections)
+
+## Optional
+
+- [llms-full.txt](/llms-full.txt): Expanded version with full documentation content inlined

@@ -74,6 +74,15 @@
           white-space: nowrap;
         }
       }
+
+      // 11th edition prices a tier for one detachment or faction; shown under
+      // the model count so it never reads as another tier keyword.
+      .points_restriction {
+        display: block;
+        font-size: 0.8em;
+        font-weight: 400;
+        font-style: italic;
+      }
     }
   }
 }
@@ -117,9 +126,6 @@
     justify-content: center;
     align-items: center;
 
-    @media print {
-      transform-origin: 0 0;
-    }
     each(@factions, {
         &.@{value}::before {
           content: " ";
@@ -282,10 +288,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    @media print {
-      transform-origin: 0 0;
-    }
 
     each(@factions, {
       &.@{value}::before {
@@ -559,10 +561,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
-    @media print {
-      transform-origin: 0 0;
-    }
 
     each(@factions, {
       &.@{value}::before {
@@ -845,7 +843,19 @@
   }
 }
 
-.data-40k-10e {
+@media print {
+  .shared-stratagem,
+  .shared-enhancement,
+  .shared-rule {
+    transform-origin: 0 0;
+  }
+}
+
+// The 11th edition renderset reuses the exact 10e card layout/look & feel, so it
+// shares this scoped block (it emits a `.data-40k-11e` wrapper). 11e-specific
+// additions live in src/styles/40k-11e.less.
+.data-40k-10e,
+.data-40k-11e {
   page-break-inside: avoid;
 
   .stratagem,
@@ -872,6 +882,7 @@
         overflow: hidden;
 
         // Inline SVG wrapper for phase icons (print-friendly)
+        // Uses color property for SVG fill inheritance via currentColor
         .phase-icon-wrapper {
           display: flex;
           justify-content: center;
@@ -880,6 +891,7 @@
           height: 100%;
           rotate: -45deg;
           padding: 2px;
+          color: var(--stratagem-colour);
         }
       }
     }
@@ -971,10 +983,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-
-      @media print {
-        transform-origin: 0 0;
-      }
 
       each(@factions, {
         &.@{value}::before {
@@ -1137,10 +1145,6 @@
       justify-content: center;
       align-items: center;
 
-      @media print {
-        transform-origin: 0 0;
-      }
-
       each(@factions, {
         &.@{value}::before {
           content: " ";
@@ -1296,10 +1300,6 @@
 
       &.auto-height {
         height: auto;
-      }
-
-      @media print {
-        transform-origin: 0 0;
       }
 
       each(@factions, {
@@ -1534,6 +1534,14 @@
           }
         }
       }
+    }
+  }
+
+  @media print {
+    .stratagem,
+    .enhancement,
+    .rule-card {
+      transform-origin: 0 0;
     }
   }
 
@@ -1918,6 +1926,9 @@
             font-family: "EB Garamond", "serif";
             color: var(--faction-text-colour);
           }
+          .legends--multi {
+            right: var(--legends-multi-offset, 250px);
+          }
           .combatpatrol {
             &::before {
               content: "Combat Patrol Datasheet";
@@ -2107,7 +2118,8 @@
         }
       }
     }
-    &.full {
+    &.full,
+    &.auto-height {
       height: auto;
       min-height: calc(714px);
       margin-bottom: 64px;
@@ -2407,6 +2419,49 @@
               }
             }
           }
+
+          .ds-section {
+            .heading {
+              background-color: var(--header-colour);
+              padding-left: 8px;
+              display: grid;
+              grid-template-columns: 1fr;
+              grid-template-rows: 1fr;
+
+              .title {
+                font-family: var(--title-font-family);
+                text-transform: uppercase;
+                color: var(--header-text-colour);
+                font-size: 1rem;
+                font-weight: 600;
+                letter-spacing: var(--title-letter-spacing);
+              }
+            }
+
+            .ds-section-items {
+              padding: 4px 8px;
+            }
+
+            .ds-section-item {
+              font-size: 0.85rem;
+              line-height: 1.4;
+              padding: 1px 0;
+
+              &::before {
+                content: "\25A0";
+                font-size: 0.5rem;
+                vertical-align: middle;
+                margin-right: 6px;
+                color: var(--header-colour);
+              }
+            }
+
+            .ds-section-text {
+              font-size: 0.85rem;
+              line-height: 1.4;
+              padding: 2px 0;
+            }
+          }
         }
 
         &.back {
@@ -2490,6 +2545,19 @@
                   color: black;
                   font-weight: 400;
                   padding-left: 4px;
+                }
+              }
+              // 11th edition structured wargear: the instruction keeps the
+              // square bullet of a plain item, the swaps it allows are listed
+              // underneath it.
+              .wargear-group {
+                .wargear-options {
+                  padding-left: 16px;
+                  .wargear-option {
+                    &:before {
+                      content: "–";
+                    }
+                  }
                 }
               }
             }
@@ -2774,17 +2842,6 @@
                 font-weight: 400;
                 text-transform: capitalize;
               }
-              .name {
-                font-size: 0.7rem;
-                color: black;
-                font-weight: 600;
-                padding-right: 4px;
-                font-family: var(--title-font-family);
-                letter-spacing: var(--title-letter-spacing);
-                &::after {
-                  content: ":";
-                }
-              }
             }
           }
 
@@ -2938,8 +2995,8 @@
       }
       .factions {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        flex-direction: row;
+        align-items: center;
         position: relative;
         padding-left: 48px;
         background-color: var(--background-colour);
@@ -2952,6 +3009,7 @@
           font-weight: 400;
           padding-right: 4px;
           line-height: 1.1rem;
+          white-space: nowrap;
 
           &::after {
             content: ":";
@@ -3138,6 +3196,9 @@
               font-weight: 600;
               font-family: "EB Garamond", "serif";
               color: var(--faction-text-colour);
+            }
+            .legends--multi {
+              right: var(--legends-multi-offset, 250px);
             }
           }
 
@@ -3377,32 +3438,13 @@
             .ranged {
               position: relative;
 
-              @media only screen and (max-width: 600px) {
-                &::before {
-                  content: "";
-                  position: absolute;
-                  left: 4px;
-                  top: 0;
-                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
-                  background-repeat: none;
-                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                  width: 16px;
-                  height: 16px;
-                  margin-top: 2px;
-                }
-              }
-              @media only screen and (min-width: 600px) {
-                &::before {
-                  content: "";
-                  position: absolute;
-                  left: 4px;
-                  top: 0;
-                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/BallisticSkill.svg");
-                  background-repeat: none;
-                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                  width: 24px;
-                  height: 24px;
-                }
+              .weapon-type-icon {
+                position: absolute;
+                left: 4px;
+                top: 2px;
+                width: 20px;
+                height: 20px;
+                z-index: 1;
               }
 
               .heading {
@@ -3496,33 +3538,14 @@
             }
             .melee {
               position: relative;
-              @media only screen and (max-width: 600px) {
-                &::before {
-                  content: "";
-                  position: absolute;
-                  left: 4px;
-                  top: 0;
-                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
-                  background-repeat: none;
-                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                  width: 16px;
-                  height: 16px;
-                  margin-top: 4px;
-                }
-              }
-              @media only screen and (min-width: 600px) {
-                &::before {
-                  content: "";
-                  position: absolute;
-                  left: 4px;
-                  top: 0;
-                  background-image: url("https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/svg/Melee.svg");
-                  background-repeat: none;
-                  filter: invert(87%) sepia(100%) saturate(0%) hue-rotate(303deg) brightness(104%) contrast(101%);
-                  width: 20px;
-                  height: 20px;
-                  margin-top: 3px;
-                }
+
+              .weapon-type-icon {
+                position: absolute;
+                left: 4px;
+                top: 2px;
+                width: 18px;
+                height: 18px;
+                z-index: 1;
               }
 
               .heading {
@@ -4069,6 +4092,33 @@
     }
   }
 
+  // Datasource unit cards: override hardcoded 6-column grid so extra stats wrap
+  .viewer.ds-unit {
+    .unit .header .stats_container {
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-areas: unset;
+      padding-top: 4px;
+
+      .name {
+        grid-column: 1 / -1;
+      }
+
+      .stat .caption {
+        height: auto;
+        line-height: 1;
+      }
+
+      .stat:nth-child(1),
+      .stat:nth-child(2),
+      .stat:nth-child(3),
+      .stat:nth-child(4),
+      .stat:nth-child(5),
+      .stat:nth-child(6) {
+        grid-area: unset;
+      }
+    }
+  }
+
   .center {
     text-align: center;
   }
@@ -4126,6 +4176,32 @@
       &::after {
         content: ", ";
       }
+
+      // Keywords with a hover tooltip get a dotted underline so it's
+      // discoverable that hovering yields the rule text. antd's Button
+      // overrides `text-decoration`, so draw the dotted line as a
+      // repeating background gradient pinned to the bottom edge. Sizing
+      // chosen for visible weight at the small font size used here.
+      &.has-info {
+        background-image: linear-gradient(
+          to right,
+          color-mix(in srgb, currentColor 50%, transparent) 2px,
+          transparent 2px
+        );
+        background-size: 4px 2px;
+        background-repeat: repeat-x;
+        background-position: 0 100%;
+        // Slightly taller than the base button so the dotted line sits
+        // clear of the uppercase text.
+        height: 17px;
+        background-clip: padding-box;
+
+        // The dotted underline is a hover affordance — drop it in print.
+        @media print {
+          background-image: none;
+          height: 16px;
+        }
+      }
     }
     .keyword-button:first-child {
       &::before {
@@ -4142,6 +4218,29 @@
     }
     &::before {
       content: "[";
+    }
+  }
+
+  // Per-keyword styled glossary tags. Used by custom datasource renderers so
+  // each keyword controls its own caps/brackets/weight instead of inheriting
+  // the group `[A, B]` treatment above. Brackets and the `, ` separator are
+  // rendered as text nodes by the renderer, so the group pseudo-elements and
+  // the per-button comma are suppressed here.
+  .keyword.keyword-styled {
+    &::before,
+    &::after {
+      content: "";
+    }
+    .keyword-button {
+      &::after {
+        content: "";
+      }
+      &.kw-no-caps {
+        text-transform: none;
+      }
+      &.kw-no-bold {
+        font-weight: 400;
+      }
     }
   }
 }
@@ -4469,7 +4568,8 @@
 }
 
 // Override centering and transform-origin when inside print-page (both screen preview and actual print)
-.print-page .data-40k-10e {
+.print-page .data-40k-10e,
+.print-page .data-40k-11e {
   .unit-card-full-wrapper,
   .unit-card-front-wrapper,
   .unit-card-back-wrapper {

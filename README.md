@@ -20,16 +20,20 @@ Game-Datacards allows a user to select a datasource and import or create datacar
 
 ### Features
 
-- Built using React 17 and Ant Design 4.
-- Support for multiple datasources to allow different types of games / datacards.
-- Uses Google Firestore to share and save online lists.
-- Hosted & Run through Github Pages
+- Built using React 18.3 and Ant Design 4
+- Vite 7 for fast development and builds
+- Support for multiple datasources (Warhammer 40K, Age of Sigmar, Necromunda)
+- Cloud sync and authentication via Supabase (premium)
+- Hosted on Cloudflare Pages
 
 ### Quick Start
 
-    clone the project to your local setup
-    yarn
-    yarn start
+```bash
+git clone https://github.com/ronplanken/game-datacards.git
+cd game-datacards
+yarn install
+yarn start
+```
 
 ### Contributing
 

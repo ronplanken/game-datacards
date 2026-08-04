@@ -1,11 +1,9 @@
 import { Trash2 } from "lucide-react";
-import { Button, Card, Select, Typography, Space, Switch } from "antd";
+import { Button, Card, Typography } from "antd";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
-
-const { Option } = Select;
 
 export function UnitBasicAbility({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -13,30 +11,6 @@ export function UnitBasicAbility({ type }) {
 
   return (
     <>
-      <Card
-        type={"inner"}
-        size={"small"}
-        title={`${typeTitle} section visibility`}
-        style={{ marginBottom: "16px" }}
-        bodyStyle={{ padding: 0 }}
-        extra={
-          <Space>
-            <Switch
-              checked={activeCard.showAbilities?.[type] !== false}
-              onChange={(value) => {
-                updateActiveCard(() => {
-                  return {
-                    ...activeCard,
-                    showAbilities: {
-                      ...activeCard.showAbilities,
-                      [type]: value,
-                    },
-                  };
-                });
-              }}
-            />
-          </Space>
-        }></Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {

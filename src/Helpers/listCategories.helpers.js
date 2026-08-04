@@ -1,4 +1,102 @@
 import { capitalizeSentence } from "./external.helpers";
+import { getCardBaseCost, getCardWargearCost } from "./listPoints.helpers";
+import { localize } from "./localization.helpers";
+
+// ===========================================
+// Keyword helpers (edition-agnostic)
+// ===========================================
+// 10th edition stores keywords as plain strings ("Character"); 11th edition
+// stores them as language-keyed objects ({ en: "Character", de: ... }). Matching
+// against the canonical English keyword via localize() therefore works for both,
+// so list logic (categorisation, character/enhancement eligibility) does not
+// silently break on 11e object-keywords.
+
+/**
+ * True when a card carries the given keyword, comparing against the canonical
+ * English form (case-insensitive). Works for 10e string keywords and 11e
+ * language-keyed object keywords.
+ * @param {Object} card - card with a `keywords` array
+ * @param {string} keyword - English keyword to test (e.g. "Character")
+ */
+export const cardHasKeyword = (card, keyword) => {
+  if (!card?.keywords || !keyword) return false;
+  const target = String(keyword).toLowerCase();
+  return card.keywords.some((k) => localize(k, "en").toLowerCase() === target);
+};
+
+/**
+ * True when a card carries the given token as a keyword or a faction. Enhancement
+ * eligibility keys off either (an enhancement's `keywords` can name a faction).
+ * The token may be a plain string or a language-keyed object; array/empty tokens
+ * never match (preserves the legacy no-op for oddly-shaped exclude entries).
+ * @param {Object} card - card with `keywords` and/or `factions`
+ * @param {string|Object} token - English keyword or faction name (or {lang} object)
+ */
+export const cardHasKeywordOrFaction = (card, token) => {
+  const name = localize(token, "en");
+  if (!name) return false;
+  if (cardHasKeyword(card, name)) return true;
+  const target = name.toLowerCase();
+  return (card?.factions || []).some((f) => localize(f, "en").toLowerCase() === target);
+};
+
+/**
+ * Whether a unit may take a given enhancement/upgrade, ignoring detachment
+ * (the caller applies the selected-detachment filter separately).
+ *
+ * - Epic Heroes take neither enhancements nor upgrades.
+ * - Characters take regular enhancements; non-character units take only
+ *   enhancements flagged `equipableByNonCharacter` (11e "(Upgrade)" entries).
+ * - The enhancement's `keywords` must match one of the unit's keywords/factions
+ *   and its `excludes` must not.
+ *
+ * @param {Object} card - the unit
+ * @param {Object} enhancement - the enhancement/upgrade
+ */
+/** How many copies of the same Upgrade an army may include (core rules). */
+export const MAX_UPGRADE_COPIES = 3;
+
+/**
+ * Whether an enhancement is an "Upgrade" — the tagged subset that, unlike other
+ * enhancements, may be given to non-Character units and taken up to three times.
+ *
+ * @param {Object} enhancement
+ */
+export const isUpgradeEnhancement = (enhancement) => Boolean(enhancement?.equipableByNonCharacter);
+
+/**
+ * How many copies of this enhancement the army may include: one for a regular
+ * enhancement ("your army cannot include more than one of the same enhancement"),
+ * three for an Upgrade.
+ *
+ * @param {Object} enhancement
+ */
+export const getEnhancementCopyLimit = (enhancement) => (isUpgradeEnhancement(enhancement) ? MAX_UPGRADE_COPIES : 1);
+
+/**
+ * Whether the army already holds as many copies of this enhancement as the rules
+ * allow, so it cannot be given to another unit.
+ *
+ * @param {Object} enhancement
+ * @param {Array} cards - the list's cards
+ * @param {string} [excludeUuid] - card being edited, so its own copy is not counted
+ */
+export const isEnhancementAtCopyLimit = (enhancement, cards, excludeUuid) => {
+  if (!enhancement?.name) return false;
+  const used = (cards || []).filter(
+    (card) => card?.uuid !== excludeUuid && card?.selectedEnhancement?.name === enhancement.name,
+  ).length;
+  return used >= getEnhancementCopyLimit(enhancement);
+};
+
+export const isUnitEnhancementEligible = (card, enhancement) => {
+  if (!enhancement) return false;
+  if (cardHasKeyword(card, "Epic Hero")) return false;
+  if (!cardHasKeyword(card, "Character") && !enhancement.equipableByNonCharacter) return false;
+  const included = (enhancement.keywords || []).some((kw) => cardHasKeywordOrFaction(card, kw));
+  const excluded = (enhancement.excludes || []).some((ex) => cardHasKeywordOrFaction(card, ex));
+  return included && !excluded;
+};
 
 // ===========================================
 // 40K-10e Section Configuration
@@ -39,20 +137,20 @@ export const categorize40kUnits = (datacards) => {
   return datacards?.reduce(
     (cats, card) => {
       // Allied units go to their own section (check first!)
-      if (card?.card?._isAllied) {
+      if (card?._isAllied) {
         cats.allied.push(card);
-      } else if (card?.card?.keywords?.includes("Character")) {
+      } else if (cardHasKeyword(card, "Character")) {
         cats.characters.push(card);
-      } else if (card?.card?.keywords?.includes("Battleline")) {
+      } else if (cardHasKeyword(card, "Battleline")) {
         cats.battleline.push(card);
-      } else if (card?.card?.keywords?.includes("Dedicated Transport")) {
+      } else if (cardHasKeyword(card, "Dedicated Transport")) {
         cats.transports.push(card);
       } else {
         cats.other.push(card);
       }
       return cats;
     },
-    { characters: [], battleline: [], transports: [], other: [], allied: [] }
+    { characters: [], battleline: [], transports: [], other: [], allied: [] },
   );
 };
 
@@ -68,7 +166,7 @@ export const categorize40kUnits = (datacards) => {
  */
 export const categorizeAoSUnits = (datacards) => {
   const hasKeyword = (card, keyword) => {
-    return card?.card?.keywords?.some((k) => k.toLowerCase() === keyword.toLowerCase());
+    return card?.keywords?.some((k) => k.toLowerCase() === keyword.toLowerCase());
   };
 
   return datacards?.reduce(
@@ -104,7 +202,7 @@ export const categorizeAoSUnits = (datacards) => {
       terrain: [],
       manifestations: [],
       other: [],
-    }
+    },
   );
 };
 
@@ -119,9 +217,9 @@ export const categorizeAoSUnits = (datacards) => {
  */
 export const sortCards = (cards) =>
   cards.toSorted((a, b) => {
-    if (a.warlord) return -1;
-    if (b.warlord) return 1;
-    return a.card.name.localeCompare(b.card.name);
+    if (a.isWarlord) return -1;
+    if (b.isWarlord) return 1;
+    return a.name.localeCompare(b.name);
   });
 
 // ===========================================
@@ -141,14 +239,19 @@ export const format40kListText = (sortedCards, sections) => {
     if (cards.length === 0) return;
     listText += `\n\n${clipboardLabel}`;
     sortCards(cards).forEach((val) => {
-      const totalCost = Number(val?.points?.cost) + (Number(val.enhancement?.cost) || 0) || "?";
-      listText += `\n\n${val.card.name} ${val.points?.models > 1 ? val.points?.models + "x" : ""} (${totalCost} pts)`;
-      if (val.warlord) {
+      const totalCost =
+        getCardBaseCost(val) + (Number(val.selectedEnhancement?.cost) || 0) + getCardWargearCost(val) || "?";
+      listText += `\n\n${val.name} ${val.unitSize?.models > 1 ? val.unitSize?.models + "x" : ""} (${totalCost} pts)`;
+      if (val.isWarlord) {
         listText += `\n   • Warlord`;
       }
-      if (val.enhancement) {
-        listText += `\n   • Enhancements: ${capitalizeSentence(val.enhancement?.name)} (+${val.enhancement?.cost} pts)`;
+      if (val.selectedEnhancement) {
+        listText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${val.selectedEnhancement?.cost} pts)`;
       }
+      (val.selectedWargear || []).forEach((entry) => {
+        const quantity = Number(entry?.quantity) > 1 ? `${entry.quantity}x ` : "";
+        listText += `\n   • Wargear: ${quantity}${localize(entry?.name)} (+${getCardWargearCost({ selectedWargear: [entry] })} pts)`;
+      });
     });
   };
 
@@ -177,9 +280,9 @@ export const formatAoSListText = (sortedCards, sections) => {
     if (cards.length === 0) return;
     listText += `\n\n${clipboardLabel}`;
     sortCards(cards).forEach((val) => {
-      const cost = val?.points?.cost || "?";
-      listText += `\n\n${val.card.name} (${cost} pts)`;
-      if (val.warlord) {
+      const cost = val?.unitSize?.cost || "?";
+      listText += `\n\n${val.name} (${cost} pts)`;
+      if (val.isWarlord) {
         listText += `\n   • General`;
       }
     });

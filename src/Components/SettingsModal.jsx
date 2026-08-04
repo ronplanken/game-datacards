@@ -1,13 +1,38 @@
 import { Settings, Database, Trash2, Printer, History, Plus } from "lucide-react";
-import { Popconfirm, message } from "antd";
+import { Popconfirm, Select } from "antd";
+import { SUPPORTED_LANGUAGES, LANGUAGE_LABELS } from "../Helpers/localization.helpers";
+import { message } from "./Toast/message";
 import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback, useState } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { useAuth, useSubscription, useSync } from "../Premium";
+import { useUmami } from "../Hooks/useUmami";
+import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
 import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
-import { CustomDatasourceModal } from "./CustomDatasource";
+import { ImportDatasourceModal } from "./SettingsModal/ImportDatasourceModal";
+import { PublishDatasourceModal } from "./DatasourcePublish";
 import { confirmDialog } from "./ConfirmChangesModal";
 import "./SettingsModal.css";
+import "./DatasourceEditor/DatasourceEditor.css";
+
+// Format ISO date string to localized date/time
+const formatDate = (isoString) => {
+  if (!isoString) return "Never";
+  try {
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    return date.toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return isoString;
+  }
+};
 
 export const SettingsModal = () => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
@@ -15,18 +40,34 @@ export const SettingsModal = () => {
   const [showOlderVersions, setShowOlderVersions] = React.useState(false);
   const [isCustomDatasourceModalOpen, setIsCustomDatasourceModalOpen] = useState(false);
   const [checkingCustomUpdateId, setCheckingCustomUpdateId] = useState(null);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+  const [publishingDatasourceId, setPublishingDatasourceId] = useState(null);
+  const [uploadingDatasourceId, setUploadingDatasourceId] = useState(null);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
   const {
     dataSource,
     checkForUpdate,
     clearData,
     removeCustomDatasource,
+    importCustomDatasource,
     checkCustomDatasourceUpdate,
     applyCustomDatasourceUpdate,
+    getCustomDatasourceData,
   } = useDataSourceStorage();
+  const { user } = useAuth();
+  const { subscription } = useSubscription();
+  const { uploadDatasource, publishLocalDatasource, pushDatasourceUpdate } = useDatasourceSharing();
+  const { uploadLocalDatasource } = useSync();
+
+  // Get tier from subscription object
+  const tier = subscription?.tier || "free";
 
   const [checkingForUpdate, setCheckingForUpdate] = React.useState(false);
+
+  // Check if user can upload (Premium or Creator tier)
+  const canUpload = user && (tier === "premium" || tier === "creator");
 
   const refreshData = () => {
     setCheckingForUpdate(true);
@@ -71,6 +112,70 @@ export const SettingsModal = () => {
     }
   };
 
+  const handleUploadDatasource = async (datasourceId) => {
+    const registryEntry = settings.customDatasources?.find((ds) => ds.id === datasourceId);
+    if (!registryEntry) return;
+
+    // Get the full datasource data from storage (includes the 'data' array)
+    const fullDatasourceData = await getCustomDatasourceData(datasourceId);
+    if (!fullDatasourceData) {
+      message.error("Could not load datasource data");
+      return;
+    }
+
+    setUploadingDatasourceId(datasourceId);
+    try {
+      const metadata = {
+        name: registryEntry.name,
+        version: registryEntry.version,
+        authorName: registryEntry.author,
+        displayFormat: fullDatasourceData.displayFormat,
+      };
+      const result = await uploadDatasource(fullDatasourceData, metadata);
+      if (result.success) {
+        // Update the local datasource with cloudId
+        const updatedDatasources = settings.customDatasources.map((ds) =>
+          ds.id === datasourceId ? { ...ds, cloudId: result.cloudId } : ds,
+        );
+        updateSettings({ ...settings, customDatasources: updatedDatasources });
+        message.success("Datasource uploaded to cloud successfully");
+      } else {
+        message.error(result.error || "Failed to upload datasource");
+      }
+    } catch (error) {
+      message.error("Failed to upload datasource");
+    } finally {
+      setUploadingDatasourceId(null);
+    }
+  };
+
+  const handlePublishDatasource = (datasourceId) => {
+    setPublishingDatasourceId(datasourceId);
+    setIsPublishModalOpen(true);
+  };
+
+  const handlePublishComplete = (shareCode) => {
+    if (publishingDatasourceId && shareCode) {
+      // Update the local datasource with published state
+      const updatedDatasources = settings.customDatasources.map((ds) =>
+        ds.id === publishingDatasourceId ? { ...ds, isPublished: true, shareCode } : ds,
+      );
+      updateSettings({ ...settings, customDatasources: updatedDatasources });
+    }
+    setIsPublishModalOpen(false);
+    setPublishingDatasourceId(null);
+  };
+
+  const handleImportDatasource = async (datasourceData) => {
+    const result = await importCustomDatasource(datasourceData, "local");
+    if (result.success) {
+      message.success("Datasource imported successfully");
+      setIsCustomDatasourceModalOpen(false);
+    } else {
+      message.error(result.error || "Failed to import datasource");
+    }
+  };
+
   // Handle escape key
   const handleKeyDown = useCallback(
     (e) => {
@@ -78,7 +183,7 @@ export const SettingsModal = () => {
         setIsModalVisible(false);
       }
     },
-    [isModalVisible]
+    [isModalVisible],
   );
 
   useEffect(() => {
@@ -104,12 +209,12 @@ export const SettingsModal = () => {
   const DatasourceDetails = () => (
     <div className="datasource-details">
       <div className="datasource-detail-item">
-        <span className="datasource-detail-label">Checked for update</span>
-        <span className="datasource-detail-value">{dataSource.lastCheckedForUpdate}</span>
+        <span className="datasource-detail-label">Last update check</span>
+        <span className="datasource-detail-value">{formatDate(dataSource.lastCheckedForUpdate)}</span>
       </div>
       <div className="datasource-detail-item">
-        <span className="datasource-detail-label">Data snapshot</span>
-        <span className="datasource-detail-value">{dataSource.lastUpdated}</span>
+        <span className="datasource-detail-label">Data version date</span>
+        <span className="datasource-detail-value">{formatDate(dataSource.lastUpdated)}</span>
       </div>
       <div className="datasource-detail-item">
         <span className="datasource-detail-label">Version</span>
@@ -120,8 +225,8 @@ export const SettingsModal = () => {
         <span className="datasource-detail-value">{dataSource.data.length || 0}</span>
       </div>
       <div className="datasource-detail-item">
-        <span className="datasource-detail-label">Storage</span>
-        <span className="datasource-detail-value">IndexDB</span>
+        <span className="datasource-detail-label">Stored</span>
+        <span className="datasource-detail-value">Locally in browser</span>
       </div>
     </div>
   );
@@ -133,8 +238,8 @@ export const SettingsModal = () => {
           <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <div className="settings-modal-header">
-              <span className="settings-modal-title">Configuration</span>
-              <span className="settings-version-badge">Version {process.env.REACT_APP_VERSION}</span>
+              <span className="settings-modal-title">Settings</span>
+              <span className="settings-version-badge">Version {import.meta.env.VITE_VERSION}</span>
             </div>
 
             {/* Body */}
@@ -158,8 +263,7 @@ export const SettingsModal = () => {
                 {activeTab === "datasources" && (
                   <>
                     <p className="settings-section-description">
-                      Please select your preferred game and datasource system. If no system is selected it will default
-                      to the Basic Card system.
+                      Choose a game system to load its unit data. If none is selected, the Basic Card system is used.
                     </p>
 
                     {/* Active Datasource Section */}
@@ -168,7 +272,7 @@ export const SettingsModal = () => {
                       {(() => {
                         // Check if a custom datasource is active
                         const activeCustomDs = settings.customDatasources?.find(
-                          (ds) => ds.id === settings.selectedDataSource
+                          (ds) => ds.id === settings.selectedDataSource,
                         );
 
                         if (activeCustomDs) {
@@ -178,13 +282,16 @@ export const SettingsModal = () => {
                               datasource={activeCustomDs}
                               isActive={true}
                               onToggle={() => {}}
-                              onDelete={() => removeCustomDatasource(activeCustomDs.id)}
                               onCheckUpdate={
-                                activeCustomDs.sourceType === "url"
+                                activeCustomDs.sourceType === "url" && !activeCustomDs.isSubscribed
                                   ? () => handleCheckCustomUpdate(activeCustomDs.id)
                                   : undefined
                               }
                               isCheckingUpdate={checkingCustomUpdateId === activeCustomDs.id}
+                              onUpload={() => handleUploadDatasource(activeCustomDs.id)}
+                              onPublish={() => handlePublishDatasource(activeCustomDs.id)}
+                              isUploading={uploadingDatasourceId === activeCustomDs.id}
+                              canUpload={canUpload}
                             />
                           );
                         }
@@ -192,6 +299,7 @@ export const SettingsModal = () => {
                         // Otherwise show built-in datasource
                         const datasources = [
                           { id: "basic", title: "Basic Cards", hasUpdate: false },
+                          { id: "40k-11e", title: "40k 11th Edition import", hasUpdate: true },
                           { id: "40k-10e", title: "40k 10th Edition import", hasUpdate: true },
                           { id: "40k-10e-cp", title: "40k 10th Combat Patrol import", hasUpdate: true },
                           { id: "40k", title: "Wahapedia data import 9th edition", hasUpdate: true },
@@ -215,6 +323,26 @@ export const SettingsModal = () => {
                       })()}
                     </div>
 
+                    {/* Card language (multi-language datasources, e.g. 40k-11e) */}
+                    {settings.selectedDataSource === "40k-11e" && (
+                      <div className="datasource-section">
+                        <h3 className="datasource-section-title">Card language</h3>
+                        <p className="datasource-empty-text">
+                          Choose the language used for 11th Edition card text. Falls back to English where a translation
+                          is unavailable.
+                        </p>
+                        <Select
+                          value={settings.language || "en"}
+                          style={{ width: "100%", maxWidth: 280 }}
+                          onChange={(value) => updateSettings({ ...settings, language: value })}
+                          options={SUPPORTED_LANGUAGES.map((code) => ({
+                            value: code,
+                            label: LANGUAGE_LABELS[code] || code,
+                          }))}
+                        />
+                      </div>
+                    )}
+
                     {/* Custom Datasources Section */}
                     <div className="datasource-section">
                       <div className="datasource-section-header">
@@ -229,49 +357,28 @@ export const SettingsModal = () => {
                           No custom datasources imported yet. Click &quot;Add&quot; to import from URL or file.
                         </p>
                       )}
-                      {(() => {
-                        const inactiveCustomDs = settings.customDatasources?.filter(
-                          (ds) => ds.id !== settings.selectedDataSource
-                        );
-                        const activeCustomDs = settings.customDatasources?.find(
-                          (ds) => ds.id === settings.selectedDataSource
-                        );
-
-                        // Show ghost placeholder if there are custom datasources but all are active
-                        if (
-                          settings.customDatasources?.length > 0 &&
-                          (!inactiveCustomDs || inactiveCustomDs.length === 0) &&
-                          activeCustomDs
-                        ) {
-                          return (
-                            <CustomDatasourceCard
-                              key={activeCustomDs.id}
-                              datasource={activeCustomDs}
-                              isActive={false}
-                              isGhost={true}
-                              onToggle={() => {}}
-                              onDelete={() => {}}
-                            />
-                          );
-                        }
-
-                        return inactiveCustomDs?.map((ds) => (
+                      {settings.customDatasources?.map((ds) => {
+                        const isActive = ds.id === settings.selectedDataSource;
+                        return (
                           <CustomDatasourceCard
                             key={ds.id}
                             datasource={ds}
                             isActive={false}
+                            isGhost={isActive}
                             onToggle={() =>
                               updateSettings({
                                 ...settings,
                                 selectedDataSource: ds.id,
                               })
                             }
-                            onDelete={() => removeCustomDatasource(ds.id)}
-                            onCheckUpdate={ds.sourceType === "url" ? () => handleCheckCustomUpdate(ds.id) : undefined}
-                            isCheckingUpdate={checkingCustomUpdateId === ds.id}
+                            onDelete={!isActive && !ds.isSubscribed ? () => removeCustomDatasource(ds.id) : undefined}
+                            onUpload={() => handleUploadDatasource(ds.id)}
+                            onPublish={() => handlePublishDatasource(ds.id)}
+                            isUploading={uploadingDatasourceId === ds.id}
+                            canUpload={canUpload}
                           />
-                        ));
-                      })()}
+                        );
+                      })}
                     </div>
 
                     {/* Other Datasources Section */}
@@ -280,28 +387,33 @@ export const SettingsModal = () => {
                       {(() => {
                         const datasources = [
                           { id: "basic", title: "Basic Cards", hasUpdate: false },
+                          { id: "40k-11e", title: "40k 11th Edition import", hasUpdate: true },
                           { id: "40k-10e", title: "40k 10th Edition import", hasUpdate: true },
                           { id: "40k-10e-cp", title: "40k 10th Combat Patrol import", hasUpdate: true },
                           { id: "40k", title: "Wahapedia data import 9th edition", hasUpdate: true },
                           { id: "necromunda", title: "Necromunda", hasUpdate: false },
                           { id: "aos", title: "Age of Sigmar", hasUpdate: true },
                         ];
-                        return datasources
-                          .filter((ds) => ds.id !== settings.selectedDataSource)
-                          .map((ds) => (
+                        const isCustomDatasourceActive = settings.customDatasources?.some(
+                          (ds) => ds.id === settings.selectedDataSource,
+                        );
+                        return datasources.map((ds) => {
+                          const isActive = !isCustomDatasourceActive && ds.id === settings.selectedDataSource;
+                          return (
                             <DatasourceCard
                               key={ds.id}
                               title={ds.title}
-                              isActive={false}
+                              isActive={isActive}
                               onToggle={() =>
                                 updateSettings({
                                   ...settings,
                                   selectedDataSource: ds.id,
                                 })
                               }
-                              disabled={false}
+                              disabled={isActive}
                             />
-                          ));
+                          );
+                        });
                       })()}
                     </div>
                   </>
@@ -312,12 +424,14 @@ export const SettingsModal = () => {
                   <>
                     <div className="warning-box">
                       <p className="warning-box-text">
-                        If you would like to clear the local storage please use the button below. Please be noted that
-                        this is a one way operation and will remove all stored data including saved cards.
+                        This permanently deletes all locally stored data, including your saved cards and categories.
+                        This action cannot be undone.
                       </p>
                     </div>
-                    <Popconfirm title={"Are you sure you want to remove all data?"} onConfirm={clearData}>
-                      <button className="danger-btn">Clear data</button>
+                    <Popconfirm
+                      title={"Delete all saved cards, categories, and settings? This cannot be undone."}
+                      onConfirm={clearData}>
+                      <button className="danger-btn">Clear all data</button>
                     </Popconfirm>
                   </>
                 )}
@@ -325,12 +439,13 @@ export const SettingsModal = () => {
                 {/* Printing Tab */}
                 {activeTab === "printing" && (
                   <>
-                    <p className="settings-section-description">You can configure printing options here.</p>
+                    <p className="settings-section-description">Adjust how your cards are printed.</p>
                     <div className="setting-row">
                       <div className="setting-info">
                         <div className="setting-label">Legacy Printing</div>
                         <div className="setting-description">
-                          Enable the legacy printing mode for older print layouts.
+                          Use the original print layout from earlier versions. Try this if the default layout has issues
+                          with your printer.
                         </div>
                       </div>
                       <Toggle
@@ -350,7 +465,249 @@ export const SettingsModal = () => {
                 {activeTab === "changelog" && (
                   <div className="changelog-container">
                     <div className="changelog-timeline">
-                      <ChangelogEntry version="Version 3.0.0" date="01-12-2025" defaultExpanded={true}>
+                      <ChangelogEntry version="Version 3.5.2" date="20-03-2026" defaultExpanded={true}>
+                        <h4 className="changelog-section-title">Fixed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Custom Card Images</strong>
+                            Images added through the Styling tab now show up in exported PNGs. Previously they were
+                            visible in the browser but missing from the export.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Weapon Stats and Phase Badges</strong>
+                            Weapon stat rows no longer show extra whitespace or broken layouts in exports, especially on
+                            Windows. AoS phase badges are also fixed.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Loadout Text</strong>
+                            Cards created in an earlier version no longer show garbled separators in the loadout
+                            section.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.5.1" date="20-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Update Notification</strong>
+                            The app now detects new deployments and shows a banner prompting you to refresh. No more
+                            stale builds after a deploy.
+                          </li>
+                        </ul>
+                        <h4 className="changelog-section-title">Removed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>What&apos;s New Modal</strong>
+                            The old What&apos;s New popup has been removed. Version announcements now use the
+                            What&apos;s New wizard exclusively.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.5.0" date="15-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Datasource Editor</strong>
+                            Build custom card structures for any game system. Define your own stats, weapons, abilities,
+                            and fields, then fill in cards that match your exact format.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Three-Panel Workspace</strong>
+                            Browse datasources and cards on the left, see a live preview in the centre, and edit
+                            properties on the right.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Multiple Card Types</strong>
+                            Each datasource supports units, rules, enhancements, and stratagems with configurable field
+                            types.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Import &amp; Export</strong>
+                            Share datasources as JSON files or import from others to get started quickly.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.4.2" date="13-03-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Keyword Highlighting</strong>
+                            Smarter word-boundary detection prevents words like &quot;Blaster&quot; from being
+                            highlighted because they contain &quot;Blast&quot;. Ability names are no longer incorrectly
+                            highlighted either.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Per-Word Escape</strong>
+                            Add a backslash before any word in ability text (e.g. \Blast) to prevent it from being
+                            highlighted.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.4.1" date="10-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>AoS Custom Templates</strong>
+                            Custom templates now work with Age of Sigmar warscrolls and spell cards. Design layouts in
+                            the Card Designer and apply them to any AoS card.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.4.0" date="05-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Card Designer (Beta)</strong>
+                            Design your own datacards from scratch. Add text, images, shapes, and frames, then connect
+                            everything to real game data so cards fill in automatically. Requires a user account.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.3.0" date="01-03-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>List Forge Import</strong>
+                            Import army lists from{" "}
+                            <a href="https://listforge.club/" target="_blank" rel="noreferrer">
+                              List Forge
+                            </a>{" "}
+                            by uploading an exported file or pasting its contents. Match units to your datasource for
+                            full datasheet cards, or import the exported data directly.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Automatic Unit Matching</strong>
+                            Factions, detachments, units, and enhancements are detected and matched automatically with
+                            the option to review and adjust before importing.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.2.2" date="27-02-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Sharing, Rebuilt</strong>
+                            Sharing has been rebuilt from the ground up. One-click sharing, a manage panel for your
+                            shared links, and a new backend for better speed and reliability.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.2.1" date="25-02-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Drag-and-Drop Reordering</strong>
+                            Categories, subcategories, and datasources can now be reordered by dragging them into
+                            position.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Refreshed Desktop Styling</strong>
+                            The desktop toolbar and unit configuration modal have been redesigned with a cleaner look.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Mobile List Sync</strong>
+                            Mobile lists now stay in sync with your desktop configuration automatically.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.2.0" date="23-02-2026">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>User Accounts</strong>
+                            Create a free account to unlock cloud sync and keep your datacards safe across devices.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Cloud Sync</strong>
+                            Back up your cards and access them from any device. Toggle the cloud icon on a category to
+                            enable syncing. Changes sync automatically in the background.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Conflict Resolution</strong>
+                            If the same category is edited on different devices, a dialog lets you choose which version
+                            to keep, or save both as separate categories.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.3" date="13-02-2026">
+                        <h4 className="changelog-section-title">Fixes</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Ability Keyword Styling</strong>
+                            Weapon keywords (e.g. Sustained Hits, Hazardous, Assault) in ability descriptions now render
+                            with the correct green weapon style and tooltip. Rule keywords (e.g. Feel No Pain, Lone
+                            Operative) use the black rule style.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.2" date="21-01-2026">
+                        <h4 className="changelog-section-title">Fixed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Stratagem Image Export</strong>
+                            Fixed an issue where phase icons on stratagem cards were not appearing in image exports.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.1" date="13-01-2026">
+                        <h4 className="changelog-section-title">Improved</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Chapter Detachments</strong>
+                            Reorganised the datasource to separate Space Marine chapters and their unique detachments
+                            (Ultramarines, Imperial Fists, Iron Hands, Raven Guard, Salamanders, White Scars, and
+                            Deathwatch).
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.1.0" date="30-12-2025">
+                        <h4 className="changelog-section-title">Added</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>Custom Datasources</strong>
+                            Load card data from external URLs or local files. Custom datasources check for updates
+                            automatically so your data stays current.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Quick Add</strong>
+                            Add units directly from the datasource list to a category with a single click.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>GW App Import</strong>
+                            Import army lists from the official Games Workshop app.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Rule Card Editor</strong>
+                            Create custom rule cards for army and detachment rules.
+                          </li>
+                        </ul>
+                        <h4 className="changelog-section-title">Fixed</h4>
+                        <ul className="changelog-list">
+                          <li className="changelog-list-item">
+                            <strong>MacOS PDF Export</strong>
+                            Fixed PDF generation issues on MacOS devices.
+                          </li>
+                          <li className="changelog-list-item">
+                            <strong>Age of Sigmar Printing</strong>
+                            Resolved layout issues when printing AoS warscrolls.
+                          </li>
+                        </ul>
+                      </ChangelogEntry>
+
+                      <ChangelogEntry version="Version 3.0.0" date="01-12-2025">
                         <h4 className="changelog-section-title">Added</h4>
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
@@ -655,6 +1012,15 @@ export const SettingsModal = () => {
 
             {/* Footer */}
             <div className="settings-modal-footer">
+              <div className="settings-footer-links">
+                <a href="/terms" target="_blank" rel="noopener noreferrer">
+                  Terms of Service
+                </a>
+                <span className="settings-footer-separator">·</span>
+                <a href="/privacy" target="_blank" rel="noopener noreferrer">
+                  Privacy Policy
+                </a>
+              </div>
               <button className="close-btn" onClick={() => setIsModalVisible(false)}>
                 Close
               </button>
@@ -665,17 +1031,29 @@ export const SettingsModal = () => {
 
       <Tooltip content="Configuration" placement="bottom-start">
         <button
-          className="app-header-icon-btn"
+          className="app-header-icon-btn app-header-settings-btn"
           onClick={() => {
             setIsModalVisible(true);
+            trackEvent("settings-open");
           }}>
           <Settings size={20} />
         </button>
       </Tooltip>
 
-      <CustomDatasourceModal
+      <ImportDatasourceModal
         isOpen={isCustomDatasourceModalOpen}
         onClose={() => setIsCustomDatasourceModalOpen(false)}
+        onImport={handleImportDatasource}
+      />
+
+      <PublishDatasourceModal
+        isOpen={isPublishModalOpen}
+        onClose={() => {
+          setIsPublishModalOpen(false);
+          setPublishingDatasourceId(null);
+        }}
+        datasource={settings.customDatasources?.find((ds) => ds.id === publishingDatasourceId)}
+        onPublishComplete={handlePublishComplete}
       />
     </>
   );

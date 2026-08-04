@@ -1,42 +1,16 @@
 import { Trash2 } from "lucide-react";
-import { Button, Card, Form, Popconfirm, Select, Space, Switch, Typography } from "antd";
+import { Button, Card, Form, Popconfirm, Space, Switch, Typography } from "antd";
 import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import React from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { reorder } from "../../../Helpers/generic.helpers";
 
-const { Option } = Select;
-
 export function UnitExtendedAbilities({ type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
   const typeTitle = type.charAt(0).toUpperCase() + type.slice(1);
   return (
     <>
-      <Card
-        type={"inner"}
-        size={"small"}
-        title={`${typeTitle} section visibility`}
-        style={{ marginBottom: "16px" }}
-        bodyStyle={{ padding: 0 }}
-        extra={
-          <Space>
-            <Switch
-              checked={activeCard?.showAbilities?.[type] !== false}
-              onChange={(value) => {
-                updateActiveCard(() => {
-                  return {
-                    ...activeCard,
-                    showAbilities: {
-                      ...activeCard.showAbilities,
-                      [type]: value,
-                    },
-                  };
-                });
-              }}
-            />
-          </Space>
-        }></Card>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {

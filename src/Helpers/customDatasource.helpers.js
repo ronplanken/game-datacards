@@ -1,12 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
+import { validateSchema, getDefaultValueForType, stripReservedWeaponColumns } from "./customSchema.helpers";
 
 // Valid display formats that map to existing card renderers
-export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos"];
+export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos", "custom"];
 
 // Validation limits for security
 const MAX_NAME_LENGTH = 200;
 const MAX_VERSION_LENGTH = 50;
-const MAX_FACTION_COUNT = 10;
+const MAX_FACTION_COUNT = 25;
 const MAX_CARD_COUNT = 2000;
 const MAX_STRING_FIELD_LENGTH = 10000;
 
@@ -24,6 +25,13 @@ const CARD_TYPE_TO_ARRAY = {
   ganger: "datasheets",
   vehicle: "datasheets",
 };
+
+/**
+ * All known card-collection array keys on a faction object. Derived from
+ * `CARD_TYPE_TO_ARRAY` so any new card type registered there is automatically
+ * picked up by the FactionsEditor (card counting, id-rename rewrites, etc.).
+ */
+export const FACTION_CARD_COLLECTION_KEYS = Array.from(new Set(Object.values(CARD_TYPE_TO_ARRAY)));
 
 /**
  * Validates a custom datasource JSON structure
@@ -105,6 +113,20 @@ export const validateCustomDatasource = (data) => {
     }
   }
 
+  // Validate optional schema property if present
+  if (data.schema !== undefined) {
+    if (!data.schema || typeof data.schema !== "object") {
+      errors.push("'schema' must be an object when provided");
+    } else {
+      const schemaResult = validateSchema(data.schema);
+      if (!schemaResult.valid) {
+        schemaResult.errors.forEach((err) => {
+          errors.push(`schema: ${err}`);
+        });
+      }
+    }
+  }
+
   return { isValid: errors.length === 0, errors };
 };
 
@@ -114,6 +136,7 @@ export const validateCustomDatasource = (data) => {
  * @returns {string} - A safe filename
  */
 export const generateDatasourceFilename = (name) => {
+  if (!name) return "untitled-datasource.json";
   const safeName = name
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
@@ -130,6 +153,7 @@ export const generateDatasourceFilename = (name) => {
  * @returns {string} - A slug ID
  */
 export const generateIdFromName = (name) => {
+  if (!name) return "untitled";
   return name
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, "")
@@ -185,6 +209,45 @@ export const mapCardsToFactionStructure = (cards, factionInfo) => {
 };
 
 /**
+ * Extracts all cards from a faction object back into a flat array
+ * Reverses mapCardsToFactionStructure for download/editing
+ * @param {Object} faction - Faction with typed arrays (datasheets, stratagems, etc.)
+ * @returns {Array} - Flat array of all cards with uuid and isCustom restored
+ */
+export const extractCardsFromFaction = (faction) => {
+  if (!faction) return [];
+
+  const cards = [];
+  const arrayNames = [...new Set(Object.values(CARD_TYPE_TO_ARRAY))];
+
+  // Extract from all typed arrays
+  arrayNames.forEach((arrayName) => {
+    if (faction[arrayName] && Array.isArray(faction[arrayName])) {
+      faction[arrayName].forEach((card) => {
+        cards.push({
+          ...card,
+          uuid: card.uuid || uuidv4(), // Restore uuid for local editing
+          isCustom: true,
+        });
+      });
+    }
+  });
+
+  // Also check 'cards' array for backwards compatibility
+  if (faction.cards && Array.isArray(faction.cards)) {
+    faction.cards.forEach((card) => {
+      cards.push({
+        ...card,
+        uuid: card.uuid || uuidv4(),
+        isCustom: true,
+      });
+    });
+  }
+
+  return cards;
+};
+
+/**
  * Creates a complete datasource object for export
  * @param {Object} options - Export options
  * @param {string} options.name - Datasource name
@@ -237,10 +300,25 @@ export const prepareDatasourceForImport = (datasource, sourceType, sourceUrl = n
 
   return {
     ...datasource,
+    // Older/hand-edited schemas may declare a weapon column keyed after a
+    // reserved profile field (e.g. `keywords`), which corrupts card data as
+    // soon as it is edited. Strip those on the way in.
+    ...(datasource.schema ? { schema: stripReservedWeaponColumns(datasource.schema) } : {}),
     id: storageId,
+    uuid: uuidv4(),
     sourceType,
     sourceUrl,
     lastCheckedForUpdate: sourceType === "url" ? new Date().toISOString() : undefined,
+    syncEnabled: false,
+    syncStatus: "local",
+    lastSyncedAt: null,
+    syncError: null,
+    cloudId: null,
+    editVersion: 0,
+    isUploaded: false,
+    isPublished: false,
+    shareCode: null,
+    publishedVersion: null,
   };
 };
 
@@ -321,6 +399,171 @@ export const countCardsByType = (cards) => {
   });
 
   return { counts, total };
+};
+
+/**
+ * Creates a schema-only export of a datasource for sharing or backup.
+ * Strips internal storage fields (id, sourceType, sourceUrl, etc.) and card data,
+ * keeping only the schema definition, metadata, and faction colours.
+ * @param {Object} datasource - The full datasource object from storage
+ * @returns {Object} - Clean schema export object
+ */
+export const exportDatasourceSchema = (datasource) => {
+  if (!datasource) return null;
+
+  const exported = {
+    name: datasource.name,
+    version: datasource.version,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  if (datasource.author) {
+    exported.author = datasource.author;
+  }
+
+  if (datasource.schema) {
+    exported.schema = datasource.schema;
+  }
+
+  // Include faction colours for theming
+  if (datasource.data && Array.isArray(datasource.data)) {
+    exported.factions = datasource.data.map((faction) => ({
+      id: faction.id,
+      name: faction.name,
+      colours: faction.colours,
+    }));
+  }
+
+  return exported;
+};
+
+/**
+ * Creates a full export of a datasource (schema + card data) for sharing or backup.
+ * Strips internal storage fields (sourceType, sourceUrl, etc.) but keeps the
+ * `id`, full `schema`, and the complete `data` array (factions with all their
+ * datasheets, stratagems, enhancements, rules, etc.). The exported shape
+ * matches the standard datasource export format, so it can be reimported as-is.
+ * @param {Object} datasource - The full datasource object from storage
+ * @returns {Object} - Clean datasource export object including all card data
+ */
+export const exportDatasource = (datasource) => {
+  if (!datasource) return null;
+
+  const exported = {
+    id: datasource.id,
+    name: datasource.name,
+    version: datasource.version,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  if (datasource.author) {
+    exported.author = datasource.author;
+  }
+
+  if (datasource.schema) {
+    exported.schema = datasource.schema;
+  }
+
+  if (datasource.data && Array.isArray(datasource.data)) {
+    // Deep-clone so consumers can't accidentally mutate the active datasource.
+    exported.data = JSON.parse(JSON.stringify(datasource.data));
+  }
+
+  return exported;
+};
+
+/**
+ * Downloads a JSON object as a file via browser download.
+ * @param {Object} data - The data to export
+ * @param {string} filename - The filename for the download
+ */
+export const downloadJsonFile = (data, filename) => {
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+/**
+ * Creates a blank card from a schema card type definition.
+ * Generates appropriate empty data structure based on baseType.
+ * @param {Object} cardTypeDef - The card type definition from schema.cardTypes
+ * @param {string} factionId - The faction ID to assign
+ * @param {string} datasourceId - The datasource ID (used as source)
+ * @returns {Object} A blank card conforming to the schema
+ */
+export const createBlankCardFromSchema = (cardTypeDef, factionId, datasourceId) => {
+  const card = {
+    id: uuidv4(),
+    name: `New ${cardTypeDef.label}`,
+    cardType: cardTypeDef.key,
+    faction_id: factionId,
+    source: datasourceId,
+  };
+
+  if (cardTypeDef.templateId) {
+    card.templateId = cardTypeDef.templateId;
+  }
+
+  const { baseType, schema } = cardTypeDef;
+
+  if (baseType === "unit") {
+    // Create one empty stat profile
+    const statProfile = {};
+    (schema.stats?.fields || []).forEach((field) => {
+      statProfile[field.key] = getDefaultValueForType(field);
+    });
+    card.stats = [statProfile];
+
+    // Create empty weapon arrays per weapon type
+    card.weapons = {};
+    (schema.weaponTypes?.types || []).forEach((wt) => {
+      card.weapons[wt.key] = [];
+    });
+
+    // Empty abilities
+    card.abilities = [];
+
+    // Sections
+    if (schema.sections?.sections) {
+      card.sections = {};
+      schema.sections.sections.forEach((section) => {
+        card.sections[section.key] = [];
+      });
+    }
+
+    // Metadata-driven arrays
+    if (schema.metadata?.hasKeywords) {
+      card.keywords = [];
+    }
+    if (schema.metadata?.hasFactionKeywords) {
+      card.factionKeywords = [];
+    }
+    if (schema.metadata?.hasPoints) {
+      card.points = null;
+    }
+  } else {
+    // Field-based types: rule, enhancement, stratagem
+    (schema.fields || []).forEach((field) => {
+      card[field.key] = getDefaultValueForType(field);
+    });
+
+    // Collections
+    if (schema.rules) {
+      card.rules = [];
+    }
+    if (schema.keywords) {
+      card.keywords = [];
+    }
+  }
+
+  return card;
 };
 
 /**

@@ -41,7 +41,7 @@ export const StepAoSSettings = () => {
             <Type />
           </div>
           <div className="mww-settings-option-info">
-            <span className="mww-settings-option-label">Use fancy fonts</span>
+            <span className="mww-settings-option-label">Decorative fonts</span>
             <span className="mww-settings-option-desc">Themed serif fonts for an authentic look</span>
           </div>
           <button

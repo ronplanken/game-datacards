@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from "react";
 import { compare } from "compare-versions";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { useFeatureFlags } from "../../../Hooks/useFeatureFlags";
 import { LAST_WIZARD_VERSION } from "../../MobileWelcomeWizard";
 import { getMobileUnseenVersions, mergeMobileVersionSteps } from "../versions";
 
@@ -20,7 +21,8 @@ import { getMobileUnseenVersions, mergeMobileVersionSteps } from "../versions";
  */
 export const useMobileVersionWizard = () => {
   const { settings, updateSettings } = useSettingsStorage();
-  const currentVersion = process.env.REACT_APP_VERSION;
+  const { paidTierEnabled } = useFeatureFlags();
+  const currentVersion = import.meta.env.VITE_VERSION;
 
   // Determine which versions need to be shown
   const unseenVersions = useMemo(() => {
@@ -36,10 +38,14 @@ export const useMobileVersionWizard = () => {
     return unseenVersions.length > 0 && compare(settings.wizardCompleted, LAST_WIZARD_VERSION, ">=");
   }, [unseenVersions, settings.wizardCompleted]);
 
-  // Merge all unseen version steps into a single flow
+  // Merge all unseen version steps into a single flow, filtering paid-tier steps when disabled
   const mergedSteps = useMemo(() => {
-    return mergeMobileVersionSteps(unseenVersions);
-  }, [unseenVersions]);
+    const steps = mergeMobileVersionSteps(unseenVersions);
+    if (!paidTierEnabled) {
+      return steps.filter((step) => !step.requiresPaidTier);
+    }
+    return steps;
+  }, [unseenVersions, paidTierEnabled]);
 
   // Get the highest version being shown
   const highestVersion = useMemo(() => {

@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Check, Pencil, Trash2, Plus, X } from "lucide-react";
+import { Check, Pencil, Trash2, Plus, X, Cloud, Loader2 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
-import { BottomSheet } from "../Mobile/BottomSheet";
+import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useCloudCategories, useAuth, usePremiumFeatures } from "../../../Premium";
+import { MobileModal } from "../Mobile/MobileModal";
+import { deleteConfirmDialog } from "../../DeleteConfirmModal";
 import "./ListSelector.css";
 
 // Inline edit input component
@@ -48,6 +51,11 @@ const ListRow = ({ list, index, isSelected, points, onSelect, onRename, onDelete
     <div className={`list-selector-row ${isSelected ? "selected" : ""}`}>
       <button className="list-selector-row-main" onClick={() => onSelect(index)} type="button">
         <div className="list-selector-row-check">{isSelected && <Check size={16} />}</div>
+        {list.syncEnabled && (
+          <div className="list-selector-row-cloud-icon">
+            <Cloud size={14} />
+          </div>
+        )}
         {isEditing ? (
           <EditInput value={list.name} onSave={handleSave} onCancel={() => setIsEditing(false)} />
         ) : (
@@ -102,7 +110,7 @@ const CreateListRow = ({ onCreate }) => {
           <input
             type="text"
             className="list-selector-create-input"
-            placeholder="List name..."
+            placeholder="List name"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             autoFocus
@@ -127,16 +135,72 @@ const CreateListRow = ({ onCreate }) => {
   return (
     <button className="list-selector-create" onClick={() => setIsCreating(true)} type="button">
       <Plus size={18} />
-      <span>Create New List</span>
+      <span>Create list</span>
     </button>
   );
 };
 
+// Game system badge component
+const GameSystemBadge = ({ system }) => {
+  const labels = {
+    "40k": "40K",
+    aos: "AoS",
+    necro: "Necro",
+    custom: "Custom",
+  };
+
+  return <span className={`cloud-category-badge cloud-category-badge--${system}`}>{labels[system] || "Custom"}</span>;
+};
+
+// Cloud category row component (now selectable like local lists)
+const CloudCategoryRow = ({ category, isSelected, onSelect }) => (
+  <div className={`list-selector-row list-selector-row--cloud ${isSelected ? "selected" : ""}`}>
+    <button className="list-selector-row-main" onClick={() => onSelect(category)} type="button">
+      <div className="list-selector-row-check">{isSelected && <Check size={16} />}</div>
+      <div className="list-selector-row-cloud-icon">
+        <Cloud size={14} />
+      </div>
+      <div className="list-selector-row-cloud-info">
+        <span className="list-selector-row-name">{category.name}</span>
+        <div className="list-selector-row-cloud-meta">
+          <GameSystemBadge system={category.gameSystem} />
+          <span className="list-selector-row-cloud-count">
+            {category.cardCount} card{category.cardCount !== 1 ? "s" : ""}
+          </span>
+        </div>
+      </div>
+    </button>
+  </div>
+);
+
 export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
-  const { lists, selectedList, setSelectedList, createList, renameList, deleteList, getListPoints } = useMobileList();
+  const {
+    lists,
+    selectedList,
+    setSelectedList,
+    createList,
+    renameList,
+    deleteList,
+    getListPoints,
+    selectedCloudCategoryId,
+    selectCloudCategory,
+  } = useMobileList();
+  const { user } = useAuth();
+  const { selectedFaction } = useDataSourceStorage();
+  const { categories: cloudCategories, isLoading: categoriesLoading } = useCloudCategories();
+  const { hasSync } = usePremiumFeatures();
+
+  // A new list is built for the faction the user is browsing, so it can offer
+  // that faction's detachments straight away.
+  const handleCreate = (name) => createList(name, { factionId: selectedFaction?.id });
+
+  // Filter out cloud categories that already exist as local lists (by UUID)
+  const localListUuids = new Set(lists.map((l) => l.uuid));
+  const displayedCloudCategories = cloudCategories.filter((c) => !localListUuids.has(c.uuid));
 
   const handleClose = () => setIsVisible(false);
 
+  // Select a local list
   const handleSelect = (index) => {
     setSelectedList(index);
     if (onListSelected) {
@@ -145,22 +209,41 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
     handleClose();
   };
 
+  // Select a cloud category (pass UUID for realtime updates)
+  const handleCloudCategorySelect = (category) => {
+    selectCloudCategory(category.uuid);
+    handleClose();
+  };
+
   const handleDelete = (index) => {
-    if (window.confirm(`Delete "${lists[index].name}"? This cannot be undone.`)) {
-      deleteList(index);
-    }
+    deleteConfirmDialog({
+      title: `Delete "${lists[index].name}"?`,
+      content: "This list will be permanently deleted.",
+      onConfirm: () => deleteList(index),
+    });
+  };
+
+  // Check if a cloud category is currently selected
+  const isCloudCategorySelected = (category) => {
+    return selectedCloudCategoryId === category.uuid;
+  };
+
+  // Check if a local list is selected (only when no cloud category is selected)
+  const isLocalListSelected = (index) => {
+    return !selectedCloudCategoryId && index === selectedList;
   };
 
   return (
-    <BottomSheet isOpen={isVisible} onClose={handleClose} title="Your Lists" maxHeight="60vh">
+    <MobileModal isOpen={isVisible} onClose={handleClose} title="Your Lists" zIndex={1002}>
       <div className="list-selector-content">
+        {/* Local Lists Section */}
         <div className="list-selector-lists">
           {lists.map((list, index) => (
             <ListRow
               key={index}
               list={list}
               index={index}
-              isSelected={index === selectedList}
+              isSelected={isLocalListSelected(index)}
               points={getListPoints(index)}
               onSelect={handleSelect}
               onRename={renameList}
@@ -169,8 +252,52 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
             />
           ))}
         </div>
-        <CreateListRow onCreate={createList} />
+        <CreateListRow onCreate={handleCreate} />
+
+        {/* Cloud Categories Section - Premium only */}
+        {hasSync && user && (
+          <div className="cloud-categories-section">
+            <div className="cloud-categories-divider">
+              <span>Cloud Categories</span>
+            </div>
+
+            {categoriesLoading ? (
+              <div className="cloud-categories-loading">
+                <Loader2 size={18} className="spinning" />
+                <span>Loading categories...</span>
+              </div>
+            ) : displayedCloudCategories.length === 0 ? (
+              <div className="cloud-categories-empty">
+                <p>No cloud categories yet</p>
+                <p className="cloud-categories-hint">Sync categories from the desktop app</p>
+              </div>
+            ) : (
+              <div className="list-selector-lists">
+                {displayedCloudCategories.map((category) => (
+                  <CloudCategoryRow
+                    key={category.uuid}
+                    category={category}
+                    isSelected={isCloudCategorySelected(category)}
+                    onSelect={handleCloudCategorySelect}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Sign in prompt for guests - Premium only */}
+        {hasSync && !user && (
+          <div className="cloud-categories-section">
+            <div className="cloud-categories-divider">
+              <span>Cloud Categories</span>
+            </div>
+            <div className="cloud-categories-empty">
+              <p>Sign in to access your cloud categories</p>
+            </div>
+          </div>
+        )}
       </div>
-    </BottomSheet>
+    </MobileModal>
   );
 };

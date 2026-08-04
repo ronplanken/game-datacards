@@ -1,0 +1,112 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  issue_comment:
+    types:
+      - created
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.event.issue.number }}"
+  cancel-in-progress: true
+
+jobs:
+  claude-review:
+    name: Claude Code Review
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'pull_request') ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude'))
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.claude_code_oauth_token }}
+          claude_args: "--allowedTools 'Bash(gh:*),Bash(git:*),Read,Glob,Grep'"
+          prompt: |
+            Act as a senior full-stack developer helping a junior developer.
+
+            Review PR #${{ github.event.pull_request.number }}.
+
+            ## IMPORTANT: Check for previous reviews first
+
+            Before reviewing, check if this is a follow-up review:
+
+            1. Run this command to check for previous bot reviews:
+               ```
+               gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+                 --jq '[.[] | select(.user.type == "Bot" or .user.login == "github-actions[bot]")] | length'
+               ```
+
+            2. If there are previous reviews (count > 0), this is a FOLLOW-UP review:
+               - Get the last review timestamp:
+                 ```
+                 gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+                   --jq '[.[] | select(.user.type == "Bot" or .user.login == "github-actions[bot]")] | last | .submitted_at'
+                 ```
+               - Only review commits AFTER that timestamp using:
+                 ```
+                 git log --after="<timestamp>" --oneline origin/${{ github.event.pull_request.base.ref }}..HEAD
+                 ```
+               - Focus ONLY on the new changes, not the entire PR
+               - In your summary, mention this is a follow-up review
+
+            3. If there are NO previous reviews (count == 0), this is an INITIAL review:
+               - Review the full PR diff
+
+            ## Review steps:
+
+            1. Use `gh pr diff ${{ github.event.pull_request.number }}` to see the changes.
+               For follow-up reviews, you may want to limit the diff to recent commits.
+
+            2. Use `gh pr view ${{ github.event.pull_request.number }} --json files` to get the list of changed files.
+
+            3. For inline comments on specific lines, use this command for each comment:
+               ```
+               gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/comments \
+                 -f body="Your comment here" \
+                 -f path="path/to/file.js" \
+                 -f commit_id="$(gh pr view ${{ github.event.pull_request.number }} --json headRefOid -q .headRefOid)" \
+                 -F line=<line_number> \
+                 -f side="RIGHT"
+               ```
+               Note: line is the line number in the new version of the file (shown with + in the diff).
+
+               When suggesting a code change, use the GitHub suggestion syntax in your comment body:
+               ```suggestion
+               your suggested code here
+               ```
+               This allows the author to apply the change with one click.
+
+            4. After adding inline comments, submit a summary review using:
+               ```
+               gh pr review ${{ github.event.pull_request.number }} --comment --body "Your summary here"
+               ```
+               The summary should include:
+               - For initial reviews: Brief overview of all changes and key findings
+               - For follow-up reviews: Focus on the new commits only, mention what was addressed from previous feedback
+
+            ## Review focus areas:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - React and JavaScript/TypeScript patterns
+            - Any security concerns
+            - Suggestions for improvement
+
+            Be constructive and specific in your feedback. Focus on the most important issues first.
+            Be to the point and short in your explanations. Never use emojis.
+            If the code looks good with no significant issues, say so briefly in the summary.

@@ -1,0 +1,35 @@
+## How Sync Works
+
+Cloud sync keeps your categories, datasources, and templates in sync across all your devices. Changes you make on one device automatically appear on the others.
+
+### What gets synced
+
+| Data | Synced? | Notes |
+|------|---------|-------|
+| Categories | Yes | Cards within categories are included |
+| Custom datasources | Yes | Schema and card data |
+| Designer templates | Yes | Full template with all elements |
+| App settings | No | Settings are per-device |
+| Print settings | No | Per-device |
+
+### How it works
+
+1. **Enable sync** on a category, datasource, or template using the <Icon name="RefreshCw" /> sync toggle.
+2. The item is uploaded to your cloud account.
+3. Changes are automatically pushed to the cloud after a short delay (about 2 seconds).
+4. Other devices receive updates in real-time via a live connection.
+
+Each device gets a unique identifier so the system can tell which changes are yours. Real-time updates from other devices appear automatically — you do not need to refresh the page.
+
+### Sync status indicators
+
+The sync icon in the header shows the overall sync state:
+
+| Status | Meaning |
+|--------|---------|
+| <IconLabel icon="CheckCircle" label="Synced" color="#52c41a" /> | Everything is up to date |
+| <IconLabel icon="Clock" label="Pending" color="#faad14" /> | Local changes are waiting to be uploaded |
+| <IconLabel icon="Loader2" label="Syncing" color="#1677ff" /> | An upload or download is in progress |
+| <IconLabel icon="AlertCircle" label="Error" color="#ff4d4f" /> | Something went wrong — check the sync details |
+| <IconLabel icon="GitMerge" label="Conflict" color="#ff4d4f" /> | The same item was edited on two devices — resolution needed |
+| <IconLabel icon="WifiOff" label="Offline" color="#8c8c8c" /> | No internet connection — changes will sync when you reconnect |

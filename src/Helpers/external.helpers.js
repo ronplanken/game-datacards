@@ -1,12 +1,16 @@
 import clone from "just-clone";
 import { v4 as uuidv4 } from "uuid";
+import { localize } from "./localization.helpers";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
 export function capitalizeSentence(sentence) {
-  let words = sentence.toLowerCase().split(" ");
+  if (!sentence || typeof sentence !== "string") return "";
+  const trimmed = sentence.trim();
+  if (!trimmed) return "";
+  let words = trimmed.toLowerCase().split(" ");
   for (let i = 0; i < words.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
   }
@@ -37,56 +41,59 @@ const readCsv = async (file) => {
     return;
   }
 
-  return fetch(file)
-    .then((response) => response.text())
-    .then((text) => JSON.parse(text));
+  const response = await fetch(file);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${file}: ${response.status} ${response.statusText}`);
+  }
+  const text = await response.text();
+  return JSON.parse(text);
 };
 
 export const get40KData = async () => {
   const lastUpdated = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Last_update.json?${new Date().getTime()}`,
   );
   const dataDatasheetAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_abilities.json?${new Date().getTime()}`,
   );
   const dataStratagems = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Stratagems.json?${new Date().getTime()}`,
   );
   const dataAbilities = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Abilities.json?${new Date().getTime()}`,
   );
   const dataDatasheetWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_wargear.json?${new Date().getTime()}`,
   );
   const dataWargearList = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Wargear_list.json?${new Date().getTime()}`,
   );
   const dataWargear = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Wargear.json?${new Date().getTime()}`,
   );
   const dataModels = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_models.json?${new Date().getTime()}`,
   );
   const dataKeywords = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_keywords.json?${new Date().getTime()}`,
   );
   const dataDamage = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets_damage.json?${new Date().getTime()}`,
   );
   const dataFactions = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Factions.json?${new Date().getTime()}`,
   );
   const sheets = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Datasheets.json?${new Date().getTime()}`,
   );
   const dataSecondaries = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Secondaries.json?${new Date().getTime()}`,
   );
   const dataPsychic = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/PsychicPowers.json?${new Date().getTime()}`,
   );
   const dataTraits = await readCsv(
-    `${process.env.REACT_APP_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`
+    `${import.meta.env.VITE_DATASOURCE_9TH_URL}/json/Warlord_traits.json?${new Date().getTime()}`,
   );
 
   const mappedPsychicPowers = dataPsychic.map((power) => {
@@ -147,7 +154,7 @@ export const get40KData = async () => {
           .map((model) => {
             return { ...model, active: true };
           })
-          .map((item) => [item["keyword"], item])
+          .map((item) => [item["keyword"], item]),
       ).values(),
     ];
     row["datasheet"] = dataModels
@@ -177,7 +184,7 @@ export const get40KData = async () => {
       ...new Map(
         dataDatasheetWargear
           .filter((wargear) => wargear.datasheet_id === row.id && wargear.is_index_wargear === "false")
-          .map((item) => [item["wargear_id"], item])
+          .map((item) => [item["wargear_id"], item]),
       ).values(),
     ];
 
@@ -187,7 +194,7 @@ export const get40KData = async () => {
       if (row["wargear"][index]) {
         row["wargear"][index]["active"] = index === 0 ? true : false;
         row["wargear"][index]["profiles"] = clone(
-          dataWargearList.filter((wargearList) => wargearList.wargear_id === wargear.wargear_id)
+          dataWargearList.filter((wargearList) => wargearList.wargear_id === wargear.wargear_id),
         );
       }
     });
@@ -251,7 +258,7 @@ export const get40KData = async () => {
 
   return {
     data: mainFactions,
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: lastUpdated[0].last_update,
     lastCheckedForUpdate: new Date().toISOString(),
   };
@@ -259,7 +266,7 @@ export const get40KData = async () => {
 
 export const getBasicData = () => {
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
@@ -434,12 +441,12 @@ export const get40k10eData = async () => {
   ];
 
   const fetchData = async (faction) => {
-    const url = `${process.env.REACT_APP_DATASOURCE_10TH_URL}/${faction}.json?${new Date().getTime()}`;
+    const url = `${import.meta.env.VITE_DATASOURCE_10TH_URL}/${faction}.json?${new Date().getTime()}`;
     const data = await readCsv(url);
     return data;
   };
 
-  const core = await readCsv(`${process.env.REACT_APP_DATASOURCE_10TH_URL}/core.json?${new Date().getTime()}`);
+  const core = await readCsv(`${import.meta.env.VITE_DATASOURCE_10TH_URL}/core.json?${new Date().getTime()}`);
 
   const fetchAllData = async () => {
     const sortedFactions = factions.sort();
@@ -451,7 +458,7 @@ export const get40k10eData = async () => {
   const allFactionsData = await fetchAllData();
 
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: allFactionsData[0].updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
@@ -475,49 +482,58 @@ export const get40k10eData = async () => {
   };
 };
 
-export const get40k10eCombatPatrolData = async () => {
+// Resolve the language-keyed `name` of a rule (and its nested rules) to a plain
+// string so the existing rule-card pipeline (search/sort/id-synthesis in
+// useDataSourceItems) keeps working. Body text stays multilingual and is
+// localised at render time by RuleCard11e.
+const resolve11eRuleNames = (rules, language) => {
+  if (!rules) return rules;
+  const resolveArmy = (rule) => ({ ...rule, name: localize(rule.name, language) });
+  return {
+    ...rules,
+    army: rules.army?.map(resolveArmy),
+    detachment: rules.detachment?.map((det) => ({
+      ...det,
+      rules: det.rules?.map(resolveArmy),
+    })),
+  };
+};
+
+export const get40k11eData = async (language = "en") => {
   const factions = [
-    "amonhotekhs_guard",
-    "aurellios_banishers",
-    "butchers_of_hyporia",
-    "claw_of_ascension",
-    "dark_zealots",
-    "gordrangs_gitstompas",
-    "guardians_of_the_throne",
-    "hand_of_the_magus",
-    "inquisitors_hand",
-    "insidious_infiltrators",
-    "insidious_invaders",
-    "karagars_rampagers",
-    "karsks_gunners",
-    "maniple_verask-alpha",
-    "mordekais_judgement",
-    "morgrims_butchas",
-    "protectors_of_aunshar",
-    "purge_corps_deltic-9",
-    "sanctuary_guardians",
-    "siguards_crusaders",
-    "strike_force_marcellos",
-    "strike_force_octavius",
-    "strike_team_solarien",
-    "sudden_dawn_cadre",
-    "the_blades_of_torment",
-    "the_coven_temporus",
-    "the_fatebreakers",
-    "the_penitent_host",
-    "the_shambling_horde",
-    "the_vardenghast_swarm",
-    "the_vengeful_brethren",
-    "thoryks_void_hunters",
-    "tristraens_gilded_blades",
-    "vantarrions_voidsmen",
-    "vigil_force_alphion",
-    "warspekes_prospect",
-    "zarkans_daemonkin",
+    "adeptasororitas",
+    "adeptuscustodes",
+    "adeptusmechanicus",
+    "aeldari",
+    "agents",
+    "astramilitarum",
+    "blacktemplar",
+    "bloodangels",
+    "chaos_spacemarines",
+    "chaosdaemons",
+    "chaosknights",
+    "darkangels",
+    "deathguard",
+    "deathwatch",
+    "drukhari",
+    "emperors_children",
+    "greyknights",
+    "gsc",
+    "imperialknights",
+    "necrons",
+    "orks",
+    "space_marines",
+    "spacewolves",
+    "tau",
+    "thousandsons",
+    "titan",
+    "tyranids",
+    "votann",
+    "worldeaters",
   ];
 
   const fetchData = async (faction) => {
-    const url = `${process.env.REACT_APP_DATASOURCE_10TH_COMBATPATROL_URL}/${faction}.json?${new Date().getTime()}`;
+    const url = `${import.meta.env.VITE_DATASOURCE_11TH_URL}/${faction}.json?${new Date().getTime()}`;
     const data = await readCsv(url);
     return data;
   };
@@ -529,11 +545,126 @@ export const get40k10eCombatPatrolData = async () => {
     return allData;
   };
 
+  // The 11e datasource ships a shared keyword glossary (weapon keywords + core
+  // abilities) as keywords.json. Fetch it alongside the factions so cards can
+  // show keyword/ability tooltips. Entries stay multilingual ({ key, category,
+  // name, description }) and are localised at render time. Older datasources may
+  // predate the file, so a failed fetch degrades to an empty glossary.
+  const fetchKeywordGlossary = async () => {
+    try {
+      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/keywords.json?${new Date().getTime()}`);
+      if (Array.isArray(data?.keywords)) return data.keywords;
+      return Array.isArray(data) ? data : [];
+    } catch {
+      return [];
+    }
+  };
+
+  // Core stratagems (Command Re-roll, Fire Overwatch, …) ship as core.json,
+  // mirroring the 10th edition core file. They become each faction's
+  // basicStratagems below; older datasources without the file degrade to none.
+  const fetchCoreStratagems = async () => {
+    try {
+      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/core.json?${new Date().getTime()}`);
+      return Array.isArray(data?.stratagems) ? data.stratagems : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [allFactionsData, keywordGlossary, coreStratagems] = await Promise.all([
+    fetchAllData(),
+    fetchKeywordGlossary(),
+    fetchCoreStratagems(),
+  ]);
+
+  const basicStratagems = coreStratagems.map((strat) => {
+    return { ...strat, cardType: "stratagem", source: "40k-11e", name: localize(strat.name, language) };
+  });
+
+  return {
+    version: import.meta.env.VITE_VERSION,
+    lastUpdated: allFactionsData[0].updated,
+    lastCheckedForUpdate: new Date().toISOString(),
+    // Shared 11e keyword glossary (weapon keywords + core abilities), multilingual.
+    keywordGlossary,
+    // The language this cache was built for. useDataSourceStorage refetches when
+    // the user's selected language differs from this value.
+    language,
+    noDatasheetOptions: false,
+    noDatasheetByRole: true,
+    noStratagemOptions: false,
+    noSubfactionOptions: true,
+    noSecondaryOptions: true,
+    noPsychicOptions: true,
+    noFactionOptions: false,
+    data: allFactionsData.map((val) => {
+      return {
+        ...val,
+        // 11th edition datasheets/stratagems/rules carry no `cardType`; inject it
+        // here (mirroring get40k10eData) and resolve only the top-level `name`
+        // string so tree/list/search/sort keep working. Body fields stay
+        // multilingual for the dedicated 11e renderset.
+        datasheets: val?.datasheets?.map((datasheet) => {
+          return {
+            ...datasheet,
+            cardType: "DataCard",
+            source: "40k-11e",
+            name: localize(datasheet.name, language),
+            // Canonical English name kept alongside the localised one so leader
+            // attachment (attachesTo targets are English datasheet names) matches
+            // regardless of the user's card language.
+            nameEn: localize(datasheet.name, "en"),
+          };
+        }),
+        stratagems: val?.stratagems?.map((strat) => {
+          return { ...strat, cardType: "stratagem", source: "40k-11e", name: localize(strat.name, language) };
+        }),
+        enhancements: val?.enhancements?.map((enhancement) => {
+          return {
+            ...enhancement,
+            cardType: "enhancement",
+            source: "40k-11e",
+            name: localize(enhancement.name, language),
+          };
+        }),
+        rules: resolve11eRuleNames(val?.rules, language),
+        // The same core set is exposed on every faction, matching how the 10e
+        // datasource shares its core.json stratagems.
+        basicStratagems,
+      };
+    }),
+  };
+};
+
+export const get40k10eCombatPatrolData = async () => {
+  const baseUrl = import.meta.env.VITE_DATASOURCE_10TH_COMBATPATROL_URL;
+  const cacheBuster = new Date().getTime();
+
+  // Fetch the index.json to get the list of combat patrols dynamically
+  const indexUrl = `${baseUrl}/index.json?${cacheBuster}`;
+  const index = await readCsv(indexUrl);
+
+  const fetchData = async (combatPatrol) => {
+    // The file path in index.json is like "combatpatrol/filename.json", extract just the filename
+    const filename = combatPatrol.file.split("/").pop();
+    const url = `${baseUrl}/${filename}?${cacheBuster}`;
+    const data = await readCsv(url);
+    return data;
+  };
+
+  const fetchAllData = async () => {
+    const sortedPatrols = [...index.combatPatrols].sort((a, b) => a.name.localeCompare(b.name));
+    const promises = sortedPatrols.map((patrol) => fetchData(patrol));
+    const allData = await Promise.all(promises);
+    return allData;
+  };
+
   const allFactionsData = await fetchAllData();
 
   return {
-    version: process.env.REACT_APP_VERSION,
-    lastUpdated: allFactionsData[0].updated,
+    version: import.meta.env.VITE_VERSION,
+    lastUpdated: index.updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: false,
     noDatasheetByRole: true,
@@ -554,8 +685,18 @@ export const get40k10eCombatPatrolData = async () => {
   };
 };
 
+export const getStarcraftData = async () => {
+  const url = `${import.meta.env.VITE_DATASOURCE_STARCRAFT_URL}/starcraft-tmg.json?${new Date().getTime()}`;
+  const data = await readCsv(url);
+  return {
+    ...data,
+    version: import.meta.env.VITE_VERSION,
+    lastCheckedForUpdate: new Date().toISOString(),
+  };
+};
+
 export const getMessages = async () => {
-  const url = `${process.env.REACT_APP_MESSAGES_URL}?${new Date().getTime()}`;
+  const url = `${import.meta.env.VITE_MESSAGES_URL}?${new Date().getTime()}`;
   const data = await readCsv(url);
   return data;
 };
@@ -592,7 +733,7 @@ export const getAoSData = async () => {
   ];
 
   const fetchData = async (faction) => {
-    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/${faction}.json?${new Date().getTime()}`;
+    const url = `${import.meta.env.VITE_DATASOURCE_AOS_URL}/${faction}.json?${new Date().getTime()}`;
     const data = await readCsv(url);
     return data;
   };
@@ -605,7 +746,7 @@ export const getAoSData = async () => {
   };
 
   const fetchGenericData = async () => {
-    const url = `${process.env.REACT_APP_DATASOURCE_AOS_URL}/generic.json?${new Date().getTime()}`;
+    const url = `${import.meta.env.VITE_DATASOURCE_AOS_URL}/generic.json?${new Date().getTime()}`;
     try {
       const data = await readCsv(url);
       return data;
@@ -618,7 +759,7 @@ export const getAoSData = async () => {
   const [allFactionsData, genericData] = await Promise.all([fetchAllData(), fetchGenericData()]);
 
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: allFactionsData[0]?.updated,
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: true,
@@ -646,7 +787,7 @@ export const getAoSData = async () => {
 
 export const getNecromundaBasicData = () => {
   return {
-    version: process.env.REACT_APP_VERSION,
+    version: import.meta.env.VITE_VERSION,
     lastUpdated: new Date().toISOString(),
     lastCheckedForUpdate: new Date().toISOString(),
     noDatasheetOptions: true,

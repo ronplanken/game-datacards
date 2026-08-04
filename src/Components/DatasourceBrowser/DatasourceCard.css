@@ -1,0 +1,162 @@
+/* DatasourceCard.css */
+
+.dsc-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dsc-card:hover {
+  border-color: rgba(22, 119, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.dsc-card.subscribed {
+  border-color: rgba(82, 196, 26, 0.3);
+  background: rgba(82, 196, 26, 0.05);
+}
+
+.dsc-card.compact {
+  padding: 12px;
+  gap: 6px;
+}
+
+/* Header */
+.dsc-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dsc-card-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1677ff;
+  border-radius: 8px;
+  color: #fff;
+}
+
+.dsc-card.compact .dsc-card-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.dsc-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dsc-game-system {
+  font-size: 10px;
+  font-weight: 600;
+  color: #4c4a7d;
+  background: rgba(148, 163, 184, 0.15);
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dsc-featured-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1677ff;
+  background: rgba(22, 119, 255, 0.1);
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Title */
+.dsc-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e1b4b;
+  margin: 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.dsc-card.compact .dsc-card-title {
+  font-size: 14px;
+  -webkit-line-clamp: 1;
+}
+
+/* Description */
+.dsc-card-description {
+  font-size: 13px;
+  color: #4c4a7d;
+  margin: 0;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Author */
+.dsc-card-author {
+  font-size: 12px;
+  color: #8b8aa8;
+  font-style: italic;
+}
+
+/* Footer */
+.dsc-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.dsc-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dsc-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #8b8aa8;
+}
+
+.dsc-stat svg {
+  color: #8b8aa8;
+}
+
+.dsc-subscribed-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #52c41a;
+  background: rgba(82, 196, 26, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+}

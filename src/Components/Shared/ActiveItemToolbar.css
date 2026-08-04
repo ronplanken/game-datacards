@@ -1,0 +1,60 @@
+/* Active item toolbar - shared between Designer and Datasource Editor */
+.active-item-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.active-item-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.active-item-toolbar-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--designer-border);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.active-item-toolbar-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--designer-radius-sm);
+  color: var(--designer-text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.active-item-toolbar-btn:hover {
+  background: var(--designer-bg-tertiary);
+  border-color: var(--designer-border);
+  color: var(--designer-text-primary);
+}
+
+.active-item-toolbar-btn:focus-visible {
+  outline: 2px solid var(--designer-accent);
+  outline-offset: -1px;
+}
+
+.active-item-toolbar-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+
+.active-item-toolbar-btn.danger:hover {
+  background: rgba(255, 77, 79, 0.08);
+  border-color: rgba(255, 77, 79, 0.2);
+  color: var(--designer-error);
+}

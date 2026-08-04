@@ -17,8 +17,8 @@ export const StepWelcome = () => (
     </div>
     <h2 className="wnw-welcome-title">Welcome to Version 3.1</h2>
     <p className="wnw-welcome-subtitle">
-      This update brings powerful new tools for managing your datacards, including custom datasources, quick add
-      functionality, and improved import options.
+      This update adds custom datasources, a quick add workflow for building collections faster, and several fixes for
+      printing and imports.
     </p>
   </div>
 );

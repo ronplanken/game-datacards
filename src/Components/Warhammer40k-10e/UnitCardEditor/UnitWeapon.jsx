@@ -3,6 +3,7 @@ import { Button, Card, Divider, Form, Input, Popconfirm, Space, Switch, Typograp
 import React, { useState } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
+import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
 export function UnitWeapon({ weapon, index, type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -161,14 +162,16 @@ export function UnitWeapon({ weapon, index, type }) {
                 </div>
                 <div className="keywords_header">Keywords</div>
                 <div className="keywords_container" style={{ paddingBottom: "4px", paddingTop: "4px" }}>
-                  {line.keywords.map((keyword, kIndex) => {
+                  {normalizeKeywords(line.keywords).map((keyword, kIndex) => {
                     return (
                       <div className="keyword_container" key={`keyword-${index}-${pIndex}-${kIndex}`}>
                         <Typography.Text
                           editable={{
                             onChange: (value) => {
                               const newWeapons = [...activeCard[type]];
-                              newWeapons[index].profiles[pIndex].keywords[kIndex] = value;
+                              const profile = newWeapons[index].profiles[pIndex];
+                              profile.keywords = normalizeKeywords(profile.keywords);
+                              profile.keywords[kIndex] = value;
                               updateActiveCard({
                                 ...activeCard,
                                 [type]: newWeapons,
@@ -184,7 +187,9 @@ export function UnitWeapon({ weapon, index, type }) {
                           onClick={(value) =>
                             updateActiveCard(() => {
                               const newWeapons = [...activeCard[type]];
-                              newWeapons[index].profiles[pIndex].keywords.splice(kIndex, 1);
+                              const profile = newWeapons[index].profiles[pIndex];
+                              profile.keywords = normalizeKeywords(profile.keywords);
+                              profile.keywords.splice(kIndex, 1);
                               return { ...activeCard, [type]: newWeapons };
                             })
                           }></Button>
@@ -198,9 +203,9 @@ export function UnitWeapon({ weapon, index, type }) {
                     onClick={() =>
                       updateActiveCard(() => {
                         const newWeapons = [...activeCard[type]];
-                        newWeapons[index].profiles[pIndex].keywords.push(
-                          `keyword ${newWeapons[index].profiles[pIndex].keywords.length + 1}`
-                        );
+                        const profile = newWeapons[index].profiles[pIndex];
+                        profile.keywords = normalizeKeywords(profile.keywords);
+                        profile.keywords.push(`keyword ${profile.keywords.length + 1}`);
                         return { ...activeCard, [type]: newWeapons };
                       })
                     }>
