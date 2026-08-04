@@ -280,6 +280,126 @@ describe("UnitConfigModal", () => {
   });
 });
 
+describe("UnitConfigModal 11e wargear", () => {
+  let modalRoot;
+
+  beforeEach(() => {
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(modalRoot);
+    vi.clearAllMocks();
+  });
+
+  // Shaped like the real data: a paid option next to free ones, and the group
+  // repeated once per model.
+  const terminators = {
+    ...baseCard,
+    source: "40k-11e",
+    points: [{ models: 5, cost: 170 }],
+    wargearOptions: [
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: "5" },
+          { name: { en: "Lightning claw" }, cost: "0" },
+        ],
+      },
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: "5" },
+          { name: { en: "Lightning claw" }, cost: "0" },
+        ],
+      },
+    ],
+  };
+
+  it("lists each paid option once and hides the free ones", () => {
+    render(<UnitConfigModal isOpen card={terminators} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.getByText("Wargear")).toBeInTheDocument();
+    expect(screen.getAllByText("Thunder hammer")).toHaveLength(1);
+    expect(screen.queryByText("Lightning claw")).not.toBeInTheDocument();
+    expect(screen.getByText("+5 pts each")).toBeInTheDocument();
+  });
+
+  it("does not show the section for a card with no paid wargear", () => {
+    render(<UnitConfigModal isOpen card={baseCard} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.queryByText("Wargear")).not.toBeInTheDocument();
+  });
+
+  it("saves the chosen quantity on the card", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={terminators} category={baseCategory} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByLabelText("Add one Thunder hammer"));
+    fireEvent.click(screen.getByLabelText("Add one Thunder hammer"));
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 2 }],
+      }),
+    );
+  });
+
+  it("starts from the card's saved selection", () => {
+    const card = { ...terminators, selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 3 }] };
+    render(<UnitConfigModal isOpen card={card} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.getByText("3")).toBeInTheDocument();
+  });
+
+  it("cannot go below zero, and dropping to zero clears the selection", () => {
+    const onSave = vi.fn();
+    const card = { ...terminators, selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 1 }] };
+    render(<UnitConfigModal isOpen card={card} category={baseCategory} onClose={vi.fn()} onSave={onSave} />);
+
+    fireEvent.click(screen.getByLabelText("Remove one Thunder hammer"));
+    expect(screen.getByLabelText("Remove one Thunder hammer")).toBeDisabled();
+
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ selectedWargear: [] }));
+  });
+
+  it("caps the quantity at the model count of the chosen size tier", () => {
+    // Single 5-model tier, so it auto-selects and the cap is 5.
+    render(<UnitConfigModal isOpen card={terminators} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    const add = screen.getByLabelText("Add one Thunder hammer");
+    for (let i = 0; i < 5; i += 1) fireEvent.click(add);
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(add).toBeDisabled();
+  });
+
+  // Wargear is priced per model, so switching down to a smaller tier has to pull
+  // an already-chosen quantity down with it, or the list total keeps charging
+  // for models the unit no longer has.
+  it("lowers an already-chosen quantity when a smaller size tier is picked", () => {
+    const onSave = vi.fn();
+    const twoTiers = {
+      ...terminators,
+      points: [
+        { models: 10, cost: 340 },
+        { models: 5, cost: 170 },
+      ],
+      selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 10 }],
+      unitSize: { models: 10, cost: 340 },
+    };
+    render(<UnitConfigModal isOpen card={twoTiers} category={baseCategory} onClose={vi.fn()} onSave={onSave} />);
+    expect(screen.getByText("10")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("5 models"));
+    expect(screen.getByText("5")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 5 }],
+      }),
+    );
+  });
+});
+
 describe("UnitConfigModal 11e attachments", () => {
   let modalRoot;
 

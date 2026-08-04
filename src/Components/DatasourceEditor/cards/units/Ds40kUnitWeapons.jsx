@@ -12,6 +12,7 @@ import {
   resolveKeywordEntry,
   resolveKeywordStyle,
 } from "../../../../Helpers/customSchema.helpers";
+import { normalizeKeywords } from "../../../../Helpers/weaponProfile.helpers";
 
 /**
  * Inline weapon keyword tag renderer that consults the datasource glossary
@@ -90,7 +91,7 @@ const Ds40kWeaponType = ({ weaponTypeDef, weapons, glossary }) => {
     weapons.forEach((weapon) => {
       weapon.profiles?.forEach((profile) => {
         if (profile.active === false) return;
-        profile.keywords?.forEach((kw) => allKeywords.push(kw));
+        normalizeKeywords(profile.keywords).forEach((kw) => allKeywords.push(kw));
       });
     });
     // `displayMode: "tooltip"` entries are rendered as hover tooltips on the
@@ -160,40 +161,44 @@ const Ds40kWeaponProfiles = ({ weapon, columns, glossary }) => {
     <>
       {weapon.profiles
         ?.filter((profile) => profile.active !== false)
-        ?.map((profile, index, profiles) => (
-          <div
-            className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
-            key={`weapon-profile-${index}`}
-            data-name={profile.name}>
-            <div className="line">
-              <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
-                <span>{profile.name}</span>
-                {profile.keywords?.length > 0 && (
-                  <span style={{ paddingLeft: "4px" }}>
-                    {Array.isArray(glossary) && glossary.length > 0 ? (
-                      <Ds40kWeaponKeywords keywords={profile.keywords} glossary={glossary} />
-                    ) : (
-                      <UnitWeaponKeywords keywords={profile.keywords} />
-                    )}
-                  </span>
-                )}
+        ?.map((profile, index, profiles) => {
+          // Saved cards can carry a string here (see normalizeKeywords).
+          const keywords = normalizeKeywords(profile.keywords);
+          return (
+            <div
+              className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
+              key={`weapon-profile-${index}`}
+              data-name={profile.name}>
+              <div className="line">
+                <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
+                  <span>{profile.name}</span>
+                  {keywords.length > 0 && (
+                    <span style={{ paddingLeft: "4px" }}>
+                      {Array.isArray(glossary) && glossary.length > 0 ? (
+                        <Ds40kWeaponKeywords keywords={keywords} glossary={glossary} />
+                      ) : (
+                        <UnitWeaponKeywords keywords={keywords} />
+                      )}
+                    </span>
+                  )}
+                </div>
+                {columns.map((col) => {
+                  const displayValue =
+                    col.type === "boolean"
+                      ? profile[col.key]
+                        ? col.onValue || "Yes"
+                        : col.offValue || "No"
+                      : profile[col.key] || "-";
+                  return (
+                    <div className="value center" key={col.key}>
+                      {displayValue}
+                    </div>
+                  );
+                })}
               </div>
-              {columns.map((col) => {
-                const displayValue =
-                  col.type === "boolean"
-                    ? profile[col.key]
-                      ? col.onValue || "Yes"
-                      : col.offValue || "No"
-                    : profile[col.key] || "-";
-                return (
-                  <div className="value center" key={col.key}>
-                    {displayValue}
-                  </div>
-                );
-              })}
             </div>
-          </div>
-        ))}
+          );
+        })}
     </>
   );
 };

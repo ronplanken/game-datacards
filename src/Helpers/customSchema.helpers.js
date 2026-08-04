@@ -8,6 +8,7 @@
 
 import { WARHAMMER_40K_10E_KEYWORD_GLOSSARY } from "./keywordGlossaryDefaults";
 import { WARHAMMER_40K_11E_KEYWORD_GLOSSARY } from "./keywordGlossary11eDefaults";
+import { isReservedWeaponProfileKey } from "./weaponProfile.helpers";
 
 // Valid base types for card type definitions
 export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
@@ -929,6 +930,53 @@ const validateEnhancementSchema = (schema, path) => {
  */
 const validateStratagemSchema = (schema, path) => {
   return validateFieldArray(schema.fields, `${path}.fields`);
+};
+
+/**
+ * Drops weapon columns whose `key` collides with a reserved weapon profile
+ * field (see `RESERVED_WEAPON_PROFILE_KEYS`).
+ *
+ * Such a column makes the card editors render a generic text input over a field
+ * the data model owns — the first keystroke replaces e.g. the keywords array
+ * with a string, and the card can no longer render. The schema editor blocks
+ * these keys, but imported and older schemas may still carry one, so they are
+ * stripped on the way in rather than rejected: keeping the datasource usable
+ * matters more than the extra column.
+ *
+ * Returns the schema unchanged (same reference) when there is nothing to strip.
+ *
+ * @param {object} schema - A datasource schema
+ * @returns {object} The schema, with colliding weapon columns removed
+ */
+export const stripReservedWeaponColumns = (schema) => {
+  if (!schema || typeof schema !== "object" || !Array.isArray(schema.cardTypes)) return schema;
+
+  let changed = false;
+  const cardTypes = schema.cardTypes.map((cardType) => {
+    const types = cardType?.schema?.weaponTypes?.types;
+    if (!Array.isArray(types)) return cardType;
+
+    let typeChanged = false;
+    const cleanedTypes = types.map((wt) => {
+      if (!Array.isArray(wt?.columns)) return wt;
+      const columns = wt.columns.filter((col) => !isReservedWeaponProfileKey(col?.key));
+      if (columns.length === wt.columns.length) return wt;
+      typeChanged = true;
+      return { ...wt, columns };
+    });
+    if (!typeChanged) return cardType;
+
+    changed = true;
+    return {
+      ...cardType,
+      schema: {
+        ...cardType.schema,
+        weaponTypes: { ...cardType.schema.weaponTypes, types: cleanedTypes },
+      },
+    };
+  });
+
+  return changed ? { ...schema, cardTypes } : schema;
 };
 
 /**

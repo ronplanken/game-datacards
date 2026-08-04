@@ -523,6 +523,86 @@
 }
 
 /* ===========================================
+   WARGEAR OPTIONS (11e, paid options only)
+   =========================================== */
+
+/* Same card as an enhancement row, but a stepper instead of a radio: several
+   models in a unit can each take the same paid option. */
+.ucm-wargear-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 10px;
+  transition: all var(--transition-base);
+  user-select: none;
+}
+
+.ucm-wargear-option.selected {
+  background: var(--accent-light);
+  border-color: rgba(22, 119, 255, 0.2);
+}
+
+.ucm-wargear-option.selected .ucm-enhancement-name,
+.ucm-wargear-option.selected .ucm-enhancement-cost {
+  color: var(--accent-primary);
+  font-weight: 600;
+}
+
+.ucm-wargear-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ucm-wargear-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.ucm-wargear-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.ucm-wargear-step:hover:not(:disabled) {
+  border-color: var(--accent-secondary);
+  color: var(--accent-primary);
+}
+
+.ucm-wargear-step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ucm-wargear-quantity {
+  min-width: 20px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===========================================
    SUBMIT BUTTON
    =========================================== */
 

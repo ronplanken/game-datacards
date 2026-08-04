@@ -74,6 +74,15 @@
           white-space: nowrap;
         }
       }
+
+      // 11th edition prices a tier for one detachment or faction; shown under
+      // the model count so it never reads as another tier keyword.
+      .points_restriction {
+        display: block;
+        font-size: 0.8em;
+        font-weight: 400;
+        font-style: italic;
+      }
     }
   }
 }
@@ -2536,6 +2545,19 @@
                   color: black;
                   font-weight: 400;
                   padding-left: 4px;
+                }
+              }
+              // 11th edition structured wargear: the instruction keeps the
+              // square bullet of a plain item, the swaps it allows are listed
+              // underneath it.
+              .wargear-group {
+                .wargear-options {
+                  padding-left: 16px;
+                  .wargear-option {
+                    &:before {
+                      content: "–";
+                    }
+                  }
                 }
               }
             }

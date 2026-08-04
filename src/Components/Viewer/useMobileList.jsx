@@ -176,6 +176,7 @@ export const MobileListProvider = (props) => {
       if (card.uuid !== uuid) return card;
       const next = { ...card, unitSize, selectedEnhancement: enhancement, isWarlord };
       if ("attachedTo" in options) next.attachedTo = options.attachedTo || undefined;
+      if ("selectedWargear" in options) next.selectedWargear = options.selectedWargear || [];
       return next;
     });
     updateCategory({ ...category, cards: updatedCards }, category.uuid);

@@ -4,6 +4,7 @@ import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize, setLocalizedField } from "../../../Helpers/localization.helpers";
+import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
 // 11th edition weapons have profiles only (no weapon-level abilities) and no
 // per-profile `active` flag. The profile name is language-keyed; range/attacks/
@@ -162,7 +163,7 @@ export function UnitWeapon({ weapon, index, type }) {
               </div>
               <div className="keywords_header">Keywords</div>
               <div className="keywords_container" style={{ paddingBottom: "4px", paddingTop: "4px" }}>
-                {(line.keywords || []).map((keyword, kIndex) => {
+                {normalizeKeywords(line.keywords).map((keyword, kIndex) => {
                   return (
                     <div className="keyword_container" key={`keyword-${index}-${pIndex}-${kIndex}`}>
                       <Typography.Text
@@ -170,7 +171,7 @@ export function UnitWeapon({ weapon, index, type }) {
                           onChange: (value) => {
                             const newWeapons = [...activeCard[type]];
                             const profiles = [...newWeapons[index].profiles];
-                            const keywords = [...(profiles[pIndex].keywords || [])];
+                            const keywords = [...normalizeKeywords(profiles[pIndex].keywords)];
                             keywords[kIndex] = value;
                             profiles[pIndex] = { ...profiles[pIndex], keywords };
                             newWeapons[index] = { ...newWeapons[index], profiles };
@@ -187,7 +188,7 @@ export function UnitWeapon({ weapon, index, type }) {
                           updateActiveCard(() => {
                             const newWeapons = [...activeCard[type]];
                             const profiles = [...newWeapons[index].profiles];
-                            const keywords = [...(profiles[pIndex].keywords || [])];
+                            const keywords = [...normalizeKeywords(profiles[pIndex].keywords)];
                             keywords.splice(kIndex, 1);
                             profiles[pIndex] = { ...profiles[pIndex], keywords };
                             newWeapons[index] = { ...newWeapons[index], profiles };
@@ -205,7 +206,7 @@ export function UnitWeapon({ weapon, index, type }) {
                     updateActiveCard(() => {
                       const newWeapons = [...activeCard[type]];
                       const profiles = [...newWeapons[index].profiles];
-                      const keywords = [...(profiles[pIndex].keywords || [])];
+                      const keywords = [...normalizeKeywords(profiles[pIndex].keywords)];
                       keywords.push(`keyword ${keywords.length + 1}`);
                       profiles[pIndex] = { ...profiles[pIndex], keywords };
                       newWeapons[index] = { ...newWeapons[index], profiles };

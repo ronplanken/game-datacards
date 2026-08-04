@@ -51,6 +51,7 @@ detachments, rules).
 - [Rich-text markup](#rich-text-markup)
 - [Keyword glossary (tooltips)](#keyword-glossary-tooltips)
 - [Points, unit sizes and roster surcharge](#points-unit-sizes-and-roster-surcharge)
+- [Wargear options](#wargear-options)
 - [Rule cards](#rule-cards)
 - [Faction colours and symbols](#faction-colours-and-symbols)
 - [Scope and limitations](#scope-and-limitations)
@@ -192,8 +193,9 @@ add `nameLoc`/`descriptionLoc` language maps:
 
 ## Points, unit sizes and roster surcharge
 
-Each datasheet's `points` is an array of size tiers — `{ cost, models, keyword, detachment }`
-— plus (11e-only) an optional `additionalCost: { cost, afterSelections }`.
+Each datasheet's `points` is an array of size tiers —
+`{ cost, models, keyword, faction, detachment }` — plus (11e-only) an optional
+`additionalCost: { cost, afterSelections }`.
 
 - **Unit size (base cost):** in a list, a card's base cost is the chosen tier
   (`card.unitSize`, picked via the desktop unit config modal or the mobile
@@ -212,10 +214,41 @@ Each datasheet's `points` is an array of size tiers — `{ cost, models, keyword
   datasheet identity (`id` + `source`). It backs the tree category badge, the list
   overview total (which shows the surcharge on its own line) and the text export,
   so all three agree. 10e lists are unaffected (they carry no `additionalCost`).
+- **Restricted tiers (`faction` / `detachment`):** a tier can be priced for one
+  faction keyword or one detachment, never both — 5 Assault Intercessors are 75,
+  but 80 in a Blood Angels army. Both are language-keyed, and `null` means
+  unrestricted. `getPointsTierRestriction` / `getPointsTierRestrictionLabel`
+  resolve them; how a list narrows its tiers is covered in
+  [40k-11e list building](40k-11e-list-building.md).
 - **Where it is shown:** the card's points popover / all-points row
-  (`UnitCard/UnitPoints.jsx`), the size pickers (desktop config modal, mobile
-  add/edit sheets) as a note under the tier options, and the card editor
-  (`UnitCardEditor/UnitPoints.jsx`), which can also edit the surcharge.
+  (`UnitCard/UnitPoints.jsx`) — which names a tier's restriction next to it, as
+  a sub-label in the popover table and in parentheses on the chips — the size
+  pickers (desktop config modal, mobile add/edit sheets) as a note under the
+  tier options, and the card editor (`UnitCardEditor/UnitPoints.jsx`), which can
+  also edit the surcharge and each tier's faction or detachment.
+
+## Wargear options
+
+11e datasheets carry their wargear twice:
+
+- `wargear` — an array of language-keyed sentences, which in the 11e data dump
+  is usually just `"None"`.
+- `wargearOptions` — the structured groups the datasheet really offers:
+  `{ instruction, options: [{ name, cost }] }`, with `instruction` and `name`
+  language-keyed and `cost` a string (mostly `"0"`).
+
+The data repeats an identical group once per model in the unit, so
+`getWargearOptionGroups(card)` (`listPoints.helpers.js`) collapses groups that
+are identical in instruction and in options-at-prices. `getPaidWargearOptions`
+builds on it for the list builder, keeping only the options that cost points.
+
+`UnitCard/UnitWargear.jsx` renders both, sentences first, and appends
+`(+N pts)` to an option that costs points. A lone `"None"` is dropped, so a
+datasheet with real options is never described as having none; when neither
+half has anything to say the section disappears. `showWargear === false` hides
+it outright. `UnitCardEditor/UnitWargearOptions.jsx` edits both halves in the
+one "Wargear Options" panel, and keeps costs as strings — the shape the
+datasource uses and the points helpers coerce.
 
 ## Rule cards
 

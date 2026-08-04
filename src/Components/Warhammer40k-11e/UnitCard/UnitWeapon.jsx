@@ -2,6 +2,7 @@ import { Grid } from "antd";
 import { UnitWeaponKeywords } from "./UnitWeaponKeyword";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize } from "../../../Helpers/localization.helpers";
+import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
 const { useBreakpoint } = Grid;
 
@@ -15,6 +16,8 @@ export const UnitWeapon = ({ weapon }) => {
     <>
       {weapon.profiles?.map((line, index, profiles) => {
         const name = localize(line.name, settings.language);
+        // Saved cards can carry a string here (see normalizeKeywords).
+        const keywords = normalizeKeywords(line.keywords);
         return (
           <div
             className={`weapon${profiles.length > 1 ? " multi-line" : ""}`}
@@ -23,9 +26,9 @@ export const UnitWeapon = ({ weapon }) => {
             <div className="line">
               <div className="value" style={{ display: "flex", flexWrap: "wrap" }}>
                 <span>{name}</span>
-                {line.keywords?.length > 0 && !screens.xs && (
+                {keywords.length > 0 && !screens.xs && (
                   <span style={{ paddingLeft: "4px" }}>
-                    <UnitWeaponKeywords keywords={line.keywords} />
+                    <UnitWeaponKeywords keywords={keywords} />
                   </span>
                 )}
               </div>
@@ -35,7 +38,7 @@ export const UnitWeapon = ({ weapon }) => {
               <div className="value center">{line.strength}</div>
               <div className="value center">{line.ap}</div>
               <div className="value center">{line.damage}</div>
-              {line.keywords?.length > 0 && screens.xs && <UnitWeaponKeywords keywords={line.keywords} />}
+              {keywords.length > 0 && screens.xs && <UnitWeaponKeywords keywords={keywords} />}
             </div>
           </div>
         );

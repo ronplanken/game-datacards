@@ -128,6 +128,38 @@ export const UnitCardFullEditor = () => {
         }>
         {activeCard.showAbilities?.other !== false && <UnitExtendedAbilities type={"other"} />}
       </Panel>
+      {/* Wargear abilities render right after the other-abilities block on the
+          card (see UnitCard/UnitExtra), so the panels follow the same order.
+          Key "6b" because "7" already belongs to the primarch panel. */}
+      <Panel
+        header="Wargear abilities"
+        style={{ width: "100%" }}
+        key="6b"
+        collapsible={activeCard.showAbilities?.wargear === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.wargear !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("wargear", "6b", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.wargear !== false && <UnitExtendedAbilities type={"wargear"} />}
+      </Panel>
+      {/* Special abilities render straight after the wargear ones on the card. */}
+      <Panel
+        header="Special abilities"
+        style={{ width: "100%" }}
+        key="6c"
+        collapsible={activeCard.showAbilities?.special === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.special !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("special", "6c", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.special !== false && <UnitExtendedAbilities type={"special"} />}
+      </Panel>
       <Panel
         header="Primarch ability"
         style={{ width: "100%" }}

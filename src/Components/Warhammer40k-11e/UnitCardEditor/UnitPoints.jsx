@@ -13,6 +13,10 @@ import { localize, setLocalizedField } from "../../../Helpers/localization.helpe
 // is shown in the active card language and edits merge into just that language
 // (like the other 11e field editors). `additionalCost` is the per-datasheet
 // roster surcharge ({ cost, afterSelections }).
+//
+// A tier can also be priced for a single detachment or a single faction — never
+// both, which is why setting one disables the other. Clearing either stores
+// `null`, the shape the source data uses for an unrestricted tier.
 export function UnitPoints() {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
@@ -26,6 +30,19 @@ export function UnitPoints() {
       newPoints[index] = { ...newPoints[index], [field]: value };
       return { ...activeCard, points: newPoints };
     });
+  };
+
+  // Restrictions are language-keyed in the source data, so an edit merges into
+  // the active language and a first value starts a language-keyed object rather
+  // than a bare string. An emptied input drops back to null (unrestricted).
+  const updateRestriction = (index, field, value) => {
+    if (String(value).trim() === "") {
+      updatePoint(index, field, null);
+      return;
+    }
+    const current = points[index]?.[field];
+    const isLocalized = current != null && typeof current === "object" && !Array.isArray(current);
+    updatePoint(index, field, isLocalized ? setLocalizedField(current, language, value) : { [language]: value });
   };
 
   const updateAdditionalCost = (field, value) => {
@@ -122,7 +139,7 @@ export function UnitPoints() {
                                   onChange={(e) => updatePoint(index, "cost", e.target.value)}
                                 />
                               </Form.Item>
-                              <Form.Item label={"Keyword"} style={{ marginBottom: 0 }}>
+                              <Form.Item label={"Keyword"}>
                                 <Input
                                   type={"text"}
                                   value={localize(point.keyword, language)}
@@ -133,6 +150,24 @@ export function UnitPoints() {
                                       setLocalizedField(point.keyword, language, e.target.value),
                                     )
                                   }
+                                />
+                              </Form.Item>
+                              {/* Only one of the two: a tier is priced for a
+                                  detachment or for a faction, never both. */}
+                              <Form.Item label={"Detachment"}>
+                                <Input
+                                  type={"text"}
+                                  value={localize(point.detachment, language)}
+                                  disabled={Boolean(localize(point.faction, language))}
+                                  onChange={(e) => updateRestriction(index, "detachment", e.target.value)}
+                                />
+                              </Form.Item>
+                              <Form.Item label={"Faction"} style={{ marginBottom: 0 }}>
+                                <Input
+                                  type={"text"}
+                                  value={localize(point.faction, language)}
+                                  disabled={Boolean(localize(point.detachment, language))}
+                                  onChange={(e) => updateRestriction(index, "faction", e.target.value)}
                                 />
                               </Form.Item>
                             </Form>

@@ -1,14 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { ChevronRight, Crown } from "lucide-react";
+import { ChevronRight, Crown, Minus, Plus } from "lucide-react";
 import { message } from "../../Toast/message";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import {
   filterPointsTiersForArmy,
+  getPaidWargearOptions,
   getPointsTierRestrictionLabel,
   getSelectablePointsTiers,
+  clampWargearQuantities,
+  getWargearQuantity,
+  getWargearQuantityMax,
   isSamePointsTier,
+  setWargearQuantity,
 } from "../../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
@@ -53,6 +58,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const [detachmentPickerOpen, setDetachmentPickerOpen] = useState(false);
   const [selectedUnitSize, setSelectedUnitSize] = useState();
   const [selectedAttachment, setSelectedAttachment] = useState();
+  const [selectedWargear, setSelectedWargear] = useState([]);
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   // 11e armies hold several detachments; enhancements from any of them are available.
@@ -70,6 +76,9 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
     [armyDetachments, lists, selectedList, listFaction?.name],
   );
   const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
+  // Only the wargear this datasheet actually charges for; free swaps are noise
+  // here. Empty for every non-11e card, which hides the section entirely.
+  const paidWargear = useMemo(() => getPaidWargearOptions(card), [card]);
 
   // Check warlord — exclude current card's uuid
   const warlordAlreadyAdded = lists[selectedList]?.cards?.find((c) => c.isWarlord && c.uuid !== card?.uuid);
@@ -97,8 +106,16 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
       setSelectedEnhancement(card.selectedEnhancement || undefined);
       setIsWarlord(card.isWarlord || false);
       setSelectedAttachment(card.attachedTo || undefined);
+      setSelectedWargear(Array.isArray(card.selectedWargear) ? card.selectedWargear : []);
     }
   }, [isVisible, card]);
+
+  // Wargear is priced per model, so a smaller size tier lowers the ceiling on an
+  // already-picked quantity. Cap the selection whenever the tier changes,
+  // otherwise switching down would keep pricing the larger unit.
+  useEffect(() => {
+    setSelectedWargear((current) => clampWargearQuantities(current, selectedUnitSize));
+  }, [selectedUnitSize]);
 
   const handleClose = () => setIsVisible(false);
 
@@ -114,16 +131,16 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const handleSave = () => {
     // Single write: passing the attachment through updateDatacard avoids a second
     // whole-category update that would overwrite this save's other changes.
-    updateDatacard(
-      card.uuid,
-      selectedUnitSize,
-      selectedEnhancement,
-      isWarlord,
-      isAttachableLeader(card) ? { attachedTo: selectedAttachment } : {},
-    );
+    updateDatacard(card.uuid, selectedUnitSize, selectedEnhancement, isWarlord, {
+      ...(isAttachableLeader(card) ? { attachedTo: selectedAttachment } : {}),
+      ...(paidWargear.length > 0 ? { selectedWargear } : {}),
+    });
     handleClose();
     message.success(`${card.name} updated`);
   };
+
+  const changeWargearQuantity = (option, quantity) =>
+    setSelectedWargear((current) => setWargearQuantity(current, option, quantity));
 
   const selectEnhancement = (enhancement) => {
     if (selectedEnhancement?.name === enhancement?.name) {
@@ -239,6 +256,49 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
                       <span className="option-label">{enhancement.name}</span>
                       <span className="option-value">{enhancement.cost} pts</span>
                     </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Wargear that costs points (11e) */}
+          {paidWargear.length > 0 && (
+            <div className="list-add-section">
+              <h4 className="list-add-section-title">Wargear</h4>
+              <div className="list-add-options">
+                {paidWargear.map((option) => {
+                  const name = localize(option.name, settings.language);
+                  const quantity = getWargearQuantity(selectedWargear, option);
+                  const max = getWargearQuantityMax(selectedUnitSize);
+                  return (
+                    <div
+                      key={`${localize(option.name)}-${option.cost}`}
+                      className={`list-add-wargear ${quantity > 0 ? "selected" : ""}`}>
+                      <div className="list-add-wargear-text">
+                        <span className="option-label">{name}</span>
+                        <span className="option-value">+{option.cost} pts each</span>
+                      </div>
+                      <div className="list-add-wargear-stepper">
+                        <button
+                          className="list-add-wargear-step"
+                          type="button"
+                          aria-label={`Remove one ${name}`}
+                          disabled={quantity <= 0}
+                          onClick={() => changeWargearQuantity(option, quantity - 1)}>
+                          <Minus size={14} />
+                        </button>
+                        <span className="list-add-wargear-quantity">{quantity}</span>
+                        <button
+                          className="list-add-wargear-step"
+                          type="button"
+                          aria-label={`Add one ${name}`}
+                          disabled={quantity >= max}
+                          onClick={() => changeWargearQuantity(option, quantity + 1)}>
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>

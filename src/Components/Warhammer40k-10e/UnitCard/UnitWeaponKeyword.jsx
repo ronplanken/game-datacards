@@ -1,4 +1,5 @@
 import { KeywordTooltip } from "./KeywordTooltip";
+import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
 export const tooltipProps = {
   placement: "bottom",
@@ -6,7 +7,7 @@ export const tooltipProps = {
 };
 
 export const UnitWeaponKeywords = ({ keywords }) => {
-  const tooltips = keywords.map((keyword, index) => {
+  const tooltips = normalizeKeywords(keywords).map((keyword, index) => {
     return <KeywordTooltip keyword={keyword} key={`${keyword}-${index}`} />;
   });
 

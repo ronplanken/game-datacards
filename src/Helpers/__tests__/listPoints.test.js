@@ -1,13 +1,20 @@
 import { describe, it, expect } from "vitest";
 import {
+  clampWargearQuantities,
   computeCategoryPoints,
   filterPointsTiersForArmy,
   getCardBaseCost,
   getCardDisplayCost,
+  getCardWargearCost,
   getCategoryPointsTotal,
+  getPaidWargearOptions,
   getPointsTierRestrictionLabel,
   getSelectablePointsTiers,
+  getWargearOptionGroups,
+  getWargearQuantity,
+  getWargearQuantityMax,
   isSamePointsTier,
+  setWargearQuantity,
 } from "../listPoints.helpers";
 
 const atrapos = (over = {}) => ({
@@ -205,6 +212,272 @@ describe("getCardDisplayCost", () => {
     const plain = { uuid: "a", unitSize: { cost: "100" } };
     expect(getCardDisplayCost(plain, undefined)).toBe(100);
     expect(getCardDisplayCost(knight("a"), undefined)).toBe(400);
+  });
+});
+
+describe("getWargearOptionGroups", () => {
+  const group = {
+    instruction: { en: "Any number of models can each have their power fist replaced." },
+    options: [
+      { name: { en: "Thunder hammer" }, cost: "5" },
+      { name: { en: "Lightning claw" }, cost: "0" },
+    ],
+  };
+
+  it("keeps free options as well as paid ones, with numeric costs", () => {
+    expect(getWargearOptionGroups({ wargearOptions: [group] })).toEqual([
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: 5 },
+          { name: { en: "Lightning claw" }, cost: 0 },
+        ],
+      },
+    ]);
+  });
+
+  it("collapses the identical groups the 11e data repeats per model", () => {
+    expect(getWargearOptionGroups({ wargearOptions: [group, { ...group }] })).toHaveLength(1);
+  });
+
+  it("keeps groups that differ in their instruction or in their prices", () => {
+    const other = { ...group, instruction: { en: "One model can be equipped with:" } };
+    const dearer = { ...group, options: [{ name: { en: "Thunder hammer" }, cost: "10" }] };
+    expect(getWargearOptionGroups({ wargearOptions: [group, other, dearer] })).toHaveLength(3);
+  });
+
+  it("keeps the language-keyed shape of instructions and names", () => {
+    const localized = {
+      wargearOptions: [
+        { instruction: { en: "Replace:", de: "Ersetze:" }, options: [{ name: { en: "Axe", de: "Axt" } }] },
+      ],
+    };
+    const [only] = getWargearOptionGroups(localized);
+    expect(only.instruction).toEqual({ en: "Replace:", de: "Ersetze:" });
+    expect(only.options[0]).toEqual({ name: { en: "Axe", de: "Axt" }, cost: 0 });
+  });
+
+  it("drops groups that offer nothing, and is safe on cards without wargear", () => {
+    expect(getWargearOptionGroups({ wargearOptions: [{ instruction: { en: "Nothing to pick" } }] })).toEqual([]);
+    expect(getWargearOptionGroups({ source: "40k-10e" })).toEqual([]);
+    expect(getWargearOptionGroups(undefined)).toEqual([]);
+  });
+});
+
+describe("getPaidWargearOptions", () => {
+  // The shape of a Terminator Assault Squad: the same group repeated once per
+  // model, mixing a free swap with a paid one.
+  const assaultTerminators = {
+    source: "40k-11e",
+    wargearOptions: [
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: "5" },
+          { name: { en: "Lightning claw" }, cost: "0" },
+        ],
+      },
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: "5" },
+          { name: { en: "Lightning claw" }, cost: "0" },
+        ],
+      },
+    ],
+  };
+
+  it("keeps only the options that cost points", () => {
+    expect(getPaidWargearOptions(assaultTerminators)).toEqual([{ name: { en: "Thunder hammer" }, cost: 5 }]);
+  });
+
+  it("collapses the duplicate groups the 11e data repeats per model", () => {
+    expect(getPaidWargearOptions(assaultTerminators)).toHaveLength(1);
+  });
+
+  it("keeps distinct paid options and coerces string costs to numbers", () => {
+    const victrix = {
+      wargearOptions: [
+        {
+          options: [
+            { name: { en: "Banner of Macragge" }, cost: "15" },
+            { name: { en: "Blades of honour" }, cost: "10" },
+          ],
+        },
+      ],
+    };
+    expect(getPaidWargearOptions(victrix)).toEqual([
+      { name: { en: "Banner of Macragge" }, cost: 15 },
+      { name: { en: "Blades of honour" }, cost: 10 },
+    ]);
+  });
+
+  it("treats the same option at two prices as two choices", () => {
+    const card = {
+      wargearOptions: [
+        { options: [{ name: { en: "Storm shield" }, cost: "5" }] },
+        { options: [{ name: { en: "Storm shield" }, cost: "10" }] },
+      ],
+    };
+    expect(getPaidWargearOptions(card)).toHaveLength(2);
+  });
+
+  it("returns nothing for cards without (or with only free) wargear options", () => {
+    expect(
+      getPaidWargearOptions({ wargearOptions: [{ options: [{ name: { en: "Chainsword" }, cost: "0" }] }] }),
+    ).toEqual([]);
+    expect(getPaidWargearOptions({ source: "40k-10e" })).toEqual([]);
+    expect(getPaidWargearOptions(undefined)).toEqual([]);
+  });
+});
+
+describe("getWargearQuantity / setWargearQuantity", () => {
+  const hammer = { name: { en: "Thunder hammer" }, cost: 5 };
+
+  it("reports 0 for an option that is not taken", () => {
+    expect(getWargearQuantity([], hammer)).toBe(0);
+    expect(getWargearQuantity(undefined, hammer)).toBe(0);
+  });
+
+  it("adds, updates and removes an option", () => {
+    let selected = setWargearQuantity([], hammer, 2);
+    expect(selected).toEqual([{ name: { en: "Thunder hammer" }, cost: 5, quantity: 2 }]);
+    expect(getWargearQuantity(selected, hammer)).toBe(2);
+
+    selected = setWargearQuantity(selected, hammer, 3);
+    expect(selected).toHaveLength(1);
+    expect(getWargearQuantity(selected, hammer)).toBe(3);
+
+    // Dropping to zero removes the entry rather than storing a zero quantity.
+    expect(setWargearQuantity(selected, hammer, 0)).toEqual([]);
+  });
+
+  it("keeps existing entries in place so the list does not reshuffle", () => {
+    const banner = { name: { en: "Banner of Macragge" }, cost: 15 };
+    const selected = setWargearQuantity(setWargearQuantity([], hammer, 1), banner, 1);
+    const updated = setWargearQuantity(selected, hammer, 2);
+    expect(updated.map((entry) => entry.name.en)).toEqual(["Thunder hammer", "Banner of Macragge"]);
+  });
+
+  it("matches a selection saved as a plain string name", () => {
+    const selected = [{ name: "Thunder hammer", cost: 5, quantity: 2 }];
+    expect(getWargearQuantity(selected, hammer)).toBe(2);
+  });
+
+  it("counts a legacy entry with no quantity as one", () => {
+    expect(getWargearQuantity([{ name: { en: "Thunder hammer" }, cost: 5 }], hammer)).toBe(1);
+  });
+});
+
+describe("getWargearQuantityMax", () => {
+  it("caps quantities at the model count of the chosen tier", () => {
+    expect(getWargearQuantityMax({ models: "5", cost: "170" })).toBe(5);
+    expect(getWargearQuantityMax({ models: 10 })).toBe(10);
+  });
+
+  it("falls back to a sane cap when the tier says nothing useful", () => {
+    expect(getWargearQuantityMax(undefined)).toBe(10);
+    expect(getWargearQuantityMax({ models: "0" })).toBe(10);
+    expect(getWargearQuantityMax({ models: "?" })).toBe(10);
+  });
+});
+
+describe("clampWargearQuantities", () => {
+  const thunderHammer = { name: { en: "Thunder hammer" }, cost: 5 };
+
+  it("caps a quantity that exceeds the new tier's model count", () => {
+    const selected = [{ ...thunderHammer, quantity: 10 }];
+    expect(clampWargearQuantities(selected, { models: "5" })).toEqual([{ ...thunderHammer, quantity: 5 }]);
+  });
+
+  it("leaves a quantity the tier still allows untouched", () => {
+    const selected = [{ ...thunderHammer, quantity: 3 }];
+    expect(clampWargearQuantities(selected, { models: "5" })).toBe(selected);
+  });
+
+  it("caps every entry independently", () => {
+    const selected = [
+      { ...thunderHammer, quantity: 8 },
+      { name: { en: "Storm shield" }, cost: 10, quantity: 2 },
+    ];
+    expect(clampWargearQuantities(selected, { models: "5" })).toEqual([
+      { ...thunderHammer, quantity: 5 },
+      { name: { en: "Storm shield" }, cost: 10, quantity: 2 },
+    ]);
+  });
+
+  it("treats a missing quantity as one, so it never gets capped", () => {
+    const selected = [thunderHammer];
+    expect(clampWargearQuantities(selected, { models: "1" })).toBe(selected);
+  });
+
+  it("uses the fallback cap when the tier says nothing useful", () => {
+    const selected = [{ ...thunderHammer, quantity: 25 }];
+    expect(clampWargearQuantities(selected, undefined)).toEqual([{ ...thunderHammer, quantity: 10 }]);
+  });
+
+  it("is safe for a card with no selection", () => {
+    expect(clampWargearQuantities(undefined, { models: "5" })).toEqual([]);
+  });
+});
+
+describe("getCardWargearCost", () => {
+  it("multiplies each selection by its quantity", () => {
+    const card = {
+      selectedWargear: [
+        { name: { en: "Thunder hammer" }, cost: 5, quantity: 3 },
+        { name: { en: "Banner of Macragge" }, cost: 15, quantity: 1 },
+      ],
+    };
+    expect(getCardWargearCost(card)).toBe(30);
+  });
+
+  it("counts an entry with no quantity once", () => {
+    expect(getCardWargearCost({ selectedWargear: [{ cost: 10 }] })).toBe(10);
+  });
+
+  it("accepts string costs", () => {
+    expect(getCardWargearCost({ selectedWargear: [{ cost: "10", quantity: 2 }] })).toBe(20);
+  });
+
+  it("is 0 for cards with no (or invalid) wargear selection", () => {
+    expect(getCardWargearCost({ source: "40k-10e" })).toBe(0);
+    expect(getCardWargearCost({ selectedWargear: [] })).toBe(0);
+    expect(getCardWargearCost({ selectedWargear: [{ cost: "free" }, null] })).toBe(0);
+    expect(getCardWargearCost({ selectedWargear: "nonsense" })).toBe(0);
+    expect(getCardWargearCost(undefined)).toBe(0);
+  });
+});
+
+describe("wargear points in list totals", () => {
+  const redemptor = (uuid) => ({
+    uuid,
+    id: "redemptor",
+    source: "40k-11e",
+    unitSize: { models: 1, cost: "210" },
+    selectedWargear: [{ name: { en: "Macro plasma incinerator" }, cost: 10, quantity: 1 }],
+  });
+
+  it("adds wargear to a card's displayed cost", () => {
+    const cards = [redemptor("a")];
+    expect(getCardDisplayCost(cards[0], cards)).toBe(220);
+  });
+
+  it("adds wargear to the category base, alongside the enhancement", () => {
+    const cards = [{ ...redemptor("a"), selectedEnhancement: { cost: "15" } }];
+    expect(computeCategoryPoints(cards)).toEqual({ base: 235, surcharge: 0, total: 235 });
+  });
+
+  it("keeps the displayed rows summing to the list total", () => {
+    const cards = [redemptor("a"), redemptor("b")];
+    const rows = cards.map((card) => getCardDisplayCost(card, cards));
+    expect(rows).toEqual([220, 220]);
+    expect(rows.reduce((sum, n) => sum + n, 0)).toBe(getCategoryPointsTotal(cards));
+  });
+
+  it("leaves cards without a wargear selection untouched", () => {
+    const cards = [{ source: "40k-10e", unitSize: { cost: "100" } }];
+    expect(computeCategoryPoints(cards)).toEqual({ base: 100, surcharge: 0, total: 100 });
   });
 });
 

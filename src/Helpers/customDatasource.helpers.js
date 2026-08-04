@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { validateSchema, getDefaultValueForType } from "./customSchema.helpers";
+import { validateSchema, getDefaultValueForType, stripReservedWeaponColumns } from "./customSchema.helpers";
 
 // Valid display formats that map to existing card renderers
 export const VALID_DISPLAY_FORMATS = ["40k-10e", "40k", "basic", "necromunda", "aos", "custom"];
@@ -300,6 +300,10 @@ export const prepareDatasourceForImport = (datasource, sourceType, sourceUrl = n
 
   return {
     ...datasource,
+    // Older/hand-edited schemas may declare a weapon column keyed after a
+    // reserved profile field (e.g. `keywords`), which corrupts card data as
+    // soon as it is edited. Strip those on the way in.
+    ...(datasource.schema ? { schema: stripReservedWeaponColumns(datasource.schema) } : {}),
     id: storageId,
     uuid: uuidv4(),
     sourceType,
