@@ -52,6 +52,11 @@ export const MarkupText = ({ content }) => {
       remarkPlugins={[[remarkGfm, { stringLength: stringWidth }], remarkBreaks]}
       rehypePlugins={[rehypeRaw, [rehypeSanitize, schema11e]]}
       components={{
+        // `remarkBreaks` already turns every newline into a <br>, so the text
+        // must not also honour the literal newline it left behind: `pre-wrap`
+        // (inherited from `.item`) would render both and put a blank line
+        // between every bullet. Markdown strips leading indentation before we
+        // get here, so there is no whitespace left for `pre-wrap` to preserve.
         p(props) {
           const { node, ...rest } = props;
           paragraphCount++;
@@ -59,11 +64,11 @@ export const MarkupText = ({ content }) => {
             return (
               <React.Fragment>
                 <span style={{ display: "block", height: "8px" }} aria-hidden="true" />
-                <span style={{ whiteSpace: "pre-wrap" }} {...rest} />
+                <span style={{ whiteSpace: "normal" }} {...rest} />
               </React.Fragment>
             );
           }
-          return <span style={{ whiteSpace: "pre-wrap" }} {...rest} />;
+          return <span style={{ whiteSpace: "normal" }} {...rest} />;
         },
         br() {
           return <br />;

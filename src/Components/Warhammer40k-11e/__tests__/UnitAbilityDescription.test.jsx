@@ -42,4 +42,23 @@ describe("MarkupText", () => {
     const { container } = render(<MarkupText content={"<ul><li>first</li><li>second</li></ul>"} />);
     expect(container.querySelectorAll("li")).toHaveLength(2);
   });
+
+  // `remarkBreaks` emits a <br> for every newline and leaves the newline in the
+  // text. Honouring both — which `white-space: pre-wrap` on the surrounding
+  // `.item` would do — put a blank line between every bullet of a wargear
+  // instruction, so the paragraph has to collapse the leftover newline itself.
+  it("breaks each line exactly once, so bullet lines stay together", () => {
+    const { container } = render(
+      <MarkupText content={"Replace with one of the following:\n◦ 1 power fist\n◦ 1 plasma pistol"} />,
+    );
+
+    const paragraph = container.querySelector("span");
+    expect(paragraph.style.whiteSpace).toBe("normal");
+    expect(container.querySelectorAll("br")).toHaveLength(2);
+  });
+
+  it("still separates real paragraphs", () => {
+    const { container } = render(<MarkupText content={"First paragraph.\n\nSecond paragraph."} />);
+    expect(container.querySelector('span[aria-hidden="true"]')).toBeInTheDocument();
+  });
 });
