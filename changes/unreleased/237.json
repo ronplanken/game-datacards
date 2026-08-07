@@ -1,0 +1,5 @@
+{
+  "title": "Subcategories now show in the card viewer",
+  "body": "Cards that use subcategories in a custom datasource (a feature in the Datasource Editor) now show their subcategory groups in the regular card viewer on both desktop and mobile. Before this, subcategory headers only appeared inside the Datasource Editor.",
+  "severity": "info"
+}
