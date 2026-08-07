@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, BookOpen } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { getMobileCardPath } from "../../Helpers/mobileRouting.helpers";
 import "./MobileCustomFaction.css";
 
 export const MobileCustomFaction = () => {
@@ -16,9 +17,9 @@ export const MobileCustomFaction = () => {
     navigate(`/mobile/${factionSlug}/units`);
   };
 
-  const handleCardClick = (card) => {
+  const handleCardClick = (card, baseType) => {
     const cardSlug = card.name?.toLowerCase().replaceAll(" ", "-");
-    navigate(`/mobile/${factionSlug}/${cardSlug}`);
+    navigate(getMobileCardPath(factionSlug, cardSlug, baseType));
   };
 
   const handleBrowseGlossary = () => {
@@ -39,6 +40,7 @@ export const MobileCustomFaction = () => {
         return {
           key: ct.key,
           label: ct.label,
+          baseType: ct.baseType,
           cards,
         };
       })
@@ -89,7 +91,10 @@ export const MobileCustomFaction = () => {
           </div>
           <div className="custom-faction-card-list">
             {section.cards.map((card) => (
-              <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
+              <button
+                key={card.id}
+                className="custom-faction-card-item"
+                onClick={() => handleCardClick(card, section.baseType)}>
                 <span className="custom-faction-card-name">{card.name}</span>
                 <ChevronRight size={16} className="custom-faction-card-arrow" />
               </button>
