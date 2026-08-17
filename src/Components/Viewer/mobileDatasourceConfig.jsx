@@ -7,7 +7,13 @@ import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
 import { CustomCardDisplay } from "../Custom/CustomCardDisplay";
 import { MobileFaction } from "./MobileFaction";
 import { MobileFactionUnits } from "./MobileFactionUnits";
-import { MobileAoSFaction, MobileAoSFactionUnits, MobileAoSManifestationLores, MobileAoSSpellLores } from "./AoS";
+import {
+  MobileAoSFaction,
+  MobileAoSFactionUnits,
+  MobileAoSManifestationLores,
+  MobileAoSSpellLores,
+  MobileAoSEnhancements,
+} from "./AoS";
 import { MobileSettings40k } from "./MobileSettings40k";
 import { MobileSettingsAoS } from "./MobileSettingsAoS";
 
@@ -112,6 +118,7 @@ export const BUILTIN_CONFIGS = {
     extraRouteViews: [
       { prop: "showManifestationLores", Component: MobileAoSManifestationLores },
       { prop: "showSpellLores", Component: MobileAoSSpellLores },
+      { prop: "showEnhancements", Component: MobileAoSEnhancements },
     ],
     SettingsSection: MobileSettingsAoS,
     GameSystemSettingsScreen: "aos",

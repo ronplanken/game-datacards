@@ -44,6 +44,7 @@ export const ViewerMobile = ({
   showUnits = false,
   showManifestationLores = false,
   showSpellLores = false,
+  showEnhancements = false,
   showGlossary = false,
 }) => {
   const [parent] = useAutoAnimate({ duration: 75 });
@@ -234,6 +235,7 @@ export const ViewerMobile = ({
   const activeExtraView = config.extraRouteViews.find((view) => {
     if (view.prop === "showManifestationLores") return showManifestationLores;
     if (view.prop === "showSpellLores") return showSpellLores;
+    if (view.prop === "showEnhancements") return showEnhancements;
     return false;
   });
 

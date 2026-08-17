@@ -63,11 +63,23 @@ describe("useDataSourceItems enhancements section", () => {
     expect(result.current[0].cardType).toBe("enhancement");
   });
 
-  // AoS factions group enhancements in an object of category-keyed arrays, which
-  // this 40K-shaped list cannot read.
-  it("returns nothing for a faction whose enhancements are grouped by category", () => {
+  // AoS factions group enhancements in an object of category-keyed arrays, and
+  // carry a source ("aos-4e") that no card renderer is keyed on.
+  it("flattens an AoS faction's grouped enhancements and routes them to the AoS renderer", () => {
     mockState.settings = { selectedDataSource: "aos" };
-    mockState.selectedFaction = { enhancements: { artefacts: [{ name: "Amulet" }], heroicTraits: [], other: [] } };
+    mockState.selectedFaction = {
+      warscrolls: [],
+      enhancements: { artefacts: [{ name: "Amulet", source: "aos-4e" }], heroicTraits: [], other: [] },
+    };
+    const { result } = renderHook(() => useDataSourceItems("enhancements", ""));
+    expect(result.current).toEqual([
+      expect.objectContaining({ name: "Amulet", cardType: "enhancement", source: "aos" }),
+    ]);
+  });
+
+  it("returns nothing for a faction with no enhancements", () => {
+    mockState.settings = { selectedDataSource: "aos" };
+    mockState.selectedFaction = { warscrolls: [], enhancements: { artefacts: [], heroicTraits: [], other: [] } };
     const { result } = renderHook(() => useDataSourceItems("enhancements", ""));
     expect(result.current).toEqual([]);
   });

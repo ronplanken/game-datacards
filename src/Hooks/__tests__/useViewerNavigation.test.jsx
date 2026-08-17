@@ -47,19 +47,42 @@ describe("useViewerNavigation enhancement route", () => {
     );
   });
 
-  // AoS factions group enhancements in an object of category-keyed arrays, so
-  // the array-shaped lookup must not run against them.
-  it("finds nothing for a faction whose enhancements are grouped by category", () => {
-    mockState.params = { faction: "kruleboyz", enhancement: "amulet" };
+  // AoS factions group enhancements in an object of category-keyed arrays.
+  it("opens an AoS faction's grouped enhancement with the AoS renderer", () => {
+    mockState.params = { faction: "kruleboyz", enhancement: "amulet-of-destiny" };
     mockState.dataSource = {
       data: [
         {
           id: "KRULEBOYZ",
           name: "Kruleboyz",
           warscrolls: [],
-          enhancements: { artefacts: [{ name: "Amulet" }], heroicTraits: [], other: [] },
+          enhancements: {
+            artefacts: [{ name: "Amulet of Destiny", source: "aos-4e" }],
+            heroicTraits: [],
+            other: [],
+          },
         },
       ],
+    };
+
+    renderHook(() => useViewerNavigation());
+
+    expect(setActiveCard).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "Amulet of Destiny",
+        cardType: "enhancement",
+        faction_id: "KRULEBOYZ",
+        // "aos-4e" from the data would reach no renderer
+        source: "aos",
+        enhancementGroup: "Artefacts of Power",
+      }),
+    );
+  });
+
+  it("finds nothing when no enhancement matches the slug", () => {
+    mockState.params = { faction: "kruleboyz", enhancement: "not-a-real-artefact" };
+    mockState.dataSource = {
+      data: [{ id: "KRULEBOYZ", name: "Kruleboyz", warscrolls: [], enhancements: { artefacts: [], other: [] } }],
     };
 
     renderHook(() => useViewerNavigation());

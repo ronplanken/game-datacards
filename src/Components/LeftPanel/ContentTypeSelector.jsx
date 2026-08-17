@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { getBrowsableEnhancements } from "../../Helpers/faction.helpers";
 import "./ContentTypeSelector.css";
 
 const CONTENT_TYPES_40K = [
@@ -15,6 +16,7 @@ const CONTENT_TYPES_40K = [
 
 const CONTENT_TYPES_AOS = [
   { value: "warscrolls", label: "Warscrolls", key: "warscrolls" },
+  { value: "enhancements", label: "Enhancements", key: "enhancements" },
   { value: "manifestationLores", label: "Manifestation Lores", key: "manifestationLores" },
   { value: "spellLores", label: "Spell Lores", key: "lores" },
 ];
@@ -64,6 +66,10 @@ export const ContentTypeSelector = ({ selectedContentType, setSelectedContentTyp
           // Rules have a different structure with army and detachment sub-arrays
           const rules = selectedFaction?.rules;
           return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
+        }
+        if (type.key === "enhancements") {
+          // AoS groups enhancements in an object, so a plain length check misses them
+          return getBrowsableEnhancements(selectedFaction).length > 0;
         }
         const data = selectedFaction?.[type.key];
         return data && data.length > 0;
