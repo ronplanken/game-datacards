@@ -89,6 +89,19 @@ export const isEnhancementAtCopyLimit = (enhancement, cards, excludeUuid) => {
   return used >= getEnhancementCopyLimit(enhancement);
 };
 
+/**
+ * A faction's enhancements as a flat array, whatever shape the datasource uses.
+ *
+ * 40K factions store `enhancements` as an array. Age of Sigmar factions store an
+ * object of category-keyed arrays (`{ artefacts, heroicTraits, other }`), which
+ * the 40K enhancement picker cannot read — those factions report no enhancements
+ * instead of crashing the page on `.filter`.
+ *
+ * @param {Object} faction - faction from the datasource
+ * @returns {Array} the faction's enhancements, or `[]` when it has none usable
+ */
+export const getFactionEnhancements = (faction) => (Array.isArray(faction?.enhancements) ? faction.enhancements : []);
+
 export const isUnitEnhancementEligible = (card, enhancement) => {
   if (!enhancement) return false;
   if (cardHasKeyword(card, "Epic Hero")) return false;

@@ -1,0 +1,5 @@
+{
+  "title": "Age of Sigmar warscrolls open again on mobile",
+  "body": "Tapping any Age of Sigmar warscroll on mobile showed a \"Sorry, something went wrong\" error instead of the card. Warscrolls now open normally, for every faction.",
+  "severity": "error"
+}

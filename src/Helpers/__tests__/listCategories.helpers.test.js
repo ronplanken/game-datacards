@@ -3,6 +3,7 @@ import {
   cardHasKeyword,
   cardHasKeywordOrFaction,
   categorize40kUnits,
+  getFactionEnhancements,
   isEnhancementAtCopyLimit,
   isUpgradeEnhancement,
   getEnhancementCopyLimit,
@@ -113,6 +114,24 @@ describe("isUnitEnhancementEligible", () => {
   it("respects excludes", () => {
     const excluded = { name: "Y", keywords: ["Adeptus Custodes"], excludes: [{ en: "Infantry" }] };
     expect(isUnitEnhancementEligible(character, excluded)).toBe(false);
+  });
+});
+
+describe("getFactionEnhancements", () => {
+  it("returns a 40K faction's enhancement array as-is", () => {
+    const enhancements = [{ name: "Superior Creation" }];
+    expect(getFactionEnhancements({ enhancements })).toBe(enhancements);
+  });
+
+  it("returns none for an AoS faction, which groups enhancements in an object", () => {
+    const aosFaction = { enhancements: { artefacts: [{ name: "Amulet" }], heroicTraits: [], other: [] } };
+    expect(getFactionEnhancements(aosFaction)).toEqual([]);
+  });
+
+  it("returns none for a missing faction or missing enhancements", () => {
+    expect(getFactionEnhancements(undefined)).toEqual([]);
+    expect(getFactionEnhancements({})).toEqual([]);
+    expect(getFactionEnhancements({ enhancements: null })).toEqual([]);
   });
 });
 
