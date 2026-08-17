@@ -1,6 +1,7 @@
 import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { MarkdownDisplay } from "../MarkdownDisplay";
+import { getEnhancementCost } from "../../Helpers/faction.helpers";
 
 /**
  * An Age of Sigmar enhancement — an artefact of power, heroic trait or other
@@ -18,8 +19,7 @@ export const EnhancementCard = ({
 }) => {
   if (!enhancement) return null;
 
-  const cost = Number.isFinite(Number(enhancement.points)) && enhancement.points !== null ? enhancement.points : null;
-  const cpCost = Number.isFinite(Number(enhancement.cpCost)) && enhancement.cpCost !== null ? enhancement.cpCost : null;
+  const cost = getEnhancementCost(enhancement);
 
   return (
     <div className={`spell-card enhancement-card ${grandAlliance} ${isMobile ? "mobile" : ""}`}>
@@ -33,16 +33,10 @@ export const EnhancementCard = ({
         )}
         <div className="spell-card-title-row">
           <h1 className="spell-card-name">{enhancement.name}</h1>
-          {cost !== null && (
+          {cost && (
             <div className="enhancement-card-cost">
-              <span className="enhancement-cost-number">{cost}</span>
-              <span className="enhancement-cost-label">pts</span>
-            </div>
-          )}
-          {cost === null && cpCost !== null && (
-            <div className="enhancement-card-cost">
-              <span className="enhancement-cost-number">{cpCost}</span>
-              <span className="enhancement-cost-label">CP</span>
+              <span className="enhancement-cost-number">{cost.value}</span>
+              <span className="enhancement-cost-label">{cost.label}</span>
             </div>
           )}
         </div>

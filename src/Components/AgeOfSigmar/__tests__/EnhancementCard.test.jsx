@@ -33,8 +33,14 @@ describe("EnhancementCard", () => {
     expect(screen.queryByText("pts")).not.toBeInTheDocument();
   });
 
-  it("shows no cost badge when the enhancement is free", () => {
+  it("shows no cost badge when the enhancement carries no cost", () => {
     render(<EnhancementCard enhancement={{ ...artefact, points: null, cpCost: null }} />);
+    expect(screen.queryByText("pts")).not.toBeInTheDocument();
+    expect(screen.queryByText("CP")).not.toBeInTheDocument();
+  });
+
+  it("shows no cost badge for a blank cost rather than reading it as free", () => {
+    render(<EnhancementCard enhancement={{ ...artefact, points: "", cpCost: "" }} />);
     expect(screen.queryByText("pts")).not.toBeInTheDocument();
     expect(screen.queryByText("CP")).not.toBeInTheDocument();
   });

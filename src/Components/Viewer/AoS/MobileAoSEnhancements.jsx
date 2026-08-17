@@ -2,20 +2,19 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
-import { getBrowsableEnhancements } from "../../../Helpers/faction.helpers";
+import { getBrowsableEnhancements, getEnhancementCost } from "../../../Helpers/faction.helpers";
 import "./MobileAoS.css";
 
 // Enhancement list item component
 const EnhancementItem = ({ enhancement, onClick }) => {
-  const cost = enhancement.points ?? enhancement.cpCost;
-  const costLabel = enhancement.points != null ? "pts" : "CP";
+  const cost = getEnhancementCost(enhancement);
 
   return (
     <button className="aos-units-item" onClick={onClick}>
       <span className="aos-units-item-name">{enhancement.name}</span>
-      {cost != null && (
+      {cost && (
         <span className="aos-units-item-points">
-          {cost} {costLabel}
+          {cost.value} {cost.label}
         </span>
       )}
     </button>

@@ -57,6 +57,32 @@ const humaniseGroupKey = (key) =>
  * @param {Object} faction - faction from the datasource
  * @returns {Array} enhancements, each with an `enhancementGroup` label when grouped
  */
+const toCostNumber = (value) => {
+  // Number("") and Number(null) are both 0, so blanks have to be rejected first
+  // or an unpriced enhancement reads as free rather than as having no cost.
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+/**
+ * What an enhancement costs and in which currency, or null when it carries no
+ * cost at all. Points win over command points; a blank or non-numeric value
+ * counts as no cost, while an explicit 0 is a real (free) price.
+ *
+ * @param {Object} enhancement
+ * @returns {{value: number, label: string}|null}
+ */
+export const getEnhancementCost = (enhancement) => {
+  const points = toCostNumber(enhancement?.points);
+  if (points !== null) return { value: points, label: "pts" };
+
+  const commandPoints = toCostNumber(enhancement?.cpCost);
+  if (commandPoints !== null) return { value: commandPoints, label: "CP" };
+
+  return null;
+};
+
 export const getBrowsableEnhancements = (faction) => {
   const enhancements = faction?.enhancements;
   if (Array.isArray(enhancements)) return enhancements;
