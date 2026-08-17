@@ -14,6 +14,11 @@ const { Text } = Typography;
 // 11th edition rule parts: { order, type, title?:{lang}, text:{lang} }. Type is a
 // plain enum; title and text are language-keyed. Parts are kept sorted by order
 // and the order is renumbered on add / remove / reorder.
+//
+// The source data also carries `quote` and `textItalic` parts (rulebook examples
+// and flavour text) that RuleCard deliberately skips. They are listed here so an
+// existing part keeps its type instead of silently becoming body text the moment
+// it is touched — their labels say they stay off the card.
 export function RuleCardInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
@@ -94,6 +99,8 @@ export function RuleCardInfo() {
                                 <Option value="text">Text</Option>
                                 <Option value="header">Header</Option>
                                 <Option value="accordion">Accordion (bulleted)</Option>
+                                <Option value="quote">Quote (not shown on card)</Option>
+                                <Option value="textItalic">Example (not shown on card)</Option>
                               </Select>
                             </Form.Item>
                           </Col>

@@ -19,13 +19,15 @@ import { localize } from "../../../Helpers/localization.helpers";
 // sidesteps the English-only regex dictionary used by the 10e renderer.
 
 // Sanitisation schema: the GitHub default already allows strong/b/ul/li/em; we
-// additionally allow <span class="keyword"> so converted <k> tags can be styled.
+// additionally allow <span class="keyword"> so converted <k> tags can be styled,
+// and <span style="..."> so the editor's colour picker survives sanitisation
+// (only the colour is kept — see the `span` renderer below).
 const schema11e = {
   ...defaultSchema,
   tagNames: [...(defaultSchema.tagNames || []), "span", "br"],
   attributes: {
     ...defaultSchema.attributes,
-    span: [...(defaultSchema.attributes?.span || []), "className"],
+    span: [...(defaultSchema.attributes?.span || []), "className", "style"],
   },
 };
 
@@ -69,6 +71,13 @@ export const MarkupText = ({ content }) => {
             );
           }
           return <span style={{ whiteSpace: "normal" }} {...rest} />;
+        },
+        // The editor's colour picker writes <span style="color: …">, and <k>
+        // keywords arrive here as <span class="gdc-keyword">. Keep the class and
+        // the colour, drop every other style (matching the 10e renderer).
+        span(props) {
+          const { node, style, ...rest } = props;
+          return <span style={style?.color ? { color: style.color } : undefined} {...rest} />;
         },
         br() {
           return <br />;

@@ -1,4 +1,5 @@
 import { Grid } from "antd";
+import { MarkupText } from "./UnitAbilityDescription";
 import { UnitWeaponKeywords } from "./UnitWeaponKeyword";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize } from "../../../Helpers/localization.helpers";
@@ -7,10 +8,14 @@ import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 const { useBreakpoint } = Grid;
 
 // 11th edition weapon profiles carry no `active` flag (all are shown) and the
-// profile name is language-keyed.
+// profile name is language-keyed. A weapon can also carry its own abilities
+// (`weapon.abilities`, e.g. Overcharge on a transmatter inverter): named rules
+// that belong to the whole weapon rather than to one profile, so they render as
+// a row underneath the profiles.
 export const UnitWeapon = ({ weapon }) => {
   const screens = useBreakpoint();
   const { settings } = useSettingsStorage();
+  const weaponAbilities = Array.isArray(weapon.abilities) ? weapon.abilities : [];
 
   return (
     <>
@@ -43,6 +48,22 @@ export const UnitWeapon = ({ weapon }) => {
           </div>
         );
       })}
+      {weaponAbilities.length > 0 && (
+        <div className="weapon weapon-abilities">
+          {weaponAbilities.map((ability, index) => {
+            const name = localize(ability.name, settings.language);
+            const description = localize(ability.description, settings.language);
+            return (
+              <div className="weapon-ability" key={`weapon-ability-${index}`}>
+                {name && <span className="name">{name}:</span>}
+                <span className="description">
+                  <MarkupText content={description} />
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 };

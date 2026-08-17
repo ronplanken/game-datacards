@@ -57,6 +57,29 @@ describe("MarkupText", () => {
     expect(container.querySelectorAll("br")).toHaveLength(2);
   });
 
+  // The shared markdown editor's colour picker writes <span style="color: …">.
+  // Sanitisation used to strip it, so colouring text in the editor did nothing
+  // on an 11e card.
+  it("keeps the colour a span carries", () => {
+    const { container } = render(<MarkupText content={'<span style="color: #ff0000">Danger</span>'} />);
+
+    // The outer span is the paragraph wrapper; the markup's own span is nested.
+    const coloured = container.querySelector("span > span");
+    expect(coloured.textContent).toBe("Danger");
+    expect(coloured.style.color).toBe("rgb(255, 0, 0)");
+  });
+
+  it("drops every style other than the colour", () => {
+    const { container } = render(
+      <MarkupText content={'<span style="color: #008000; position: fixed; width: 900px">Safe</span>'} />,
+    );
+
+    const coloured = container.querySelector("span > span");
+    expect(coloured.style.color).toBe("rgb(0, 128, 0)");
+    expect(coloured.style.position).toBe("");
+    expect(coloured.style.width).toBe("");
+  });
+
   it("still separates real paragraphs", () => {
     const { container } = render(<MarkupText content={"First paragraph.\n\nSecond paragraph."} />);
     expect(container.querySelector('span[aria-hidden="true"]')).toBeInTheDocument();

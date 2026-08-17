@@ -5,7 +5,7 @@ import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "../../../Helpers/generic.helpers";
-import { localize, setLocalizedField } from "../../../Helpers/localization.helpers";
+import { localize, setLocalizedField, setLocalizedFieldSeeded } from "../../../Helpers/localization.helpers";
 
 // 11th edition points have no active/primary flags: the first entry is the
 // primary cost and the rest are listed when "Show All Points" is on. Models and
@@ -40,9 +40,7 @@ export function UnitPoints() {
       updatePoint(index, field, null);
       return;
     }
-    const current = points[index]?.[field];
-    const isLocalized = current != null && typeof current === "object" && !Array.isArray(current);
-    updatePoint(index, field, isLocalized ? setLocalizedField(current, language, value) : { [language]: value });
+    updatePoint(index, field, setLocalizedFieldSeeded(points[index]?.[field], language, value));
   };
 
   const updateAdditionalCost = (field, value) => {

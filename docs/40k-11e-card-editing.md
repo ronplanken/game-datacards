@@ -30,6 +30,8 @@ how it reads and writes every field.
 
 - [Edit-the-active-language model](#edit-the-active-language-model)
 - [Plain vs language-keyed fields](#plain-vs-language-keyed-fields)
+  - [Fields the datasource omits](#fields-the-datasource-omits)
+  - [Panels beyond the card](#panels-beyond-the-card)
 - [The localisation helpers](#the-localisation-helpers)
 - [Optional show/hide flags](#optional-showhide-flags)
 - [Markup in text fields](#markup-in-text-fields)
@@ -61,19 +63,47 @@ them raw (and some are concatenated into `data-*` attributes):
   stat values `m/t/sv/w/ld/oc`, weapon `range/attacks/skill/strength/ap/damage`,
   `abilities.invul.value`, point `models/cost/keyword`, and all `styling.*`
   numbers and `show*` booleans.
+- Enhancement `keywords[]` / `excludes[]` / `equipableByNonCharacter` — list
+  eligibility is matched against the **English** keyword, so these stay plain.
 
 Everything else is **language-keyed** and edited in place: stat profile `name`;
-weapon profile `name`; `abilities.core[].name` / `faction[].name` /
-`other[].name` / `other[].description`; `abilities.primarch[].name` and its
-nested `abilities.primarch[].abilities[].name` / `.description`;
+weapon profile `name`; weapon `abilities[].name` / `.description`;
+`abilities.core[].name` / `faction[].name` / `other[].name` /
+`other[].description`; `abilities.primarch[].name` and its nested
+`abilities.primarch[].abilities[].name` / `.description`;
 `abilities.damaged.range` / `description`; `composition[]`, `loadout`, `leader`,
 `wargear[]`; unit `keywords[]`; **stratagem**
-`name`/`when`/`target`/`effect`/`detachment`/`type`; **enhancement**
-`name`/`description`/`detachment`; **rule**
+`name`/`when`/`target`/`effect`/`restrictions`/`detachment`/`type`;
+**enhancement** `name`/`description`/`detachment`; **rule**
 `name`/`detachment`/`rules[].title`/`rules[].text`.
 
 > Note the asymmetry: a **unit's** top-level `name` is plain, but
 > **stratagem / enhancement / rule** names are language-keyed.
+
+### Fields the datasource omits
+
+A few language-keyed fields are only present on the cards that use them — a
+stratagem's `restrictions`, a points tier's `faction`/`detachment` restriction.
+`setLocalizedField` returns a plain string when there is nothing to merge into,
+which would store the first value typed in, say, German as a taggless string
+that then shows in every language. Editors for such fields use
+`setLocalizedFieldSeeded`, which starts them as `{ [language]: value }`, and
+drop the field again (via `isLocalizedFieldEmpty`) once it is empty in every
+language, so the card returns to the shape the datasource ships.
+
+### Panels beyond the card
+
+Two editor panels write data that is not printed on the card:
+
+- **Enhancement → List eligibility** — `equipableByNonCharacter` (the
+  "(Upgrade)" entries a non-Character unit may take), plus the `keywords` a unit
+  must have and the `excludes` it must not. This is what
+  `isUnitEnhancementEligible` (`listCategories.helpers.js`) reads in the list
+  builder.
+- **Rule → part type** — the type list includes `quote` and `textItalic`, the
+  rulebook examples `RuleCard` deliberately skips. They are offered (labelled
+  "not shown on card") so an existing part keeps its type instead of silently
+  turning into body text when it is edited.
 
 ## The localisation helpers
 
@@ -116,3 +146,7 @@ use `<k>keyword</k>` for highlighted keywords, `<b>bold</b>`,
 `<ul><li>…</li></ul>` lists, line breaks and `■` bullets (leader text). This is
 the 11e markup described in [warhammer-40k-11e-format.md](warhammer-40k-11e-format.md),
 not the 10e bracket/keyword-dictionary syntax.
+
+The editor's colour picker writes `<span style="color: …">`; the 11e renderer
+keeps that colour (and drops every other style) exactly as the 10e renderer
+does, so colouring text in the editor shows up on the card.
