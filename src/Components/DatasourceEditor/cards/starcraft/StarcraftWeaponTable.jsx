@@ -1,10 +1,30 @@
 import React from "react";
+import { isReservedWeaponProfileKey, normalizeKeywords } from "../../../../Helpers/weaponProfile.helpers";
 import {
   GlossaryExplanationRows,
   GlossaryKeywordTags,
   getKeywordExplanations,
   splitKeywordString,
 } from "../shared/GlossaryKeywords";
+
+/**
+ * Column key of the synthesised keywords column. It is not a schema column:
+ * weapon keywords live on the profile itself (`profile.keywords`), so the
+ * column exists only to give those tags a header and a cell to render in.
+ */
+const PROFILE_KEYWORDS_KEY = "__profileKeywords";
+
+const isKeywordColumnKey = (key) => /^keywords?$/i.test(key || "");
+
+/**
+ * The keyword tags a weapon profile carries, normalised to an array (saved
+ * cards can hold a bare string here). Falls back to the parent weapon's own
+ * keywords when the profile has none.
+ */
+const profileKeywords = (profile, weapon) => {
+  const own = normalizeKeywords(profile?.keywords);
+  return own.length > 0 ? own : normalizeKeywords(weapon?.keywords);
+};
 
 /**
  * Renders the weapon list for a single Starcraft TMG phase (Assault or Combat).
@@ -20,19 +40,33 @@ import {
  * cards: each weapon gets a name banner and a stat grid with column labels
  * inline, so the data stays scannable on a narrow screen.
  *
- * When a `glossary` is supplied, the keyword column (a comma-separated string
- * cell whose key is `keyword`/`keywords`) renders glossary-styled tags with
+ * Keywords reach the table through two routes, and both resolve against the
+ * datasource glossary:
+ * - a schema column keyed `keyword` holding a comma-separated string cell
+ * - `profile.keywords`, the array the card editors write when the weapon type
+ *   has `hasKeywords` enabled — rendered in a trailing "Keywords" column
+ *
+ * When a `glossary` is supplied those tags get their glossary styling and
  * hover tooltips, and matching explanation-mode entries render as explanation
  * rows below the table.
  */
 export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile, glossary }) => {
-  const columns = weaponTypeDef?.columns || [];
+  const schemaColumns = weaponTypeDef?.columns || [];
   const relation = weaponTypeDef?.profileRelation || "parent-child";
   const indentSubProfiles = relation === "parent-child";
   if (!weapons?.length) return null;
 
   const hasGlossary = Array.isArray(glossary) && glossary.length > 0;
-  const isKeywordColumn = (col) => /^keywords?$/i.test(col?.key || "");
+
+  // A column keyed after a reserved profile field (`keywords`, `name`, …) is
+  // not a real column — the data model owns that field, and the card editors
+  // never write a plain cell value to it. Rendering it would dump the raw
+  // value (an array of keywords stringifies to "Repeating,testing"), so drop
+  // it here and let the synthesised keywords column below do the work.
+  const columns = schemaColumns.filter((col) => !isReservedWeaponProfileKey(col?.key));
+  const reservedKeywordColumn = schemaColumns.find(
+    (col) => isReservedWeaponProfileKey(col?.key) && isKeywordColumnKey(col?.key),
+  );
 
   const cellValue = (source, field) => {
     if (!source) return "-";
@@ -60,6 +94,9 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile,
             indent: pIdx > 0 && indentSubProfiles,
             upgrade: Boolean(profile.upgrade || (pIdx === 0 && weapon.upgrade)),
             data: profile,
+            // Saved cards can carry the keywords on the weapon rather than on
+            // each profile, so the profile value falls back to the parent's.
+            keywords: profileKeywords(profile, weapon),
           });
         });
     } else {
@@ -69,44 +106,63 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile,
         indent: false,
         upgrade: Boolean(weapon.upgrade),
         data: weapon,
+        keywords: profileKeywords(weapon, weapon),
       });
     }
   });
 
   if (!rows.length) return null;
 
-  // Parse each keyword cell once (TMG stores keywords as a comma-separated
-  // string column): row data object → { [colKey]: tags }. Both the
-  // explanation rows and the per-cell render read from this.
-  const keywordColumns = columns.filter(isKeywordColumn);
+  // The profile keyword array only gets a column when the weapon type declares
+  // keywords and something actually carries one.
+  const showProfileKeywords = weaponTypeDef?.hasKeywords !== false && rows.some((row) => row.keywords.length > 0);
+  const renderedColumns = showProfileKeywords
+    ? [...columns, { key: PROFILE_KEYWORDS_KEY, label: reservedKeywordColumn?.label || "Keywords", type: "string" }]
+    : columns;
+
+  const isKeywordColumn = (col) => col?.key === PROFILE_KEYWORDS_KEY || isKeywordColumnKey(col?.key);
+
+  // Resolve each row's keyword tags once: row key → { [colKey]: tags }. Both
+  // the explanation rows and the per-cell render read from this.
+  const keywordColumns = renderedColumns.filter(isKeywordColumn);
   const keywordTagsByRow = new Map();
-  if (hasGlossary) {
-    rows.forEach((row) => {
-      const byCol = {};
-      keywordColumns.forEach((col) => {
-        byCol[col.key] = splitKeywordString(row.data?.[col.key]);
-      });
-      keywordTagsByRow.set(row.data, byCol);
+  rows.forEach((row) => {
+    const byCol = {};
+    keywordColumns.forEach((col) => {
+      byCol[col.key] = col.key === PROFILE_KEYWORDS_KEY ? row.keywords : splitKeywordString(row.data?.[col.key]);
     });
-  }
+    keywordTagsByRow.set(row.key, byCol);
+  });
+
+  const keywordTags = (row, col) => keywordTagsByRow.get(row.key)?.[col.key] || [];
 
   const explanationEntries = hasGlossary
     ? getKeywordExplanations(
-        rows.flatMap((row) => keywordColumns.flatMap((col) => keywordTagsByRow.get(row.data)[col.key])),
+        rows.flatMap((row) => keywordColumns.flatMap((col) => keywordTags(row, col))),
         glossary,
         "weapons",
       )
     : [];
 
+  // Plain-text value of a cell, used for the mobile wide/compact split and as
+  // the fallback whenever a keyword cell has no glossary to resolve against.
+  const columnText = (row, col) => {
+    if (col.key === PROFILE_KEYWORDS_KEY) {
+      const tags = keywordTags(row, col);
+      return tags.length > 0 ? tags.join(", ") : "-";
+    }
+    return cellValue(row.data, col);
+  };
+
   // Keyword columns render as glossary-styled tags; every other column stays plain text.
-  const renderCell = (data, col) => {
+  const renderCell = (row, col) => {
     if (hasGlossary && isKeywordColumn(col)) {
-      const tags = keywordTagsByRow.get(data)?.[col.key] || [];
+      const tags = keywordTags(row, col);
       if (tags.length > 0) {
         return <GlossaryKeywordTags keywords={tags} glossary={glossary} scope="weapons" />;
       }
     }
-    return cellValue(data, col);
+    return columnText(row, col);
   };
 
   if (isMobile) {
@@ -118,11 +174,11 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile,
     const WIDE_THRESHOLD = 12;
     const isWideColumn = (col) =>
       rows.some((row) => {
-        const value = cellValue(row.data, col);
+        const value = columnText(row, col);
         return typeof value === "string" && value !== "-" && value.length > WIDE_THRESHOLD;
       });
-    const compactColumns = columns.filter((col) => !isWideColumn(col));
-    const wideColumns = columns.filter((col) => isWideColumn(col));
+    const compactColumns = renderedColumns.filter((col) => !isWideColumn(col));
+    const wideColumns = renderedColumns.filter((col) => isWideColumn(col));
 
     return (
       <div className={`sc-weapon-cards${isLast ? " is-last" : ""}`}>
@@ -142,18 +198,17 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile,
                 {compactColumns.map((col) => (
                   <div key={col.key} className="sc-weapon-card-stat">
                     <span className="sc-weapon-card-stat-label">{col.label}</span>
-                    <span className="sc-weapon-card-stat-value">{renderCell(row.data, col)}</span>
+                    <span className="sc-weapon-card-stat-value">{renderCell(row, col)}</span>
                   </div>
                 ))}
               </div>
             )}
             {wideColumns.map((col) => {
-              const value = cellValue(row.data, col);
-              if (value === "-") return null;
+              if (columnText(row, col) === "-") return null;
               return (
                 <div key={col.key} className="sc-weapon-card-wide">
                   <span className="sc-weapon-card-wide-label">{col.label}</span>
-                  <span className="sc-weapon-card-wide-value">{renderCell(row.data, col)}</span>
+                  <span className="sc-weapon-card-wide-value">{renderCell(row, col)}</span>
                 </div>
               );
             })}
@@ -184,7 +239,7 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile,
         <thead>
           <tr>
             <th>Name</th>
-            {columns.map((col) => (
+            {renderedColumns.map((col) => (
               <th key={col.key}>{col.label}</th>
             ))}
           </tr>
@@ -193,8 +248,8 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile,
           {rows.map((row) => (
             <tr key={row.key} className={row.indent ? "sc-weapon-profile" : "sc-weapon-row"}>
               {renderNameCell(row.name, { indent: row.indent, upgrade: row.upgrade })}
-              {columns.map((col) => (
-                <td key={col.key}>{renderCell(row.data, col)}</td>
+              {renderedColumns.map((col) => (
+                <td key={col.key}>{renderCell(row, col)}</td>
               ))}
             </tr>
           ))}
