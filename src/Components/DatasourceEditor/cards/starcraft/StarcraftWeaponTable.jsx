@@ -113,8 +113,11 @@ export const StarcraftWeaponTable = ({ weapons, weaponTypeDef, isLast, isMobile,
 
   if (!rows.length) return null;
 
-  // The profile keyword array only gets a column when the weapon type declares
-  // keywords and something actually carries one.
+  // The profile keyword array only gets a column when the weapon type allows
+  // keywords and something actually carries one. `!== false` rather than
+  // `=== true` on purpose: keywords default to on when the field is unset, the
+  // same reading `CustomCardWeapons` and the premium weapons editor use, so a
+  // schema predating the field still renders the keywords its cards hold.
   const showProfileKeywords = weaponTypeDef?.hasKeywords !== false && rows.some((row) => row.keywords.length > 0);
   const renderedColumns = showProfileKeywords
     ? [...columns, { key: PROFILE_KEYWORDS_KEY, label: reservedKeywordColumn?.label || "Keywords", type: "string" }]
