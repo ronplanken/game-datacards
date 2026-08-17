@@ -53,3 +53,22 @@ describe("useDataSourceItems stratagems section", () => {
     expect(result.current.map((i) => i.name)).toEqual(["Faction Strat"]);
   });
 });
+
+describe("useDataSourceItems enhancements section", () => {
+  it("lists a 40K faction's enhancements", () => {
+    mockState.settings = { selectedDataSource: "40k-10e" };
+    mockState.selectedFaction = { enhancements: [{ name: "Artificer Armour" }] };
+    const { result } = renderHook(() => useDataSourceItems("enhancements", ""));
+    expect(result.current.map((i) => i.name)).toEqual(["Artificer Armour"]);
+    expect(result.current[0].cardType).toBe("enhancement");
+  });
+
+  // AoS factions group enhancements in an object of category-keyed arrays, which
+  // this 40K-shaped list cannot read.
+  it("returns nothing for a faction whose enhancements are grouped by category", () => {
+    mockState.settings = { selectedDataSource: "aos" };
+    mockState.selectedFaction = { enhancements: { artefacts: [{ name: "Amulet" }], heroicTraits: [], other: [] } };
+    const { result } = renderHook(() => useDataSourceItems("enhancements", ""));
+    expect(result.current).toEqual([]);
+  });
+});

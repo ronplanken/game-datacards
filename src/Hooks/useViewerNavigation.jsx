@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "./useDataSourceStorage";
 import { useCardStorage } from "./useCardStorage";
 import { useSettingsStorage } from "./useSettingsStorage";
+import { getFactionEnhancements } from "../Helpers/listCategories.helpers";
 
 export function useViewerNavigation() {
   const { faction, unit, alliedFaction, alliedUnit, stratagem, spell, enhancement, rule } = useParams();
@@ -127,7 +128,7 @@ export function useViewerNavigation() {
         updateSelectedFaction(foundFaction);
       }
 
-      const foundEnhancement = foundFaction?.enhancements?.find((e) => {
+      const foundEnhancement = getFactionEnhancements(foundFaction).find((e) => {
         return e.name.replaceAll(" ", "-").toLowerCase() === enhancement;
       });
 

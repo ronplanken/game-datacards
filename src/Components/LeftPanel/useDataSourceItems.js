@@ -1,5 +1,6 @@
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { getFactionEnhancements } from "../../Helpers/listCategories.helpers";
 
 /**
  * Group warscrolls by their role keywords (Hero, Battleline, Monster, etc.)
@@ -234,7 +235,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "enhancements") {
-      const filteredEnhancements = selectedFaction?.enhancements?.map((enhancement) => {
+      const filteredEnhancements = getFactionEnhancements(selectedFaction).map((enhancement) => {
         // Preserve the card's own source (e.g. "40k-11e") so it routes to the
         // correct renderer; fall back to the faction/datasource source.
         return {
@@ -245,7 +246,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       });
 
       const mainEnhancements = searchText
-        ? filteredEnhancements?.filter((enhancement) =>
+        ? filteredEnhancements.filter((enhancement) =>
             enhancement.name.toLowerCase().includes(searchText.toLowerCase()),
           )
         : filteredEnhancements;
