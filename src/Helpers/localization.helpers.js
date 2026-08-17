@@ -82,8 +82,8 @@ export function setLocalizedField(existing, language = "en", newValue = "") {
 }
 
 /**
- * Like {@link setLocalizedField}, but starts a **new** field as a language-keyed
- * object instead of a plain string.
+ * Like {@link setLocalizedField}, but starts an **absent** field as a
+ * language-keyed object instead of a plain string.
  *
  * `setLocalizedField` deliberately returns a bare string when there is nothing
  * to merge into, so fields the loader already resolved (a unit's `name`) stay
@@ -92,6 +92,11 @@ export function setLocalizedField(existing, language = "en", newValue = "") {
  * say, German would be stored as a taggless string and then show up in every
  * language. Seeding `{ [language]: value }` keeps such a field multilingual from
  * its first edit.
+ *
+ * Only a nullish `existing` is seeded. A field that already holds a plain string
+ * keeps the shape it has (the `setLocalizedField` contract): a plain string here
+ * means a field that is meant to be plain, not a multilingual one waiting to be
+ * converted.
  *
  * @param {string|Object|null|undefined} existing - The current field value.
  * @param {string} [language="en"] - The active card language code.

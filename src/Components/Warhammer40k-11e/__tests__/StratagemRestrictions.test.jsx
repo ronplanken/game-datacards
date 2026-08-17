@@ -120,6 +120,19 @@ describe("11e stratagem restrictions editor", () => {
     expect(capturedCard.when).toEqual({ en: "When", de: "Wann genau" });
   });
 
+  // Dropping an emptied field is for `restrictions`, which the datasource omits
+  // on most stratagems. when/target/effect ship on every stratagem and keep
+  // their key whatever they are cleared to.
+  it("keeps when / target / effect when they are cleared", () => {
+    mockActiveCard.ref = { when: { de: "Wann" }, target: { en: "T" }, effect: { en: "E" } };
+    const { container } = render(<StratagemCardInfo />);
+
+    fireEvent.change(editorFor(container, "When"), { target: { value: "" } });
+
+    expect(capturedCard).toHaveProperty("when");
+    expect(capturedCard.when).toEqual({ de: "" });
+  });
+
   it("renders what the editor wrote on the card", () => {
     const { getByText } = render(
       <StratagemCard
