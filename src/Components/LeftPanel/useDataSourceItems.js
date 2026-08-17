@@ -1,5 +1,6 @@
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { getBrowsableEnhancements } from "../../Helpers/faction.helpers";
 
 /**
  * Group warscrolls by their role keywords (Hero, Battleline, Monster, etc.)
@@ -234,18 +235,20 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "enhancements") {
-      const filteredEnhancements = selectedFaction?.enhancements?.map((enhancement) => {
+      const isAoSFaction = Boolean(selectedFaction?.warscrolls);
+      const filteredEnhancements = getBrowsableEnhancements(selectedFaction).map((enhancement) => {
         // Preserve the card's own source (e.g. "40k-11e") so it routes to the
-        // correct renderer; fall back to the faction/datasource source.
+        // correct renderer; fall back to the faction/datasource source. AoS
+        // entries carry "aos-4e", which no renderer is keyed on.
         return {
           ...enhancement,
           cardType: "enhancement",
-          source: enhancement.source ?? selectedFaction?.source ?? "40k-10e",
+          source: isAoSFaction ? "aos" : (enhancement.source ?? selectedFaction?.source ?? "40k-10e"),
         };
       });
 
       const mainEnhancements = searchText
-        ? filteredEnhancements?.filter((enhancement) =>
+        ? filteredEnhancements.filter((enhancement) =>
             enhancement.name.toLowerCase().includes(searchText.toLowerCase()),
           )
         : filteredEnhancements;

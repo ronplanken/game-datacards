@@ -17,6 +17,7 @@ import {
 } from "../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
+  getFactionEnhancements,
   isEnhancementAtCopyLimit,
   isUnitEnhancementEligible,
 } from "../../Helpers/listCategories.helpers";
@@ -139,11 +140,11 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   // (equipableByNonCharacter). Epic Heroes take neither.
   const filteredEnhancements = isEpicHero
     ? []
-    : cardFaction?.enhancements
-        ?.filter((enhancement) => isEnhancementInDetachments(enhancement, category?.detachments, selectedDetachment))
-        ?.filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
+    : getFactionEnhancements(cardFaction)
+        .filter((enhancement) => isEnhancementInDetachments(enhancement, category?.detachments, selectedDetachment))
+        .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
 
-  const showEnhancements = !isEpicHero && (filteredEnhancements?.length || 0) > 0;
+  const showEnhancements = !isEpicHero && filteredEnhancements.length > 0;
   const showDetachments = showEnhancements && detachments?.length > 1;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
   // Leaders may stand alone; Support units must be attached to an eligible squad

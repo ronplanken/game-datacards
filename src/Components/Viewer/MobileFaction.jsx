@@ -5,6 +5,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
+import { getFactionEnhancements } from "../../Helpers/listCategories.helpers";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
 import { StratagemCard as StratagemCard11e } from "../Warhammer40k-11e/StratagemCard";
@@ -139,12 +140,10 @@ export const MobileFaction = () => {
   const coreStratagems = selectedFaction?.basicStratagems || [];
 
   // Filter enhancements by selected detachment
-  const enhancements = Array.isArray(selectedFaction?.enhancements)
-    ? selectedFaction.enhancements.filter(
-        (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-      )
-    : [];
+  const enhancements = getFactionEnhancements(selectedFaction).filter(
+    (enhancement) =>
+      enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
+  );
 
   // Get detachment rules for selected detachment
   const detachmentRules =

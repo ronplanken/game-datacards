@@ -13,6 +13,7 @@ import {
 } from "../../../Helpers/listPoints.helpers";
 import {
   cardHasKeyword,
+  getFactionEnhancements,
   isEnhancementAtCopyLimit,
   isUnitEnhancementEligible,
 } from "../../../Helpers/listCategories.helpers";
@@ -143,9 +144,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   // enhancements; non-character units can take enhancements flagged as upgrades
   // (equipableByNonCharacter). Epic Heroes take neither.
   const getAvailableEnhancements = () => {
-    if (!cardFaction?.enhancements || isEpicHero) return [];
+    if (isEpicHero) return [];
 
-    return cardFaction.enhancements
+    return getFactionEnhancements(cardFaction)
       .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
       .filter((enhancement) => isUnitEnhancementEligible(activeCard, enhancement));
   };
