@@ -50,6 +50,9 @@ detachments, rules).
 - [Datasheet column layout](#datasheet-column-layout)
 - [Rich-text markup](#rich-text-markup)
 - [Keyword glossary (tooltips)](#keyword-glossary-tooltips)
+- [Weapons](#weapons)
+- [Stratagems](#stratagems)
+- [Enhancements](#enhancements)
 - [Points, unit sizes and roster surcharge](#points-unit-sizes-and-roster-surcharge)
 - [Wargear options](#wargear-options)
 - [Rule cards](#rule-cards)
@@ -145,7 +148,9 @@ so the component localises both through `localize(...)`.
 `MarkupText`. `normalize11eMarkup` converts `<k>…</k>` → `<span
 class="gdc-keyword">`, normalises `\r` to `\n`, and puts `■` bullets on their own
 line; `MarkupText` then renders it through ReactMarkdown (with `rehype-raw` +
-sanitisation allowing `span[class]`, `strong`, `ul`, `li`). No keyword dictionary
+sanitisation allowing `span[class]`, `span[style]`, `strong`, `ul`, `li`). Of the
+styles only `color` is applied — that is what the shared editor's colour picker
+writes — matching the 10e renderer. No keyword dictionary
 is needed for this **highlighting** because keywords are already explicitly
 tagged in the data. Hover **explanations** for keywords and core abilities come
 from a separate glossary file — see [Keyword glossary](#keyword-glossary-tooltips).
@@ -190,6 +195,39 @@ add `nameLoc`/`descriptionLoc` language maps:
   hover tooltip whose description is localised (`descriptionLoc[lang]`, falling
   back to the English `description`) and rendered with the 11e
   `MarkupText`/`LocalizedMarkup` engine. Unmatched tags render plain.
+
+## Weapons
+
+A weapon is `{ profiles: [...], abilities?: [...] }`. Each profile carries the
+language-keyed `name` plus the plain `range/attacks/skill/strength/ap/damage` and
+`keywords`. The optional `abilities` are named rules that belong to the **whole
+weapon** rather than to one profile (Overcharge on a transmatter inverter,
+Conversion on an SP conversion beamer) — `{ name, description }`, both
+language-keyed. `UnitCard/UnitWeapon.jsx` renders them as a full-width row under
+the weapon's profiles, through the same markup engine as ability text, and
+`UnitCardEditor/UnitWeapon.jsx` edits them per weapon. Weapons that have none
+carry no `abilities` key at all, which the editor restores when the last one is
+deleted.
+
+## Stratagems
+
+Beyond `when` / `target` / `effect`, a stratagem may carry `restrictions` — the
+"cannot be used more than once per battle" style clause — which the card renders
+as a fourth section. Only some stratagems have it (2 of the 11 core stratagems),
+so it is an optional language-keyed field; see
+[the editing doc](40k-11e-card-editing.md#fields-the-datasource-omits) for how
+the editor adds and removes it. `fluff` (flavour text) is carried in the data but
+not rendered, matching the 10e cards.
+
+## Enhancements
+
+Alongside `name`/`description`/`detachment`/`cost`, an enhancement carries the
+fields that decide which units may take it in the list builder: `keywords` (a
+unit must have one of them), `excludes` (it must have none of them) and
+`equipableByNonCharacter`, which marks the "(Upgrade)" entries a non-Character
+unit may take (up to three times). These are plain English strings — matching in
+`listCategories.helpers.js` localises to English — and are edited in the
+enhancement editor's "List eligibility" panel. They are not printed on the card.
 
 ## Points, unit sizes and roster surcharge
 
@@ -267,6 +305,10 @@ the same structure 10e uses (`useDataSourceItems.js`). The only differences are
 that `name`/`text` are language-keyed (resolved/localised by `RuleCard11e`) and
 the card `source` is stamped from the active datasource so it routes to the 11e
 renderer.
+
+Each rule part has a `type`: `text`, `header` and `accordion` render on the card;
+`quote` and `textItalic` are rulebook examples the renderer skips. The editor
+lists all five so a skipped part keeps its type when its card is edited.
 
 ## Faction colours and symbols
 

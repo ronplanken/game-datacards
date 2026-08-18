@@ -82,6 +82,52 @@ export function setLocalizedField(existing, language = "en", newValue = "") {
 }
 
 /**
+ * Like {@link setLocalizedField}, but starts an **absent** field as a
+ * language-keyed object instead of a plain string.
+ *
+ * `setLocalizedField` deliberately returns a bare string when there is nothing
+ * to merge into, so fields the loader already resolved (a unit's `name`) stay
+ * plain. That is wrong for a field the datasource simply omits — a stratagem's
+ * `restrictions`, a points tier's `faction` — because the first value typed in,
+ * say, German would be stored as a taggless string and then show up in every
+ * language. Seeding `{ [language]: value }` keeps such a field multilingual from
+ * its first edit.
+ *
+ * Only a nullish `existing` is seeded. A field that already holds a plain string
+ * keeps the shape it has (the `setLocalizedField` contract): a plain string here
+ * means a field that is meant to be plain, not a multilingual one waiting to be
+ * converted.
+ *
+ * @param {string|Object|null|undefined} existing - The current field value.
+ * @param {string} [language="en"] - The active card language code.
+ * @param {string} [newValue=""] - The value to store for `language`.
+ * @returns {string|Object} The updated field value.
+ */
+export function setLocalizedFieldSeeded(existing, language = "en", newValue = "") {
+  if (existing == null) return { [language]: newValue };
+  return setLocalizedField(existing, language, newValue);
+}
+
+/**
+ * True when a (possibly language-keyed) field holds no text in any language.
+ *
+ * Used by the editor to drop an optional field entirely once the user clears it,
+ * so the card stops rendering its section and the card data keeps the shape the
+ * datasource uses for cards that never had the field.
+ *
+ * @param {string|Object|null|undefined} value - The field value to test.
+ * @returns {boolean}
+ */
+export function isLocalizedFieldEmpty(value) {
+  if (value == null) return true;
+  if (typeof value === "string") return value.trim() === "";
+  if (typeof value === "object") {
+    return Object.values(value).every((entry) => typeof entry !== "string" || entry.trim() === "");
+  }
+  return false;
+}
+
+/**
  * Shape-preserving update of a single entry in an array of localized values
  * (e.g. keywords, unit composition lines, wargear options). Each entry may be a
  * plain string or a language-keyed object; the entry's shape is preserved via

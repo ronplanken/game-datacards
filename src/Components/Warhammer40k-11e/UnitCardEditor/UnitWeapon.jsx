@@ -1,18 +1,22 @@
 import { Trash2 } from "lucide-react";
-import { Button, Card, Divider, Input, Popconfirm, Space, Typography } from "antd";
+import { Button, Card, Divider, Form, Input, Popconfirm, Space, Typography } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { CustomMarkdownEditor } from "../../CustomMarkdownEditor";
 import { localize, setLocalizedField } from "../../../Helpers/localization.helpers";
 import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
-// 11th edition weapons have profiles only (no weapon-level abilities) and no
-// per-profile `active` flag. The profile name is language-keyed; range/attacks/
-// skill/strength/ap/damage and keywords are plain values.
+// 11th edition weapons have no per-profile `active` flag. The profile name is
+// language-keyed; range/attacks/skill/strength/ap/damage and keywords are plain
+// values. A weapon can also carry `abilities`: named rules that apply to the
+// whole weapon (Overcharge, …) with a language-keyed name and description, shown
+// under the profiles on the card.
 export function UnitWeapon({ weapon, index, type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
   const lang = settings.language;
+  const abilities = Array.isArray(weapon?.abilities) ? weapon.abilities : [];
 
   const handleSheetChange = (event, pIndex) => {
     const newWeapons = [...activeCard[type]];
@@ -20,6 +24,24 @@ export function UnitWeapon({ weapon, index, type }) {
     profiles[pIndex] = { ...profiles[pIndex], [event.target.name]: event.target.value };
     newWeapons[index] = { ...newWeapons[index], profiles };
     updateActiveCard({ ...activeCard, [type]: newWeapons });
+  };
+
+  // Weapons without abilities carry no `abilities` key at all in the source
+  // data, so deleting the last one removes the key again rather than leaving an
+  // empty array behind.
+  const updateAbilities = (mutate) => {
+    updateActiveCard(() => {
+      const newWeapons = [...activeCard[type]];
+      const current = Array.isArray(newWeapons[index].abilities) ? newWeapons[index].abilities : [];
+      const next = mutate([...current]);
+      if (next.length === 0) {
+        const { abilities: _emptied, ...rest } = newWeapons[index];
+        newWeapons[index] = rest;
+      } else {
+        newWeapons[index] = { ...newWeapons[index], abilities: next };
+      }
+      return { ...activeCard, [type]: newWeapons };
+    });
   };
 
   return (
@@ -242,6 +264,70 @@ export function UnitWeapon({ weapon, index, type }) {
           })
         }>
         Add profile
+      </Button>
+      {abilities.map((ability, aIndex) => (
+        <Card
+          key={`weapon-ability-${index}-${aIndex}`}
+          type={"inner"}
+          size={"small"}
+          style={{ marginTop: 4 }}
+          bodyStyle={{ padding: 8 }}
+          title={
+            <Typography.Text
+              editable={{
+                onChange: (value) =>
+                  updateAbilities((next) => {
+                    next[aIndex] = { ...next[aIndex], name: setLocalizedField(next[aIndex].name, lang, value) };
+                    return next;
+                  }),
+              }}>
+              {localize(ability.name, lang)}
+            </Typography.Text>
+          }
+          extra={
+            <Space>
+              <Popconfirm
+                title={"Are you sure you want to delete this weapon ability?"}
+                placement="topRight"
+                onConfirm={() =>
+                  updateAbilities((next) => {
+                    next.splice(aIndex, 1);
+                    return next;
+                  })
+                }>
+                <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
+              </Popconfirm>
+            </Space>
+          }>
+          <Form size="small">
+            <Form.Item label={"Description"}>
+              <CustomMarkdownEditor
+                value={localize(ability.description, lang)}
+                onChange={(value) =>
+                  updateAbilities((next) => {
+                    next[aIndex] = {
+                      ...next[aIndex],
+                      description: setLocalizedField(next[aIndex].description, lang, value || ""),
+                    };
+                    return next;
+                  })
+                }
+                height={100}
+              />
+            </Form.Item>
+          </Form>
+        </Card>
+      ))}
+      <Button
+        type="dashed"
+        style={{ width: "100%", marginTop: 4, marginBottom: 4, borderColor: "#898989" }}
+        onClick={() =>
+          updateAbilities((next) => {
+            next.push({ name: { [lang]: `Weapon ability ${next.length + 1}` }, description: { [lang]: "" } });
+            return next;
+          })
+        }>
+        Add weapon ability
       </Button>
       <Divider />
     </>

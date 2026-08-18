@@ -2,7 +2,9 @@ import { describe, it, expect } from "vitest";
 import {
   localize,
   getCardName,
+  isLocalizedFieldEmpty,
   setLocalizedField,
+  setLocalizedFieldSeeded,
   setLocalizedArrayItem,
   SUPPORTED_LANGUAGES,
   LANGUAGE_LABELS,
@@ -73,6 +75,36 @@ describe("setLocalizedField", () => {
 
   it("does not treat arrays as language-keyed objects", () => {
     expect(setLocalizedField(["a", "b"], "de", "X")).toBe("X");
+  });
+});
+
+describe("setLocalizedFieldSeeded", () => {
+  it("starts an absent field as a language-keyed object", () => {
+    expect(setLocalizedFieldSeeded(null, "de", "X")).toEqual({ de: "X" });
+    expect(setLocalizedFieldSeeded(undefined, "de", "X")).toEqual({ de: "X" });
+  });
+
+  it("merges into an existing language-keyed field like setLocalizedField", () => {
+    expect(setLocalizedFieldSeeded({ en: "A" }, "de", "X")).toEqual({ en: "A", de: "X" });
+  });
+
+  it("keeps an existing plain string plain", () => {
+    expect(setLocalizedFieldSeeded("plain", "de", "X")).toBe("X");
+  });
+});
+
+describe("isLocalizedFieldEmpty", () => {
+  it("treats nullish, blank strings and blank language maps as empty", () => {
+    expect(isLocalizedFieldEmpty(null)).toBe(true);
+    expect(isLocalizedFieldEmpty(undefined)).toBe(true);
+    expect(isLocalizedFieldEmpty("   ")).toBe(true);
+    expect(isLocalizedFieldEmpty({})).toBe(true);
+    expect(isLocalizedFieldEmpty({ en: "", de: "  " })).toBe(true);
+  });
+
+  it("is not empty when any language still holds text", () => {
+    expect(isLocalizedFieldEmpty({ en: "A", de: "" })).toBe(false);
+    expect(isLocalizedFieldEmpty("text")).toBe(false);
   });
 });
 

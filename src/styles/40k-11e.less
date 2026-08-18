@@ -26,6 +26,26 @@
     }
   }
 
+  // Weapon-level abilities (`weapon.abilities`) render as a full-width row under
+  // the weapon's profiles, so they keep the row striping but break out of the
+  // profile grid. Slightly smaller than a profile line so the stat columns stay
+  // the thing the eye lands on first.
+  .weapon-abilities {
+    .weapon-ability {
+      color: black;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: normal;
+      padding: 2px 4px 2px 0;
+      z-index: 2;
+
+      .name {
+        font-weight: 600;
+        padding-right: 4px;
+      }
+    }
+  }
+
   // Weapon keywords / core abilities that resolve to a keyword-glossary entry
   // get a subtle dotted underline (and a help cursor) to signal the hover
   // tooltip carrying the localised rule text.
