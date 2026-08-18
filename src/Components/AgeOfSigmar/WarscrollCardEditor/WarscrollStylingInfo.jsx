@@ -1,10 +1,11 @@
-import { Form, Switch, Input, Card, Space, Typography, Upload, Button, Slider } from "antd";
+import { Form, Switch, Input, Card, Space, Typography, Upload, Button } from "antd";
 import { message } from "../../Toast/message";
 import { Upload as UploadIcon, Trash2 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
+import { SliderWithInput } from "../../Shared/SliderWithInput";
 
 const { Text } = Typography;
 
@@ -161,72 +162,64 @@ export function WarscrollStylingInfo() {
           </Form.Item>
 
           <Form.Item label={"Image Opacity"}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={0}
-                max={100}
-                value={activeCard.imageOpacity ?? 30}
-                onChange={(value) => updateActiveCard({ ...activeCard, imageOpacity: value })}
-                marks={{
-                  0: "0%",
-                  30: "30%",
-                  100: "100%",
-                }}
-                tooltip={{ formatter: (value) => `${value}%` }}
-              />
-            </div>
+            <SliderWithInput
+              min={0}
+              max={100}
+              value={activeCard.imageOpacity ?? 30}
+              onChange={(value) => updateActiveCard({ ...activeCard, imageOpacity: value })}
+              marks={{
+                0: "0%",
+                30: "30%",
+                100: "100%",
+              }}
+              tooltip={{ formatter: (value) => `${value}%` }}
+            />
           </Form.Item>
 
           <Form.Item label={"Horizontal Position"}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-200}
-                max={200}
-                value={activeCard.imagePositionX || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, imagePositionX: value })}
-                marks={{
-                  [-200]: "Left",
-                  0: "Center",
-                  200: "Right",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-200}
+              max={200}
+              value={activeCard.imagePositionX || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, imagePositionX: value })}
+              marks={{
+                [-200]: "Left",
+                0: "Center",
+                200: "Right",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
 
           <Form.Item label={"Vertical Position"}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-200}
-                max={200}
-                value={activeCard.imagePositionY || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, imagePositionY: value })}
-                marks={{
-                  [-200]: "Top",
-                  0: "Center",
-                  200: "Bottom",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-200}
+              max={200}
+              value={activeCard.imagePositionY || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, imagePositionY: value })}
+              marks={{
+                [-200]: "Top",
+                0: "Center",
+                200: "Bottom",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
 
           <Form.Item label={"Image Scale"} style={{ marginBottom: 0 }}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={50}
-                max={300}
-                value={activeCard.imageScale ?? 100}
-                onChange={(value) => updateActiveCard({ ...activeCard, imageScale: value })}
-                marks={{
-                  50: "50%",
-                  100: "100%",
-                  200: "200%",
-                  300: "300%",
-                }}
-                tooltip={{ formatter: (value) => `${value}%` }}
-              />
-            </div>
+            <SliderWithInput
+              min={50}
+              max={300}
+              value={activeCard.imageScale ?? 100}
+              onChange={(value) => updateActiveCard({ ...activeCard, imageScale: value })}
+              marks={{
+                50: "50%",
+                100: "100%",
+                200: "200%",
+                300: "300%",
+              }}
+              tooltip={{ formatter: (value) => `${value}%` }}
+            />
           </Form.Item>
         </Form>
       </Card>
