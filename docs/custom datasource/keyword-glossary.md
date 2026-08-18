@@ -150,7 +150,16 @@ AoS and Starcraft TMG render glossary keywords through three system-neutral comp
 |-------------|---------|-----------|
 | `40k-10e` / `40k-11e` | `Ds40kUnitWeapons` → `Ds40kWeaponKeywords` (inline tags) + a `<div class="special">` of `.ability` rows. Uses the 40K-native components rather than the shared ones. | `Ds40kUnitExtra` → `UnitAbilityDescription` (`glossaryOnly`). |
 | `aos` | `DsAosWeapons` → `GlossaryKeywordTags` replaces the plain `weapon-ability-badge` pills (desktop + mobile); `GlossaryExplanationRows` renders below the weapon table. Falls back to plain badges when no glossary is present. | `DsAosAbilities` → `GlossaryText` on `ability.description`, but only when there is an actual abilities-scoped tooltip match (otherwise the normal `MarkdownDisplay` path is kept so formatting survives). |
-| `starcraft-tmg` | `StarcraftWeaponTable` → the keyword column (any column whose `key` is `keyword`/`keywords`) is split with `splitKeywordString` and rendered via `GlossaryKeywordTags`; `GlossaryExplanationRows` renders below the table (desktop + mobile). | `StarcraftAbility` → `GlossaryText` on `ability.description`. |
+| `starcraft-tmg` | `StarcraftWeaponTable` → keywords from a string column (`key` = `keyword`, split with `splitKeywordString`) **and** from the `profile.keywords` array (see below) render via `GlossaryKeywordTags`; `GlossaryExplanationRows` renders below the table (desktop + mobile). | `StarcraftAbility` → `GlossaryText` on `ability.description`. |
+
+### Where Starcraft TMG weapon keywords come from
+
+A TMG weapon type can carry keywords two ways, and both resolve against the glossary:
+
+- **A schema column keyed `keyword`** holding a comma-separated string cell (`Target (Ground), Long Range (18")`) — the shape the built-in Starcraft TMG datasource uses.
+- **`profile.keywords`**, the array the card editors write when the weapon type has `hasKeywords` enabled. `StarcraftWeaponTable` appends a trailing keywords column for it whenever any profile carries a tag, falling back to the parent weapon's `keywords` when a profile has none. The column's header uses the label of a stripped reserved column when the schema has one, otherwise `Keywords`.
+
+A schema column whose `key` is a reserved weapon profile field (`keywords`, `name`, `active`, `upgrade` — see `RESERVED_WEAPON_PROFILE_KEYS`) is dropped before rendering: the data model owns that field, so printing its raw value dumped the keyword array into the cell as `Repeating,testing`. The schema editor blocks those keys, but older and imported datasources can still carry one.
 
 Description text can include newlines and bullet markers (`• `) which the 40K `UnitAbilityDescription` renders verbatim; the shared `GlossaryText` renders plain text plus tooltip spans.
 
@@ -166,4 +175,5 @@ Description text can include newlines and bullet markers (`• `) which the 40K 
 - Create a `blank`-base datasource → glossary starts empty; manually-added entries with `Weapons` selected render correctly.
 - **AoS:** on an `aos` datasource, add a glossary entry scoped to `Weapons`, then add that keyword to a warscroll weapon profile → the keyword tag is styled and (explanation mode) an explanation row renders below the weapon table.
 - **Starcraft TMG:** on a `starcraft-tmg` datasource, add a glossary entry whose name matches a token in a weapon's `Keyword` column (e.g. `Target (Ground)` exact, or `Long Range` prefix) → the column splits into styled tags and explanation rows render below the table.
+- **Starcraft TMG (keyword arrays):** on a weapon type with `hasKeywords` enabled, add a keyword to a weapon profile in the card editor and a glossary entry with the same name scoped to `Weapons` → a `Keywords` column appears with styled tags and the explanation row renders below the table.
 - **Abilities (AoS / TMG):** add an entry scoped to `Abilities` with display mode `Hover tooltip`, reference its name in an ability description → the name gets a dotted underline + hover tooltip in the rendered card.

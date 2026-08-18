@@ -1,0 +1,5 @@
+{
+  "title": "Starcraft weapon keywords link to the glossary again",
+  "body": "On Starcraft datacards, keywords added to a weapon were printed as raw text and never matched a glossary entry. They now render as proper keyword tags with their tooltips and explanation lines, just like on the other game systems.",
+  "severity": "warning"
+}
