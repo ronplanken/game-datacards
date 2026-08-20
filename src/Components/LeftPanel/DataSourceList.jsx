@@ -9,6 +9,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { ContextMenu } from "../TreeView/ContextMenu";
 import { buildCategoryMenuItems } from "../../util/menu-helper";
+import { localize } from "../../Helpers/localization.helpers";
 
 export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSelectedTreeIndex, onAddToCategory }) => {
   const { settings, updateSettings } = useSettingsStorage();
@@ -191,6 +192,17 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
     }
   };
 
+  const detachmentSubtitle = (card) => {
+    if (card.role) {
+      return null;
+    }
+    const detachment = localize(card.detachment, settings.language);
+    if (!detachment || detachment === "core") {
+      return null;
+    }
+    return <span style={{ fontSize: "0.7rem" }}>{detachment}</span>;
+  };
+
   const renderItem = (card, index) => {
     if (card.type === "header") {
       return (
@@ -292,7 +304,9 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           className={card.nonBase ? card.faction_id : ""}>
           <span style={{ flexDirection: "column", display: "flex" }}>
             {card.name}
-            {card.detachment !== "core" && <span style={{ fontSize: "0.7rem" }}>{card.detachment}</span>}
+            {/* The detachment subtitle is redundant once the list is grouped by
+                detachment, and "core" stratagems belong to none. */}
+            {detachmentSubtitle(card)}
           </span>
           {settings.showPointsInListview && card?.points?.length > 0 && (
             <span className="list-cost">

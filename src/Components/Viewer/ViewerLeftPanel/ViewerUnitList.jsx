@@ -2,6 +2,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { List } from "antd";
 import classNames from "classnames";
 import { useDataSourceType } from "../../../Helpers/cardstorage.helpers";
+import { groupStratagemsByDetachment } from "../../../Helpers/browseList.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
@@ -86,19 +87,33 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
       return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
     });
 
-    const mainStratagems = searchText
+    const searchedStratagems = searchText
       ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
       : filteredStratagems;
 
-    const basicStratagems = searchText
-      ? selectedFaction.basicStratagems?.filter((stratagem) =>
-          stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
-        )
-      : selectedFaction.basicStratagems;
+    // A faction ships six stratagems per detachment, so the flat list runs to
+    // 60+ entries. Splitting it into collapsible detachment sections is opt-in.
+    const mainStratagems = settings.groupStratagemsByDetachment
+      ? groupStratagemsByDetachment(searchedStratagems, settings.language)
+      : searchedStratagems;
+
+    const basicStratagems = settings.hideBasicStratagems
+      ? []
+      : searchText
+        ? selectedFaction.basicStratagems?.filter((stratagem) =>
+            stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
+          )
+        : selectedFaction.basicStratagems;
 
     unitList = [
-      { type: "header", name: "Basic stratagems" },
-      ...(basicStratagems || []).map((s) => ({ ...s, faction_id: selectedFaction.id })),
+      // Datasources without core stratagems skip the Basic section entirely
+      // instead of rendering an empty header.
+      ...(basicStratagems?.length > 0
+        ? [
+            { type: "header", name: "Basic stratagems" },
+            ...basicStratagems.map((s) => ({ ...s, faction_id: selectedFaction.id })),
+          ]
+        : []),
       { type: "header", name: "Faction stratagems" },
       ...(mainStratagems || []),
     ];
