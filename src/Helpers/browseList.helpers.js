@@ -78,9 +78,10 @@ export const groupStratagemsByDetachment = (stratagems, language = "en") => {
   (stratagems || []).forEach((stratagem) => {
     const name = localize(stratagem?.detachment, language) || OTHER_ROLE;
     if (!sections.has(name)) {
-      sections.set(name, []);
+      sections.set(name, { roleKey: `detachment:${name}`, rows: [] });
     }
-    sections.get(name).push({ ...stratagem, role: name, roleKey: `detachment:${name}` });
+    const section = sections.get(name);
+    section.rows.push({ ...stratagem, role: name, roleKey: section.roleKey });
   });
 
   // A nameless detachment sorts last, whatever order the data listed it in.
@@ -89,7 +90,10 @@ export const groupStratagemsByDetachment = (stratagems, language = "en") => {
     names.push(OTHER_ROLE);
   }
 
-  return names.flatMap((name) => [{ type: "role", name, roleKey: `detachment:${name}` }, ...sections.get(name)]);
+  return names.flatMap((name) => {
+    const { roleKey, rows } = sections.get(name);
+    return [{ type: "role", name, roleKey }, ...rows];
+  });
 };
 
 const isCardRow = (row) => Boolean(row) && !row.type;
