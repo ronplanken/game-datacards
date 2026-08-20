@@ -9,6 +9,8 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { ContextMenu } from "../TreeView/ContextMenu";
 import { buildCategoryMenuItems } from "../../util/menu-helper";
+import { localize } from "../../Helpers/localization.helpers";
+import { getCardSectionKey, getSectionKey } from "../../Helpers/browseList.helpers";
 
 export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSelectedTreeIndex, onAddToCategory }) => {
   const { settings, updateSettings } = useSettingsStorage();
@@ -59,11 +61,12 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
   };
 
   const handleRoleClick = (card) => {
+    const sectionKey = getSectionKey(card);
     let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
-    if (newClosedRoles.includes(card.name)) {
-      newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
+    if (newClosedRoles.includes(sectionKey)) {
+      newClosedRoles.splice(newClosedRoles.indexOf(sectionKey), 1);
     } else {
-      newClosedRoles.push(card.name);
+      newClosedRoles.push(sectionKey);
     }
     updateSettings({
       ...settings,
@@ -191,6 +194,17 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
     }
   };
 
+  const detachmentSubtitle = (card) => {
+    if (card.role) {
+      return null;
+    }
+    const detachment = localize(card.detachment, settings.language);
+    if (!detachment || detachment === "core") {
+      return null;
+    }
+    return <span style={{ fontSize: "0.7rem" }}>{detachment}</span>;
+  };
+
   const renderItem = (card, index) => {
     if (card.type === "header") {
       return (
@@ -253,7 +267,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           onClick={() => handleRoleClick(card)}
           onContextMenu={(e) => handleContextMenu(e, card)}>
           <span className="icon">
-            {settings?.mobile?.closedRoles?.includes(card.name) ? (
+            {settings?.mobile?.closedRoles?.includes(getSectionKey(card)) ? (
               <ChevronRight size={14} />
             ) : (
               <ChevronDown size={14} />
@@ -268,7 +282,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
     if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
       return <></>;
     }
-    if (settings?.mobile?.closedRoles?.includes(card.role)) {
+    if (settings?.mobile?.closedRoles?.includes(getCardSectionKey(card))) {
       return <></>;
     }
 
@@ -292,7 +306,9 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           className={card.nonBase ? card.faction_id : ""}>
           <span style={{ flexDirection: "column", display: "flex" }}>
             {card.name}
-            {card.detachment !== "core" && <span style={{ fontSize: "0.7rem" }}>{card.detachment}</span>}
+            {/* The detachment subtitle is redundant once the list is grouped by
+                detachment, and "core" stratagems belong to none. */}
+            {detachmentSubtitle(card)}
           </span>
           {settings.showPointsInListview && card?.points?.length > 0 && (
             <span className="list-cost">

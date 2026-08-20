@@ -135,7 +135,13 @@ export function useViewerNavigation() {
       if (foundEnhancement) {
         // AoS enhancements carry their own `source` ("aos-4e"), which no renderer
         // is keyed on — the faction's shape decides which card display to use.
-        const enhancementSource = foundFaction?.warscrolls ? "aos" : foundFaction?.datasheets ? "40k-10e" : "40k";
+        // 40k cards keep their own source so 11e enhancements reach the 11e
+        // renderer, falling back to the faction's for data that omits it.
+        const enhancementSource = foundFaction?.warscrolls
+          ? "aos"
+          : foundFaction?.datasheets
+            ? (foundEnhancement.source ?? foundFaction.source ?? "40k-10e")
+            : "40k";
         setActiveCard({
           ...foundEnhancement,
           id: `enhancement-${foundEnhancement.name}`, // Add unique id for changeActiveCard comparison
@@ -183,7 +189,9 @@ export function useViewerNavigation() {
           id: `rule-${foundRule.name}`, // Add unique id for changeActiveCard comparison
           cardType: "rule",
           faction_id: foundFaction?.id,
-          source: foundFaction?.datasheets ? "40k-10e" : "40k",
+          // Same as enhancements: the rule's own source routes 11e rules to the
+          // 11e renderer, with the faction's as a fallback.
+          source: foundFaction?.datasheets ? (foundRule.source ?? foundFaction.source ?? "40k-10e") : "40k",
         });
       } else {
         setActiveCard();

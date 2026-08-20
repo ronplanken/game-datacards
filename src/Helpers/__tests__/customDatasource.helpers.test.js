@@ -38,7 +38,7 @@ describe("VALID_DISPLAY_FORMATS", () => {
   });
 
   it("includes all expected formats", () => {
-    expect(VALID_DISPLAY_FORMATS).toEqual(["40k-10e", "40k", "basic", "necromunda", "aos", "custom"]);
+    expect(VALID_DISPLAY_FORMATS).toEqual(["40k-11e", "40k-10e", "40k", "basic", "necromunda", "aos", "custom"]);
   });
 });
 

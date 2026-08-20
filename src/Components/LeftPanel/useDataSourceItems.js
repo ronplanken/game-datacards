@@ -1,6 +1,11 @@
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { getBrowsableEnhancements } from "../../Helpers/faction.helpers";
+import {
+  buildFactionDatasheetList,
+  groupStratagemsByDetachment,
+  is40kBrowseSource,
+} from "../../Helpers/browseList.helpers";
 
 /**
  * Group warscrolls by their role keywords (Hero, Battleline, Monster, etc.)
@@ -83,107 +88,16 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "datasheets") {
-      let filteredSheets = [];
-      if (
-        selectedFaction &&
-        (settings.selectedDataSource === "40k-10e" ||
-          settings.selectedDataSource === "40k-10e-cp" ||
-          settings.selectedDataSource === "40k-11e")
-      ) {
+      if (selectedFaction && is40kBrowseSource(settings.selectedDataSource)) {
         try {
-          filteredSheets = [
-            { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
-            ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-          ];
-          if (selectedFaction.is_subfaction && settings.combineParentFactions) {
-            let parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
-
-            let parentDatasheets = parentFaction?.datasheets
-              ?.filter((val) => val.factions.length === 1 && val.factions.includes(selectedFaction.parent_keyword))
-              .map((val) => {
-                return { ...val, nonBase: true };
-              });
-
-            filteredSheets = [
-              ...filteredSheets,
-              { type: "category", name: parentFaction.name, id: parentFaction.id, closed: true },
-              ...parentDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-            ];
-          }
-
-          if (!settings?.showLegends) {
-            filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
-          }
-          if (!settings.groupByFaction) {
-            filteredSheets = filteredSheets?.toSorted((a, b) => a.name.localeCompare(b.name));
-          }
-          if (settings.groupByRole) {
-            const types = ["Battleline", "Character", "Dedicated Transport"];
-            let byRole = [];
-
-            types.map((role) => {
-              byRole = [...byRole, { type: "role", name: role }];
-              byRole = [
-                ...byRole,
-                ...filteredSheets
-                  ?.filter((sheet) => sheet?.keywords?.includes(role))
-                  .map((val) => {
-                    return { ...val, role: role };
-                  }),
-              ];
-            });
-
-            byRole = [
-              ...byRole,
-              { type: "role", name: "Other" },
-              ...filteredSheets
-                ?.filter((sheet) => {
-                  return types.every((t) => !sheet?.keywords?.includes(t));
-                })
-                .map((val) => {
-                  return { ...val, role: "Other" };
-                }),
-            ];
-
-            filteredSheets = byRole;
-          }
-
-          if (
-            selectedFaction.allied_factions &&
-            selectedFaction.allied_factions.length > 0 &&
-            settings.combineAlliedFactions
-          ) {
-            selectedFaction.allied_factions.forEach((alliedFactionId) => {
-              let alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
-
-              let alliedFactionDatasheets = alliedFaction?.datasheets.map((val) => {
-                return { ...val, nonBase: true, allied: true };
-              });
-
-              filteredSheets = [
-                ...filteredSheets,
-                { type: "allied", name: alliedFaction.name, id: alliedFaction.id, closed: true },
-                ...alliedFactionDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-              ];
-            });
-          }
-          filteredSheets = searchText
-            ? filteredSheets.filter((sheet) => {
-                if (sheet.type === "category" || sheet.type === "header") {
-                  return true;
-                }
-                return sheet.name.toLowerCase().includes(searchText.toLowerCase());
-              })
-            : filteredSheets;
-
-          return filteredSheets;
+          return buildFactionDatasheetList({ dataSource, selectedFaction, settings, searchText });
         } catch (error) {
           console.error("An error occured", error);
           return [];
         }
       }
 
-      filteredSheets = searchText
+      let filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
       if (!settings?.showLegends) {
@@ -206,9 +120,15 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       const filteredStratagems = selectedFaction?.stratagems?.filter((stratagem) => {
         return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
       });
-      const mainStratagems = searchText
+      const searchedStratagems = searchText
         ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
         : filteredStratagems;
+
+      // A faction ships six stratagems per detachment, so the flat list runs to
+      // 60+ entries. Splitting it into collapsible detachment sections is opt-in.
+      const mainStratagems = settings.groupStratagemsByDetachment
+        ? groupStratagemsByDetachment(searchedStratagems, settings.language)
+        : searchedStratagems;
 
       if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
         return mainStratagems;
@@ -219,8 +139,8 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
             )
           : (selectedFaction.basicStratagems ?? []);
 
-        // Datasources without core stratagems (e.g. 11th edition ships none yet)
-        // skip the Basic section entirely instead of rendering an empty header.
+        // Datasources without core stratagems skip the Basic section entirely
+        // instead of rendering an empty header.
         if (!basicStratagems || basicStratagems.length === 0) {
           return [{ type: "header", name: "Faction stratagems" }, ...mainStratagems];
         }

@@ -84,3 +84,88 @@ describe("useDataSourceItems enhancements section", () => {
     expect(result.current).toEqual([]);
   });
 });
+
+describe("useDataSourceItems stratagem detachment grouping", () => {
+  const detachmentStrat = (name, detachment) => ({ ...strat(name), detachment });
+
+  it("leaves stratagems in one flat list by default", () => {
+    mockState.settings = { selectedDataSource: "40k-11e" };
+    mockState.selectedFaction = {
+      stratagems: [detachmentStrat("Ere We Go", "Blitz Brigade"), detachmentStrat("Wall of Dakka", "Dread Mob")],
+      basicStratagems: [],
+    };
+    const { result } = renderHook(() => useDataSourceItems("stratagems", ""));
+    expect(result.current.some((i) => i.type === "role")).toBe(false);
+  });
+
+  it("splits stratagems into collapsible detachment sections when enabled", () => {
+    mockState.settings = { selectedDataSource: "40k-11e", groupStratagemsByDetachment: true };
+    mockState.selectedFaction = {
+      stratagems: [
+        detachmentStrat("Ere We Go", "Blitz Brigade"),
+        detachmentStrat("Wall of Dakka", "Dread Mob"),
+        detachmentStrat("Ramming Speed", "Blitz Brigade"),
+      ],
+      basicStratagems: [],
+    };
+    const { result } = renderHook(() => useDataSourceItems("stratagems", ""));
+    expect(result.current.map((i) => i.name)).toEqual([
+      "Faction stratagems",
+      "Blitz Brigade",
+      "Ere We Go",
+      "Ramming Speed",
+      "Dread Mob",
+      "Wall of Dakka",
+    ]);
+  });
+
+  it("leaves core stratagems flat under the Basic section", () => {
+    mockState.settings = { selectedDataSource: "40k-11e", groupStratagemsByDetachment: true };
+    mockState.selectedFaction = {
+      stratagems: [detachmentStrat("Ere We Go", "Blitz Brigade")],
+      basicStratagems: [strat("Command Re-roll")],
+    };
+    const { result } = renderHook(() => useDataSourceItems("stratagems", ""));
+    const basicIndex = result.current.findIndex((i) => i.name === "Command Re-roll");
+    expect(result.current[basicIndex].type).toBeUndefined();
+    expect(result.current[basicIndex - 1].name).toBe("Basic stratagems");
+  });
+});
+
+describe("useDataSourceItems datasheets section", () => {
+  // 11e keywords are language-keyed objects, so role grouping has to match on
+  // the canonical English keyword rather than on string equality.
+  const sheet11e = (name, ...keywords) => ({ id: name, name, keywords: keywords.map((k) => ({ en: k })) });
+
+  it("groups an 11e faction's datasheets by role", () => {
+    mockState.settings = { selectedDataSource: "40k-11e", groupByRole: true };
+    mockState.dataSource = { data: [] };
+    mockState.selectedFaction = {
+      id: "orks",
+      name: "Orks",
+      datasheets: [sheet11e("Boyz", "Battleline"), sheet11e("Warboss", "Character"), sheet11e("Stompa", "Titanic")],
+    };
+    const { result } = renderHook(() => useDataSourceItems("datasheets", ""));
+    expect(result.current.map((i) => i.name)).toEqual([
+      "Character",
+      "Warboss",
+      "Battleline",
+      "Boyz",
+      "Dedicated Transport",
+      "Other",
+      "Stompa",
+    ]);
+  });
+
+  it("sorts an 11e faction's datasheets alphabetically when grouping is off", () => {
+    mockState.settings = { selectedDataSource: "40k-11e" };
+    mockState.dataSource = { data: [] };
+    mockState.selectedFaction = {
+      id: "orks",
+      name: "Orks",
+      datasheets: [sheet11e("Warboss", "Character"), sheet11e("Boyz", "Battleline")],
+    };
+    const { result } = renderHook(() => useDataSourceItems("datasheets", ""));
+    expect(result.current.filter((i) => !i.type).map((i) => i.name)).toEqual(["Boyz", "Warboss"]);
+  });
+});
