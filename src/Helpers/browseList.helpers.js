@@ -34,21 +34,28 @@ export const OTHER_ROLE = "Other";
  *
  * @param {Array} sheets - datasheets, possibly mixed with structural rows
  * @returns {Array} rows of `{ type: "role", name }` separators followed by their
- *   datasheets, each tagged with `role` so the list can collapse the section
+ *   datasheets, each tagged with `role` and `roleKey` so the list can collapse
+ *   the section
  */
 export const groupSheetsByRole = (sheets) => {
   const cards = (sheets || []).filter((sheet) => !sheet?.type);
   const rows = [];
 
+  const section = (role) => {
+    const roleKey = `role:${role}`;
+    rows.push({ type: "role", name: role, roleKey });
+    return roleKey;
+  };
+
   DATASHEET_ROLES.forEach((role) => {
-    rows.push({ type: "role", name: role });
-    cards.filter((sheet) => cardHasKeyword(sheet, role)).forEach((sheet) => rows.push({ ...sheet, role }));
+    const roleKey = section(role);
+    cards.filter((sheet) => cardHasKeyword(sheet, role)).forEach((sheet) => rows.push({ ...sheet, role, roleKey }));
   });
 
-  rows.push({ type: "role", name: OTHER_ROLE });
+  const otherKey = section(OTHER_ROLE);
   cards
     .filter((sheet) => DATASHEET_ROLES.every((role) => !cardHasKeyword(sheet, role)))
-    .forEach((sheet) => rows.push({ ...sheet, role: OTHER_ROLE }));
+    .forEach((sheet) => rows.push({ ...sheet, role: OTHER_ROLE, roleKey: otherKey }));
 
   return rows;
 };
@@ -62,7 +69,8 @@ export const groupSheetsByRole = (sheets) => {
  * @param {string} [language] - card language, for datasources whose detachment
  *   names are language-keyed objects
  * @returns {Array} rows of `{ type: "role", name }` separators followed by their
- *   stratagems, each tagged with `role` so the list can collapse the section
+ *   stratagems, each tagged with `role` and `roleKey` so the list can collapse
+ *   the section
  */
 export const groupStratagemsByDetachment = (stratagems, language = "en") => {
   const sections = new Map();
@@ -72,7 +80,7 @@ export const groupStratagemsByDetachment = (stratagems, language = "en") => {
     if (!sections.has(name)) {
       sections.set(name, []);
     }
-    sections.get(name).push({ ...stratagem, role: name });
+    sections.get(name).push({ ...stratagem, role: name, roleKey: `detachment:${name}` });
   });
 
   // A nameless detachment sorts last, whatever order the data listed it in.
@@ -81,7 +89,7 @@ export const groupStratagemsByDetachment = (stratagems, language = "en") => {
     names.push(OTHER_ROLE);
   }
 
-  return names.flatMap((name) => [{ type: "role", name }, ...sections.get(name)]);
+  return names.flatMap((name) => [{ type: "role", name, roleKey: `detachment:${name}` }, ...sections.get(name)]);
 };
 
 const isCardRow = (row) => Boolean(row) && !row.type;
@@ -94,6 +102,22 @@ const isCardRow = (row) => Boolean(row) && !row.type;
  * @returns {Array} the same rows minus the separators that head no cards
  */
 const dropEmptySections = (rows) => rows.filter((row, index) => isCardRow(row) || isCardRow(rows[index + 1]));
+
+/**
+ * Collapse-state key for a section separator row. Datasheet roles and stratagem
+ * detachments share one `settings.mobile.closedRoles` list, and both can be
+ * called "Other", so the key is namespaced rather than the bare display name.
+ *
+ * @param {Object} row - a `{ type: "role" }` separator row
+ */
+export const getSectionKey = (row) => row?.roleKey ?? row?.name;
+
+/**
+ * Collapse-state key for a card row, matching the separator it sits under.
+ *
+ * @param {Object} card - a card row
+ */
+export const getCardSectionKey = (card) => card?.roleKey ?? card?.role;
 
 /**
  * Build a 40K faction's datasheet list: the faction's own sheets plus any parent

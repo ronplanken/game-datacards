@@ -51,12 +51,19 @@ how to draw.
 | _(none)_ | A card | — |
 | `category` | Faction heading (own or parent faction) | yes, via `settings.mobile.closedFactions` |
 | `allied` | Allied faction heading | yes, via `settings.mobile.closedFactions` |
-| `role` | Role or detachment heading | yes, via `settings.mobile.closedRoles` |
+| `role` | Role or detachment heading | yes, via `settings.mobile.closedRoles` keyed on `roleKey` |
 | `header` | Plain, non-collapsible heading | no |
 
-Cards under a `role` separator carry a matching `role` field, which is what the
-renderers hide against when the section is collapsed, and what the "Add all
+Cards under a `role` separator carry a matching `role` field, which the "Add all
 items to..." context action selects on.
+
+Collapsed sections are tracked in one shared `settings.mobile.closedRoles` list,
+across datasheet roles and stratagem detachments alike. Both can produce a
+section called "Other", so the list stores a namespaced key (`role:Other`,
+`detachment:Other`) rather than the display name, carried on both the separator
+and its cards as `roleKey`. Read it through `getSectionKey(separator)` and
+`getCardSectionKey(card)`, which fall back to the display name for rows built
+without one.
 
 Searching filters the cards, then `dropEmptySections` removes any separator the
 search left with no cards under it.

@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   buildFactionDatasheetList,
+  getCardSectionKey,
+  getSectionKey,
   groupSheetsByRole,
   groupStratagemsByDetachment,
   is40kBrowseSource,
@@ -166,5 +168,33 @@ describe("buildFactionDatasheetList", () => {
     expect(rows[allied].name).toBe("Agents of the Imperium");
     expect(rows[allied + 1].name).toBe("Inquisitor");
     expect(rows[allied + 1].allied).toBe(true);
+  });
+});
+
+// Role sections and detachment sections share one `settings.mobile.closedRoles`
+// list, and both have an "Other" bucket, so their collapse keys must not collide.
+describe("section collapse keys", () => {
+  const otherSheet = groupSheetsByRole([sheet11e("Stompa", "Titanic")]).filter((row) => row.name === "Other");
+  const otherStrats = groupStratagemsByDetachment([{ id: "s", name: "Command Re-roll", detachment: "" }]);
+
+  it("namespaces a role section apart from a detachment section of the same name", () => {
+    const roleSeparator = otherSheet.find((row) => row.type === "role");
+    const detachmentSeparator = otherStrats.find((row) => row.type === "role");
+    expect(getSectionKey(roleSeparator)).not.toBe(getSectionKey(detachmentSeparator));
+  });
+
+  it("gives a card the same key as the separator it sits under", () => {
+    const [separator, card] = groupSheetsByRole([sheet11e("Warboss", "Character")]);
+    expect(getCardSectionKey(card)).toBe(getSectionKey(separator));
+
+    const [stratSeparator, strat] = groupStratagemsByDetachment([
+      { id: "s", name: "Ere We Go", detachment: "Blitz Brigade" },
+    ]);
+    expect(getCardSectionKey(strat)).toBe(getSectionKey(stratSeparator));
+  });
+
+  it("falls back to the display name for rows built without a key", () => {
+    expect(getSectionKey({ type: "role", name: "Heroes" })).toBe("Heroes");
+    expect(getCardSectionKey({ name: "Warboss", role: "Character" })).toBe("Character");
   });
 });
