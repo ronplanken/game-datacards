@@ -1,4 +1,4 @@
-import { Button, Col, Form, Grid, Image, Layout, Row, Slider, Space, Typography } from "antd";
+import { Button, Col, Form, Grid, Image, Layout, Row, Space, Typography } from "antd";
 import split from "just-split";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -6,6 +6,7 @@ import "../App.css";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Printer } from "../Components/Print/Printer";
 import { PrintFaq } from "../Components/PrintFaq";
+import { SliderWithInput } from "../Components/Shared/SliderWithInput";
 import { Warhammer40KCardDisplay } from "../Components/Warhammer40k/CardDisplay";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
@@ -53,8 +54,8 @@ export const LegacyPrint = () => {
               </Col>
             </Row>
             <Form layout="vertical" style={{ padding: 8, borderRightWidth: 1, borderRightColor: "#0070D6" }}>
-              <Form.Item label={`Cards per Page (${cardsPerPage})`}>
-                <Slider
+              <Form.Item label="Cards per Page">
+                <SliderWithInput
                   value={cardsPerPage}
                   min={1}
                   max={9}
@@ -64,10 +65,11 @@ export const LegacyPrint = () => {
                       ...settings,
                       legacyPrintSettings: { ...settings.legacyPrintSettings, cardsPerPage: val },
                     });
-                  }}></Slider>
+                  }}
+                />
               </Form.Item>
-              <Form.Item label={`Cards per Row (${cardsPerRow})`}>
-                <Slider
+              <Form.Item label="Cards per Row">
+                <SliderWithInput
                   min={1}
                   max={10}
                   onChange={(val) => {
@@ -77,10 +79,11 @@ export const LegacyPrint = () => {
                       legacyPrintSettings: { ...settings.legacyPrintSettings, cardsPerRow: val },
                     });
                   }}
-                  value={cardsPerRow}></Slider>
+                  value={cardsPerRow}
+                />
               </Form.Item>
-              <Form.Item label={`Card scaling (${cardScaling}%)`}>
-                <Slider
+              <Form.Item label="Card scaling">
+                <SliderWithInput
                   min={25}
                   max={200}
                   step={1}
@@ -91,7 +94,8 @@ export const LegacyPrint = () => {
                       legacyPrintSettings: { ...settings.legacyPrintSettings, cardScaling: val },
                     });
                   }}
-                  value={cardScaling}></Slider>
+                  value={cardScaling}
+                />
               </Form.Item>
               <Form.Item>
                 <Button block type="primary" onClick={() => window.print()}>

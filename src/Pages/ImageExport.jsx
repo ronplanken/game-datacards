@@ -1,4 +1,4 @@
-import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Spin } from "antd";
+import { Button, Col, Collapse, Form, Layout, Row, Select, Spin } from "antd";
 import { captureToBlob } from "../Helpers/screenshot.helpers";
 import { useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -6,6 +6,7 @@ import "../App.css";
 import "../Components/Print/Print.css";
 import { AppHeader } from "../Components/AppHeader";
 import { CardRenderer } from "../Components/Print/CardRenderer";
+import { SliderWithInput } from "../Components/Shared/SliderWithInput";
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 import JSZip from "jszip";
@@ -127,8 +128,8 @@ export const ImageExport = () => {
                         size={"small"}
                       />
                     </Form.Item>
-                    <Form.Item label={`Image pixel scaling (${pixelScaling})`}>
-                      <Slider
+                    <Form.Item label="Image pixel scaling">
+                      <SliderWithInput
                         min={0.5}
                         max={2.5}
                         step={0.25}
