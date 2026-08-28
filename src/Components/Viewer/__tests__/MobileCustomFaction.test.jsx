@@ -19,6 +19,8 @@ const mockSelectedFaction = {
     { id: "unit-2", name: "Beta Unit", cardType: "unit" },
   ],
   stratagems: [{ id: "strat-1", name: "Surprise Attack", cardType: "stratagem" }],
+  enhancements: [{ id: "enh-1", name: "Artificer Armour", cardType: "enhancement" }],
+  rules: [{ id: "rule-1", name: "Oath of Moment", cardType: "rule" }],
 };
 
 const mockDataSource = {
@@ -26,6 +28,8 @@ const mockDataSource = {
     cardTypes: [
       { key: "unit", baseType: "unit", label: "Units" },
       { key: "stratagem", baseType: "stratagem", label: "Stratagems" },
+      { key: "enhancement", baseType: "enhancement", label: "Enhancements" },
+      { key: "rule", baseType: "rule", label: "Rules" },
     ],
     keywordGlossary: [
       { key: "a", name: "A", description: "desc", appliesTo: ["weapons"] },
@@ -33,6 +37,7 @@ const mockDataSource = {
       { key: "c", name: "C", description: "desc", appliesTo: ["weapons"] },
       { key: "d", name: "D", description: "desc", appliesTo: ["weapons"] },
       { key: "e", name: "E", description: "desc", appliesTo: ["weapons"] },
+      { key: "f", name: "F", description: "desc", appliesTo: ["weapons"] },
     ],
   },
 };
@@ -57,13 +62,15 @@ describe("MobileCustomFaction", () => {
   it("renders Browse All Cards button with total card count", () => {
     render(<MobileCustomFaction />);
     expect(screen.getByText("Browse All Cards")).toBeTruthy();
-    expect(screen.getByText("3")).toBeTruthy(); // 2 units + 1 stratagem
+    expect(screen.getByText("5")).toBeTruthy(); // 2 units + 1 stratagem + 1 enhancement + 1 rule
   });
 
   it("generates sections from schema.cardTypes", () => {
     render(<MobileCustomFaction />);
     expect(screen.getByText("Units")).toBeTruthy();
     expect(screen.getByText("Stratagems")).toBeTruthy();
+    expect(screen.getByText("Enhancements")).toBeTruthy();
+    expect(screen.getByText("Rules")).toBeTruthy();
   });
 
   it("lists cards per section", () => {
@@ -71,6 +78,8 @@ describe("MobileCustomFaction", () => {
     expect(screen.getByText("Alpha Unit")).toBeTruthy();
     expect(screen.getByText("Beta Unit")).toBeTruthy();
     expect(screen.getByText("Surprise Attack")).toBeTruthy();
+    expect(screen.getByText("Artificer Armour")).toBeTruthy();
+    expect(screen.getByText("Oath of Moment")).toBeTruthy();
   });
 
   it("navigates to units page on Browse All Cards click", () => {
@@ -79,16 +88,34 @@ describe("MobileCustomFaction", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/mobile/test-faction/units");
   });
 
-  it("navigates to card on card click", () => {
+  it("navigates to unit card on card click", () => {
     render(<MobileCustomFaction />);
     fireEvent.click(screen.getByText("Alpha Unit"));
     expect(mockNavigate).toHaveBeenCalledWith("/mobile/test-faction/alpha-unit");
   });
 
+  it("navigates to stratagem card with type segment", () => {
+    render(<MobileCustomFaction />);
+    fireEvent.click(screen.getByText("Surprise Attack"));
+    expect(mockNavigate).toHaveBeenCalledWith("/mobile/test-faction/stratagem/surprise-attack");
+  });
+
+  it("navigates to enhancement card with type segment", () => {
+    render(<MobileCustomFaction />);
+    fireEvent.click(screen.getByText("Artificer Armour"));
+    expect(mockNavigate).toHaveBeenCalledWith("/mobile/test-faction/enhancement/artificer-armour");
+  });
+
+  it("navigates to rule card with type segment", () => {
+    render(<MobileCustomFaction />);
+    fireEvent.click(screen.getByText("Oath of Moment"));
+    expect(mockNavigate).toHaveBeenCalledWith("/mobile/test-faction/rule/oath-of-moment");
+  });
+
   it("renders Keyword Glossary button with entry count", () => {
     render(<MobileCustomFaction />);
     expect(screen.getByText("Keyword Glossary")).toBeTruthy();
-    expect(screen.getByText("5")).toBeTruthy();
+    expect(screen.getByText("6")).toBeTruthy();
   });
 
   it("navigates to glossary page on Keyword Glossary click", () => {
@@ -99,8 +126,10 @@ describe("MobileCustomFaction", () => {
 
   it("shows section card counts", () => {
     render(<MobileCustomFaction />);
-    // 2 units + 1 stratagem section counts
-    expect(screen.getByText("2")).toBeTruthy();
-    expect(screen.getByText("1")).toBeTruthy();
+    // 2 units + 1 stratagem + 1 enhancement + 1 rule section counts
+    const twos = screen.getAllByText("2");
+    const ones = screen.getAllByText("1");
+    expect(twos).toHaveLength(1); // Units section
+    expect(ones).toHaveLength(3); // Stratagems + Enhancements + Rules sections
   });
 });
