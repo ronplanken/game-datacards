@@ -218,6 +218,26 @@ describe("createCustomDatasource", () => {
     expect(stored.author).toBeNull();
   });
 
+  it("resets dataSource to basic data when switching to a custom datasource with no stored data", async () => {
+    localStorage.setItem(
+      "settings",
+      JSON.stringify({
+        selectedDataSource: "custom-nonexistent",
+        selectedFactionIndex: {},
+        hasFactionSelected: {},
+      }),
+    );
+
+    const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(result.current.dataSource).toEqual({ data: [{ id: "basic-1", name: "Basic" }] });
+    expect(result.current.selectedFaction).toBeNull();
+  });
+
   it("sets lastUpdated to current ISO timestamp", async () => {
     const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
 
