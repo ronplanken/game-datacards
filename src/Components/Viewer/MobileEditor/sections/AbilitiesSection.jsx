@@ -5,6 +5,7 @@ import { EditorSelectField } from "../shared/EditorSelectField";
 import { EditorTagInput } from "../shared/EditorTagInput";
 import { EditorToggle } from "../shared/EditorToggle";
 import { EditorChipListField } from "../shared/EditorChipListField";
+import { alignNameObjects, nameObjectLabel } from "../shared/nameObjects";
 import { AOS_PHASE_OPTIONS, AOS_ICON_OPTIONS } from "../../../AgeOfSigmar/constants";
 import { VALID_ABILITY_TYPES, VALID_ABILITY_COST_UNITS } from "../../../../Helpers/customSchema.helpers";
 
@@ -29,10 +30,12 @@ export const AbilitiesSection = ({ card, config, label, icon, updateField, repla
   return null;
 };
 
-// 40k abilities: categorized object with core (string[]), faction (string[]), other/wargear/special (ability objects[])
+// 40k abilities: categorized object with core (string[] in 10e, { name }[] in
+// 11e), faction (same) and other/wargear/special (ability objects[])
 const Abilities40k = ({ card, label, icon, replaceCard, config }) => {
   const abilities = card.abilities || {};
-  const { categories } = config;
+  const { categories, newAbilityDefaults } = config;
+  const abilityDefaults = newAbilityDefaults ?? { showAbility: true, showDescription: true };
 
   const handleUpdateNameOnly = (categoryKey, index, value) => {
     const arr = [...(abilities[categoryKey] || [])];
@@ -57,10 +60,7 @@ const Abilities40k = ({ card, label, icon, replaceCard, config }) => {
   };
 
   const handleAddAbility = (categoryKey) => {
-    const arr = [
-      ...(abilities[categoryKey] || []),
-      { name: "New Ability", description: "", showAbility: true, showDescription: true },
-    ];
+    const arr = [...(abilities[categoryKey] || []), { ...abilityDefaults, name: "New Ability", description: "" }];
     replaceCard({ ...card, abilities: { ...abilities, [categoryKey]: arr } });
   };
 
@@ -74,12 +74,18 @@ const Abilities40k = ({ card, label, icon, replaceCard, config }) => {
       {categories.map((cat) => {
         const items = abilities[cat.key] || [];
         if (cat.format === "name-only") {
+          const isObjectShape = cat.itemShape === "object";
           return (
             <div key={cat.key} style={{ marginBottom: 16 }}>
               <EditorTagInput
                 label={cat.label}
-                tags={items}
-                onChange={(tags) => replaceCard({ ...card, abilities: { ...abilities, [cat.key]: tags } })}
+                tags={isObjectShape ? items.map(nameObjectLabel) : items}
+                onChange={(tags) =>
+                  replaceCard({
+                    ...card,
+                    abilities: { ...abilities, [cat.key]: isObjectShape ? alignNameObjects(items, tags) : tags },
+                  })
+                }
               />
             </div>
           );

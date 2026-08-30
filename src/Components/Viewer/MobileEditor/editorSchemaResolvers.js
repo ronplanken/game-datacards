@@ -62,6 +62,8 @@ export function resolveEditorSections(card, gameSystem, schema) {
   switch (source) {
     case "40k-10e":
       return resolve40k10eSections(card);
+    case "40k-11e":
+      return resolve40k11eSections(card);
     case "aos":
       return resolveAosSections(card);
     default:
@@ -317,6 +319,273 @@ function resolve40kRuleSections() {
       type: "rulesList",
       config: {},
     },
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// 40k-11e
+//
+// The 11th edition data is close to 10th but not identical, and the editor is
+// fed a language projection of the card (see localizedCard.js) so every
+// localized field arrives here as a plain string. The differences that the
+// sections need to know about are passed as config rather than branched on
+// inside the components:
+//
+//   - no per-profile / per-weapon / per-ability `active` and `show*` flags
+//   - core and faction abilities are `{ name }` objects, not bare strings
+//   - keywords are objects too (they are language-keyed in the source)
+//   - points are tiers with detachment / faction restrictions
+//   - weapons can carry their own named abilities (Overcharge, ...)
+// ---------------------------------------------------------------------------
+
+// 11e stat lines carry no `active` flag; the card renders every profile.
+const NEW_STAT_PROFILE_11E = { showName: true };
+
+const WEAPON_TYPE_11E = {
+  columns: WEAPON_COLUMNS_40K_10E,
+  hasKeywords: true,
+  hasActiveFlag: false,
+  hasWeaponAbilities: true,
+  newWeaponDefaults: {},
+  newProfileDefaults: {},
+};
+
+function resolve40k11eSections(card) {
+  switch (card.cardType) {
+    case "stratagem":
+      return resolve11eStratagemSections();
+    case "enhancement":
+      return resolve11eEnhancementSections();
+    case "DataCard":
+      return resolve11eUnitSections(card);
+    default:
+      break;
+  }
+
+  const isUnit = Array.isArray(card.stats) || card.rangedWeapons || card.meleeWeapons;
+  if (isUnit) return resolve11eUnitSections(card);
+  if (card.when !== undefined || card.effect !== undefined) return resolve11eStratagemSections();
+  if (Array.isArray(card.rules)) return resolve11eRuleSections();
+  if (card.description !== undefined) return resolve11eEnhancementSections();
+  return resolve11eUnitSections(card);
+}
+
+function resolve11eUnitSections(card) {
+  const sections = [{ key: "name", label: "Name", type: "name", config: {} }];
+
+  if (Array.isArray(card.stats)) {
+    sections.push({
+      key: "stats",
+      label: "Stats",
+      type: "stats",
+      config: {
+        fields: STATS_40K_10E,
+        allowMultipleProfiles: true,
+        dataPath: "stats",
+        newProfileDefaults: NEW_STAT_PROFILE_11E,
+      },
+    });
+  }
+
+  if (Array.isArray(card.points)) {
+    sections.push({
+      key: "points",
+      label: "Points",
+      type: "points",
+      config: {
+        format: "tiers",
+        hasActive: false,
+        hasRestrictions: true,
+        hasAdditionalCost: true,
+      },
+    });
+  }
+
+  const weaponTypes = [];
+  if (card.rangedWeapons) {
+    weaponTypes.push({ key: "rangedWeapons", label: "Ranged Weapons", ...WEAPON_TYPE_11E });
+  }
+  if (card.meleeWeapons) {
+    weaponTypes.push({ key: "meleeWeapons", label: "Melee Weapons", ...WEAPON_TYPE_11E });
+  }
+  if (weaponTypes.length > 0) {
+    sections.push({
+      key: "weapons",
+      label: "Weapons",
+      type: "weapons",
+      config: { types: weaponTypes, format: "40k" },
+    });
+  }
+
+  sections.push({
+    key: "abilities",
+    label: "Abilities",
+    type: "abilities",
+    config: {
+      format: "40k",
+      newAbilityDefaults: {},
+      categories: [
+        { key: "core", label: "Core Abilities", format: "name-only", itemShape: "object" },
+        { key: "faction", label: "Faction Abilities", format: "name-only", itemShape: "object" },
+        { key: "other", label: "Other Abilities", format: "name-description" },
+        { key: "wargear", label: "Wargear Abilities", format: "name-description" },
+        { key: "special", label: "Special Abilities", format: "name-description" },
+      ],
+    },
+  });
+
+  if (card.abilities?.primarch?.length) {
+    sections.push({
+      key: "primarch",
+      label: "Primarch Abilities",
+      type: "primarch",
+      config: { hasShowToggle: false, newAbilityDefaults: {} },
+    });
+  }
+
+  if (card.abilities?.damaged) {
+    sections.push({
+      key: "damaged",
+      label: "Damaged Profile",
+      type: "damaged",
+      config: { hasShowToggle: false },
+    });
+  }
+
+  if (card.abilities?.invul) {
+    sections.push({
+      key: "invul",
+      label: "Invulnerable Save",
+      type: "invul",
+      config: { valueOnly: true },
+    });
+  }
+
+  // Wargear lives in two fields and the card renders only one of them: the
+  // structured groups win when a card has any, otherwise the free-form
+  // sentences. Mirror the desktop panel and edit whichever one reaches the card
+  // (see Warhammer40k-11e/UnitCardEditor/UnitWargearOptions).
+  if (card.wargearOptions?.length) {
+    sections.push({
+      key: "wargearOptions",
+      label: "Wargear Options",
+      type: "wargearOptions",
+      config: {},
+    });
+  } else if (card.wargear) {
+    sections.push({
+      key: "wargear",
+      label: "Wargear",
+      type: "stringList",
+      config: { dataPath: "wargear", itemLabel: "Wargear text" },
+    });
+  }
+
+  if (card.composition) {
+    sections.push({
+      key: "composition",
+      label: "Unit Composition",
+      type: "stringList",
+      config: { dataPath: "composition", itemLabel: "Entry" },
+    });
+  }
+
+  if (card.loadout !== undefined) {
+    sections.push({ key: "loadout", label: "Loadout", type: "textField", config: { dataPath: "loadout" } });
+  }
+
+  if (card.leader !== undefined) {
+    sections.push({ key: "leader", label: "Leader", type: "textField", config: { dataPath: "leader" } });
+  }
+
+  if (card.transport !== undefined) {
+    sections.push({ key: "transport", label: "Transport", type: "textField", config: { dataPath: "transport" } });
+  }
+
+  sections.push({
+    key: "keywords",
+    label: "Keywords",
+    type: "keywords",
+    config: {
+      keywordsPath: "keywords",
+      factionKeywordsPath: "factions",
+      factionKeywordsLabel: "Factions",
+      // Keywords are language-keyed and project to `{ name }` objects; factions
+      // are plain strings the glossary matches in English.
+      keywordsAreObjects: true,
+    },
+  });
+
+  return sections;
+}
+
+function resolve11eStratagemSections() {
+  return [
+    { key: "name", label: "Name", type: "name", config: {} },
+    {
+      key: "fields",
+      label: "Details",
+      type: "fields",
+      config: {
+        fields: [
+          { key: "type", label: "Type", type: "string" },
+          { key: "detachment", label: "Detachment", type: "string" },
+          { key: "cost", label: "Cost", type: "string" },
+          { key: "turn", label: "Turn", type: "enum", options: ["your", "opponents", "either"] },
+          { key: "when", label: "When", type: "richtext" },
+          { key: "target", label: "Target", type: "richtext" },
+          { key: "effect", label: "Effect", type: "richtext" },
+          { key: "restrictions", label: "Restrictions", type: "richtext" },
+        ],
+      },
+    },
+  ];
+}
+
+function resolve11eEnhancementSections() {
+  return [
+    { key: "name", label: "Name", type: "name", config: {} },
+    {
+      key: "fields",
+      label: "Details",
+      type: "fields",
+      config: {
+        fields: [
+          { key: "detachment", label: "Detachment", type: "string" },
+          { key: "cost", label: "Cost", type: "string" },
+          { key: "description", label: "Description", type: "richtext" },
+        ],
+      },
+    },
+    {
+      key: "eligibility",
+      label: "Eligibility",
+      type: "keywords",
+      config: {
+        keywordsPath: "keywords",
+        keywordsLabel: "Requires keyword",
+        factionKeywordsPath: "excludes",
+        factionKeywordsLabel: "Excludes keyword",
+      },
+    },
+  ];
+}
+
+function resolve11eRuleSections() {
+  return [
+    { key: "name", label: "Name", type: "name", config: {} },
+    {
+      key: "fields",
+      label: "Details",
+      type: "fields",
+      config: {
+        fields: [
+          { key: "ruleType", label: "Rule Type", type: "enum", options: ["army", "detachment"] },
+          { key: "detachment", label: "Detachment", type: "string" },
+        ],
+      },
+    },
+    { key: "rules", label: "Rules", type: "rulesList", config: {} },
   ];
 }
 

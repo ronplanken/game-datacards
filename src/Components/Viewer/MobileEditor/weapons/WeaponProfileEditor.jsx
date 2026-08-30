@@ -90,6 +90,10 @@ const ProfileWeaponEditor = ({ weapons, weaponIndex, profileIndex, columns, conf
   if (!profile) return null;
 
   const hasKeywords = config.hasKeywords !== false;
+  // 11e profiles have no `active` flag (every profile is rendered), but their
+  // weapons can carry named abilities shown under the profiles on the card.
+  const hasActiveFlag = config.hasActiveFlag !== false;
+  const hasWeaponAbilities = config.hasWeaponAbilities === true;
   const isParentChild = config.profileRelation === "parent-child";
   const childLabel = config.profileChildLabel || "Upgrade";
 
@@ -104,7 +108,7 @@ const ProfileWeaponEditor = ({ weapons, weaponIndex, profileIndex, columns, conf
   const addProfile = () => {
     const isUpgrade = isParentChild;
     const baseName = isUpgrade ? `${childLabel} ${profiles.length}` : `Profile ${profiles.length + 1}`;
-    const blank = { name: baseName, active: true, keywords: [] };
+    const blank = { ...(config.newProfileDefaults ?? { active: true }), name: baseName, keywords: [] };
     if (isUpgrade) blank.upgrade = true;
     columns?.forEach((col) => (blank[col.key] = ""));
     const updatedWeapons = [...weapons];
@@ -151,17 +155,37 @@ const ProfileWeaponEditor = ({ weapons, weaponIndex, profileIndex, columns, conf
         ))}
       </div>
 
-      <EditorToggle
-        label="Active"
-        checked={profile.active !== false}
-        onChange={(value) => updateProfile("active", value)}
-      />
+      {hasActiveFlag && (
+        <EditorToggle
+          label="Active"
+          checked={profile.active !== false}
+          onChange={(value) => updateProfile("active", value)}
+        />
+      )}
 
       {hasKeywords && (
         <EditorTagInput
           label="Keywords"
           tags={normalizeKeywords(profile.keywords)}
           onChange={(tags) => updateProfile("keywords", tags)}
+        />
+      )}
+
+      {hasWeaponAbilities && (
+        <WeaponAbilitiesEditor
+          weapon={weapon}
+          onChange={(abilities) => {
+            const updatedWeapons = [...weapons];
+            // A weapon with no abilities carries no `abilities` key at all in
+            // the source data, so clearing the last one removes the key again.
+            if (abilities.length === 0) {
+              const { abilities: _emptied, ...rest } = weapon;
+              updatedWeapons[weaponIndex] = rest;
+            } else {
+              updatedWeapons[weaponIndex] = { ...weapon, abilities };
+            }
+            setWeapons(updatedWeapons);
+          }}
         />
       )}
 
@@ -269,6 +293,55 @@ const FlatWeaponEditor = ({ weapons, weaponIndex, columns, config, setWeapons })
           onChange={(tags) => updateWeapon("keywords", tags)}
         />
       )}
+    </div>
+  );
+};
+
+// Abilities that apply to a whole weapon rather than one profile (Overcharge,
+// ...), rendered under the profiles on an 11e card.
+const WeaponAbilitiesEditor = ({ weapon, onChange }) => {
+  const abilities = Array.isArray(weapon.abilities) ? weapon.abilities : [];
+
+  const updateAbility = (index, field, value) => {
+    const updated = [...abilities];
+    updated[index] = { ...updated[index], [field]: value };
+    onChange(updated);
+  };
+
+  return (
+    <div>
+      <label className="mobile-editor-field-label">Weapon Abilities</label>
+      {abilities.map((ability, index) => (
+        <div key={index} className="mobile-editor-ability-item">
+          <div className="mobile-editor-ability-header">
+            <EditorTextField
+              value={ability.name}
+              onChange={(value) => updateAbility(index, "name", value)}
+              placeholder="Ability name"
+              className="mobile-editor-ability-name-input"
+            />
+            <button
+              className="mobile-editor-weapon-delete"
+              onClick={() => onChange(abilities.filter((_, i) => i !== index))}
+              type="button">
+              <Trash2 size={14} />
+            </button>
+          </div>
+          <EditorTextField
+            value={ability.description}
+            onChange={(value) => updateAbility(index, "description", value)}
+            placeholder="Description"
+            multiline
+          />
+        </div>
+      ))}
+      <button
+        className="mobile-editor-add-btn"
+        onClick={() => onChange([...abilities, { name: "New Ability", description: "" }])}
+        type="button">
+        <Plus size={14} />
+        <span>Add Weapon Ability</span>
+      </button>
     </div>
   );
 };
