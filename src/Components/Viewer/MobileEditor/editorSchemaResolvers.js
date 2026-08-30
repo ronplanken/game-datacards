@@ -1,3 +1,5 @@
+import { classify11eCard } from "./localizedCard";
+
 /**
  * Resolves a card + game system into an array of editor section descriptors.
  * Each section describes what editor component to render and with what config.
@@ -350,24 +352,20 @@ const WEAPON_TYPE_11E = {
   newProfileDefaults: {},
 };
 
+// Classification is shared with the localization spec (`classify11eCard`): the
+// sections a card gets and the spec its text is merged against have to agree,
+// or a card would be edited through fields its spec does not describe.
 function resolve40k11eSections(card) {
-  switch (card.cardType) {
+  switch (classify11eCard(card)) {
     case "stratagem":
       return resolve11eStratagemSections();
     case "enhancement":
       return resolve11eEnhancementSections();
-    case "DataCard":
-      return resolve11eUnitSections(card);
+    case "rule":
+      return resolve11eRuleSections();
     default:
-      break;
+      return resolve11eUnitSections(card);
   }
-
-  const isUnit = Array.isArray(card.stats) || card.rangedWeapons || card.meleeWeapons;
-  if (isUnit) return resolve11eUnitSections(card);
-  if (card.when !== undefined || card.effect !== undefined) return resolve11eStratagemSections();
-  if (Array.isArray(card.rules)) return resolve11eRuleSections();
-  if (card.description !== undefined) return resolve11eEnhancementSections();
-  return resolve11eUnitSections(card);
 }
 
 function resolve11eUnitSections(card) {

@@ -104,6 +104,48 @@ const RULE_11E = {
   rules: { each: { title: TEXT, text: TEXT } },
 };
 
+const SPEC_BY_11E_CARD_TYPE = {
+  unit: UNIT_11E,
+  stratagem: STRATAGEM_11E,
+  enhancement: ENHANCEMENT_11E,
+  rule: RULE_11E,
+};
+
+/**
+ * Classify an 11th edition card as "unit" | "stratagem" | "enhancement" | "rule".
+ *
+ * The editor has to agree with itself about what a card is twice over — once to
+ * pick its localization spec and once to pick its editor sections — and a card
+ * resolved against a mismatched spec would silently mis-merge its text. So both
+ * go through this one function.
+ *
+ * The `cardType` stamped on a card is authoritative: the datasource loader sets
+ * `DataCard` / `stratagem` / `enhancement` (`get40k11eData`), and the viewer's
+ * unit list sets `rule` when it turns army and detachment rules into cards
+ * (`ViewerUnitList`). The shape checks below are the fallback for cards stored
+ * before those existed, and for hand-built test data.
+ */
+export function classify11eCard(card) {
+  switch (card?.cardType) {
+    case "DataCard":
+      return "unit";
+    case "stratagem":
+      return "stratagem";
+    case "enhancement":
+      return "enhancement";
+    case "rule":
+      return "rule";
+    default:
+      break;
+  }
+
+  if (Array.isArray(card?.stats) || card?.rangedWeapons || card?.meleeWeapons) return "unit";
+  if (card?.when !== undefined || card?.effect !== undefined) return "stratagem";
+  if (Array.isArray(card?.rules)) return "rule";
+  if (card?.description !== undefined) return "enhancement";
+  return "unit";
+}
+
 /**
  * The localization spec for a card, or `null` when the card needs no projection.
  *
@@ -113,28 +155,8 @@ const RULE_11E = {
 export function getLocalizationSpec(card, gameSystem) {
   const source = card?.source || gameSystem;
   if (source !== "40k-11e") return null;
-  return specFor11eCard(card);
-}
-
-// The 11e loader stamps a `cardType` on every card; the shape checks are the
-// fallback for cards stored before it did (and for hand-built test data).
-function specFor11eCard(card) {
   if (!card) return null;
-  switch (card.cardType) {
-    case "stratagem":
-      return STRATAGEM_11E;
-    case "enhancement":
-      return ENHANCEMENT_11E;
-    case "DataCard":
-      return UNIT_11E;
-    default:
-      break;
-  }
-  if (Array.isArray(card.stats) || card.rangedWeapons || card.meleeWeapons) return UNIT_11E;
-  if (card.when !== undefined || card.effect !== undefined) return STRATAGEM_11E;
-  if (Array.isArray(card.rules)) return RULE_11E;
-  if (card.description !== undefined) return ENHANCEMENT_11E;
-  return UNIT_11E;
+  return SPEC_BY_11E_CARD_TYPE[classify11eCard(card)];
 }
 
 /**

@@ -557,6 +557,15 @@ describe("editorSchemaResolvers 40k-11e", () => {
     expect(ruleTypes).toContain("rulesList");
   });
 
+  it("resolves a rule card the viewer stamped as a rule", () => {
+    // ViewerUnitList stamps cardType "rule"; the resolver must not fall through
+    // to the unit sections for it.
+    const rule = { source: "40k-11e", cardType: "rule", ruleType: "army", rules: [{ order: 0, type: "text" }] };
+    const keys = resolveEditorSections(rule, "40k-11e", null).map((s) => s.key);
+
+    expect(keys).toEqual(["name", "fields", "rules"]);
+  });
+
   it("keeps enhancement eligibility keywords on the plain-string path", () => {
     const enhancement = { source: "40k-11e", cardType: "enhancement", description: "D", cost: "10" };
     const eligibility = resolveEditorSections(enhancement, "40k-11e", null).find((s) => s.key === "eligibility");

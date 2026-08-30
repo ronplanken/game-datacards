@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getLocalizationSpec, I18N_KEY, mergeCard, projectCard } from "../localizedCard";
+import { classify11eCard, getLocalizationSpec, I18N_KEY, mergeCard, projectCard } from "../localizedCard";
 
 // A trimmed 11e unit carrying one of every localized shape the spec covers.
 const unit11e = () => ({
@@ -71,10 +71,52 @@ describe("getLocalizationSpec", () => {
     expect(view.when).toBe("W");
   });
 
+  it("uses the rule spec for a card the viewer stamped as a rule", () => {
+    // ViewerUnitList turns army and detachment rules into cards with
+    // cardType "rule"; the loader never stamps that one.
+    const rule = {
+      source: "40k-11e",
+      cardType: "rule",
+      ruleType: "detachment",
+      name: "Gladius Task Force",
+      detachment: { en: "Gladius Task Force", de: "Gladius DE" },
+      rules: [{ order: 0, type: "text", text: { en: "Body", de: "Körper" } }],
+    };
+    const spec = getLocalizationSpec(rule, "40k-11e");
+    const view = projectCard(rule, spec, "de");
+
+    expect(view.detachment).toBe("Gladius DE");
+    expect(view.rules[0].text).toBe("Körper");
+
+    view.rules[0].text = "Neuer Körper";
+    expect(mergeCard(view, spec, "de").rules[0].text).toEqual({ en: "Body", de: "Neuer Körper" });
+  });
+
   it("falls back to the card shape when cardType is missing", () => {
     const rule = { source: "40k-11e", rules: [{ order: 0, type: "text", text: { en: "Body", de: "Körper" } }] };
     const view = projectCard(rule, getLocalizationSpec(rule, "40k-11e"), "de");
     expect(view.rules[0].text).toBe("Körper");
+  });
+});
+
+describe("classify11eCard", () => {
+  it("trusts the stamped card type over the card's shape", () => {
+    // A rule card carries `rules`; a datasheet carries `stats`. Both are
+    // classified by what they say they are.
+    expect(classify11eCard({ cardType: "rule", rules: [] })).toBe("rule");
+    expect(classify11eCard({ cardType: "DataCard", stats: [] })).toBe("unit");
+    expect(classify11eCard({ cardType: "stratagem" })).toBe("stratagem");
+    expect(classify11eCard({ cardType: "enhancement" })).toBe("enhancement");
+  });
+
+  it("falls back to the card shape for cards stored before cardType existed", () => {
+    expect(classify11eCard({ stats: [] })).toBe("unit");
+    expect(classify11eCard({ rangedWeapons: [] })).toBe("unit");
+    expect(classify11eCard({ when: { en: "W" } })).toBe("stratagem");
+    expect(classify11eCard({ rules: [] })).toBe("rule");
+    expect(classify11eCard({ description: { en: "D" } })).toBe("enhancement");
+    expect(classify11eCard({})).toBe("unit");
+    expect(classify11eCard(undefined)).toBe("unit");
   });
 });
 
