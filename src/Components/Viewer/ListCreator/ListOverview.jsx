@@ -83,6 +83,7 @@ const ListHeader = ({
   onListSelectorClick,
   onCopyToClipboard,
   onShareList,
+  canShare,
   isCloudCategory,
   isSynced,
   gameSystem,
@@ -119,7 +120,7 @@ const ListHeader = ({
                   <FileText size={16} />
                   <span>Copy List</span>
                 </button>
-                {!isCloudCategory && (
+                {canShare && (
                   <button
                     className="list-overview-more-item"
                     onClick={() => {
@@ -239,6 +240,7 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
   const { isAuthenticated } = useAuth();
 
   const [shareResult, setShareResult] = useState(null);
+  const [shareError, setShareError] = useState(null);
   const [existingShare, setExistingShare] = useState(null);
   const [isPublic, setIsPublic] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -256,6 +258,7 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
   const handleClose = () => {
     onClose();
     setShareResult(null);
+    setShareError(null);
     setExistingShare(null);
     setIsPublic(true);
     setCopied(false);
@@ -263,6 +266,7 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
 
   const handleShare = async () => {
     if (!category) return;
+    setShareError(null);
     let result;
     if (isAuthenticated) {
       result = await shareOwned(category, isPublic);
@@ -271,14 +275,19 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
     }
     if (result.success) {
       setShareResult(result.shareId);
+    } else {
+      setShareError(result.error || "Could not share this list");
     }
   };
 
   const handleUpdate = async () => {
     if (!category || !existingShare?.share_id) return;
+    setShareError(null);
     const result = await updateShare(existingShare.share_id, category);
     if (result.success) {
       setShareResult(existingShare.share_id);
+    } else {
+      setShareError(result.error || "Could not update this share");
     }
   };
 
@@ -316,6 +325,9 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
             </button>
           </div>
         )}
+
+        {/* Share failure (e.g. the sharing hook's 100 card limit) */}
+        {shareError && <div className="list-share-error">{shareError}</div>}
 
         {/* Share result */}
         {shareUrl && (
@@ -502,6 +514,12 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
     ? { surcharge: 0, total: 0 }
     : computeCategoryPoints(currentCards);
 
+  // The category the share sheet operates on. A cloud category shares the very
+  // object the overview renders, so the link always contains what is on screen;
+  // it carries the same uuid as its local mirror, so an existing share is still
+  // found and can be updated. Local lists keep sharing the selected list.
+  const shareCategory = isCloudCategory ? selectedCloudCategory : currentList;
+
   const isEmpty = currentCards.length === 0;
 
   return (
@@ -562,6 +580,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 onListSelectorClick={() => setIsListSelectorVisible(true)}
                 onCopyToClipboard={handleCopyToClipboard}
                 onShareList={() => setIsShareSheetVisible(true)}
+                canShare={!!shareCategory}
                 isCloudCategory={isCloudCategory}
                 isSynced={!isCloudCategory && !!currentList?.syncEnabled}
                 gameSystem={isCloudCategory ? selectedCloudCategory.gameSystem : null}
@@ -683,11 +702,11 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
         card={editingCard}
       />
 
-      {!isCloudCategory && currentList && (
+      {shareCategory && (
         <ListShareSheet
           isVisible={isShareSheetVisible}
           onClose={() => setIsShareSheetVisible(false)}
-          category={currentList}
+          category={shareCategory}
         />
       )}
     </>

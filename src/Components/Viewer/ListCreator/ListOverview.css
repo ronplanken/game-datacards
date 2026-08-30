@@ -550,6 +550,16 @@
   font-size: 14px;
 }
 
+/* Share failure message */
+.list-share-error {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bs-danger-bg);
+  color: var(--bs-danger, #dc3545);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 /* Spinner */
 .list-share-spinner {
   animation: listShareSpin 1s linear infinite;
