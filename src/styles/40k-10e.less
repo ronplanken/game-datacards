@@ -2332,6 +2332,14 @@
                   letter-spacing: normal;
                   z-index: 2;
 
+                  // A grid track's automatic minimum is its content's
+                  // min-content width, and the keyword list below is `nowrap`.
+                  // Without this the name column stretches to fit the keywords
+                  // and shoves the characteristic columns out of line with
+                  // their header; with it the keywords simply run on underneath
+                  // them.
+                  min-width: 0;
+
                   .name {
                     white-space: pre-line;
                   }
@@ -2412,8 +2420,21 @@
                   letter-spacing: normal;
                   z-index: 2;
 
+                  // A grid track's automatic minimum is its content's
+                  // min-content width, and the keyword list below is `nowrap`.
+                  // Without this the name column stretches to fit the keywords
+                  // and shoves the characteristic columns out of line with
+                  // their header; with it the keywords simply run on underneath
+                  // them.
+                  min-width: 0;
+
+                  // Keep the keyword list on one line, exactly as the ranged
+                  // block does. The keywords are inline-block buttons, so
+                  // without this they break between tags and fold into the
+                  // narrow name column instead of running on under the
+                  // characteristic columns.
                   .keyword {
-                    // white-space: nowrap;
+                    white-space: nowrap;
                   }
                 }
               }
@@ -3525,6 +3546,10 @@
                     letter-spacing: normal;
                     z-index: 2;
 
+                    // See the printed-card block: keeps the nowrap keyword list
+                    // from widening the name column.
+                    min-width: 0;
+
                     .name {
                       white-space: pre-line;
                     }
@@ -3625,6 +3650,10 @@
                     font-weight: 400;
                     letter-spacing: normal;
                     z-index: 2;
+
+                    // See the printed-card block: keeps the nowrap keyword list
+                    // from widening the name column.
+                    min-width: 0;
 
                     .keyword {
                       white-space: nowrap;
