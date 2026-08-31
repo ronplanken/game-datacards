@@ -9,6 +9,7 @@ vi.mock("lucide-react", () => ({
   ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
   ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
   Download: (props) => <svg data-testid="icon-download" {...props} />,
+  Upload: (props) => <svg data-testid="icon-upload" {...props} />,
   Eye: (props) => <svg data-testid="icon-eye" {...props} />,
   Link: (props) => <svg data-testid="icon-link" {...props} />,
   MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
@@ -223,6 +224,14 @@ describe("KeywordGlossaryEditor", () => {
     expect(next.keywordGlossary.length).toBeGreaterThan(5);
     expect(next.keywordGlossary.some((e) => e.name === "One Shot")).toBe(true);
     expect(next.keywordGlossary.every((e) => e.appliesTo?.includes("weapons"))).toBe(true);
+  });
+
+  it("marks the defaults action as an import with the upload icon", () => {
+    render(<KeywordGlossaryEditor schema={baseSchema({ keywordGlossary: [] })} onChange={vi.fn()} />);
+    openSection();
+    const action = screen.getByRole("button", { name: /Import 40K 10e defaults/i });
+    expect(action.querySelector("[data-testid='icon-upload']")).toBeInTheDocument();
+    expect(action.querySelector("[data-testid='icon-download']")).toBeNull();
   });
 
   it("hides the overflow menu trigger when the base system has no seeds", () => {
