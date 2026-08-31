@@ -96,5 +96,12 @@
     "body": "On Starcraft datacards, keywords added to a weapon were printed as raw text and never matched a glossary entry. They now render as proper keyword tags with their tooltips and explanation lines, just like on the other game systems.",
     "severity": "warning",
     "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.12",
+    "title": "Weapons tab no longer breaks after adding a weapon keyword",
+    "body": "Adding a weapon keyword could leave a card in a state where the weapons tab refused to open, even after a refresh. Affected cards now open again and the stray keyword can simply be deleted.",
+    "severity": "error",
+    "timestamp": 1788204839
   }
 ]
