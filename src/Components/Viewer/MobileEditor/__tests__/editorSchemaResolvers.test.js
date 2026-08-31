@@ -484,6 +484,7 @@ describe("editorSchemaResolvers 40k-11e", () => {
       "leader",
       "transport",
       "keywords",
+      "styling",
     ]);
   });
 

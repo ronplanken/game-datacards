@@ -1,5 +1,5 @@
 {
-  "title": "Melee weapon keywords line up with ranged",
-  "body": "On 10th and 11th edition datasheets, a melee weapon with a long keyword list folded those keywords into a stack under the weapon name, while a ranged weapon kept them on one line. Melee weapons now read the same as ranged: the keywords run on in a single line under the characteristics, and the characteristic columns stay lined up with their headings.",
+  "title": "Choose how weapon keywords wrap",
+  "body": "On 10th and 11th edition datasheets, melee and ranged weapons used to lay their keywords out differently: a long melee keyword list stacked under the weapon name while a ranged one stayed on a single line. Both now wrap inside the weapon name column, and the characteristic columns stay lined up with their headings. A new Wrap Keywords switch in the Styling section lets you turn wrapping off per card, so the keywords run on in one line under the characteristics instead. It is on the mobile card editor too.",
   "severity": "info"
 }

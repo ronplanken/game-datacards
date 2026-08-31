@@ -4,17 +4,20 @@ import { resolve, dirname } from "node:path";
 import less from "less";
 
 // The 10e/11e weapon row renders its keyword list as a `.keyword` span of
-// inline-block buttons inside the (narrow) name column. `white-space: nowrap`
-// is what keeps that list on one line so it runs on under the characteristic
-// columns; without it the list folds inside the name column and the row grows.
-// The melee block used to carry the rule commented out, so melee and ranged
-// weapons laid their keywords out differently on the same card.
+// inline-block buttons inside the (narrow) name column.
+//
+// By default that list wraps, so a long list stays inside the name column. The
+// card's "Wrap Keywords" styling toggle turns wrapping off by adding
+// `keywords-nowrap` to the weapons panel, which keeps each list on one unbroken
+// line running on under the characteristic columns.
+//
+// Both weapon types must behave identically: melee once carried its keyword
+// rule commented out, so melee and ranged laid out differently on one card.
 const STYLE_FILE = resolve(process.cwd(), "src/styles/40k-10e.less");
 
 const CARD = ".unit .data_container .data .weapons";
 const VIEWER = ".viewer .unit .data_container .data .weapons";
 const CELL = ".weapon .line .value";
-const KEYWORD = `${CELL} .keyword`;
 
 let css = "";
 
@@ -36,15 +39,29 @@ const ruleBody = (selector) => {
 };
 
 describe("40k 10e/11e weapon keyword layout", () => {
+  // The bug this replaced: an unconditional `white-space: nowrap` on ranged and
+  // a commented-out one on melee. Nothing may reintroduce it outside the
+  // `keywords-nowrap` opt-out.
   it.each([
-    ["ranged", "printed card", `.data-40k-10e ${CARD} .ranged ${KEYWORD}`],
-    ["melee", "printed card", `.data-40k-10e ${CARD} .melee ${KEYWORD}`],
-    ["ranged", "mobile viewer", `.data-40k-10e ${VIEWER} .ranged ${KEYWORD}`],
-    ["melee", "mobile viewer", `.data-40k-10e ${VIEWER} .melee ${KEYWORD}`],
-  ])("keeps %s weapon keywords on one line on the %s", (_type, _surface, selector) => {
-    const body = ruleBody(selector);
+    ["ranged", "printed card", `.data-40k-10e ${CARD} .ranged ${CELL} .keyword`],
+    ["melee", "printed card", `.data-40k-10e ${CARD} .melee ${CELL} .keyword`],
+    ["ranged", "mobile viewer", `.data-40k-10e ${VIEWER} .ranged ${CELL} .keyword`],
+    ["melee", "mobile viewer", `.data-40k-10e ${VIEWER} .melee ${CELL} .keyword`],
+  ])("lets %s weapon keywords wrap by default on the %s", (_type, _surface, selector) => {
+    // The rule may be absent entirely — what matters is that nothing forces
+    // the list onto one line.
+    expect(ruleBody(selector) ?? "").not.toContain("white-space: nowrap");
+  });
 
-    expect(body, `${selector} should be present in the compiled stylesheet`).not.toBeNull();
+  it.each([
+    ["printed card", `.data-40k-10e ${CARD}`],
+    ["mobile viewer", `.data-40k-10e ${VIEWER}`],
+    ["11th edition printed card", `.data-40k-11e ${CARD}`],
+    ["11th edition mobile viewer", `.data-40k-11e ${VIEWER}`],
+  ])("keeps keywords on one line when the toggle is off, on the %s", (_surface, prefix) => {
+    const body = ruleBody(`${prefix}.keywords-nowrap .weapon .line .keyword`);
+
+    expect(body, `${prefix}.keywords-nowrap should be present in the compiled stylesheet`).not.toBeNull();
     expect(body).toContain("white-space: nowrap");
   });
 
@@ -58,10 +75,5 @@ describe("40k 10e/11e weapon keyword layout", () => {
     ["melee", "mobile viewer", `.data-40k-10e ${VIEWER} .melee ${CELL}`],
   ])("lets the %s name column shrink on the %s", (_type, _surface, selector) => {
     expect(ruleBody(selector)).toContain("min-width: 0");
-  });
-
-  it("applies the same rules to 11th edition", () => {
-    expect(ruleBody(`.data-40k-11e ${CARD} .melee ${KEYWORD}`)).toContain("white-space: nowrap");
-    expect(ruleBody(`.data-40k-11e ${CARD} .melee ${CELL}`)).toContain("min-width: 0");
   });
 });

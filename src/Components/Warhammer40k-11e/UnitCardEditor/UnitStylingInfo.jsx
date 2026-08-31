@@ -404,6 +404,21 @@ export function UnitStylingInfo() {
         )}
       </Card>
 
+      <Card type={"inner"} title="Weapon Keywords" size="small" bodyStyle={{ padding: 16 }} style={{ marginTop: 16 }}>
+        <Form size="small">
+          <Form.Item label={"Wrap Keywords"} style={{ marginBottom: 0 }}>
+            <Switch
+              checked={activeCard.wrapKeywords !== false}
+              onChange={(value) => updateActiveCard({ ...activeCard, wrapKeywords: value })}
+            />
+            <Text type="secondary" style={{ fontSize: "12px", display: "block", marginTop: 4 }}>
+              Long keyword lists wrap inside the weapon name column. Turn this off to keep each list on one line,
+              running on under the characteristics.
+            </Text>
+          </Form.Item>
+        </Form>
+      </Card>
+
       <Card
         type={"inner"}
         title="Custom Colours"

@@ -9,8 +9,12 @@ import { UnitWeaponsType } from "./UnitWeaponsType";
 export const UnitWeapons = ({ unit }) => {
   const showRanged = unit.showWeapons?.rangedWeapons !== false;
   const showMelee = unit.showWeapons?.meleeWeapons !== false;
+  // Weapon keyword lists wrap inside the name column by default. Cards that
+  // turn the "Wrap Keywords" styling toggle off opt into one unbreakable line
+  // per list instead; an absent flag means wrap.
+  const wrapKeywords = unit.wrapKeywords !== false;
   return (
-    <div className="weapons">
+    <div className={`weapons${wrapKeywords ? "" : " keywords-nowrap"}`}>
       {showRanged && unit.rangedWeapons && unit.rangedWeapons.length > 0 && (
         <UnitWeaponsType
           weaponType={{ name: "Ranged weapons", class: "ranged", skill: "BS" }}
