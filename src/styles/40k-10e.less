@@ -2263,6 +2263,15 @@
           gap: 16px;
           padding-bottom: 16px;
 
+          // Weapon keyword lists wrap by default, so a long list stays inside
+          // the weapon name column. The card's "Wrap Keywords" styling
+          // toggle turns that off by adding `keywords-nowrap` here, which
+          // keeps each list on one line running on under the characteristic
+          // columns instead.
+          &.keywords-nowrap .weapon .line .keyword {
+            white-space: nowrap;
+          }
+
           .ranged {
             position: relative;
 
@@ -2333,19 +2342,15 @@
                   z-index: 2;
 
                   // A grid track's automatic minimum is its content's
-                  // min-content width, and the keyword list below is `nowrap`.
-                  // Without this the name column stretches to fit the keywords
-                  // and shoves the characteristic columns out of line with
-                  // their header; with it the keywords simply run on underneath
-                  // them.
+                  // min-content width. With `keywords-nowrap` the keyword list
+                  // is one unbreakable run, so without this the name column
+                  // stretches to fit it and shoves the characteristic columns
+                  // out of line with their header; with it the keywords simply
+                  // run on underneath them.
                   min-width: 0;
 
                   .name {
                     white-space: pre-line;
-                  }
-
-                  .keyword {
-                    white-space: nowrap;
                   }
                 }
               }
@@ -2421,21 +2426,12 @@
                   z-index: 2;
 
                   // A grid track's automatic minimum is its content's
-                  // min-content width, and the keyword list below is `nowrap`.
-                  // Without this the name column stretches to fit the keywords
-                  // and shoves the characteristic columns out of line with
-                  // their header; with it the keywords simply run on underneath
-                  // them.
+                  // min-content width. With `keywords-nowrap` the keyword list
+                  // is one unbreakable run, so without this the name column
+                  // stretches to fit it and shoves the characteristic columns
+                  // out of line with their header; with it the keywords simply
+                  // run on underneath them.
                   min-width: 0;
-
-                  // Keep the keyword list on one line, exactly as the ranged
-                  // block does. The keywords are inline-block buttons, so
-                  // without this they break between tags and fold into the
-                  // narrow name column instead of running on under the
-                  // characteristic columns.
-                  .keyword {
-                    white-space: nowrap;
-                  }
                 }
               }
             }
@@ -3456,6 +3452,15 @@
             flex-direction: column;
             gap: 16px;
 
+            // Weapon keyword lists wrap by default, so a long list stays inside
+            // the weapon name column. The card's "Wrap Keywords" styling
+            // toggle turns that off by adding `keywords-nowrap` here, which
+            // keeps each list on one line running on under the characteristic
+            // columns instead.
+            &.keywords-nowrap .weapon .line .keyword {
+              white-space: nowrap;
+            }
+
             .ranged {
               position: relative;
 
@@ -3546,16 +3551,12 @@
                     letter-spacing: normal;
                     z-index: 2;
 
-                    // See the printed-card block: keeps the nowrap keyword list
-                    // from widening the name column.
+                    // See the printed-card block: keeps a `keywords-nowrap`
+                    // keyword list from widening the name column.
                     min-width: 0;
 
                     .name {
                       white-space: pre-line;
-                    }
-
-                    .keyword {
-                      white-space: nowrap;
                     }
                   }
                 }
@@ -3651,12 +3652,11 @@
                     letter-spacing: normal;
                     z-index: 2;
 
-                    // See the printed-card block: keeps the nowrap keyword list
-                    // from widening the name column.
+                    // See the printed-card block: keeps a `keywords-nowrap`
+                    // keyword list from widening the name column.
                     min-width: 0;
 
                     .keyword {
-                      white-space: nowrap;
                       grid-area: column-8;
                     }
                   }

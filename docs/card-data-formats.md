@@ -208,7 +208,10 @@ There are four `cardType` values:
   // Custom colours
   "useCustomColours": false,
   "customHeaderColour": "#000000",
-  "customBannerColour": "#000000"
+  "customBannerColour": "#000000",
+
+  // Styling
+  "wrapKeywords": true         // Wrap long weapon keyword lists (absent = true)
 }
 ```
 
@@ -217,6 +220,7 @@ There are four `cardType` values:
 - `abilities.core` and `abilities.faction` are string arrays (just names), not objects.
 - `abilities.other`, `abilities.wargear`, and `abilities.special` are arrays of `{ name, description, showAbility, showDescription }` objects.
 - Weapons have a two-level structure: weapon groups contain `profiles` (for multi-profile weapons like "Combi-weapon") and optional `abilities`.
+- `wrapKeywords` controls weapon keyword layout, and is set by the "Wrap Keywords" switch in the editor's Styling panel. When `true` (or absent) a long keyword list wraps inside the weapon name column; when `false` it stays on one line, running on under the characteristic columns. The same field is read by the 11th edition renderer.
 
 ---
 
