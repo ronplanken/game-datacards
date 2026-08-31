@@ -1,5 +1,0 @@
-{
-  "title": "Choose how weapon keywords wrap",
-  "body": "Long weapon keyword lists on 10th and 11th edition datasheets now wrap inside the weapon name column instead of running on in a single line under the characteristics, and the characteristic columns stay lined up with their headings. If you preferred the single line, a new Wrap Keywords switch in the Styling section turns wrapping off per card. It is in the mobile card editor too.",
-  "severity": "info"
-}

@@ -103,5 +103,12 @@
     "body": "Adding a weapon keyword could leave a card in a state where the weapons tab refused to open, even after a refresh. Affected cards now open again and the stray keyword can simply be deleted.",
     "severity": "error",
     "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.13",
+    "title": "Choose how weapon keywords wrap",
+    "body": "Long weapon keyword lists on 10th and 11th edition datasheets now wrap inside the weapon name column instead of running on in a single line under the characteristics, and the characteristic columns stay lined up with their headings. If you preferred the single line, a new Wrap Keywords switch in the Styling section turns wrapping off per card. It is in the mobile card editor too.",
+    "severity": "info",
+    "timestamp": 1788207017
   }
 ]
