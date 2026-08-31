@@ -1,5 +1,0 @@
-{
-  "title": "Edit wargear and special abilities, and pay for wargear in lists",
-  "body": "The card editor now has Wargear abilities and Special abilities panels for 11th edition units, so abilities like Terminator Storm Shield or Chapter Master of the Raven Guard can be edited or hidden instead of only showing up on the card. In the list builder, units that charge points for wargear (such as a Redemptor Dreadnought's macro plasma incinerator) now let you pick those options and count them towards your list total. Those wargear choices also appear on the back of the card, each with its points cost, instead of the card simply saying \"None\", and you can add, edit and price them yourself in the Wargear Options panel — which now shows each option's wargear list once instead of repeating it as loose text. Points that only apply to one faction or detachment — 5 Assault Intercessors cost more in a Blood Angels army — now say so on the card, and can be set per size in the Points panel.",
-  "severity": "info"
-}

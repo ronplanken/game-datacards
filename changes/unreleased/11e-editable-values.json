@@ -1,5 +1,0 @@
-{
-  "title": "Edit stratagem restrictions and weapon abilities in 11th edition",
-  "body": "Stratagems that carry a restrictions section — like Insane Bravery's \"cannot be used more than once per battle\" — can now be edited: the 11th edition stratagem editor has a Restrictions field next to When, Target and Effect, and it works on stratagems that had no restrictions yet. Weapon abilities such as Overcharge or Conversion now show up under their weapon's profiles on the card and can be added, edited and removed per weapon. Colouring text in the editor now shows on 11th edition cards instead of being dropped. Enhancements get a List eligibility panel for the keywords a unit needs, the keywords that rule it out, and whether non-Characters can take it, and rule parts that never print on the card (quotes and examples) keep their type when the card is edited.",
-  "severity": "info"
-}
