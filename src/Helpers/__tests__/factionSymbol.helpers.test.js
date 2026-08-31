@@ -53,6 +53,8 @@ describe("isLegacyFactionCode", () => {
     expect(isLegacyFactionCode("CSM")).toBe(true);
     expect(isLegacyFactionCode("AoI")).toBe(true);
     expect(isLegacyFactionCode("farsight-enclaves")).toBe(false);
+    // A generated slug is always lowercase, so it is never a code.
+    expect(isLegacyFactionCode("orks")).toBe(false);
     expect(isLegacyFactionCode("2f1c4b9e-9a1e-4d64-9d0e-0f7bb7f1c4aa")).toBe(false);
     expect(isLegacyFactionCode(undefined)).toBe(false);
   });
@@ -63,8 +65,14 @@ describe("factionNamesFromCard", () => {
     expect(factionNamesFromCard({ factions: ["Chaos", "Heretic Astartes"] })).toEqual(["Heretic Astartes", "Chaos"]);
   });
 
-  it("falls back to the custom datasource field and tolerates missing values", () => {
+  it("prefers the custom datasource field, which is the one its card prints", () => {
     expect(factionNamesFromCard({ factionKeywords: ["Necrons"] })).toEqual(["Necrons"]);
+    expect(factionNamesFromCard({ factionKeywords: ["Necrons"], factions: ["Orks"] })).toEqual(["Necrons"]);
+  });
+
+  it("treats an empty array as absent and tolerates missing values", () => {
+    expect(factionNamesFromCard({ factions: [], factionKeywords: ["Necrons"] })).toEqual(["Necrons"]);
+    expect(factionNamesFromCard({ factionKeywords: [], factions: ["Orks"] })).toEqual(["Orks"]);
     expect(factionNamesFromCard({})).toEqual([]);
     expect(factionNamesFromCard(undefined)).toEqual([]);
   });
@@ -80,6 +88,8 @@ describe("buildFactionIconCandidates", () => {
     // 11th edition (UUID) and custom datasource (slug) faction ids.
     expect(buildFactionIconCandidates({ factionId: "3f0a-uuid-9931", names: ["Heretic Astartes"] })).toEqual(["CSM"]);
     expect(buildFactionIconCandidates({ factionId: "farsight-enclaves", names: ["T'au Empire"] })).toEqual(["TAU"]);
+    // A slug short enough to look like a code is not requested first.
+    expect(buildFactionIconCandidates({ factionId: "orks", names: ["Orks"] })).toEqual(["ORK"]);
   });
 
   it("returns an empty list when nothing resolves", () => {

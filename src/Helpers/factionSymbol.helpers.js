@@ -73,8 +73,11 @@ const CODE_BY_NAME = Object.entries(ALIASES).reduce((acc, [code, names]) => {
 
 // A legacy short code as used by 10th edition (`CSM`, `CHUL`, `AoI`). Custom
 // datasource faction ids are slugs ("farsight-enclaves") and 11th edition ids
-// are UUIDs, so neither is mistaken for a symbol filename.
-const LEGACY_CODE_PATTERN = /^[A-Za-z]{2,6}$/;
+// are UUIDs, so neither is mistaken for a symbol filename. The required capital
+// rules out a short slug that would otherwise pass ("orks"): generateIdFromName
+// lowercases, so a generated slug never has one. Matching against the alias
+// table's codes instead would drop any 10e code this file does not list.
+const LEGACY_CODE_PATTERN = /^(?=.*[A-Z])[A-Za-z]{2,6}$/;
 
 export const isLegacyFactionCode = (factionId) => LEGACY_CODE_PATTERN.test(String(factionId ?? ""));
 
@@ -94,10 +97,12 @@ export const resolveFactionCode = (names = []) => resolveFactionCodes(names)[0] 
 
 /**
  * The faction keyword(s) printed on a card, most specific (last) keyword first.
- * Custom datasources may store them under `factionKeywords`.
+ * Custom datasources may store them under `factionKeywords`, which is also the
+ * field their card renders, so it wins when both are filled. Empty arrays fall
+ * through to the other field rather than counting as an answer.
  */
 export const factionNamesFromCard = (card) => {
-  const keywords = card?.factions || card?.factionKeywords || [];
+  const keywords = card?.factionKeywords?.length ? card.factionKeywords : card?.factions;
   return Array.isArray(keywords) ? [...keywords].reverse() : [];
 };
 
