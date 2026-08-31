@@ -89,5 +89,12 @@
     "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories, not just local lists, so you can hand out a link to a synced category from your phone. Sharing a list that cannot be shared now tells you why instead of doing nothing.",
     "severity": "success",
     "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.11",
+    "title": "Starcraft weapon keywords link to the glossary again",
+    "body": "On Starcraft datacards, keywords added to a weapon were printed as raw text and never matched a glossary entry. They now render as proper keyword tags with their tooltips and explanation lines, just like on the other game systems.",
+    "severity": "warning",
+    "timestamp": 1788204839
   }
 ]
