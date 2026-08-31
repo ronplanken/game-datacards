@@ -1,0 +1,5 @@
+{
+  "title": "Share cloud categories from your phone",
+  "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories, not just local lists, so you can hand out a link to a synced category from your phone. Sharing a list that cannot be shared now tells you why instead of doing nothing.",
+  "severity": "success"
+}

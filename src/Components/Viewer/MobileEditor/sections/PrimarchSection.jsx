@@ -3,8 +3,15 @@ import { EditorAccordion } from "../shared/EditorAccordion";
 import { EditorTextField } from "../shared/EditorTextField";
 import { EditorToggle } from "../shared/EditorToggle";
 
-export const PrimarchSection = ({ card, label, icon, replaceCard }) => {
+export const PrimarchSection = ({ card, config = {}, label, icon, replaceCard }) => {
   const primarch = card.abilities?.primarch || [];
+
+  // 11e primarch groups carry no per-ability show flags (the panel switch owns
+  // visibility), so both the toggle and the keys a new entry starts with are
+  // supplied by the resolver.
+  const hasShowToggle = config.hasShowToggle !== false;
+  const newAbilityDefaults = config.newAbilityDefaults ?? { showAbility: true, showDescription: true };
+  const newGroupDefaults = config.newGroupDefaults ?? (hasShowToggle ? { showAbility: true } : {});
 
   const updatePrimarch = (updated) => {
     replaceCard({ ...card, abilities: { ...card.abilities, primarch: updated } });
@@ -28,7 +35,7 @@ export const PrimarchSection = ({ card, label, icon, replaceCard }) => {
     const updated = [...primarch];
     const abilities = [
       ...(updated[groupIndex].abilities || []),
-      { name: "New Ability", description: "", showAbility: true, showDescription: true },
+      { ...newAbilityDefaults, name: "New Ability", description: "" },
     ];
     updated[groupIndex] = { ...updated[groupIndex], abilities };
     updatePrimarch(updated);
@@ -44,7 +51,7 @@ export const PrimarchSection = ({ card, label, icon, replaceCard }) => {
   };
 
   const handleAddGroup = () => {
-    updatePrimarch([...primarch, { name: "Ability Group", showAbility: true, abilities: [] }]);
+    updatePrimarch([...primarch, { ...newGroupDefaults, name: "Ability Group", abilities: [] }]);
   };
 
   const handleRemoveGroup = (groupIndex) => {
@@ -66,11 +73,13 @@ export const PrimarchSection = ({ card, label, icon, replaceCard }) => {
               <Trash2 size={14} />
             </button>
           </div>
-          <EditorToggle
-            label="Show on card"
-            checked={group.showAbility !== false}
-            onChange={(value) => handleUpdateGroup(groupIndex, "showAbility", value)}
-          />
+          {hasShowToggle && (
+            <EditorToggle
+              label="Show on card"
+              checked={group.showAbility !== false}
+              onChange={(value) => handleUpdateGroup(groupIndex, "showAbility", value)}
+            />
+          )}
           <div
             style={{
               paddingLeft: 12,

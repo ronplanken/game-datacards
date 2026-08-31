@@ -36,6 +36,7 @@ import { useViewerNavigation } from "../Hooks/useViewerNavigation";
 import { useMobileSharing } from "../Hooks/useMobileSharing";
 import { useRecentSearches } from "../Hooks/useRecentSearches";
 import { useScrollRevealHeader } from "../Hooks/useScrollRevealHeader";
+import { getCardName } from "../Helpers/localization.helpers";
 
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -107,10 +108,7 @@ export const ViewerMobile = ({
   const listCard = location.state?.listCard;
   const cloudCard = location.state?.cloudCard;
   const editableCard = listCard || cloudCard;
-  // 11th edition cards are desktop-edit only for now: the mobile editor has no
-  // 40k-11e resolver, and its generic fallback would overwrite language-keyed
-  // fields with plain strings.
-  const isEditableCard = !!editableCard && activeCard?.source !== "40k-11e";
+  const isEditableCard = !!editableCard;
 
   // Load custom datasource schema for the editor (only when editing a custom DS card)
   const [editorSchema, setEditorSchema] = useState(null);
@@ -414,7 +412,10 @@ export const ViewerMobile = ({
                     updateActiveCard(updatedCard, true);
                     // Build URL from updated name so useViewerNavigation can match it
                     const factionSlug = cardFaction?.name?.toLowerCase().replaceAll(" ", "-");
-                    const cardSlug = updatedCard.name?.toLowerCase().replaceAll(" ", "-");
+                    // 11e names arrive from the datasource already resolved to a
+                    // plain string, but a card stored before that could still hold
+                    // a language-keyed object.
+                    const cardSlug = getCardName(updatedCard, settings.language)?.toLowerCase().replaceAll(" ", "-");
                     const newPath = factionSlug && cardSlug ? `/mobile/${factionSlug}/${cardSlug}` : location.pathname;
                     const stateKey = listCard ? "listCard" : "cloudCard";
                     navigate(newPath, { replace: true, state: { [stateKey]: updatedCard } });

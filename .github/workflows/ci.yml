@@ -12,8 +12,14 @@ on:
     paths-ignore:
       - "**/*.md"
 
+# A branch with an open PR fires this workflow twice — once for the push and once
+# for the pull_request — and both resolved to the same group, so whichever
+# started second cancelled the other. Only the pull_request run executes `test`,
+# so when the push run won the race the PR went green having run no tests at all.
+# Keying the group on the event as well lets the two runs stand alongside each
+# other, while a second push to the same branch still cancels its own predecessor.
 concurrency:
-  group: "${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}"
+  group: "${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}"
   cancel-in-progress: true
 
 jobs:

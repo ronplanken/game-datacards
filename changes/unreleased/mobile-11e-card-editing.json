@@ -1,0 +1,5 @@
+{
+  "title": "Edit 11th edition cards on mobile",
+  "body": "Cards you add to an 11th edition list on mobile now have an Edit button, like 10th edition and Age of Sigmar cards already did. The mobile editor covers the whole card — stats, points and their detachment or faction restrictions, weapons and their profiles, weapon abilities, core, faction and other abilities, Primarch abilities, the damaged profile, invulnerable save, wargear options, unit composition, loadout, leader, transport and keywords — as well as stratagems, enhancements and rules. Edits are written in the card language you picked in Settings and leave the other languages untouched, so a card you edit in German still reads correctly in English.",
+  "severity": "info"
+}

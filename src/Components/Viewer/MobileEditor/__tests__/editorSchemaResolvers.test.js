@@ -437,3 +437,140 @@ describe("editorSchemaResolvers", () => {
     });
   });
 });
+
+// 11th edition cards reach the resolver as a language projection (see
+// localizedCard.js), so every localized field is already a plain string here.
+describe("editorSchemaResolvers 40k-11e", () => {
+  const unitCard = {
+    name: "Intercessor Squad",
+    source: "40k-11e",
+    cardType: "DataCard",
+    stats: [{ name: "Intercessor", m: '6"', t: "4", sv: "3+", w: "2", ld: "6+", oc: "2" }],
+    rangedWeapons: [{ profiles: [{ name: "Bolt rifle", range: "24", attacks: "2" }] }],
+    meleeWeapons: [{ profiles: [{ name: "Close combat weapon", range: "Melee" }] }],
+    abilities: {
+      core: [{ name: 'Scouts 6"' }],
+      faction: [{ name: "Oath of Moment" }],
+      other: [{ name: "Combat Squads", description: "Split" }],
+      primarch: [{ name: "Rites of Battle", abilities: [{ name: "Tactical Precision", description: "Re-roll" }] }],
+      damaged: { range: "1-3 wounds", description: "Hurts" },
+      invul: { value: "4+" },
+    },
+    keywords: [{ name: "Infantry" }],
+    factions: ["Adeptus Astartes"],
+    composition: [{ name: "5 Intercessors" }],
+    loadout: "Equipped with a bolt rifle",
+    leader: "Can lead Assault Squads",
+    transport: "Capacity 6",
+    points: [{ models: "5", cost: "80", keyword: "" }],
+  };
+
+  const sectionFor = (card, key) => resolveEditorSections(card, "40k-11e", null).find((s) => s.key === key);
+
+  it("resolves the full set of unit sections", () => {
+    const keys = resolveEditorSections(unitCard, "40k-11e", null).map((s) => s.key);
+
+    expect(keys).toEqual([
+      "name",
+      "stats",
+      "points",
+      "weapons",
+      "abilities",
+      "primarch",
+      "damaged",
+      "invul",
+      "composition",
+      "loadout",
+      "leader",
+      "transport",
+      "keywords",
+    ]);
+  });
+
+  it("tells the sections about the shapes 11e does not share with 10e", () => {
+    expect(sectionFor(unitCard, "stats").config.newProfileDefaults).not.toHaveProperty("active");
+    expect(sectionFor(unitCard, "invul").config.valueOnly).toBe(true);
+    expect(sectionFor(unitCard, "damaged").config.hasShowToggle).toBe(false);
+    expect(sectionFor(unitCard, "primarch").config.hasShowToggle).toBe(false);
+    expect(sectionFor(unitCard, "keywords").config.keywordsAreObjects).toBe(true);
+    expect(sectionFor(unitCard, "keywords").config.factionKeywordsAreObjects).toBeUndefined();
+
+    const weaponType = sectionFor(unitCard, "weapons").config.types[0];
+    expect(weaponType.hasActiveFlag).toBe(false);
+    expect(weaponType.hasWeaponAbilities).toBe(true);
+    expect(weaponType.newProfileDefaults).toEqual({});
+  });
+
+  it("resolves points as restricted tiers rather than a scalar", () => {
+    const config = sectionFor(unitCard, "points").config;
+    expect(config.hasActive).toBe(false);
+    expect(config.hasRestrictions).toBe(true);
+    expect(config.hasAdditionalCost).toBe(true);
+  });
+
+  it("marks core and faction abilities as name objects", () => {
+    const categories = sectionFor(unitCard, "abilities").config.categories;
+    const byKey = Object.fromEntries(categories.map((c) => [c.key, c]));
+
+    expect(byKey.core.itemShape).toBe("object");
+    expect(byKey.faction.itemShape).toBe("object");
+    expect(byKey.other.itemShape).toBeUndefined();
+    expect(sectionFor(unitCard, "abilities").config.newAbilityDefaults).toEqual({});
+  });
+
+  it("edits the structured wargear groups when a card has them", () => {
+    const withGroups = { ...unitCard, wargearOptions: [{ instruction: "Replace", options: [] }], wargear: ["Text"] };
+    const keys = resolveEditorSections(withGroups, "40k-11e", null).map((s) => s.key);
+
+    expect(keys).toContain("wargearOptions");
+    expect(keys).not.toContain("wargear");
+  });
+
+  it("falls back to the free-form wargear sentences when there are no groups", () => {
+    const withText = { ...unitCard, wargear: ["Any model may take a plasma pistol"] };
+    const section = sectionFor(withText, "wargear");
+
+    expect(section.type).toBe("stringList");
+    expect(section.config.dataPath).toBe("wargear");
+  });
+
+  it("resolves stratagem, enhancement and rule cards", () => {
+    const stratagem = { source: "40k-11e", cardType: "stratagem", when: "W", effect: "E" };
+    const stratagemFields = resolveEditorSections(stratagem, "40k-11e", null).find((s) => s.type === "fields");
+    expect(stratagemFields.config.fields.map((f) => f.key)).toEqual([
+      "type",
+      "detachment",
+      "cost",
+      "turn",
+      "when",
+      "target",
+      "effect",
+      "restrictions",
+    ]);
+
+    const enhancement = { source: "40k-11e", cardType: "enhancement", description: "D", cost: "10" };
+    const enhancementKeys = resolveEditorSections(enhancement, "40k-11e", null).map((s) => s.key);
+    expect(enhancementKeys).toEqual(["name", "fields", "eligibility"]);
+
+    const rule = { source: "40k-11e", rules: [{ order: 0, type: "text", text: "Body" }] };
+    const ruleTypes = resolveEditorSections(rule, "40k-11e", null).map((s) => s.type);
+    expect(ruleTypes).toContain("rulesList");
+  });
+
+  it("resolves a rule card the viewer stamped as a rule", () => {
+    // ViewerUnitList stamps cardType "rule"; the resolver must not fall through
+    // to the unit sections for it.
+    const rule = { source: "40k-11e", cardType: "rule", ruleType: "army", rules: [{ order: 0, type: "text" }] };
+    const keys = resolveEditorSections(rule, "40k-11e", null).map((s) => s.key);
+
+    expect(keys).toEqual(["name", "fields", "rules"]);
+  });
+
+  it("keeps enhancement eligibility keywords on the plain-string path", () => {
+    const enhancement = { source: "40k-11e", cardType: "enhancement", description: "D", cost: "10" };
+    const eligibility = resolveEditorSections(enhancement, "40k-11e", null).find((s) => s.key === "eligibility");
+
+    expect(eligibility.config.keywordsAreObjects).toBeUndefined();
+    expect(eligibility.config.factionKeywordsPath).toBe("excludes");
+  });
+});
