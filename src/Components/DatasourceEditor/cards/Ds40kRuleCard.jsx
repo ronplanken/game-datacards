@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { MarkdownDisplay } from "../../MarkdownDisplay";
+import { buildFactionIconCandidates, factionNamesFromCard } from "../../../Helpers/factionSymbol.helpers";
 import { FactionIcon } from "../../Icons/FactionIcon";
 
 const formatRuleText = (text) => {
@@ -104,7 +105,12 @@ export const Ds40kRuleCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
             <div className="containers">
               <div className="rule-type-indicator">
                 <div className="faction-icon">
-                  <FactionIcon factionId={card.faction_id} />
+                  <FactionIcon
+                    factionId={buildFactionIconCandidates({
+                      factionId: card.faction_id,
+                      names: factionNamesFromCard(card),
+                    })}
+                  />
                 </div>
               </div>
             </div>

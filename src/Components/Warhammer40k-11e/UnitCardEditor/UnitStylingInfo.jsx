@@ -100,10 +100,7 @@ export function UnitStylingInfo() {
         localImageFilename: actualFile.name,
       };
       updateActiveCard(updatedCard);
-
-      setTimeout(() => {
-        saveActiveCard();
-      }, 100);
+      saveActiveCard(updatedCard);
 
       setLocalImageInfo({
         filename: actualFile.name,
@@ -124,15 +121,9 @@ export function UnitStylingInfo() {
 
     try {
       await deleteImage(activeCard.uuid);
-      updateActiveCard({
-        ...activeCard,
-        hasLocalImage: false,
-        localImageFilename: null,
-      });
-
-      setTimeout(() => {
-        saveActiveCard();
-      }, 100);
+      const updatedCard = { ...activeCard, hasLocalImage: false, localImageFilename: null };
+      updateActiveCard(updatedCard);
+      saveActiveCard(updatedCard);
 
       setLocalImageInfo(null);
       message.success("Local image removed");
@@ -174,15 +165,13 @@ export function UnitStylingInfo() {
     try {
       await saveFactionSymbol(activeCard.uuid, actualFile);
 
-      updateActiveCard({
+      const updatedCard = {
         ...activeCard,
         hasCustomFactionSymbol: true,
         customFactionSymbolFilename: actualFile.name,
-      });
-
-      setTimeout(() => {
-        saveActiveCard();
-      }, 100);
+      };
+      updateActiveCard(updatedCard);
+      saveActiveCard(updatedCard);
 
       setFactionSymbolInfo({
         filename: actualFile.name,
@@ -203,15 +192,9 @@ export function UnitStylingInfo() {
 
     try {
       await deleteFactionSymbol(activeCard.uuid);
-      updateActiveCard({
-        ...activeCard,
-        hasCustomFactionSymbol: false,
-        customFactionSymbolFilename: null,
-      });
-
-      setTimeout(() => {
-        saveActiveCard();
-      }, 100);
+      const updatedCard = { ...activeCard, hasCustomFactionSymbol: false, customFactionSymbolFilename: null };
+      updateActiveCard(updatedCard);
+      saveActiveCard(updatedCard);
 
       setFactionSymbolInfo(null);
       message.success("Faction symbol removed");
@@ -318,8 +301,9 @@ export function UnitStylingInfo() {
           <Switch
             checked={activeCard.hasCustomFactionSymbol || false}
             onChange={(value) => {
-              updateActiveCard({ ...activeCard, hasCustomFactionSymbol: value });
-              setTimeout(() => saveActiveCard(), 100);
+              const updatedCard = { ...activeCard, hasCustomFactionSymbol: value };
+              updateActiveCard(updatedCard);
+              saveActiveCard(updatedCard);
             }}
           />
         }>

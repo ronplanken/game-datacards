@@ -1,0 +1,5 @@
+{
+  "title": "Faction symbols stay on your datacards",
+  "body": "Switching the custom faction symbol on or off, uploading one, or removing it saved the card as it was before the change, so the setting flipped back after a reload and the symbol could not be replaced. Those actions now save what you actually did. Custom symbols also work on 11th edition cards, where the switch used to do nothing, and cards that showed an empty badge - 11th edition datasheets and cards from a custom datasource - now fall back to the symbol of the faction printed on the card.",
+  "severity": "info"
+}
