@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { FactionIcon } from "../Icons/FactionIcon";
 import { MarkupText } from "./UnitCard/UnitAbilityDescription";
-import { resolveFactionCode } from "./UnitCard/UnitFactionSymbol";
+import { buildFactionIconCandidates } from "../../Helpers/factionSymbol.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { localize } from "../../Helpers/localization.helpers";
@@ -58,7 +58,7 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
   const useAutoHeight = rule.styling?.autoHeight !== false;
 
   const faction = dataSource?.data?.find((f) => f.id === rule.faction_id);
-  const factionCode = resolveFactionCode([faction?.name]);
+  const factionCodes = buildFactionIconCandidates({ factionId: rule.faction_id, names: [faction?.name] });
 
   return (
     <div
@@ -92,7 +92,7 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
           </div>
           <div className="containers">
             <div className="rule-type-indicator">
-              <div className="faction-icon">{factionCode && <FactionIcon factionId={factionCode} />}</div>
+              <div className="faction-icon">{factionCodes.length > 0 && <FactionIcon factionId={factionCodes} />}</div>
             </div>
           </div>
         </div>

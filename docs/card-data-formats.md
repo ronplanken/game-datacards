@@ -32,6 +32,7 @@ All text fields support Markdown formatting unless noted otherwise.
   - [Gangers](#gangers)
   - [Vehicles](#vehicles)
 - [Basic Cards](#basic-cards)
+- [Faction Symbols](#faction-symbols)
 - [Key Differences Between Systems](#key-differences-between-systems)
 
 ---
@@ -195,6 +196,14 @@ There are four `cardType` values:
   "imageZIndex": 0,
   "imagePositionX": 0,
   "imagePositionY": 0,
+
+  // Faction symbol (see "Faction Symbols" below)
+  "hasCustomFactionSymbol": false,  // Replace the default symbol
+  "externalFactionSymbol": null,    // URL string or null
+  "customFactionSymbolFilename": null,
+  "factionSymbolScale": 0.8,
+  "factionSymbolPositionX": 0,
+  "factionSymbolPositionY": 0,
 
   // Custom colours
   "useCustomColours": false,
@@ -721,6 +730,31 @@ Basic cards use the 9th edition stat format and serve as general-purpose templat
 ```
 
 Basic datasources can also include `stratagems`, `secondaries`, and `psychicpowers` using the 9th edition format.
+
+---
+
+
+## Faction Symbols
+
+The symbol in the diamond badge on a 40k datacard is an SVG from the legacy
+`40k-Data-Card` repository, addressed by a short code (`CSM`, `CHUL`, `TAU`).
+
+Resolution order, implemented in `src/Helpers/factionSymbol.helpers.js`:
+
+1. A card with `hasCustomFactionSymbol: true` uses its own symbol — the image
+   stored in IndexedDB under `faction-<card uuid>`, or `externalFactionSymbol`
+   when there is no uploaded one. With neither, the default symbol below is used,
+   so enabling the switch never leaves a card without a symbol.
+2. `faction_id`, but only when it already is a symbol code. 10th edition
+   datasheets carry one; 11th edition faction ids are UUIDs and custom
+   datasource faction ids are slugs, and those are skipped.
+3. The faction name(s): the card's `factions` (or `factionKeywords`) entries,
+   most specific first, then the datasource faction name. Names are matched
+   case- and punctuation-insensitively, and sub-factions map onto their parent's
+   symbol (`Farsight Enclaves` to `TAU`, `Heretic Astartes` to `CSM`).
+
+Candidates are tried in order and the first one that resolves to an SVG wins, so
+a faction without a symbol of its own still falls back to its parent's.
 
 ---
 
