@@ -19,5 +19,12 @@
     "body": "You used to be able to start syncing a sub-category on its own, even when the category it sits under wasn't synced yet, which never actually worked. Now a sub-category's sync button stays off until you sync its parent category first.",
     "severity": "info",
     "timestamp": 1779902166
+  },
+  {
+    "version": "3.11.1",
+    "title": "Group 11th edition datasheets and stratagems again",
+    "body": "The faction settings for 11th edition were missing, so datasheets could not be grouped into Character / Battleline / Dedicated Transport / Other. They are back, together with the points and double-sided display options, and stratagems can now be split into collapsible sections per detachment.",
+    "severity": "info",
+    "timestamp": 1788204838
   }
 ]
