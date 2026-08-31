@@ -68,5 +68,12 @@
     "body": "Selecting factions such as Adeptus Titanicus in the Image Generator no longer throws a \"something went wrong\" error. Each faction's cards are now tracked on demand, so any faction can be generated.",
     "severity": "info",
     "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.8",
+    "title": "Melee weapon keywords line up with ranged",
+    "body": "On 10th and 11th edition datasheets, a melee weapon with a long keyword list folded those keywords into a stack under the weapon name, while a ranged weapon kept them on one line. Melee weapons now read the same as ranged: the keywords run on in a single line under the characteristics, and the characteristic columns stay lined up with their headings.",
+    "severity": "info",
+    "timestamp": 1788204839
   }
 ]
