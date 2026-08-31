@@ -30,6 +30,7 @@ description: Table of contents for all Game Datacards documentation files
 | [faction-browser-grouping.md](faction-browser-grouping.md) | How the faction browser groups datasheets by faction/role and stratagems by detachment across the editor and viewer panels, the separator row shapes, and why keyword matching must be edition-agnostic |
 | [welcome-wizard-v2.md](welcome-wizard-v2.md) | Onboarding wizard (v2.0.0): 9-step flow, game system selection, interactive demos, component architecture |
 | [release-notifications.md](release-notifications.md) | How shipped changes reach users: quiet release notes in the notification bell for fixes (patch bump), the full What's New wizard for notable features (minor bump), and how the issue-to-PR pipeline routes between them |
+| [gw-app-list-import.md](gw-app-list-import.md) | Warhammer 40,000 app list import for both 40k editions: the shared list parser (title and WTC export shapes, attached units, model counts), unit and enhancement matching, 11th edition size tiers, and the battle size and detachments an 11e import restores |
 | [listforge-direct-read-import.md](listforge-direct-read-import.md) | ListForge/NewRecruit roster import with match and direct-read modes, format mapping reference |
 | [listforge-url-import.md](listforge-url-import.md) | One-click import via URL hash fragment with gzip-compressed JSON payload from ListForge |
 
