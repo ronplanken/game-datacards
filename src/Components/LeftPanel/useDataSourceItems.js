@@ -92,7 +92,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
         try {
           return buildFactionDatasheetList({ dataSource, selectedFaction, settings, searchText });
         } catch (error) {
-          console.error("An error occured", error);
+          console.error("An error occurred", error);
           return [];
         }
       }
