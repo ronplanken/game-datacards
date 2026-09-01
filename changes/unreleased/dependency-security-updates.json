@@ -1,0 +1,5 @@
+{
+  "title": "Security and dependency updates",
+  "body": "Game Datacards now runs on updated versions of the libraries it is built with, closing a batch of reported security issues. Nothing changes in how the app looks or works.",
+  "severity": "info"
+}
