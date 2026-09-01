@@ -1,5 +1,0 @@
-{
-  "title": "Reuse faction symbols and keep their colours",
-  "body": "Custom faction symbols were always flattened to black, so an uploaded symbol lost its colours. A new Original Colours switch in the Faction Symbol panel leaves them alone; it stays off by default, which is the look that matches the printed cards. Uploading a symbol onto a card that already had one also kept showing the old image until you switched the panel off and on again, and that now updates straight away. Finally, a Saved symbols button lists every symbol you have uploaded in this browser so you can put one on another card without hunting for the file again, and removing a symbol no longer closes the panel so you can pick a replacement right away.",
-  "severity": "info"
-}
