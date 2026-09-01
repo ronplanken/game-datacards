@@ -50,12 +50,14 @@ export const FactionSymbolLibraryModal = ({ open, onCancel, onSelect }) => {
       setLoading(true);
       try {
         const stored = await listFactionSymbols();
+        // Bail before creating any url: cleanup has already revoked whatever
+        // previewUrls held, so anything made after it would never be released.
+        if (cancelled) return;
         const entries = dedupeSymbols(stored).map((symbol) => {
           const previewUrl = URL.createObjectURL(symbol.image);
           previewUrls.push(previewUrl);
           return { ...symbol, previewUrl };
         });
-        if (cancelled) return;
         setSymbols(entries);
       } catch (error) {
         if (!cancelled) setSymbols([]);

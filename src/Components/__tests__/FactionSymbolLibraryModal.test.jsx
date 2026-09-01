@@ -74,6 +74,23 @@ describe("FactionSymbolLibraryModal", () => {
     expect(listFactionSymbols).not.toHaveBeenCalled();
   });
 
+  it("creates no preview urls when it closes while the library is loading", async () => {
+    let resolveList;
+    listFactionSymbols.mockReturnValue(
+      new Promise((resolve) => {
+        resolveList = resolve;
+      }),
+    );
+
+    const { unmount } = render(<FactionSymbolLibraryModal open onCancel={vi.fn()} onSelect={vi.fn()} />);
+    unmount();
+    resolveList([symbol()]);
+    await waitFor(() => expect(listFactionSymbols).toHaveBeenCalled());
+
+    // Cleanup has already run, so a url made now would never be revoked.
+    expect(global.URL.createObjectURL).not.toHaveBeenCalled();
+  });
+
   it("releases the preview urls it created when it closes", async () => {
     listFactionSymbols.mockResolvedValue([symbol()]);
     const { unmount } = render(<FactionSymbolLibraryModal open onCancel={vi.fn()} onSelect={vi.fn()} />);
