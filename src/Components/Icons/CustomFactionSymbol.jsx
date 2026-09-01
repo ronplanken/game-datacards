@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useIndexedDBImages } from "../../Hooks/useIndexedDBImages";
 
+// The built-in faction symbols are flattened to black to match the printed
+// cards; an uploaded symbol gets the same treatment unless the card asks to keep
+// its colours.
+const GREYSCALE_FILTER = "invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%)";
+
 const SymbolImage = styled.div`
   width: 100%;
   height: 100%;
@@ -9,7 +14,7 @@ const SymbolImage = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
+  filter: ${(props) => (props.$keepColours ? "none" : GREYSCALE_FILTER)};
   rotate: -45deg;
   scale: ${(props) => props.$scale || 0.8};
   transform: translate(${(props) => props.$positionX || 0}px, ${(props) => props.$positionY || 0}px);
@@ -26,6 +31,10 @@ export const useCustomFactionSymbolUrl = (card) => {
 
   const uuid = card?.uuid;
   const enabled = card?.hasCustomFactionSymbol;
+  // Bumped whenever the stored symbol is replaced or removed. The card uuid and
+  // the enabled flag both stay put when a symbol is swapped on a card that
+  // already had one, so without this the preview keeps the previous image.
+  const updatedAt = card?.factionSymbolUpdatedAt;
 
   useEffect(() => {
     let cancelled = false;
@@ -62,7 +71,7 @@ export const useCustomFactionSymbolUrl = (card) => {
     };
     // getFactionSymbolUrl is recreated on every render of the hook; depending on
     // it would re-run this effect forever.
-  }, [uuid, enabled, isReady]);
+  }, [uuid, enabled, isReady, updatedAt]);
 
   return symbolUrl;
 };
@@ -71,6 +80,7 @@ export const useCustomFactionSymbolUrl = (card) => {
 export const CustomFactionSymbol = ({ card, imageUrl }) => (
   <SymbolImage
     $imageUrl={imageUrl}
+    $keepColours={card?.keepFactionSymbolColours}
     $scale={card?.factionSymbolScale}
     $positionX={card?.factionSymbolPositionX}
     $positionY={card?.factionSymbolPositionY}
