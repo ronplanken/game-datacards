@@ -1,15 +1,9 @@
 import { Empty, Modal, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
+import { formatFileSize } from "../Helpers/generic.helpers";
 import { useIndexedDBImages } from "../Hooks/useIndexedDBImages";
 
 const { Text } = Typography;
-
-const formatFileSize = (bytes) => {
-  if (!bytes && bytes !== 0) return "";
-  if (bytes < 1024) return `${bytes} bytes`;
-  if (bytes < 1048576) return `${Math.round(bytes / 1024)} KB`;
-  return `${Math.round((bytes / 1048576) * 10) / 10} MB`;
-};
 
 /**
  * The same symbol uploaded onto several cards is stored once per card. Collapse

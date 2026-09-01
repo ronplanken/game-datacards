@@ -2,6 +2,7 @@ import { Form, Input, Select, Switch, Upload, Button, Space, Typography, Slider,
 import { message } from "../../Toast/message";
 import { Upload as UploadIcon, Trash2 } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
+import { formatFileSize } from "../../../Helpers/generic.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { FactionSymbolPanel } from "../../CardEditor/FactionSymbolPanel";
 import { FactionSelect } from "../FactionSelect";
@@ -107,12 +108,6 @@ export function UnitStylingInfo() {
     } catch (error) {
       message.error("Failed to delete image");
     }
-  };
-
-  const formatFileSize = (bytes) => {
-    if (bytes < 1024) return bytes + " bytes";
-    else if (bytes < 1048576) return Math.round(bytes / 1024) + " KB";
-    else return Math.round((bytes / 1048576) * 10) / 10 + " MB";
   };
 
   return (

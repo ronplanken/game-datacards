@@ -1,6 +1,7 @@
 import { Button, Card, Form, Input, Slider, Space, Switch, Typography, Upload } from "antd";
 import { Images, Trash2, Upload as UploadIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { formatFileSize } from "../../Helpers/generic.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useIndexedDBImages } from "../../Hooks/useIndexedDBImages";
 import { message } from "../Toast/message";
@@ -9,12 +10,6 @@ import { FactionSymbolLibraryModal } from "../FactionSymbolLibraryModal";
 const { Text } = Typography;
 
 const MAX_SYMBOL_BYTES = 2 * 1024 * 1024;
-
-const formatFileSize = (bytes) => {
-  if (bytes < 1024) return `${bytes} bytes`;
-  if (bytes < 1048576) return `${Math.round(bytes / 1024)} KB`;
-  return `${Math.round((bytes / 1048576) * 10) / 10} MB`;
-};
 
 /**
  * The faction symbol section of the card styling editor. Shared by the 10th and
