@@ -220,7 +220,9 @@ export const Exporter = () => {
   };
 
   // Check if GW 40k App export should be disabled
-  const isGwAppDisabled = settings.selectedDataSource !== "40k-10e" || activeCategory?.type !== "list";
+  const isGwAppDisabled =
+    (settings.selectedDataSource !== "40k-10e" && settings.selectedDataSource !== "40k-11e") ||
+    activeCategory?.type !== "list";
 
   // Generate previews when modal opens or category changes
   useEffect(() => {
@@ -259,9 +261,7 @@ export const Exporter = () => {
                     <FileJson size={16} className="import-export-nav-icon" />
                     <span>GDC JSON</span>
                   </div>
-                  <Tooltip
-                    content={isGwAppDisabled ? "Only available for 10th Edition 40k lists" : ""}
-                    placement="right">
+                  <Tooltip content={isGwAppDisabled ? "Only available for 40k lists" : ""} placement="right">
                     <div
                       className={`import-export-nav-item ${activeTab === "gwapp" ? "active" : ""} ${
                         isGwAppDisabled ? "disabled" : ""

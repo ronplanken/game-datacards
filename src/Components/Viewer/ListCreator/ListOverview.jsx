@@ -419,6 +419,9 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   // 11e armies buy several detachments with Detachment Points, so they get the
   // army roster sheet (battle size + detachments + force dispositions).
   const is11e = settings.selectedDataSource === "40k-11e";
+  // Both 40k editions export from the same app, and the parser reads both, so
+  // both can be imported into.
+  const canImport = is40k || is11e;
 
   // Get current list data (local or cloud)
   const currentList = lists[selectedList];
@@ -549,27 +552,31 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 </div>
                 <ChevronRight size={16} />
               </button>
-              <button
-                className="import-picker-option"
-                onClick={() => {
-                  setShowImportPicker(false);
-                  setActiveImporter("listforge");
-                  setIsVisible(false);
-                }}
-                type="button">
-                <FileText size={18} />
-                <div className="import-picker-option-text">
-                  <span className="import-picker-option-title">List Forge</span>
-                  <span className="import-picker-option-desc">Upload or paste a JSON export</span>
-                </div>
-                <ChevronRight size={16} />
-              </button>
+              {/* List Forge builds its cards itself, as 10th edition ones, so it is
+                  not offered while an 11th edition list is open. */}
+              {is40k && (
+                <button
+                  className="import-picker-option"
+                  onClick={() => {
+                    setShowImportPicker(false);
+                    setActiveImporter("listforge");
+                    setIsVisible(false);
+                  }}
+                  type="button">
+                  <FileText size={18} />
+                  <div className="import-picker-option-text">
+                    <span className="import-picker-option-title">List Forge</span>
+                    <span className="import-picker-option-desc">Upload or paste a JSON export</span>
+                  </div>
+                  <ChevronRight size={16} />
+                </button>
+              )}
             </div>
           </div>
         ) : (
           <>
             {/* Only show import for 40k local lists */}
-            {is40k && !isCloudCategory && (
+            {canImport && !isCloudCategory && (
               <div className="list-overview-import-section">
                 <ImportActionButton onClick={() => setShowImportPicker(true)} />
               </div>
