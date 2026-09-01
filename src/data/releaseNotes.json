@@ -117,5 +117,12 @@
     "body": "An Original Colours switch in the Faction Symbol panel keeps an uploaded symbol's colours instead of flattening them to black. Uploading over an existing symbol now updates straight away, and a Saved symbols button lists every symbol you uploaded in this browser.",
     "severity": "info",
     "timestamp": 1788263596
+  },
+  {
+    "version": "3.11.15",
+    "title": "Security and dependency updates",
+    "body": "Game Datacards now runs on updated versions of the libraries it is built with, closing a batch of reported security issues. Nothing changes in how the app looks or works.",
+    "severity": "info",
+    "timestamp": 1788266742
   }
 ]
