@@ -287,7 +287,7 @@ Feature flags (set in `.env`, all default to `true` if omitted):
 
 ## CI/CD Pipeline
 
-- **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 20)
+- **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 22)
 - **Release** (`.github/workflows/release.yml`): on merge to `main`, consumes any `changes/unreleased/` fragment, bumps the patch version, appends the release note, and tags. This is the only thing that changes `package.json`.
 - **Cloudflare Pages**: Automatically builds and deploys all branches
   - Preview URLs generated for each branch
@@ -301,7 +301,7 @@ When setting up Cloudflare Pages, use these build settings:
 - **Build command**: `yarn build`
 - **Build output directory**: `build`
 - **Root directory**: `/`
-- **Node.js version**: `20`
+- **Node.js version**: `22` (also pinned in `.node-version`, which Cloudflare Pages reads automatically)
 
 ### Environment Variables
 
