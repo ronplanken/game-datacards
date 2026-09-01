@@ -287,7 +287,7 @@ Feature flags (set in `.env`, all default to `true` if omitted):
 
 ## CI/CD Pipeline
 
-- **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 20)
+- **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 22)
 - **Release** (`.github/workflows/release.yml`): on merge to `main`, consumes any `changes/unreleased/` fragment, bumps the patch version, appends the release note, and tags. This is the only thing that changes `package.json`.
 - **Cloudflare Pages**: Automatically builds and deploys all branches
   - Preview URLs generated for each branch
@@ -301,7 +301,7 @@ When setting up Cloudflare Pages, use these build settings:
 - **Build command**: `yarn build`
 - **Build output directory**: `build`
 - **Root directory**: `/`
-- **Node.js version**: `20`
+- **Node.js version**: `22` (also pinned in `.node-version`, which Cloudflare Pages reads automatically)
 
 ### Environment Variables
 
@@ -338,6 +338,21 @@ This project uses **Yarn 1.22.22**. Do not use npm.
 yarn install    # Install dependencies
 yarn add <pkg>  # Add a dependency
 ```
+
+### Deliberate version caps
+
+A few ranges in `package.json` carry an upper bound on purpose. `package.json`
+cannot hold comments, so the reasons live here — check this list before
+"fixing" one of them during a dependency bump.
+
+| Package | Range | Why |
+|---------|-------|-----|
+| `@testing-library/jest-dom` | `>=6.0.0 <6.10.0` | 6.10.0 is deprecated upstream as a bad minor ("Incorrect minor release with breaking changes"); the maintainers direct the 6.x line to 6.9.1. It also adds a required `@testing-library/dom` peer this project does not carry. Lift the cap only by moving to 7.x and adding that peer. |
+
+Node itself is pinned in `.node-version` and mirrored by `engines.node` in
+`package.json` and the `node-version` inputs in the workflows. Several
+dependencies (`@supabase/supabase-js`, `firebase-admin`) now require Node >= 22,
+so all four places must move together, along with the Cloudflare Pages setting.
 
 ## Git Commit and PR Guidelines
 
