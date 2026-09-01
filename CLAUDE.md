@@ -339,6 +339,21 @@ yarn install    # Install dependencies
 yarn add <pkg>  # Add a dependency
 ```
 
+### Deliberate version caps
+
+A few ranges in `package.json` carry an upper bound on purpose. `package.json`
+cannot hold comments, so the reasons live here — check this list before
+"fixing" one of them during a dependency bump.
+
+| Package | Range | Why |
+|---------|-------|-----|
+| `@testing-library/jest-dom` | `>=6.0.0 <6.10.0` | 6.10.0 is deprecated upstream as a bad minor ("Incorrect minor release with breaking changes"); the maintainers direct the 6.x line to 6.9.1. It also adds a required `@testing-library/dom` peer this project does not carry. Lift the cap only by moving to 7.x and adding that peer. |
+
+Node itself is pinned in `.node-version` and mirrored by `engines.node` in
+`package.json` and the `node-version` inputs in the workflows. Several
+dependencies (`@supabase/supabase-js`, `firebase-admin`) now require Node >= 22,
+so all four places must move together, along with the Cloudflare Pages setting.
+
 ## Git Commit and PR Guidelines
 
 - Never sign commits or PRs with your own name or as co-author
