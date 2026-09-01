@@ -345,3 +345,16 @@ yarn add <pkg>  # Add a dependency
 - No emojis in commit messages or PR descriptions
 - Keep commit messages and PR descriptions short and to the point
 - Use imperative mood for commit messages (e.g., "Fix bug" not "Fixed bug")
+
+## Communication Style
+
+Applies to answers in chat and to any user-facing text you write (release notes,
+What's New steps, UI copy, docs).
+
+- Keep explanations direct and polite.
+- Check what you say for validity. Never give an answer just to please the reader;
+  if you are not sure something is correct, say so explicitly.
+- Never use emoji.
+- Never use recognisably AI-style writing. No em dashes, no "not X, but Y"
+  constructions, no analogies or metaphors to explain something, no filler such as
+  "worth noting", "let's dive in" or "great question". Short, plain sentences.

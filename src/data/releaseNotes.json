@@ -2,119 +2,119 @@
   {
     "version": "3.10.1",
     "title": "Legends label no longer overlaps points",
-    "body": "When you mark a datasheet as Legends and show more than one points value, the Legends label used to sit on top of the points. Now it moves to the left and stays clear, however many values you show.",
+    "body": "The Legends label used to sit on top of the points when a datasheet showed more than one points value. It now moves to the left and stays clear.",
     "severity": "info",
     "timestamp": 1779861089
   },
   {
     "version": "3.10.2",
-    "title": "Patch notes take less space in notifications",
-    "body": "The date line under patch notes in the notification dropdown used to be too tall, making each entry take up more room than needed. Now the date sits tighter so you can scan the list faster.",
+    "title": "Patch notes take up less space",
+    "body": "The date line under each patch note in the notification list was too tall. It now sits tighter, so the list is quicker to scan.",
     "severity": "info",
     "timestamp": 1779869126
   },
   {
     "version": "3.10.3",
     "title": "Sub-categories sync with their parent",
-    "body": "You used to be able to start syncing a sub-category on its own, even when the category it sits under wasn't synced yet, which never actually worked. Now a sub-category's sync button stays off until you sync its parent category first.",
+    "body": "You could start syncing a sub-category before its parent, which never worked. Its sync button now stays off until you sync the parent category.",
     "severity": "info",
     "timestamp": 1779902166
   },
   {
     "version": "3.11.1",
     "title": "Group 11th edition datasheets and stratagems again",
-    "body": "The faction settings for 11th edition were missing, so datasheets could not be grouped into Character / Battleline / Dedicated Transport / Other. They are back, together with the points and double-sided display options, and stratagems can now be split into collapsible sections per detachment.",
+    "body": "The 11th edition faction settings were missing, so datasheets could not be grouped. Grouping, points and double-sided options are back, and stratagems can be split into collapsible sections per detachment.",
     "severity": "info",
     "timestamp": 1788204838
   },
   {
     "version": "3.11.2",
-    "title": "Edit stratagem restrictions and weapon abilities in 11th edition",
-    "body": "Stratagems that carry a restrictions section — like Insane Bravery's \"cannot be used more than once per battle\" — can now be edited: the 11th edition stratagem editor has a Restrictions field next to When, Target and Effect, and it works on stratagems that had no restrictions yet. Weapon abilities such as Overcharge or Conversion now show up under their weapon's profiles on the card and can be added, edited and removed per weapon. Colouring text in the editor now shows on 11th edition cards instead of being dropped. Enhancements get a List eligibility panel for the keywords a unit needs, the keywords that rule it out, and whether non-Characters can take it, and rule parts that never print on the card (quotes and examples) keep their type when the card is edited.",
+    "title": "Edit stratagem restrictions and weapon abilities",
+    "body": "11th edition stratagems now have a Restrictions field next to When, Target and Effect. Weapon abilities show under their weapon's profiles and can be edited per weapon, coloured text prints on the card instead of being dropped, and enhancements gained a List eligibility panel.",
     "severity": "info",
     "timestamp": 1788204838
   },
   {
     "version": "3.11.3",
-    "title": "Edit wargear and special abilities, and pay for wargear in lists",
-    "body": "The card editor now has Wargear abilities and Special abilities panels for 11th edition units, so abilities like Terminator Storm Shield or Chapter Master of the Raven Guard can be edited or hidden instead of only showing up on the card. In the list builder, units that charge points for wargear (such as a Redemptor Dreadnought's macro plasma incinerator) now let you pick those options and count them towards your list total. Those wargear choices also appear on the back of the card, each with its points cost, instead of the card simply saying \"None\", and you can add, edit and price them yourself in the Wargear Options panel — which now shows each option's wargear list once instead of repeating it as loose text. Points that only apply to one faction or detachment — 5 Assault Intercessors cost more in a Blood Angels army — now say so on the card, and can be set per size in the Points panel.",
+    "title": "Edit wargear and pay for it in your lists",
+    "body": "11th edition units now have Wargear abilities and Special abilities panels in the card editor. Wargear that costs points can be picked in the list builder, counts towards your total, and prints on the back of the card with its cost. Points that only apply to one faction or detachment now say so.",
     "severity": "info",
     "timestamp": 1788204838
   },
   {
     "version": "3.11.4",
-    "title": "Age of Sigmar artefacts and heroic traits are now in the app",
-    "body": "Every faction's artefacts of power, heroic traits and other enhancements can now be browsed from the faction screen, found through search, and opened as a card showing its cost, phase and rules text. They were in the data all along but had nowhere to appear.",
+    "title": "Age of Sigmar artefacts and heroic traits",
+    "body": "Every faction's artefacts of power, heroic traits and other enhancements can now be browsed from the faction screen, found through search, and opened as a card with their cost, phase and rules.",
     "severity": "info",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.5",
     "title": "Age of Sigmar warscrolls open again on mobile",
-    "body": "Tapping any Age of Sigmar warscroll on mobile showed a \"Sorry, something went wrong\" error instead of the card. Warscrolls now open normally, for every faction.",
+    "body": "Tapping a warscroll on mobile showed an error instead of the card. Warscrolls now open normally, for every faction.",
     "severity": "error",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.6",
     "title": "Faction symbols stay on your datacards",
-    "body": "Switching the custom faction symbol on or off, uploading one, or removing it saved the card as it was before the change, so the setting flipped back after a reload and the symbol could not be replaced. Those actions now save what you actually did. Custom symbols also work on 11th edition cards, where the switch used to do nothing, and cards that showed an empty badge - 11th edition datasheets and cards from a custom datasource - now fall back to the symbol of the faction printed on the card.",
+    "body": "Turning a custom faction symbol on or off, uploading one, or removing it saved the card as it was before the change, so the setting flipped back after a reload. Those actions now stick. They also work on 11th edition cards, and a card with an empty badge falls back to the faction printed on it.",
     "severity": "info",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.7",
-    "title": "Image Generator no longer crashes on certain factions",
-    "body": "Selecting factions such as Adeptus Titanicus in the Image Generator no longer throws a \"something went wrong\" error. Each faction's cards are now tracked on demand, so any faction can be generated.",
+    "title": "Image Generator no longer crashes on some factions",
+    "body": "Picking a faction such as Adeptus Titanicus threw an error. Every faction can now be generated.",
     "severity": "info",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.8",
     "title": "Melee weapon keywords line up with ranged",
-    "body": "On 10th and 11th edition datasheets, a melee weapon with a long keyword list folded those keywords into a stack under the weapon name, while a ranged weapon kept them on one line. Melee weapons now read the same as ranged: the keywords run on in a single line under the characteristics, and the characteristic columns stay lined up with their headings.",
+    "body": "A melee weapon with a long keyword list stacked those keywords under the weapon name, while a ranged weapon kept them on one line. Melee weapons now read the same, with the columns lined up under their headings.",
     "severity": "info",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.9",
     "title": "Edit 11th edition cards on mobile",
-    "body": "Cards you add to an 11th edition list on mobile now have an Edit button, like 10th edition and Age of Sigmar cards already did. The mobile editor covers the whole card — stats, points and their detachment or faction restrictions, weapons and their profiles, weapon abilities, core, faction and other abilities, Primarch abilities, the damaged profile, invulnerable save, wargear options, unit composition, loadout, leader, transport and keywords — as well as stratagems, enhancements and rules. Edits are written in the card language you picked in Settings and leave the other languages untouched, so a card you edit in German still reads correctly in English.",
+    "body": "Cards in an 11th edition list now have an Edit button on mobile. The editor covers the whole card, as well as stratagems, enhancements and rules, and writes edits in the card language you picked without touching the others.",
     "severity": "info",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.10",
     "title": "Share cloud categories from your phone",
-    "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories, not just local lists, so you can hand out a link to a synced category from your phone. Sharing a list that cannot be shared now tells you why instead of doing nothing.",
+    "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories, not just local lists. A list that cannot be shared tells you why instead of doing nothing.",
     "severity": "success",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.11",
     "title": "Starcraft weapon keywords link to the glossary again",
-    "body": "On Starcraft datacards, keywords added to a weapon were printed as raw text and never matched a glossary entry. They now render as proper keyword tags with their tooltips and explanation lines, just like on the other game systems.",
+    "body": "Keywords added to a Starcraft weapon were printed as plain text and matched no glossary entry. They now show as keyword tags with their tooltips and explanations.",
     "severity": "warning",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.12",
-    "title": "Weapons tab no longer breaks after adding a weapon keyword",
-    "body": "Adding a weapon keyword could leave a card in a state where the weapons tab refused to open, even after a refresh. Affected cards now open again and the stray keyword can simply be deleted.",
+    "title": "Weapons tab no longer breaks after adding a keyword",
+    "body": "Adding a weapon keyword could stop the weapons tab from opening, even after a refresh. Those cards open again and the stray keyword can simply be deleted.",
     "severity": "error",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.13",
     "title": "Choose how weapon keywords wrap",
-    "body": "Long weapon keyword lists on 10th and 11th edition datasheets now wrap inside the weapon name column instead of running on in a single line under the characteristics, and the characteristic columns stay lined up with their headings. If you preferred the single line, a new Wrap Keywords switch in the Styling section turns wrapping off per card. It is in the mobile card editor too.",
+    "body": "Long keyword lists now wrap inside the weapon name column, with the characteristic columns lined up under their headings. A Wrap Keywords switch in the Styling section turns wrapping off per card, on desktop and mobile.",
     "severity": "info",
     "timestamp": 1788207017
   },
   {
     "version": "3.11.14",
     "title": "Reuse faction symbols and keep their colours",
-    "body": "Custom faction symbols were always flattened to black, so an uploaded symbol lost its colours. A new Original Colours switch in the Faction Symbol panel leaves them alone; it stays off by default, which is the look that matches the printed cards. Uploading a symbol onto a card that already had one also kept showing the old image until you switched the panel off and on again, and that now updates straight away. Finally, a Saved symbols button lists every symbol you have uploaded in this browser so you can put one on another card without hunting for the file again, and removing a symbol no longer closes the panel so you can pick a replacement right away.",
+    "body": "An Original Colours switch in the Faction Symbol panel keeps an uploaded symbol's colours instead of flattening them to black. Uploading over an existing symbol now updates straight away, and a Saved symbols button lists every symbol you uploaded in this browser.",
     "severity": "info",
     "timestamp": 1788263596
   }

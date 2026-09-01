@@ -121,5 +121,10 @@ they remain in `releaseNotes.json` and the bell.
 
 Write the way a team member jots an honest note to players: address the reader as
 "you" in the present tense, say plainly what used to go wrong and what happens now,
-avoid jargon, file names, version numbers, emojis, and marketing words. The full
-writing rules live under "How to write the release text" in the pipeline prompt.
+avoid jargon, file names, version numbers, emojis, and marketing words.
+
+Keep it short. The bell renders the note in a narrow dropdown, so titles stay
+under roughly 55 characters and bodies run to two or three short sentences (about
+300 characters at most). Use short, plain sentences: no em dashes, no "not X, but
+Y" constructions, no analogies, no filler openers. The full writing rules live
+under "How to write the release text" in the pipeline prompt.
