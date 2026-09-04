@@ -314,6 +314,7 @@ export const useTemplateStorage = () => ({
   updateElement: () => {},
   removeElement: () => {},
   reorderElements: () => {},
+  reorderRootElements: () => {},
   syncElementsFromCanvas: () => {},
   // Canvas settings - no-op
   updateCanvasSettings: () => {},

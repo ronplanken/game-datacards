@@ -21,6 +21,7 @@ export {
   ArrowRight,
   ArrowDown,
   Grid3X3,
+  Magnet,
   AlignStartVertical,
   AlignCenterVertical,
   Copy,

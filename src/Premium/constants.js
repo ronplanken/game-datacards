@@ -75,7 +75,7 @@ export const TEMPLATE_PRESETS = {
     width: 500,
     height: 700,
     targetFormat: "40k-10e",
-    useFactory: true, // Indicates this preset uses a template factory
+    factory: "40k-styled",
   },
   "40k-stratagem": {
     name: "40K Stratagem",
@@ -94,7 +94,27 @@ export const TEMPLATE_PRESETS = {
     width: 1080,
     height: 720,
     targetFormat: "40k-10e",
-    useFactory: true,
+    factory: "40k-desktop",
+  },
+  "40k-11e-datacard": {
+    name: "40K 11th Edition Datacard",
+    width: 500,
+    height: 700,
+    targetFormat: "40k-11e",
+  },
+  "40k-11e-datacard-styled": {
+    name: "40K 11th Edition Datacard (Styled)",
+    width: 500,
+    height: 700,
+    targetFormat: "40k-11e",
+    factory: "40k-styled",
+  },
+  "40k-11e-datacard-desktop": {
+    name: "40K 11th Edition Datacard (Desktop)",
+    width: 1080,
+    height: 720,
+    targetFormat: "40k-11e",
+    factory: "40k-desktop",
   },
   custom: {
     name: "Custom",

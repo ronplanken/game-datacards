@@ -9,33 +9,61 @@ Wrap any field path in double curly braces inside a text element:
 - `{{name}}` — Shows the unit name
 - `{{stats[0].m}}` — Shows the first stat profile's Movement value
 
-### Available bindings — Warhammer 40K
+### Available bindings — Warhammer 40K (10th and 11th edition)
 
 | Category | Bindings |
 |----------|----------|
-| **Basic** | `name`, `subname`, `description`, `faction_id` |
-| **Stats** | `stats[0].m`, `stats[0].t`, `stats[0].sv`, `stats[0].w`, `stats[0].ld`, `stats[0].oc`, `stats[0].invul` |
+| **Basic** | `name`, `subname`, `faction_id` (10th edition also has `description`) |
+| **Stats** | `stats[0].m`, `stats[0].t`, `stats[0].sv`, `stats[0].w`, `stats[0].ld`, `stats[0].oc` |
 | **Ranged weapons** | `rangedWeapons[N].name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage` |
 | **Melee weapons** | `meleeWeapons[N].name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage` |
-| **Abilities** | `abilities[N].name`, `abilities[N].description` |
-| **Keywords** | `keywords[N].keyword` |
-| **Other** | `composition`, `loadout`, `transport` |
+| **Abilities** | `abilities.other[N].name`, `abilities.other[N].description`, `abilities.core`, `abilities.faction` |
+| **Invulnerable save** | `abilities.invul.value` (10th edition also has `stats[0].invul` and `abilities.invul.info`) |
+| **Keywords** | `keywords[N]`, `factions` |
+| **Points** | `points[N].cost`, `points[N].models` (11th edition also has `points[N].keyword`) |
+| **Other** | `composition`, `loadout`, 10th edition `transport`, 11th edition `leader` and `wargear` |
 
 Replace `[N]` with an index (0, 1, 2...) to access specific items in a list.
+
+Weapons store their values in a profile. A weapon binding such as `{{rangedWeapons[0].name}}` resolves the weapon's first profile, so you do not have to write `profiles[0]` yourself. Use a repeater frame when a weapon has several profiles.
+
+`abilities.core` and `abilities.faction` are lists of names. They are joined with commas, for example "Deep Strike, Leader".
+
+### 11th edition
+
+11th edition templates use the same paths as 10th edition. Two things differ:
+
+- Values are shown in the card language you picked in Settings. A field with no translation falls back to English.
+- Ability text carries markup (`<k>`, `<b>`, bullet lists). The markup is removed before the text is drawn, so a canvas text element shows plain text with list items on their own lines.
+
+Set the template format to "40K 11th Edition" in the Card properties, or start from one of the 11th edition presets in the new template dialog. Preview needs the app datasource to be set to 11th edition as well.
 
 ### Available bindings — Age of Sigmar
 
 | Category | Bindings |
 |----------|----------|
+| **Basic** | `name`, `subname`, `points` |
 | **Stats** | `stats.move`, `stats.save`, `stats.control`, `stats.health`, `stats.ward`, `stats.wizard`, `stats.priest` |
-| **Weapons** | `weapons.ranged[N]` / `weapons.melee[N]` with `.name`, `.hit`, `.wound`, `.rend`, `.damage` |
+| **Weapons** | `weapons.ranged[N]` / `weapons.melee[N]` with `.name`, `.range`, `.attacks`, `.hit`, `.wound`, `.rend`, `.damage` |
+| **Abilities** | `abilities[N].name`, `abilities[N].effect` |
+| **Keywords** | `keywords[N]`, `keywords` |
+
+### Custom datasources
+
+A template that targets a custom datasource card type gets its bindings from that card type's schema:
+
+- Weapons: `weapons.<type>[N].name` plus one path per column, resolved through the weapon's first profile.
+- Abilities: `abilities.<category>[N].name` and `abilities.<category>[N].description`, one group per ability category.
+- Keywords and points follow the card type's metadata settings.
 
 ### Preview mode
 
-Toggle preview mode in the toolbar to see your template with real unit data. Select a datasheet from the dropdown to populate all bound fields. This lets you check layout and sizing before finalizing your design.
+Toggle preview mode in the properties panel to see your template with real unit data. Select a datasheet from the dropdown to populate all bound fields. This lets you check layout and sizing before finalizing your design.
+
+The faction and datasheet lists follow the template's format. If the app is showing a different datasource than the template targets, the panel says which datasource to switch to instead of listing unrelated units.
 
 The original template text is preserved — preview mode only affects the display. Switch back to edit mode to continue working on your template.
 
 ### Binding modal
 
-Click the binding icon on any text element to open the binding browser. Bindings are organized by category and searchable. Click a binding to insert it at the cursor position.
+Click the binding icon on any text element to open the binding browser. Bindings are organized by category and searchable. Clicking a binding appends it to the end of the element's text, so move it into place afterwards if the element already holds text.
