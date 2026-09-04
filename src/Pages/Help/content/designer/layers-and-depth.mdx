@@ -12,10 +12,42 @@ To change the order:
 
 Elements inside a frame are layered relative to each other within that frame. Moving a frame moves all its children together.
 
+### The layer tree
+
+The Layers tab shows the full structure of your template as a nested tree — a
+frame's children are indented underneath it, and a frame inside another frame
+nests to any depth. Click the arrow next to a frame to expand or collapse its
+children.
+
+### Moving elements into and out of frames
+
+You can reparent an element from the tree or from the canvas:
+
+- **In the tree** — drag a row onto a frame's row, nudging it slightly to the right as you drop, to nest it inside that frame. Drag it back out among the root-level rows, or drag it to the left while over a shallower row, to release it.
+- **On the canvas** — drag an element so its centre sits over a frame to drop it inside; drag an element that is already inside a frame outside that frame's bounds to release it. The frame highlights while a compatible drop is in reach.
+
+### Renaming
+
+Double-click a layer's name, press <Kbd>Enter</Kbd> with a single layer
+selected, or right-click a layer and choose Rename, to edit its name in
+place. Press <Kbd>Enter</Kbd> to save or <Kbd>Escape</Kbd> to cancel. A
+layer's default name comes from what it is bound to (for example "Unit
+Name" for a text bound to `{{name}}`) or its type, but any custom name you
+give it takes over from then on.
+
+### Selecting multiple layers
+
+Click a layer to select it on its own. <Kbd mod>Click</Kbd> a layer to add
+or remove it from the current selection. <Kbd>Shift</Kbd> + click selects
+every layer between your last click and the one you just clicked. This
+mirrors multi-select on the canvas — you can also shift-click or drag a
+selection box on the canvas itself.
+
 ### Duplicating and grouping
 
 Duplicate and grouping are keyboard shortcuts rather than menu items:
 
 - <Kbd mod>D</Kbd> duplicates the selection, offset a few pixels from the original.
 - <Kbd mod>G</Kbd> wraps the selection in a new frame, sized to fit around it.
-- <Kbd mod>Shift</Kbd> + <Kbd>G</Kbd> ungroups a selected frame, releasing its children back onto the canvas at their current position and removing the frame.
+- <Kbd mod>Shift</Kbd> + <Kbd>G</Kbd> ungroups a selected frame, releasing its children back onto the canvas at their
+  current position and removing the frame.

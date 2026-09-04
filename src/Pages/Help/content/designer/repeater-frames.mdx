@@ -57,19 +57,14 @@ inside it, so the first and last copies do not touch the frame border.
 
 ### Section order and push
 
-Every frame has a **Section Order** number and a "Push elements below when
-expanded" checkbox, found under Section Layout in its properties. These
-control what happens to the rest of the card when a repeater grows or
-shrinks:
-
-- Section Order sets where a frame sits in the card's vertical stack of
-  sections, independent of its exact pixel position.
-- On a repeater frame, turning on "Push elements below" makes every frame
-  with a higher section order move down to make room when this repeater
-  draws more rows than it has space for by default, and move back up when it
-  draws fewer. This is what keeps a weapons table from overlapping the
-  abilities text below it as the unit's weapon count changes from card to
-  card.
-
-Push only takes effect on frames with the repeater enabled; the checkbox is
-disabled otherwise.
+A repeater frame can take part in the card's vertical flow, so the rest of
+the card moves out of the way as it grows or shrinks. This is managed from
+the **Sections** list in the card's own properties, not from the frame — see
+Frames and Auto-Layout for how the list works. Turning Push on for a
+repeater's row in that list makes every section after it in the same column
+move down when the repeater draws more rows than it has space for by
+default, and move back up when it draws fewer. This is what keeps a weapons
+table from overlapping the abilities text below it as the unit's weapon
+count changes from card to card. A frame's own properties panel shows a
+read-only summary of its place in the flow, with a link to jump to the
+card's Sections list.

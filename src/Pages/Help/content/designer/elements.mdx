@@ -6,13 +6,55 @@ Elements are the building blocks of your template.
 
 <IconLabel icon="Type" label="Text" />
 
-Add headings, labels, stat values, or any other text. You can customize the font (choose from 10 font families including Helvetica, Arial, and Georgia), weight, size, alignment, and fill color. Bind a text element to game data — see Data Binding.
+Add headings, labels, stat values, or any other text. Bind a text element to game data — see Data Binding.
+
+#### Typography
+
+Choose the font family from the app's own bundled fonts, a curated set of
+Google Fonts, or the ten classic system fonts, along with weight, size,
+alignment and fill colour. You can also set line height, letter spacing,
+italic, underline and a text transform (uppercase, lowercase or capitalize)
+— uppercase is what most 40K headings use. Vertical alignment controls
+where the text sits inside its box (top, middle or bottom) when the box is
+taller than the text itself.
+
+#### Sizing
+
+A text element's Sizing mode controls how its box responds to its content:
+
+- **Auto width** — The box grows or shrinks to fit the text on one line.
+- **Auto height** — The box keeps a fixed width and grows or shrinks in height as text wraps.
+- **Fixed** — The box keeps the size you set. Set an overflow behaviour for text that doesn't fit: Clip (cut off at the box edge) or Shrink to fit (the font size steps down until the text fits, without changing what you typed).
 
 ### Images
 
 <IconLabel icon="Image" label="Image" />
 
-Add artwork, icons, faction logos, or decorative elements. Upload an image file or place a placeholder to fill in later. Adjust scaling and opacity to get the look you want.
+Add artwork, icons, faction logos, or decorative elements. Upload an image
+file or place a placeholder to fill in later.
+
+#### Fit
+
+Choose how the image fills its box:
+
+- **Fill** — Stretches the image to exactly match the box, ignoring its aspect ratio.
+- **Contain** — Scales the image to fit entirely inside the box, keeping its aspect ratio; you may see empty space on two sides.
+- **Cover** — Scales the image to fill the box completely, keeping its aspect ratio; the parts that don't fit are cropped.
+
+#### Crop
+
+Use the crop tool to choose exactly which part of the image shows. The full
+image appears as a faded guide behind your crop box; drag and resize the
+crop box, then confirm to commit it. A cropped image always fills its box
+exactly (as if set to Fill).
+
+#### Binding
+
+An image can take its source from the card's data instead of a fixed file:
+drag a field from the Data tab onto an image to bind it. A plain URL field
+is used as-is; a faction-related field resolves to the app's own faction
+symbol artwork. "Hide when empty" removes the element entirely when its
+bound source has nothing to show, the same as for text.
 
 ### Shapes
 
