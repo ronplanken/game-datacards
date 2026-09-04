@@ -1,15 +1,75 @@
 ## Repeater Frames
 
-Use repeater frames to display lists of items, like weapons or abilities.
+Use a repeater frame to display a list of items, like ranged weapons or
+abilities, without adding one text element per item by hand.
 
-A repeater frame takes an array of data (for example, a list of ranged weapons) and creates a copy of its contents for each item.
+A repeater frame takes an array of data and repeats one row of content once
+for every item in that array.
 
-To set up a repeater:
+### Creating a repeater
 
-1. Create a frame and add the elements you want repeated (one row of content)
-2. Enable "Repeat" mode in the frame properties
-3. Set the **data source** — the array path to repeat over (e.g., `rangedWeapons`)
-4. Choose a **direction** — stack copies vertically or horizontally
-5. Optionally set a **maximum count** to limit how many items are shown
+The quickest way is to drag a list from the Data tab — Ranged Weapons,
+Abilities, Keywords, and so on — onto the canvas. This creates a frame with
+"Repeat" already enabled, its data source already set, and one text child per
+field in that list, laid out in a row.
 
-Switch to preview mode to see the repeater in action with real unit data.
+You can also build one by hand:
+
+1. Draw a frame and add the elements you want repeated (one row of content).
+2. Open the frame's properties and turn on "Enable repeater".
+3. Choose a **data source** — which list to repeat over, for example Ranged
+   Weapons or Other Abilities. The list depends on the template's format;
+   a custom datasource offers the lists its own schema defines.
+4. Choose a **direction** — Vertical stacks copies top to bottom, Horizontal
+   lays them out left to right.
+5. Optionally set **Max Items** to cap how many copies are shown, even if the
+   unit has more entries than that.
+
+Switch on Preview to see the repeater filled with a real unit's data.
+
+### Editing the row
+
+Whatever you put inside the frame becomes the template for every row. Bind
+each child element to a field of the item, either by dragging a field from
+the Data tab (which shows that repeater's own fields first, since it knows
+you are working inside it) or by typing the field name directly, for example
+`{{name}}` or `{{range}}` for a weapon row. You do not include the list name
+or an index — each copy already resolves its fields against its own item.
+
+### $index, $count, $first and $last
+
+Inside a repeater, four extra values are available alongside the item's own
+fields:
+
+- `{{$index}}` — the row's position, starting at 0
+- `{{$count}}` — the total number of rows being drawn
+- `{{$first}}` — true on the first row
+- `{{$last}}` — true on the last row
+
+These are useful for numbering rows or for a binding that should only show
+something on the first or last item.
+
+### Gap and padding
+
+**Gap** sets the space between one copy and the next. Padding (top, right,
+bottom, left) sets the space between the frame's edge and the row template
+inside it, so the first and last copies do not touch the frame border.
+
+### Section order and push
+
+Every frame has a **Section Order** number and a "Push elements below when
+expanded" checkbox, found under Section Layout in its properties. These
+control what happens to the rest of the card when a repeater grows or
+shrinks:
+
+- Section Order sets where a frame sits in the card's vertical stack of
+  sections, independent of its exact pixel position.
+- On a repeater frame, turning on "Push elements below" makes every frame
+  with a higher section order move down to make room when this repeater
+  draws more rows than it has space for by default, and move back up when it
+  draws fewer. This is what keeps a weapons table from overlapping the
+  abilities text below it as the unit's weapon count changes from card to
+  card.
+
+Push only takes effect on frames with the repeater enabled; the checkbox is
+disabled otherwise.
