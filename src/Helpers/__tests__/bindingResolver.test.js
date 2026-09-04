@@ -234,8 +234,12 @@ describe("bindingResolver", () => {
   describe("stripMarkup", () => {
     it("keeps the content of inline tags", () => {
       expect(stripMarkup("Add 1 to its <k>Leadership</k>.")).toBe("Add 1 to its Leadership.");
-      expect(stripMarkup("Re-roll a failed <b>Battle-shock</b> test.")).toBe("Re-roll a failed Battle-shock test.");
-      expect(stripMarkup("An <i>italic</i> word.")).toBe("An italic word.");
+    });
+
+    it("turns bold and italic tags into markdown markers", () => {
+      expect(stripMarkup("Re-roll a failed <b>Battle-shock</b> test.")).toBe("Re-roll a failed **Battle-shock** test.");
+      expect(stripMarkup("An <i>italic</i> word.")).toBe("An *italic* word.");
+      expect(stripMarkup("<b>Bold</b> and <k>keyword</k>")).toBe("**Bold** and keyword");
     });
 
     it("turns list items into dashed lines", () => {
@@ -352,12 +356,12 @@ describe("bindingResolver", () => {
       expect(resolve("{{abilities.invul.value}}", card)).toBe("4+");
     });
 
-    it("strips rich-text markup from ability descriptions", () => {
+    it("strips rich-text markup from ability descriptions, keeping bold as markdown", () => {
       const description = resolve("{{abilities.other[0].description}}", card);
       expect(description).toBe('While a friendly unit is within 6", add 1 to its Leadership.');
       expect(description).not.toContain("<k>");
       expect(resolve("{{abilities.other[1].description}}", card)).toBe(
-        "Once per battle, this unit can re-roll a failed Battle-shock test.",
+        "Once per battle, this unit can re-roll a failed **Battle-shock** test.",
       );
     });
 

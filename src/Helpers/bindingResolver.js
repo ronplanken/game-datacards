@@ -204,6 +204,8 @@ export const stripMarkup = (text) => {
   return text
     .replace(/\r\n?/g, "\n")
     .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?b(\s[^<>]*)?>/gi, "**")
+    .replace(/<\/?i(\s[^<>]*)?>/gi, "*")
     .replace(/<li(\s[^<>]*)?>/gi, "\n- ")
     .replace(/<\/li\s*>/gi, "")
     .replace(/<(ul|ol)(\s[^<>]*)?>/gi, "")
