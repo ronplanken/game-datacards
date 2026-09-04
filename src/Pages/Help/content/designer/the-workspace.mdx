@@ -2,14 +2,37 @@
 
 The Designer workspace is split into four areas.
 
-<WorkspaceMap zones={[
-  { area: "1 / 1 / 3 / 2", label: "Layer Panel", description: "Templates, layers, element tree" },
-  { area: "1 / 2 / 2 / 4", label: "Floating Toolbar", description: "Add elements, zoom, grid" },
-  { area: "2 / 2 / 3 / 4", label: "Canvas", description: "Main editing area", accent: true },
-  { area: "1 / 4 / 3 / 5", label: "Properties Panel", description: "Settings for selected element" }
-]} />
+<WorkspaceMap
+  zones={[
+    { area: "1 / 1 / 3 / 2", label: "Layer Panel", description: "Templates, layers, element tree" },
+    { area: "1 / 2 / 2 / 4", label: "Floating Toolbar", description: "Tools, zoom, grid" },
+    { area: "2 / 2 / 3 / 4", label: "Canvas", description: "Main editing area", accent: true },
+    { area: "1 / 4 / 3 / 5", label: "Properties Panel", description: "Settings for selected element" },
+  ]}
+/>
 
 - **Layer Panel** (left side) — Shows all your elements in a tree view. Manage templates, reorder layers, and organize elements into frames. Elements at the top of the list appear in front on the canvas.
 - **Canvas** (center) — Your main editing area. Click, drag, and resize elements directly. What you see here is what your card will look like.
-- **Floating Toolbar** (above the canvas) — Quick access buttons for adding elements and controlling zoom level.
+- **Floating Toolbar** (above the canvas) — Tools for drawing elements, undo and redo, zoom controls, and the grid toggles.
 - **Properties Panel** (right side) — Shows settings for whatever you have selected. Change colors, fonts, sizes, positions, and more. When nothing is selected, it shows canvas settings like background color and dimensions.
+
+### Moving around the canvas
+
+The card sits on an endless work area, so it is never cut off, however wide it is.
+
+- **Zoom** with <Icon name="ZoomIn" /> and <Icon name="ZoomOut" />, or hold Ctrl (Cmd on a Mac) and use the mouse wheel. Wheel zoom keeps the point under the cursor in place.
+- **Type a zoom level** by clicking the percentage and pressing Enter. Anything between 5% and 800% works.
+- **The arrow next to the zoom controls** opens a menu with Fit, Zoom to selection, 100% and 200%.
+- **Scroll** with the mouse wheel, and sideways with Shift and the wheel.
+- **Pan** by holding Space and dragging, or by dragging with the middle mouse button.
+
+The card is fitted to the panel when you open a template and when the panel is
+resized. Once you zoom or pan yourself, the view is left alone until you fit it
+again with Shift+1.
+
+### Drawing elements
+
+Pick a tool in the toolbar, then drag on the card to draw the element at the size
+you want. A single click drops the element at its default size. Double click a tool
+button to drop an element in the middle of the card, the way the toolbar used to
+work.

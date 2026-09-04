@@ -1,8 +1,9 @@
 ## Grid and Alignment
 
-The grid helps you place elements precisely.
+The grid and the smart guides help you place elements precisely.
 
-A 10-pixel grid is shown by default. Elements snap to the nearest grid line as you move or resize them, making it easy to keep things aligned.
+A 10-pixel grid is shown by default. It follows the card, so it stays in place at
+any zoom level.
 
 You can:
 
@@ -11,9 +12,24 @@ You can:
 - <Icon name="Magnet" /> **Toggle snap to grid** in the floating toolbar. Turn it off when you need freeform placement;
   elements then move to any pixel position instead of snapping to the nearest grid line.
 
+### Smart guides
+
+While you drag or resize an element, red dashed lines appear when its edges or its
+centre line up with another element or with the edge or centre of the card. The
+element snaps to that line. Snapping to the grid, when it is on, is applied after
+the guides.
+
+Guides compare the element against every other element on the card, including
+elements inside frames.
+
 ### Alignment tools
 
 Select an element and use the alignment buttons in the properties panel:
 
 - <Icon name="AlignStartVertical" /> **Align left, right, top, or bottom** — Snap to the canvas edge
 - <Icon name="AlignCenterVertical" /> **Center horizontally or vertically** — Place at the exact center of the canvas
+
+### Nudging
+
+Arrow keys move the selection by one pixel. Shift and an arrow key move it by one
+grid step when snap to grid is on, or by 10 pixels when it is off.
