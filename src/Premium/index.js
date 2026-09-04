@@ -344,11 +344,15 @@ export const useTemplateStorage = () => ({
 export const useDataBinding = () => ({
   getAvailableBindings: () => null,
   resolveBinding: (template) => template,
+  resolveBindingWithContext: (template) => template,
+  areBindingsEmpty: () => false,
   hasBindings: () => false,
   extractBindings: () => [],
   validateBinding: () => false,
+  validateTemplateBindings: () => [],
   createBindingString: (path) => `{{${path}}}`,
   availableFormats: [],
+  getArraySources: () => [],
 });
 
 /**

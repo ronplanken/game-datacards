@@ -228,15 +228,203 @@ export const formatBindingValue = (value, language = "en") => {
   return stripMarkup(toDisplayString(value, language));
 };
 
+export const BINDING_FILTERS = [
+  { name: "upper", takesArg: false },
+  { name: "lower", takesArg: false },
+  { name: "title", takesArg: false },
+  { name: "trim", takesArg: false },
+  { name: "join", takesArg: true, defaultArg: ", " },
+  { name: "prefix", takesArg: true, defaultArg: "" },
+  { name: "suffix", takesArg: true, defaultArg: "" },
+  { name: "default", takesArg: true, defaultArg: "" },
+  { name: "truncate", takesArg: true, defaultArg: "20" },
+  { name: "first", takesArg: false },
+  { name: "count", takesArg: false },
+];
+
+const FILTER_NAMES = new Set(BINDING_FILTERS.map((filter) => filter.name));
+
+const splitExpressionSegments = (text) => {
+  const segments = [];
+  let current = "";
+  let quote = null;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+
+    if (quote) {
+      if (char === "\\" && index + 1 < text.length) {
+        current += char + text[index + 1];
+        index += 1;
+        continue;
+      }
+      if (char === quote) quote = null;
+      current += char;
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      current += char;
+      continue;
+    }
+
+    if (char === "|") {
+      segments.push(current);
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  segments.push(current);
+  return segments;
+};
+
+const unquoteArg = (raw) => {
+  const trimmed = raw.trim();
+  if (trimmed.length >= 2) {
+    const first = trimmed[0];
+    const last = trimmed[trimmed.length - 1];
+    if ((first === '"' || first === "'") && last === first) {
+      return trimmed
+        .slice(1, -1)
+        .replace(/\\(["'\\])/g, "$1")
+        .replace(/\\n/g, "\n");
+    }
+  }
+  return trimmed;
+};
+
+export const parseBindingExpression = (expressionText) => {
+  const text = typeof expressionText === "string" ? expressionText : "";
+  const segments = splitExpressionSegments(text);
+  const path = segments.shift()?.trim() || "";
+  const filters = [];
+
+  for (const segment of segments) {
+    const trimmed = segment.trim();
+    if (trimmed === "") continue;
+
+    const colon = trimmed.indexOf(":");
+    const name = (colon === -1 ? trimmed : trimmed.slice(0, colon)).trim();
+    if (name === "") continue;
+
+    const filter = { name };
+    if (colon !== -1) filter.arg = unquoteArg(trimmed.slice(colon + 1));
+    filters.push(filter);
+  }
+
+  return { path, filters };
+};
+
+const quoteArg = (arg) => {
+  const text = String(arg).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return `"${text}"`;
+};
+
+export const formatBindingExpression = (expression) => {
+  const path = expression?.path ? String(expression.path).trim() : "";
+  const filters = Array.isArray(expression?.filters) ? expression.filters : [];
+  const parts = [path];
+
+  for (const filter of filters) {
+    if (!filter?.name) continue;
+    parts.push(
+      filter.arg === undefined || filter.arg === null ? filter.name : `${filter.name}:${quoteArg(filter.arg)}`,
+    );
+  }
+
+  return parts.join(" | ");
+};
+
+const stateText = (state, language) => (state.text != null ? state.text : formatBindingValue(state.value, language));
+
+const toTitleCase = (text) =>
+  text.replace(/\S+/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+
+const applyFilter = (state, filter, language) => {
+  switch (filter.name) {
+    case "upper":
+      return { text: stateText(state, language).toUpperCase() };
+    case "lower":
+      return { text: stateText(state, language).toLowerCase() };
+    case "title":
+      return { text: toTitleCase(stateText(state, language)) };
+    case "trim":
+      return { text: stateText(state, language).trim() };
+    case "join": {
+      const separator = filter.arg === undefined ? ", " : filter.arg;
+      if (!Array.isArray(state.value) || state.text != null) {
+        return { text: stateText(state, language) };
+      }
+      return {
+        text: state.value
+          .map((entry) => formatBindingValue(entry, language))
+          .filter((entry) => entry !== "")
+          .join(separator),
+      };
+    }
+    case "prefix": {
+      const text = stateText(state, language);
+      return { text: text === "" ? "" : `${filter.arg ?? ""}${text}` };
+    }
+    case "suffix": {
+      const text = stateText(state, language);
+      return { text: text === "" ? "" : `${text}${filter.arg ?? ""}` };
+    }
+    case "default": {
+      const text = stateText(state, language);
+      return text === "" ? { text: filter.arg ?? "" } : state;
+    }
+    case "truncate": {
+      const limit = parseInt(filter.arg, 10);
+      const text = stateText(state, language);
+      if (!Number.isFinite(limit) || limit < 0) return { text };
+      return { text: text.length <= limit ? text : `${text.slice(0, limit)}...` };
+    }
+    case "first":
+      if (Array.isArray(state.value) && state.text == null) {
+        return { value: state.value[0] };
+      }
+      return state;
+    case "count": {
+      if (Array.isArray(state.value) && state.text == null) {
+        return { text: String(state.value.length) };
+      }
+      return { text: stateText(state, language) === "" ? "0" : "1" };
+    }
+    default:
+      return state;
+  }
+};
+
+export const resolveExpression = (context, expressionText, options = {}) => {
+  const language = options.language || "en";
+  const parsed =
+    expressionText && typeof expressionText === "object" ? expressionText : parseBindingExpression(expressionText);
+
+  let state = { value: getNestedValue(context, parsed.path), text: null };
+
+  for (const filter of parsed.filters || []) {
+    if (!FILTER_NAMES.has(filter.name)) continue;
+    const next = applyFilter(state, filter, language);
+    state = { value: next.value, text: next.text ?? null };
+  }
+
+  return stateText(state, language);
+};
+
 export const resolveTemplate = (template, context, options = {}) => {
   if (typeof template !== "string" || template === "") return template;
   if (!context) return template;
 
   const language = options.language || "en";
 
-  return template.replace(/\{\{([^}]+)\}\}/g, (match, path) => {
+  return template.replace(/\{\{([^}]+)\}\}/g, (match, expression) => {
     try {
-      return formatBindingValue(getNestedValue(context, path.trim()), language);
+      return resolveExpression(context, expression, { language });
     } catch {
       return "";
     }
@@ -252,4 +440,24 @@ export const extractBindings = (template) => {
   if (!template) return [];
   const matches = template.match(/\{\{([^}]+)\}\}/g) || [];
   return matches.map((match) => match.slice(2, -2).trim());
+};
+
+export const parseBindings = (template) =>
+  extractBindings(template).map((expression) => {
+    const { path, filters } = parseBindingExpression(expression);
+    return { expression, path, filters };
+  });
+
+export const areBindingsEmpty = (template, context, options = {}) => {
+  const expressions = extractBindings(template);
+  if (expressions.length === 0) return false;
+  if (!context) return false;
+
+  return expressions.every((expression) => {
+    try {
+      return resolveExpression(context, expression, options) === "";
+    } catch {
+      return true;
+    }
+  });
 };

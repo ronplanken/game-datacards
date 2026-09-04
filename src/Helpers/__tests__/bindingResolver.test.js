@@ -1,12 +1,17 @@
 import { describe, it, expect } from "vitest";
 import {
+  areBindingsEmpty,
   extractBindings,
+  formatBindingExpression,
   formatBindingValue,
   getNestedValue,
   hasBindings,
   isLanguageKeyedObject,
   normalizeBindingItem,
   normalizeCardForBinding,
+  parseBindingExpression,
+  parseBindings,
+  resolveExpression,
   resolveTemplate,
   stripMarkup,
 } from "../bindingResolver";
@@ -480,6 +485,133 @@ describe("bindingResolver", () => {
       normalizeCardForBinding(card);
       expect(card.keywords[0]).toEqual({ en: "Infantry", de: "Infanterie" });
       expect(card.rangedWeapons[0].name).toBeUndefined();
+    });
+  });
+
+  describe("binding expressions", () => {
+    it("parses a bare path", () => {
+      expect(parseBindingExpression("name")).toEqual({ path: "name", filters: [] });
+      expect(parseBindingExpression(" stats[0].m ")).toEqual({ path: "stats[0].m", filters: [] });
+    });
+
+    it("parses filters with and without arguments", () => {
+      expect(parseBindingExpression("name | upper")).toEqual({ path: "name", filters: [{ name: "upper" }] });
+      expect(parseBindingExpression('keywords | join:", "')).toEqual({
+        path: "keywords",
+        filters: [{ name: "join", arg: ", " }],
+      });
+      expect(parseBindingExpression('name | upper | prefix:"A: " | truncate:10')).toEqual({
+        path: "name",
+        filters: [{ name: "upper" }, { name: "prefix", arg: "A: " }, { name: "truncate", arg: "10" }],
+      });
+    });
+
+    it("keeps a pipe inside a quoted argument", () => {
+      expect(parseBindingExpression('keywords | join:" | "')).toEqual({
+        path: "keywords",
+        filters: [{ name: "join", arg: " | " }],
+      });
+    });
+
+    it("round-trips through formatBindingExpression", () => {
+      const expressions = [
+        "name",
+        "name | upper",
+        'keywords | join:", "',
+        'missing | default:"n/a"',
+        'name | prefix:"Weapon: " | truncate:"12"',
+      ];
+      for (const expression of expressions) {
+        const parsed = parseBindingExpression(expression);
+        expect(parseBindingExpression(formatBindingExpression(parsed))).toEqual(parsed);
+      }
+      expect(formatBindingExpression({ path: "name", filters: [{ name: "upper" }] })).toBe("name | upper");
+      expect(formatBindingExpression({ path: "keywords", filters: [{ name: "join", arg: ", " }] })).toBe(
+        'keywords | join:", "',
+      );
+    });
+
+    it("escapes quotes in arguments", () => {
+      const expression = formatBindingExpression({ path: "name", filters: [{ name: "prefix", arg: 'a"b' }] });
+      expect(expression).toBe('name | prefix:"a\\"b"');
+      expect(parseBindingExpression(expression).filters[0].arg).toBe('a"b');
+    });
+
+    it("parses the bindings of a text", () => {
+      expect(parseBindings('{{name | upper}} {{keywords | join:" / "}}')).toEqual([
+        { expression: "name | upper", path: "name", filters: [{ name: "upper" }] },
+        { expression: 'keywords | join:" / "', path: "keywords", filters: [{ name: "join", arg: " / " }] },
+      ]);
+      expect(parseBindings("plain text")).toEqual([]);
+    });
+  });
+
+  describe("binding filters", () => {
+    const context = normalizeCardForBinding(make10eCard());
+
+    it("keeps plain bindings working", () => {
+      expect(resolveTemplate("{{name}}", context)).toBe("Captain");
+      expect(resolveTemplate("{{ name }}", context)).toBe("Captain");
+    });
+
+    it("applies case filters", () => {
+      expect(resolveTemplate("{{name | upper}}", context)).toBe("CAPTAIN");
+      expect(resolveTemplate("{{name | lower}}", context)).toBe("captain");
+      expect(resolveTemplate("{{subname | title}}", context)).toBe("Chapter Master");
+    });
+
+    it("applies trim", () => {
+      expect(resolveExpression({ value: "  spaced  " }, "value | trim")).toBe("spaced");
+    });
+
+    it("joins arrays with the given separator and defaults to a comma", () => {
+      expect(resolveTemplate("{{keywords | join}}", context)).toBe("Infantry, Character, Imperium, Captain");
+      expect(resolveTemplate('{{keywords | join:" / "}}', context)).toBe("Infantry / Character / Imperium / Captain");
+      expect(resolveTemplate("{{keywords}}", context)).toBe("Infantry, Character, Imperium, Captain");
+    });
+
+    it("adds a prefix and a suffix only when the value is filled", () => {
+      expect(resolveTemplate('{{rangedWeapons[0].name | prefix:"Weapon: "}}', context)).toBe("Weapon: Bolt pistol");
+      expect(resolveTemplate('{{rangedWeapons[9].name | prefix:"Weapon: "}}', context)).toBe("");
+      expect(resolveTemplate('{{name | suffix:" (unit)"}}', context)).toBe("Captain (unit)");
+      expect(resolveTemplate('{{missing | suffix:" (unit)"}}', context)).toBe("");
+    });
+
+    it("falls back to a default for missing and empty values", () => {
+      expect(resolveTemplate('{{missingField | default:"n/a"}}', context)).toBe("n/a");
+      expect(resolveExpression({ value: "" }, 'value | default:"n/a"')).toBe("n/a");
+      expect(resolveTemplate('{{name | default:"n/a"}}', context)).toBe("Captain");
+    });
+
+    it("truncates with an ellipsis", () => {
+      expect(resolveTemplate("{{abilities.other[0].description | truncate:10}}", context)).toBe("Add 1 to L...");
+      expect(resolveTemplate("{{name | truncate:20}}", context)).toBe("Captain");
+    });
+
+    it("takes the first item and counts arrays", () => {
+      expect(resolveTemplate("{{keywords | first}}", context)).toBe("Infantry");
+      expect(resolveTemplate("{{keywords | count}}", context)).toBe("4");
+      expect(resolveTemplate("{{rangedWeapons | first | upper}}", context)).toBe("BOLT PISTOL");
+      expect(resolveTemplate("{{missing | count}}", context)).toBe("0");
+    });
+
+    it("chains filters in order", () => {
+      expect(resolveTemplate('{{name | upper | prefix:"Unit: "}}', context)).toBe("Unit: CAPTAIN");
+      expect(resolveTemplate('{{missing | default:"none" | upper}}', context)).toBe("NONE");
+    });
+
+    it("ignores unknown filters", () => {
+      expect(resolveTemplate("{{name | bogus}}", context)).toBe("Captain");
+      expect(resolveTemplate('{{name | bogus:"x" | upper}}', context)).toBe("CAPTAIN");
+    });
+
+    it("reports when every binding of a text is empty", () => {
+      expect(areBindingsEmpty("{{transport}}", context)).toBe(true);
+      expect(areBindingsEmpty("{{name}}", context)).toBe(false);
+      expect(areBindingsEmpty("{{transport}} {{missing}}", context)).toBe(true);
+      expect(areBindingsEmpty("{{transport}} {{name}}", context)).toBe(false);
+      expect(areBindingsEmpty('{{transport | default:"-"}}', context)).toBe(false);
+      expect(areBindingsEmpty("static text", context)).toBe(false);
     });
   });
 
