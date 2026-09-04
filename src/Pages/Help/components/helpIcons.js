@@ -30,6 +30,7 @@ export {
   Globe,
   Share2,
   Pencil,
+  Pentagon,
   CheckCircle,
   Clock,
   Loader2,
