@@ -1,6 +1,7 @@
 import {
   useAuth,
   useSubscription,
+  useTemplateStorage,
   SUBSCRIPTION_LIMITS,
   TEMPLATE_PRESETS,
   useTemplateSharing,
@@ -307,5 +308,28 @@ describe("useAuth stub", () => {
   it("should return user as null", () => {
     const auth = useAuth();
     expect(auth.user).toBeNull();
+  });
+});
+
+// ============================================
+// useTemplateStorage stub
+// ============================================
+describe("useTemplateStorage stub", () => {
+  it("should expose history defaults", () => {
+    const storage = useTemplateStorage();
+    expect(storage.canUndo).toBe(false);
+    expect(storage.canRedo).toBe(false);
+    expect(storage.historyLength).toBe(0);
+    expect(storage.revision).toBe(0);
+  });
+
+  it("should expose history operations as no-ops", () => {
+    const storage = useTemplateStorage();
+    expect(typeof storage.undo).toBe("function");
+    expect(typeof storage.redo).toBe("function");
+    expect(typeof storage.commitTemplate).toBe("function");
+    expect(storage.undo()).toBeUndefined();
+    expect(storage.redo()).toBeUndefined();
+    expect(storage.commitTemplate(() => ({}), "label")).toBeUndefined();
   });
 });

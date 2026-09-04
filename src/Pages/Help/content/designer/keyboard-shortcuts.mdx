@@ -1,23 +1,31 @@
 ## Keyboard Shortcuts
 
-| Action                   | Shortcut                                  |
-| ------------------------ | ----------------------------------------- |
-| Delete selected elements | <Kbd>Delete</Kbd> or <Kbd>Backspace</Kbd> |
-| Copy                     | <Kbd mod>C</Kbd>                          |
-| Paste                    | <Kbd mod>V</Kbd>                          |
-| Select all               | <Kbd mod>A</Kbd>                          |
-| Move by 1 pixel          | <Kbd>Arrow keys</Kbd>                     |
-| Move by 10 pixels        | <Kbd>Shift</Kbd> + <Kbd>Arrow keys</Kbd>  |
-| Bring to front           | <Kbd mod>]</Kbd>                          |
-| Send to back             | <Kbd mod>[</Kbd>                          |
-| Add text                 | <Kbd>T</Kbd>                              |
-| Add frame                | <Kbd>F</Kbd>                              |
-| Add rectangle            | <Kbd>R</Kbd>                              |
-| Add circle               | <Kbd>O</Kbd>                              |
-| Add line                 | <Kbd>L</Kbd>                              |
-| Add image                | <Kbd>I</Kbd>                              |
+| Action                   | Shortcut                                                |
+| ------------------------ | ------------------------------------------------------- |
+| Undo                     | <Kbd mod>Z</Kbd>                                        |
+| Redo                     | <Kbd mod>Shift</Kbd> + <Kbd>Z</Kbd> or <Kbd mod>Y</Kbd> |
+| Clear selection          | <Kbd>Escape</Kbd>                                       |
+| Delete selected elements | <Kbd>Delete</Kbd> or <Kbd>Backspace</Kbd>               |
+| Copy                     | <Kbd mod>C</Kbd>                                        |
+| Paste                    | <Kbd mod>V</Kbd>                                        |
+| Select all               | <Kbd mod>A</Kbd>                                        |
+| Move by 1 pixel          | <Kbd>Arrow keys</Kbd>                                   |
+| Move by 10 pixels        | <Kbd>Shift</Kbd> + <Kbd>Arrow keys</Kbd>                |
+| Bring to front           | <Kbd mod>]</Kbd>                                        |
+| Send to back             | <Kbd mod>[</Kbd>                                        |
+| Add text                 | <Kbd>T</Kbd>                                            |
+| Add frame                | <Kbd>F</Kbd>                                            |
+| Add rectangle            | <Kbd>R</Kbd>                                            |
+| Add circle               | <Kbd>O</Kbd>                                            |
+| Add line                 | <Kbd>L</Kbd>                                            |
+| Add image                | <Kbd>I</Kbd>                                            |
 
 Pasted elements are offset by a few pixels from the original, so you can see both copies.
+
+Undo and redo cover canvas edits, property changes and layer operations. Typing in a
+property field counts as one step once you leave the field or press Enter. History is
+kept per template and is cleared when you switch templates. Undo and redo are
+disabled while preview mode is on.
 
 The single-letter shortcuts only work while the canvas has focus, with no
 modifier key held, and not while you're typing inside a text element.

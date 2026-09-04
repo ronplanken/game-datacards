@@ -329,6 +329,13 @@ export const useTemplateStorage = () => ({
   setTemplateSyncEnabled: () => {},
   bulkUpdateTemplates: () => {},
   getTemplate: () => null,
+  commitTemplate: () => {},
+  undo: () => {},
+  redo: () => {},
+  canUndo: false,
+  canRedo: false,
+  historyLength: 0,
+  revision: 0,
 });
 
 /**
