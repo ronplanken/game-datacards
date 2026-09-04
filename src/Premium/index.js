@@ -339,6 +339,22 @@ export const useTemplateStorage = () => ({
 });
 
 /**
+ * Stub for useTemplateImages - no cloud image storage in public version
+ */
+export const useTemplateImages = () => ({
+  cloudEnabled: false,
+  uploadTemplateImage: () => Promise.resolve({ url: null, path: null, error: "not-available" }),
+  uploadTemplateImageFromDataUrl: () => Promise.resolve({ url: null, path: null, error: "not-available" }),
+  deleteTemplateImage: () => Promise.resolve(false),
+  deleteTemplateImages: () => Promise.resolve(false),
+  listTemplateImages: () => Promise.resolve([]),
+});
+
+export const TEMPLATE_IMAGE_BUCKET = "template-images";
+export const TEMPLATE_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+export const TEMPLATE_IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
+
+/**
  * Stub for useDataBinding - minimal implementation
  */
 export const useDataBinding = () => ({
