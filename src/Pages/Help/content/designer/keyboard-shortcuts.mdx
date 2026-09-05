@@ -1,14 +1,69 @@
 ## Keyboard Shortcuts
 
-| Action | Shortcut |
-|--------|----------|
-| Delete selected elements | <Kbd>Delete</Kbd> or <Kbd>Backspace</Kbd> |
-| Copy | <Kbd mod>C</Kbd> |
-| Paste | <Kbd mod>V</Kbd> |
-| Select all | <Kbd mod>A</Kbd> |
-| Move by 1 pixel | <Kbd>Arrow keys</Kbd> |
-| Move by 10 pixels | <Kbd>Shift</Kbd> + <Kbd>Arrow keys</Kbd> |
-| Bring to front | <Kbd mod>]</Kbd> |
-| Send to back | <Kbd mod>[</Kbd> |
+### Editing
+
+| Action                   | Shortcut                                                |
+| ------------------------ | ------------------------------------------------------- |
+| Undo                     | <Kbd mod>Z</Kbd>                                        |
+| Redo                     | <Kbd mod>Shift</Kbd> + <Kbd>Z</Kbd> or <Kbd mod>Y</Kbd> |
+| Clear selection          | <Kbd>Escape</Kbd>                                       |
+| Delete selected elements | <Kbd>Delete</Kbd> or <Kbd>Backspace</Kbd>               |
+| Copy                     | <Kbd mod>C</Kbd>                                        |
+| Paste                    | <Kbd mod>V</Kbd>                                        |
+| Duplicate in place       | <Kbd mod>D</Kbd>                                        |
+| Select all               | <Kbd mod>A</Kbd>                                        |
+| Group into a frame       | <Kbd mod>G</Kbd>                                        |
+| Ungroup a frame          | <Kbd mod>Shift</Kbd> + <Kbd>G</Kbd>                     |
+| Move by 1 pixel          | <Kbd>Arrow keys</Kbd>                                   |
+| Move by one grid step    | <Kbd>Shift</Kbd> + <Kbd>Arrow keys</Kbd>                |
+
+### Depth
+
+| Action         | Shortcut                            |
+| -------------- | ----------------------------------- |
+| Forward one    | <Kbd mod>]</Kbd>                    |
+| Backward one   | <Kbd mod>[</Kbd>                    |
+| Bring to front | <Kbd mod>Shift</Kbd> + <Kbd>]</Kbd> |
+| Send to back   | <Kbd mod>Shift</Kbd> + <Kbd>[</Kbd> |
+
+### View
+
+| Action            | Shortcut                                      |
+| ----------------- | --------------------------------------------- |
+| Zoom to fit       | <Kbd>Shift</Kbd> + <Kbd>1</Kbd>               |
+| Zoom to selection | <Kbd>Shift</Kbd> + <Kbd>2</Kbd>               |
+| Zoom to 100%      | <Kbd>Shift</Kbd> + <Kbd>0</Kbd>               |
+| Zoom in or out    | <Kbd mod>Mouse wheel</Kbd>                    |
+| Scroll up or down | <Kbd>Mouse wheel</Kbd>                        |
+| Scroll sideways   | <Kbd>Shift</Kbd> + <Kbd>Mouse wheel</Kbd>     |
+| Pan the canvas    | <Kbd>Space</Kbd> + drag, or middle mouse drag |
+
+### Tools
+
+| Tool      | Shortcut     |
+| --------- | ------------ |
+| Text      | <Kbd>T</Kbd> |
+| Frame     | <Kbd>F</Kbd> |
+| Rectangle | <Kbd>R</Kbd> |
+| Circle    | <Kbd>O</Kbd> |
+| Line      | <Kbd>L</Kbd> |
+| Image     | <Kbd>I</Kbd> |
+
+A tool key selects the tool. Drag on the card to draw the element at the size you
+want, or click once to drop it at its default size. The tool goes back to select
+after one element, unless you hold <Kbd>Shift</Kbd> while you finish the drag.
+
+<Kbd>Escape</Kbd> cancels the tool.
+
+Hold <Kbd>Shift</Kbd> while resizing to keep the aspect ratio, and while rotating
+to turn in 15 degree steps.
 
 Pasted elements are offset by a few pixels from the original, so you can see both copies.
+
+Undo and redo cover canvas edits, property changes and layer operations. Typing in a
+property field counts as one step once you leave the field or press Enter. History is
+kept per template and is cleared when you switch templates. Undo and redo are
+disabled while preview mode is on.
+
+The single-letter shortcuts only work while the canvas has focus, with no
+modifier key held, and not while you're typing inside a text element.

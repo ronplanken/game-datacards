@@ -11,10 +11,40 @@ Every change you make is saved to your browser within about a second. You'll see
 
 ### Duplicate
 
-<Icon name="Copy" /> Create a copy of any template to experiment without affecting the original. Duplicates are named with "(Copy)" appended.
+<Icon name="Copy" /> Create a copy of any template to experiment without affecting the original. Duplicates are named
+with "(Copy)" appended.
 
 ### Important
 
 <Callout type="warning">
-Templates are stored in your browser's local storage. Clearing your browser data will remove them. Use export to keep backups of templates you want to keep.
+  Templates are stored in your browser's local storage. Clearing your browser data will remove them. Use export to keep
+  backups of templates you want to keep.
 </Callout>
+
+### Cloud images
+
+An image you upload into a template is stored in the cloud rather than
+inside the template file itself, so exporting, importing and syncing a
+template with images stays small and fast. Templates created before this
+change may still carry their images inline. If a template like that needs
+attention, open its Layers tab and use "Migrate images to cloud" in the
+toolbar to move its images to cloud storage and shrink the saved template.
+
+### Template formats
+
+Every template targets a format — 40K 10th Edition, 40K 11th Edition, Age
+of Sigmar, or a specific custom datasource card type — set when you create
+it and shown in Card properties. The format decides which fields are
+available to bind and which cards the template can be attached to.
+
+A template built for one format can still be attached to a card from a
+closely related format: a 40K 10th Edition template can be used on an 11th
+edition card and back again, since the two share the same card shape. The
+template selector on a card only offers templates whose format is
+compatible with that card, and shows the template's own format next to its
+name when it differs from the card's.
+
+If you change a template's format in Card properties and it has bindings
+that don't exist in the new format, you'll be asked whether to keep them
+as-is, clear them from the text, or remap them to a same-named field when
+one exists.

@@ -2,7 +2,9 @@
 
 Frames act as containers that hold and organize other elements.
 
-Drag elements into a frame to group them. The frame can then control how its children are arranged.
+Drag elements into a frame to group them, either by dropping onto the frame
+on the canvas or by dragging a row onto the frame in the Layers tree. The
+frame can then control how its children are arranged.
 
 ### Auto-layout modes
 
@@ -16,8 +18,80 @@ When auto-layout is active, you can adjust:
 
 - **Gap** — The space between each child element
 - **Padding** — The space between the frame edge and its contents
-- **Alignment** — Where children sit along the cross-axis (start, center, or end)
+- **Align** — Where children sit on the cross-axis (start, center, or end)
+- **Justify** — Where children sit on the main-axis when there is spare room (start, center, or end)
+- **Wrap to next line** — Only for horizontal layouts. When a row of children would run past the frame's width, the rest continue on a new line below.
+
+### Sizing
+
+A frame's Sizing setting controls how it responds to its contents:
+
+- **Fixed** — The frame keeps the size you set. Content that does not fit is clipped or overflows, depending on Clip Content.
+- **Hug contents** — The frame resizes itself to fit its children plus padding, growing and shrinking automatically as children are added, removed or edited. With Wrap on, a hug frame only adjusts its height; its width stays fixed and is what sets the wrap point.
 
 ### Clipping
 
 Enable "Clip content" to hide anything that extends beyond the frame boundaries. This keeps your layout tidy when elements are larger than the available space.
+
+### Repeater row styling
+
+A repeater frame (see Repeater Frames) has three extra options for how its
+rows are drawn:
+
+- **Alternate row fill** — A background colour painted behind every other row, for a striped table look.
+- **Separator** — Draws a line or dotted rule between rows, in the colour you choose.
+- **Empty state text** — Text shown as a single row when the data source array is empty. With no empty text set, a repeater with nothing to show hides itself entirely.
+
+### Sections and the card's vertical flow
+
+A frame with a Section Order takes part in the card's vertical flow, and a
+repeater whose "Push elements below" is on can push everything after it
+down as it grows. A frame's own properties panel only shows a read-only
+summary of its place in the flow, with a "Manage in card settings" link —
+the actual list lives on the card itself.
+
+Select the card (click its background, or the root row in the Layers tree)
+to open its properties, then look for the **Sections** section. It lists
+every frame that takes part in the flow, grouped by column:
+
+- Drag a row to reorder it within its column — frames higher in a column are drawn first.
+- Change a row's column to move it between independent flows (for example, a two-column layout where each side pushes separately).
+- Toggle Push on a row to make it push elements below it when it expands.
+- Use "Add to flow..." to bring an unplaced frame into the flow.
+
+<Callout type="info">
+  Reordering renumbers every section across all columns into one sequence, so section numbers are not restarted per
+  column.
+</Callout>
+
+### Cards that grow with their content
+
+Section push moves the sections below a repeater down, but the card itself
+keeps the height you designed, so a unit with a long weapon list can still
+run off the bottom. Turn on **Card grows with content** in the card's Canvas
+properties to let the card get taller instead.
+
+With it on, the card is measured against the unit being rendered: the lowest
+edge of everything that flows, every repeater row included. The card keeps
+its design height for as long as that content stays **Gap** px (16 by
+default) above the elements anchored to the bottom, and past that it grows by
+exactly what is missing, so a card with room to spare stays its designed
+size. **Max** caps how tall it may get (leave it blank for no limit).
+Repeaters ignore their Max Items cap while the card can grow, so every item
+is drawn.
+
+Two element checkboxes in the Transform section tell the rest of the card
+what to do with the extra height. They apply to shapes, frames and images:
+
+- **Stretch to card bottom** — The element gets taller by the same amount the card did. Use it for a background panel or a column divider that should cover the whole card. On a polygon, only the points in its lower half move, so notched corners keep their shape.
+- **Keep distance to card bottom** — The element moves down by the same amount, staying the same distance from the bottom edge. Use it for a footer bar or a badge that sits at the bottom of the card but is not part of the section flow.
+
+A section that is set to hug its contents grows too: its auto-height text is
+measured against the real card, the frame grows to fit it, and the sections
+below it in the same column move down by the same amount. That is what keeps
+a long wargear list readable instead of shrinking it into its box.
+
+Both 40K styled presets ship with this set up: the data panel background and
+the column divider stretch, the keywords footer and the faction diamond stay
+anchored to the bottom, and the wargear, unit composition and abilities
+blocks hug their text.

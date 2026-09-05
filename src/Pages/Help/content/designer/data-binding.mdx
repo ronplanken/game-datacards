@@ -1,41 +1,147 @@
 ## Data Binding
 
-Connect your template to real game data so cards fill in automatically. Data binding replaces placeholder text with actual values from your datasheets.
+Connect your template to real game data so cards fill in automatically. A bound
+text element shows real values from a datasheet instead of static text.
 
-### Binding syntax
+### The Data tab
 
-Wrap any field path in double curly braces inside a text element:
+The left panel has two tabs: **Layers** and **Data**. The Data tab shows every
+field your template's format can bind to, grouped the same way as the card
+(basic info, stats, weapons, abilities, keywords). A sample card selector sits
+at the top of the tab. Whichever card you pick there, every field in the tree
+shows that card's actual value next to its name, so you can see what you are
+binding before you drop it on the canvas.
 
-- `{{name}}` — Shows the unit name
-- `{{stats[0].m}}` — Shows the first stat profile's Movement value
+### Drag to bind
 
-### Available bindings — Warhammer 40K
+Drag a field from the Data tab onto the canvas to create a new text element
+bound to it. Drag a field onto an existing text element to replace its
+content with that binding, or drop it at the cursor position if you are
+already editing the text.
 
-| Category | Bindings |
-|----------|----------|
-| **Basic** | `name`, `subname`, `description`, `faction_id` |
-| **Stats** | `stats[0].m`, `stats[0].t`, `stats[0].sv`, `stats[0].w`, `stats[0].ld`, `stats[0].oc`, `stats[0].invul` |
-| **Ranged weapons** | `rangedWeapons[N].name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage` |
-| **Melee weapons** | `meleeWeapons[N].name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage` |
-| **Abilities** | `abilities[N].name`, `abilities[N].description` |
-| **Keywords** | `keywords[N].keyword` |
-| **Other** | `composition`, `loadout`, `transport` |
+Drag a list — Ranged Weapons, Abilities, Keywords, and so on — onto the canvas
+to create a repeater frame in one step. This lays out one row per item, side
+by side, with a text child for each of that list's fields. See Repeater
+Frames for how to adjust it afterwards.
 
-Replace `[N]` with an index (0, 1, 2...) to access specific items in a list.
+### Binding chips
 
-### Available bindings — Age of Sigmar
+Inside a text element, a bound field shows as a chip with its label and the
+sample value from the card you picked in the Data tab, not as raw
+`{{ }}` braces. Click a chip to open a small popover where you can add a
+filter, change the field, or remove the chip. Text and chips can be mixed
+freely, for example "Cost: " followed by a `points[0].cost` chip.
 
-| Category | Bindings |
-|----------|----------|
-| **Stats** | `stats.move`, `stats.save`, `stats.control`, `stats.health`, `stats.ward`, `stats.wizard`, `stats.priest` |
-| **Weapons** | `weapons.ranged[N]` / `weapons.melee[N]` with `.name`, `.hit`, `.wound`, `.rend`, `.damage` |
+Under the hood a chip is still stored as `{{path}}`, or `{{path | filter}}`
+once you add a filter, so older templates and the raw text editor below both
+keep working.
+
+### Filters
+
+A filter changes how a bound value is shown. Chain several with `|`, in the
+order you want them applied.
+
+| Filter | What it does | Example |
+|--------|--------------|---------|
+| `upper` | Upper-cases the text | `{{name \| upper}}` → INTERCESSOR SQUAD |
+| `lower` | Lower-cases the text | `{{name \| lower}}` → intercessor squad |
+| `title` | Capitalizes each word | `{{name \| title}}` → Intercessor Squad |
+| `trim` | Removes leading and trailing spaces | `{{subname \| trim}}` |
+| `join` | Joins a list with a separator (default `, `) | `{{keywords \| join:" / "}}` → Infantry / Imperium |
+| `prefix` | Adds text before the value, only if it is not empty | `{{points[0].cost \| prefix:"Cost: "}}` → Cost: 90 |
+| `suffix` | Adds text after the value, only if it is not empty | `{{stats[0].m \| suffix:"\\""}}` → 6" |
+| `default` | Shows fallback text when the value is empty | `{{subname \| default:"—"}}` |
+| `truncate` | Cuts text to a length and adds `...` | `{{abilities.other[0].description \| truncate:"40"}}` |
+| `first` | Takes the first item of a list | `{{keywords \| first}}` → Infantry |
+| `count` | Counts the items in a list | `{{rangedWeapons \| count}}` → 2 |
+
+An unknown filter is ignored, so a plain `{{path}}` with no filter always
+keeps working.
+
+### Hide when empty
+
+Every text element has a "Hide when empty" checkbox in its Content section.
+Turn it on and the element disappears from the card whenever all of its
+bindings resolve to nothing — useful for an optional line like a subname or
+an invulnerable save that not every unit has.
+
+### Sample values on the canvas
+
+While you are editing, a bound text element shows the sample value from the
+card selected in the Data tab, not the raw `{{path}}` placeholder. This lets
+you judge width and wrapping against real data as you build the layout,
+without switching to preview mode. The stored template text is still the
+binding expression — the sample value is only what's drawn while you edit.
+
+### Validation and format changes
+
+If a binding no longer exists for the template's format, the text panel shows
+a warning below the Content section listing which paths are unknown, and the
+layer panel shows a warning triangle on that row instead of the usual "Bound"
+badge.
+
+Changing the format in the Card properties panel checks every binding against
+the new format. If nothing breaks, the format switches immediately. If some
+bindings would stop resolving, a dialog lists them and offers:
+
+- **Keep** — leave the bindings as they are, so they show as unresolved until you fix them.
+- **Clear** — remove the broken bindings from the affected text.
+- **Remap** — switch each broken binding to the matching field in the new format, where one exists (for example a field that only changed which edition it comes from).
+
+The whole change, including any remapping, is a single undo step.
+
+### Format compatibility
+
+10th and 11th edition Warhammer 40K unit templates are compatible with each
+other. A template built for 10th edition can be assigned to an 11th edition
+card and the other way round, because both share the same underlying field
+paths. When you assign a template to a card elsewhere in the app, the
+template picker shows all compatible templates and labels the ones built for
+a different format so you know what you are choosing. A custom datasource
+whose base system is 40K and whose card type is a unit joins the same
+compatibility group.
+
+Templates for Age of Sigmar, or for a custom datasource with a different base
+system, are only compatible with templates built for that same system.
+
+### Built-in paths by format
+
+For power users, or for anything the Data tab does not cover yet, you can
+still type a binding directly.
+
+| Format | Reference |
+|--------|-----------|
+| 40K 10th and 11th edition | Share the same paths: `name`, `subname`, `faction_id` (10th also has `description`); `stats[0].m/t/sv/w/ld/oc`; `rangedWeapons[N]` / `meleeWeapons[N]` with `.name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage`; `abilities.other[N].name/.description`, `abilities.core`, `abilities.faction`; `abilities.invul.value` (10th also has `stats[0].invul` and `abilities.invul.info`); `keywords[N]`, `factions`; `points[N].cost`, `points[N].models` (11th also has `points[N].keyword`); `composition`, `loadout`; 10th also has `transport`; 11th also has `leader` and `wargear` |
+| Age of Sigmar | `name`, `subname`, `points`; `stats.move/save/control/health/ward/wizard/priest`; `weapons.ranged[N]` / `weapons.melee[N]` with `.name`, `.range`, `.attacks`, `.hit`, `.wound`, `.rend`, `.damage`; `abilities[N].name/.effect`; `keywords[N]`, `keywords` |
+| Custom datasources | Generated from the card type's own schema: `weapons.<type>[N].name` plus one path per column; `abilities.<category>[N].name/.description`, one group per ability category; keywords and points follow the card type's metadata settings |
+
+Replace `[N]` with an index (0, 1, 2...) to reach a specific item in a list.
+Weapons resolve through the item's first profile automatically, so
+`{{rangedWeapons[0].name}}` works without writing `profiles[0]`. Use a
+repeater frame for a weapon with several profiles. `abilities.core` and
+`abilities.faction` are lists of names joined with commas, for example
+"Deep Strike, Leader".
+
+11th edition also localizes values to the card language set in Settings,
+falling back to English when a field has no translation, and strips markup
+(`<k>`, `<b>`, bullet lists) from ability text so a text element shows plain
+text with list items on their own lines.
 
 ### Preview mode
 
-Toggle preview mode in the toolbar to see your template with real unit data. Select a datasheet from the dropdown to populate all bound fields. This lets you check layout and sizing before finalizing your design.
+Toggle Preview in the properties panel to see the whole card with real unit
+data instead of just the sample values inside each element. Select a faction
+and a datasheet from the dropdowns to choose which unit to preview. The
+faction and datasheet lists follow the template's format — if the app is
+showing a different datasource than the template targets, the panel tells
+you which datasource to switch to instead of listing unrelated units.
 
-The original template text is preserved — preview mode only affects the display. Switch back to edit mode to continue working on your template.
+The original template text is preserved; preview mode only changes what is
+displayed. Turn preview off to keep editing.
 
-### Binding modal
+### The raw text editor
 
-Click the binding icon on any text element to open the binding browser. Bindings are organized by category and searchable. Click a binding to insert it at the cursor position.
+The Content section still has a plain text box under the chips. Anyone who
+prefers typing can write `{{path}}` or `{{path | filter:"arg"}}` directly, and
+the chips update to match. This is also where you can chain several filters
+by hand, for example `{{keywords | join:" / " | upper}}`.

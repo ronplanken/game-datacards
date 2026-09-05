@@ -59,6 +59,16 @@ export function useSettingsStorage() {
   return context;
 }
 
+export function useOptionalSettingsStorage() {
+  return React.useContext(SettingsStorageContext);
+}
+
+export function useCardLanguage() {
+  const context = useOptionalSettingsStorage();
+  const language = context?.settings?.language;
+  return typeof language === "string" && language ? language : "en";
+}
+
 export const SettingsStorageProviderComponent = (props) => {
   const [localSettings, setLocalSettings] = React.useState(() => {
     try {
