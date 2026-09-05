@@ -72,11 +72,13 @@ run off the bottom. Turn on **Card grows with content** in the card's Canvas
 properties to let the card get taller instead.
 
 With it on, the card is measured against the unit being rendered: the lowest
-edge of everything on it, every repeater row included, plus the same bottom
-margin the design keeps below its lowest element. The card never gets shorter
-than its design height, and **Max** caps how tall it may get (leave it
-blank for no limit). Repeaters ignore their Max Items cap while the card can
-grow, so every item is drawn.
+edge of everything that flows, every repeater row included. The card keeps
+its design height for as long as that content stays **Gap** px (16 by
+default) above the elements anchored to the bottom, and past that it grows by
+exactly what is missing, so a card with room to spare stays its designed
+size. **Max** caps how tall it may get (leave it blank for no limit).
+Repeaters ignore their Max Items cap while the card can grow, so every item
+is drawn.
 
 Two element checkboxes in the Transform section tell the rest of the card
 what to do with the extra height. They apply to shapes, frames and images:
@@ -84,6 +86,12 @@ what to do with the extra height. They apply to shapes, frames and images:
 - **Stretch to card bottom** — The element gets taller by the same amount the card did. Use it for a background panel or a column divider that should cover the whole card. On a polygon, only the points in its lower half move, so notched corners keep their shape.
 - **Keep distance to card bottom** — The element moves down by the same amount, staying the same distance from the bottom edge. Use it for a footer bar or a badge that sits at the bottom of the card but is not part of the section flow.
 
+A section that is set to hug its contents grows too: its auto-height text is
+measured against the real card, the frame grows to fit it, and the sections
+below it in the same column move down by the same amount. That is what keeps
+a long wargear list readable instead of shrinking it into its box.
+
 Both 40K styled presets ship with this set up: the data panel background and
 the column divider stretch, the keywords footer and the faction diamond stay
-anchored to the bottom.
+anchored to the bottom, and the wargear, unit composition and abilities
+blocks hug their text.
