@@ -12,8 +12,9 @@ import "./DatasourceSelector.css";
 const BUILT_IN_DATASOURCES = [
   { id: "basic", title: "Basic Cards" },
   { id: "40k-11e", title: "40k 11th Edition" },
+  { id: "40k-11e-cp", title: "40k 11th Edition Combat Patrol" },
   { id: "40k-10e", title: "40k 10th Edition" },
-  { id: "40k-10e-cp", title: "40k Combat Patrol" },
+  { id: "40k-10e-cp", title: "40k 10th Edition Combat Patrol" },
   { id: "40k", title: "Wahapedia 9th Edition" },
   { id: "necromunda", title: "Necromunda" },
   { id: "aos", title: "Age of Sigmar" },

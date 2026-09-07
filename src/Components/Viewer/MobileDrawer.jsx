@@ -1,3 +1,5 @@
+import { patrolRouteQuery } from "../../Helpers/datasource11e.helpers";
+import { PatrolRosterSummary } from "../PatrolRosterSummary";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Col, Divider, Drawer, Input, List, Row, Select } from "antd";
 import classNames from "classnames";
@@ -211,7 +213,7 @@ export const MobileDrawer = ({ open, setOpen }) => {
                     navigate(
                       `/mobile/${cardFaction.name.toLowerCase().replaceAll(" ", "-")}/${card.name
                         .replaceAll(" ", "-")
-                        .toLowerCase()}`,
+                        .toLowerCase()}${patrolRouteQuery(card)}`,
                     );
                   }
                   if (card.nonBase) {
@@ -233,7 +235,10 @@ export const MobileDrawer = ({ open, setOpen }) => {
                 <div
                   style={{ display: "flex", width: "100%", marginRight: "0px", justifyContent: "space-between" }}
                   className={card.nonBase ? card.faction_id : ""}>
-                  <span>{card.name}</span>
+                  <span>
+                    {card.name}
+                    <PatrolRosterSummary card={card} />
+                  </span>
                   {settings.showPointsInListview && card.points.length > 0 && (
                     <span
                       style={{
