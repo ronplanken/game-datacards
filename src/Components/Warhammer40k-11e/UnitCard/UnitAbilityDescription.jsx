@@ -12,6 +12,7 @@ import { localize } from "../../../Helpers/localization.helpers";
 // bracket/regex keyword dictionary):
 //   <k>keyword</k>  -> highlighted keyword (already final, no dictionary needed)
 //   <b>bold</b>     -> bold (standard markdown/HTML)
+//   <bi>text</bi>   -> bold italic (used by translated codex descriptions)
 //   <ul><li>..</li> -> bullet list
 //   \r / \n         -> line break
 //   ■               -> box bullet (rendered on its own line, matching 10e)
@@ -40,6 +41,7 @@ export const normalize11eMarkup = (text) => {
   if (!text || typeof text !== "string") return "";
   return text
     .replace(/\r\n?/g, "\n") // CRLF / CR -> LF
+    .replace(/<bi>([\s\S]*?)<\/bi>/gi, "<b><i>$1</i></b>")
     .replace(/<k>([\s\S]*?)<\/k>/gi, '<span class="gdc-keyword">$1</span>') // keyword highlight
     .replace(/\s*■\s*/g, "\n■ "); // box bullets onto their own line
 };
