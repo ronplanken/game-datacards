@@ -397,6 +397,11 @@ export const useTemplateRenderer = () => ({
 export const TemplateRenderer = () => null;
 
 /**
+ * Stub for TemplateDomRenderer - returns null (templates not available in community version)
+ */
+export const TemplateDomRenderer = () => null;
+
+/**
  * Stub for TemplateSelector - returns null (templates not available in community version)
  */
 export const TemplateSelector = () => null;
