@@ -41,19 +41,19 @@ keep working.
 A filter changes how a bound value is shown. Chain several with `|`, in the
 order you want them applied.
 
-| Filter | What it does | Example |
-|--------|--------------|---------|
-| `upper` | Upper-cases the text | `{{name \| upper}}` → INTERCESSOR SQUAD |
-| `lower` | Lower-cases the text | `{{name \| lower}}` → intercessor squad |
-| `title` | Capitalizes each word | `{{name \| title}}` → Intercessor Squad |
-| `trim` | Removes leading and trailing spaces | `{{subname \| trim}}` |
-| `join` | Joins a list with a separator (default `, `) | `{{keywords \| join:" / "}}` → Infantry / Imperium |
-| `prefix` | Adds text before the value, only if it is not empty | `{{points[0].cost \| prefix:"Cost: "}}` → Cost: 90 |
-| `suffix` | Adds text after the value, only if it is not empty | `{{stats[0].m \| suffix:"\\""}}` → 6" |
-| `default` | Shows fallback text when the value is empty | `{{subname \| default:"—"}}` |
-| `truncate` | Cuts text to a length and adds `...` | `{{abilities.other[0].description \| truncate:"40"}}` |
-| `first` | Takes the first item of a list | `{{keywords \| first}}` → Infantry |
-| `count` | Counts the items in a list | `{{rangedWeapons \| count}}` → 2 |
+| Filter     | What it does                                        | Example                                               |
+| ---------- | --------------------------------------------------- | ----------------------------------------------------- |
+| `upper`    | Upper-cases the text                                | `{{name \| upper}}` → INTERCESSOR SQUAD               |
+| `lower`    | Lower-cases the text                                | `{{name \| lower}}` → intercessor squad               |
+| `title`    | Capitalizes each word                               | `{{name \| title}}` → Intercessor Squad               |
+| `trim`     | Removes leading and trailing spaces                 | `{{subname \| trim}}`                                 |
+| `join`     | Joins a list with a separator (default `, `)        | `{{keywords \| join:" / "}}` → Infantry / Imperium    |
+| `prefix`   | Adds text before the value, only if it is not empty | `{{points[0].cost \| prefix:"Cost: "}}` → Cost: 90    |
+| `suffix`   | Adds text after the value, only if it is not empty  | `{{stats[0].m \| suffix:"\\""}}` → 6"                 |
+| `default`  | Shows fallback text when the value is empty         | `{{subname \| default:"—"}}`                          |
+| `truncate` | Cuts text to a length and adds `...`                | `{{abilities.other[0].description \| truncate:"40"}}` |
+| `first`    | Takes the first item of a list                      | `{{keywords \| first}}` → Infantry                    |
+| `count`    | Counts the items in a list                          | `{{rangedWeapons \| count}}` → 2                      |
 
 An unknown filter is ignored, so a plain `{{path}}` with no filter always
 keeps working.
@@ -109,11 +109,11 @@ system, are only compatible with templates built for that same system.
 For power users, or for anything the Data tab does not cover yet, you can
 still type a binding directly.
 
-| Format | Reference |
-|--------|-----------|
+| Format                    | Reference                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 40K 10th and 11th edition | Share the same paths: `name`, `subname`, `faction_id` (10th also has `description`); `stats[0].m/t/sv/w/ld/oc`; `rangedWeapons[N]` / `meleeWeapons[N]` with `.name`, `.range`, `.attacks`, `.skill`, `.strength`, `.ap`, `.damage`; `abilities.other[N].name/.description`, `abilities.core`, `abilities.faction`; `abilities.invul.value` (10th also has `stats[0].invul` and `abilities.invul.info`); `keywords[N]`, `factions`; `points[N].cost`, `points[N].models` (11th also has `points[N].keyword`); `composition`, `loadout`; 10th also has `transport`; 11th also has `leader` and `wargear` |
-| Age of Sigmar | `name`, `subname`, `points`; `stats.move/save/control/health/ward/wizard/priest`; `weapons.ranged[N]` / `weapons.melee[N]` with `.name`, `.range`, `.attacks`, `.hit`, `.wound`, `.rend`, `.damage`; `abilities[N].name/.effect`; `keywords[N]`, `keywords` |
-| Custom datasources | Generated from the card type's own schema: `weapons.<type>[N].name` plus one path per column; `abilities.<category>[N].name/.description`, one group per ability category; keywords and points follow the card type's metadata settings |
+| Age of Sigmar             | `name`, `subname`, `points`; `stats.move/save/control/health/ward/wizard/priest`; `weapons.ranged[N]` / `weapons.melee[N]` with `.name`, `.range`, `.attacks`, `.hit`, `.wound`, `.rend`, `.damage`; `abilities[N].name/.effect`; `keywords[N]`, `keywords`                                                                                                                                                                                                                                                                                                                                            |
+| Custom datasources        | Generated from the card type's own schema: `weapons.<type>[N].name` plus one path per column; `abilities.<category>[N].name/.description`, one group per ability category; keywords and points follow the card type's metadata settings                                                                                                                                                                                                                                                                                                                                                                |
 
 Replace `[N]` with an index (0, 1, 2...) to reach a specific item in a list.
 Weapons resolve through the item's first profile automatically, so
@@ -137,7 +137,10 @@ showing a different datasource than the template targets, the panel tells
 you which datasource to switch to instead of listing unrelated units.
 
 The original template text is preserved; preview mode only changes what is
-displayed. Turn preview off to keep editing.
+displayed. Turn preview off to keep editing. While preview is on, the canvas
+grid is hidden and the card is shown exactly as the app renders it; you can
+still zoom with <Kbd mod>wheel</Kbd> and pan with the mouse wheel, and select
+text on the card.
 
 ### Keywords and selectable text
 
