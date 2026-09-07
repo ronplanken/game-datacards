@@ -55,6 +55,15 @@ something on the first or last item.
 bottom, left) sets the space between the frame's edge and the row template
 inside it, so the first and last copies do not touch the frame border.
 
+### Row height
+
+By default every row is as tall as the frame you drew. Set the frame's
+Height sizing to Hug and each row takes the height of its own content
+instead: give the row's text Auto height and a long ability description gets
+a taller row while a short one stays compact. The sections below the
+repeater move down by the measured total, and an auto-height card grows to
+fit. Horizontal repeaters give every column the height of the tallest one.
+
 ### Section order and push
 
 A repeater frame can take part in the card's vertical flow, so the rest of

@@ -6,6 +6,19 @@ Drag elements into a frame to group them, either by dropping onto the frame
 on the canvas or by dragging a row onto the frame in the Layers tree. The
 frame can then control how its children are arranged.
 
+### Selecting inside a frame
+
+A click on the canvas selects the frame as a whole, even when you click on
+one of its children. Double-click the child to select it instead. The frame
+stays open while a child is selected, so a single click then picks another
+child of the same frame, and you can drag or resize the child in place.
+Press <Kbd>Escape</Kbd> to step back out to the frame, and again to clear the
+selection. A nested frame works the same way: double-click it to select it,
+double-click again to go one level deeper. Double-click a selected text to
+start editing it.
+
+The Layers tree always selects exactly the row you click, at any depth.
+
 ### Auto-layout modes
 
 - <IconLabel icon="LayoutList" label="None" /> — Children are positioned freely, just like on the main canvas
@@ -24,10 +37,20 @@ When auto-layout is active, you can adjust:
 
 ### Sizing
 
-A frame's Sizing setting controls how it responds to its contents:
+A frame has a separate sizing setting for its width and its height:
 
-- **Fixed** — The frame keeps the size you set. Content that does not fit is clipped or overflows, depending on Clip Content.
-- **Hug contents** — The frame resizes itself to fit its children plus padding, growing and shrinking automatically as children are added, removed or edited. With Wrap on, a hug frame only adjusts its height; its width stays fixed and is what sets the wrap point.
+- **Fixed** — The frame keeps the size you set on that axis. Content that does not fit is clipped or overflows, depending on Clip Content.
+- **Hug** — The frame resizes itself on that axis to fit its children plus padding, growing and shrinking automatically as children are added, removed or edited.
+
+Most section frames want a fixed width and a hugging height, so a block of
+text can grow downwards without changing the column width. A row of stats
+is the opposite: hug the width, keep the height. With Wrap on, the width is
+locked to fixed because it is what sets the wrap point, so only the height
+can hug.
+
+On a repeater frame, a hugging height applies to every row on its own: each
+row takes the height of its content, so an ability with a long description
+gets a taller row and a short one stays compact. See Repeater Frames.
 
 ### Clipping
 
@@ -93,5 +116,6 @@ a long wargear list readable instead of shrinking it into its box.
 
 Both 40K styled presets ship with this set up: the data panel background and
 the column divider stretch, the keywords footer and the faction diamond stay
-anchored to the bottom, and the wargear, unit composition and abilities
-blocks hug their text.
+anchored to the bottom, the wargear, unit composition and abilities blocks
+hug their text, and the other abilities repeater hugs each row to its
+description.
