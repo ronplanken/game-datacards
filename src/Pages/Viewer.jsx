@@ -14,6 +14,7 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { useAutoFitScale } from "../Hooks/useAutoFitScale";
+import { useTemplateCardWidth } from "../Hooks/useTemplateCardWidth";
 import { useViewerNavigation } from "../Hooks/useViewerNavigation";
 import { useMobileSharing } from "../Hooks/useMobileSharing";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
@@ -74,7 +75,13 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
   };
 
   // Use auto-fit hook
-  const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), settings.autoFitEnabled !== false);
+  const templateWidth = useTemplateCardWidth(activeCard);
+  const { autoScale } = useAutoFitScale(
+    cardContainerRef,
+    getCardType(),
+    settings.autoFitEnabled !== false,
+    templateWidth,
+  );
 
   // Determine effective scale based on mode
   const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
