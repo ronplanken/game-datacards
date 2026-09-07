@@ -131,5 +131,12 @@
     "body": "The Card Designer now supports undo and redo, plus a new Data panel that lets you drag fields straight onto the card instead of typing them by hand. Zoom, pan and alignment guides make positioning easier, text and images gained more styling and fit options, and 11th edition datasheets are now supported. Frames can hug their width and height separately, repeater rows can grow to fit their content, double-clicking a frame selects the element inside it, and cards can grow with their content.",
     "severity": "success",
     "timestamp": 1788811348
+  },
+  {
+    "version": "3.11.17",
+    "title": "Ork rule formatting on mobile",
+    "body": "You now see formatted text in new Ork army and detachment rules on mobile, where formatting tags used to appear. Translated codex rules also keep their combined bold and italic text on mobile and desktop.",
+    "severity": "info",
+    "timestamp": 1788813398
   }
 ]
