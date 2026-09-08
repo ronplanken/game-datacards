@@ -44,9 +44,12 @@ entry. 10th edition remains selectable independently.
 2. Release the app integration. The existing `VITE_DATASOURCE_11TH_URL` should
    point to the directory containing that index; no additional URL is needed.
 
-The source-946 dataset contains 12 Ork Legends cards and 24 patrols / 107 roster
-cards. This is verified source coverage, not a claim of complete Legends
-coverage for every faction. No archived 10th-edition data is relabelled.
+The source-946 app export supplies 12 Ork Legends cards and 24 patrols / 107
+roster cards. The pipeline adds 500 verified Wahapedia 11th-edition Legends
+cards, for 512 Legends cards in total. The additional cards provide English
+text with the existing language fallback; the native Ork matches retain their
+translations. The daily Wahapedia workflow refreshes the companion files
+independently of app releases. No archived 10th-edition data is relabelled.
 
 ## Checks
 
