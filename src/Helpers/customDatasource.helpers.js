@@ -172,6 +172,44 @@ export const getTargetArray = (cardType) => {
 };
 
 /**
+ * Collects the cards belonging to a schema card type from a faction object.
+ * Cards live in the faction array resolved from the card type key/baseType and
+ * are matched on their `cardType` property.
+ * @param {Object} faction - The faction object containing card arrays
+ * @param {Object} cardTypeDef - A schema card type definition ({ key, baseType, ... })
+ * @returns {Array} - The cards for this card type (empty array if none)
+ */
+export const getCardsForCardType = (faction, cardTypeDef) => {
+  if (!faction || !cardTypeDef) return [];
+  const arrayName = getTargetArray(cardTypeDef.key) || getTargetArray(cardTypeDef.baseType);
+  return (faction[arrayName] || []).filter(
+    (c) => c.cardType === cardTypeDef.key || c.cardType === cardTypeDef.baseType,
+  );
+};
+
+/**
+ * Groups cards by their `subcategory` field, preserving first-seen order.
+ * Returns `null` when headers should not be shown (no cards, or a single
+ * group with no subcategory), so callers can fall back to a flat list.
+ * @param {Array} cards - The cards to group (already ordered/sorted by caller)
+ * @returns {Array<{label: string, key: string, cards: Array}>|null}
+ */
+export const groupCardsBySubcategory = (cards) => {
+  const groups = [];
+  const index = new Map();
+  for (const card of cards || []) {
+    const key = card.subcategory || "";
+    if (!index.has(key)) {
+      index.set(key, groups.length);
+      groups.push({ label: key || "Uncategorized", key, cards: [] });
+    }
+    groups[index.get(key)].cards.push(card);
+  }
+  const showHeaders = groups.length > 1 || (groups.length === 1 && groups[0].key !== "");
+  return showHeaders ? groups : null;
+};
+
+/**
  * Maps cards from a category to faction structure for export
  * @param {Array} cards - Array of cards from the category
  * @param {Object} factionInfo - Faction metadata (id, name, colours)

@@ -242,3 +242,39 @@
   padding: 4px 10px;
   border-radius: 10px;
 }
+
+/* ===========================================
+   SUBCATEGORY HEADER (custom datasources)
+   =========================================== */
+
+.faction-units-subcategory {
+  margin-bottom: 12px;
+}
+
+.faction-units-subcategory:last-child {
+  margin-bottom: 0;
+}
+
+.faction-units-subcategory-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 6px 12px;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--header-colour, #d9d9d9);
+}
+
+.faction-units-subcategory-header span:first-child {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.faction-units-subcategory-count {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.4);
+  background: #f0f0f0;
+  padding: 1px 7px;
+  border-radius: 8px;
+  margin-left: auto;
+}

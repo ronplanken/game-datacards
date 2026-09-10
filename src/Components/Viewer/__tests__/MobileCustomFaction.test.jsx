@@ -9,8 +9,8 @@ vi.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate,
 }));
 
-// Mock hooks
-const mockSelectedFaction = {
+// Dynamic mock state
+let mockSelectedFaction = {
   id: "test-faction",
   name: "Test Faction",
   colours: { header: "#333", banner: "#666" },
@@ -21,7 +21,7 @@ const mockSelectedFaction = {
   stratagems: [{ id: "strat-1", name: "Surprise Attack", cardType: "stratagem" }],
 };
 
-const mockDataSource = {
+let mockDataSource = {
   schema: {
     cardTypes: [
       { key: "unit", baseType: "unit", label: "Units" },
@@ -102,5 +102,57 @@ describe("MobileCustomFaction", () => {
     // 2 units + 1 stratagem section counts
     expect(screen.getByText("2")).toBeTruthy();
     expect(screen.getByText("1")).toBeTruthy();
+  });
+
+  it("groups cards by subcategory when hasSubcategory is enabled", () => {
+    mockSelectedFaction = {
+      id: "test-faction",
+      name: "Test Faction",
+      colours: { header: "#333", banner: "#666" },
+      datasheets: [
+        { id: "unit-1", name: "Alpha Unit", cardType: "unit", subcategory: "Core" },
+        { id: "unit-2", name: "Beta Unit", cardType: "unit", subcategory: "Core" },
+        { id: "unit-3", name: "Gamma Unit", cardType: "unit", subcategory: "Elite" },
+        { id: "unit-4", name: "Delta Unit", cardType: "unit", subcategory: "" },
+      ],
+    };
+    mockDataSource = {
+      schema: {
+        cardTypes: [{ key: "unit", baseType: "unit", label: "Units", schema: { metadata: { hasSubcategory: true } } }],
+      },
+    };
+
+    render(<MobileCustomFaction />);
+    // Subcategory headers should appear
+    expect(screen.getByText("Core")).toBeTruthy();
+    expect(screen.getByText("Elite")).toBeTruthy();
+    expect(screen.getByText("Uncategorized")).toBeTruthy();
+    // Cards should still be present
+    expect(screen.getByText("Alpha Unit")).toBeTruthy();
+    expect(screen.getByText("Gamma Unit")).toBeTruthy();
+    expect(screen.getByText("Delta Unit")).toBeTruthy();
+  });
+
+  it("does not show subcategory headers when all cards are uncategorized", () => {
+    mockSelectedFaction = {
+      id: "test-faction",
+      name: "Test Faction",
+      colours: { header: "#333", banner: "#666" },
+      datasheets: [
+        { id: "unit-1", name: "Alpha Unit", cardType: "unit" },
+        { id: "unit-2", name: "Beta Unit", cardType: "unit" },
+      ],
+    };
+    mockDataSource = {
+      schema: {
+        cardTypes: [{ key: "unit", baseType: "unit", label: "Units", schema: { metadata: { hasSubcategory: true } } }],
+      },
+    };
+
+    render(<MobileCustomFaction />);
+    // No subcategory headers, cards rendered directly
+    expect(screen.getByText("Alpha Unit")).toBeTruthy();
+    expect(screen.getByText("Beta Unit")).toBeTruthy();
+    expect(screen.queryByText("Uncategorized")).toBeFalsy();
   });
 });

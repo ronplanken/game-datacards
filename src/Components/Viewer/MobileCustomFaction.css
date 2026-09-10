@@ -64,6 +64,37 @@
   margin: 0;
 }
 
+/* Subcategory group header */
+.custom-faction-subcategory {
+  margin-bottom: 4px;
+}
+
+.custom-faction-subcategory:last-child {
+  margin-bottom: 0;
+}
+
+.custom-faction-subcategory-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px 6px 28px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.custom-faction-subcategory-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.4);
+  background: #f0f0f0;
+  padding: 1px 7px;
+  border-radius: 8px;
+  margin-left: auto;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .custom-faction-card-item {

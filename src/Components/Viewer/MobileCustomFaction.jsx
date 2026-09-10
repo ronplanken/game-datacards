@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { List, ChevronRight, BookOpen } from "lucide-react";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
-import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { getCardsForCardType, groupCardsBySubcategory } from "../../Helpers/customDatasource.helpers";
 import "./MobileCustomFaction.css";
 
 export const MobileCustomFaction = () => {
@@ -33,13 +33,15 @@ export const MobileCustomFaction = () => {
 
     return schema.cardTypes
       .map((ct) => {
-        const arrayName = getTargetArray(ct.key) || getTargetArray(ct.baseType);
-        const cards =
-          selectedFaction[arrayName]?.filter((c) => c.cardType === ct.key || c.cardType === ct.baseType) || [];
+        const sorted = [...getCardsForCardType(selectedFaction, ct)].sort((a, b) =>
+          (a.name || "").localeCompare(b.name || ""),
+        );
+        const subGroups = ct?.schema?.metadata?.hasSubcategory ? groupCardsBySubcategory(sorted) : null;
         return {
           key: ct.key,
           label: ct.label,
-          cards,
+          cards: sorted,
+          subGroups,
         };
       })
       .filter((section) => section.cards.length > 0);
@@ -87,14 +89,33 @@ export const MobileCustomFaction = () => {
             <span>{section.label}</span>
             <span className="custom-faction-section-count">{section.cards.length}</span>
           </div>
-          <div className="custom-faction-card-list">
-            {section.cards.map((card) => (
-              <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
-                <span className="custom-faction-card-name">{card.name}</span>
-                <ChevronRight size={16} className="custom-faction-card-arrow" />
-              </button>
-            ))}
-          </div>
+          {section.subGroups ? (
+            section.subGroups.map((subGroup) => (
+              <div key={subGroup.key || "__uncategorized__"} className="custom-faction-subcategory">
+                <div className="custom-faction-subcategory-header">
+                  <span>{subGroup.label}</span>
+                  <span className="custom-faction-subcategory-count">{subGroup.cards.length}</span>
+                </div>
+                <div className="custom-faction-card-list">
+                  {subGroup.cards.map((card) => (
+                    <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
+                      <span className="custom-faction-card-name">{card.name}</span>
+                      <ChevronRight size={16} className="custom-faction-card-arrow" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="custom-faction-card-list">
+              {section.cards.map((card) => (
+                <button key={card.id} className="custom-faction-card-item" onClick={() => handleCardClick(card)}>
+                  <span className="custom-faction-card-name">{card.name}</span>
+                  <ChevronRight size={16} className="custom-faction-card-arrow" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       ))}
 

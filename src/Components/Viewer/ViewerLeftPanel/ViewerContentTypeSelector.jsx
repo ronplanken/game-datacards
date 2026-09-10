@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { ChevronDown } from "lucide-react";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { getCardsForCardType } from "../../../Helpers/customDatasource.helpers";
 import "./ViewerContentTypeSelector.css";
 
 const CONTENT_TYPES_40K = [
@@ -19,42 +20,63 @@ export const ViewerContentTypeSelector = ({ selectedContentType, setSelectedCont
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const { selectedFaction } = useDataSourceStorage();
+  const { selectedFaction, dataSource, isCustomDatasource } = useDataSourceStorage();
+
+  const customContentTypes = useMemo(() => {
+    if (!isCustomDatasource || !dataSource?.schema?.cardTypes?.length) return null;
+    return dataSource.schema.cardTypes.map((ct) => ({
+      value: ct.key,
+      label: ct.label,
+      key: ct.key,
+    }));
+  }, [isCustomDatasource, dataSource]);
 
   // Determine if this is AoS data (has warscrolls property)
   const isAoS = selectedFaction?.warscrolls !== undefined;
-  const CONTENT_TYPES = isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
+  const CONTENT_TYPES = customContentTypes ? customContentTypes : isAoS ? CONTENT_TYPES_AOS : CONTENT_TYPES_40K;
 
-  // Reset content type when data source changes (e.g., 40K to AoS)
+  // Reset content type when data source changes (e.g., 40K to AoS, or to custom)
   useEffect(() => {
-    const defaultType = isAoS ? "warscrolls" : "datasheets";
+    const defaultType = customContentTypes
+      ? customContentTypes[0]?.value || "datasheets"
+      : isAoS
+        ? "warscrolls"
+        : "datasheets";
     if (selectedContentType !== defaultType && !CONTENT_TYPES.some((t) => t.value === selectedContentType)) {
       setSelectedContentType(defaultType);
     }
-  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES]);
+  }, [isAoS, selectedContentType, setSelectedContentType, CONTENT_TYPES, customContentTypes]);
 
-  // Get available content types based on faction data
-  const availableTypes = CONTENT_TYPES.filter((type) => {
-    if (type.key === "rules") {
-      // Rules have a different structure with army and detachment sub-arrays
-      const rules = selectedFaction?.rules;
-      return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
-    }
-    if (type.key === "warscrolls") {
-      const warscrolls = selectedFaction?.warscrolls;
-      return warscrolls && warscrolls.length > 0;
-    }
-    if (type.key === "manifestationLores") {
-      const manifestationLores = selectedFaction?.manifestationLores;
-      return manifestationLores && manifestationLores.length > 0;
-    }
-    if (type.key === "lores") {
-      const lores = selectedFaction?.lores;
-      return lores && lores.length > 0;
-    }
-    const data = selectedFaction?.[type.key];
-    return data && data.length > 0;
-  });
+  // Get available content types based on faction data. Custom datasource card
+  // types store their data in a faction array resolved from the card type
+  // key/baseType (e.g. "datasheets"), not under the type key itself, so they
+  // need the schema-aware lookup rather than `selectedFaction?.[type.key]`.
+  const availableTypes = customContentTypes
+    ? CONTENT_TYPES.filter((type) => {
+        const cardTypeDef = dataSource?.schema?.cardTypes?.find((ct) => ct.key === type.key);
+        return getCardsForCardType(selectedFaction, cardTypeDef).length > 0;
+      })
+    : CONTENT_TYPES.filter((type) => {
+        if (type.key === "rules") {
+          // Rules have a different structure with army and detachment sub-arrays
+          const rules = selectedFaction?.rules;
+          return rules && (rules.army?.length > 0 || rules.detachment?.length > 0);
+        }
+        if (type.key === "warscrolls") {
+          const warscrolls = selectedFaction?.warscrolls;
+          return warscrolls && warscrolls.length > 0;
+        }
+        if (type.key === "manifestationLores") {
+          const manifestationLores = selectedFaction?.manifestationLores;
+          return manifestationLores && manifestationLores.length > 0;
+        }
+        if (type.key === "lores") {
+          const lores = selectedFaction?.lores;
+          return lores && lores.length > 0;
+        }
+        const data = selectedFaction?.[type.key];
+        return data && data.length > 0;
+      });
 
   // Get the label for the selected content type
   const selectedLabel = CONTENT_TYPES.find((t) => t.value === selectedContentType)?.label || "Select a type";
