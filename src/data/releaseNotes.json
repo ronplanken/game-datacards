@@ -138,5 +138,12 @@
     "body": "You now see formatted text in new Ork army and detachment rules on mobile, where formatting tags used to appear. Translated codex rules also keep their combined bold and italic text on mobile and desktop.",
     "severity": "info",
     "timestamp": 1788813398
+  },
+  {
+    "version": "3.11.18",
+    "title": "Import and export icons match their action",
+    "body": "A couple of import and export buttons showed the wrong arrow. Importing now always shows the upload icon and exporting the download icon.",
+    "severity": "info",
+    "timestamp": 1789026611
   }
 ]
