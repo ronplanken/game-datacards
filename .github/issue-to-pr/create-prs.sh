@@ -9,9 +9,9 @@ set -euo pipefail
 # two at build time. Both repos must use the same branch name.
 #
 # The PR body is assembled from the agent's own plain-language summary
-# (pr-summary.md, written outside both repos so it is never committed), the
-# actual git diffstat of the change, the issue link, the lint/test status, and
-# the OpenCode token/cost usage for the run.
+# (pr-summary.md, written in the app repo and deleted here before committing so
+# it never lands in the PR), the actual git diffstat of the change, the issue
+# link, the lint/test status, and the OpenCode token/cost usage for the run.
 #
 # Required env:
 #   GITHUB_WORKSPACE  parent dir containing game-datacards/ and gdc-premium/
@@ -23,7 +23,7 @@ set -euo pipefail
 #   PREMIUM_REPO      owner/repo, e.g. ronplanken/gdc-premium
 #   CHECKS            human-readable lint/test status line
 # Optional:
-#   SUMMARY_FILE      path to the agent's PR summary (default: $GITHUB_WORKSPACE/pr-summary.md)
+#   SUMMARY_FILE      path to the agent's PR summary (default: $GITHUB_WORKSPACE/game-datacards/pr-summary.md)
 #   USAGE_FILE        path to the OpenCode usage stats text
 #   PREMIUM_BASE      base branch for the premium PR (default: main)
 #   BOT_NAME, BOT_EMAIL
@@ -32,12 +32,16 @@ BRANCH="${BRANCH:?BRANCH must be set by the workflow}"
 PREMIUM_BASE="${PREMIUM_BASE:-main}"
 BOT_NAME="${BOT_NAME:-gdc-issue-bot}"
 BOT_EMAIL="${BOT_EMAIL:-issue-bot@users.noreply.github.com}"
-SUMMARY_FILE="${SUMMARY_FILE:-${GITHUB_WORKSPACE}/pr-summary.md}"
+SUMMARY_FILE="${SUMMARY_FILE:-${GITHUB_WORKSPACE}/game-datacards/pr-summary.md}"
 
 # Read the agent summary and usage stats if present; both degrade gracefully.
+# The summary lives inside the app repo (so the agent can write it without an
+# external-directory grant), so delete it after reading or `git add -A` below
+# would commit it into the PR.
 SUMMARY=""
 if [ -s "$SUMMARY_FILE" ]; then
   SUMMARY="$(cat "$SUMMARY_FILE")"
+  rm -f "$SUMMARY_FILE"
 fi
 USAGE=""
 if [ -n "${USAGE_FILE:-}" ] && [ -s "$USAGE_FILE" ]; then

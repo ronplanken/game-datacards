@@ -5,8 +5,12 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
+import { getFactionEnhancements } from "../../Helpers/listCategories.helpers";
 import { MarkdownDisplay } from "../MarkdownDisplay";
 import { StratagemCard } from "../Warhammer40k-10e/StratagemCard";
+import { StratagemCard as StratagemCard11e } from "../Warhammer40k-11e/StratagemCard";
+import { MarkupText } from "../Warhammer40k-11e/UnitCard/UnitAbilityDescription";
+import { localize } from "../../Helpers/localization.helpers";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import "./MobileFaction.css";
 
@@ -37,9 +41,11 @@ const formatRuleText = (text) => {
   return text?.replace(/\n/g, "\n\n").replace(/\n\n\n\n/g, "\n\n") || "";
 };
 
-// Rule content component for rendering rule parts with different types
-const RuleContent = ({ rules }) => (
-  <div className="rule-content">
+// Rule content component for rendering rule parts with different types.
+// `lang` resolves language-keyed text for multi-language datasources (e.g.
+// 40k-11e); localize() passes plain strings through unchanged for 40k-10e.
+const RuleContent = ({ rules, lang = "en", is11e = false }) => (
+  <div className={`rule-content${is11e ? " data-40k-11e" : ""}`}>
     {[...rules]
       .sort((a, b) => a.order - b.order)
       .map((part, index) => {
@@ -47,25 +53,26 @@ const RuleContent = ({ rules }) => (
         if (part.type === "quote" || part.type === "textItalic") {
           return null;
         }
-        const formattedText = formatRuleText(part.text);
+        const text = localize(part.text, lang);
+        const content = is11e ? <MarkupText content={text} /> : <MarkdownDisplay content={formatRuleText(text)} />;
         switch (part.type) {
           case "header":
             return (
               <h4 key={index} className="rule-header">
-                {part.text}
+                {localize(part.text, lang)}
               </h4>
             );
           case "accordion":
             return (
               <div key={index} className="rule-accordion-item">
-                {part.title && <h5 className="rule-accordion-title">{part.title}</h5>}
-                <MarkdownDisplay content={formattedText} />
+                {part.title && <h5 className="rule-accordion-title">{localize(part.title, lang)}</h5>}
+                {content}
               </div>
             );
           default:
             return (
               <div key={index} className="rule-text">
-                <MarkdownDisplay content={formattedText} />
+                {content}
               </div>
             );
         }
@@ -90,6 +97,10 @@ export const MobileFaction = () => {
   const { datasheets: combinedDatasheets } = useCombinedDatasheets();
 
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
+
+  // Multi-language datasource (40k-11e) needs language resolution + the 11e cards.
+  const is11e = settings.selectedDataSource === "40k-11e";
+  const lang = settings.language || "en";
 
   const handleBrowseUnits = () => {
     navigate(`/mobile/${factionSlug}/units`);
@@ -130,12 +141,10 @@ export const MobileFaction = () => {
   const coreStratagems = selectedFaction?.basicStratagems || [];
 
   // Filter enhancements by selected detachment
-  const enhancements = Array.isArray(selectedFaction?.enhancements)
-    ? selectedFaction.enhancements.filter(
-        (enhancement) =>
-          enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-      )
-    : [];
+  const enhancements = getFactionEnhancements(selectedFaction).filter(
+    (enhancement) =>
+      enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
+  );
 
   // Get detachment rules for selected detachment
   const detachmentRules =
@@ -181,7 +190,7 @@ export const MobileFaction = () => {
           <div className="rules-list">
             {selectedFaction.rules.army.map((rule) => (
               <ExpandableItem key={rule.name} title={rule.name}>
-                <RuleContent rules={rule.rules} />
+                <RuleContent rules={rule.rules} lang={lang} is11e={is11e} />
               </ExpandableItem>
             ))}
           </div>
@@ -196,7 +205,7 @@ export const MobileFaction = () => {
             {detachmentRules?.rules?.map((rule) => {
               return (
                 <ExpandableItem key={rule.name} title={rule.name}>
-                  <RuleContent rules={rule.rules} />
+                  <RuleContent rules={rule.rules} lang={lang} is11e={is11e} />
                 </ExpandableItem>
               );
             })}
@@ -233,9 +242,15 @@ export const MobileFaction = () => {
                     title={stratagem.name}
                     cost={stratagem.cost}
                     costLabel="CP">
-                    <div className="data-40k-10e">
-                      <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="mobile" />
-                    </div>
+                    {is11e ? (
+                      <div className="data-40k-11e">
+                        <StratagemCard11e stratagem={stratagem} paddingTop="0" containerClass="mobile" />
+                      </div>
+                    ) : (
+                      <div className="data-40k-10e">
+                        <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="mobile" />
+                      </div>
+                    )}
                   </ExpandableItem>
                 ))
               ) : (
@@ -248,9 +263,15 @@ export const MobileFaction = () => {
             <>
               {coreStratagems.map((stratagem) => (
                 <ExpandableItem key={stratagem.name} title={stratagem.name} cost={stratagem.cost} costLabel="CP">
-                  <div className="data-40k-10e">
-                    <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="stratagem mobile" />
-                  </div>
+                  {is11e ? (
+                    <div className="data-40k-11e">
+                      <StratagemCard11e stratagem={stratagem} paddingTop="0" containerClass="stratagem mobile" />
+                    </div>
+                  ) : (
+                    <div className="data-40k-10e">
+                      <StratagemCard stratagem={stratagem} paddingTop="0" containerClass="stratagem mobile" />
+                    </div>
+                  )}
                 </ExpandableItem>
               ))}
             </>
@@ -271,7 +292,13 @@ export const MobileFaction = () => {
                 cost={enhancement.cost}
                 costLabel="pts">
                 <div className="enhancement-description">
-                  <MarkdownDisplay content={enhancement.description.replaceAll("■", "\n ■")} />
+                  {is11e ? (
+                    <div className="data-40k-11e">
+                      <MarkupText content={localize(enhancement.description, lang)} />
+                    </div>
+                  ) : (
+                    <MarkdownDisplay content={enhancement.description.replaceAll("■", "\n ■")} />
+                  )}
                 </div>
               </ExpandableItem>
             ))

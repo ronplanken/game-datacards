@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "./useDataSourceStorage";
 import { useCardStorage } from "./useCardStorage";
 import { useSettingsStorage } from "./useSettingsStorage";
+import { getBrowsableEnhancements } from "../Helpers/faction.helpers";
 
 export function useViewerNavigation() {
   const { faction, unit, alliedFaction, alliedUnit, stratagem, spell, enhancement, rule } = useParams();
@@ -127,17 +128,26 @@ export function useViewerNavigation() {
         updateSelectedFaction(foundFaction);
       }
 
-      const foundEnhancement = foundFaction?.enhancements?.find((e) => {
+      const foundEnhancement = getBrowsableEnhancements(foundFaction).find((e) => {
         return e.name.replaceAll(" ", "-").toLowerCase() === enhancement;
       });
 
       if (foundEnhancement) {
+        // AoS enhancements carry their own `source` ("aos-4e"), which no renderer
+        // is keyed on — the faction's shape decides which card display to use.
+        // 40k cards keep their own source so 11e enhancements reach the 11e
+        // renderer, falling back to the faction's for data that omits it.
+        const enhancementSource = foundFaction?.warscrolls
+          ? "aos"
+          : foundFaction?.datasheets
+            ? (foundEnhancement.source ?? foundFaction.source ?? "40k-10e")
+            : "40k";
         setActiveCard({
           ...foundEnhancement,
           id: `enhancement-${foundEnhancement.name}`, // Add unique id for changeActiveCard comparison
           cardType: "enhancement",
           faction_id: foundFaction?.id,
-          source: foundFaction?.datasheets ? "40k-10e" : "40k",
+          source: enhancementSource,
         });
       } else {
         setActiveCard();
@@ -179,7 +189,9 @@ export function useViewerNavigation() {
           id: `rule-${foundRule.name}`, // Add unique id for changeActiveCard comparison
           cardType: "rule",
           faction_id: foundFaction?.id,
-          source: foundFaction?.datasheets ? "40k-10e" : "40k",
+          // Same as enhancements: the rule's own source routes 11e rules to the
+          // 11e renderer, with the faction's as a fallback.
+          source: foundFaction?.datasheets ? (foundRule.source ?? foundFaction.source ?? "40k-10e") : "40k",
         });
       } else {
         setActiveCard();

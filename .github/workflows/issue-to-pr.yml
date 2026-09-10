@@ -119,7 +119,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
 
       - name: Install dependencies
         run: |
@@ -146,14 +146,23 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           PROMPT_FILE="$RUNNER_TEMP/prompt.txt"
+          # Pull only maintainer comments (repo owner/member/collaborator, and not
+          # a bot) so a maintainer can clarify or narrow the spec after filing.
+          # Outside users' and bots' comments are ignored. The result is captured
+          # as data and only ever printed via `printf '%s'` (never executed), so a
+          # comment body cannot inject shell. ISSUE_REPO/NUMBER are repo-controlled
+          # (owner/repo and a number), not attacker input.
+          COMMENTS="$(gh api "repos/${ISSUE_REPO}/issues/${ISSUE_NUMBER}/comments" --paginate \
+            --jq '.[] | select((.author_association=="OWNER" or .author_association=="MEMBER" or .author_association=="COLLABORATOR") and .user.type!="Bot") | "From @\(.user.login):\n\(.body)\n"' || true)"
           {
             cat game-datacards/.github/issue-to-pr/prompt.md
             printf '\n\n## Repository locations\n\n'
             printf -- '- App (game-datacards), your working directory: %s\n' "$GITHUB_WORKSPACE/game-datacards"
             printf -- '- Premium package (gdc-premium): %s\n' "$GITHUB_WORKSPACE/gdc-premium"
-            printf -- '- PR summary file (write your summary here as your final step): %s\n' "$GITHUB_WORKSPACE/pr-summary.md"
+            printf -- '- PR summary file (write your summary here as your final step): %s\n' "$GITHUB_WORKSPACE/game-datacards/pr-summary.md"
             printf -- '- Release fragment file (write the release note here): %s\n' "$GITHUB_WORKSPACE/game-datacards/changes/unreleased/${ISSUE_NUMBER}.json"
             printf 'Use these absolute paths. Only edit files under the src/ and docs/ subfolders of each, plus the release fragment and PR summary files above (see "Record the change" and "Write the PR summary"). Do NOT edit package.json or any other release bookkeeping; the version bump and release notes happen automatically after merge.\n'
             printf '\n## The issue to implement\n\n'
@@ -162,6 +171,10 @@ jobs:
             printf 'Title: %s\n\n' "$ISSUE_TITLE"
             printf 'Body:\n'
             printf '%s\n' "$ISSUE_BODY"
+            if [ -n "$COMMENTS" ]; then
+              printf '\nMaintainer comments (clarifications from the project team; treat them as authoritative refinements of the spec above):\n\n'
+              printf '%s\n' "$COMMENTS"
+            fi
           } > "$PROMPT_FILE"
           echo "PROMPT_FILE=$PROMPT_FILE" >> "$GITHUB_ENV"
 
@@ -230,7 +243,8 @@ jobs:
           PREMIUM_REPO: ronplanken/gdc-premium
           CHECKS: ${{ steps.checks.outputs.result }}
           BRANCH: ${{ needs.gate.outputs.branch }}
-          # pr-summary.md is written by the agent; usage.txt by the step above.
-          SUMMARY_FILE: ${{ github.workspace }}/pr-summary.md
+          # pr-summary.md is written by the agent inside the app repo; usage.txt
+          # by the step above. create-prs.sh deletes the summary before committing.
+          SUMMARY_FILE: ${{ github.workspace }}/game-datacards/pr-summary.md
           USAGE_FILE: ${{ env.USAGE_FILE }}
         run: bash game-datacards/.github/issue-to-pr/create-prs.sh

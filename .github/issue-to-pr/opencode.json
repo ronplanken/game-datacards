@@ -24,20 +24,20 @@
   },
   "permission": {
     "external_directory": {
-      "GDCWS/gdc-premium/**": "allow",
-      "GDCWS/pr-summary.md": "allow"
+      "GDCWS/gdc-premium/**": "allow"
     },
     "edit": {
       "*": "deny",
       "src/**": "allow",
       "docs/**": "allow",
       "changes/unreleased/**": "allow",
+      "pr-summary.md": "allow",
       "GDCWS/game-datacards/src/**": "allow",
       "GDCWS/game-datacards/docs/**": "allow",
       "GDCWS/game-datacards/changes/unreleased/**": "allow",
+      "GDCWS/game-datacards/pr-summary.md": "allow",
       "GDCWS/gdc-premium/src/**": "allow",
-      "GDCWS/gdc-premium/docs/**": "allow",
-      "GDCWS/pr-summary.md": "allow"
+      "GDCWS/gdc-premium/docs/**": "allow"
     },
     "bash": {
       "*": "allow",

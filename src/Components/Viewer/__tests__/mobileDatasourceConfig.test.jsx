@@ -123,8 +123,9 @@ describe("mobileDatasourceConfig", () => {
 
   describe("SELECTOR_SYSTEMS", () => {
     it("has expected entries", () => {
-      expect(SELECTOR_SYSTEMS).toHaveLength(3);
+      expect(SELECTOR_SYSTEMS).toHaveLength(4);
       const ids = SELECTOR_SYSTEMS.map((s) => s.id);
+      expect(ids).toContain("40k-11e");
       expect(ids).toContain("40k-10e");
       expect(ids).toContain("aos");
       expect(ids).toContain("starcraft-tmg");
