@@ -271,6 +271,7 @@ Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem
 | 018 | category_sharing | Enhanced category sharing with owned shares |
 | 028 | datamissions_tracker_sync | Cross-app tracker sync tables/RPCs for game-datamissions |
 | 029 | signup_source | Track which app (datacards/datamissions) an account first signed in on |
+| 030 | soft_delete_categories | Soft delete for categories (delete_category RPC, restore on re-sync) |
 
 ### Feature Flags
 

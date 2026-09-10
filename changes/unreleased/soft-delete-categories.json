@@ -1,0 +1,5 @@
+{
+  "title": "Deleted cloud categories can now be recovered",
+  "body": "Removing a category from cloud sync no longer erases it permanently on the server. If something goes wrong, your data can still be restored on request.",
+  "severity": "info"
+}
