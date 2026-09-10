@@ -7,12 +7,14 @@
  */
 
 import { WARHAMMER_40K_10E_KEYWORD_GLOSSARY } from "./keywordGlossaryDefaults";
+import { WARHAMMER_40K_11E_KEYWORD_GLOSSARY } from "./keywordGlossary11eDefaults";
+import { isReservedWeaponProfileKey } from "./weaponProfile.helpers";
 
 // Valid base types for card type definitions
 export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
 
 // Valid match types for keyword glossary entries
-export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix"];
+export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix", "parameterized"];
 
 // Valid display modes for weapon-scoped keyword glossary entries.
 // Other scopes don't honour this field today.
@@ -27,7 +29,12 @@ export const VALID_GLOSSARY_SCOPES = ["weapons", "abilities", "unit-keywords", "
 export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
 
 // Valid base systems
-export const VALID_BASE_SYSTEMS = ["40k-10e", "aos", "starcraft-tmg", "blank"];
+export const VALID_BASE_SYSTEMS = ["40k-10e", "40k-11e", "aos", "starcraft-tmg", "blank"];
+
+// Both Warhammer 40K editions share the fixed 40K card structure (locked stat
+// lines, weapon tables, ability sections) and the same editor behaviour; the
+// editions differ in the seeded keyword glossary, not in schema capabilities.
+export const is40kBaseSystem = (baseSystem) => baseSystem === "40k-10e" || baseSystem === "40k-11e";
 
 // Valid ability formats
 export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
@@ -81,7 +88,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  */
 
 /**
- * @typedef {"40k-10e" | "aos" | "blank"} BaseSystem
+ * @typedef {"40k-10e" | "40k-11e" | "aos" | "starcraft-tmg" | "blank"} BaseSystem
  */
 
 /**
@@ -515,11 +522,13 @@ export const getPresetStepDefaults = (baseSystem, baseType) => {
   const preset =
     baseSystem === "40k-10e"
       ? create40kPreset()
-      : baseSystem === "aos"
-        ? createAoSPreset()
-        : baseSystem === "starcraft-tmg"
-          ? createStarcraftTmgPreset()
-          : null;
+      : baseSystem === "40k-11e"
+        ? create40k11ePreset()
+        : baseSystem === "aos"
+          ? createAoSPreset()
+          : baseSystem === "starcraft-tmg"
+            ? createStarcraftTmgPreset()
+            : null;
   if (!preset) return null;
 
   const cardType = preset.cardTypes.find((ct) => ct.baseType === baseType);
@@ -924,6 +933,53 @@ const validateStratagemSchema = (schema, path) => {
 };
 
 /**
+ * Drops weapon columns whose `key` collides with a reserved weapon profile
+ * field (see `RESERVED_WEAPON_PROFILE_KEYS`).
+ *
+ * Such a column makes the card editors render a generic text input over a field
+ * the data model owns — the first keystroke replaces e.g. the keywords array
+ * with a string, and the card can no longer render. The schema editor blocks
+ * these keys, but imported and older schemas may still carry one, so they are
+ * stripped on the way in rather than rejected: keeping the datasource usable
+ * matters more than the extra column.
+ *
+ * Returns the schema unchanged (same reference) when there is nothing to strip.
+ *
+ * @param {object} schema - A datasource schema
+ * @returns {object} The schema, with colliding weapon columns removed
+ */
+export const stripReservedWeaponColumns = (schema) => {
+  if (!schema || typeof schema !== "object" || !Array.isArray(schema.cardTypes)) return schema;
+
+  let changed = false;
+  const cardTypes = schema.cardTypes.map((cardType) => {
+    const types = cardType?.schema?.weaponTypes?.types;
+    if (!Array.isArray(types)) return cardType;
+
+    let typeChanged = false;
+    const cleanedTypes = types.map((wt) => {
+      if (!Array.isArray(wt?.columns)) return wt;
+      const columns = wt.columns.filter((col) => !isReservedWeaponProfileKey(col?.key));
+      if (columns.length === wt.columns.length) return wt;
+      typeChanged = true;
+      return { ...wt, columns };
+    });
+    if (!typeChanged) return cardType;
+
+    changed = true;
+    return {
+      ...cardType,
+      schema: {
+        ...cardType.schema,
+        weaponTypes: { ...cardType.schema.weaponTypes, types: cleanedTypes },
+      },
+    };
+  });
+
+  return changed ? { ...schema, cardTypes } : schema;
+};
+
+/**
  * Validates a complete datasource schema for structural integrity.
  * Checks version, baseSystem, cardTypes, and all nested definitions.
  * @param {object} schema - The datasource schema to validate
@@ -1101,11 +1157,49 @@ export const filterGlossaryByScope = (glossary, scope) => {
   return glossary.filter((entry) => Array.isArray(entry?.appliesTo) && entry.appliesTo.includes(scope));
 };
 
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// A trailing parameter value: a dice expression, a save "N+", or a plain
+// integer, each optionally followed by an inch mark so distance-valued keywords
+// such as Scouts 6" / Fall Back and Shoot 6" resolve like their bare names do.
+const PARAMETER_VALUE_PATTERN = String.raw`(?:(?:(?:\d+D\d+|D\d+)(?:\+\d+)?|\d+\+|\d+(?:\+\d+)?)"?)`;
+const PARAMETER_WORD_PATTERN = String.raw`[A-Za-z][A-Za-z-]*`;
+const PARAMETER_TOKEN_PATTERN = String.raw`(?:${PARAMETER_WORD_PATTERN}\s+){0,3}${PARAMETER_VALUE_PATTERN}`;
+const TEXT_ONLY_PARAMETER_PATTERN = String.raw`${PARAMETER_WORD_PATTERN}(?:\s+${PARAMETER_WORD_PATTERN}){0,2}`;
+
+const getMatchType = (entry) => (VALID_KEYWORD_MATCH_TYPES.includes(entry?.matchType) ? entry.matchType : "exact");
+
+const createParameterizedKeywordRegex = (needle) => {
+  const separator = /[\s-]$/.test(needle) ? "" : String.raw`\s+`;
+  const textOnlySuffix = /-$/.test(needle) ? String.raw`|${TEXT_ONLY_PARAMETER_PATTERN}` : "";
+  return new RegExp(
+    String.raw`^${escapeRegExp(needle)}(?:${separator}(?:${PARAMETER_TOKEN_PATTERN}${textOnlySuffix}))?$`,
+    "i",
+  );
+};
+
+const createGlossaryTextRegex = (needle, matchType) => {
+  const escaped = escapeRegExp(needle);
+  if (matchType === "parameterized") {
+    const separator = /[\s-]$/.test(needle) ? "" : String.raw`\s+`;
+    const textOnlySuffix = /-$/.test(needle) ? String.raw`|${TEXT_ONLY_PARAMETER_PATTERN}` : "";
+    // Keep the leading boundary permissive around "-" so entries like "Anti-"
+    // can start inside "Anti-Vehicle", but require a stricter trailing boundary
+    // so values like "5+" are not half-matched inside "5+1".
+    return new RegExp(
+      String.raw`(?<![A-Za-z0-9])${escaped}(?:${separator}(?:${PARAMETER_TOKEN_PATTERN}${textOnlySuffix}))?(?![A-Za-z0-9+-])`,
+      "gi",
+    );
+  }
+  return new RegExp(String.raw`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "gi");
+};
+
 /**
  * Resolves a keyword tag to its glossary entry, if any, within a given scope.
  * Match rules:
- *   - "exact"  → case-insensitive equality
- *   - "prefix" → case-insensitive startsWith match
+ *   - "exact"         → case-insensitive equality
+ *   - "prefix"        → case-insensitive startsWith match
+ *   - "parameterized" → exact entry name, optionally followed by a value
  * When multiple entries match the same keyword, the entry with the longest
  * `name` wins so specific entries (e.g. "Twin-linked") take precedence over
  * shorter prefixes that happen to be substrings.
@@ -1127,8 +1221,13 @@ export const resolveKeywordEntry = (keyword, glossary, scope) => {
     if (!entry?.name || typeof entry.name !== "string") continue;
     const needle = entry.name.toLowerCase().trim();
     if (!needle) continue;
-    const matchType = entry.matchType === "prefix" ? "prefix" : "exact";
-    const matches = matchType === "prefix" ? haystack.startsWith(needle) : haystack === needle;
+    const matchType = getMatchType(entry);
+    const matches =
+      matchType === "prefix"
+        ? haystack.startsWith(needle)
+        : matchType === "parameterized"
+          ? createParameterizedKeywordRegex(needle).test(haystack)
+          : haystack === needle;
     if (matches && (!best || needle.length > best.name.toLowerCase().trim().length)) {
       best = entry;
     }
@@ -1195,8 +1294,7 @@ export const findGlossaryMatchesInText = (text, glossary, scope) => {
   const matches = [];
   for (const entry of sorted) {
     const needle = entry.name.trim();
-    const pattern = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(`(?<![A-Za-z0-9])${pattern}(?![A-Za-z0-9])`, "gi");
+    const re = createGlossaryTextRegex(needle, getMatchType(entry));
     let m;
     while ((m = re.exec(text)) !== null) {
       const start = m.index;
@@ -1247,18 +1345,24 @@ export const resolveKeywordStyle = (entry) => {
 
 /**
  * Returns the default seeded keyword glossary for the given base system.
- * Currently only `40k-10e` ships a seed; every other system starts empty.
+ * The 40K editions ship seeds (10e: weapon-keyword explanations; 11e: the full
+ * weapon + core-ability glossary from the edition's keywords.json); every other
+ * system starts empty.
  * @param {BaseSystem} baseSystem
  * @returns {object[]} A fresh copy of the seed array (safe to mutate)
  */
 export const getDefaultKeywordGlossary = (baseSystem) => {
-  if (baseSystem === "40k-10e") {
-    return WARHAMMER_40K_10E_KEYWORD_GLOSSARY.map((entry) => ({
-      ...entry,
-      appliesTo: [...entry.appliesTo],
-    }));
-  }
-  return [];
+  const seed =
+    baseSystem === "40k-10e"
+      ? WARHAMMER_40K_10E_KEYWORD_GLOSSARY
+      : baseSystem === "40k-11e"
+        ? WARHAMMER_40K_11E_KEYWORD_GLOSSARY
+        : null;
+  if (!seed) return [];
+  return seed.map((entry) => ({
+    ...entry,
+    appliesTo: [...entry.appliesTo],
+  }));
 };
 
 // --- Migration Helpers ---
@@ -1781,4 +1885,20 @@ export const create40kPreset = () => ({
       },
     },
   ],
+});
+
+// --- Preset: Warhammer 40K 11th Edition ---
+
+/**
+ * Creates a schema preset matching the Warhammer 40K 11th Edition format.
+ * 11th edition cards share the 10th edition card structure (stat line, weapon
+ * tables, ability sections), so the preset reuses the 40K card types and only
+ * differs in its base system and the seeded keyword glossary, which carries the
+ * full 11e weapon + core-ability glossary with parameterized matching.
+ * @returns {DatasourceSchema}
+ */
+export const create40k11ePreset = () => ({
+  ...create40kPreset(),
+  baseSystem: "40k-11e",
+  keywordGlossary: getDefaultKeywordGlossary("40k-11e"),
 });

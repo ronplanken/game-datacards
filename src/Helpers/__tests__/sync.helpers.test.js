@@ -57,6 +57,25 @@ describe("sync.helpers", () => {
       localStorage.setItem("gdc-device-id", "device-existing-123");
       expect(getDeviceId()).toBe("device-existing-123");
     });
+
+    it("falls back to an in-memory id when localStorage throws", () => {
+      const original = Object.getOwnPropertyDescriptor(window, "localStorage");
+      Object.defineProperty(window, "localStorage", {
+        configurable: true,
+        get() {
+          throw new Error("blocked");
+        },
+      });
+      try {
+        const id = getDeviceId();
+        expect(id).toMatch(/^device-/);
+        expect(getDeviceId()).toBe(id);
+      } finally {
+        if (original) {
+          Object.defineProperty(window, "localStorage", original);
+        }
+      }
+    });
   });
 
   describe("runDebouncedSync", () => {

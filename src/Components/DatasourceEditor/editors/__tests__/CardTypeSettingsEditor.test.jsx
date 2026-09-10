@@ -167,6 +167,53 @@ describe("CardTypeSettingsEditor", () => {
     });
   });
 
+  describe("subcategory toggle", () => {
+    const unitWithMetadata = { ...mockCardType, schema: { metadata: {} } };
+
+    it("shows the subcategory toggle for card types with metadata, regardless of base system", () => {
+      render(
+        <CardTypeSettingsEditor
+          cardType={unitWithMetadata}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={vi.fn()}
+          baseSystem="aos"
+        />,
+      );
+      expect(screen.getByLabelText("Subcategory")).toBeInTheDocument();
+    });
+
+    it("hides the subcategory toggle when the schema has no metadata", () => {
+      render(
+        <CardTypeSettingsEditor
+          cardType={mockCardType}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={vi.fn()}
+          baseSystem="40k-10e"
+        />,
+      );
+      expect(screen.queryByLabelText("Subcategory")).not.toBeInTheDocument();
+    });
+
+    it("updates schema.metadata.hasSubcategory on toggle", () => {
+      const onUpdateSchema = vi.fn();
+      render(
+        <CardTypeSettingsEditor
+          cardType={unitWithMetadata}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={onUpdateSchema}
+          baseSystem="40k-10e"
+        />,
+      );
+      fireEvent.click(screen.getByLabelText("Subcategory"));
+      expect(onUpdateSchema).toHaveBeenCalledWith(
+        expect.objectContaining({ metadata: expect.objectContaining({ hasSubcategory: true }) }),
+      );
+    });
+  });
+
   afterEach(() => {
     mockPremiumFeatures.hasCardDesigner = false;
   });

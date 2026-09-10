@@ -157,9 +157,9 @@ describe("KeywordGlossaryEditor", () => {
     render(<KeywordGlossaryEditor schema={baseSchema()} onChange={onChange} />);
     openSection();
     expandEntry("One Shot");
-    fireEvent.change(screen.getByLabelText("Match type"), { target: { value: "prefix" } });
+    fireEvent.change(screen.getByLabelText("Match type"), { target: { value: "parameterized" } });
     const next = onChange.mock.calls.at(-1)[0];
-    expect(next.keywordGlossary[0].matchType).toBe("prefix");
+    expect(next.keywordGlossary[0].matchType).toBe("parameterized");
   });
 
   it("adds a scope via the appliesTo dropdown", () => {

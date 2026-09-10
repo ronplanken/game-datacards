@@ -74,6 +74,15 @@
           white-space: nowrap;
         }
       }
+
+      // 11th edition prices a tier for one detachment or faction; shown under
+      // the model count so it never reads as another tier keyword.
+      .points_restriction {
+        display: block;
+        font-size: 0.8em;
+        font-weight: 400;
+        font-style: italic;
+      }
     }
   }
 }
@@ -842,7 +851,11 @@
   }
 }
 
-.data-40k-10e {
+// The 11th edition renderset reuses the exact 10e card layout/look & feel, so it
+// shares this scoped block (it emits a `.data-40k-11e` wrapper). 11e-specific
+// additions live in src/styles/40k-11e.less.
+.data-40k-10e,
+.data-40k-11e {
   page-break-inside: avoid;
 
   .stratagem,
@@ -1913,6 +1926,9 @@
             font-family: "EB Garamond", "serif";
             color: var(--faction-text-colour);
           }
+          .legends--multi {
+            right: var(--legends-multi-offset, 250px);
+          }
           .combatpatrol {
             &::before {
               content: "Combat Patrol Datasheet";
@@ -2247,6 +2263,15 @@
           gap: 16px;
           padding-bottom: 16px;
 
+          // Weapon keyword lists wrap by default, so a long list stays inside
+          // the weapon name column. The card's "Wrap Keywords" styling
+          // toggle turns that off by adding `keywords-nowrap` here, which
+          // keeps each list on one line running on under the characteristic
+          // columns instead.
+          &.keywords-nowrap .weapon .line .keyword {
+            white-space: nowrap;
+          }
+
           .ranged {
             position: relative;
 
@@ -2316,12 +2341,16 @@
                   letter-spacing: normal;
                   z-index: 2;
 
+                  // A grid track's automatic minimum is its content's
+                  // min-content width. With `keywords-nowrap` the keyword list
+                  // is one unbreakable run, so without this the name column
+                  // stretches to fit it and shoves the characteristic columns
+                  // out of line with their header; with it the keywords simply
+                  // run on underneath them.
+                  min-width: 0;
+
                   .name {
                     white-space: pre-line;
-                  }
-
-                  .keyword {
-                    white-space: nowrap;
                   }
                 }
               }
@@ -2396,9 +2425,13 @@
                   letter-spacing: normal;
                   z-index: 2;
 
-                  .keyword {
-                    // white-space: nowrap;
-                  }
+                  // A grid track's automatic minimum is its content's
+                  // min-content width. With `keywords-nowrap` the keyword list
+                  // is one unbreakable run, so without this the name column
+                  // stretches to fit it and shoves the characteristic columns
+                  // out of line with their header; with it the keywords simply
+                  // run on underneath them.
+                  min-width: 0;
                 }
               }
             }
@@ -2529,6 +2562,19 @@
                   color: black;
                   font-weight: 400;
                   padding-left: 4px;
+                }
+              }
+              // 11th edition structured wargear: the instruction keeps the
+              // square bullet of a plain item, the swaps it allows are listed
+              // underneath it.
+              .wargear-group {
+                .wargear-options {
+                  padding-left: 16px;
+                  .wargear-option {
+                    &:before {
+                      content: "–";
+                    }
+                  }
                 }
               }
             }
@@ -3168,6 +3214,9 @@
               font-family: "EB Garamond", "serif";
               color: var(--faction-text-colour);
             }
+            .legends--multi {
+              right: var(--legends-multi-offset, 250px);
+            }
           }
 
           .name_container {
@@ -3403,6 +3452,15 @@
             flex-direction: column;
             gap: 16px;
 
+            // Weapon keyword lists wrap by default, so a long list stays inside
+            // the weapon name column. The card's "Wrap Keywords" styling
+            // toggle turns that off by adding `keywords-nowrap` here, which
+            // keeps each list on one line running on under the characteristic
+            // columns instead.
+            &.keywords-nowrap .weapon .line .keyword {
+              white-space: nowrap;
+            }
+
             .ranged {
               position: relative;
 
@@ -3493,12 +3551,12 @@
                     letter-spacing: normal;
                     z-index: 2;
 
+                    // See the printed-card block: keeps a `keywords-nowrap`
+                    // keyword list from widening the name column.
+                    min-width: 0;
+
                     .name {
                       white-space: pre-line;
-                    }
-
-                    .keyword {
-                      white-space: nowrap;
                     }
                   }
                 }
@@ -3594,8 +3652,11 @@
                     letter-spacing: normal;
                     z-index: 2;
 
+                    // See the printed-card block: keeps a `keywords-nowrap`
+                    // keyword list from widening the name column.
+                    min-width: 0;
+
                     .keyword {
-                      white-space: nowrap;
                       grid-area: column-8;
                     }
                   }
@@ -4536,7 +4597,8 @@
 }
 
 // Override centering and transform-origin when inside print-page (both screen preview and actual print)
-.print-page .data-40k-10e {
+.print-page .data-40k-10e,
+.print-page .data-40k-11e {
   .unit-card-full-wrapper,
   .unit-card-front-wrapper,
   .unit-card-back-wrapper {

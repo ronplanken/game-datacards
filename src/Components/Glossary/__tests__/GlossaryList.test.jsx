@@ -15,7 +15,7 @@ const glossary = [
     key: "anti",
     name: "Anti-",
     description: "An unmodified Wound roll of 'x+' scores a Critical Wound.",
-    matchType: "prefix",
+    matchType: "parameterized",
     appliesTo: ["weapons", "abilities"],
   },
 ];
@@ -32,6 +32,11 @@ describe("GlossaryList", () => {
     render(<GlossaryList glossary={glossary} />);
     expect(screen.getAllByText("Weapons").length).toBe(2);
     expect(screen.getByText("Abilities")).toBeTruthy();
+  });
+
+  it("marks parameterized entries in the list", () => {
+    render(<GlossaryList glossary={glossary} />);
+    expect(screen.getByTitle("Parameterized match").textContent).toBe(" x");
   });
 
   it("reveals the description when an entry is expanded", () => {

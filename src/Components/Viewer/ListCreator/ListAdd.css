@@ -25,6 +25,14 @@
   margin: 0 4px;
 }
 
+/* Note under the Unit Size options for datasheets that carry an 11e roster
+   surcharge (additionalCost). */
+.list-add-additional-cost {
+  font-size: 12px;
+  color: var(--bs-text-muted);
+  margin: 8px 4px 0;
+}
+
 /* ===========================================
    OPTIONS (Unit Size, Enhancements)
    =========================================== */
@@ -67,6 +75,15 @@
 
 .option-label {
   color: var(--bs-text);
+}
+
+/* Why this price differs from the generic one: the detachment or faction
+   keyword it is restricted to. */
+.option-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--bs-text-muted);
 }
 
 .option-value {
@@ -150,15 +167,17 @@
 /* ===========================================
    SELECT (Detachment)
    =========================================== */
+/* Compact on purpose: it carries a single value (the detachment name) and shares
+   the modal with the size and enhancement lists, so it stays out of their way. */
 .list-add-select {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 8px 12px;
   background: var(--bs-surface);
   border: 1px solid var(--bs-border); /* High contrast border */
   border-radius: 8px; /* Reduced to 8px */
-  font-size: 16px;
+  font-size: 14px;
   color: var(--bs-text);
   cursor: pointer;
   transition: background 0.2s ease;
@@ -216,4 +235,71 @@
   background: #cbd5e1;
   color: #64748b;
   cursor: not-allowed;
+}
+
+/* Wargear that costs points (11e). Same card as an option row, but with a
+   stepper: several models in a unit can each take the same paid option. */
+.list-add-wargear {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
+}
+
+.list-add-wargear.selected {
+  background: #f0f9ff;
+  border-color: var(--bs-accent);
+}
+
+.list-add-wargear-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.list-add-wargear-stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.list-add-wargear-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  color: var(--bs-text);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.list-add-wargear-step:active:not(:disabled) {
+  background: var(--bs-surface-hover);
+}
+
+.list-add-wargear-step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.list-add-wargear-quantity {
+  min-width: 20px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bs-text);
+  font-variant-numeric: tabular-nums;
 }

@@ -51,7 +51,7 @@ describe("WARHAMMER_40K_10E_KEYWORD_GLOSSARY", () => {
       expect(entry.name.length).toBeGreaterThan(0);
       expect(typeof entry.description).toBe("string");
       expect(entry.description.length).toBeGreaterThan(0);
-      expect(["exact", "prefix"]).toContain(entry.matchType);
+      expect(["exact", "prefix", "parameterized"]).toContain(entry.matchType);
     }
   });
 
@@ -62,12 +62,12 @@ describe("WARHAMMER_40K_10E_KEYWORD_GLOSSARY", () => {
     }
   });
 
-  it("uses prefix matching for parametrised rules", () => {
+  it("uses parameterized matching for parametrised rules", () => {
     const byName = Object.fromEntries(WARHAMMER_40K_10E_KEYWORD_GLOSSARY.map((e) => [e.name, e]));
-    expect(byName["Anti-"].matchType).toBe("prefix");
-    expect(byName["Melta"].matchType).toBe("prefix");
-    expect(byName["Rapid Fire"].matchType).toBe("prefix");
-    expect(byName["Sustained Hits"].matchType).toBe("prefix");
-    expect(byName["Feel No Pain"].matchType).toBe("prefix");
+    expect(byName["Anti-"].matchType).toBe("parameterized");
+    expect(byName["Melta"].matchType).toBe("parameterized");
+    expect(byName["Rapid Fire"].matchType).toBe("parameterized");
+    expect(byName["Sustained Hits"].matchType).toBe("parameterized");
+    expect(byName["Feel No Pain"].matchType).toBe("parameterized");
   });
 });

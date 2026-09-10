@@ -22,6 +22,8 @@ export const CloudCategoriesProvider = ({ children }) => children;
 // HOOKS - Return safe defaults / disabled state
 // =====================================================
 
+const EMPTY_ERROR_MAP = new Map();
+
 /**
  * Stub for useAuth - no authentication in public version
  */
@@ -95,6 +97,11 @@ export const useSync = () => ({
   pendingCount: 0,
   errorCount: 0,
   conflictCount: 0,
+  // Diagnostics
+  syncEvents: [],
+  lastErrorByItemId: EMPTY_ERROR_MAP,
+  clearSyncEvents: () => {},
+  recordSyncEvent: () => {},
 });
 
 /**
@@ -187,6 +194,7 @@ export const SignupModal = () => null;
 export const TwoFactorPrompt = () => null;
 export const TwoFactorSetup = () => null;
 export const AccountSettingsModal = () => null;
+export const ResetPasswordPage = () => null;
 
 // =====================================================
 // MOBILE AUTH COMPONENTS - All render null
@@ -221,6 +229,13 @@ export const SyncConflictHandler = () => null;
 export const DatasourceConflictModal = () => null;
 export const DatasourceConflictHandler = () => null;
 export const SyncStatusIndicator = () => null;
+export const SyncDiagnosticsModal = () => null;
+export const SyncDiagnosticsProvider = ({ children }) => children;
+export const useSyncDiagnostics = () => ({
+  isOpen: false,
+  open: () => {},
+  close: () => {},
+});
 export const ListSyncButton = () => null;
 
 // =====================================================
@@ -299,6 +314,7 @@ export const useTemplateStorage = () => ({
   updateElement: () => {},
   removeElement: () => {},
   reorderElements: () => {},
+  reorderRootElements: () => {},
   syncElementsFromCanvas: () => {},
   // Canvas settings - no-op
   updateCanvasSettings: () => {},
@@ -313,7 +329,30 @@ export const useTemplateStorage = () => ({
   setTemplateSyncEnabled: () => {},
   bulkUpdateTemplates: () => {},
   getTemplate: () => null,
+  commitTemplate: () => {},
+  undo: () => {},
+  redo: () => {},
+  canUndo: false,
+  canRedo: false,
+  historyLength: 0,
+  revision: 0,
 });
+
+/**
+ * Stub for useTemplateImages - no cloud image storage in public version
+ */
+export const useTemplateImages = () => ({
+  cloudEnabled: false,
+  uploadTemplateImage: () => Promise.resolve({ url: null, path: null, error: "not-available" }),
+  uploadTemplateImageFromDataUrl: () => Promise.resolve({ url: null, path: null, error: "not-available" }),
+  deleteTemplateImage: () => Promise.resolve(false),
+  deleteTemplateImages: () => Promise.resolve(false),
+  listTemplateImages: () => Promise.resolve([]),
+});
+
+export const TEMPLATE_IMAGE_BUCKET = "template-images";
+export const TEMPLATE_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+export const TEMPLATE_IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
 
 /**
  * Stub for useDataBinding - minimal implementation
@@ -321,11 +360,15 @@ export const useTemplateStorage = () => ({
 export const useDataBinding = () => ({
   getAvailableBindings: () => null,
   resolveBinding: (template) => template,
+  resolveBindingWithContext: (template) => template,
+  areBindingsEmpty: () => false,
   hasBindings: () => false,
   extractBindings: () => [],
   validateBinding: () => false,
+  validateTemplateBindings: () => [],
   createBindingString: (path) => `{{${path}}}`,
   availableFormats: [],
+  getArraySources: () => [],
 });
 
 /**
@@ -352,6 +395,11 @@ export const useTemplateRenderer = () => ({
  * Stub for TemplateRenderer - returns null (templates not available in community version)
  */
 export const TemplateRenderer = () => null;
+
+/**
+ * Stub for TemplateDomRenderer - returns null (templates not available in community version)
+ */
+export const TemplateDomRenderer = () => null;
 
 /**
  * Stub for TemplateSelector - returns null (templates not available in community version)

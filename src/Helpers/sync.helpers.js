@@ -20,14 +20,31 @@ export const parseSubscriptionLimitError = (errorMessage) => {
  * Generate or retrieve a persistent device ID for filtering own realtime events.
  * Uses localStorage so the ID persists across page reloads, avoiding false
  * version conflicts when the user refreshes.
+ *
+ * Tolerates environments where localStorage is missing, broken, or throws
+ * (private-mode browsers, SSR, test runners without jsdom). Falls back to an
+ * in-memory id that lives only for the current page/session.
  */
+let memoryDeviceId = null;
+const newDeviceId = () => `device-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
 export const getDeviceId = () => {
-  let deviceId = localStorage.getItem("gdc-device-id");
-  if (!deviceId) {
-    deviceId = `device-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem("gdc-device-id", deviceId);
+  try {
+    if (typeof localStorage !== "undefined" && localStorage) {
+      let deviceId = localStorage.getItem("gdc-device-id");
+      if (!deviceId) {
+        deviceId = newDeviceId();
+        localStorage.setItem("gdc-device-id", deviceId);
+      }
+      return deviceId;
+    }
+  } catch {
+    // localStorage exists but threw (e.g. private mode, quota, disabled storage)
   }
-  return deviceId;
+  if (!memoryDeviceId) {
+    memoryDeviceId = newDeviceId();
+  }
+  return memoryDeviceId;
 };
 
 /**

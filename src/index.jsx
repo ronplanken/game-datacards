@@ -17,6 +17,7 @@ import {
   AuthProvider,
   SubscriptionProvider,
   SyncProvider,
+  SyncDiagnosticsProvider,
   CloudCategoriesProvider,
   CheckoutSuccessModal,
   SyncConflictHandler,
@@ -25,6 +26,7 @@ import {
   MobileSignupPage,
   MobilePasswordResetPage,
   MobileTwoFactorPage,
+  ResetPasswordPage,
   useProducts,
   useAuth,
   useSubscription,
@@ -54,6 +56,8 @@ import { Print } from "./Pages/Print";
 import { Shared } from "./Pages/Shared";
 import { TermsOfService } from "./Pages/TermsOfService";
 import { PrivacyPolicy } from "./Pages/PrivacyPolicy";
+import { NotFound } from "./Pages/NotFound";
+import { RouteErrorBoundary } from "./Pages/RouteErrorBoundary";
 import { DatasourceEditorPage } from "./Pages/DatasourceEditor";
 import { Viewer } from "./Pages/Viewer";
 import { ViewerMobile } from "./Pages/ViewerMobile";
@@ -345,20 +349,22 @@ const RootLayout = () => (
                   <CardStorageProviderComponent>
                     <TemplateStorageProvider>
                       <SyncProvider>
-                        <CloudCategoriesProvider>
-                          <Outlet />
-                          <ScrollRestoration />
-                          <UmamiSessionIdentifier />
-                          <WizardSelector />
-                          <WhatsNewWizardSelector />
-                          <CheckoutSuccessHandler />
-                          <ListForgeUrlHandler />
-                          <SyncConflictHandler />
-                          <DatasourceConflictHandler />
-                          <LocalDatasourceMigrationNotice />
-                          <UpdateNotification />
-                          {import.meta.env.MODE === "development" && <DevFab />}
-                        </CloudCategoriesProvider>
+                        <SyncDiagnosticsProvider>
+                          <CloudCategoriesProvider>
+                            <Outlet />
+                            <ScrollRestoration />
+                            <UmamiSessionIdentifier />
+                            <WizardSelector />
+                            <WhatsNewWizardSelector />
+                            <CheckoutSuccessHandler />
+                            <ListForgeUrlHandler />
+                            <SyncConflictHandler />
+                            <DatasourceConflictHandler />
+                            <LocalDatasourceMigrationNotice />
+                            <UpdateNotification />
+                            {import.meta.env.MODE === "development" && <DevFab />}
+                          </CloudCategoriesProvider>
+                        </SyncDiagnosticsProvider>
                       </SyncProvider>
                     </TemplateStorageProvider>
                   </CardStorageProviderComponent>
@@ -377,6 +383,7 @@ const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       // Root route - redirect based on device
       { path: "/", element: isMobile ? <MobileRedirect /> : <App /> },
@@ -407,6 +414,8 @@ const router = createBrowserRouter([
       // Legal pages
       { path: "terms", element: <TermsOfService /> },
       { path: "privacy", element: <PrivacyPolicy /> },
+      // Password recovery landing (Supabase redirects recovery links here)
+      { path: "reset-password", element: <ResetPasswordPage /> },
       // Shared card view
       { path: "shared/:Id", element: <Shared /> },
       // Desktop viewer routes
@@ -430,6 +439,7 @@ const router = createBrowserRouter([
       { path: "mobile/:faction/manifestation-lore/:spell", element: <ViewerMobile /> },
       { path: "mobile/:faction/spell-lores", element: <ViewerMobile showSpellLores /> },
       { path: "mobile/:faction/spell-lore/:spell", element: <ViewerMobile /> },
+      { path: "mobile/:faction/enhancements", element: <ViewerMobile showEnhancements /> },
       { path: "mobile/:faction/enhancement/:enhancement", element: <ViewerMobile /> },
       { path: "mobile/:faction/rule/:rule", element: <ViewerMobile /> },
       { path: "mobile/:faction/stratagem/:stratagem", element: <ViewerMobile /> },
@@ -440,6 +450,8 @@ const router = createBrowserRouter([
       { path: "legacy-print/:CategoryId", element: <LegacyPrint /> },
       { path: "image-generator", element: <ImageGenerator /> },
       { path: "image-export/:CategoryId", element: <ImageExport /> },
+      // Catch-all: render a branded 404 instead of the router's default error
+      { path: "*", element: <NotFound /> },
     ],
   },
 ]);

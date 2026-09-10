@@ -68,10 +68,7 @@ export function WarscrollStylingInfo() {
         localImageFilename: actualFile.name,
       };
       updateActiveCard(updatedCard);
-
-      setTimeout(() => {
-        saveActiveCard();
-      }, 100);
+      saveActiveCard(updatedCard);
 
       setLocalImageInfo({
         filename: actualFile.name,
@@ -93,15 +90,9 @@ export function WarscrollStylingInfo() {
 
     try {
       await deleteImage(activeCard.uuid);
-      updateActiveCard({
-        ...activeCard,
-        hasLocalImage: false,
-        localImageFilename: null,
-      });
-
-      setTimeout(() => {
-        saveActiveCard();
-      }, 100);
+      const updatedCard = { ...activeCard, hasLocalImage: false, localImageFilename: null };
+      updateActiveCard(updatedCard);
+      saveActiveCard(updatedCard);
 
       setLocalImageInfo(null);
       message.success("Local image removed");

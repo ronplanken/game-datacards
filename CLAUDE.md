@@ -26,6 +26,7 @@ For detailed documentation on card data formats, import features, components, an
 - **All new features require unit tests.** Write tests using Vitest before or alongside implementation.
 - **Use Chrome DevTools MCP to validate UI work.** Take snapshots and screenshots to verify visual changes render correctly in the browser.
 - **WhatsNew wizard mobile steps must use `mwnw-*` CSS classes.** Desktop wizard uses `wnw-*` classes, mobile uses `mwnw-*`. When adding a new version step to `MobileWhatsNewWizard/versions/`, use an existing mobile step (e.g., v3.7.0 `StepMobileEditor.jsx`) as the template, not the desktop counterpart.
+- **Two release channels: notification notes (default) vs the What's New wizard.** Routine fixes ship as a quiet entry in `src/data/releaseNotes.json` (shown in the notification bell, patch version bump) and add NO wizard entry. Only notable features get a full What's New wizard entry (minor version bump). See `docs/release-notifications.md`. Issue-to-PR PRs do NOT bump the version or edit `releaseNotes.json` themselves: they drop a fragment in `changes/unreleased/`, and `.github/workflows/release.yml` applies the patch bump + note after merge. Feature/wizard releases are cut manually by a human.
 
 ## Before Making Changes
 
@@ -176,7 +177,8 @@ The Datasource Editor (`/datasources`) is a community feature for creating custo
 ### Base Systems
 
 Datasources are created for a specific base system that determines rendering and available field types:
-- `40k-10e` - Warhammer 40K 10th Edition (units, stratagems, enhancements, rules)
+- `40k-11e` - Warhammer 40K 11th Edition (shares the 40K card structure/renderers with 10e; seeds the full 11e keyword glossary)
+- `40k-10e` - Warhammer 40K 10th Edition (units, stratagems, enhancements, rules) — legacy in the wizard
 - `aos` - Age of Sigmar (warscrolls)
 - `blank` / `custom` - Custom card format with fallback renderers
 
@@ -211,7 +213,7 @@ Two-mode wizard (`src/Components/DatasourceWizard/`) for creating datasources ("
 ### Datasource Validation Limits
 
 - Max 200 char names, 50 char versions
-- Max 10 factions, 2000 total cards
+- Max 25 factions, 2000 total cards
 - Schema export/import via JSON
 
 ## Card Designer (Premium)
@@ -242,6 +244,8 @@ Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem
 | template_subscriptions | Track template subscriptions |
 | category_shares | Publicly shared categories |
 | sync_metadata | Conflict resolution tracking |
+| dm_tracker_games | game-datamissions tracker games (one row per game, cross-app) |
+| dm_tracker_kv | game-datamissions per-user tracker preferences (cross-app) |
 
 ### Migration Overview
 
@@ -265,6 +269,8 @@ Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem
 | 016 | fix_search_path | Security hardening for search-path hijacking |
 | 017 | fix_rls_initplan | RLS performance optimization |
 | 018 | category_sharing | Enhanced category sharing with owned shares |
+| 028 | datamissions_tracker_sync | Cross-app tracker sync tables/RPCs for game-datamissions |
+| 029 | signup_source | Track which app (datacards/datamissions) an account first signed in on |
 
 ### Feature Flags
 
@@ -281,10 +287,12 @@ Feature flags (set in `.env`, all default to `true` if omitted):
 
 ## CI/CD Pipeline
 
-- **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 20)
+- **GitHub Actions**: Runs lint on all branches, tests on pull requests only (Node.js 22)
+- **Release** (`.github/workflows/release.yml`): on merge to `main`, consumes any `changes/unreleased/` fragment, bumps the patch version, appends the release note, and tags. This is the only thing that changes `package.json`.
 - **Cloudflare Pages**: Automatically builds and deploys all branches
   - Preview URLs generated for each branch
   - Production deployment on `main` branch
+  - **Production builds are gated by a build watch path of `package.json`** so only release commits (the post-merge version bump) deploy — routine merges that carry no release fragment do not. Set this under Cloudflare Pages → Settings → Builds & deployments → Build watch paths.
 
 ## Cloudflare Pages Configuration
 
@@ -293,7 +301,7 @@ When setting up Cloudflare Pages, use these build settings:
 - **Build command**: `yarn build`
 - **Build output directory**: `build`
 - **Root directory**: `/`
-- **Node.js version**: `20`
+- **Node.js version**: `22` (also pinned in `.node-version`, which Cloudflare Pages reads automatically)
 
 ### Environment Variables
 
@@ -331,9 +339,37 @@ yarn install    # Install dependencies
 yarn add <pkg>  # Add a dependency
 ```
 
+### Deliberate version caps
+
+A few ranges in `package.json` carry an upper bound on purpose. `package.json`
+cannot hold comments, so the reasons live here — check this list before
+"fixing" one of them during a dependency bump.
+
+| Package | Range | Why |
+|---------|-------|-----|
+| `@testing-library/jest-dom` | `>=6.0.0 <6.10.0` | 6.10.0 is deprecated upstream as a bad minor ("Incorrect minor release with breaking changes"); the maintainers direct the 6.x line to 6.9.1. It also adds a required `@testing-library/dom` peer this project does not carry. Lift the cap only by moving to 7.x and adding that peer. |
+
+Node itself is pinned in `.node-version` and mirrored by `engines.node` in
+`package.json` and the `node-version` inputs in the workflows. Several
+dependencies (`@supabase/supabase-js`, `firebase-admin`) now require Node >= 22,
+so all four places must move together, along with the Cloudflare Pages setting.
+
 ## Git Commit and PR Guidelines
 
 - Never sign commits or PRs with your own name or as co-author
 - No emojis in commit messages or PR descriptions
 - Keep commit messages and PR descriptions short and to the point
 - Use imperative mood for commit messages (e.g., "Fix bug" not "Fixed bug")
+
+## Communication Style
+
+Applies to answers in chat and to any user-facing text you write (release notes,
+What's New steps, UI copy, docs).
+
+- Keep explanations direct and polite.
+- Check what you say for validity. Never give an answer just to please the reader;
+  if you are not sure something is correct, say so explicitly.
+- Never use emoji.
+- Never use recognisably AI-style writing. No em dashes, no "not X, but Y"
+  constructions, no analogies or metaphors to explain something, no filler such as
+  "worth noting", "let's dive in" or "great question". Short, plain sentences.

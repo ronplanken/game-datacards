@@ -1,8 +1,8 @@
 ---
 title: Keyword Glossary
-description: Datasource-level mapping from keyword tags to their rule explanations. Each entry declares the render scopes (weapons, abilities, …) it applies to so a single glossary feeds every renderer across 40k-10e, AoS, and Starcraft TMG.
+description: Datasource-level mapping from keyword tags to their rule explanations. Each entry declares the render scopes (weapons, abilities, …) it applies to so a single glossary feeds every renderer across 40k-10e, 40k-11e, AoS, and Starcraft TMG.
 category: custom-datasource
-tags: [keywords, glossary, rendering, 40k-10e, aos, starcraft-tmg, weapons, abilities]
+tags: [keywords, glossary, rendering, 40k-10e, 40k-11e, aos, starcraft-tmg, weapons, abilities]
 related:
   - datasource-schema-architecture.md
   - custom-datasource-format.md
@@ -24,7 +24,7 @@ The built-in Warhammer 40K 10th edition data cards render a short explanation li
 
 Custom datasources get the same behavior — and the same mechanism extends to other keyword sites on a card (ability text, the unit keywords bar, etc.) — through a **datasource-level glossary**. Define a keyword name, description, and the scopes it applies to once, and every renderer that consumes that scope auto-renders the explanation.
 
-The glossary is **base-system agnostic**: the `40k-10e`, `aos`, and `starcraft-tmg` datasource renderers all read the same `keywordGlossary` array and share the render logic in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx`.
+The glossary is **base-system agnostic**: the `40k-10e`, `40k-11e`, `aos`, and `starcraft-tmg` datasource renderers all read the same `keywordGlossary` array and share the render logic in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx`.
 
 ## Table of Contents
 
@@ -32,6 +32,7 @@ The glossary is **base-system agnostic**: the `40k-10e`, `aos`, and `starcraft-t
 - [Scopes](#scopes)
 - [Match resolution](#match-resolution)
 - [Default seed for 40k-10e](#default-seed-for-40k-10e)
+- [Default seed for 40k-11e](#default-seed-for-40k-11e)
 - [Editor UI](#editor-ui)
 - [Rendering](#rendering)
 
@@ -56,7 +57,7 @@ schema: {
       key: "anti",
       name: "Anti-",
       description: "An unmodified Wound roll of 'x+' against a target with the matching keyword scores a Critical Wound.",
-      matchType: "prefix",
+      matchType: "parameterized",
       appliesTo: ["weapons"],
     },
   ],
@@ -68,7 +69,7 @@ schema: {
 | `key`         | string   | yes      | Stable storage key, unique within the glossary. |
 | `name`        | string   | yes      | Keyword name as it appears on cards. |
 | `description` | string   | yes      | Explanation text rendered by consuming renderers. |
-| `matchType`   | string   | no       | `"exact"` (default, case-insensitive equality) or `"prefix"` (case-insensitive `startsWith`). |
+| `matchType`   | string   | no       | `"exact"` (default, case-insensitive equality), `"prefix"` (case-insensitive `startsWith`), or `"parameterized"` (entry name plus an optional value such as `Sustained Hits 2`, `Feel No Pain 5+`, `Melta D6+2`, or `Anti-Vehicle 4+`). |
 | `appliesTo`   | string[] | yes      | Non-empty array of scopes from `VALID_GLOSSARY_SCOPES`. |
 | `displayMode` | string   | no       | Weapons-only. `"explanation"` (default) renders an explanation row under the profile; `"tooltip"` shows the description on hover over the inline keyword tag and skips the row. Other scopes ignore this field. |
 
@@ -98,13 +99,18 @@ The renderer resolves each keyword tag to at most one glossary entry via `resolv
 1. Filter the glossary down to entries whose `appliesTo` includes the renderer's scope.
 2. `exact` entries compare via case-insensitive equality on the keyword tag.
 3. `prefix` entries match when the keyword tag starts with the entry name (case-insensitive).
-4. When multiple in-scope entries match the same tag, the entry with the **longest `name`** wins. This lets a specific entry like `Power Fist` win over a generic prefix `Power`.
+4. `parameterized` entries match the bare entry name or the entry name plus a value, including save values (`5+`), dice values (`D6`, `D6+2`, `2D6+2`), and text-plus-value suffixes (`Vehicle 4+`).
+5. When multiple in-scope entries match the same tag, the entry with the **longest `name`** wins. This lets a specific entry like `Power Fist` win over a generic prefix `Power`.
 
 Within one renderer section, the same glossary entry is only rendered once even if multiple weapons share the keyword — explanation rows are deduplicated by entry key.
 
 ## Default seed for 40k-10e
 
 When the Datasource Wizard creates a datasource with `baseSystem: "40k-10e"`, the schema is pre-seeded with the official 10e weapon keyword set from `src/Helpers/keywordGlossaryDefaults.js`. The list mirrors the keywords explained in the built-in `KeywordTooltip` component: `One Shot`, `Devastating Wounds`, `Sustained Hits`, `Lethal Hits`, `Anti-`, `Twin-linked`, `Heavy`, `Pistol`, `Rapid Fire`, `Assault`, `Blast`, `Hazardous`, `Indirect Fire`, `Melta`, `Precision`, `Torrent`, `Lance`, `Ignores Cover`, `Feel No Pain`, `Psychic`, `Extra Attacks`, `Plasma Warhead`, `Linked Fire`. Every seeded entry has `appliesTo: ["weapons"]`.
+
+## Default seed for 40k-11e
+
+When the Datasource Wizard creates a datasource with `baseSystem: "40k-11e"`, the schema is pre-seeded with the **full 11th edition glossary** from `src/Helpers/keywordGlossary11eDefaults.js` — derived from the 11e datasource's shared `keywords.json` (English fields, source markup stripped to plain text). Unlike the 10e seed it covers two scopes: weapon keywords (`Anti-`, `Rapid Fire`, `Sustained Hits`, …) scoped to `["weapons"]` and core abilities (`Deep Strike`, `Feel No Pain`, `Scouts`, `Deadly Demise`, …) scoped to `["abilities"]`, with `parameterized` matching on value-carrying entries so tags like `Rapid Fire 1`, `Anti-Vehicle 4+` and `Scouts 6"` resolve.
 
 Other base systems (`aos`, `starcraft-tmg`, `blank`) start with an empty glossary. The seed call is `getDefaultKeywordGlossary(baseSystem)`.
 
@@ -113,14 +119,14 @@ Other base systems (`aos`, `starcraft-tmg`, `blank`) start with an empty glossar
 The glossary editor lives in the Datasource Editor right panel, under the datasource node (above the Factions section). Each row exposes:
 
 - Keyword name input
-- Match type select (`Exact` / `Prefix`)
+- Match type select (`Exact` / `Prefix` / `Parameterized`)
 - Auto-generated storage key (editable for advanced users)
 - **Applies to** multi-select dropdown (one option per scope; new entries default to `weapons` selected)
 - **Display mode** select (`Explanation row` / `Hover tooltip`) — only shown when the entry applies to weapons
 - Multi-line description textarea
 - Trash button
 
-The section header has a "+" button to add a blank entry. 40k-10e datasources also get a "Restore defaults" button that replaces the glossary with the seeded set.
+The section header has a "+" button to add a blank entry. 40k-10e and 40k-11e datasources also get a "Restore defaults" button that replaces the glossary with the seeded set.
 
 The **premium `SchemaWeaponsEditor`** uses glossary entries whose `appliesTo` includes `"weapons"` to populate an `AutoComplete` dropdown when editing a weapon's keywords. Users can still type any free-form keyword — the autocomplete is a hint, not a constraint.
 
@@ -142,9 +148,18 @@ AoS and Starcraft TMG render glossary keywords through three system-neutral comp
 
 | Base system | Weapons | Abilities |
 |-------------|---------|-----------|
-| `40k-10e` | `Ds40kUnitWeapons` → `Ds40kWeaponKeywords` (inline tags) + a `<div class="special">` of `.ability` rows. Uses the 40K-native components rather than the shared ones. | `Ds40kUnitExtra` → `UnitAbilityDescription` (`glossaryOnly`). |
+| `40k-10e` / `40k-11e` | `Ds40kUnitWeapons` → `Ds40kWeaponKeywords` (inline tags) + a `<div class="special">` of `.ability` rows. Uses the 40K-native components rather than the shared ones. | `Ds40kUnitExtra` → `UnitAbilityDescription` (`glossaryOnly`). |
 | `aos` | `DsAosWeapons` → `GlossaryKeywordTags` replaces the plain `weapon-ability-badge` pills (desktop + mobile); `GlossaryExplanationRows` renders below the weapon table. Falls back to plain badges when no glossary is present. | `DsAosAbilities` → `GlossaryText` on `ability.description`, but only when there is an actual abilities-scoped tooltip match (otherwise the normal `MarkdownDisplay` path is kept so formatting survives). |
-| `starcraft-tmg` | `StarcraftWeaponTable` → the keyword column (any column whose `key` is `keyword`/`keywords`) is split with `splitKeywordString` and rendered via `GlossaryKeywordTags`; `GlossaryExplanationRows` renders below the table (desktop + mobile). | `StarcraftAbility` → `GlossaryText` on `ability.description`. |
+| `starcraft-tmg` | `StarcraftWeaponTable` → keywords from a string column (`key` = `keyword`, split with `splitKeywordString`) **and** from the `profile.keywords` array (see below) render via `GlossaryKeywordTags`; `GlossaryExplanationRows` renders below the table (desktop + mobile). | `StarcraftAbility` → `GlossaryText` on `ability.description`. |
+
+### Where Starcraft TMG weapon keywords come from
+
+A TMG weapon type can carry keywords two ways, and both resolve against the glossary:
+
+- **A schema column keyed `keyword`** holding a comma-separated string cell (`Target (Ground), Long Range (18")`) — the shape the built-in Starcraft TMG datasource uses.
+- **`profile.keywords`**, the array the card editors write when the weapon type has `hasKeywords` enabled. `StarcraftWeaponTable` appends a trailing keywords column for it whenever any profile carries a tag, falling back to the parent weapon's `keywords` when a profile has none. The column's header uses the label of a stripped reserved column when the schema has one, otherwise `Keywords`.
+
+A schema column whose `key` is a reserved weapon profile field (`keywords`, `name`, `active`, `upgrade` — see `RESERVED_WEAPON_PROFILE_KEYS`) is dropped before rendering: the data model owns that field, so printing its raw value dumped the keyword array into the cell as `Repeating,testing`. The schema editor blocks those keys, but older and imported datasources can still carry one.
 
 Description text can include newlines and bullet markers (`• `) which the 40K `UnitAbilityDescription` renders verbatim; the shared `GlossaryText` renders plain text plus tooltip spans.
 
@@ -160,4 +175,5 @@ Description text can include newlines and bullet markers (`• `) which the 40K 
 - Create a `blank`-base datasource → glossary starts empty; manually-added entries with `Weapons` selected render correctly.
 - **AoS:** on an `aos` datasource, add a glossary entry scoped to `Weapons`, then add that keyword to a warscroll weapon profile → the keyword tag is styled and (explanation mode) an explanation row renders below the weapon table.
 - **Starcraft TMG:** on a `starcraft-tmg` datasource, add a glossary entry whose name matches a token in a weapon's `Keyword` column (e.g. `Target (Ground)` exact, or `Long Range` prefix) → the column splits into styled tags and explanation rows render below the table.
+- **Starcraft TMG (keyword arrays):** on a weapon type with `hasKeywords` enabled, add a keyword to a weapon profile in the card editor and a glossary entry with the same name scoped to `Weapons` → a `Keywords` column appears with styled tags and the explanation row renders below the table.
 - **Abilities (AoS / TMG):** add an entry scoped to `Abilities` with display mode `Hover tooltip`, reference its name in an ability description → the name gets a dotted underline + hover tooltip in the rendered card.

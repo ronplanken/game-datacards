@@ -27,13 +27,24 @@ const GlossaryDescription = ({ description }) => (
 const GlossaryEntry = ({ entry }) => {
   const [isOpen, setIsOpen] = useState(false);
   const scopes = Array.isArray(entry.appliesTo) ? entry.appliesTo : [];
+  const matchIndicator = entry.matchType === "prefix" ? "…" : entry.matchType === "parameterized" ? " x" : "";
+  const matchTitle =
+    entry.matchType === "prefix"
+      ? "Prefix match"
+      : entry.matchType === "parameterized"
+        ? "Parameterized match"
+        : undefined;
 
   return (
     <div className={`glossary-entry ${isOpen ? "open" : ""}`}>
       <button className="glossary-entry-header" onClick={() => setIsOpen(!isOpen)}>
         <span className="glossary-entry-name">
           {entry.name}
-          {entry.matchType === "prefix" && <span className="glossary-entry-prefix">…</span>}
+          {matchIndicator && (
+            <span className="glossary-entry-prefix" title={matchTitle}>
+              {matchIndicator}
+            </span>
+          )}
         </span>
         <span className="glossary-entry-scopes">
           {scopes.map((scope) => (

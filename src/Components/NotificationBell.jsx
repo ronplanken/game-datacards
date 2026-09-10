@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Bell } from "lucide-react";
 import { getMessages } from "../Helpers/external.helpers";
+import { getReleaseNotes, isReleaseNoteUnread } from "../Helpers/releaseNotes";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import "./NotificationBell.css";
 
@@ -32,6 +33,7 @@ export const NotificationBell = () => {
   const [lastMessageId, setLastMessageId] = useState(0);
   const { settings, updateSettings } = useSettingsStorage();
   const containerRef = useRef(null);
+  const currentVersion = import.meta.env.VITE_VERSION;
 
   // Fetch messages on mount
   useEffect(() => {
@@ -67,11 +69,22 @@ export const NotificationBell = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  const isActiveUnread = (m) => m.active !== false && m.id > settings.serviceMessage && isRecentMessage(m.timestamp);
-  const unreadCount = messages.filter(isActiveUnread).length;
+  // Remote operational messages and bundled release notes share one feed, newest
+  // first. Each carries a `source` so unread state uses the right cursor: remote
+  // messages track an id, release notes track the last version marked read.
+  const items = [
+    ...messages.map((m) => ({ ...m, source: "remote", key: `remote-${m.id}` })),
+    ...getReleaseNotes(),
+  ].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  const isActiveUnread = (item) =>
+    item.source === "release"
+      ? isReleaseNoteUnread(item, settings.lastReadReleaseVersion)
+      : item.active !== false && item.id > settings.serviceMessage && isRecentMessage(item.timestamp);
+  const unreadCount = items.filter(isActiveUnread).length;
 
   const markAllRead = () => {
-    updateSettings({ ...settings, serviceMessage: lastMessageId });
+    updateSettings({ ...settings, serviceMessage: lastMessageId, lastReadReleaseVersion: currentVersion });
     setIsOpen(false);
   };
 
@@ -94,15 +107,15 @@ export const NotificationBell = () => {
           )}
         </div>
         <div className="notification-dropdown-body">
-          {messages.length === 0 ? (
+          {items.length === 0 ? (
             <div className="notification-empty">
               <Bell size={32} strokeWidth={1.5} />
               <p>You&apos;re all caught up</p>
             </div>
           ) : (
-            messages.map((msg, index) => (
+            items.map((msg, index) => (
               <div
-                key={msg.id}
+                key={msg.key}
                 className={`notification-item ${
                   isActiveUnread(msg) ? "notification-item--unread" : ""
                 } ${isOpen && index < 5 ? "notification-item--animate" : ""}`}>

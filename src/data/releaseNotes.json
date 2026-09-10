@@ -1,0 +1,142 @@
+[
+  {
+    "version": "3.10.1",
+    "title": "Legends label no longer overlaps points",
+    "body": "The Legends label used to sit on top of the points when a datasheet showed more than one points value. It now moves to the left and stays clear.",
+    "severity": "info",
+    "timestamp": 1779861089
+  },
+  {
+    "version": "3.10.2",
+    "title": "Patch notes take up less space",
+    "body": "The date line under each patch note in the notification list was too tall. It now sits tighter, so the list is quicker to scan.",
+    "severity": "info",
+    "timestamp": 1779869126
+  },
+  {
+    "version": "3.10.3",
+    "title": "Sub-categories sync with their parent",
+    "body": "You could start syncing a sub-category before its parent, which never worked. Its sync button now stays off until you sync the parent category.",
+    "severity": "info",
+    "timestamp": 1779902166
+  },
+  {
+    "version": "3.11.1",
+    "title": "Group 11th edition datasheets and stratagems again",
+    "body": "The 11th edition faction settings were missing, so datasheets could not be grouped. Grouping, points and double-sided options are back, and stratagems can be split into collapsible sections per detachment.",
+    "severity": "info",
+    "timestamp": 1788204838
+  },
+  {
+    "version": "3.11.2",
+    "title": "Edit stratagem restrictions and weapon abilities",
+    "body": "11th edition stratagems now have a Restrictions field next to When, Target and Effect. Weapon abilities show under their weapon's profiles and can be edited per weapon, coloured text prints on the card instead of being dropped, and enhancements gained a List eligibility panel.",
+    "severity": "info",
+    "timestamp": 1788204838
+  },
+  {
+    "version": "3.11.3",
+    "title": "Edit wargear and pay for it in your lists",
+    "body": "11th edition units now have Wargear abilities and Special abilities panels in the card editor. Wargear that costs points can be picked in the list builder, counts towards your total, and prints on the back of the card with its cost. Points that only apply to one faction or detachment now say so.",
+    "severity": "info",
+    "timestamp": 1788204838
+  },
+  {
+    "version": "3.11.4",
+    "title": "Age of Sigmar artefacts and heroic traits",
+    "body": "Every faction's artefacts of power, heroic traits and other enhancements can now be browsed from the faction screen, found through search, and opened as a card with their cost, phase and rules.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.5",
+    "title": "Age of Sigmar warscrolls open again on mobile",
+    "body": "Tapping a warscroll on mobile showed an error instead of the card. Warscrolls now open normally, for every faction.",
+    "severity": "error",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.6",
+    "title": "Faction symbols stay on your datacards",
+    "body": "Turning a custom faction symbol on or off, uploading one, or removing it saved the card as it was before the change, so the setting flipped back after a reload. Those actions now stick. They also work on 11th edition cards, and a card with an empty badge falls back to the faction printed on it.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.7",
+    "title": "Image Generator no longer crashes on some factions",
+    "body": "Picking a faction such as Adeptus Titanicus threw an error. Every faction can now be generated.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.8",
+    "title": "Melee weapon keywords line up with ranged",
+    "body": "A melee weapon with a long keyword list stacked those keywords under the weapon name, while a ranged weapon kept them on one line. Melee weapons now read the same, with the columns lined up under their headings.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.9",
+    "title": "Edit 11th edition cards on mobile",
+    "body": "Cards in an 11th edition list now have an Edit button on mobile. The editor covers the whole card, as well as stratagems, enhancements and rules, and writes edits in the card language you picked without touching the others.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.10",
+    "title": "Share cloud categories from your phone",
+    "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories, not just local lists. A list that cannot be shared tells you why instead of doing nothing.",
+    "severity": "success",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.11",
+    "title": "Starcraft weapon keywords link to the glossary again",
+    "body": "Keywords added to a Starcraft weapon were printed as plain text and matched no glossary entry. They now show as keyword tags with their tooltips and explanations.",
+    "severity": "warning",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.12",
+    "title": "Weapons tab no longer breaks after adding a keyword",
+    "body": "Adding a weapon keyword could stop the weapons tab from opening, even after a refresh. Those cards open again and the stray keyword can simply be deleted.",
+    "severity": "error",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.13",
+    "title": "Choose how weapon keywords wrap",
+    "body": "Long keyword lists now wrap inside the weapon name column, with the characteristic columns lined up under their headings. A Wrap Keywords switch in the Styling section turns wrapping off per card, on desktop and mobile.",
+    "severity": "info",
+    "timestamp": 1788207017
+  },
+  {
+    "version": "3.11.14",
+    "title": "Reuse faction symbols and keep their colours",
+    "body": "An Original Colours switch in the Faction Symbol panel keeps an uploaded symbol's colours instead of flattening them to black. Uploading over an existing symbol now updates straight away, and a Saved symbols button lists every symbol you uploaded in this browser.",
+    "severity": "info",
+    "timestamp": 1788263596
+  },
+  {
+    "version": "3.11.15",
+    "title": "Security and dependency updates",
+    "body": "Game Datacards now runs on updated versions of the libraries it is built with, closing a batch of reported security issues. Nothing changes in how the app looks or works.",
+    "severity": "info",
+    "timestamp": 1788266742
+  },
+  {
+    "version": "3.11.16",
+    "title": "Card Designer gets undo, a data panel and more",
+    "body": "The Card Designer now supports undo and redo, plus a new Data panel that lets you drag fields straight onto the card instead of typing them by hand. Zoom, pan and alignment guides make positioning easier, text and images gained more styling and fit options, and 11th edition datasheets are now supported. Frames can hug their width and height separately, repeater rows can grow to fit their content, double-clicking a frame selects the element inside it, and cards can grow with their content.",
+    "severity": "success",
+    "timestamp": 1788811348
+  },
+  {
+    "version": "3.11.17",
+    "title": "Ork rule formatting on mobile",
+    "body": "You now see formatted text in new Ork army and detachment rules on mobile, where formatting tags used to appear. Translated codex rules also keep their combined bold and italic text on mobile and desktop.",
+    "severity": "info",
+    "timestamp": 1788813398
+  }
+]

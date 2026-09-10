@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSwipeable } from "react-swipeable";
 import { useDataSourceType } from "../../Helpers/cardstorage.helpers";
+import { getCardSectionKey, getSectionKey } from "../../Helpers/browseList.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -171,11 +172,12 @@ export const MobileDrawer = ({ open, setOpen }) => {
                   key={`list-role-${index}`}
                   className={`list-category`}
                   onClick={() => {
+                    const sectionKey = getSectionKey(card);
                     let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
-                    if (newClosedRoles.includes(card.name)) {
-                      newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
+                    if (newClosedRoles.includes(sectionKey)) {
+                      newClosedRoles.splice(newClosedRoles.indexOf(sectionKey), 1);
                     } else {
-                      newClosedRoles.push(card.name);
+                      newClosedRoles.push(sectionKey);
                     }
                     updateSettings({
                       ...settings,
@@ -183,7 +185,7 @@ export const MobileDrawer = ({ open, setOpen }) => {
                     });
                   }}>
                   <span className="icon">
-                    {settings?.mobile?.closedRoles?.includes(card.name) ? (
+                    {settings?.mobile?.closedRoles?.includes(getSectionKey(card)) ? (
                       <ChevronRight size={14} />
                     ) : (
                       <ChevronDown size={14} />
@@ -198,7 +200,7 @@ export const MobileDrawer = ({ open, setOpen }) => {
             if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
               return <></>;
             }
-            if (settings?.mobile?.closedRoles?.includes(card.role)) {
+            if (settings?.mobile?.closedRoles?.includes(getCardSectionKey(card))) {
               return <></>;
             }
             return (

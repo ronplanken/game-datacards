@@ -353,8 +353,11 @@ export const buildCoreAbilitySet = (factions) => {
     if (!Array.isArray(faction.datasheets)) continue;
     for (const sheet of faction.datasheets) {
       if (Array.isArray(sheet.abilities?.core)) {
-        for (const name of sheet.abilities.core) {
-          coreNames.add(name.toLowerCase());
+        for (const entry of sheet.abilities.core) {
+          // Built-in 40K datasources store core abilities as bare strings;
+          // custom datasources store them as `{ name, showAbility, ... }`.
+          const name = typeof entry === "string" ? entry : entry?.name;
+          if (typeof name === "string") coreNames.add(name.toLowerCase());
         }
       }
     }

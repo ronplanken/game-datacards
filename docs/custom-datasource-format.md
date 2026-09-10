@@ -61,7 +61,7 @@ For schema definitions, see [datasource-schema-architecture.md](custom%20datasou
 | `author`      | string | No       | Author name |
 | `lastUpdated` | string | No       | ISO 8601 timestamp |
 | `schema`      | object | No       | Schema definition (see [Schema Object](#schema-object)) |
-| `data`        | array  | Yes      | Array of faction objects (1 to 10 factions) |
+| `data`        | array  | Yes      | Array of faction objects (1 to 25 factions) |
 
 ## Faction Object
 
