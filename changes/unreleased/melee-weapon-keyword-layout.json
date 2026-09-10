@@ -1,5 +1,0 @@
-{
-  "title": "Melee weapon keywords line up with ranged",
-  "body": "On 10th and 11th edition datasheets, a melee weapon with a long keyword list folded those keywords into a stack under the weapon name, while a ranged weapon kept them on one line. Melee weapons now read the same as ranged: the keywords run on in a single line under the characteristics, and the characteristic columns stay lined up with their headings.",
-  "severity": "info"
-}

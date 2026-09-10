@@ -1,5 +1,0 @@
-{
-  "title": "Group 11th edition datasheets and stratagems again",
-  "body": "The faction settings for 11th edition were missing, so datasheets could not be grouped into Character / Battleline / Dedicated Transport / Other. They are back, together with the points and double-sided display options, and stratagems can now be split into collapsible sections per detachment.",
-  "severity": "info"
-}
