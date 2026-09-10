@@ -1,0 +1,5 @@
+{
+  "title": "Type exact slider values",
+  "body": "You can now type exact values next to sliders in the 10th- and 11th-edition card editors, including faction symbol size and position. Numeric inputs are also available for Age of Sigmar styling, printing and image exports.",
+  "severity": "info"
+}

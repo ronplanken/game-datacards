@@ -27,7 +27,7 @@ thing that changes `package.json`, which is what the Cloudflare Pages build
 watch path uses to deploy production.
 
 Write the note in the app's release-note style: short, plain sentences, a title
-under roughly 55 characters, and a body of two or three sentences. The full rules
+under roughly 55 characters, and a body of at most two short, easy-to-understand sentences. The full rules
 are in `docs/release-notifications.md` and the pipeline prompt.
 
 Notable **feature** releases — the full-screen What's New wizard plus a minor

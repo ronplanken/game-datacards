@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Input, Typography } from "antd";
+import { Button, Col, Collapse, Form, Layout, Row, Select, Input, Typography } from "antd";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import split from "just-split";
 
@@ -7,6 +7,7 @@ import "../App.css";
 import "../Components/Print/Print.css";
 
 import { AppHeader } from "../Components/AppHeader";
+import { SliderWithInput } from "../Components/Shared/SliderWithInput";
 import { Page } from "../Components/Print/Page";
 import { Printer } from "../Components/Print/Printer";
 import { CardRenderer } from "../Components/Print/CardRenderer";
@@ -154,8 +155,8 @@ export const Print = () => {
                       size="small"
                     />
                   </Form.Item>
-                  <Form.Item label={`Page padding (${printSettings.pagePadding}px)`}>
-                    <Slider
+                  <Form.Item label="Page padding">
+                    <SliderWithInput
                       min={0}
                       max={64}
                       step={2}
@@ -199,16 +200,16 @@ export const Print = () => {
                       size="small"
                     />
                   </Form.Item>
-                  <Form.Item label={`Cards per page (${printSettings.cardsPerPage})`}>
-                    <Slider
+                  <Form.Item label="Cards per page">
+                    <SliderWithInput
                       min={1}
                       max={12}
                       value={printSettings.cardsPerPage}
                       onChange={printSettings.setCardsPerPage}
                     />
                   </Form.Item>
-                  <Form.Item label={`Card scaling (${printSettings.cardScaling}%)`}>
-                    <Slider
+                  <Form.Item label="Card scaling">
+                    <SliderWithInput
                       min={25}
                       max={200}
                       step={1}
@@ -216,11 +217,17 @@ export const Print = () => {
                       onChange={printSettings.setCardScaling}
                     />
                   </Form.Item>
-                  <Form.Item label={`Row padding (${printSettings.rowGap}px)`}>
-                    <Slider min={0} max={64} step={2} value={printSettings.rowGap} onChange={printSettings.setRowGap} />
+                  <Form.Item label="Row padding">
+                    <SliderWithInput
+                      min={0}
+                      max={64}
+                      step={2}
+                      value={printSettings.rowGap}
+                      onChange={printSettings.setRowGap}
+                    />
                   </Form.Item>
-                  <Form.Item label={`Column padding (${printSettings.columnGap}px)`}>
-                    <Slider
+                  <Form.Item label="Column padding">
+                    <SliderWithInput
                       min={0}
                       max={64}
                       step={2}

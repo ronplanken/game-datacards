@@ -69,6 +69,17 @@ describe.each([
     return label.closest(".ant-form-item").querySelector("button[role='switch']");
   };
 
+  it.each([
+    ["Horizontal Position", "-37", "imagePositionX", -37],
+    ["Vertical Position", "23", "imagePositionY", 23],
+  ])("accepts typed image %s", (label, text, field, value) => {
+    render(<UnitStylingInfo />);
+    const input = screen.getByText(label).closest(".ant-form-item").querySelector("input[role='spinbutton']");
+    fireEvent.change(input, { target: { value: text } });
+    fireEvent.blur(input);
+    expect(mockUpdateActiveCard).toHaveBeenLastCalledWith({ ...mockActiveCard.ref, [field]: value });
+  });
+
   // Cards saved before the toggle existed carry no flag and must still wrap.
   it("shows as on when the card carries no flag", () => {
     render(<UnitStylingInfo />);

@@ -23,28 +23,28 @@
   {
     "version": "3.11.1",
     "title": "Group 11th edition datasheets and stratagems again",
-    "body": "The 11th edition faction settings were missing, so datasheets could not be grouped. Grouping, points and double-sided options are back, and stratagems can be split into collapsible sections per detachment.",
+    "body": "Faction settings are back for 11th edition, including card grouping, points and double-sided options. You can also group stratagems by detachment.",
     "severity": "info",
     "timestamp": 1788204838
   },
   {
     "version": "3.11.2",
     "title": "Edit stratagem restrictions and weapon abilities",
-    "body": "11th edition stratagems now have a Restrictions field next to When, Target and Effect. Weapon abilities show under their weapon's profiles and can be edited per weapon, coloured text prints on the card instead of being dropped, and enhancements gained a List eligibility panel.",
+    "body": "You can edit stratagem restrictions, weapon abilities and enhancement eligibility in 11th edition. Coloured text now appears correctly on cards.",
     "severity": "info",
     "timestamp": 1788204838
   },
   {
     "version": "3.11.3",
     "title": "Edit wargear and pay for it in your lists",
-    "body": "11th edition units now have Wargear abilities and Special abilities panels in the card editor. Wargear that costs points can be picked in the list builder, counts towards your total, and prints on the back of the card with its cost. Points that only apply to one faction or detachment now say so.",
+    "body": "You can edit wargear and special abilities on 11th edition cards. Paid wargear now counts towards your army total and appears on the card with its cost.",
     "severity": "info",
     "timestamp": 1788204838
   },
   {
     "version": "3.11.4",
     "title": "Age of Sigmar artefacts and heroic traits",
-    "body": "Every faction's artefacts of power, heroic traits and other enhancements can now be browsed from the faction screen, found through search, and opened as a card with their cost, phase and rules.",
+    "body": "You can browse and search Age of Sigmar artefacts, heroic traits and other enhancements. Open them as cards to see their costs and rules.",
     "severity": "info",
     "timestamp": 1788204839
   },
@@ -58,7 +58,7 @@
   {
     "version": "3.11.6",
     "title": "Faction symbols stay on your datacards",
-    "body": "Turning a custom faction symbol on or off, uploading one, or removing it saved the card as it was before the change, so the setting flipped back after a reload. Those actions now stick. They also work on 11th edition cards, and a card with an empty badge falls back to the faction printed on it.",
+    "body": "Your faction symbol changes now stay saved after a reload, including on 11th edition cards. Cards without a custom symbol use their faction’s default symbol.",
     "severity": "info",
     "timestamp": 1788204839
   },
@@ -72,14 +72,14 @@
   {
     "version": "3.11.8",
     "title": "Melee weapon keywords line up with ranged",
-    "body": "A melee weapon with a long keyword list stacked those keywords under the weapon name, while a ranged weapon kept them on one line. Melee weapons now read the same, with the columns lined up under their headings.",
+    "body": "Melee weapon keywords now line up the same way as ranged weapon keywords. Long lists no longer push the columns out of place.",
     "severity": "info",
     "timestamp": 1788204839
   },
   {
     "version": "3.11.9",
     "title": "Edit 11th edition cards on mobile",
-    "body": "Cards in an 11th edition list now have an Edit button on mobile. The editor covers the whole card, as well as stratagems, enhancements and rules, and writes edits in the card language you picked without touching the others.",
+    "body": "You can now edit 11th edition units, stratagems, enhancements and rules on mobile. Changes apply only to your selected card language.",
     "severity": "info",
     "timestamp": 1788204839
   },
@@ -107,28 +107,28 @@
   {
     "version": "3.11.13",
     "title": "Choose how weapon keywords wrap",
-    "body": "Long keyword lists now wrap inside the weapon name column, with the characteristic columns lined up under their headings. A Wrap Keywords switch in the Styling section turns wrapping off per card, on desktop and mobile.",
+    "body": "Long weapon keyword lists now wrap neatly below the weapon name. Use Wrap Keywords in the Styling section to turn this off for a card on desktop or mobile.",
     "severity": "info",
     "timestamp": 1788207017
   },
   {
     "version": "3.11.14",
     "title": "Reuse faction symbols and keep their colours",
-    "body": "An Original Colours switch in the Faction Symbol panel keeps an uploaded symbol's colours instead of flattening them to black. Uploading over an existing symbol now updates straight away, and a Saved symbols button lists every symbol you uploaded in this browser.",
+    "body": "You can reuse uploaded faction symbols from Saved symbols and keep their original colours. Replacing a symbol now updates the preview straight away.",
     "severity": "info",
     "timestamp": 1788263596
   },
   {
     "version": "3.11.15",
     "title": "Security and dependency updates",
-    "body": "Game Datacards now runs on updated versions of the libraries it is built with, closing a batch of reported security issues. Nothing changes in how the app looks or works.",
+    "body": "This update fixes reported security issues in the app’s supporting software.",
     "severity": "info",
     "timestamp": 1788266742
   },
   {
     "version": "3.11.16",
     "title": "Card Designer gets undo, a data panel and more",
-    "body": "The Card Designer now supports undo and redo, plus a new Data panel that lets you drag fields straight onto the card instead of typing them by hand. Zoom, pan and alignment guides make positioning easier, text and images gained more styling and fit options, and 11th edition datasheets are now supported. Frames can hug their width and height separately, repeater rows can grow to fit their content, double-clicking a frame selects the element inside it, and cards can grow with their content.",
+    "body": "The Card Designer now has undo and redo, drag-and-drop data fields and support for 11th edition cards. Improved layout and styling controls make cards easier to customise.",
     "severity": "success",
     "timestamp": 1788811348
   },
@@ -149,14 +149,14 @@
   {
     "version": "3.11.19",
     "title": "Delete a list from mobile",
-    "body": "The list details menu on mobile now has a Delete List option, so you can remove a whole list (with confirmation) without opening the list picker.",
+    "body": "You can now delete a list from its details menu on mobile. You’ll be asked to confirm before it is deleted.",
     "severity": "info",
     "timestamp": 1789026654
   },
   {
     "version": "3.11.20",
     "title": "Import army lists into 11th edition",
-    "body": "The Import Army List button only appeared for 10th edition lists, so an 11th edition army had to be built by hand. It is now offered for both editions, on mobile and desktop, and the list reader behind it has been replaced with the parser shared with the streamer app: it reads both the app's own export and the WTC format, keeps attached units together with the characters that lead them, counts models correctly in exports that lost their indentation, and copes with the thousands separators, footnote stars and player annotations real exports carry. An 11th edition import now also restores the army around the units: the battle size, the detachments the list bought with its Detachment Points, and its faction, with every unit landing on one of its datasheet's own size tiers so points that depend on a detachment or a faction keyword stay correct.",
+    "body": "You can now import army lists into 11th edition on desktop and mobile. Imports also set up your faction, battle size, detachments and unit points.",
     "severity": "info",
     "timestamp": 1789026679
   },
