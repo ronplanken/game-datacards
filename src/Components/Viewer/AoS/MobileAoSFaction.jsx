@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, List, Sparkles, BookOpen } from "lucide-react";
+import { ChevronRight, List, Sparkles, BookOpen, Gem } from "lucide-react";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { getBrowsableEnhancements } from "../../../Helpers/faction.helpers";
 import "./MobileAoS.css";
 
 export const MobileAoSFaction = () => {
@@ -39,6 +40,9 @@ export const MobileAoSFaction = () => {
   const spellLores = selectedFaction.lores || [];
   const spellLoreCount = spellLores.reduce((total, lore) => total + (lore.spells?.length || 0), 0);
 
+  // Artefacts of power, heroic traits and other battletome enhancements
+  const enhancementCount = getBrowsableEnhancements(selectedFaction).length;
+
   const factionSlug = selectedFaction.name?.toLowerCase().replaceAll(" ", "-");
 
   const handleViewUnits = () => {
@@ -51,6 +55,10 @@ export const MobileAoSFaction = () => {
 
   const handleViewSpellLores = () => {
     navigate(`/mobile/${factionSlug}/spell-lores`);
+  };
+
+  const handleViewEnhancements = () => {
+    navigate(`/mobile/${factionSlug}/enhancements`);
   };
 
   return (
@@ -75,6 +83,16 @@ export const MobileAoSFaction = () => {
           <BookOpen size={18} />
           <span>Spell Lores</span>
           <span className="units-count">{spellLoreCount}</span>
+          <ChevronRight size={18} />
+        </button>
+      )}
+
+      {/* Enhancements Button */}
+      {enhancementCount > 0 && (
+        <button className="aos-faction-units-button" onClick={handleViewEnhancements} type="button">
+          <Gem size={18} />
+          <span>Enhancements</span>
+          <span className="units-count">{enhancementCount}</span>
           <ChevronRight size={18} />
         </button>
       )}

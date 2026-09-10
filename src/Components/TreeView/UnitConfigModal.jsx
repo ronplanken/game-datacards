@@ -1,9 +1,34 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
-import { X, Crown, ChevronDown } from "lucide-react";
+import { X, Crown, ChevronDown, Minus, Plus } from "lucide-react";
 import classNames from "classnames";
 import { Toggle } from "../SettingsModal/Toggle";
 import { getDetachmentName } from "../../Helpers/faction.helpers";
+import {
+  filterPointsTiersForArmy,
+  getPaidWargearOptions,
+  getPointsTierRestrictionLabel,
+  getSelectablePointsTiers,
+  clampWargearQuantities,
+  getWargearQuantity,
+  getWargearQuantityMax,
+  isSamePointsTier,
+  setWargearQuantity,
+} from "../../Helpers/listPoints.helpers";
+import {
+  cardHasKeyword,
+  getFactionEnhancements,
+  isEnhancementAtCopyLimit,
+  isUnitEnhancementEligible,
+} from "../../Helpers/listCategories.helpers";
+import { getEligibleSquads, isAttachableLeader, requiresAttachment } from "../../Helpers/listAttachments.helpers";
+import {
+  getArmyFactionKeywords,
+  getDetachmentNamesEn,
+  getListFactionId,
+  isEnhancementInDetachments,
+} from "../../Helpers/listRoster.helpers";
+import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import "./UnitConfigModal.css";
@@ -14,44 +39,68 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
+  // The faction the list is built for, which its faction-scoped prices key off.
+  const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(category));
+  // Restricted prices (a detachment or a faction keyword) only apply to armies
+  // that match them.
+  const army = useMemo(
+    () => ({
+      detachments: getDetachmentNamesEn(category?.detachments),
+      factions: getArmyFactionKeywords(category?.cards, listFaction?.name),
+    }),
+    [category?.detachments, category?.cards, listFaction?.name],
+  );
+  const availableTiers = useMemo(() => filterPointsTiersForArmy(getSelectablePointsTiers(card), army), [card, army]);
+  // Only the wargear this datasheet actually charges for; free swaps are noise
+  // here. Empty for every non-11e card, which hides the section entirely.
+  const paidWargear = useMemo(() => getPaidWargearOptions(card), [card]);
 
   const [selectedUnitSize, setSelectedUnitSize] = useState(undefined);
   const [isWarlord, setIsWarlord] = useState(false);
   const [selectedEnhancement, setSelectedEnhancement] = useState(undefined);
   const [selectedDetachment, setSelectedDetachment] = useState(undefined);
   const [detachmentOpen, setDetachmentOpen] = useState(false);
+  const [selectedAttachment, setSelectedAttachment] = useState(undefined);
+  const [selectedWargear, setSelectedWargear] = useState([]);
 
-  // Reset state when modal opens
+  // Reset the card's own selections when the modal opens for a (different) card.
+  // Keyed on the card's uuid rather than the object so an unrelated re-render
+  // (e.g. a fresh datasource array) cannot wipe an in-progress selection.
   useEffect(() => {
     if (isOpen && card) {
       setIsWarlord(card?.isWarlord || false);
       setSelectedEnhancement(card?.selectedEnhancement);
+      setSelectedAttachment(card?.attachedTo);
+      setSelectedWargear(Array.isArray(card?.selectedWargear) ? card.selectedWargear : []);
       setDetachmentOpen(false);
 
       if (card.unitSize) {
         setSelectedUnitSize(card.unitSize);
-      } else if (card?.points?.length === 1) {
-        setSelectedUnitSize(card.points[0]);
       } else {
-        setSelectedUnitSize(undefined);
-      }
-
-      // Detachment selection
-      if (card?.detachment) {
-        setSelectedDetachment(card.detachment);
-      } else if (settings?.selectedDetachment?.[card?.faction_id]) {
-        const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
-        const isStillValid = detachments?.some((d) => getDetachmentName(d) === savedDetachment);
-        if (isStillValid) {
-          setSelectedDetachment(savedDetachment);
-        } else {
-          setSelectedDetachment(getDetachmentName(detachments?.[0]));
-        }
-      } else {
-        setSelectedDetachment(getDetachmentName(detachments?.[0]));
+        setSelectedUnitSize(availableTiers.length === 1 ? availableTiers[0] : undefined);
       }
     }
-  }, [isOpen, card, settings?.selectedDetachment, detachments]);
+  }, [isOpen, card?.uuid]);
+
+  // Wargear is priced per model, so a smaller size tier lowers the ceiling on an
+  // already-picked quantity. Cap the selection whenever the tier changes,
+  // otherwise switching down would keep pricing the larger unit.
+  useEffect(() => {
+    setSelectedWargear((current) => clampWargearQuantities(current, selectedUnitSize));
+  }, [selectedUnitSize]);
+
+  // Resolve the detachment separately: it depends on settings and the faction's
+  // detachment list, which can arrive/refresh independently of the card.
+  useEffect(() => {
+    if (!isOpen || !card) return;
+    if (card?.detachment) {
+      setSelectedDetachment(card.detachment);
+      return;
+    }
+    const savedDetachment = settings?.selectedDetachment?.[card?.faction_id];
+    const isStillValid = savedDetachment && detachments?.some((d) => getDetachmentName(d) === savedDetachment);
+    setSelectedDetachment(isStillValid ? savedDetachment : getDetachmentName(detachments?.[0]));
+  }, [isOpen, card?.uuid, card?.detachment, card?.faction_id, settings?.selectedDetachment, detachments]);
 
   // Handle escape key
   useEffect(() => {
@@ -80,14 +129,30 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   const warlordAlreadyAdded = category?.cards?.find((c) => c.isWarlord);
   const epicHeroAlreadyAdded = category?.cards?.find((foundCard) => {
-    return foundCard.uuid !== card?.uuid && card?.keywords?.includes("Epic Hero") && card?.id === foundCard?.id;
+    return foundCard.uuid !== card?.uuid && cardHasKeyword(card, "Epic Hero") && card?.id === foundCard?.id;
   });
 
-  const isCharacter = card?.keywords?.includes("Character");
-  const isEpicHero = card?.keywords?.includes("Epic Hero");
+  const isCharacter = cardHasKeyword(card, "Character");
+  const isEpicHero = cardHasKeyword(card, "Epic Hero");
   const showWarlord = isCharacter || isEpicHero;
-  const showEnhancements = isCharacter && !isEpicHero;
+
+  // Characters take regular enhancements; non-character units can take upgrades
+  // (equipableByNonCharacter). Epic Heroes take neither.
+  const filteredEnhancements = isEpicHero
+    ? []
+    : getFactionEnhancements(cardFaction)
+        .filter((enhancement) => isEnhancementInDetachments(enhancement, category?.detachments, selectedDetachment))
+        .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
+
+  const showEnhancements = !isEpicHero && filteredEnhancements.length > 0;
   const showDetachments = showEnhancements && detachments?.length > 1;
+  const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
+  // Leaders may stand alone; Support units must be attached to an eligible squad
+  // that is already in this list.
+  const mustAttach = requiresAttachment(card);
+  const eligibleSquads = isAttachableLeader(card)
+    ? getEligibleSquads(card, category?.cards || [], { detachment: selectedDetachment })
+    : [];
 
   const selectEnhancement = (enhancement) => {
     if (selectedEnhancement?.name === enhancement?.name) {
@@ -106,39 +171,23 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     });
   };
 
+  const changeWargearQuantity = (option, quantity) =>
+    setSelectedWargear((current) => setWargearQuantity(current, option, quantity));
+
   const handleSubmit = () => {
-    onSave({ ...card, unitSize: selectedUnitSize, selectedEnhancement, isWarlord });
-  };
-
-  const filteredEnhancements = cardFaction?.enhancements
-    ?.filter(
-      (enhancement) =>
-        enhancement?.detachment?.toLowerCase() === selectedDetachment?.toLowerCase() || !enhancement.detachment,
-    )
-    ?.filter((enhancement) => {
-      let isActiveEnhancement = false;
-      enhancement.keywords.forEach((keyword) => {
-        if (card?.keywords?.includes(keyword)) {
-          isActiveEnhancement = true;
-        }
-        if (card?.factions?.includes(keyword)) {
-          isActiveEnhancement = true;
-        }
-      });
-      enhancement?.excludes?.forEach((exclude) => {
-        if (card?.keywords?.includes(exclude)) {
-          isActiveEnhancement = false;
-        }
-        if (card?.factions?.includes(exclude)) {
-          isActiveEnhancement = false;
-        }
-      });
-      return isActiveEnhancement;
+    onSave({
+      ...card,
+      unitSize: selectedUnitSize,
+      selectedEnhancement,
+      isWarlord,
+      attachedTo: selectedAttachment,
+      selectedWargear,
     });
-
-  const isEnhancementDisabled = (enhancement) => {
-    return category?.cards?.some((c) => c?.selectedEnhancement?.name === enhancement?.name && c.uuid !== card?.uuid);
   };
+
+  // Regular enhancements are once per army; Upgrades may be taken up to three
+  // times (core rules, Select Enhancements). This card's own copy is excluded.
+  const isEnhancementDisabled = (enhancement) => isEnhancementAtCopyLimit(enhancement, category?.cards, card?.uuid);
 
   const modalRoot = document.getElementById("modal-root");
 
@@ -159,28 +208,33 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
           <div>
             <div className="ucm-section-label">Unit size</div>
             <div className="ucm-size-list">
-              {card?.points
-                ?.filter((p) => p.active)
-                .map((point) => {
-                  const isSelected =
-                    selectedUnitSize?.models === point.models && selectedUnitSize?.keyword === point.keyword;
-                  return (
-                    <div
-                      key={`${point.models}-${point.keyword || ""}`}
-                      className={classNames("ucm-size-option", { selected: isSelected })}
-                      onClick={() => setSelectedUnitSize(point)}>
-                      <div className={classNames("ucm-radio", { checked: isSelected })} />
-                      <div className="ucm-size-text">
-                        <span className="ucm-size-label">
-                          {point.models} {point.models > 1 ? "models" : "model"}
-                          {point.keyword ? ` (${point.keyword})` : ""}
-                        </span>
-                        <span className="ucm-size-cost">{point.cost} pts</span>
-                      </div>
+              {availableTiers.map((point) => {
+                const isSelected = isSamePointsTier(selectedUnitSize, point);
+                const restrictionLabel = getPointsTierRestrictionLabel(point, settings.language);
+                return (
+                  <div
+                    key={`${point.models}-${localize(point.keyword)}`}
+                    className={classNames("ucm-size-option", { selected: isSelected })}
+                    onClick={() => setSelectedUnitSize(point)}>
+                    <div className={classNames("ucm-radio", { checked: isSelected })} />
+                    <div className="ucm-size-text">
+                      <span className="ucm-size-label">
+                        {point.models} {point.models > 1 ? "models" : "model"}
+                        {point.keyword ? ` (${localize(point.keyword, settings.language)})` : ""}
+                        {restrictionLabel && <span className="ucm-size-sublabel">{restrictionLabel}</span>}
+                      </span>
+                      <span className="ucm-size-cost">{point.cost} pts</span>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })}
             </div>
+            {card?.additionalCost?.cost != null && (
+              <p className="ucm-additional-cost">
+                +{card.additionalCost.cost} pts for each copy of this datasheet beyond{" "}
+                {card.additionalCost.afterSelections} in your list.
+              </p>
+            )}
           </div>
 
           {/* Warlord */}
@@ -233,10 +287,10 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
             </div>
           )}
 
-          {/* Enhancements */}
+          {/* Enhancements / Upgrades */}
           {showEnhancements && filteredEnhancements?.length > 0 && (
             <div>
-              <div className="ucm-section-label">Enhancements</div>
+              <div className="ucm-section-label">{enhancementLabel}s</div>
               <div className="ucm-enhancement-list">
                 {filteredEnhancements.map((enhancement) => {
                   const disabled = isEnhancementDisabled(enhancement);
@@ -260,6 +314,89 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
               </div>
             </div>
           )}
+
+          {/* Wargear that costs points (11e) */}
+          {paidWargear.length > 0 && (
+            <div>
+              <div className="ucm-section-label">Wargear</div>
+              <div className="ucm-enhancement-list">
+                {paidWargear.map((option) => {
+                  const name = localize(option.name, settings.language);
+                  const quantity = getWargearQuantity(selectedWargear, option);
+                  const max = getWargearQuantityMax(selectedUnitSize);
+                  return (
+                    <div
+                      key={`${localize(option.name)}-${option.cost}`}
+                      className={classNames("ucm-wargear-option", { selected: quantity > 0 })}>
+                      <div className="ucm-wargear-text">
+                        <span className="ucm-enhancement-name">{name}</span>
+                        <span className="ucm-enhancement-cost">+{option.cost} pts each</span>
+                      </div>
+                      <div className="ucm-wargear-stepper">
+                        <button
+                          className="ucm-wargear-step"
+                          type="button"
+                          aria-label={`Remove one ${name}`}
+                          disabled={quantity <= 0}
+                          onClick={() => changeWargearQuantity(option, quantity - 1)}>
+                          <Minus size={14} />
+                        </button>
+                        <span className="ucm-wargear-quantity">{quantity}</span>
+                        <button
+                          className="ucm-wargear-step"
+                          type="button"
+                          aria-label={`Add one ${name}`}
+                          disabled={quantity >= max}
+                          onClick={() => changeWargearQuantity(option, quantity + 1)}>
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Attach to unit (leaders / support) */}
+          {isAttachableLeader(card) && (
+            <div>
+              <div className="ucm-section-label">{mustAttach ? "Attach to unit (required)" : "Attach to unit"}</div>
+              <div className="ucm-enhancement-list">
+                {!mustAttach && (
+                  <div
+                    className={classNames("ucm-enhancement-option", { selected: !selectedAttachment })}
+                    onClick={() => setSelectedAttachment(undefined)}>
+                    <div className={classNames("ucm-radio", { checked: !selectedAttachment })} />
+                    <div className="ucm-enhancement-text">
+                      <span className="ucm-enhancement-name">Not attached</span>
+                    </div>
+                  </div>
+                )}
+                {eligibleSquads.map((squad) => {
+                  const isSelected = selectedAttachment === squad.uuid;
+                  return (
+                    <div
+                      key={squad.uuid}
+                      className={classNames("ucm-enhancement-option", { selected: isSelected })}
+                      onClick={() => setSelectedAttachment(squad.uuid)}>
+                      <div className={classNames("ucm-radio", { checked: isSelected })} />
+                      <div className="ucm-enhancement-text">
+                        <span className="ucm-enhancement-name">{squad.name}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {mustAttach && !selectedAttachment && (
+                <span className="ucm-epic-hero-warning">
+                  {eligibleSquads.length > 0
+                    ? "This Support unit must be attached to a unit."
+                    : "This Support unit must be attached, but no eligible unit is in this list yet."}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -270,7 +407,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
           <button
             className="ucm-submit"
             onClick={handleSubmit}
-            disabled={!selectedUnitSize || epicHeroAlreadyAdded}
+            disabled={!selectedUnitSize || epicHeroAlreadyAdded || (mustAttach && !selectedAttachment)}
             type="button">
             Set unit values
           </button>

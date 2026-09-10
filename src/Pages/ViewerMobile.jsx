@@ -18,7 +18,7 @@ import { MobileSharingMenu } from "../Components/Viewer/MobileSharingMenu";
 import { MobileGameSystemSelector } from "../Components/Viewer/MobileGameSystemSelector";
 import { MobileGlossaryList } from "../Components/Viewer/MobileGlossaryList";
 import { MobileGameSystemSettings } from "../Components/Viewer/MobileGameSystemSettings";
-import { resolveMobileConfig } from "../Components/Viewer/mobileDatasourceConfig";
+import { BUILTIN_CONFIGS, resolveMobileConfig } from "../Components/Viewer/mobileDatasourceConfig";
 import { ListAdd } from "../Components/Viewer/ListCreator/ListAdd";
 import { MobileListProvider, useMobileList } from "../Components/Viewer/useMobileList";
 import { PWAInstallPrompt } from "../Components/Viewer/Mobile/PWAInstallPrompt";
@@ -36,6 +36,7 @@ import { useViewerNavigation } from "../Hooks/useViewerNavigation";
 import { useMobileSharing } from "../Hooks/useMobileSharing";
 import { useRecentSearches } from "../Hooks/useRecentSearches";
 import { useScrollRevealHeader } from "../Hooks/useScrollRevealHeader";
+import { getCardName } from "../Helpers/localization.helpers";
 
 const { Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -44,6 +45,7 @@ export const ViewerMobile = ({
   showUnits = false,
   showManifestationLores = false,
   showSpellLores = false,
+  showEnhancements = false,
   showGlossary = false,
 }) => {
   const [parent] = useAutoAnimate({ duration: 75 });
@@ -98,6 +100,11 @@ export const ViewerMobile = ({
   }, [settings.showCardsAsDoubleSided]);
 
   const { activeCard, updateActiveCard } = useCardStorage();
+  // Saved cards keep their own edition even when browsing another datasource.
+  // Use its renderer and style scope for both the viewer and image exports.
+  // Unregistered sources (including custom schemas and AoS source aliases)
+  // retain the browsing config.
+  const cardConfig = BUILTIN_CONFIGS[activeCard?.source] || config;
   const { shareLink, htmlToImageConvert } = useMobileSharing();
   const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearches();
   const location = useLocation();
@@ -116,7 +123,7 @@ export const ViewerMobile = ({
       return;
     }
     // Built-in systems don't need a schema
-    const builtIn = ["40k-10e", "40k", "aos", "necromunda", "basic"];
+    const builtIn = ["40k-10e", "40k-11e", "40k", "aos", "necromunda", "basic"];
     if (builtIn.includes(activeCard.source)) {
       setEditorSchema(null);
       return;
@@ -135,9 +142,9 @@ export const ViewerMobile = ({
   // (e.g. AoS stat wheel) sits above the unit name. Cards whose name target
   // is at the very top of the scroll area should set this to 0.
   const { showHeader, headerReady, scrollContainerRef } = useScrollRevealHeader({
-    enabled: !!activeCard && config.useScrollRevealHeader,
-    targetSelector: config.scrollRevealTargetSelector,
-    topOffset: config.scrollRevealTopOffset ?? 64,
+    enabled: !!activeCard && cardConfig.useScrollRevealHeader,
+    targetSelector: cardConfig.scrollRevealTargetSelector,
+    topOffset: cardConfig.scrollRevealTopOffset ?? 64,
   });
 
   // Handle back navigation from card viewer
@@ -231,6 +238,7 @@ export const ViewerMobile = ({
   const activeExtraView = config.extraRouteViews.find((view) => {
     if (view.prop === "showManifestationLores") return showManifestationLores;
     if (view.prop === "showSpellLores") return showSpellLores;
+    if (view.prop === "showEnhancements") return showEnhancements;
     return false;
   });
 
@@ -304,11 +312,11 @@ export const ViewerMobile = ({
           <Row>
             <Col ref={parent} span={24}>
               {/* Scroll-reveal header (config-driven) */}
-              {activeCard && config.useScrollRevealHeader && headerReady && (
+              {activeCard && cardConfig.useScrollRevealHeader && headerReady && (
                 <>
                   <div
                     className={`mobile-card-header mobile-card-header-scroll ${
-                      config.scrollRevealHeaderClass || ""
+                      cardConfig.scrollRevealHeaderClass || ""
                     } ${showHeader ? "visible" : "hidden"}`}
                     style={{
                       "--banner-colour": cardFaction?.colours?.banner,
@@ -344,9 +352,9 @@ export const ViewerMobile = ({
                   backgroundColor: "#d8d8da",
                   paddingBottom: "64px",
                 }}
-                className={config.cssClass}>
+                className={cardConfig.cssClass}>
                 {/* Back button header for non-scroll-reveal cards */}
-                {activeCard && !config.useScrollRevealHeader && (
+                {activeCard && !cardConfig.useScrollRevealHeader && (
                   <div className="mobile-card-header">
                     <button className="mobile-card-back" onClick={handleBackFromCard} type="button">
                       <ArrowLeft size={20} />
@@ -361,7 +369,7 @@ export const ViewerMobile = ({
                 )}
                 <Row style={{ overflow: "hidden" }}>
                   <React.Suspense fallback={null}>
-                    {config.renderCard("viewer", { onBack: handleBackFromCard })}
+                    {cardConfig.renderCard("viewer", { onBack: handleBackFromCard })}
                   </React.Suspense>
                 </Row>
                 {!activeCard && !selectedFaction && !showUnits && !showGlossary && (
@@ -409,7 +417,10 @@ export const ViewerMobile = ({
                     updateActiveCard(updatedCard, true);
                     // Build URL from updated name so useViewerNavigation can match it
                     const factionSlug = cardFaction?.name?.toLowerCase().replaceAll(" ", "-");
-                    const cardSlug = updatedCard.name?.toLowerCase().replaceAll(" ", "-");
+                    // 11e names arrive from the datasource already resolved to a
+                    // plain string, but a card stored before that could still hold
+                    // a language-keyed object.
+                    const cardSlug = getCardName(updatedCard, settings.language)?.toLowerCase().replaceAll(" ", "-");
                     const newPath = factionSlug && cardSlug ? `/mobile/${factionSlug}/${cardSlug}` : location.pathname;
                     const stateKey = listCard ? "listCard" : "cloudCard";
                     navigate(newPath, { replace: true, state: { [stateKey]: updatedCard } });
@@ -472,9 +483,9 @@ export const ViewerMobile = ({
               top: "0px",
               left: "0px",
             }}
-            className={config.cssClass}>
+            className={cardConfig.cssClass}>
             <Row style={{ overflow: "hidden" }}>
-              <React.Suspense fallback={null}>{config.renderCard()}</React.Suspense>
+              <React.Suspense fallback={null}>{cardConfig.renderCard()}</React.Suspense>
             </Row>
           </div>
           <div
@@ -489,10 +500,10 @@ export const ViewerMobile = ({
               top: "0px",
               left: "0px",
             }}
-            className={config.cssClass}>
+            className={cardConfig.cssClass}>
             <Row style={{ overflow: "hidden" }}>
               <React.Suspense fallback={null}>
-                {config.renderCard("viewer", { onBack: handleBackFromCard })}
+                {cardConfig.renderCard("viewer", { onBack: handleBackFromCard })}
               </React.Suspense>
             </Row>
           </div>

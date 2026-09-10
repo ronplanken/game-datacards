@@ -4,6 +4,7 @@ import { Tooltip } from "../Tooltip/Tooltip";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 
 import { Parser } from "xml2js";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -36,6 +37,7 @@ export const Toolbar = () => {
   const navigate = useNavigate();
 
   const { cardStorage, activeCategory, addCategory } = useCardStorage();
+  const { selectedFaction } = useDataSourceStorage();
 
   return (
     <div className="treeview-toolbar">
@@ -89,7 +91,9 @@ export const Toolbar = () => {
             type="text"
             icon={<ListCards style={{ fontSize: 16 }} />}
             onClick={() => {
-              addCategory("New List", "list", settings.selectedDataSource);
+              // A new list is built for the faction being browsed, so it can
+              // offer that faction's detachments straight away.
+              addCategory("New List", "list", settings.selectedDataSource, { factionId: selectedFaction?.id });
               trackEvent("category-create", { type: "list" });
             }}
           />

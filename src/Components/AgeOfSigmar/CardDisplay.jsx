@@ -5,6 +5,7 @@ import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { WarscrollCard } from "./WarscrollCard";
 import { SpellCard } from "./SpellCard";
+import { EnhancementCard } from "./EnhancementCard";
 import { TemplateRenderer } from "../../Premium";
 import { AOS_COLOURS } from "../../Helpers/printcolours";
 
@@ -163,6 +164,24 @@ export const AgeOfSigmarCardDisplay = ({
               />
             </div>
           )}
+          {activeCard?.cardType === "enhancement" && !activeCard?.templateId && (
+            <div
+              className={`data-aos ${grandAlliance} ${fontClass}`}
+              style={{
+                "--card-scaling-factor": "inherit",
+                ...(displayCard?.useCustomColours && {
+                  "--bg-header": headerColour,
+                  "--banner-colour": bannerColour,
+                }),
+              }}>
+              <EnhancementCard
+                enhancement={activeCard}
+                groupName={activeCard.enhancementGroup}
+                faction={cardFaction}
+                grandAlliance={grandAlliance}
+              />
+            </div>
+          )}
           {activeCard?.templateId && (
             <TemplateRenderer templateId={activeCard.templateId} card={activeCard} faction={cardFaction} />
           )}
@@ -227,6 +246,26 @@ export const AgeOfSigmarCardDisplay = ({
           <SpellCard spell={card} loreName={card.loreName} faction={cardFaction} grandAlliance={grandAlliance} />
         </div>
       )}
+      {type === "print" && card && card?.cardType === "enhancement" && !card?.templateId && (
+        <div
+          className={`data-aos ${grandAlliance} ${fontClass}`}
+          style={{
+            zoom: cardScaling / 100,
+            "--card-scaling-factor": 1,
+            ...bgOverrides,
+            ...(displayCard?.useCustomColours && {
+              "--bg-header": headerColour,
+              "--banner-colour": bannerColour,
+            }),
+          }}>
+          <EnhancementCard
+            enhancement={card}
+            groupName={card.enhancementGroup}
+            faction={cardFaction}
+            grandAlliance={grandAlliance}
+          />
+        </div>
+      )}
       {type === "print" && card && card?.templateId && (
         <div
           className={`data-aos ${grandAlliance} ${fontClass}`}
@@ -278,6 +317,16 @@ export const AgeOfSigmarCardDisplay = ({
               onBack={onBack}
             />
           )}
+          {activeCard?.cardType === "enhancement" && !activeCard?.templateId && (
+            <EnhancementCard
+              enhancement={activeCard}
+              groupName={activeCard.enhancementGroup}
+              faction={cardFaction}
+              grandAlliance={grandAlliance}
+              isMobile={true}
+              onBack={onBack}
+            />
+          )}
           {activeCard?.templateId && (
             <div className="data-aos" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <TemplateRenderer templateId={activeCard.templateId} card={activeCard} faction={cardFaction} />
@@ -304,6 +353,16 @@ export const AgeOfSigmarCardDisplay = ({
               grandAlliance={grandAlliance}
               isMobile={true}
               onViewWarscroll={handleViewWarscroll}
+              onBack={onBack}
+            />
+          )}
+          {card?.cardType === "enhancement" && !card?.templateId && (
+            <EnhancementCard
+              enhancement={card}
+              groupName={card.enhancementGroup}
+              faction={cardFaction}
+              grandAlliance={grandAlliance}
+              isMobile={true}
               onBack={onBack}
             />
           )}

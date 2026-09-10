@@ -14,11 +14,14 @@ export const WeaponListView = ({ card, weaponTypeKey, config, replaceCard, onEdi
 
   const handleAdd = () => {
     if (profileBased) {
-      const profile = { name: "New Weapon", active: true, keywords: [] };
+      // 10e/custom weapons and profiles carry an `active` flag and 40k weapons
+      // an `abilities` array; 11e carries neither unless the weapon actually has
+      // abilities, so the resolver supplies the keys a blank entry starts with.
+      const profile = { ...(config.newProfileDefaults ?? { active: true }), name: "New Weapon", keywords: [] };
       columns?.forEach((col) => (profile[col.key] = ""));
-      const blank = { active: true, profiles: [profile] };
-      if (format === "40k") blank.abilities = [];
-      setWeapons([...weapons, blank]);
+      const weaponDefaults =
+        config.newWeaponDefaults ?? (format === "40k" ? { active: true, abilities: [] } : { active: true });
+      setWeapons([...weapons, { ...weaponDefaults, profiles: [profile] }]);
       return;
     }
 

@@ -1436,6 +1436,55 @@
   }
 
   // ============================================
+  // ENHANCEMENT CARD
+  // ============================================
+  // Reuses the spell card layout; only the cost badge and the phase line differ,
+  // since an enhancement is priced rather than cast.
+  .enhancement-card-cost {
+    background: var(--stat-wheel-gold);
+    color: #fff;
+    min-width: 50px;
+    height: 50px;
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+
+    .enhancement-cost-number {
+      font-family: "Cinzel", serif;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .enhancement-cost-label {
+      font-family: "Cinzel", serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  .enhancement-card-phase {
+    font-family: "Cinzel", serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  }
+
+  // ============================================
   // LINKED WARSCROLL BUTTON (on spell cards)
   // ============================================
   .linked-warscroll-button {

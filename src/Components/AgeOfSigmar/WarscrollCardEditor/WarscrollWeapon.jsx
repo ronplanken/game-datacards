@@ -2,6 +2,7 @@ import { Trash2 } from "lucide-react";
 import { Button, Card, Input, Popconfirm, Space, Switch, Typography } from "antd";
 import React, { useState, useEffect } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
 export function WarscrollWeapon({ weapon, index, type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -30,12 +31,16 @@ export function WarscrollWeapon({ weapon, index, type }) {
     });
   };
 
-  const keywordsArray = weapon.abilities?.length ? weapon.abilities : weapon.keywords?.length ? weapon.keywords : [];
-  const [keywordsText, setKeywordsText] = useState(keywordsArray.join(", "));
+  // Saved cards can carry a plain string in either field (see normalizeKeywords).
+  const resolveKeywords = () => {
+    const abilities = normalizeKeywords(weapon.abilities);
+    return abilities.length ? abilities : normalizeKeywords(weapon.keywords);
+  };
+  const [keywordsText, setKeywordsText] = useState(resolveKeywords().join(", "));
 
   useEffect(() => {
-    const arr = weapon.abilities?.length ? weapon.abilities : weapon.keywords?.length ? weapon.keywords : [];
-    setKeywordsText(arr.join(", "));
+    const abilities = normalizeKeywords(weapon.abilities);
+    setKeywordsText((abilities.length ? abilities : normalizeKeywords(weapon.keywords)).join(", "));
   }, [weapon.abilities, weapon.keywords]);
 
   return (

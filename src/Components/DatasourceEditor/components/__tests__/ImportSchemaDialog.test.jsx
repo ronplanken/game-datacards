@@ -16,6 +16,7 @@ vi.mock("../../../../Helpers/customSchema.helpers", () => ({
     }
     return { valid: true, errors: [] };
   }),
+  stripReservedWeaponColumns: vi.fn((schema) => schema),
 }));
 
 const validSchemaJson = JSON.stringify({

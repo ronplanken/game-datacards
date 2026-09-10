@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Upload, FileText, AlertCircle, CheckCircle2 } from "lucide-react";
-import { validateSchema } from "../../../Helpers/customSchema.helpers";
+import { validateSchema, stripReservedWeaponColumns } from "../../../Helpers/customSchema.helpers";
 
 /**
  * Dialog for importing a datasource schema from a JSON file.
@@ -60,6 +60,9 @@ export const ImportSchemaDialog = ({ open, onImport, onCancel }) => {
         }
 
         if (data.schema) {
+          // Weapon columns keyed after a reserved profile field corrupt card
+          // data as soon as they are edited, so drop them on import.
+          data.schema = stripReservedWeaponColumns(data.schema);
           const schemaResult = validateSchema(data.schema);
           if (!schemaResult.valid) {
             validationErrors.push(...schemaResult.errors);
