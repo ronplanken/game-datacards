@@ -3,14 +3,14 @@ import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import { BottomSheet } from "./BottomSheet";
 import "./DetachmentPicker.css";
 
-export const DetachmentPicker = ({ isOpen, onClose, detachments, selected, onSelect }) => {
+export const DetachmentPicker = ({ isOpen, onClose, detachments, selected, onSelect, elevated = true }) => {
   const handleSelect = (detachmentName) => {
     onSelect(detachmentName);
     onClose();
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Detachment">
+    <BottomSheet isOpen={isOpen} onClose={onClose} title="Select Detachment" elevated={elevated}>
       <div className="detachment-list">
         {detachments?.map((detachment) => {
           const detachmentName = getDetachmentName(detachment);

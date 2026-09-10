@@ -1,136 +1,196 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ListOverview } from "../ListOverview";
 
-const mocks = vi.hoisted(() => ({
-  deleteList: vi.fn(),
-  deleteConfirmDialog: vi.fn(),
-  state: {
-    mobileList: null,
-    cloudCategories: [],
-  },
+// The list overview shares either the selected local list or, when a cloud
+// category is open, that cloud category. These tests pin down which object ends
+// up in the share sheet, because sharing the wrong one would publish a
+// completely different army list.
+
+const localList = {
+  uuid: "local-1",
+  name: "My Local List",
+  cards: [{ uuid: "card-local", name: "Local Marine", cardType: "datasheet", keywords: [], faction_id: "faction-1" }],
+};
+
+const cloudCategory = {
+  uuid: "cloud-1",
+  name: "My Cloud Category",
+  type: "category",
+  gameSystem: "40k",
+  cloudId: 42,
+  cardCount: 2,
+  cards: [
+    { uuid: "card-cloud-1", name: "Cloud Marine", cardType: "datasheet", keywords: [] },
+    { uuid: "card-cloud-2", name: "Cloud Terminator", cardType: "datasheet", keywords: [] },
+  ],
+};
+
+let mobileListState;
+let cloudCategories;
+let isAuthenticated;
+let shareAnonymousResult;
+
+const shareAnonymous = vi.fn(() => Promise.resolve(shareAnonymousResult));
+const shareOwned = vi.fn(() => Promise.resolve({ success: true, shareId: "owned-share" }));
+const updateShare = vi.fn(() => Promise.resolve({ success: true }));
+const getExistingShare = vi.fn(() => Promise.resolve(null));
+
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => vi.fn(),
+  useLocation: () => ({ pathname: "/mobile", state: {} }),
 }));
 
 vi.mock("../../useMobileList", () => ({
-  useMobileList: () => mocks.state.mobileList,
+  useMobileList: () => mobileListState,
 }));
 
-vi.mock("../../../DeleteConfirmModal", () => ({
-  deleteConfirmDialog: (...args) => mocks.deleteConfirmDialog(...args),
+vi.mock("../../../../Hooks/useDataSourceStorage", () => ({
+  useDataSourceStorage: () => ({
+    dataSource: { data: [{ id: "faction-1", name: "Space Marines", detachments: [] }] },
+    selectedFaction: { id: "faction-1", name: "Space Marines" },
+  }),
 }));
 
-// Render modal children inline so we can query the header/menu directly
-vi.mock("../../Mobile/MobileModal", () => ({
-  MobileModal: ({ isOpen, children, title }) =>
-    isOpen ? (
-      <div data-testid="mobile-modal">
-        <span>{title}</span>
-        {children}
-      </div>
-    ) : null,
+vi.mock("../../../../Hooks/useSettingsStorage", () => ({
+  useSettingsStorage: () => ({ settings: { selectedDataSource: "40k-10e" }, updateSettings: vi.fn() }),
 }));
 
+vi.mock("../../../../Premium", () => ({
+  useCloudCategories: () => ({ categories: cloudCategories }),
+  useAuth: () => ({ isAuthenticated }),
+  ListSyncButton: () => null,
+}));
+
+vi.mock("../../../../Hooks/useCategorySharing", () => ({
+  useCategorySharing: () => ({
+    shareAnonymous,
+    shareOwned,
+    updateShare,
+    getExistingShare,
+    isSharing: false,
+  }),
+}));
+
+// Sibling sheets are not under test and pull in their own storage hooks.
 vi.mock("../ListSelector", () => ({ ListSelector: () => null }));
 vi.mock("../ListEditCard", () => ({ ListEditCard: () => null }));
+vi.mock("../../Mobile/ArmyRosterSheet", () => ({ ArmyRosterSheet: () => null }));
 vi.mock("../../MobileImporter", () => ({
   MobileGwImporter: () => null,
   MobileListForgeImporter: () => null,
 }));
-vi.mock("../../../../Hooks/useDataSourceStorage", () => ({
-  useDataSourceStorage: () => ({ dataSource: { data: [] } }),
-}));
-vi.mock("../../../../Hooks/useSettingsStorage", () => ({
-  useSettingsStorage: () => ({ settings: { selectedDataSource: "40k-10e" }, updateSettings: vi.fn() }),
-}));
-vi.mock("../../../../Premium", () => ({
-  useCloudCategories: () => ({ categories: mocks.state.cloudCategories }),
-  useAuth: () => ({ isAuthenticated: false }),
-  ListSyncButton: () => null,
-}));
-vi.mock("../../../../Hooks/useCategorySharing", () => ({
-  useCategorySharing: () => ({
-    shareAnonymous: vi.fn(),
-    shareOwned: vi.fn(),
-    updateShare: vi.fn(),
-    getExistingShare: vi.fn(() => Promise.resolve(null)),
-    isSharing: false,
-  }),
-}));
-vi.mock("../../../Toast/message", () => ({
-  message: { success: vi.fn(), error: vi.fn() },
-}));
-vi.mock("react-router-dom", () => ({
-  useNavigate: () => vi.fn(),
-  useLocation: () => ({ state: {}, pathname: "/mobile" }),
-}));
-
-const makeList = (uuid, name) => ({ uuid, name, type: "list", dataSource: "40k-10e", cards: [] });
 
 const openMoreMenu = (container) => {
-  const moreButton = container.querySelector(".list-overview-more-button");
-  fireEvent.click(moreButton);
+  fireEvent.click(container.querySelector(".list-overview-more-button"));
 };
 
-describe("ListOverview - delete list menu", () => {
+describe("ListOverview sharing", () => {
+  let modalRoot;
+
   beforeEach(() => {
-    mocks.deleteList.mockClear();
-    mocks.deleteConfirmDialog.mockClear();
-    mocks.state.cloudCategories = [];
-    mocks.state.mobileList = {
-      lists: [makeList("a", "Default"), makeList("b", "Second")],
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
+
+    mobileListState = {
+      lists: [localList],
       selectedList: 0,
       removeDatacard: vi.fn(),
-      deleteList: mocks.deleteList,
       selectedCloudCategoryId: null,
+      setListDetachments: vi.fn(),
+      setListBattleSize: vi.fn(),
     };
+    cloudCategories = [cloudCategory];
+    isAuthenticated = false;
+    shareAnonymousResult = { success: true, shareId: "anon-share" };
+
+    shareAnonymous.mockClear();
+    shareOwned.mockClear();
+    updateShare.mockClear();
+    getExistingShare.mockClear();
   });
 
-  it("shows Delete List in the more menu when multiple local lists exist", () => {
-    const { container } = render(<ListOverview isVisible={true} setIsVisible={vi.fn()} />);
-    expect(screen.queryByText("Delete List")).not.toBeInTheDocument();
-    openMoreMenu(container);
-    expect(screen.getByText("Delete List")).toBeInTheDocument();
+  afterEach(() => {
+    document.body.removeChild(modalRoot);
+    document.body.style.overflow = "";
   });
 
-  it("hides Delete List when only one list exists", () => {
-    mocks.state.mobileList.lists = [makeList("a", "Default")];
-    const { container } = render(<ListOverview isVisible={true} setIsVisible={vi.fn()} />);
-    openMoreMenu(container);
-    expect(screen.queryByText("Delete List")).not.toBeInTheDocument();
-    // Copy List is still available
-    expect(screen.getByText("Copy List")).toBeInTheDocument();
+  const renderOverview = () => render(<ListOverview isVisible={true} setIsVisible={vi.fn()} />);
+
+  it("offers Share List for a local list", () => {
+    renderOverview();
+    openMoreMenu(document.body);
+    expect(screen.getByText("Share List")).toBeTruthy();
+    expect(screen.getByText("Copy List")).toBeTruthy();
   });
 
-  it("hides Delete List (and Share List) for cloud categories", () => {
-    mocks.state.cloudCategories = [{ uuid: "c1", name: "Cloud Cat", gameSystem: "40k", cards: [] }];
-    mocks.state.mobileList.selectedCloudCategoryId = "c1";
-    const { container } = render(<ListOverview isVisible={true} setIsVisible={vi.fn()} />);
-    openMoreMenu(container);
-    expect(screen.queryByText("Delete List")).not.toBeInTheDocument();
-    expect(screen.queryByText("Share List")).not.toBeInTheDocument();
-    expect(screen.getByText("Copy List")).toBeInTheDocument();
+  it("offers Share List for a cloud category", () => {
+    mobileListState.selectedCloudCategoryId = "cloud-1";
+    renderOverview();
+    openMoreMenu(document.body);
+    expect(screen.getByText("Share List")).toBeTruthy();
   });
 
-  it("opens the confirmation dialog with the current list name when Delete List is clicked", () => {
-    const { container } = render(<ListOverview isVisible={true} setIsVisible={vi.fn()} />);
-    openMoreMenu(container);
-    fireEvent.click(screen.getByText("Delete List"));
+  it("shares the cloud category, not the selected local list", async () => {
+    mobileListState.selectedCloudCategoryId = "cloud-1";
+    renderOverview();
+    openMoreMenu(document.body);
+    fireEvent.click(screen.getByText("Share List"));
 
-    expect(mocks.deleteConfirmDialog).toHaveBeenCalledTimes(1);
-    const arg = mocks.deleteConfirmDialog.mock.calls[0][0];
-    expect(arg.title).toBe('Delete "Default"?');
-    expect(arg.content).toBe("This list will be permanently deleted.");
-    // Deletion is deferred until the user confirms
-    expect(mocks.deleteList).not.toHaveBeenCalled();
+    // The sheet describes the cloud category (2 cards), not the local list (1 card)
+    expect(document.querySelector(".list-share-name").textContent).toBe("My Cloud Category");
+    expect(document.querySelector(".list-share-meta").textContent).toBe("2 cards");
+
+    fireEvent.click(screen.getByText("Generate Link"));
+    await waitFor(() => expect(shareAnonymous).toHaveBeenCalledTimes(1));
+    expect(shareAnonymous.mock.calls[0][0]).toBe(cloudCategory);
+    expect(shareAnonymous.mock.calls[0][0].uuid).toBe("cloud-1");
   });
 
-  it("deletes the selected list only after the confirmation is accepted", () => {
-    mocks.state.mobileList.selectedList = 1;
-    const { container } = render(<ListOverview isVisible={true} setIsVisible={vi.fn()} />);
-    openMoreMenu(container);
-    fireEvent.click(screen.getByText("Delete List"));
+  it("looks up an existing share by the cloud category uuid when authenticated", async () => {
+    isAuthenticated = true;
+    mobileListState.selectedCloudCategoryId = "cloud-1";
+    renderOverview();
+    openMoreMenu(document.body);
+    fireEvent.click(screen.getByText("Share List"));
 
-    const arg = mocks.deleteConfirmDialog.mock.calls[0][0];
-    arg.onConfirm();
-    expect(mocks.deleteList).toHaveBeenCalledWith(1);
+    await waitFor(() => expect(getExistingShare).toHaveBeenCalledWith("cloud-1"));
+
+    fireEvent.click(await screen.findByText("Share"));
+    await waitFor(() => expect(shareOwned).toHaveBeenCalledTimes(1));
+    expect(shareOwned.mock.calls[0][0]).toBe(cloudCategory);
+  });
+
+  it("still shares the selected local list when no cloud category is open", async () => {
+    renderOverview();
+    openMoreMenu(document.body);
+    fireEvent.click(screen.getByText("Share List"));
+
+    expect(document.querySelector(".list-share-name").textContent).toBe("My Local List");
+    expect(document.querySelector(".list-share-meta").textContent).toBe("1 card");
+
+    fireEvent.click(screen.getByText("Generate Link"));
+    await waitFor(() => expect(shareAnonymous).toHaveBeenCalledTimes(1));
+    expect(shareAnonymous.mock.calls[0][0]).toBe(localList);
+  });
+
+  it("hides Share List when there is no list or cloud category to share", () => {
+    mobileListState.lists = [];
+    renderOverview();
+    openMoreMenu(document.body);
+    expect(screen.queryByText("Share List")).toBeNull();
+    expect(screen.getByText("Copy List")).toBeTruthy();
+  });
+
+  it("surfaces a share failure such as the card limit", async () => {
+    shareAnonymousResult = { success: false, error: "Maximum 100 cards per share" };
+    mobileListState.selectedCloudCategoryId = "cloud-1";
+    renderOverview();
+    openMoreMenu(document.body);
+    fireEvent.click(screen.getByText("Share List"));
+    fireEvent.click(screen.getByText("Generate Link"));
+
+    expect(await screen.findByText("Maximum 100 cards per share")).toBeTruthy();
   });
 });

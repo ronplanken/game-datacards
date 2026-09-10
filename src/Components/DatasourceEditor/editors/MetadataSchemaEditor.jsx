@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
+import { is40kBaseSystem } from "../../../Helpers/customSchema.helpers";
 
 const POINTS_FORMAT_OPTIONS = [
   { value: "per-model", label: "Per Model" },
@@ -144,7 +145,7 @@ export const MetadataSchemaEditor = ({ schema, onChange, baseSystem }) => {
           </div>
         </div>
       )}
-      {baseSystem !== "40k-10e" && (
+      {!is40kBaseSystem(baseSystem) && (
         <>
           <div className="props-compact-input">
             <Tooltip content="Banner type" placement="top">

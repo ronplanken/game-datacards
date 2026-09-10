@@ -7,10 +7,11 @@ import { MobileGameSystemSelector } from "../MobileGameSystemSelector";
 vi.mock("../../../Images/logo.png", () => ({ default: "logo.png" }));
 
 // Mock the config
+// Mirrors the real registry's shape: current editions first, the legacy one last.
 vi.mock("../mobileDatasourceConfig", () => ({
   SELECTOR_SYSTEMS: [
-    { id: "40k-10e", name: "Warhammer 40,000", meta: "10th Edition", cssClass: "gss-option-40k" },
     { id: "aos", name: "Age of Sigmar", meta: "4th Edition", cssClass: "gss-option-aos" },
+    { id: "40k-10e", name: "Warhammer 40,000", meta: "10th Edition", cssClass: "gss-option-40k", legacy: true },
   ],
 }));
 
@@ -33,6 +34,22 @@ describe("MobileGameSystemSelector", () => {
     render(<MobileGameSystemSelector onSelect={mockOnSelect} />);
     fireEvent.click(screen.getByText("Warhammer 40,000"));
     expect(mockOnSelect).toHaveBeenCalledWith("40k-10e");
+  });
+
+  it("marks legacy systems with the compact modifier class", () => {
+    const { container } = render(<MobileGameSystemSelector onSelect={mockOnSelect} />);
+    const options = [...container.querySelectorAll(".gss-option")];
+    const legacy = options.filter((o) => o.classList.contains("gss-option--legacy"));
+    expect(legacy).toHaveLength(1);
+    expect(legacy[0].textContent).toContain("10th Edition");
+    // The legacy card is last, so current editions read as the default.
+    expect(options[options.length - 1]).toBe(legacy[0]);
+  });
+
+  it("leaves current-edition systems unmodified", () => {
+    const { container } = render(<MobileGameSystemSelector onSelect={mockOnSelect} />);
+    const aos = container.querySelector(".gss-option-aos");
+    expect(aos.classList.contains("gss-option--legacy")).toBe(false);
   });
 
   it("hides custom sections when arrays are empty", () => {

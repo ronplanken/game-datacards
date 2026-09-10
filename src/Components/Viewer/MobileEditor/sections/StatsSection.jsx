@@ -20,7 +20,7 @@ const StatFieldInput = ({ field, value, onChange }) => {
 };
 
 export const StatsSection = ({ card, config, label, icon, updateField, replaceCard }) => {
-  const { fields, allowMultipleProfiles, dataPath, flatObject } = config;
+  const { fields, allowMultipleProfiles, dataPath, flatObject, newProfileDefaults } = config;
 
   if (flatObject) {
     return (
@@ -43,7 +43,9 @@ export const StatsSection = ({ card, config, label, icon, updateField, replaceCa
   };
 
   const handleAddProfile = () => {
-    const blank = { active: true, name: "New Profile" };
+    // 10e/custom stat lines carry an `active` flag; 11e ones do not, so the
+    // resolver supplies the keys a blank profile should start with.
+    const blank = { ...(newProfileDefaults ?? { active: true }), name: "New Profile" };
     fields.forEach((f) => (blank[f.key] = ""));
     replaceCard({ ...card, [dataPath]: [...stats, blank] });
   };

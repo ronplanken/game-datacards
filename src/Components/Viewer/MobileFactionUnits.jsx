@@ -4,15 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useCombinedDatasheets } from "../../Hooks/useCombinedDatasheets";
+import { cardHasKeyword } from "../../Helpers/listCategories.helpers";
+import { getSelectablePointsTiers } from "../../Helpers/listPoints.helpers";
 import "./MobileFactionUnits.css";
 
-// Group units by role
+// Group units by role (edition-agnostic keyword matching so 11e object-keywords work)
 const groupUnitsByRole = (datasheets) => {
   return (datasheets || []).reduce(
     (groups, unit) => {
-      if (unit.keywords?.includes("Character")) {
+      if (cardHasKeyword(unit, "Character")) {
         groups.characters.push(unit);
-      } else if (unit.keywords?.includes("Battleline")) {
+      } else if (cardHasKeyword(unit, "Battleline")) {
         groups.battleline.push(unit);
       } else {
         groups.other.push(unit);
@@ -23,11 +25,12 @@ const groupUnitsByRole = (datasheets) => {
   );
 };
 
-// Get lowest points cost for a unit
+// Get lowest points cost for a unit. getSelectablePointsTiers handles both 10e
+// (active tiers) and 11e (tiers carry no active flag, so all count).
 const getLowestPoints = (unit) => {
-  const activePoints = unit.points?.filter((p) => p.active);
-  if (!activePoints || activePoints.length === 0) return null;
-  return Math.min(...activePoints.map((p) => Number(p.cost)));
+  const tiers = getSelectablePointsTiers(unit);
+  if (!tiers || tiers.length === 0) return null;
+  return Math.min(...tiers.map((p) => Number(p.cost)));
 };
 
 // Unit list item component
