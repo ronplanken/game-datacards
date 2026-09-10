@@ -1,6 +1,7 @@
 import {
   useAuth,
   useSubscription,
+  useTemplateStorage,
   SUBSCRIPTION_LIMITS,
   TEMPLATE_PRESETS,
   useTemplateSharing,
@@ -97,7 +98,15 @@ describe("SUBSCRIPTION_LIMITS", () => {
 // TEMPLATE_PRESETS constant
 // ============================================
 describe("TEMPLATE_PRESETS", () => {
-  const presetKeys = ["40k-datacard", "40k-stratagem", "aos-warscroll", "custom"];
+  const presetKeys = [
+    "40k-datacard",
+    "40k-stratagem",
+    "aos-warscroll",
+    "40k-11e-datacard",
+    "40k-11e-datacard-styled",
+    "40k-11e-datacard-desktop",
+    "custom",
+  ];
 
   it.each(presetKeys)("should have required properties for %s preset", (preset) => {
     expect(TEMPLATE_PRESETS[preset]).toHaveProperty("name");
@@ -109,6 +118,14 @@ describe("TEMPLATE_PRESETS", () => {
   it("should have correct dimensions for 40k-datacard", () => {
     expect(TEMPLATE_PRESETS["40k-datacard"].width).toBe(500);
     expect(TEMPLATE_PRESETS["40k-datacard"].height).toBe(700);
+  });
+
+  it("should have 40k-11e target format for the 11th edition presets", () => {
+    expect(TEMPLATE_PRESETS["40k-11e-datacard"].targetFormat).toBe("40k-11e");
+    expect(TEMPLATE_PRESETS["40k-11e-datacard-styled"].targetFormat).toBe("40k-11e");
+    expect(TEMPLATE_PRESETS["40k-11e-datacard-desktop"].targetFormat).toBe("40k-11e");
+    expect(TEMPLATE_PRESETS["40k-11e-datacard-desktop"].width).toBe(1080);
+    expect(TEMPLATE_PRESETS["40k-11e-datacard-desktop"].height).toBe(720);
   });
 
   it("should have correct dimensions for 40k-stratagem", () => {
@@ -291,5 +308,28 @@ describe("useAuth stub", () => {
   it("should return user as null", () => {
     const auth = useAuth();
     expect(auth.user).toBeNull();
+  });
+});
+
+// ============================================
+// useTemplateStorage stub
+// ============================================
+describe("useTemplateStorage stub", () => {
+  it("should expose history defaults", () => {
+    const storage = useTemplateStorage();
+    expect(storage.canUndo).toBe(false);
+    expect(storage.canRedo).toBe(false);
+    expect(storage.historyLength).toBe(0);
+    expect(storage.revision).toBe(0);
+  });
+
+  it("should expose history operations as no-ops", () => {
+    const storage = useTemplateStorage();
+    expect(typeof storage.undo).toBe("function");
+    expect(typeof storage.redo).toBe("function");
+    expect(typeof storage.commitTemplate).toBe("function");
+    expect(storage.undo()).toBeUndefined();
+    expect(storage.redo()).toBeUndefined();
+    expect(storage.commitTemplate(() => ({}), "label")).toBeUndefined();
   });
 });

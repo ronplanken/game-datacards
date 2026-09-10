@@ -50,6 +50,16 @@ export const CardStorageProviderComponent = (props) => {
     localStorage.setItem("storage", JSON.stringify({ ...cardStorage, version }));
   }, [cardStorage]);
 
+  // The latest active card, readable synchronously. `saveActiveCard` used to
+  // close over the `activeCard` of the render it was created in, so anything
+  // that updated a card and then saved it (a timeout, a promise callback)
+  // persisted the *previous* card and silently reverted the change.
+  const activeCardRef = React.useRef(null);
+
+  useEffect(() => {
+    activeCardRef.current = activeCard;
+  }, [activeCard]);
+
   const updateActiveCard = (card, noUpdate = false) => {
     if (!card) {
       return;
@@ -58,6 +68,7 @@ export const CardStorageProviderComponent = (props) => {
     if (!noUpdate) {
       setCardUpdated(true);
     }
+    activeCardRef.current = copiedCard;
     setActiveCard(copiedCard);
   };
 
@@ -72,8 +83,12 @@ export const CardStorageProviderComponent = (props) => {
     });
   };
 
-  const saveActiveCard = () => {
-    if (!activeCard) {
+  // `cardToSave` lets a caller persist the exact card it just built, without
+  // waiting for the state update to land. Without it, the most recent card is
+  // read from the ref above.
+  const saveActiveCard = (cardToSave) => {
+    const card = cardToSave || activeCardRef.current || activeCard;
+    if (!card || !activeCategory) {
       return;
     }
     setCardUpdated(false);
@@ -81,8 +96,15 @@ export const CardStorageProviderComponent = (props) => {
       const newStorage = clone(prevStorage);
       const categoryIndex = newStorage.categories.findIndex((cat) => cat.uuid === activeCategory.uuid);
       const category = newStorage.categories[categoryIndex];
+      if (!category) {
+        return prevStorage;
+      }
       const newCards = category.cards;
-      newCards[newCards.findIndex((card) => card.uuid === activeCard.uuid)] = activeCard;
+      const cardIndex = newCards.findIndex((existing) => existing.uuid === card.uuid);
+      if (cardIndex === -1) {
+        return prevStorage;
+      }
+      newCards[cardIndex] = card;
       newStorage.categories[categoryIndex] = {
         ...category,
         cards: newCards,

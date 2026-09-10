@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { ReactFitty } from "react-fitty";
 import { MarkdownDisplay } from "../MarkdownDisplay";
+import { buildFactionIconCandidates, factionNamesFromCard } from "../../Helpers/factionSymbol.helpers";
 import { FactionIcon } from "../Icons/FactionIcon";
 
 // Helper to convert single newlines to markdown line breaks
@@ -84,7 +85,12 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
           <div className="containers">
             <div className="rule-type-indicator">
               <div className="faction-icon">
-                <FactionIcon factionId={rule.faction_id} />
+                <FactionIcon
+                  factionId={buildFactionIconCandidates({
+                    factionId: rule.faction_id,
+                    names: factionNamesFromCard(rule),
+                  })}
+                />
               </div>
             </div>
           </div>

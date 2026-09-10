@@ -120,6 +120,10 @@ read like they were written by an AI or a marketing team. Write the way someone 
 the team would jot a short, honest note to players. Distilled from the existing
 entries:
 
+- **Keep it short.** The note is read in a narrow notification dropdown, so the
+  `title` stays under roughly 55 characters and the `body` runs to two or three
+  short sentences (about 300 characters at most). Cover the change itself. A full
+  list of everything you touched belongs in the pull request.
 - **Talk to the reader as "you", in the present tense.** Open with one plain
   sentence that says what changed and why it helps.
 - **Then name the specifics** people actually see — the buttons, screens, or
@@ -130,8 +134,12 @@ entries:
   setting names, no internal terms, and no version numbers in the body.
 - **Avoid the AI/marketing tells.** No emojis. Drop words like "seamless",
   "powerful", "effortless", "unlock", "elevate", "supercharge", "robust". Don't
-  write slogan-like three-part phrases, and don't overstate — describe what it
+  write slogan-like three-part phrases, and don't overstate. Describe what it
   does, calmly and concretely.
+- **Write plainly.** Short sentences. No em dashes (use a full stop, a comma or
+  brackets). No "not X, but Y" constructions. No analogies or metaphors. No
+  filler openers such as "worth noting" or "in short". If you are unsure a claim
+  about the change is true, leave it out rather than guessing.
 
 ## Final check before you finish
 

@@ -6,6 +6,7 @@ tags: [40k-11e, editor, multi-language, i18n, localization]
 related:
   - warhammer-40k-11e-format.md
   - card-data-formats.md
+  - mobile-card-editor.md
 file_locations:
   - src/Components/Warhammer40k-11e/CardEditor.jsx
   - src/Components/Warhammer40k-11e/UnitCardEditor.jsx
@@ -25,6 +26,11 @@ enhancement and rule editors). The editor is wired in `src/App.jsx` and routed b
 The data format differs from 10e (see
 [warhammer-40k-11e-format.md](warhammer-40k-11e-format.md)), so the editor adapts
 how it reads and writes every field.
+
+11e cards in a list are editable on mobile too. The mobile editor follows the
+same edit-the-active-language model but reaches it differently — it edits a
+projection of the card rather than resolving each field in each input; see
+[mobile-card-editor.md](mobile-card-editor.md).
 
 ## Table of contents
 

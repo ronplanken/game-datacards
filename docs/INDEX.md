@@ -37,6 +37,7 @@ description: Table of contents for all Game Datacards documentation files
 
 | File | Description |
 |------|-------------|
+| [mobile-card-editor.md](mobile-card-editor.md) | Mobile card editor: how sections are resolved per base system, and how multi-language (40k-11e) cards are projected into the active card language and merged back without touching the other languages |
 | [draggable-tree-component.md](draggable-tree-component.md) | TreeViewDemo drag-and-drop component used in the Welcome Wizard workspace step |
 
 ## Infrastructure
