@@ -51,6 +51,7 @@ import { ArmyRosterSheet } from "../Mobile/ArmyRosterSheet";
 import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter, MobileListForgeImporter } from "../MobileImporter";
+import { deleteConfirmDialog } from "../../DeleteConfirmModal";
 import "./ListOverview.css";
 
 // Import action button (prominent, at top of content)
@@ -83,6 +84,8 @@ const ListHeader = ({
   onListSelectorClick,
   onCopyToClipboard,
   onShareList,
+  onDeleteList,
+  canDeleteList,
   canShare,
   isCloudCategory,
   isSynced,
@@ -130,6 +133,18 @@ const ListHeader = ({
                     type="button">
                     <Share2 size={16} />
                     <span>Share List</span>
+                  </button>
+                )}
+                {!isCloudCategory && canDeleteList && (
+                  <button
+                    className="list-overview-more-item list-overview-more-item--danger"
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onDeleteList();
+                    }}
+                    type="button">
+                    <Trash2 size={16} />
+                    <span>Delete List</span>
                   </button>
                 )}
               </div>
@@ -373,8 +388,15 @@ const ListShareSheet = ({ isVisible, onClose, category }) => {
 };
 
 export const ListOverview = ({ isVisible, setIsVisible }) => {
-  const { lists, selectedList, removeDatacard, selectedCloudCategoryId, setListDetachments, setListBattleSize } =
-    useMobileList();
+  const {
+    lists,
+    selectedList,
+    removeDatacard,
+    deleteList,
+    selectedCloudCategoryId,
+    setListDetachments,
+    setListBattleSize,
+  } = useMobileList();
   const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const { categories: cloudCategories } = useCloudCategories();
@@ -507,6 +529,16 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
     }
   };
 
+  // Delete the entire current list (local lists only, never the last one)
+  const handleDeleteList = () => {
+    if (isCloudCategory || !currentList) return;
+    deleteConfirmDialog({
+      title: `Delete "${currentListName}"?`,
+      content: "This list will be permanently deleted.",
+      onConfirm: () => deleteList(selectedList),
+    });
+  };
+
   // Calculate total points (only for local lists). Includes 11e cards (defaulting
   // to their cheapest tier) and the per-datasheet roster surcharge; see
   // listPoints.helpers.
@@ -580,6 +612,8 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 onListSelectorClick={() => setIsListSelectorVisible(true)}
                 onCopyToClipboard={handleCopyToClipboard}
                 onShareList={() => setIsShareSheetVisible(true)}
+                onDeleteList={handleDeleteList}
+                canDeleteList={lists.length > 1}
                 canShare={!!shareCategory}
                 isCloudCategory={isCloudCategory}
                 isSynced={!isCloudCategory && !!currentList?.syncEnabled}

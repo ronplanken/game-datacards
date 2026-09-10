@@ -1,0 +1,5 @@
+{
+  "title": "Delete a list from mobile",
+  "body": "The list details menu on mobile now has a Delete List option, so you can remove a whole list (with confirmation) without opening the list picker.",
+  "severity": "info"
+}
