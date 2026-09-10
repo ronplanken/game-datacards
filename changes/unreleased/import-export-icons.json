@@ -1,0 +1,5 @@
+{
+  "title": "Import and export icons match their action",
+  "body": "A couple of import and export buttons showed the wrong arrow. Importing now always shows the upload icon and exporting the download icon.",
+  "severity": "info"
+}
