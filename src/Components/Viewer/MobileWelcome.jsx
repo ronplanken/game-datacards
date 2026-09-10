@@ -1,5 +1,6 @@
 import { ChevronRight, Clock, Search, Trash2, List } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { getMobileCardPath } from "../../Helpers/mobileRouting.helpers";
 import "./MobileWelcome.css";
 
 export const MobileWelcome = ({
@@ -19,18 +20,7 @@ export const MobileWelcome = ({
         : item.factionName?.toLowerCase().replaceAll(" ", "-");
     const cardSlug = item.unitName?.toLowerCase().replaceAll(" ", "-");
 
-    // Build route based on card type (matching MobileSearchDropdown logic)
-    const routeMap = {
-      unit: `/${cardSlug}`,
-      stratagem: `/stratagem/${cardSlug}`,
-      enhancement: `/enhancement/${cardSlug}`,
-      rule: `/rule/${cardSlug}`,
-      spell: `/spell-lore/${cardSlug}`,
-      manifestation: `/manifestation-lore/${cardSlug}`,
-    };
-
-    const path = `/mobile/${factionSlug}${routeMap[item.cardType] || `/${cardSlug}`}`;
-    navigate(path);
+    navigate(getMobileCardPath(factionSlug, cardSlug, item.cardType));
   };
 
   const handleContinueToFaction = () => {

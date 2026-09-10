@@ -1,0 +1,5 @@
+{
+  "title": "Tapping cards on mobile opens them again",
+  "body": "On mobile, tapping an enhancement, stratagem, or rule card used to do nothing. Now it opens the card, the same as tapping a unit.",
+  "severity": "info"
+}
