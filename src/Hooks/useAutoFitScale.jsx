@@ -10,19 +10,22 @@ const CARD_DIMENSIONS = {
   spell: { width: 650, height: null },
 };
 
-export function useAutoFitScale(containerRef, cardType = "unit", isEnabled = true) {
+export function useAutoFitScale(containerRef, cardType = "unit", isEnabled = true, cardWidth = null) {
   const [autoScale, setAutoScale] = useState(1);
   const resizeObserverRef = useRef(null);
 
   const calculateScale = useCallback(
     (width) => {
       if (!width || !isEnabled) return 1;
-      const cardWidth = CARD_DIMENSIONS[cardType]?.width || CARD_DIMENSIONS.unit.width;
+      const baseWidth =
+        Number.isFinite(cardWidth) && cardWidth > 0
+          ? cardWidth
+          : CARD_DIMENSIONS[cardType]?.width || CARD_DIMENSIONS.unit.width;
       const availableWidth = width - 32; // padding buffer
-      const calculatedScale = Math.min(1, availableWidth / cardWidth);
+      const calculatedScale = Math.min(1, availableWidth / baseWidth);
       return Math.max(0.25, calculatedScale);
     },
-    [cardType, isEnabled],
+    [cardType, isEnabled, cardWidth],
   );
 
   useEffect(() => {

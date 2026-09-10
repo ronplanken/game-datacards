@@ -314,6 +314,7 @@ export const useTemplateStorage = () => ({
   updateElement: () => {},
   removeElement: () => {},
   reorderElements: () => {},
+  reorderRootElements: () => {},
   syncElementsFromCanvas: () => {},
   // Canvas settings - no-op
   updateCanvasSettings: () => {},
@@ -328,7 +329,30 @@ export const useTemplateStorage = () => ({
   setTemplateSyncEnabled: () => {},
   bulkUpdateTemplates: () => {},
   getTemplate: () => null,
+  commitTemplate: () => {},
+  undo: () => {},
+  redo: () => {},
+  canUndo: false,
+  canRedo: false,
+  historyLength: 0,
+  revision: 0,
 });
+
+/**
+ * Stub for useTemplateImages - no cloud image storage in public version
+ */
+export const useTemplateImages = () => ({
+  cloudEnabled: false,
+  uploadTemplateImage: () => Promise.resolve({ url: null, path: null, error: "not-available" }),
+  uploadTemplateImageFromDataUrl: () => Promise.resolve({ url: null, path: null, error: "not-available" }),
+  deleteTemplateImage: () => Promise.resolve(false),
+  deleteTemplateImages: () => Promise.resolve(false),
+  listTemplateImages: () => Promise.resolve([]),
+});
+
+export const TEMPLATE_IMAGE_BUCKET = "template-images";
+export const TEMPLATE_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+export const TEMPLATE_IMAGE_MIME_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
 
 /**
  * Stub for useDataBinding - minimal implementation
@@ -336,11 +360,15 @@ export const useTemplateStorage = () => ({
 export const useDataBinding = () => ({
   getAvailableBindings: () => null,
   resolveBinding: (template) => template,
+  resolveBindingWithContext: (template) => template,
+  areBindingsEmpty: () => false,
   hasBindings: () => false,
   extractBindings: () => [],
   validateBinding: () => false,
+  validateTemplateBindings: () => [],
   createBindingString: (path) => `{{${path}}}`,
   availableFormats: [],
+  getArraySources: () => [],
 });
 
 /**
@@ -367,6 +395,11 @@ export const useTemplateRenderer = () => ({
  * Stub for TemplateRenderer - returns null (templates not available in community version)
  */
 export const TemplateRenderer = () => null;
+
+/**
+ * Stub for TemplateDomRenderer - returns null (templates not available in community version)
+ */
+export const TemplateDomRenderer = () => null;
 
 /**
  * Stub for TemplateSelector - returns null (templates not available in community version)

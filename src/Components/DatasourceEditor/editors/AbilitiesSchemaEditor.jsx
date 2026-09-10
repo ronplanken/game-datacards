@@ -17,6 +17,7 @@ import {
 import { Section, CompactInput, CollapsibleFieldItem } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
+import { is40kBaseSystem } from "../../../Helpers/customSchema.helpers";
 
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name Only" },
@@ -192,7 +193,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
               value={category.header || ""}
               onChange={(val) => updateCategory(index, "header", val || undefined)}
             />
-            {baseSystem !== "40k-10e" && (
+            {!is40kBaseSystem(baseSystem) && (
               <div className="props-compact-row-2col">
                 <CompactInput
                   label={<IconClock size={10} stroke={1.5} />}

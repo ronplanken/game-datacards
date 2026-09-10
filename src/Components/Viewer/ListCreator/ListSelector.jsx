@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, Pencil, Trash2, Plus, X, Cloud, Loader2 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
+import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useCloudCategories, useAuth, usePremiumFeatures } from "../../../Premium";
 import { MobileModal } from "../Mobile/MobileModal";
 import { deleteConfirmDialog } from "../../DeleteConfirmModal";
@@ -185,8 +186,13 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
     selectCloudCategory,
   } = useMobileList();
   const { user } = useAuth();
+  const { selectedFaction } = useDataSourceStorage();
   const { categories: cloudCategories, isLoading: categoriesLoading } = useCloudCategories();
   const { hasSync } = usePremiumFeatures();
+
+  // A new list is built for the faction the user is browsing, so it can offer
+  // that faction's detachments straight away.
+  const handleCreate = (name) => createList(name, { factionId: selectedFaction?.id });
 
   // Filter out cloud categories that already exist as local lists (by UUID)
   const localListUuids = new Set(lists.map((l) => l.uuid));
@@ -246,7 +252,7 @@ export const ListSelector = ({ isVisible, setIsVisible, onListSelected }) => {
             />
           ))}
         </div>
-        <CreateListRow onCreate={createList} />
+        <CreateListRow onCreate={handleCreate} />
 
         {/* Cloud Categories Section - Premium only */}
         {hasSync && user && (

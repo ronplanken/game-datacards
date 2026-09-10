@@ -32,6 +32,7 @@ All text fields support Markdown formatting unless noted otherwise.
   - [Gangers](#gangers)
   - [Vehicles](#vehicles)
 - [Basic Cards](#basic-cards)
+- [Faction Symbols](#faction-symbols)
 - [Key Differences Between Systems](#key-differences-between-systems)
 
 ---
@@ -196,10 +197,23 @@ There are four `cardType` values:
   "imagePositionX": 0,
   "imagePositionY": 0,
 
+  // Faction symbol (see "Faction Symbols" below)
+  "hasCustomFactionSymbol": false,  // Replace the default symbol
+  "externalFactionSymbol": null,    // URL string or null
+  "customFactionSymbolFilename": null,
+  "factionSymbolUpdatedAt": null,   // Timestamp; bumped when the stored symbol changes
+  "keepFactionSymbolColours": false, // Skip the flatten-to-black filter
+  "factionSymbolScale": 0.8,
+  "factionSymbolPositionX": 0,
+  "factionSymbolPositionY": 0,
+
   // Custom colours
   "useCustomColours": false,
   "customHeaderColour": "#000000",
-  "customBannerColour": "#000000"
+  "customBannerColour": "#000000",
+
+  // Styling
+  "wrapKeywords": true         // Wrap long weapon keyword lists (absent = true)
 }
 ```
 
@@ -208,6 +222,7 @@ There are four `cardType` values:
 - `abilities.core` and `abilities.faction` are string arrays (just names), not objects.
 - `abilities.other`, `abilities.wargear`, and `abilities.special` are arrays of `{ name, description, showAbility, showDescription }` objects.
 - Weapons have a two-level structure: weapon groups contain `profiles` (for multi-profile weapons like "Combi-weapon") and optional `abilities`.
+- `wrapKeywords` controls weapon keyword layout, and is set by the "Wrap Keywords" switch in the editor's Styling panel. When `true` (or absent) a long keyword list wraps inside the weapon name column; when `false` it stays on one line, running on under the characteristic columns. The same field is read by the 11th edition renderer.
 
 ---
 
@@ -721,6 +736,48 @@ Basic cards use the 9th edition stat format and serve as general-purpose templat
 ```
 
 Basic datasources can also include `stratagems`, `secondaries`, and `psychicpowers` using the 9th edition format.
+
+---
+
+
+## Faction Symbols
+
+The symbol in the diamond badge on a 40k datacard is an SVG from the legacy
+`40k-Data-Card` repository, addressed by a short code (`CSM`, `CHUL`, `TAU`).
+
+Resolution order, implemented in `src/Helpers/factionSymbol.helpers.js`:
+
+1. A card with `hasCustomFactionSymbol: true` uses its own symbol — the image
+   stored in IndexedDB under `faction-<card uuid>`, or `externalFactionSymbol`
+   when there is no uploaded one. With neither, the default symbol below is used,
+   so enabling the switch never leaves a card without a symbol.
+2. `faction_id`, but only when it already is a symbol code. 10th edition
+   datasheets carry one; 11th edition faction ids are UUIDs and custom
+   datasource faction ids are slugs, and those are skipped.
+3. The faction name(s): the card's `factions` (or `factionKeywords`) entries,
+   most specific first, then the datasource faction name. Names are matched
+   case- and punctuation-insensitively, and sub-factions map onto their parent's
+   symbol (`Farsight Enclaves` to `TAU`, `Heretic Astartes` to `CSM`).
+
+Candidates are tried in order and the first one that resolves to an SVG wins, so
+a faction without a symbol of its own still falls back to its parent's.
+
+### Custom symbols
+
+Uploads are stored in IndexedDB (database `CardImagesDB`, store `images`) under
+`faction-<card uuid>`, alongside the card artwork stored under the bare uuid.
+One card, one stored symbol.
+
+- `factionSymbolUpdatedAt` is the card's cache key for that entry. Replacing a
+  symbol changes neither the card uuid nor `hasCustomFactionSymbol`, so without
+  a new timestamp the renderers keep showing the previous image.
+- `keepFactionSymbolColours` skips the `saturate(0%)` filter that flattens a
+  symbol to black. The filter is on by default because it is what matches the
+  printed cards; the built-in symbols are always flattened.
+- The symbol library (`FactionSymbolLibraryModal`) lists every `faction-`
+  entry in this browser so an existing symbol can be copied onto another card.
+  Entries are deduplicated by filename, size and type, since reusing a symbol
+  stores a copy per card.
 
 ---
 

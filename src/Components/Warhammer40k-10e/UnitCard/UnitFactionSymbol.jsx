@@ -1,56 +1,10 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
+import React from "react";
+import { buildFactionIconCandidates, factionNamesFromCard } from "../../../Helpers/factionSymbol.helpers";
+import { CustomFactionSymbol, useCustomFactionSymbolUrl } from "../../Icons/CustomFactionSymbol";
 import { FactionIcon } from "../../Icons/FactionIcon";
 
-const CustomSymbol = styled.div`
-  width: 100%;
-  height: 100%;
-  background-image: url(${(props) => props.$imageUrl});
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  filter: invert(0%) sepia(2%) saturate(0%) hue-rotate(253deg) brightness(100%) contrast(100%);
-  rotate: -45deg;
-  scale: ${(props) => props.$scale || 0.8};
-  transform: translate(${(props) => props.$positionX || 0}px, ${(props) => props.$positionY || 0}px);
-`;
-
 export const UnitFactionSymbol = ({ unit }) => {
-  const { getFactionSymbolUrl, isReady } = useIndexedDBImages();
-  const [customSymbolUrl, setCustomSymbolUrl] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    let objectUrl = null;
-
-    const loadCustomSymbol = async () => {
-      if (unit?.hasCustomFactionSymbol && unit?.uuid && isReady) {
-        try {
-          const url = await getFactionSymbolUrl(unit.uuid);
-          if (isMounted && url) {
-            objectUrl = url;
-            setCustomSymbolUrl(objectUrl);
-          }
-        } catch (error) {
-          // Failed to load custom faction symbol
-        }
-      } else {
-        if (isMounted) {
-          setCustomSymbolUrl(null);
-        }
-      }
-    };
-
-    loadCustomSymbol();
-
-    return () => {
-      isMounted = false;
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
-    };
-  }, [unit?.uuid, unit?.hasCustomFactionSymbol, isReady]);
+  const customSymbolUrl = useCustomFactionSymbolUrl(unit);
 
   // Determine the symbol URL (local takes priority over external)
   const symbolUrl = customSymbolUrl || unit?.externalFactionSymbol;
@@ -59,21 +13,23 @@ export const UnitFactionSymbol = ({ unit }) => {
   if (unit?.hasCustomFactionSymbol && symbolUrl) {
     return (
       <div className="faction">
-        <CustomSymbol
-          $imageUrl={symbolUrl}
-          $scale={unit.factionSymbolScale}
-          $positionX={unit.factionSymbolPositionX}
-          $positionY={unit.factionSymbolPositionY}
-        />
+        <CustomFactionSymbol card={unit} imageUrl={symbolUrl} />
       </div>
     );
   }
 
-  // Otherwise render default faction symbol using FactionIcon (print-friendly)
+  // Otherwise render default faction symbol using FactionIcon (print-friendly).
+  // 10th edition faction ids are symbol codes; cards from a custom datasource
+  // carry a slug instead, so the faction keywords are offered as a fallback.
+  const candidates = buildFactionIconCandidates({
+    factionId: unit?.faction_id,
+    names: factionNamesFromCard(unit),
+  });
+
   return (
     <div className="faction">
       <div className="faction-symbol-wrapper">
-        <FactionIcon factionId={unit.faction_id} />
+        <FactionIcon factionId={candidates} />
       </div>
     </div>
   );

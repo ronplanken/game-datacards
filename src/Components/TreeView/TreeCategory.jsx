@@ -1,12 +1,26 @@
 import React, { useState } from "react";
-import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus } from "lucide-react";
+import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus, SlidersHorizontal } from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
+import {
+  describeRepricedCards,
+  getArmyContext,
+  getBattleSize,
+  getEnhancementUsage,
+  getListFactionId,
+  getSpentDetachmentPoints,
+  isDetachmentSelectionOverBudget,
+  repriceListCards,
+} from "../../Helpers/listRoster.helpers";
 import { useSync, CategorySyncIcon } from "../../Premium";
 import { useUmami } from "../../Hooks/useUmami";
 import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
+import { ArmyRosterModal } from "./ArmyRosterModal";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import "./TreeView.css";
@@ -30,13 +44,54 @@ export function TreeCategory({
     updateCategory,
     addSubCategory,
     getSubCategories,
+    markCategoryPending,
   } = useCardStorage();
   const { deleteFromCloud } = useSync();
   const { trackEvent } = useUmami();
+  const { dataSource, selectedFaction } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+  const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+
+  // Army roster (11e): battle size, Detachment Points and the detachments the
+  // list holds. Only offered while the 11e datasource is loaded, since the
+  // faction's detachments come from it.
+  const isEleventhEditionList =
+    category.type === "list" && (category.dataSource || category.cards?.[0]?.source) === "40k-11e";
+  const showRoster = isEleventhEditionList && settings.selectedDataSource === "40k-11e";
+  // The faction the list is built for. Lists made before the faction was
+  // recorded fall back to their cards, an empty one to the faction being browsed.
+  const listFaction = dataSource?.data?.find(
+    (faction) => faction.id === (getListFactionId(category) || selectedFaction?.id),
+  );
+  const armyDetachments = category.detachments || [];
+  const armyBattleSize = getBattleSize(category.battleSize);
+  const enhancementUsage = getEnhancementUsage(category.cards, category.battleSize);
+
+  // updateCategory is the one storage mutator that does not flag the category
+  // itself, so a synced list needs the explicit markCategoryPending — same as
+  // the mobile roster path.
+  const handleChangeBattleSize = (battleSize) => {
+    updateCategory({ ...category, battleSize: battleSize || undefined }, category.uuid);
+    markCategoryPending(category.uuid);
+  };
+
+  // Detachments can change what units cost, so the list is repriced in the same
+  // write and the affected units are named in a toast.
+  const handleChangeDetachments = (detachments) => {
+    const next = { ...category, detachments: detachments?.length ? detachments : undefined };
+    if (!next.factionId && listFaction?.id) next.factionId = listFaction.id;
+
+    const { cards, changes } = repriceListCards(category.cards, getArmyContext(next, listFaction));
+    updateCategory({ ...next, cards }, category.uuid);
+    markCategoryPending(category.uuid);
+
+    const summary = describeRepricedCards(changes);
+    if (summary) message.info(summary);
+  };
 
   const handleRename = (newName) => {
     renameCategory(category.uuid, newName);
@@ -52,15 +107,9 @@ export function TreeCategory({
     message.success("Sub-category created.");
   };
 
-  const pointsTotal = category.cards?.reduce((total, card) => {
-    if (card?.source === "40k-10e" && card?.unitSize?.cost) {
-      if (card.selectedEnhancement) {
-        return total + Number(card?.unitSize?.cost) + Number(card.selectedEnhancement.cost);
-      }
-      return total + Number(card?.unitSize?.cost);
-    }
-    return total;
-  }, 0);
+  // Includes 10e (configured unit sizes), 11e (defaulting to the cheapest tier)
+  // and the 11e per-datasheet roster surcharge. See listPoints.helpers.
+  const pointsTotal = getCategoryPointsTotal(category.cards);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -195,6 +244,33 @@ export function TreeCategory({
         {category.type === "list" && <span className="tree-category-badge">{pointsTotal}</span>}
       </div>
 
+      {!category.closed && showRoster && (
+        <div className="tree-roster-wrapper">
+          <button
+            className="tree-roster-button"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsRosterModalOpen(true);
+            }}>
+            <SlidersHorizontal size={12} />
+            <span>
+              {armyBattleSize.label} ·{" "}
+              <span
+                className={
+                  isDetachmentSelectionOverBudget(armyDetachments, category.battleSize) ? "tree-roster-over" : ""
+                }>
+                {getSpentDetachmentPoints(armyDetachments)}/{armyBattleSize.dp} DP
+              </span>{" "}
+              ·{" "}
+              <span className={enhancementUsage.exceeded ? "tree-roster-over" : ""}>
+                {enhancementUsage.used}/{enhancementUsage.limit} enh
+              </span>
+            </span>
+          </button>
+        </div>
+      )}
+
       {!category.closed && children}
 
       {contextMenu && (
@@ -220,6 +296,17 @@ export function TreeCategory({
         initialValue=""
         onConfirm={handleAddSubCategory}
         onCancel={() => setIsSubCategoryModalOpen(false)}
+      />
+
+      <ArmyRosterModal
+        isOpen={isRosterModalOpen}
+        onClose={() => setIsRosterModalOpen(false)}
+        detachments={listFaction?.detachments || []}
+        selectedDetachments={armyDetachments}
+        battleSize={category.battleSize}
+        onChangeBattleSize={handleChangeBattleSize}
+        onChangeDetachments={handleChangeDetachments}
+        language={settings.language}
       />
     </>
   );

@@ -8,6 +8,7 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
+import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
 import { useUmami } from "../../Hooks/useUmami";
 import "./ImportExport.css";
 
@@ -114,12 +115,8 @@ export const Exporter = () => {
     // Get all cards including sub-category cards
     const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
 
-    // Calculate total points
-    const totalPoints = allCards?.reduce((sum, card) => {
-      const unitCost = Number(card?.unitSize?.cost) || 0;
-      const enhancementCost = Number(card?.selectedEnhancement?.cost) || 0;
-      return sum + unitCost + enhancementCost;
-    }, 0);
+    // Calculate total points (includes 11e cheapest-tier default + roster surcharge).
+    const totalPoints = getCategoryPointsTotal(allCards);
 
     // Sort cards into sections
     const sortedCards = allCards?.reduce(
