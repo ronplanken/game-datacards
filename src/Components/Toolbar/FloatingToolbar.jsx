@@ -105,17 +105,18 @@ export const FloatingToolbar = ({
     message.success("Card saved");
   };
 
-  const is40k10e = activeCard?.source === "40k-10e";
+  // Both 40k editions render a two-sided datacard and honour card scaling.
+  const is40k = ["40k-10e", "40k-11e"].includes(activeCard?.source);
   const isAos = activeCard?.source === "aos";
   const isCustomDs = activeCard?.source?.startsWith("custom-");
   const showFrontBackToggle =
-    is40k10e &&
+    is40k &&
     settings.showCardsAsDoubleSided !== true &&
     activeCard?.variant !== "full" &&
     activeCard?.cardType === "DataCard";
 
   // Determine which button groups are visible
-  const showZoom = is40k10e || isAos || isCustomDs;
+  const showZoom = is40k || isAos || isCustomDs;
   const showAddToCategory = !activeCard.isCustom;
   const showSave = activeCard.isCustom && cardUpdated;
 

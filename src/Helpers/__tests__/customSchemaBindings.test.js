@@ -60,14 +60,19 @@ describe("customSchemaBindings", () => {
         expect(melee.bindings[0].path).toBe("weapons.melee[0].name");
       });
 
-      it("includes Abilities group", () => {
-        const abilities = result.groups.find((g) => g.name === "Abilities");
-        expect(abilities).toBeDefined();
-        // 3 abilities x 3 fields (name, description, category) = 9
-        expect(abilities.bindings.length).toBe(9);
-        expect(abilities.bindings[0].path).toBe("abilities[0].name");
-        expect(abilities.bindings[1].path).toBe("abilities[0].description");
-        expect(abilities.bindings[2].path).toBe("abilities[0].category");
+      it("includes one abilities group per category", () => {
+        const core = result.groups.find((g) => g.name === "Core");
+        expect(core).toBeDefined();
+        expect(core.bindings.length).toBe(6);
+        expect(core.bindings[0].path).toBe("abilities.core[0].name");
+        expect(core.bindings[1].path).toBe("abilities.core[0].description");
+
+        const unit = result.groups.find((g) => g.name === "Unit Abilities");
+        expect(unit).toBeDefined();
+        expect(unit.bindings[0].path).toBe("abilities.unit[0].name");
+        expect(unit.bindings[5].path).toBe("abilities.unit[2].description");
+
+        expect(result.groups.find((g) => g.name === "Damaged")).toBeDefined();
       });
 
       it("includes Keywords group with keywords and factionKeywords", () => {
@@ -181,10 +186,17 @@ describe("customSchemaBindings", () => {
         expect(melee.itemFields).toEqual(["name", "range", "a", "ws", "s", "ap", "d"]);
       });
 
-      it("includes abilities array source", () => {
-        const abilities = result.find((s) => s.path === "abilities");
-        expect(abilities).toBeDefined();
-        expect(abilities.itemFields).toEqual(["name", "description", "category"]);
+      it("includes one abilities array source per category", () => {
+        const core = result.find((s) => s.path === "abilities.core");
+        expect(core).toBeDefined();
+        expect(core.label).toBe("Core");
+        expect(core.itemFields).toEqual(["name", "description"]);
+
+        const unit = result.find((s) => s.path === "abilities.unit");
+        expect(unit).toBeDefined();
+        expect(unit.label).toBe("Unit Abilities");
+
+        expect(result.find((s) => s.path === "abilities")).toBeUndefined();
       });
 
       it("includes keywords and factionKeywords array sources", () => {

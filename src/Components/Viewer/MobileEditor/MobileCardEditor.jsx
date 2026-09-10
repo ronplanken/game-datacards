@@ -16,10 +16,13 @@ import {
   Wrench,
   Users,
   ScrollText,
+  WrapText,
 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
+import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { useCardEditorState } from "./useCardEditorState";
 import { resolveEditorSections } from "./editorSchemaResolvers";
+import { getLocalizationSpec, mergeCard, projectCard } from "./localizedCard";
 import { NameSection } from "./sections/NameSection";
 import { StatsSection } from "./sections/StatsSection";
 import { WeaponsSection } from "./sections/WeaponsSection";
@@ -36,6 +39,8 @@ import { DamagedSection } from "./sections/DamagedSection";
 import { StringListSection } from "./sections/StringListSection";
 import { TextFieldSection } from "./sections/TextFieldSection";
 import { LeaderInfoSection } from "./sections/LeaderInfoSection";
+import { WargearOptionsSection } from "./sections/WargearOptionsSection";
+import { StylingSection } from "./sections/StylingSection";
 import { DrillDownView } from "./shared/DrillDownView";
 import { WeaponListView } from "./weapons/WeaponListView";
 import { WeaponProfileEditor } from "./weapons/WeaponProfileEditor";
@@ -59,6 +64,8 @@ const SECTION_COMPONENTS = {
   stringList: StringListSection,
   textField: TextFieldSection,
   leaderInfo: LeaderInfoSection,
+  wargearOptions: WargearOptionsSection,
+  styling: StylingSection,
 };
 
 const SECTION_ICONS = {
@@ -77,20 +84,39 @@ const SECTION_ICONS = {
   stringList: Wrench,
   textField: ScrollText,
   leaderInfo: Users,
+  wargearOptions: Wrench,
+  styling: WrapText,
 };
 
 export const MobileCardEditor = ({ isOpen, onClose, card, cardUuid, gameSystem, schema, factionColours }) => {
   const [drillDown, setDrillDown] = useState(null);
   const { updateCardData } = useMobileList();
+  const { settings } = useSettingsStorage();
+
+  // Multi-language datasources (40k-11e) store every displayable string as a
+  // language-keyed object. The sections below all read and write plain strings,
+  // so the editor works on a projection of the card in the active card language
+  // and folds each change back in, leaving the other languages untouched.
+  const language = settings?.language || "en";
+  const localizationSpec = useMemo(() => getLocalizationSpec(card, gameSystem), [card, gameSystem]);
+  const editableCard = useMemo(
+    () => (localizationSpec ? projectCard(card, localizationSpec, language) : card),
+    [card, localizationSpec, language],
+  );
+
+  const toStoredCard = useCallback(
+    (edited) => (localizationSpec ? mergeCard(edited, localizationSpec, language) : edited),
+    [localizationSpec, language],
+  );
 
   const handleSave = useCallback(
     (updatedCard) => {
-      updateCardData?.(cardUuid, updatedCard);
+      updateCardData?.(cardUuid, toStoredCard(updatedCard));
     },
-    [updateCardData, cardUuid],
+    [updateCardData, cardUuid, toStoredCard],
   );
 
-  const { localCard, updateField, updateFields, replaceCard } = useCardEditorState(card, handleSave);
+  const { localCard, updateField, updateFields, replaceCard } = useCardEditorState(editableCard, handleSave);
 
   const sections = useMemo(() => resolveEditorSections(localCard, gameSystem, schema), [localCard, gameSystem, schema]);
 
@@ -110,7 +136,7 @@ export const MobileCardEditor = ({ isOpen, onClose, card, cardUuid, gameSystem, 
 
   const handleClose = () => {
     setDrillDown(null);
-    onClose(localCard);
+    onClose(toStoredCard(localCard));
   };
 
   const bannerColour = factionColours?.banner || "#1a1d2e";

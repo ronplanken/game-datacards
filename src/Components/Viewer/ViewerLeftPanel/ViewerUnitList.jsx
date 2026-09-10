@@ -2,6 +2,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { List } from "antd";
 import classNames from "classnames";
 import { useDataSourceType } from "../../../Helpers/cardstorage.helpers";
+import { getCardSectionKey, getSectionKey, groupStratagemsByDetachment } from "../../../Helpers/browseList.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
@@ -86,19 +87,33 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
       return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
     });
 
-    const mainStratagems = searchText
+    const searchedStratagems = searchText
       ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
       : filteredStratagems;
 
-    const basicStratagems = searchText
-      ? selectedFaction.basicStratagems?.filter((stratagem) =>
-          stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
-        )
-      : selectedFaction.basicStratagems;
+    // A faction ships six stratagems per detachment, so the flat list runs to
+    // 60+ entries. Splitting it into collapsible detachment sections is opt-in.
+    const mainStratagems = settings.groupStratagemsByDetachment
+      ? groupStratagemsByDetachment(searchedStratagems, settings.language)
+      : searchedStratagems;
+
+    const basicStratagems = settings.hideBasicStratagems
+      ? []
+      : searchText
+        ? selectedFaction.basicStratagems?.filter((stratagem) =>
+            stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
+          )
+        : selectedFaction.basicStratagems;
 
     unitList = [
-      { type: "header", name: "Basic stratagems" },
-      ...(basicStratagems || []).map((s) => ({ ...s, faction_id: selectedFaction.id })),
+      // Datasources without core stratagems skip the Basic section entirely
+      // instead of rendering an empty header.
+      ...(basicStratagems?.length > 0
+        ? [
+            { type: "header", name: "Basic stratagems" },
+            ...basicStratagems.map((s) => ({ ...s, faction_id: selectedFaction.id })),
+          ]
+        : []),
       { type: "header", name: "Faction stratagems" },
       ...(mainStratagems || []),
     ];
@@ -268,11 +283,12 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
   };
 
   const handleRoleClick = (card) => {
+    const sectionKey = getSectionKey(card);
     let newClosedRoles = [...(settings?.mobile?.closedRoles || [])];
-    if (newClosedRoles.includes(card.name)) {
-      newClosedRoles.splice(newClosedRoles.indexOf(card.name), 1);
+    if (newClosedRoles.includes(sectionKey)) {
+      newClosedRoles.splice(newClosedRoles.indexOf(sectionKey), 1);
     } else {
-      newClosedRoles.push(card.name);
+      newClosedRoles.push(sectionKey);
     }
     updateSettings({
       ...settings,
@@ -351,7 +367,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
 
     // Role item
     if (card.type === "role") {
-      const isClosed = settings?.mobile?.closedRoles?.includes(card.name);
+      const isClosed = settings?.mobile?.closedRoles?.includes(getSectionKey(card));
       return (
         <List.Item key={`list-role-${index}`} className="list-category" onClick={() => handleRoleClick(card)}>
           <span className="icon">{isClosed ? <ChevronRight size={14} /> : <ChevronDown size={14} />}</span>
@@ -364,7 +380,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
     if (settings?.mobile?.closedFactions?.includes(card.faction_id) && card.allied) {
       return null;
     }
-    if (settings?.mobile?.closedRoles?.includes(card.role)) {
+    if (settings?.mobile?.closedRoles?.includes(getCardSectionKey(card))) {
       return null;
     }
 

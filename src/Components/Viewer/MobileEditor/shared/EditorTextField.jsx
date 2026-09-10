@@ -4,7 +4,15 @@ import { useState, useRef, useEffect } from "react";
  * Auto-saving text input with debounce.
  * Debounces onChange by 300ms, but always flushes on blur.
  */
-export const EditorTextField = ({ label, value, onChange, placeholder, multiline = false, className = "" }) => {
+export const EditorTextField = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  multiline = false,
+  disabled = false,
+  className = "",
+}) => {
   const [localValue, setLocalValue] = useState(value ?? "");
   const timerRef = useRef(null);
   const onChangeRef = useRef(onChange);
@@ -57,6 +65,7 @@ export const EditorTextField = ({ label, value, onChange, placeholder, multiline
         onChange={handleChange}
         onBlur={handleBlur}
         placeholder={placeholder}
+        disabled={disabled}
         rows={multiline ? 3 : undefined}
       />
     </div>

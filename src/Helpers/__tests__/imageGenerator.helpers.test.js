@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { assignBucketRef } from "../imageGenerator.helpers";
+import { assignBucketRef, IMAGE_GENERATOR_EDITIONS, resolveInitialEdition } from "../imageGenerator.helpers";
 
 describe("assignBucketRef", () => {
   it("creates a bucket on demand for a previously unseen faction id (e.g. Adeptus Titanicus)", () => {
@@ -38,5 +38,25 @@ describe("assignBucketRef", () => {
     const buckets = {};
     assignBucketRef(buckets, undefined, 0, "x");
     expect(buckets).toEqual({});
+  });
+});
+
+describe("IMAGE_GENERATOR_EDITIONS", () => {
+  it("offers both 40K editions, 11th edition first", () => {
+    expect(IMAGE_GENERATOR_EDITIONS.map((e) => e.id)).toEqual(["40k-11e", "40k-10e"]);
+    IMAGE_GENERATOR_EDITIONS.forEach((e) => expect(e.title).toBeTruthy());
+  });
+});
+
+describe("resolveInitialEdition", () => {
+  it("keeps the current datasource when it is a supported 40K edition", () => {
+    expect(resolveInitialEdition("40k-11e")).toBe("40k-11e");
+    expect(resolveInitialEdition("40k-10e")).toBe("40k-10e");
+  });
+
+  it("falls back to 10th edition for unsupported / non-40K sources", () => {
+    expect(resolveInitialEdition("aos")).toBe("40k-10e");
+    expect(resolveInitialEdition("custom-1234")).toBe("40k-10e");
+    expect(resolveInitialEdition(undefined)).toBe("40k-10e");
   });
 });

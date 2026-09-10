@@ -4,9 +4,11 @@ import { FloatingToolbar } from "../Toolbar/FloatingToolbar";
 import { AgeOfSigmarCardDisplay } from "../AgeOfSigmar/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { CustomCardDisplay } from "../Custom/CustomCardDisplay";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
+import { useTemplateCardWidth } from "../../Hooks/useTemplateCardWidth";
 
 /**
  * The card-display view for the middle panel. Owns the auto-fit scaling and
@@ -40,7 +42,13 @@ export const CardView = ({
     return "unit";
   };
 
-  const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), settings.autoFitEnabled !== false);
+  const templateWidth = useTemplateCardWidth(activeCard);
+  const { autoScale } = useAutoFitScale(
+    cardContainerRef,
+    getCardType(),
+    settings.autoFitEnabled !== false,
+    templateWidth,
+  );
 
   const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
   const currentZoom = settings.zoom || 100;
@@ -65,6 +73,7 @@ export const CardView = ({
       <Row style={{ overflow: "hidden", justifyContent: "center", flex: "1 0 auto" }}>
         {activeCard?.source === "40k" && <Warhammer40KCardDisplay />}
         {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={activeCard.print_side || "front"} />}
+        {activeCard?.source === "40k-11e" && <Warhammer40K11eCardDisplay side={activeCard.print_side || "front"} />}
         {activeCard?.source === "basic" && <Warhammer40KCardDisplay />}
         {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
         {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}

@@ -175,7 +175,7 @@ export const ImageExport = () => {
                             <div ref={(el) => (cardsFrontRef.current[index] = el)}>
                               <CardRenderer card={card} cardScaling={100} printSide="front" backgrounds={backgrounds} />
                             </div>
-                            {card?.source === "40k-10e" &&
+                            {["40k-10e", "40k-11e"].includes(card?.source) &&
                               settings.showCardsAsDoubleSided !== true &&
                               card?.cardType === "DataCard" &&
                               card?.variant !== "full" && (

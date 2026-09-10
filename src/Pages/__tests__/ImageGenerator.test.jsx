@@ -32,8 +32,20 @@ const titanicus = {
   stratagems: [],
 };
 
+// 11th edition faction shape: uuid ids and shared core stratagems stamped with
+// source "40k-11e" (see get40k11eData).
+const astartes = {
+  id: "01623188-9470-4441-96b0-e06eb2572bb5",
+  name: "Adeptus Astartes",
+  colours: { banner: "#333", header: "#444" },
+  datasheets: [{ name: "Intercessor Squad", cardType: "DataCard", source: "40k-11e", faction_id: "01623188" }],
+  stratagems: [],
+  basicStratagems: [{ name: "Command Re-roll", cardType: "stratagem", source: "40k-11e" }],
+};
+
+let mockData = [titanicus];
 vi.mock("../../Hooks/useDataSourceStorage", () => ({
-  useDataSourceStorage: () => ({ dataSource: { data: [titanicus] } }),
+  useDataSourceStorage: () => ({ dataSource: { data: mockData } }),
 }));
 vi.mock("../../Hooks/useSettingsStorage", () => ({
   useSettingsStorage: () => ({ settings: {}, updateSettings: vi.fn() }),
@@ -42,22 +54,42 @@ vi.mock("../../Helpers/screenshot.helpers", () => ({ captureToBlob: vi.fn() }));
 vi.mock("../../Components/Warhammer40k-10e/CardDisplay", () => ({
   Warhammer40K10eCardDisplay: ({ card, side }) => <div data-testid="card-10e" data-side={side} data-name={card.name} />,
 }));
+vi.mock("../../Components/Warhammer40k-11e/CardDisplay", () => ({
+  Warhammer40K11eCardDisplay: ({ card, side }) => <div data-testid="card-11e" data-side={side} data-name={card.name} />,
+}));
 
 import { ImageGenerator } from "../ImageGenerator";
 
+// The page has two selects (edition picker + faction multi-select); target the
+// faction one explicitly.
 const selectFaction = (container, name) => {
-  fireEvent.mouseDown(container.querySelector(".ant-select-selector"));
+  fireEvent.mouseDown(container.querySelector(".ant-select-multiple .ant-select-selector"));
   const option = Array.from(document.querySelectorAll(".ant-select-item-option")).find((el) => el.textContent === name);
   fireEvent.click(option);
 };
 
 describe("ImageGenerator", () => {
   it("renders datasheets for a faction id that is not in any hardcoded list", () => {
+    mockData = [titanicus];
     const { container, getAllByTestId } = render(<ImageGenerator />);
     selectFaction(container, "Adeptus Titanicus");
     // Two datasheets, each rendered front + back.
     const cards = getAllByTestId("card-10e");
     expect(cards).toHaveLength(4);
     expect(cards[0].getAttribute("data-name")).toBe("Warhound Titan");
+  });
+
+  it("renders 11th edition datasheets and core stratagems", () => {
+    mockData = [astartes];
+    const { container, getAllByTestId, getByText } = render(<ImageGenerator />);
+    selectFaction(container, "Adeptus Astartes");
+    fireEvent.click(getByText("Stratagems"));
+
+    const cards = getAllByTestId("card-11e");
+    const names = cards.map((c) => c.getAttribute("data-name"));
+    expect(names).toContain("Intercessor Squad");
+    // Core stratagems carry source 40k-11e and must render through the 11e
+    // display, not silently produce an empty capture node.
+    expect(names).toContain("Command Re-roll");
   });
 });

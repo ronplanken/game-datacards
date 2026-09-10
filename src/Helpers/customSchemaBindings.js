@@ -69,29 +69,25 @@ const generateUnitBindings = (cardTypeDef, datasourceName) => {
     }
   }
 
-  // Abilities group
   if (schema.abilities?.categories?.length > 0) {
-    const bindings = [];
+    for (const category of schema.abilities.categories) {
+      const bindings = [];
 
-    for (let i = 0; i < 3; i++) {
-      bindings.push({
-        path: `abilities[${i}].name`,
-        label: `Ability ${i + 1} Name`,
-        type: "string",
-      });
-      bindings.push({
-        path: `abilities[${i}].description`,
-        label: `Ability ${i + 1} Description`,
-        type: "string",
-      });
-      bindings.push({
-        path: `abilities[${i}].category`,
-        label: `Ability ${i + 1} Category`,
-        type: "string",
-      });
+      for (let i = 0; i < 3; i++) {
+        bindings.push({
+          path: `abilities.${category.key}[${i}].name`,
+          label: `Ability ${i + 1} Name`,
+          type: "string",
+        });
+        bindings.push({
+          path: `abilities.${category.key}[${i}].description`,
+          label: `Ability ${i + 1} Description`,
+          type: "string",
+        });
+      }
+
+      groups.push({ name: category.label || category.key, bindings });
     }
-
-    groups.push({ name: schema.abilities.label || "Abilities", bindings });
   }
 
   // Keywords group
@@ -228,13 +224,14 @@ const generateUnitArraySources = (cardTypeDef) => {
     }
   }
 
-  // Abilities
   if (schema.abilities?.categories?.length > 0) {
-    sources.push({
-      path: "abilities",
-      label: schema.abilities.label || "Abilities",
-      itemFields: ["name", "description", "category"],
-    });
+    for (const category of schema.abilities.categories) {
+      sources.push({
+        path: `abilities.${category.key}`,
+        label: category.label || category.key,
+        itemFields: ["name", "description"],
+      });
+    }
   }
 
   // Keywords
