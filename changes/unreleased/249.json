@@ -1,0 +1,5 @@
+{
+  "title": "Faction list shows correct factions after switching datasource",
+  "body": "When you switched to a custom datasource on mobile, the faction picker would show factions from the previous game system for a moment. Now it always shows the correct factions for the datasource you are viewing.",
+  "severity": "info"
+}
