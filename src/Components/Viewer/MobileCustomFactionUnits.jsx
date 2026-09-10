@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { getTargetArray } from "../../Helpers/customDatasource.helpers";
+import { getMobileCardPath } from "../../Helpers/mobileRouting.helpers";
 import "./MobileFactionUnits.css";
 
 export const MobileCustomFactionUnits = () => {
@@ -26,9 +27,21 @@ export const MobileCustomFactionUnits = () => {
     navigate(`/mobile/${factionSlug}`);
   };
 
+  const cardBaseTypes = useMemo(() => {
+    if (!schema?.cardTypes) return {};
+    const map = {};
+    schema.cardTypes.forEach((ct) => {
+      if (ct.baseType) {
+        map[ct.key] = ct.baseType;
+      }
+    });
+    return map;
+  }, [schema]);
+
   const handleCardClick = (card) => {
     const cardSlug = card.name?.toLowerCase().replaceAll(" ", "-");
-    navigate(`/mobile/${factionSlug}/${cardSlug}`);
+    const baseType = cardBaseTypes[card.cardType];
+    navigate(getMobileCardPath(factionSlug, cardSlug, baseType));
   };
 
   // Collect all cards grouped by card type

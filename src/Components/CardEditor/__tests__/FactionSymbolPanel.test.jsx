@@ -104,6 +104,18 @@ describe("FactionSymbolPanel", () => {
     expect(updateActiveCard).toHaveBeenCalledWith(expect.objectContaining({ keepFactionSymbolColours: true }));
   });
 
+  it.each([
+    ["Scale", "1.3", "factionSymbolScale", 1.3],
+    ["Horizontal Position", "-17", "factionSymbolPositionX", -17],
+    ["Vertical Position", "12", "factionSymbolPositionY", 12],
+  ])("accepts typed %s values", (label, text, field, value) => {
+    render(<FactionSymbolPanel />);
+    const input = screen.getByText(label).closest(".ant-form-item").querySelector("input[role='spinbutton']");
+    fireEvent.change(input, { target: { value: text } });
+    fireEvent.blur(input);
+    expect(updateActiveCard).toHaveBeenLastCalledWith({ ...activeCard, [field]: value });
+  });
+
   it("hides the controls while the custom symbol is switched off", () => {
     activeCard = { uuid: "card-1", hasCustomFactionSymbol: false };
     render(<FactionSymbolPanel />);

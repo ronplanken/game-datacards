@@ -1,4 +1,5 @@
-import { Form, Input, Select, Switch, Upload, Button, Space, Typography, Slider, Card } from "antd";
+import { SliderWithInput } from "../../Shared/SliderWithInput";
+import { Form, Input, Select, Switch, Upload, Button, Space, Typography, Card } from "antd";
 import { message } from "../../Toast/message";
 import { Upload as UploadIcon, Trash2 } from "lucide-react";
 import React, { useState, useEffect } from "react";
@@ -159,37 +160,33 @@ export function UnitStylingInfo() {
           </Form.Item>
 
           <Form.Item label={"Horizontal Position"}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-200}
-                max={200}
-                value={activeCard.imagePositionX || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, imagePositionX: value })}
-                marks={{
-                  [-200]: "Left",
-                  0: "Center",
-                  200: "Right",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-200}
+              max={200}
+              value={activeCard.imagePositionX || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, imagePositionX: value })}
+              marks={{
+                [-200]: "Left",
+                0: "Center",
+                200: "Right",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
 
           <Form.Item label={"Vertical Position"} style={{ marginBottom: 0 }}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-200}
-                max={200}
-                value={activeCard.imagePositionY || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, imagePositionY: value })}
-                marks={{
-                  [-200]: "Top",
-                  0: "Center",
-                  200: "Bottom",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-200}
+              max={200}
+              value={activeCard.imagePositionY || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, imagePositionY: value })}
+              marks={{
+                [-200]: "Top",
+                0: "Center",
+                200: "Bottom",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
         </Form>
       </Card>

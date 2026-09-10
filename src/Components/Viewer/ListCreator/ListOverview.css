@@ -376,6 +376,18 @@
   flex-shrink: 0;
 }
 
+.list-overview-more-item--danger {
+  color: var(--bs-danger);
+}
+
+.list-overview-more-item--danger svg {
+  color: var(--bs-danger);
+}
+
+.list-overview-more-item--danger:active {
+  background: var(--bs-danger-bg);
+}
+
 /* ===========================================
    LIST SHARE SHEET
    =========================================== */

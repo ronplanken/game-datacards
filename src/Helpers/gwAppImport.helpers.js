@@ -1,102 +1,23 @@
 import Fuse from "fuse.js";
 import { v4 as uuidv4 } from "uuid";
-
-// All valid section headers
-const SECTION_HEADERS = [
-  "CHARACTERS",
-  "BATTLELINE",
-  "DEDICATED TRANSPORTS",
-  "OTHER DATASHEETS",
-  "OTHER",
-  "ALLIED UNITS",
-];
-
-// Space Marine chapters that appear as subfactions
-const SPACE_MARINE_CHAPTERS = [
-  "Blood Angels",
-  "Dark Angels",
-  "Space Wolves",
-  "Deathwatch",
-  "Black Templars",
-  "Ultramarines",
-  "Imperial Fists",
-  "Salamanders",
-  "Iron Hands",
-  "Raven Guard",
-  "White Scars",
-];
-
-// Battle size keywords
-const BATTLE_SIZE_KEYWORDS = ["Strike Force", "Incursion", "Onslaught", "Combat Patrol"];
-
-// Bullet point patterns
-const BULLET_PATTERN = /^[•\-\*◦]\s*/;
-
-// Points pattern - matches both "pts" and "Points"
-const POINTS_PATTERN = /\((\d+)\s*(?:pts?|points?)\)$/i;
+import { parseArmyList } from "./armyListParser.helpers";
+import { localize } from "./localization.helpers";
+import { BATTLE_SIZES, canAddDetachment } from "./listRoster.helpers";
+import { filterPointsTiersForArmy, getSelectablePointsTiers } from "./listPoints.helpers";
 
 // Match score thresholds for fuzzy matching classification
 const MATCH_THRESHOLD_CONFIDENT = 0.2;
 const MATCH_THRESHOLD_AMBIGUOUS = 0.4;
 
-/**
- * Check if a line starts with a battle size keyword
- * @param {string} line - The line to check
- * @returns {boolean} True if the line starts with a battle size keyword
- */
-const isBattleSizeLine = (line) => {
-  return BATTLE_SIZE_KEYWORDS.some((keyword) => line.startsWith(keyword));
-};
-
-/**
- * Parse enhancement name and cost from text like "Master-Crafted Weapon (+10 pts)"
- * @param {string} text - The enhancement text to parse
- * @returns {{name: string, cost: number}} Object with enhancement name and cost
- */
-const parseEnhancement = (text) => {
-  const costMatch = text.match(/\(\+?(\d+)\s*(?:pts?|points?)\)$/i);
-  if (costMatch) {
-    const cost = parseInt(costMatch[1], 10);
-    const name = text.replace(costMatch[0], "").trim();
-    return { name, cost };
-  }
-  return { name: text.trim(), cost: 0 };
-};
-
-/**
- * Analyzes bullet indentation structure to determine model count
- * Based on 40k-ez implementation:
- * - If bullets have nested structure (multiple indent levels): count first-level bullets only
- * - If bullets are all at same level (flat structure): it's a single-model unit, return 1
- * - Special case: if ALL bullets have quantity 1, treat as equipment list (handles inconsistent formatting)
- * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines with indentation
- * @returns {{modelCount: number, modelIndentLevel: number|null}} Object with model count and indent level
- */
-export const analyzeModelCount = (bulletLines) => {
-  if (bulletLines.length === 0) {
-    return { modelCount: 1, modelIndentLevel: null };
-  }
-
-  // Special case: if all bullets have quantity 1, it's likely all equipment/weapons
-  // This handles cases like vehicles where GW app has inconsistent indentation
-  const allQuantityOne = bulletLines.every((b) => b.quantity === 1);
-  if (allQuantityOne) {
-    return { modelCount: 1, modelIndentLevel: null };
-  }
-
-  // Get all unique indentation levels
-  const indentLevels = [...new Set(bulletLines.map((b) => b.indent))].sort((a, b) => a - b);
-
-  if (indentLevels.length === 1) {
-    // All bullets at same indentation level = single-model unit with weapon list
-    return { modelCount: 1, modelIndentLevel: null };
-  }
-
-  // Multiple indentation levels = first level is models, deeper levels are weapons
-  const firstIndentLevel = indentLevels[0];
-  const modelCount = bulletLines.filter((b) => b.indent === firstIndentLevel).reduce((sum, b) => sum + b.quantity, 0);
-
-  return { modelCount: modelCount > 0 ? modelCount : 1, modelIndentLevel: firstIndentLevel };
+// The section a unit is reported under, per bucket the parser puts it in. An
+// export that states its own section header keeps that header verbatim; these
+// are only for the shapes that carry none (a compact WTC export), so a caller
+// grouping by section still gets something sensible.
+const SECTION_BY_CATEGORY = {
+  characters: "CHARACTERS",
+  battleline: "BATTLELINE",
+  transports: "DEDICATED TRANSPORTS",
+  other: "OTHER DATASHEETS",
 };
 
 /**
@@ -110,263 +31,75 @@ const removeInvisibleChars = (text) => {
 };
 
 /**
- * Finalize a unit by extracting weapons from bullet lines and calculating model count.
- * This is a shared helper used when saving units (at section headers, unit headers, or end of parsing).
+ * Parse the full GW App text format into structured data.
  *
- * @param {Object} unit - The current unit being parsed
- * @param {Array<{indent: number, quantity: number, text: string}>} bulletLines - Parsed bullet lines
- * @returns {Object} Finalized unit with models and weapons
- */
-export const finalizeUnit = (unit, bulletLines) => {
-  const { modelCount, modelIndentLevel } = analyzeModelCount(bulletLines);
-  const weapons = [];
-
-  if (modelIndentLevel !== null) {
-    // Nested structure: weapons are bullets with indent > model indent level
-    for (const bullet of bulletLines) {
-      if (bullet.indent > modelIndentLevel) {
-        weapons.push(bullet.text);
-      }
-    }
-  } else {
-    // Flat structure: all non-metadata bullets are weapons
-    for (const bullet of bulletLines) {
-      if (!bullet.text.toLowerCase().includes("warlord") && !bullet.text.toLowerCase().includes("enhancement")) {
-        weapons.push(bullet.text);
-      }
-    }
-  }
-
-  return {
-    ...unit,
-    models: modelCount,
-    weapons,
-  };
-};
-
-/**
- * Parse the full GW App text format into structured data
- * Based on 40k-ez implementation
+ * The reading itself is done by `parseArmyList` (see armyListParser.helpers.js),
+ * the parser shared with the streamer app, which handles both the app's title
+ * format and the WTC "+++" format across 10th and 11th edition. This wraps it in
+ * the shape the importers consume: units carry an `originalName` to match
+ * against datasheets, an enhancement split into name and cost, and a section.
+ *
  * @param {string} text - The raw text copied from GW App
- * @returns {{listName: string|null, totalPoints: number|null, factionName: string|null, battleSize: string|null, detachment: string|null, subfaction: string|null, units: Array, error: string|null}} Parsed list data
+ * @returns {{listName: string|null, totalPoints: number|null, factionName: string|null, battleSize: string|null, detachment: string|null, detachmentPoints: number|null, disposition: string|null, subfaction: string|null, units: Array, error: string|null}} Parsed list data
  */
 export const parseGwAppText = (text) => {
-  if (!text || !text.trim()) {
-    return {
-      listName: null,
-      totalPoints: null,
-      factionName: null,
-      battleSize: null,
-      detachment: null,
-      subfaction: null,
-      units: [],
-      error: "No text provided",
-    };
-  }
-
-  // Clean invisible characters before parsing
-  const cleanedText = removeInvisibleChars(text);
-  const lines = cleanedText.split("\n");
-  const units = [];
-  let listName = null;
-  let factionName = null;
-  let battleSize = null;
-  let detachment = null;
-  let subfaction = null;
-  let totalPoints = null;
-
-  let currentUnit = null;
-  let bulletLines = [];
-  let currentSection = null;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const trimmed = line.trim();
-
-    if (!trimmed) continue;
-
-    // Calculate indentation level
-    const indentation = line.length - line.trimStart().length;
-
-    // Parse header lines (first few lines before sections)
-    if (i === 0) {
-      // Line 1: List name and total points "My List (2000 Points)"
-      const line1Match = trimmed.match(/^(.+?)\s*\((\d+)\s*(?:pts?|points?)\)$/i);
-      if (line1Match) {
-        listName = line1Match[1].trim();
-        totalPoints = parseInt(line1Match[2], 10);
-      }
-      continue;
-    }
-
-    if (i === 2) {
-      // Line 3: Faction name (line index 2, after empty line)
-      factionName = trimmed;
-      continue;
-    }
-
-    if (i === 3) {
-      if (factionName === "Space Marines") {
-        // Line 4 for Space Marines: Subfaction (keep faction as "Space Marines")
-        subfaction = trimmed;
-      } else {
-        // Line 4 for non-Space Marines: Could be Detachment or Battle size
-        if (isBattleSizeLine(trimmed)) {
-          battleSize = trimmed;
-        } else {
-          detachment = trimmed;
-        }
-      }
-      continue;
-    }
-
-    if (i === 4) {
-      if (subfaction) {
-        // Line 5 for Space Marines: Battle size
-        battleSize = trimmed;
-      } else {
-        // Line 5 for non-Space Marines: Could be Detachment or Battle size
-        if (!battleSize && isBattleSizeLine(trimmed)) {
-          battleSize = trimmed;
-        } else if (!detachment) {
-          detachment = trimmed;
-        }
-      }
-      continue;
-    }
-
-    if (i === 5) {
-      if (subfaction) {
-        // Line 6 for Space Marines: Detachment
-        detachment = trimmed;
-      }
-      continue;
-    }
-
-    // Track section headers
-    const upperTrimmed = trimmed.toUpperCase();
-    if (SECTION_HEADERS.includes(upperTrimmed)) {
-      // Save previous unit if exists
-      if (currentUnit) {
-        units.push(finalizeUnit(currentUnit, bulletLines));
-        currentUnit = null;
-        bulletLines = [];
-      }
-
-      currentSection = upperTrimmed;
-      continue;
-    }
-
-    // Parse enhancement lines
-    const enhancementMatch = trimmed.match(/^[•\-\*◦]?\s*Enhancements?:\s*(.+)$/i);
-    if (enhancementMatch && currentUnit) {
-      currentUnit.enhancement = parseEnhancement(enhancementMatch[1]);
-      continue;
-    }
-
-    // Skip special lines
-    if (/^(Warlord|Exported with|Created with)/i.test(trimmed)) {
-      if (/^Warlord$/i.test(trimmed) && currentUnit) {
-        currentUnit.isWarlord = true;
-      }
-      continue;
-    }
-
-    // Check if this is a unit header line (has points in parentheses)
-    const unitHeaderMatch = trimmed.match(/^(.+?)\s*\((\d+)\s*(?:pts?|points?)\)$/i);
-    if (unitHeaderMatch) {
-      // Save previous unit if exists
-      if (currentUnit) {
-        units.push(finalizeUnit(currentUnit, bulletLines));
-      }
-
-      // Start new unit
-      currentUnit = {
-        originalName: unitHeaderMatch[1].trim(),
-        points: parseInt(unitHeaderMatch[2], 10),
-        models: 1,
-        section: currentSection,
-        isWarlord: false,
-        enhancement: null,
-        weapons: [],
-        matchStatus: null,
-        matchedCard: null,
-        alternatives: [],
-        skipped: false,
-      };
-      bulletLines = [];
-      continue;
-    }
-
-    // Parse model composition lines (bullet points with quantities)
-    const modelMatch = trimmed.match(/^[•\-\*◦]\s*(\d+)x\s+(.+)/);
-    if (modelMatch && currentUnit) {
-      const quantity = parseInt(modelMatch[1], 10);
-      const text = modelMatch[2].trim();
-      bulletLines.push({ indent: indentation, quantity, text });
-      continue;
-    }
-
-    // Parse simple bullet lines (warlord, enhancement, weapons without quantity)
-    if (BULLET_PATTERN.test(trimmed) && currentUnit) {
-      const cleanText = trimmed.replace(BULLET_PATTERN, "").trim();
-
-      // Check for warlord
-      if (/^Warlord$/i.test(cleanText)) {
-        currentUnit.isWarlord = true;
-        continue;
-      }
-
-      // Check for enhancement
-      const enhMatch = cleanText.match(/^Enhancements?:\s*(.+)$/i);
-      if (enhMatch) {
-        currentUnit.enhancement = parseEnhancement(enhMatch[1]);
-        continue;
-      }
-
-      // Otherwise it's equipment/weapons
-      bulletLines.push({ indent: indentation, quantity: 1, text: cleanText });
-      continue;
-    }
-
-    // Parse quantity lines WITHOUT bullet points (e.g., "9x Bolt rifle")
-    // These are continuation weapons in a model's equipment list
-    const noBulletQuantityMatch = trimmed.match(/^(\d+)x\s+(.+)/);
-    if (noBulletQuantityMatch && currentUnit) {
-      const quantity = parseInt(noBulletQuantityMatch[1], 10);
-      const text = noBulletQuantityMatch[2].trim();
-      bulletLines.push({ indent: indentation, quantity, text });
-    }
-  }
-
-  // Save last unit
-  if (currentUnit) {
-    units.push(finalizeUnit(currentUnit, bulletLines));
-  }
-
-  if (!factionName) {
-    return {
-      listName,
-      totalPoints,
-      factionName: null,
-      battleSize,
-      detachment,
-      subfaction,
-      units: [],
-      error: "Could not identify faction name",
-    };
-  }
-
-  return {
-    listName,
-    totalPoints,
-    factionName,
-    battleSize,
-    detachment,
-    subfaction,
-    units,
+  const empty = {
+    listName: null,
+    totalPoints: null,
+    factionName: null,
+    battleSize: null,
+    detachment: null,
+    detachmentPoints: null,
+    disposition: null,
+    subfaction: null,
+    units: [],
     error: null,
   };
+
+  if (!text || !text.trim()) {
+    return { ...empty, error: "No text provided" };
+  }
+
+  const list = parseArmyList(removeInvisibleChars(text));
+
+  const parsed = {
+    listName: list.name,
+    totalPoints: list.points,
+    factionName: list.faction,
+    battleSize: list.battleSize,
+    detachment: list.detachment,
+    detachmentPoints: list.detachmentPoints,
+    disposition: list.disposition,
+    subfaction: list.subfaction,
+    units: list.units.map((unit) => ({
+      originalName: unit.name,
+      points: unit.points ?? 0,
+      models: unit.models ?? 1,
+      section: unit.section || SECTION_BY_CATEGORY[unit.category] || null,
+      category: unit.category,
+      isWarlord: unit.isWarlord,
+      // The importer subtracts the cost from the unit's points to get the
+      // datasheet's own cost. An export that annotates the enhancement only as
+      // an "(Upgrade)" states no cost, so it stays 0 here and the faction data
+      // prices it in matchEnhancementsToFaction.
+      enhancement: unit.enhancement ? { name: unit.enhancement, cost: unit.enhancementCost ?? 0 } : null,
+      weapons: unit.wargear,
+      // The characters attached to this unit, and the block it was listed in.
+      leaders: unit.leaders,
+      attachment: unit.attachment,
+      matchStatus: null,
+      matchedCard: null,
+      alternatives: [],
+      skipped: false,
+    })),
+    error: null,
+  };
+
+  if (!parsed.factionName) {
+    return { ...parsed, units: [], error: "Could not identify faction name" };
+  }
+
+  return parsed;
 };
 
 /**
@@ -861,20 +594,19 @@ export const matchEnhancementsToFaction = (units, faction, listDetachment) => {
  * Build import-ready card objects from matched units.
  * Assigns UUIDs, sets points/models, applies enhancements, and filters weapons.
  * @param {Array} units - Units with matchedCard data
+ * @param {{ detachments?: Array<string>, factions?: Array<string> }} [army] - the
+ *   army the list is being built for, so 11th edition units land on the size tier
+ *   that army pays (see getImportUnitSize)
  * @returns {Array} Array of card objects ready for import
  */
-export const buildCardsFromUnits = (units) => {
+export const buildCardsFromUnits = (units, army = {}) => {
   return units.map((unit) => {
     let card = { ...unit.matchedCard };
     card.uuid = uuidv4();
     card.isCustom = true;
 
     if (unit.points) {
-      card.unitSize = {
-        ...(card.unitSize || {}),
-        cost: unit.points - (unit.enhancement?.cost || 0),
-        models: unit.models || 1,
-      };
+      card.unitSize = getImportUnitSize(card, unit, army);
     }
 
     if (unit.isWarlord) {
@@ -898,4 +630,135 @@ export const buildCardsFromUnits = (units) => {
 
     return card;
   });
+};
+
+// 11th edition army roster.
+//
+// An 11e list is more than its units: the battle size sets the Detachment Points
+// budget, and the army buys several detachments out of it. All three are in the
+// export header, so an import can set up the whole roster instead of leaving the
+// user to pick it again by hand.
+
+/** Lowercased, punctuation-free words, for comparing names that are written loosely. */
+const normalizeName = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+
+/**
+ * The battle size an export names ("Strike Force"), as a key of BATTLE_SIZES.
+ *
+ * @param {string|null} name - the battle size as the export wrote it
+ * @returns {string|null} the battle size key, or null when it names none this edition has
+ */
+export const matchBattleSize = (name) => {
+  const wanted = normalizeName(name);
+  if (!wanted) return null;
+  return BATTLE_SIZES.find((size) => normalizeName(size.label) === wanted)?.key || null;
+};
+
+/**
+ * The detachments an 11th edition export names, resolved against the faction's own.
+ *
+ * An 11e army holds several detachments and the export writes them as one line,
+ * joined by "and" or "+" - "Ironstorm Spearhead and Marshal's Household". That
+ * cannot be split on the joiner, because a detachment's own name may contain one
+ * ("Legends of Saga and Song and Saga of the Beastslayer" is two detachments, not
+ * three). So the faction's detachment names are searched for inside the line
+ * instead, longest first, each match claiming its words so a shorter name cannot
+ * take them again.
+ *
+ * The result is capped at what the battle size can pay for, in the order the
+ * export lists them, so an import can never build a roster the list builder
+ * itself would refuse.
+ *
+ * @param {string|null} text - the detachment line from the export
+ * @param {Object} faction - the matched faction, with its `detachments`
+ * @param {string|null} battleSizeKey - the battle size, for the DP budget
+ * @returns {Array} the faction's own detachment objects, in the order named
+ */
+export const matchDetachmentsToFaction = (text, faction, battleSizeKey) => {
+  const haystack = normalizeName(text);
+  const detachments = faction?.detachments;
+  if (!haystack || !Array.isArray(detachments) || detachments.length === 0) return [];
+
+  // Longest name first, so "Legends of Saga and Song" claims its words before
+  // the "Saga of the Beastslayer" that shares one with it gets to look.
+  const candidates = detachments
+    .map((detachment) => ({ detachment, name: normalizeName(localize(detachment?.name, "en")) }))
+    .filter((entry) => entry.name.length > 0)
+    .sort((a, b) => b.name.length - a.name.length);
+
+  const found = [];
+  // Claimed words are blanked out rather than removed, so the positions of the
+  // names still to be matched do not shift.
+  let remaining = haystack;
+  for (const { detachment, name } of candidates) {
+    const at = remaining.search(new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`));
+    if (at < 0) continue;
+    found.push({ detachment, at });
+    remaining = remaining.slice(0, at) + " ".repeat(name.length) + remaining.slice(at + name.length);
+  }
+
+  // In the order the export names them, and only as many as the budget allows.
+  return found
+    .sort((a, b) => a.at - b.at)
+    .reduce((selected, { detachment }) => {
+      if (!canAddDetachment(selected, detachment, battleSizeKey)) return selected;
+      return [...selected, detachment];
+    }, []);
+};
+
+/**
+ * The army roster an import can set on the list it creates: the battle size and
+ * the detachments, both resolved against the app's own data. Empty for an export
+ * that states neither, and for a faction with no detachments of its own (10th
+ * edition data), so the caller can apply it unconditionally.
+ *
+ * @param {Object} parsed - the result of parseGwAppText
+ * @param {Object} faction - the matched faction
+ * @returns {{battleSize: string|null, detachments: Array}}
+ */
+export const getImportRoster = (parsed, faction) => {
+  const battleSize = matchBattleSize(parsed?.battleSize);
+  return {
+    battleSize,
+    detachments: matchDetachmentsToFaction(parsed?.detachment, faction, battleSize),
+  };
+};
+
+/**
+ * The size tier an imported unit lands on.
+ *
+ * 11th edition prices a datasheet per size tier, and the list builder works on
+ * those tiers: repricing when a detachment changes, and the unit config modal,
+ * both match a card's `unitSize` against the entries in `card.points`. A tier
+ * invented from the pasted points would match none of them, so the export's
+ * numbers are used to pick one of the card's own tiers instead - by size and
+ * price together, then by either on its own, because the parser can miscount the
+ * models of a squad whose export lost its indentation.
+ *
+ * Falling back to the pasted cost keeps the list total the user pasted, which is
+ * also what a 10th edition card (no tiers of its own) always gets.
+ *
+ * @param {Object} card - the matched datasheet
+ * @param {Object} unit - the parsed unit, with its points, models and enhancement
+ * @param {{ detachments?: Array<string>, factions?: Array<string> }} [army] - the
+ *   army context, so a price scoped to a detachment or a faction keyword wins
+ * @returns {Object} the tier to store as the card's `unitSize`
+ */
+export const getImportUnitSize = (card, unit, army = {}) => {
+  const cost = (unit?.points ?? 0) - (unit?.enhancement?.cost || 0);
+  const models = unit?.models || 1;
+  const pasted = { ...(card?.unitSize || {}), cost, models };
+
+  const tiers = filterPointsTiersForArmy(getSelectablePointsTiers(card), army);
+  if (tiers.length === 0) return pasted;
+
+  const sameSize = (tier) => Number(tier?.models) === models;
+  const samePrice = (tier) => Number(tier?.cost) === cost;
+
+  const tier = tiers.find((t) => sameSize(t) && samePrice(t)) || tiers.find(samePrice) || tiers.find(sameSize);
+  return tier ? { ...tier } : pasted;
 };
