@@ -1,5 +1,6 @@
-import { Col, InputNumber, Row, Slider } from "antd";
+import { InputNumber, Slider } from "antd";
 import React from "react";
+import "./SliderWithInput.css";
 
 const derivePrecision = (step) => {
   if (!step || step >= 1) return 0;
@@ -41,21 +42,21 @@ export const SliderWithInput = ({
   const resolvedPrecision = precision ?? derivePrecision(step);
 
   return (
-    <Row gutter={[8, 0]} align="middle" wrap={false}>
-      <Col flex="auto">
+    <div className="slider-with-input">
+      <div className="slider-with-input-track">
         <Slider
           min={min}
           max={max}
           step={step}
           value={value}
           onChange={handleChange}
-          marks={marks}
           tooltip={tooltip}
           disabled={disabled}
+          marks={marks}
           {...sliderProps}
         />
-      </Col>
-      <Col flex="none">
+      </div>
+      <div className="slider-with-input-number">
         <InputNumber
           min={min}
           max={max}
@@ -70,7 +71,7 @@ export const SliderWithInput = ({
           style={{ width: inputWidth }}
           {...inputProps}
         />
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
