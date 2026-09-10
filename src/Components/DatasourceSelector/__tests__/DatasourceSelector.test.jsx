@@ -105,7 +105,7 @@ describe("DatasourceSelector", () => {
     const dropdown = document.querySelector(".ds-dropdown");
     expect(dropdown.textContent).toContain("Basic Cards");
     expect(dropdown.textContent).toContain("40k 10th Edition");
-    expect(dropdown.textContent).toContain("40k Combat Patrol");
+    expect(dropdown.textContent).toContain("40k 10th Edition Combat Patrol");
     expect(dropdown.textContent).toContain("Wahapedia 9th Edition");
     expect(dropdown.textContent).toContain("Necromunda");
     expect(dropdown.textContent).toContain("Age of Sigmar");
