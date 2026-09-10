@@ -1,0 +1,5 @@
+{
+  "title": "Import army lists into 11th edition",
+  "body": "The Import Army List button only appeared for 10th edition lists, so an 11th edition army had to be built by hand. It is now offered for both editions, on mobile and desktop, and the list reader behind it has been replaced with the parser shared with the streamer app: it reads both the app's own export and the WTC format, keeps attached units together with the characters that lead them, counts models correctly in exports that lost their indentation, and copes with the thousands separators, footnote stars and player annotations real exports carry. An 11th edition import now also restores the army around the units: the battle size, the detachments the list bought with its Detachment Points, and its faction, with every unit landing on one of its datasheet's own size tiers so points that depend on a detachment or a faction keyword stay correct.",
+  "severity": "info"
+}

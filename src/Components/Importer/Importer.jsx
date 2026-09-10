@@ -61,8 +61,9 @@ export const Importer = () => {
     setUrlPayload(null);
   };
 
-  // Check if GW 40k App / List Forge tabs should be enabled
-  const isGwAppEnabled = settings.selectedDataSource === "40k-10e";
+  // Check if GW 40k App / List Forge tabs should be enabled. The GW app parser
+  // reads both 40k editions; List Forge builds 10th edition cards itself.
+  const isGwAppEnabled = settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-11e";
   const isLfEnabled = settings.selectedDataSource === "40k-10e";
 
   // ===========================================
@@ -196,7 +197,7 @@ export const Importer = () => {
                     <FileJson size={16} className="import-export-nav-icon" />
                     <span>GDC JSON</span>
                   </div>
-                  <Tooltip content={!isGwAppEnabled ? "Only available for 10th Edition 40k" : ""} placement="right">
+                  <Tooltip content={!isGwAppEnabled ? "Only available for 40k lists" : ""} placement="right">
                     <div
                       className={`import-export-nav-item ${activeTab === "gwapp" ? "active" : ""} ${
                         !isGwAppEnabled ? "disabled" : ""
