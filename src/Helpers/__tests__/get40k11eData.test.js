@@ -74,7 +74,8 @@ describe("get40k11eData", () => {
     vi.stubEnv("VITE_DATASOURCE_11TH_URL", "https://example.test/11th");
     vi.stubEnv("VITE_VERSION", "9.9.9");
     global.fetch = vi.fn(async (url) => ({
-      ok: true,
+      ok: !url.includes("index.json"),
+      status: url.includes("index.json") ? 404 : 200,
       text: async () => JSON.stringify(bodyFor(url)),
     }));
   });
@@ -127,9 +128,9 @@ describe("get40k11eData", () => {
     expect(basics[0].effect).toEqual({ en: "Re-roll that roll." });
   });
 
-  it("fetches one file per faction (29) plus keywords.json and core.json", async () => {
+  it("fetches 29 legacy factions plus the index probe, keywords.json and core.json", async () => {
     await get40k11eData("en");
-    const shared = (u) => u.includes("keywords.json") || u.includes("core.json");
+    const shared = (u) => u.includes("keywords.json") || u.includes("core.json") || u.includes("index.json");
     const factionCalls = global.fetch.mock.calls.filter(([u]) => !shared(u));
     expect(factionCalls).toHaveLength(29);
     expect(global.fetch.mock.calls.filter(([u]) => u.includes("keywords.json"))).toHaveLength(1);
@@ -149,7 +150,7 @@ describe("get40k11eData", () => {
   });
 
   it("degrades gracefully when keywords.json and core.json are unavailable", async () => {
-    const shared = (u) => u.includes("keywords.json") || u.includes("core.json");
+    const shared = (u) => u.includes("keywords.json") || u.includes("core.json") || u.includes("index.json");
     global.fetch = vi.fn(async (url) => ({
       ok: !shared(url),
       status: shared(url) ? 404 : 200,
