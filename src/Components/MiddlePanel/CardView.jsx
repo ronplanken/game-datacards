@@ -8,6 +8,7 @@ import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { CustomCardDisplay } from "../Custom/CustomCardDisplay";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
+import { useTemplateCardWidth } from "../../Hooks/useTemplateCardWidth";
 
 /**
  * The card-display view for the middle panel. Owns the auto-fit scaling and
@@ -41,7 +42,13 @@ export const CardView = ({
     return "unit";
   };
 
-  const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), settings.autoFitEnabled !== false);
+  const templateWidth = useTemplateCardWidth(activeCard);
+  const { autoScale } = useAutoFitScale(
+    cardContainerRef,
+    getCardType(),
+    settings.autoFitEnabled !== false,
+    templateWidth,
+  );
 
   const effectiveScale = settings.autoFitEnabled !== false ? autoScale : (settings.zoom || 100) / 100;
   const currentZoom = settings.zoom || 100;

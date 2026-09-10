@@ -259,6 +259,13 @@ function resolve40kUnitSections(card) {
     });
   }
 
+  // Styling. Weapon keyword wrapping is the only styling option that applies on
+  // a phone, so the section is only worth showing when the card has weapons to
+  // carry keywords.
+  if (card.rangedWeapons?.length || card.meleeWeapons?.length) {
+    sections.push({ key: "styling", label: "Styling", type: "styling", config: {} });
+  }
+
   return sections;
 }
 
@@ -513,6 +520,10 @@ function resolve11eUnitSections(card) {
       keywordsAreObjects: true,
     },
   });
+
+  if (card.rangedWeapons?.length || card.meleeWeapons?.length) {
+    sections.push({ key: "styling", label: "Styling", type: "styling", config: {} });
+  }
 
   return sections;
 }

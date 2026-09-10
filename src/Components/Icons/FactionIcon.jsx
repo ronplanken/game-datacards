@@ -1,6 +1,7 @@
 // Faction icon component for Warhammer 40k 10th edition cards
 // Fetches SVG and renders inline to fix MacOS print-to-PDF rendering issues
 import React, { useState, useEffect } from "react";
+import { FACTION_SYMBOL_BASE_URL } from "../../Helpers/factionSymbol.helpers";
 
 // Sanitize fetched SVG to prevent XSS and strip rendering artifacts
 const DANGEROUS_ELEMENTS = ["script", "foreignobject"];
@@ -56,10 +57,8 @@ const sanitizeSvg = (raw) => {
 // so a faction without a symbol is not re-requested on every render.
 const svgCache = new Map();
 
-const BASE_URL = "https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc";
-
 const fetchSvg = async (factionId) => {
-  const url = `${BASE_URL}/${factionId}.svg`;
+  const url = `${FACTION_SYMBOL_BASE_URL}/${factionId}.svg`;
   if (svgCache.has(url)) return svgCache.get(url);
 
   try {

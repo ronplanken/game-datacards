@@ -119,3 +119,45 @@ export const buildFactionIconCandidates = ({ factionId, names = [] } = {}) => {
   });
   return candidates;
 };
+
+export const FACTION_SYMBOL_BASE_URL = "https://raw.githubusercontent.com/ronplanken/40k-Data-Card/master/src/dc";
+
+/** URL of the SVG for a symbol code, or null when there is no code. */
+export const factionSymbolUrl = (code) => (code ? `${FACTION_SYMBOL_BASE_URL}/${code}.svg` : null);
+
+/**
+ * The faction symbol URL for a card, following the same order as
+ * `UnitFactionSymbol`: an uploaded external symbol wins, otherwise the first
+ * symbol code the card's faction id and faction names resolve to. The optional
+ * faction is the datasource faction the card belongs to; its name is used as a
+ * last lookup candidate.
+ */
+export const resolveFactionSymbolUrl = (card, faction) => {
+  if (card?.hasCustomFactionSymbol && card?.externalFactionSymbol) {
+    return card.externalFactionSymbol;
+  }
+
+  const names = factionNamesFromCard(card);
+  if (faction?.name) names.push(faction.name);
+
+  const candidates = buildFactionIconCandidates({ factionId: card?.faction_id, names });
+  return factionSymbolUrl(candidates[0]);
+};
+
+/**
+ * The faction symbol URL for a resolved binding value. The value is a URL, a
+ * symbol code or a faction name; when it resolves to none of those the card is
+ * used instead, so `{{faction_id}}` still finds a symbol on editions whose ids
+ * are not symbol codes.
+ */
+export const resolveFactionSymbolUrlForValue = (value, card, faction) => {
+  const text = typeof value === "string" ? value.trim() : "";
+  if (/^(https?:|data:)/i.test(text)) return text;
+
+  if (text) {
+    const candidates = buildFactionIconCandidates({ factionId: text, names: [text] });
+    if (candidates.length > 0) return factionSymbolUrl(candidates[0]);
+  }
+
+  return resolveFactionSymbolUrl(card, faction);
+};

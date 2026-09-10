@@ -1,7 +1,11 @@
 import { describe, it, expect } from "vitest";
 import {
+  FACTION_SYMBOL_BASE_URL,
   buildFactionIconCandidates,
   factionNamesFromCard,
+  factionSymbolUrl,
+  resolveFactionSymbolUrl,
+  resolveFactionSymbolUrlForValue,
   isLegacyFactionCode,
   normalizeFactionName,
   resolveFactionCode,
@@ -95,5 +99,58 @@ describe("buildFactionIconCandidates", () => {
   it("returns an empty list when nothing resolves", () => {
     expect(buildFactionIconCandidates({ factionId: "my-own-faction", names: ["My Own Faction"] })).toEqual([]);
     expect(buildFactionIconCandidates()).toEqual([]);
+  });
+});
+
+describe("resolveFactionSymbolUrl", () => {
+  it("builds the symbol url for a 10th edition faction id", () => {
+    expect(resolveFactionSymbolUrl({ faction_id: "CSM" })).toBe(`${FACTION_SYMBOL_BASE_URL}/CSM.svg`);
+  });
+
+  it("uses the faction keywords when the id is not a symbol code", () => {
+    expect(resolveFactionSymbolUrl({ faction_id: "3f0a-uuid", factions: ["Adeptus Astartes", "Ultramarines"] })).toBe(
+      `${FACTION_SYMBOL_BASE_URL}/CHUL.svg`,
+    );
+  });
+
+  it("uses the datasource faction name as a last candidate", () => {
+    expect(resolveFactionSymbolUrl({ faction_id: "necrons-slug" }, { name: "Necrons" })).toBe(
+      `${FACTION_SYMBOL_BASE_URL}/NEC.svg`,
+    );
+  });
+
+  it("prefers an uploaded external symbol", () => {
+    expect(
+      resolveFactionSymbolUrl({
+        faction_id: "CSM",
+        hasCustomFactionSymbol: true,
+        externalFactionSymbol: "https://example.com/logo.png",
+      }),
+    ).toBe("https://example.com/logo.png");
+  });
+
+  it("returns null when nothing resolves", () => {
+    expect(resolveFactionSymbolUrl({ faction_id: "my-own-faction" })).toBeNull();
+    expect(resolveFactionSymbolUrl()).toBeNull();
+    expect(factionSymbolUrl(null)).toBeNull();
+  });
+});
+
+describe("resolveFactionSymbolUrlForValue", () => {
+  it("returns a url value unchanged", () => {
+    expect(resolveFactionSymbolUrlForValue("https://example.com/a.svg", {})).toBe("https://example.com/a.svg");
+    expect(resolveFactionSymbolUrlForValue("data:image/png;base64,AAA", {})).toBe("data:image/png;base64,AAA");
+  });
+
+  it("resolves a symbol code or a faction name", () => {
+    expect(resolveFactionSymbolUrlForValue("TYR", {})).toBe(`${FACTION_SYMBOL_BASE_URL}/TYR.svg`);
+    expect(resolveFactionSymbolUrlForValue("Death Guard", {})).toBe(`${FACTION_SYMBOL_BASE_URL}/DG.svg`);
+  });
+
+  it("falls back to the card when the value resolves to nothing", () => {
+    expect(resolveFactionSymbolUrlForValue("9f1c-uuid", { factions: ["Orks"] })).toBe(
+      `${FACTION_SYMBOL_BASE_URL}/ORK.svg`,
+    );
+    expect(resolveFactionSymbolUrlForValue("", { faction_id: "my-own-faction" })).toBeNull();
   });
 });

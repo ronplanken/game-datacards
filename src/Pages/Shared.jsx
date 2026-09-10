@@ -10,6 +10,7 @@ import { useCardStorage } from "../Hooks/useCardStorage";
 import { useCategorySharing } from "../Hooks/useCategorySharing";
 import { useUmami } from "../Hooks/useUmami";
 import { useAutoFitScale } from "../Hooks/useAutoFitScale";
+import { useTemplateCardWidth } from "../Hooks/useTemplateCardWidth";
 import logo from "../Images/logo.png";
 import { SharedCardDisplay } from "../Components/Shared/SharedCardDisplay";
 import { SharedCardList } from "../Components/Shared/SharedCardList";
@@ -69,7 +70,8 @@ export const Shared = () => {
   };
 
   // Auto-fit scaling for desktop
-  const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), !isMobile);
+  const templateWidth = useTemplateCardWidth(currentCard);
+  const { autoScale } = useAutoFitScale(cardContainerRef, getCardType(), !isMobile, templateWidth);
 
   // Update document title
   useEffect(() => {

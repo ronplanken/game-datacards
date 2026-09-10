@@ -44,8 +44,8 @@ const formatRuleText = (text) => {
 // Rule content component for rendering rule parts with different types.
 // `lang` resolves language-keyed text for multi-language datasources (e.g.
 // 40k-11e); localize() passes plain strings through unchanged for 40k-10e.
-const RuleContent = ({ rules, lang = "en" }) => (
-  <div className="rule-content">
+const RuleContent = ({ rules, lang = "en", is11e = false }) => (
+  <div className={`rule-content${is11e ? " data-40k-11e" : ""}`}>
     {[...rules]
       .sort((a, b) => a.order - b.order)
       .map((part, index) => {
@@ -53,7 +53,8 @@ const RuleContent = ({ rules, lang = "en" }) => (
         if (part.type === "quote" || part.type === "textItalic") {
           return null;
         }
-        const formattedText = formatRuleText(localize(part.text, lang));
+        const text = localize(part.text, lang);
+        const content = is11e ? <MarkupText content={text} /> : <MarkdownDisplay content={formatRuleText(text)} />;
         switch (part.type) {
           case "header":
             return (
@@ -65,13 +66,13 @@ const RuleContent = ({ rules, lang = "en" }) => (
             return (
               <div key={index} className="rule-accordion-item">
                 {part.title && <h5 className="rule-accordion-title">{localize(part.title, lang)}</h5>}
-                <MarkdownDisplay content={formattedText} />
+                {content}
               </div>
             );
           default:
             return (
               <div key={index} className="rule-text">
-                <MarkdownDisplay content={formattedText} />
+                {content}
               </div>
             );
         }
@@ -189,7 +190,7 @@ export const MobileFaction = () => {
           <div className="rules-list">
             {selectedFaction.rules.army.map((rule) => (
               <ExpandableItem key={rule.name} title={rule.name}>
-                <RuleContent rules={rule.rules} lang={lang} />
+                <RuleContent rules={rule.rules} lang={lang} is11e={is11e} />
               </ExpandableItem>
             ))}
           </div>
@@ -204,7 +205,7 @@ export const MobileFaction = () => {
             {detachmentRules?.rules?.map((rule) => {
               return (
                 <ExpandableItem key={rule.name} title={rule.name}>
-                  <RuleContent rules={rule.rules} lang={lang} />
+                  <RuleContent rules={rule.rules} lang={lang} is11e={is11e} />
                 </ExpandableItem>
               );
             })}

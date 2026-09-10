@@ -33,6 +33,17 @@ describe("MarkupText", () => {
     expect(keyword.textContent).toBe("Psyker");
   });
 
+  it("renders translated bold-italic tags while sanitizing their contents", () => {
+    const { container } = render(
+      <MarkupText
+        content={'<BI><k>Psyker</k> level 3</BI><bi><img src="x" onerror="alert(1)"><script>alert(1)</script></bi>'}
+      />,
+    );
+    expect(container.querySelector("b i .gdc-keyword")).toHaveTextContent("Psyker");
+    expect(container.querySelector("script")).toBeNull();
+    expect(container.querySelector("img")).not.toHaveAttribute("onerror");
+  });
+
   it("renders markdown bold", () => {
     const { container } = render(<MarkupText content="**Bold text**" />);
     expect(container.querySelector("strong")).toBeInTheDocument();
