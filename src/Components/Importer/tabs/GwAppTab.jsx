@@ -14,6 +14,7 @@ import {
   getImportRoster,
 } from "../../../Helpers/gwAppImport.helpers";
 import { getArmyContext } from "../../../Helpers/listRoster.helpers";
+import { useCardLanguage } from "../../../Hooks/useSettingsStorage";
 import { useUmami } from "../../../Hooks/useUmami";
 import { ImportReviewPanel } from "../ImportReviewPanel";
 
@@ -28,6 +29,7 @@ export const GwAppTab = ({ dataSource, settings, importCategory, onClose, footer
   // Battle size and detachments read out of the export, for 11th edition lists.
   const [roster, setRoster] = useState({ battleSize: null, detachments: [] });
 
+  const language = useCardLanguage();
   const { trackEvent } = useUmami();
   const factionOptions = dataSource?.data?.map((f) => ({ value: f.id, label: f.name })) || [];
 
@@ -115,7 +117,7 @@ export const GwAppTab = ({ dataSource, settings, importCategory, onClose, footer
       { detachments: roster.detachments, cards: importableUnits.map((unit) => unit.matchedCard) },
       matchedFaction,
     );
-    const cards = buildCardsFromUnits(importableUnits, army, settings?.language);
+    const cards = buildCardsFromUnits(importableUnits, army, language);
 
     const category = {
       uuid: uuidv4(),
