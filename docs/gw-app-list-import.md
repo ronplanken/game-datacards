@@ -32,6 +32,7 @@ file_locations:
 - [From parsed list to cards](#from-parsed-list-to-cards)
   - [Faction and unit matching](#faction-and-unit-matching)
   - [Size tiers](#size-tiers)
+  - [Weapon filtering](#weapon-filtering)
   - [Enhancements](#enhancements)
 - [The 11th edition army roster](#the-11th-edition-army-roster)
   - [Battle size](#battle-size)
@@ -171,6 +172,19 @@ own tiers instead:
 
 The army context (`getArmyContext`) is passed in, so a price scoped to a
 detachment or a faction keyword wins over the generic one.
+
+### Weapon filtering
+
+`filterCardWeapons(card, weapons, language)` marks a datasheet's weapon profiles
+active or inactive against the loadout the export listed, and drops the wargear
+lines that mention none of them.
+
+The names it compares come in two shapes. 10th edition data stores a weapon
+profile name and a wargear line as a plain string; 11th edition stores both as a
+language-keyed object (`{ en: "Chiron gatling cannon", de: … }`), because only a
+datasheet's top-level `name` is resolved when the datasource loads. Both are
+resolved with `localize` before they are compared, in the card language from
+Settings, which is the language the datasource itself was loaded in.
 
 ### Enhancements
 

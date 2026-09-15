@@ -115,7 +115,7 @@ export const GwAppTab = ({ dataSource, settings, importCategory, onClose, footer
       { detachments: roster.detachments, cards: importableUnits.map((unit) => unit.matchedCard) },
       matchedFaction,
     );
-    const cards = buildCardsFromUnits(importableUnits, army);
+    const cards = buildCardsFromUnits(importableUnits, army, settings?.language);
 
     const category = {
       uuid: uuidv4(),

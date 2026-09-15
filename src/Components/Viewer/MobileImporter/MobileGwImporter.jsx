@@ -5,6 +5,7 @@ import { message } from "../../Toast/message";
 import { MobileModal } from "../Mobile/MobileModal";
 import { useMobileList } from "../useMobileList";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useCardLanguage } from "../../../Hooks/useSettingsStorage";
 import {
   parseGwAppText,
   matchFaction,
@@ -115,6 +116,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
 
 export const MobileGwImporter = ({ isOpen, onClose }) => {
   const { dataSource } = useDataSourceStorage();
+  const language = useCardLanguage();
   const { createListWithCards } = useMobileList();
 
   // Wizard state
@@ -265,7 +267,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
       // Filter weapons
       if (unit.weapons?.length) {
-        card = filterCardWeapons(card, unit.weapons);
+        card = filterCardWeapons(card, unit.weapons, language);
       }
 
       return { card, points, enhancement, isWarlord: unit.isWarlord };
