@@ -180,5 +180,12 @@
     "body": "Importing a Warhammer 40,000 app list into an 11th edition army did nothing when you pressed the import button. The list is now imported, and an import that cannot be completed shows you why instead of failing in silence.",
     "severity": "info",
     "timestamp": 1789547582
+  },
+  {
+    "version": "3.11.24",
+    "title": "Combat Patrol label now prints",
+    "body": "The Combat Patrol Datasheet label showed in the print preview but was missing from the printed page or PDF. It now prints. The Legends label had the same problem and is fixed too.",
+    "severity": "info",
+    "timestamp": 1789547651
   }
 ]

@@ -1,5 +1,0 @@
-{
-  "title": "Combat Patrol label now prints",
-  "body": "The Combat Patrol Datasheet label showed in the print preview but was missing from the printed page or PDF. It now prints. The Legends label had the same problem and is fixed too.",
-  "severity": "info"
-}
