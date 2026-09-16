@@ -377,15 +377,18 @@ export const getImportableUnits = (units) => {
 
 /**
  * Normalize a weapon name for comparison:
+ * - Resolve a language-keyed name (11th edition data) to a plain string
  * - Remove quantity prefixes like "2x " or " x2"
  * - Convert to lowercase
  * - Trim whitespace
- * @param {string} name - The weapon name to normalize
+ * @param {string|Object} name - The weapon name to normalize, plain or language-keyed
+ * @param {string} [language="en"] - The language to resolve a language-keyed name in
  * @returns {string} Normalized weapon name
  */
-const normalizeWeaponName = (name) => {
-  if (!name) return "";
-  return name
+const normalizeWeaponName = (name, language = "en") => {
+  const text = localize(name, language);
+  if (!text) return "";
+  return text
     .toLowerCase()
     .trim()
     .replace(/^➤\s*/, "") // "➤ Hellforged weapons - strike" -> "Hellforged weapons - strike"
@@ -407,12 +410,13 @@ const normalizeDashes = (text) => {
  * Check if an imported weapon string matches a datasheet weapon profile name
  * Handles: case, quantities, weapon variants (e.g., "Bolt rifle - rapid fire", "Blastmaster – Single frequency")
  * @param {string} importedWeapon - Weapon name from import
- * @param {string} profileName - Weapon profile name from datasheet
+ * @param {string|Object} profileName - Weapon profile name from datasheet
+ * @param {string} [language="en"] - The language to resolve a language-keyed profile name in
  * @returns {boolean} True if weapons match
  */
-const doesWeaponMatch = (importedWeapon, profileName) => {
+const doesWeaponMatch = (importedWeapon, profileName, language = "en") => {
   const normalizedImport = normalizeDashes(normalizeWeaponName(importedWeapon));
-  const normalizedProfile = normalizeDashes(normalizeWeaponName(profileName));
+  const normalizedProfile = normalizeDashes(normalizeWeaponName(profileName, language));
 
   // Exact match
   if (normalizedProfile === normalizedImport) return true;
@@ -434,18 +438,19 @@ const WEAPON_FUZZY_THRESHOLD = 0.3;
 /**
  * Check if a datasheet weapon profile matches any imported weapon, using fuzzy search as fallback.
  * Tries deterministic matching first (exact, variant, parent), then falls back to Fuse.js fuzzy match.
- * @param {string} profileName - Weapon profile name from the datasheet
+ * @param {string|Object} profileName - Weapon profile name from the datasheet
  * @param {string[]} importedWeapons - Array of imported weapon names
  * @param {Fuse|null} weaponFuse - Pre-built Fuse index over normalized imported weapon names
+ * @param {string} [language="en"] - The language to resolve a language-keyed profile name in
  * @returns {boolean} True if the profile matches any imported weapon
  */
-const doesWeaponMatchAny = (profileName, importedWeapons, weaponFuse) => {
+const doesWeaponMatchAny = (profileName, importedWeapons, weaponFuse, language = "en") => {
   // Try deterministic matching first
-  if (importedWeapons.some((w) => doesWeaponMatch(w, profileName))) return true;
+  if (importedWeapons.some((w) => doesWeaponMatch(w, profileName, language))) return true;
 
   // Fallback: fuzzy match against imported weapon names
   if (weaponFuse) {
-    const normalizedProfile = normalizeDashes(normalizeWeaponName(profileName));
+    const normalizedProfile = normalizeDashes(normalizeWeaponName(profileName, language));
     const results = weaponFuse.search(normalizedProfile);
     if (results.length > 0 && results[0].score <= WEAPON_FUZZY_THRESHOLD) return true;
   }
@@ -458,11 +463,16 @@ const doesWeaponMatchAny = (profileName, importedWeapons, weaponFuse) => {
  * Sets active: false on weapon profiles NOT in the import list
  * Hides entire sections if no weapons are active
  *
+ * Weapon profile names and wargear lines are language-keyed objects in 11th
+ * edition data and plain strings in 10th, so both are resolved before they are
+ * compared with the pasted text.
+ *
  * @param {Object} card - The datasheet card to filter
  * @param {string[]} importedWeapons - Array of weapon strings from import
+ * @param {string} [language="en"] - The language the pasted list is read in
  * @returns {Object} - Card with filtered weapons
  */
-export const filterCardWeapons = (card, importedWeapons) => {
+export const filterCardWeapons = (card, importedWeapons, language = "en") => {
   if (!importedWeapons?.length) {
     // No weapons imported = no filtering (keep all weapons)
     return card;
@@ -485,7 +495,7 @@ export const filterCardWeapons = (card, importedWeapons) => {
       ...weapon,
       profiles: weapon.profiles?.map((profile) => ({
         ...profile,
-        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse),
+        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse, language),
       })),
     }));
 
@@ -504,7 +514,7 @@ export const filterCardWeapons = (card, importedWeapons) => {
       ...weapon,
       profiles: weapon.profiles?.map((profile) => ({
         ...profile,
-        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse),
+        active: doesWeaponMatchAny(profile.name, importedWeapons, weaponFuse, language),
       })),
     }));
 
@@ -520,7 +530,7 @@ export const filterCardWeapons = (card, importedWeapons) => {
   // Filter wargear - keep entries that mention any imported weapon
   if (card.wargear?.length) {
     filteredCard.wargear = card.wargear.filter((wargearText) => {
-      const lowerText = wargearText.toLowerCase();
+      const lowerText = localize(wargearText, language).toLowerCase();
       return importedWeapons.some((w) => lowerText.includes(normalizeWeaponName(w)));
     });
     // If no wargear matches, hide the section entirely
@@ -597,9 +607,11 @@ export const matchEnhancementsToFaction = (units, faction, listDetachment) => {
  * @param {{ detachments?: Array<string>, factions?: Array<string> }} [army] - the
  *   army the list is being built for, so 11th edition units land on the size tier
  *   that army pays (see getImportUnitSize)
+ * @param {string} [language="en"] - The language the pasted list is read in, used
+ *   to resolve language-keyed weapon names when filtering a card's loadout
  * @returns {Array} Array of card objects ready for import
  */
-export const buildCardsFromUnits = (units, army = {}) => {
+export const buildCardsFromUnits = (units, army = {}, language = "en") => {
   return units.map((unit) => {
     let card = { ...unit.matchedCard };
     card.uuid = uuidv4();
@@ -625,7 +637,7 @@ export const buildCardsFromUnits = (units, army = {}) => {
     }
 
     if (unit.weapons?.length && !card._directRead) {
-      card = filterCardWeapons(card, unit.weapons);
+      card = filterCardWeapons(card, unit.weapons, language);
     }
 
     return card;

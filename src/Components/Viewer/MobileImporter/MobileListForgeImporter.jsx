@@ -398,6 +398,8 @@ export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null })
 
   // Step 3: Import
   const handleImport = () => {
+    setError(null);
+
     const importableUnits = getImportableUnits(units);
 
     if (!importableUnits.length) {
@@ -405,20 +407,25 @@ export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null })
       return;
     }
 
-    const cards = buildCardsFromUnits(importableUnits);
+    try {
+      const cards = buildCardsFromUnits(importableUnits);
 
-    const cardsToImport = cards.map((card) => ({
-      card,
-      points: card.unitSize,
-      enhancement: card.selectedEnhancement || null,
-      isWarlord: card.isWarlord || false,
-    }));
+      const cardsToImport = cards.map((card) => ({
+        card,
+        points: card.unitSize,
+        enhancement: card.selectedEnhancement || null,
+        isWarlord: card.isWarlord || false,
+      }));
 
-    createListWithCards(listName || "Imported List", cardsToImport);
+      createListWithCards(listName || "Imported List", cardsToImport);
 
-    trackEvent("import-listforge", { faction: matchedFaction?.name, unitCount: cards.length, mode: importMode });
-    message.success(`Imported ${cards.length} units to "${listName || "Imported List"}"`);
-    handleClose();
+      trackEvent("import-listforge", { faction: matchedFaction?.name, unitCount: cards.length, mode: importMode });
+      message.success(`Imported ${cards.length} units to "${listName || "Imported List"}"`);
+      handleClose();
+    } catch (err) {
+      console.error("List Forge import failed", err);
+      setError(`Could not import this list: ${err.message}`);
+    }
   };
 
   const matchCounts = countMatchStatuses(units);
@@ -644,6 +651,13 @@ export const MobileListForgeImporter = ({ isOpen, onClose, initialData = null })
                 placeholder="My Army List"
               />
             </div>
+
+            {error && (
+              <div className="mi-error">
+                <AlertCircle size={16} />
+                <span>{error}</span>
+              </div>
+            )}
 
             <button className="mi-primary-btn" onClick={handleImport} disabled={importableCount === 0}>
               Import {importableCount} Unit{importableCount !== 1 ? "s" : ""}

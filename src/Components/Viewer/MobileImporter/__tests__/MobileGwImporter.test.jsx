@@ -68,8 +68,11 @@ vi.mock("../../../../Hooks/useDataSourceStorage", () => ({
               name: "Techmarine",
               source: "40k-11e",
               points: [{ models: "1", cost: "85" }],
-              rangedWeapons: [],
-              meleeWeapons: [],
+              // 11th edition keeps weapon names and wargear language-keyed; only
+              // the top-level card name is resolved when the datasource loads.
+              rangedWeapons: [{ profiles: [{ name: { en: "Plasma cutter" } }] }],
+              meleeWeapons: [{ profiles: [{ name: { en: "Servo-arm" } }] }],
+              wargear: [{ en: "This model is equipped with a servo-arm." }],
             },
             {
               id: "ds-infiltrator",
@@ -207,6 +210,31 @@ describe("MobileGwImporter - 11th edition", () => {
     expect(grimaldus.isWarlord).toBe(true);
     const brethren = cards.find((c) => c.card.name === "Sword Brethren Squad");
     expect(brethren.enhancement).toMatchObject({ name: "Fervent Exemplars", cost: 15 });
+  });
+
+  it("keeps only the weapons the export lists, on language-keyed profiles", () => {
+    const [, cards] = importList(IRONSTORM_EXPORT);
+    const techmarine = cards.find((c) => c.card.name === "Techmarine");
+    expect(techmarine.card.meleeWeapons[0].profiles[0].active).toBe(true);
+    expect(techmarine.card.rangedWeapons[0].profiles[0].active).toBe(false);
+  });
+
+  it("shows an error instead of dying silently when the import throws", () => {
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockCreateListWithCards.mockImplementationOnce(() => {
+      throw new Error("storage is full");
+    });
+    const onClose = vi.fn();
+    render(<MobileGwImporter isOpen={true} onClose={onClose} />);
+    fireEvent.change(screen.getByPlaceholderText(/Blood Angels/), { target: { value: IRONSTORM_EXPORT } });
+    fireEvent.click(screen.getByText("Continue"));
+    fireEvent.click(screen.getByText("Continue"));
+    fireEvent.click(screen.getByText(/^Import \d+ Unit/));
+
+    expect(screen.getByText(/Could not import this list: storage is full/)).toBeInTheDocument();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(logged).toHaveBeenCalled();
+    logged.mockRestore();
   });
 
   it("takes no roster from an export that states none", () => {

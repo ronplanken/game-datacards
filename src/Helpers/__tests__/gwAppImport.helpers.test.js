@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { matchEnhancementsToFaction, buildCardsFromUnits } from "../gwAppImport.helpers";
+import { matchEnhancementsToFaction, buildCardsFromUnits, filterCardWeapons } from "../gwAppImport.helpers";
 
 // Mock uuid
 vi.mock("uuid", () => ({
@@ -150,5 +150,50 @@ describe("buildCardsFromUnits", () => {
     const result = buildCardsFromUnits([createUnit({ matchedCard: card, weapons: ["Storm bolter"] })]);
     expect(result[0].rangedWeapons[0].profiles[0].active).toBe(true);
     expect(result[0].rangedWeapons[0].profiles[1].active).toBe(false);
+  });
+});
+
+// ============================================
+// filterCardWeapons - 11th edition data
+// ============================================
+describe("filterCardWeapons with language-keyed names", () => {
+  // 11th edition datasheets store every displayable string as a language-keyed
+  // object; only the top-level card name is resolved when the datasource loads.
+  const createCard = () => ({
+    id: "card-1",
+    name: "Commissar Graves",
+    source: "40k-11e",
+    rangedWeapons: [
+      { profiles: [{ name: { en: "Chiron gatling cannon", de: "Chiron-Gatlingkanone" } }] },
+      { profiles: [{ name: { en: "Prefectus heavy stubber", de: "Prefectus-Schwerer Stubber" } }] },
+    ],
+    meleeWeapons: [{ profiles: [{ name: { en: "Armoured hull", de: "Gepanzerte Hulle" } }] }],
+    wargear: [{ en: "This model can be equipped with a Chiron gatling cannon." }],
+    showWeapons: { rangedWeapons: true, meleeWeapons: true },
+  });
+
+  it("matches a language-keyed profile name against the pasted weapons", () => {
+    const result = filterCardWeapons(createCard(), ["Chiron gatling cannon", "Armoured hull"]);
+    expect(result.rangedWeapons[0].profiles[0].active).toBe(true);
+    expect(result.rangedWeapons[1].profiles[0].active).toBe(false);
+    expect(result.meleeWeapons[0].profiles[0].active).toBe(true);
+  });
+
+  it("matches in the language the list was pasted in", () => {
+    const result = filterCardWeapons(createCard(), ["Chiron-Gatlingkanone"], "de");
+    expect(result.rangedWeapons[0].profiles[0].active).toBe(true);
+    expect(result.rangedWeapons[1].profiles[0].active).toBe(false);
+  });
+
+  it("keeps a language-keyed wargear line that mentions an imported weapon", () => {
+    const result = filterCardWeapons(createCard(), ["Chiron gatling cannon"]);
+    expect(result.wargear).toHaveLength(1);
+    expect(result.showWargear).toBeUndefined();
+  });
+
+  it("hides wargear that mentions none of the imported weapons", () => {
+    const result = filterCardWeapons(createCard(), ["Armoured hull"]);
+    expect(result.wargear).toHaveLength(0);
+    expect(result.showWargear).toBe(false);
   });
 });

@@ -206,6 +206,27 @@ describe("MobileListForgeImporter", () => {
     expect(screen.getByText("Direct")).toBeTruthy();
   });
 
+  it("shows an error instead of dying silently when the import throws", () => {
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockCreateListWithCards.mockImplementationOnce(() => {
+      throw new Error("storage is full");
+    });
+    const onClose = vi.fn();
+    render(<MobileListForgeImporter isOpen={true} onClose={onClose} />);
+
+    const textarea = screen.getByPlaceholderText("Paste List Forge JSON export here...");
+    fireEvent.change(textarea, { target: { value: JSON.stringify(createValidExport()) } });
+    fireEvent.click(screen.getByText("Parse JSON"));
+    fireEvent.click(screen.getByText("Continue"));
+    fireEvent.click(screen.getByText("Continue"));
+    fireEvent.click(screen.getByText(/^Import \d+ Unit/));
+
+    expect(screen.getByText(/Could not import this list: storage is full/)).toBeTruthy();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(logged).toHaveBeenCalled();
+    logged.mockRestore();
+  });
+
   it("resets state when closed", () => {
     const onClose = vi.fn();
     render(<MobileListForgeImporter isOpen={true} onClose={onClose} />);
