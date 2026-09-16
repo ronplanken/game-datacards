@@ -12,6 +12,8 @@ file_locations:
   parser_tests: src/Helpers/__tests__/armyListParser.helpers.test.js
   parser_fixtures: src/Helpers/__tests__/armyListParser.fixtures.js
   importer_helpers: src/Helpers/gwAppImport.helpers.js
+  exporter_helpers: src/Helpers/gwAppExport.helpers.js
+  exporter_tests: src/Helpers/__tests__/gwAppExport.helpers.test.js
   importer_tests: src/Helpers/__tests__/gwAppImport.roster.test.js
   mobile_importer: src/Components/Viewer/MobileImporter/MobileGwImporter.jsx
   desktop_tab: src/Components/Importer/tabs/GwAppTab.jsx
@@ -225,8 +227,46 @@ for, so an import can never build a roster the list builder itself would refuse.
 
 ## Export
 
-The GW app text export (`Exporter.jsx`) is edition-agnostic — sections, points,
-warlord and enhancements — and produces a shape this parser reads back, so a list
-round-trips. It does not yet write the 11e header lines (battle size, detachment
-and its DP, force disposition), so those are lost on a round trip through the
-exported text.
+The GW app text export is built by `src/Helpers/gwAppExport.helpers.js` and shown
+in the Export modal (`Exporter.jsx`). It is edition-agnostic and produces a shape
+this parser reads back, so a list round-trips.
+
+The text is written as:
+
+```
+<list name> (<total> points)
+
+<faction>
+<detachment> (<DP> Detachment Points)
+Force Dispositions: <disposition>
+<battle size> (<battle size points> Points)
+
+CHARACTERS
+
+<unit> <models>x (<points> pts)
+   • Warlord
+   • Enhancements: <name> (+<cost> pts)
+   • <quantity>x <wargear>
+```
+
+Header rules:
+
+- The detachment lines are written per detachment the army holds, each with its
+  DP cost and, when the detachment has one, its force disposition. The parser
+  reads the first detachment and skips the rest, so a multi-detachment list
+  round-trips only its first one.
+- "Detachment Points" is always written in the plural, since that is what the
+  parser matches on.
+- The battle size line is written for a list that stores one, and for an 11e list
+  that does not (it falls back to Strike Force, the same default the app shows).
+  A 10e list without a stored battle size gets no line.
+
+Unit rules:
+
+- Unit points are `getCardDisplayCost`, so the size tier, the enhancement, paid
+  wargear and the 11e roster surcharge are all counted and the units add up to
+  the header total.
+- Only wargear that costs points is written, because that is all a list card
+  stores. Free loadout choices are not part of the export.
+- Wargear bullets carry no points of their own. Their cost is already in the unit
+  line, and a bullet ending in "(+N pts)" is read back as an enhancement.

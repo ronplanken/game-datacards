@@ -1,0 +1,5 @@
+{
+  "title": "Richer GW app list export",
+  "body": "The GW 40k app export now includes your battle size, detachments and the wargear you paid points for. Unit points now match the list total.",
+  "severity": "info"
+}
