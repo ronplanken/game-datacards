@@ -1,5 +1,5 @@
 {
   "title": "Fix importing an 11th edition army list",
-  "body": "Importing a Warhammer 40,000 app list into an 11th edition army did nothing when you pressed the import button. The list is now imported, with each unit keeping only the weapons the export lists.",
+  "body": "Importing a Warhammer 40,000 app list into an 11th edition army did nothing when you pressed the import button. The list is now imported, and an import that cannot be completed shows you why instead of failing in silence.",
   "severity": "info"
 }

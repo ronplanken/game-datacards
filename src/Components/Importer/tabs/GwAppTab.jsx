@@ -109,31 +109,36 @@ export const GwAppTab = ({ dataSource, settings, importCategory, onClose, footer
       return;
     }
 
-    // 11th edition prices some datasheets per detachment and per faction keyword,
-    // so the roster the export stated and the datasheets it matched together
-    // decide which size tier a unit lands on. The matched cards are what identify
-    // a chapter — a shared datasheet only carries the parent keyword.
-    const army = getArmyContext(
-      { detachments: roster.detachments, cards: importableUnits.map((unit) => unit.matchedCard) },
-      matchedFaction,
-    );
-    const cards = buildCardsFromUnits(importableUnits, army, language);
+    try {
+      // 11th edition prices some datasheets per detachment and per faction keyword,
+      // so the roster the export stated and the datasheets it matched together
+      // decide which size tier a unit lands on. The matched cards are what identify
+      // a chapter — a shared datasheet only carries the parent keyword.
+      const army = getArmyContext(
+        { detachments: roster.detachments, cards: importableUnits.map((unit) => unit.matchedCard) },
+        matchedFaction,
+      );
+      const cards = buildCardsFromUnits(importableUnits, army, language);
 
-    const category = {
-      uuid: uuidv4(),
-      name: categoryName || "Imported List",
-      type: "list",
-      dataSource: settings.selectedDataSource,
-      factionId: matchedFaction?.id || undefined,
-      battleSize: roster.battleSize || undefined,
-      detachments: roster.detachments.length ? roster.detachments : undefined,
-      cards,
-    };
+      const category = {
+        uuid: uuidv4(),
+        name: categoryName || "Imported List",
+        type: "list",
+        dataSource: settings.selectedDataSource,
+        factionId: matchedFaction?.id || undefined,
+        battleSize: roster.battleSize || undefined,
+        detachments: roster.detachments.length ? roster.detachments : undefined,
+        cards,
+      };
 
-    importCategory(category);
-    trackEvent("import-gw-list", { faction: matchedFaction?.name, unitCount: cards.length });
-    message.success(`Imported ${cards.length} units to "${category.name}"`);
-    onClose();
+      importCategory(category);
+      trackEvent("import-gw-list", { faction: matchedFaction?.name, unitCount: cards.length });
+      message.success(`Imported ${cards.length} units to "${category.name}"`);
+      onClose();
+    } catch (err) {
+      console.error("GW app list import failed", err);
+      message.error(`Could not import this list: ${err.message}`);
+    }
   };
 
   const matchCounts = countMatchStatuses(units);

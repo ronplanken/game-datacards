@@ -219,6 +219,24 @@ describe("MobileGwImporter - 11th edition", () => {
     expect(techmarine.card.rangedWeapons[0].profiles[0].active).toBe(false);
   });
 
+  it("shows an error instead of dying silently when the import throws", () => {
+    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockCreateListWithCards.mockImplementationOnce(() => {
+      throw new Error("storage is full");
+    });
+    const onClose = vi.fn();
+    render(<MobileGwImporter isOpen={true} onClose={onClose} />);
+    fireEvent.change(screen.getByPlaceholderText(/Blood Angels/), { target: { value: IRONSTORM_EXPORT } });
+    fireEvent.click(screen.getByText("Continue"));
+    fireEvent.click(screen.getByText("Continue"));
+    fireEvent.click(screen.getByText(/^Import \d+ Unit/));
+
+    expect(screen.getByText(/Could not import this list: storage is full/)).toBeInTheDocument();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(logged).toHaveBeenCalled();
+    logged.mockRestore();
+  });
+
   it("takes no roster from an export that states none", () => {
     const [, , options] = importList(`Plain List (100 Points)
 
