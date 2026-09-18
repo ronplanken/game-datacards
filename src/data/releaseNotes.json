@@ -187,5 +187,12 @@
     "body": "The Combat Patrol Datasheet label showed in the print preview but was missing from the printed page or PDF. It now prints. The Legends label had the same problem and is fixed too.",
     "severity": "info",
     "timestamp": 1789547651
+  },
+  {
+    "version": "3.11.25",
+    "title": "Richer GW app list export",
+    "body": "The GW 40k app export now includes your battle size, detachments and the wargear you paid points for. Unit points now match the list total.",
+    "severity": "info",
+    "timestamp": 1789716627
   }
 ]
