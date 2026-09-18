@@ -204,6 +204,13 @@ export const buildCustomConfig = (dataSource) => {
  * 2. Prefix match for custom-/subscribed-/local-ds- datasources
  * 3. Fallback to custom config
  */
+BUILTIN_CONFIGS["40k-11e-cp"] = {
+  ...BUILTIN_CONFIGS["40k-11e"],
+  label: "Combat Patrol — 11th Edition",
+  labelShort: "Combat Patrol",
+  labelMeta: "11th Edition",
+};
+
 export const resolveMobileConfig = (datasourceId, dataSource) => {
   if (BUILTIN_CONFIGS[datasourceId]) {
     return BUILTIN_CONFIGS[datasourceId];

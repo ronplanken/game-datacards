@@ -123,7 +123,7 @@ describe("mobileDatasourceConfig", () => {
 
   describe("SELECTOR_SYSTEMS", () => {
     it("has expected entries", () => {
-      expect(SELECTOR_SYSTEMS).toHaveLength(4);
+      expect(SELECTOR_SYSTEMS).toHaveLength(5);
       const ids = SELECTOR_SYSTEMS.map((s) => s.id);
       expect(ids).toContain("40k-11e");
       expect(ids).toContain("40k-10e");

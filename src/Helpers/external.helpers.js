@@ -1,6 +1,12 @@
 import clone from "just-clone";
 import { v4 as uuidv4 } from "uuid";
 import { localize } from "./localization.helpers";
+import {
+  DATASOURCE_11E_CACHE_VERSION,
+  validate11eIndex,
+  merge11eLegends,
+  expand11ePatrols,
+} from "./datasource11e.helpers";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -43,7 +49,9 @@ const readCsv = async (file) => {
 
   const response = await fetch(file);
   if (!response.ok) {
-    throw new Error(`Failed to fetch ${file}: ${response.status} ${response.statusText}`);
+    const error = new Error(`Failed to fetch ${file}: ${response.status} ${response.statusText}`);
+    error.status = response.status;
+    throw error;
   }
   const text = await response.text();
   return JSON.parse(text);
@@ -499,7 +507,7 @@ const resolve11eRuleNames = (rules, language) => {
   };
 };
 
-export const get40k11eData = async (language = "en") => {
+export const get40k11eData = async (language = "en", { combatPatrol = false } = {}) => {
   const factions = [
     "adeptasororitas",
     "adeptuscustodes",
@@ -532,17 +540,34 @@ export const get40k11eData = async (language = "en") => {
     "worldeaters",
   ];
 
-  const fetchData = async (faction) => {
-    const url = `${import.meta.env.VITE_DATASOURCE_11TH_URL}/${faction}.json?${new Date().getTime()}`;
-    const data = await readCsv(url);
+  const baseUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
+  const cacheBuster = Date.now();
+  let index = null;
+  try {
+    index = validate11eIndex(await readCsv(`${baseUrl}/index.json?${cacheBuster}`));
+  } catch (error) {
+    // Old published data has no discovery index. Only an actual 404 is an
+    // optional absence; network/server/schema errors must preserve the cache.
+    if (error.status !== 404) throw error;
+  }
+  if (combatPatrol && !index)
+    throw new Error("11th-edition Combat Patrol data is not available yet. Please try updating later.");
+  const fetchEntry = async (entry) => {
+    const data = await readCsv(`${baseUrl}/${entry.file}?${cacheBuster}`);
+    if (entry.id && data.id !== entry.id) throw new Error(`Datasource identity mismatch: ${entry.file}`);
+    if (index?.compatibleDataVersion != null && data.compatibleDataVersion !== index.compatibleDataVersion) {
+      throw new Error(`Datasource version mismatch: ${entry.file}`);
+    }
     return data;
   };
-
   const fetchAllData = async () => {
-    const sortedFactions = factions.sort();
-    const promises = sortedFactions.map((faction) => fetchData(faction));
-    const allData = await Promise.all(promises);
-    return allData;
+    if (combatPatrol) return expand11ePatrols(await Promise.all(index.combatPatrol.map(fetchEntry)), language);
+    const entries = index?.factions || factions.sort().map((name) => ({ file: `${name}.json` }));
+    const [normal, legends] = await Promise.all([
+      Promise.all(entries.map(fetchEntry)),
+      Promise.all((index?.legends || []).map(fetchEntry)),
+    ]);
+    return merge11eLegends(normal, legends);
   };
 
   // The 11e datasource ships a shared keyword glossary (weapon keywords + core
@@ -575,7 +600,7 @@ export const get40k11eData = async (language = "en") => {
   const [allFactionsData, keywordGlossary, coreStratagems] = await Promise.all([
     fetchAllData(),
     fetchKeywordGlossary(),
-    fetchCoreStratagems(),
+    combatPatrol ? Promise.resolve([]) : fetchCoreStratagems(),
   ]);
 
   const basicStratagems = coreStratagems.map((strat) => {
@@ -584,7 +609,9 @@ export const get40k11eData = async (language = "en") => {
 
   return {
     version: import.meta.env.VITE_VERSION,
-    lastUpdated: allFactionsData[0].updated,
+    schemaVersion: DATASOURCE_11E_CACHE_VERSION,
+    isCombatPatrol: combatPatrol,
+    lastUpdated: index?.updated || allFactionsData[0]?.updated,
     lastCheckedForUpdate: new Date().toISOString(),
     // Shared 11e keyword glossary (weapon keywords + core abilities), multilingual.
     keywordGlossary,
@@ -608,6 +635,7 @@ export const get40k11eData = async (language = "en") => {
         datasheets: val?.datasheets?.map((datasheet) => {
           return {
             ...datasheet,
+            legends: !!(datasheet.isLegends || datasheet.legends),
             cardType: "DataCard",
             source: "40k-11e",
             name: localize(datasheet.name, language),
@@ -636,6 +664,8 @@ export const get40k11eData = async (language = "en") => {
     }),
   };
 };
+
+export const get40k11eCombatPatrolData = (language = "en") => get40k11eData(language, { combatPatrol: true });
 
 export const get40k10eCombatPatrolData = async () => {
   const baseUrl = import.meta.env.VITE_DATASOURCE_10TH_COMBATPATROL_URL;

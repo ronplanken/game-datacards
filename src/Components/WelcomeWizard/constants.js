@@ -55,6 +55,15 @@ export const GAME_SYSTEMS = [
     tier: "secondary",
   },
   {
+    id: "40k-11e-cp",
+    title: "Combat Patrol",
+    subtitle: "11th Edition",
+    description: "Patrol rosters and their dedicated datacards",
+    color: "#0891b2",
+    tag: null,
+    tier: "secondary",
+  },
+  {
     id: "40k-10e-cp",
     title: "Combat Patrol",
     subtitle: "10th Edition",

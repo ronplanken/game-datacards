@@ -1,3 +1,5 @@
+import { patrolRouteQuery } from "../../Helpers/datasource11e.helpers";
+import { PatrolRosterSummary } from "../PatrolRosterSummary";
 import { useMemo, useState } from "react";
 import { ArrowLeft, LayoutGrid, SortAsc } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +41,10 @@ const UnitItem = ({ unit, onClick }) => {
 
   return (
     <button className="faction-units-item" onClick={onClick}>
-      <span className="faction-units-item-name">{unit.name}</span>
+      <span className="faction-units-item-name">
+        {unit.name}
+        <PatrolRosterSummary card={unit} />
+      </span>
       {points !== null && <span className="faction-units-item-points">{points} pts</span>}
     </button>
   );
@@ -120,7 +125,7 @@ export const MobileFactionUnits = () => {
 
   const handleUnitClick = (unit) => {
     const unitSlug = unit.name?.toLowerCase().replaceAll(" ", "-");
-    navigate(`/mobile/${factionSlug}/${unitSlug}`);
+    navigate(`/mobile/${factionSlug}/${unitSlug}${patrolRouteQuery(unit)}`);
   };
 
   // Get alphabetically sorted units - memoized to avoid re-sorting on every render

@@ -18,7 +18,7 @@ const separators = (rows) => rows.filter((row) => row.type === "role").map((row)
 
 describe("is40kBrowseSource", () => {
   it("covers every 40k edition that browses datasheets", () => {
-    expect(["40k-10e", "40k-10e-cp", "40k-11e"].every(is40kBrowseSource)).toBe(true);
+    expect(["40k-10e", "40k-10e-cp", "40k-11e", "40k-11e-cp"].every(is40kBrowseSource)).toBe(true);
   });
 
   it("excludes the other datasources", () => {
