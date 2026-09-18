@@ -5,10 +5,9 @@ import { Tooltip } from "../Tooltip/Tooltip";
 import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCardLanguage, useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { v4 as uuidv4 } from "uuid";
-import { capitalizeSentence } from "../../Helpers/external.helpers";
-import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
+import { buildGwAppListText } from "../../Helpers/gwAppExport.helpers";
 import { useUmami } from "../../Hooks/useUmami";
 import "./ImportExport.css";
 
@@ -30,6 +29,7 @@ export const Exporter = () => {
   const [activeTab, setActiveTab] = useState("json");
   const { activeCategory, cardStorage } = useCardStorage();
   const { settings } = useSettingsStorage();
+  const language = useCardLanguage();
   const { trackEvent } = useUmami();
 
   // Preview state
@@ -112,105 +112,9 @@ export const Exporter = () => {
   const generateGwAppText = useCallback(() => {
     if (!activeCategory) return "";
 
-    // Get all cards including sub-category cards
     const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
-
-    // Calculate total points (includes 11e cheapest-tier default + roster surcharge).
-    const totalPoints = getCategoryPointsTotal(allCards);
-
-    // Sort cards into sections
-    const sortedCards = allCards?.reduce(
-      (exportCards, card) => {
-        const keywords = card.keywords || [];
-        if (keywords.includes("Character")) {
-          exportCards.characters.push(card);
-        } else if (keywords.includes("Battleline")) {
-          exportCards.battleline.push(card);
-        } else if (keywords.includes("Transport") || keywords.includes("Dedicated Transport")) {
-          exportCards.transports.push(card);
-        } else if (card.faction_id && card.faction_id !== activeCategory.factionId) {
-          // Allied units have different faction
-          exportCards.allied.push(card);
-        } else {
-          exportCards.other.push(card);
-        }
-        return exportCards;
-      },
-      { characters: [], battleline: [], transports: [], other: [], allied: [] },
-    );
-
-    // Helper to format a unit entry
-    const formatUnit = (val) => {
-      let unitText = `\n\n${val.name}`;
-      if (val.unitSize?.models > 1) {
-        unitText += ` ${val.unitSize.models}x`;
-      }
-      const unitCost = Number(val?.unitSize?.cost) || 0;
-      const enhancementCost = Number(val?.selectedEnhancement?.cost) || 0;
-      unitText += ` (${unitCost + enhancementCost || "?"} pts)`;
-
-      if (val.isWarlord) {
-        unitText += `\n   • Warlord`;
-      }
-      if (val.selectedEnhancement) {
-        unitText += `\n   • Enhancements: ${capitalizeSentence(val.selectedEnhancement?.name)} (+${
-          val.selectedEnhancement?.cost
-        } pts)`;
-      }
-      return unitText;
-    };
-
-    // Build the export text
-    // Header: List name with total points
-    let listText = `${activeCategory.name} (${totalPoints} points)`;
-
-    // Faction name (use stored faction or category name)
-    const factionName = activeCategory.factionName || activeCategory.name;
-    listText += `\n\n${factionName}`;
-
-    // CHARACTERS section
-    if (sortedCards.characters.length > 0) {
-      listText += "\n\nCHARACTERS";
-      sortedCards.characters.forEach((val) => {
-        listText += formatUnit(val);
-      });
-    }
-
-    // BATTLELINE section
-    if (sortedCards.battleline.length > 0) {
-      listText += "\n\nBATTLELINE";
-      sortedCards.battleline.forEach((val) => {
-        listText += formatUnit(val);
-      });
-    }
-
-    // DEDICATED TRANSPORTS section
-    if (sortedCards.transports.length > 0) {
-      listText += "\n\nDEDICATED TRANSPORTS";
-      sortedCards.transports.forEach((val) => {
-        listText += formatUnit(val);
-      });
-    }
-
-    // OTHER DATASHEETS section
-    if (sortedCards.other.length > 0) {
-      listText += "\n\nOTHER DATASHEETS";
-      sortedCards.other.forEach((val) => {
-        listText += formatUnit(val);
-      });
-    }
-
-    // ALLIED UNITS section
-    if (sortedCards.allied.length > 0) {
-      listText += "\n\nALLIED UNITS";
-      sortedCards.allied.forEach((val) => {
-        listText += formatUnit(val);
-      });
-    }
-
-    listText += "\n\nCreated with https://game-datacards.eu";
-    return listText;
-  }, [activeCategory, cardStorage.categories]);
+    return buildGwAppListText(activeCategory, allCards, language);
+  }, [activeCategory, cardStorage.categories, language]);
 
   const handleCopyGwApp = () => {
     if (!gwAppPreview) return;
@@ -295,8 +199,8 @@ export const Exporter = () => {
                   {activeTab === "gwapp" && (
                     <>
                       <p className="import-export-description">
-                        Export your list in GW Warhammer 40k app format. Please note this is currently missing some
-                        features such as wargear selection.
+                        Export your list in GW Warhammer 40k app format, including battle size, detachments and the
+                        wargear that costs points. Free wargear choices are not included.
                       </p>
                       <textarea className="export-preview" value={gwAppPreview || "No cards to export"} readOnly />
                       <div className="export-actions">
