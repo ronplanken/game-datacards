@@ -60,7 +60,8 @@ const headerLines = (category, cards, language) => {
 
 const unitLines = (card, cards, language) => {
   const models = Number(card?.unitSize?.models) > 1 ? ` ${card.unitSize.models}x` : "";
-  const cost = getCardDisplayCost(card, cards) || "?";
+  const displayCost = getCardDisplayCost(card, cards);
+  const cost = Number.isFinite(displayCost) ? displayCost : "?";
   const lines = ["", `${card.name}${models} (${cost} pts)`];
 
   if (card.isWarlord) lines.push("   • Warlord");

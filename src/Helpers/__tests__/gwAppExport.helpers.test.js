@@ -120,6 +120,12 @@ describe("buildGwAppListText", () => {
     expect(buildGwAppListText(category, [unit()])).toContain("Intercessor Squad 5x (80 pts)");
   });
 
+  it("writes a free unit as 0 points", () => {
+    const text = buildGwAppListText(category, [unit({ name: "Hypercrypt Legion", unitSize: { models: 1, cost: 0 } })]);
+
+    expect(text).toContain("Hypercrypt Legion (0 pts)");
+  });
+
   it("returns an empty string without a category", () => {
     expect(buildGwAppListText(null, [unit()])).toBe("");
   });

@@ -5,7 +5,7 @@ import { Tooltip } from "../Tooltip/Tooltip";
 import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { useCardStorage } from "../../Hooks/useCardStorage";
-import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useCardLanguage, useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { v4 as uuidv4 } from "uuid";
 import { buildGwAppListText } from "../../Helpers/gwAppExport.helpers";
 import { useUmami } from "../../Hooks/useUmami";
@@ -29,6 +29,7 @@ export const Exporter = () => {
   const [activeTab, setActiveTab] = useState("json");
   const { activeCategory, cardStorage } = useCardStorage();
   const { settings } = useSettingsStorage();
+  const language = useCardLanguage();
   const { trackEvent } = useUmami();
 
   // Preview state
@@ -112,8 +113,8 @@ export const Exporter = () => {
     if (!activeCategory) return "";
 
     const allCards = getAllCategoryCards(activeCategory, cardStorage.categories);
-    return buildGwAppListText(activeCategory, allCards, settings.language);
-  }, [activeCategory, cardStorage.categories, settings.language]);
+    return buildGwAppListText(activeCategory, allCards, language);
+  }, [activeCategory, cardStorage.categories, language]);
 
   const handleCopyGwApp = () => {
     if (!gwAppPreview) return;
