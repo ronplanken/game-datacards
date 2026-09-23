@@ -30,6 +30,11 @@ import { MobileModal } from "../Mobile/MobileModal";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
 import "./ListAdd.css";
 
+// A list with no detachments must fall back to a stable empty array: `|| []`
+// builds a fresh array every render, which churns the memoised `army` and
+// `availableTiers` below and used to re-run the reset effect on every tap.
+const EMPTY_DETACHMENTS = [];
+
 // Custom toggle for warlord selection
 const Toggle = ({ checked, onChange, disabled }) => (
   <button
@@ -49,7 +54,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   // 11e armies hold several detachments; enhancements from any of them are available.
-  const armyDetachments = lists[selectedList]?.detachments || [];
+  const armyDetachments = lists[selectedList]?.detachments || EMPTY_DETACHMENTS;
   // The faction the list is built for, which its faction-scoped prices key off.
   const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(lists[selectedList]));
   // Restricted prices (a detachment or a faction keyword) only apply to armies
@@ -97,14 +102,17 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
     }
   }, [settings, activeCard?.faction_id, detachments]);
 
-  // Reset state when panel opens with new card
+  // Reset state when the panel opens or a different card is selected. The tier
+  // list is read but deliberately not a dependency: resetting should follow the
+  // panel/card, not a recomputation of the tiers, otherwise picking a size would
+  // re-run this and wipe the choice.
   useEffect(() => {
     if (isVisible) {
       setSelectedEnhancement(undefined);
       setIsWarlord(false);
       setSelectedUnitSize(availableTiers.length === 1 ? availableTiers[0] : undefined);
     }
-  }, [isVisible, activeCard, availableTiers]);
+  }, [isVisible, activeCard?.uuid]);
 
   const handleClose = () => setIsVisible(false);
 
