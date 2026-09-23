@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ListAdd } from "../ListAdd";
 
 // Age of Sigmar factions group enhancements in an object of category-keyed
@@ -84,5 +84,28 @@ describe("ListAdd", () => {
     render(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
     expect(screen.getByText("Add Captain")).toBeInTheDocument();
     expect(screen.getByText("Artificer Armour")).toBeInTheDocument();
+  });
+
+  it("keeps a chosen unit size selected on a list with no detachments", () => {
+    activeCard = {
+      name: "Intercessor Squad",
+      id: "unit-2",
+      faction_id: "faction-1",
+      source: "40k-11e",
+      keywords: [],
+      points: [
+        { models: 5, cost: 75 },
+        { models: 10, cost: 150 },
+      ],
+    };
+
+    render(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
+
+    const addButton = screen.getByRole("button", { name: "Add to List" });
+    expect(addButton).toBeDisabled();
+
+    fireEvent.click(screen.getByText("5 models").closest("button"));
+
+    expect(addButton).toBeEnabled();
   });
 });

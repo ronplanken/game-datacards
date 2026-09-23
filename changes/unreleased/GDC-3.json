@@ -1,0 +1,5 @@
+{
+  "title": "Unit size stays selected",
+  "body": "Picking a unit size on a mobile list used to reset the moment you tapped it, leaving Add to List disabled. Your choice now sticks.",
+  "severity": "info"
+}
