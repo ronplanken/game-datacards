@@ -1,0 +1,5 @@
+{
+  "title": "Support core ability shows its rule",
+  "body": "The Support core ability now shows its explanation when you hover it, matching Leader and Stealth.",
+  "severity": "info"
+}
