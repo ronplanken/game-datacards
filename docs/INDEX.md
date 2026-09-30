@@ -26,6 +26,7 @@ description: Table of contents for all Game Datacards documentation files
 | File | Description |
 |------|-------------|
 | [40k-11e-card-editing.md](40k-11e-card-editing.md) | How the 11th edition card editor edits language-keyed fields in place for the active card language (with per-field English fallback), which fields stay plain, and the optional show/hide flags |
+| [40k-11e-data-versions.md](40k-11e-data-versions.md) | Pinning the 11th edition datasource to an older data version: the `11th/versions.json` manifest in the datasources repo, the settings selector, and how the cache refetches on change |
 | [40k-11e-list-building.md](40k-11e-list-building.md) | 11th edition army lists: the list's main faction, battle size and Detachment Points, multi-detachment selection, enhancements and Upgrades, leader/support attachment, and how detachment- and faction-scoped points are resolved and repriced |
 | [faction-browser-grouping.md](faction-browser-grouping.md) | How the faction browser groups datasheets by faction/role and stratagems by detachment across the editor and viewer panels, the separator row shapes, and why keyword matching must be edition-agnostic |
 | [welcome-wizard-v2.md](welcome-wizard-v2.md) | Onboarding wizard (v2.0.0): 9-step flow, game system selection, interactive demos, component architecture |
