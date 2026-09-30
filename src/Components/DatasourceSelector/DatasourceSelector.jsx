@@ -1,4 +1,4 @@
-import { Database, ChevronDown, RefreshCw, Plus, Globe, Check, Link, Users } from "lucide-react";
+import { Database, ChevronDown, RefreshCw, Plus, Globe, Check, Link, Users, Pin } from "lucide-react";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import { compare } from "compare-versions";
@@ -7,6 +7,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { CustomDatasourceModal, CommunityBrowserModal } from "../../Premium";
 import { useFeatureFlags } from "../../Hooks/useFeatureFlags";
+import { get11eDataVersionBadge } from "../../Helpers/dataVersion11e.helpers";
 import "./DatasourceSelector.css";
 
 const BUILT_IN_DATASOURCES = [
@@ -19,6 +20,17 @@ const BUILT_IN_DATASOURCES = [
   { id: "aos", title: "Age of Sigmar" },
   { id: "starcraft-tmg", title: "Starcraft TMG" },
 ];
+
+const DataVersionBadge = ({ badge }) =>
+  badge ? (
+    <span
+      className={`ds-version-badge ${badge.pinned ? "ds-version-badge--pinned" : ""}`}
+      title={badge.title}
+      aria-label={badge.title}>
+      {badge.pinned && <Pin size={10} />}
+      {badge.version}
+    </span>
+  ) : null;
 
 export const DatasourceSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -167,6 +179,9 @@ export const DatasourceSelector = () => {
         onClick={() => setIsOpen(!isOpen)}>
         <Database size={16} />
         <span className="ds-selector-text">{getCurrentDatasourceName()}</span>
+        {settings.selectedDataSource === "40k-11e" && (
+          <DataVersionBadge badge={get11eDataVersionBadge(dataSource, settings.dataVersion11e)} />
+        )}
         <ChevronDown size={14} className={`ds-selector-chevron ${isOpen ? "rotated" : ""}`} />
         {needsUpdate && !isCustomOrLocalDatasource && <span className="ds-update-dot" />}
       </button>
@@ -203,6 +218,11 @@ export const DatasourceSelector = () => {
                       className={`ds-dropdown-item ${currentId === ds.id ? "selected" : ""}`}
                       onClick={() => handleSelectDatasource(ds.id)}>
                       <span className="ds-dropdown-item-text">{ds.title}</span>
+                      {ds.id === "40k-11e" && (
+                        <DataVersionBadge
+                          badge={get11eDataVersionBadge(dataSource, settings.dataVersion11e, currentId === ds.id)}
+                        />
+                      )}
                       {currentId === ds.id && <Check size={16} className="ds-dropdown-check" />}
                     </button>
                   ))}

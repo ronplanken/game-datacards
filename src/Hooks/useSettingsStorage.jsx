@@ -9,6 +9,7 @@ const defaultSettings = {
   // Preferred language for multi-language datasource content (e.g. 40k-11e).
   // Only affects card content; the app UI stays in English. Falls back to "en".
   language: "en",
+  dataVersion11e: null,
   // Per-datasource selected faction index
   selectedFactionIndex: {
     "40k-10e": 0,

@@ -15,6 +15,8 @@ import v372Config from "./v3.7.2";
 import v380Config from "./v3.8.0";
 import v390Config from "./v3.9.0";
 import v3110Config from "./v3.11.0";
+import v3120Config from "./v3.12.0";
+import v3130Config from "./v3.13.0";
 
 /**
  * Registry of all mobile version wizard configurations
@@ -42,6 +44,8 @@ export const MOBILE_VERSION_REGISTRY = [
   v380Config,
   v390Config,
   v3110Config,
+  v3120Config,
+  v3130Config,
 ]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));
@@ -65,12 +69,15 @@ export const getMobileVersionConfig = (version) => MOBILE_VERSION_REGISTRY.find(
  */
 export const getLatestMobileWizardVersion = () => MOBILE_VERSION_REGISTRY[MOBILE_VERSION_REGISTRY.length - 1]?.version;
 
+export const RECENT_SINGLE_STEP_VERSIONS = 3;
+
 /**
  * Merges multiple mobile version wizard steps into a single flow
  *
  * Rules:
  * 1. Each version's welcome step becomes a version introduction
- * 2. Thank you steps are removed from all but the final version
+ * 2. Thank you steps are removed from all but the final version, unless they are the only step of one of
+ *    the last RECENT_SINGLE_STEP_VERSIONS versions
  * 3. Steps maintain their original order within each version
  * 4. Version context is added to each step for display purposes
  *
@@ -84,8 +91,10 @@ export const mergeMobileVersionSteps = (versions) => {
     const isLastVersion = versionIndex === versions.length - 1;
 
     versionConfig.steps.forEach((step, stepIndex) => {
-      // Skip thank you steps except for the final version
-      if (step.isThankYou && !isLastVersion) {
+      // Skip thank you steps except for the final version or a recent version's only step
+      const keepsOnlyStep =
+        versionConfig.steps.length === 1 && versionIndex >= versions.length - RECENT_SINGLE_STEP_VERSIONS;
+      if (step.isThankYou && !isLastVersion && !keepsOnlyStep) {
         return;
       }
 

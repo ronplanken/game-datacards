@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Copy, Crown, Trash2, Flame } from "lucide-react";
+import { Copy, Crown, Trash2, Flame, GitCompare } from "lucide-react";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { message } from "../Toast/message";
 import classNames from "classnames";
@@ -7,6 +7,7 @@ import { Draggable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from "uuid";
 import { capitalizeSentence } from "../../Helpers/external.helpers";
 import { getCardDisplayCost } from "../../Helpers/listPoints.helpers";
+import { localize } from "../../Helpers/localization.helpers";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { Datacard } from "../../Icons/Datacard";
 import { Datacard10e } from "../../Icons/Datacard10e";
@@ -25,6 +26,7 @@ import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import { ContextMenu } from "./ContextMenu";
 import { UnitConfigModal } from "./UnitConfigModal";
+import { DatasourceUpdatesDialog } from "../DatasourceUpdates";
 import "./TreeView.css";
 
 export function TreeItem({
@@ -51,6 +53,7 @@ export function TreeItem({
 
   const [modalVisible, setModalVisible] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+  const [compareCards, setCompareCards] = useState(null);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
@@ -94,6 +97,13 @@ export function TreeItem({
       label: "Duplicate",
       icon: <Copy size={14} />,
       onClick: handleDuplicate,
+    },
+    {
+      key: "compare-datasource",
+      label: "Compare with datasource",
+      icon: <GitCompare size={14} />,
+      disabled: card.id === undefined,
+      onClick: () => setCompareCards([card]),
     },
     {
       type: "divider",
@@ -251,6 +261,15 @@ export function TreeItem({
           y={contextMenu.y}
           items={contextMenuItems}
           onClose={() => setContextMenu(null)}
+        />
+      )}
+
+      {compareCards && (
+        <DatasourceUpdatesDialog
+          category={category}
+          cards={compareCards}
+          title={`Compare '${localize(card.name)}' with datasource`}
+          onClose={() => setCompareCards(null)}
         />
       )}
 

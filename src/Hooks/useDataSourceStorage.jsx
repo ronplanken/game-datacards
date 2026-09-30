@@ -108,13 +108,17 @@ export const DataSourceStorageProviderComponent = (props) => {
         const storedData = await dataStore.getItem("40k-11e");
         // Cache is language-specific: top-level names are resolved at fetch time.
         // Refetch when the user switched language since the cache was built.
-        if (storedData && storedData.language === settings.language) {
+        if (
+          storedData &&
+          storedData.language === settings.language &&
+          (storedData.dataVersion ?? null) === (settings.dataVersion11e?.version ?? null)
+        ) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[factionIndex]);
           return;
         }
         setIsLoading(true);
-        const dataFactions = await get40k11eData(settings.language);
+        const dataFactions = await get40k11eData(settings.language, settings.dataVersion11e);
 
         dataStore.setItem("40k-11e", dataFactions);
         setDataSource(dataFactions);
@@ -199,7 +203,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [settings.selectedDataSource, settings.language]);
+  }, [settings.selectedDataSource, settings.language, settings.dataVersion11e?.version]);
 
   // Reload active custom/subscribed datasource when sync writes new data to localForage
   useEffect(() => {
@@ -248,7 +252,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (settings.selectedDataSource === "40k-11e") {
-        const dataFactions = await get40k11eData(settings.language);
+        const dataFactions = await get40k11eData(settings.language, settings.dataVersion11e);
         dataStore.setItem("40k-11e", dataFactions);
 
         setDataSource(dataFactions);

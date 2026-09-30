@@ -61,6 +61,15 @@ describe("ArmyRosterModal", () => {
     expect(onChangeBattleSize).toHaveBeenCalledWith("incursion");
   });
 
+  it("shows every force disposition of a detachment", () => {
+    const both = {
+      ...lions,
+      forceDispositions: [{ name: { en: "Disruption" } }, { name: { en: "Take and Hold" } }],
+    };
+    renderModal({ detachments: [both] });
+    expect(screen.getByText("Disruption, Take and Hold")).toBeInTheDocument();
+  });
+
   it("lists each detachment with its DP cost and force disposition", () => {
     renderModal();
     expect(screen.getByText("Lions of the Emperor")).toBeInTheDocument();

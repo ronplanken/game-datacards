@@ -1,4 +1,10 @@
 import { SUPPORTED_LANGUAGES, LANGUAGE_LABELS } from "../../Helpers/localization.helpers";
+import { use11eDataVersions } from "../../Hooks/use11eDataVersions";
+import {
+  build11eDataVersionOptions,
+  get11eDataVersionValue,
+  resolve11eDataVersion,
+} from "../../Helpers/dataVersion11e.helpers";
 
 const SettingsRow = ({ label, checked, onChange }) => (
   <div className="settings-row">
@@ -8,6 +14,36 @@ const SettingsRow = ({ label, checked, onChange }) => (
     </button>
   </div>
 );
+
+const DataVersionRow = ({ settings, updateSettings }) => {
+  const { versions, error } = use11eDataVersions();
+  return (
+    <div className="settings-row settings-row-select">
+      <span className="settings-label">Data version</span>
+      <select
+        className="settings-select"
+        aria-label="Data version"
+        value={get11eDataVersionValue(settings.dataVersion11e)}
+        onChange={(e) =>
+          updateSettings({
+            ...settings,
+            dataVersion11e: resolve11eDataVersion(e.target.value, versions, settings.dataVersion11e),
+          })
+        }>
+        {build11eDataVersionOptions(versions, settings.dataVersion11e).map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+        {error && (
+          <option value="unavailable" disabled>
+            Older versions unavailable
+          </option>
+        )}
+      </select>
+    </div>
+  );
+};
 
 export const MobileSettings40k = ({ settings, updateSettings }) => (
   <div className="settings-section">
@@ -39,6 +75,9 @@ export const MobileSettings40k = ({ settings, updateSettings }) => (
             ))}
           </select>
         </div>
+      )}
+      {settings.selectedDataSource === "40k-11e" && (
+        <DataVersionRow settings={settings} updateSettings={updateSettings} />
       )}
     </div>
   </div>

@@ -6,6 +6,12 @@ import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback, useState } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { use11eDataVersions } from "../Hooks/use11eDataVersions";
+import {
+  build11eDataVersionOptions,
+  get11eDataVersionValue,
+  resolve11eDataVersion,
+} from "../Helpers/dataVersion11e.helpers";
 import { useAuth, useSubscription, useSync } from "../Premium";
 import { useUmami } from "../Hooks/useUmami";
 import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
@@ -46,6 +52,7 @@ export const SettingsModal = () => {
 
   const { settings, updateSettings } = useSettingsStorage();
   const { trackEvent } = useUmami();
+  const dataVersions11e = use11eDataVersions(isModalVisible && settings.selectedDataSource === "40k-11e");
   const {
     dataSource,
     checkForUpdate,
@@ -216,6 +223,15 @@ export const SettingsModal = () => {
         <span className="datasource-detail-label">Data version date</span>
         <span className="datasource-detail-value">{formatDate(dataSource.lastUpdated)}</span>
       </div>
+      {dataSource.compatibleDataVersion && (
+        <div className="datasource-detail-item">
+          <span className="datasource-detail-label">Data version</span>
+          <span className="datasource-detail-value">
+            {dataSource.compatibleDataVersion}
+            {dataSource.dataVersion ? " (pinned)" : ""}
+          </span>
+        </div>
+      )}
       <div className="datasource-detail-item">
         <span className="datasource-detail-label">Version</span>
         <span className="datasource-detail-value">{dataSource.version}</span>
@@ -340,6 +356,44 @@ export const SettingsModal = () => {
                             label: LANGUAGE_LABELS[code] || code,
                           }))}
                         />
+                      </div>
+                    )}
+
+                    {settings.selectedDataSource === "40k-11e" && (
+                      <div className="datasource-section">
+                        <h3 className="datasource-section-title">Data version</h3>
+                        <p className="datasource-section-description">
+                          Use an older data version, for example for an event that has not moved to the latest points
+                          and rules yet. Latest follows every new update.
+                        </p>
+                        <Select
+                          value={get11eDataVersionValue(settings.dataVersion11e)}
+                          loading={dataVersions11e.isLoading}
+                          style={{ width: "100%", maxWidth: 280 }}
+                          onChange={(value) =>
+                            updateSettings({
+                              ...settings,
+                              dataVersion11e: resolve11eDataVersion(
+                                value,
+                                dataVersions11e.versions,
+                                settings.dataVersion11e,
+                              ),
+                            })
+                          }
+                          options={build11eDataVersionOptions(dataVersions11e.versions, settings.dataVersion11e)}
+                        />
+                        {dataVersions11e.error && (
+                          <p className="datasource-section-description" style={{ margin: "12px 0 0" }}>
+                            Older data versions could not be loaded. Check your connection and reopen Settings to try
+                            again.
+                          </p>
+                        )}
+                        {settings.dataVersion11e && (
+                          <p className="datasource-section-description" style={{ margin: "12px 0 0" }}>
+                            You are using data version {settings.dataVersion11e.version}. New updates are not applied
+                            until you switch back to Latest.
+                          </p>
+                        )}
                       </div>
                     )}
 

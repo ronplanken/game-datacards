@@ -70,8 +70,16 @@ From the core rules' Select Battle Size table (`BATTLE_SIZES`):
 | Strike Force | 2000 | 3 | 4 | 3 |
 
 An army buys several detachments with its DP budget; each detachment costs
-1-3 DP (`detachmentPoints`) and grants its own force disposition, rules,
+1-3 DP (`detachmentPoints`) and grants its own force dispositions, rules,
 enhancements and stratagems. The same detachment cannot be taken twice.
+
+A detachment can grant more than one force disposition. From data 963 each
+detachment carries a `forceDispositions` list, and the older single
+`forceDisposition` stays alongside it (equal to the first entry). Older data
+and lists saved before 963 only have `forceDisposition`.
+`getDetachmentForceDispositions` reads the list when it has entries and falls
+back to the single field otherwise. The roster picker, the list overview and the
+GW app export show every disposition, joined with a comma.
 
 One exception is implemented: at Incursion a 3 DP detachment may be taken as the
 army's **only** detachment (`allowsSoloOverBudgetDetachment`). Once taken it

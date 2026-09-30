@@ -376,6 +376,10 @@
   flex-shrink: 0;
 }
 
+.list-overview-more-item span {
+  white-space: nowrap;
+}
+
 .list-overview-more-item--danger {
   color: var(--bs-danger);
 }

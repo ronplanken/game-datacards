@@ -238,7 +238,7 @@ The text is written as:
 
 <faction>
 <detachment> (<DP> Detachment Points)
-Force Dispositions: <disposition>
+Force Dispositions: <disposition>[, <disposition>]
 <battle size> (<battle size points> Points)
 
 CHARACTERS
@@ -252,7 +252,8 @@ CHARACTERS
 Header rules:
 
 - The detachment lines are written per detachment the army holds, each with its
-  DP cost and, when the detachment has one, its force disposition. The parser
+  DP cost and, when the detachment has them, its force dispositions separated by
+  a comma. The parser
   reads the first detachment and skips the rest, so a multi-detachment list
   round-trips only its first one.
 - "Detachment Points" is always written in the plural, since that is what the

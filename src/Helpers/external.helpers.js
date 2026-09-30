@@ -1,6 +1,11 @@
 import clone from "just-clone";
 import { v4 as uuidv4 } from "uuid";
 import { localize } from "./localization.helpers";
+import {
+  get11eVersionsManifestUrl,
+  is11eDataVersionUrlAllowed,
+  parse11eVersionsManifest,
+} from "./dataVersion11e.helpers";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -499,7 +504,13 @@ const resolve11eRuleNames = (rules, language) => {
   };
 };
 
-export const get40k11eData = async (language = "en") => {
+export const get40k11eData = async (language = "en", dataVersion = null) => {
+  const defaultUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
+  if (dataVersion && !is11eDataVersionUrlAllowed(dataVersion.url, defaultUrl)) {
+    throw new Error(`Data version ${dataVersion.version} points to an unexpected location`);
+  }
+  const baseUrl = dataVersion?.url || defaultUrl;
+
   const factions = [
     "adeptasororitas",
     "adeptuscustodes",
@@ -533,7 +544,7 @@ export const get40k11eData = async (language = "en") => {
   ];
 
   const fetchData = async (faction) => {
-    const url = `${import.meta.env.VITE_DATASOURCE_11TH_URL}/${faction}.json?${new Date().getTime()}`;
+    const url = `${baseUrl}/${faction}.json?${new Date().getTime()}`;
     const data = await readCsv(url);
     return data;
   };
@@ -552,7 +563,7 @@ export const get40k11eData = async (language = "en") => {
   // predate the file, so a failed fetch degrades to an empty glossary.
   const fetchKeywordGlossary = async () => {
     try {
-      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/keywords.json?${new Date().getTime()}`);
+      const data = await readCsv(`${baseUrl}/keywords.json?${new Date().getTime()}`);
       if (Array.isArray(data?.keywords)) return data.keywords;
       return Array.isArray(data) ? data : [];
     } catch {
@@ -565,7 +576,7 @@ export const get40k11eData = async (language = "en") => {
   // basicStratagems below; older datasources without the file degrade to none.
   const fetchCoreStratagems = async () => {
     try {
-      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/core.json?${new Date().getTime()}`);
+      const data = await readCsv(`${baseUrl}/core.json?${new Date().getTime()}`);
       return Array.isArray(data?.stratagems) ? data.stratagems : [];
     } catch {
       return [];
@@ -586,6 +597,8 @@ export const get40k11eData = async (language = "en") => {
     version: import.meta.env.VITE_VERSION,
     lastUpdated: allFactionsData[0].updated,
     lastCheckedForUpdate: new Date().toISOString(),
+    compatibleDataVersion: allFactionsData[0].compatibleDataVersion,
+    dataVersion: dataVersion?.version ?? null,
     // Shared 11e keyword glossary (weapon keywords + core abilities), multilingual.
     keywordGlossary,
     // The language this cache was built for. useDataSourceStorage refetches when
@@ -635,6 +648,12 @@ export const get40k11eData = async (language = "en") => {
       };
     }),
   };
+};
+
+export const get40k11eDataVersions = async () => {
+  const baseUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
+  const data = await readCsv(`${get11eVersionsManifestUrl(baseUrl)}?${Date.now()}`);
+  return parse11eVersionsManifest(data, baseUrl);
 };
 
 export const get40k10eCombatPatrolData = async () => {

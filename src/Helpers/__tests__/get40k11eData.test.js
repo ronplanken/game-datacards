@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { get40k11eData } from "../external.helpers";
+import { get40k11eData, get40k11eDataVersions } from "../external.helpers";
 
 // A minimal single-faction fixture covering every card type. Returned for every
 // faction fetch so we can assert the mapping the helper applies.
@@ -161,5 +161,70 @@ describe("get40k11eData", () => {
     expect(result.data[0].basicStratagems).toEqual([]);
     // Factions still load fine when the shared files are missing.
     expect(result.data).toHaveLength(29);
+  });
+
+  it("loads a pinned data version from its own base url", async () => {
+    const result = await get40k11eData("en", { version: 946, url: "https://example.test/sha946/11th/gdc" });
+    const urls = global.fetch.mock.calls.map(([u]) => u);
+    expect(urls.every((u) => u.startsWith("https://example.test/sha946/11th/gdc/"))).toBe(true);
+    expect(urls.some((u) => u.includes("/keywords.json?"))).toBe(true);
+    expect(urls.some((u) => u.includes("/core.json?"))).toBe(true);
+    expect(result.dataVersion).toBe(946);
+  });
+
+  it("refuses a pinned data version on another origin without fetching", async () => {
+    await expect(get40k11eData("en", { version: 946, url: "https://evil.test/sha946/11th/gdc" })).rejects.toThrow(
+      /Data version 946/,
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
+  it("records no pinned data version when loading the latest data", async () => {
+    const result = await get40k11eData("en");
+    expect(result.dataVersion).toBeNull();
+  });
+
+  it("exposes the compatible data version of the loaded files", async () => {
+    global.fetch = vi.fn(async (url) => ({
+      ok: true,
+      text: async () =>
+        JSON.stringify(bodyFor(url) === faction ? { ...faction, compatibleDataVersion: 963 } : bodyFor(url)),
+    }));
+    const result = await get40k11eData("en");
+    expect(result.compatibleDataVersion).toBe(963);
+  });
+});
+
+describe("get40k11eDataVersions", () => {
+  beforeEach(() => {
+    vi.stubEnv("VITE_DATASOURCE_11TH_URL", "https://example.test/datasources/main/11th/gdc");
+    global.fetch = vi.fn(async () => ({
+      ok: true,
+      text: async () =>
+        JSON.stringify({
+          versions: [
+            { version: 931, url: "https://example.test/sha931/11th/gdc" },
+            { version: 946, url: "https://example.test/sha946/11th/gdc" },
+          ],
+        }),
+    }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it("fetches the versions manifest next to the gdc folder", async () => {
+    const versions = await get40k11eDataVersions();
+    expect(global.fetch.mock.calls[0][0]).toMatch(
+      /^https:\/\/example\.test\/datasources\/main\/11th\/versions\.json\?\d+$/,
+    );
+    expect(versions.map((v) => v.version)).toEqual([946, 931]);
+  });
+
+  it("rejects when the manifest cannot be fetched", async () => {
+    global.fetch = vi.fn(async () => ({ ok: false, status: 404, statusText: "Not Found" }));
+    await expect(get40k11eDataVersions()).rejects.toThrow();
   });
 });

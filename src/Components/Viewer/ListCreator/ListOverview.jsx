@@ -15,6 +15,7 @@ import {
   Check,
   Loader,
   RefreshCw,
+  GitCompare,
 } from "lucide-react";
 import { message } from "../../Toast/message";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -52,6 +53,7 @@ import { ListSelector } from "./ListSelector";
 import { ListEditCard } from "./ListEditCard";
 import { MobileGwImporter, MobileListForgeImporter } from "../MobileImporter";
 import { deleteConfirmDialog } from "../../DeleteConfirmModal";
+import { DatasourceUpdatesDialog } from "../../DatasourceUpdates";
 import "./ListOverview.css";
 
 // Import action button (prominent, at top of content)
@@ -85,8 +87,10 @@ const ListHeader = ({
   onCopyToClipboard,
   onShareList,
   onDeleteList,
+  onCompare,
   canDeleteList,
   canShare,
+  canCompare,
   isCloudCategory,
   isSynced,
   gameSystem,
@@ -123,6 +127,18 @@ const ListHeader = ({
                   <FileText size={16} />
                   <span>Copy List</span>
                 </button>
+                {canCompare && (
+                  <button
+                    className="list-overview-more-item"
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onCompare();
+                    }}
+                    type="button">
+                    <GitCompare size={16} />
+                    <span>Compare with datasource</span>
+                  </button>
+                )}
                 {canShare && (
                   <button
                     className="list-overview-more-item"
@@ -408,6 +424,7 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const [editingCard, setEditingCard] = useState(null);
   const [isShareSheetVisible, setIsShareSheetVisible] = useState(false);
   const [isRosterSheetVisible, setIsRosterSheetVisible] = useState(false);
+  const [compareCards, setCompareCards] = useState(null);
   const [urlPayload, setUrlPayload] = useState(null);
 
   // Consume ListForge URL payload from router state
@@ -620,6 +637,8 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
                 onCopyToClipboard={handleCopyToClipboard}
                 onShareList={() => setIsShareSheetVisible(true)}
                 onDeleteList={handleDeleteList}
+                onCompare={() => setCompareCards(currentList.cards)}
+                canCompare={!isCloudCategory && currentCards.length > 0}
                 canDeleteList={lists.length > 1}
                 canShare={!!shareCategory}
                 isCloudCategory={isCloudCategory}
@@ -726,6 +745,16 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
         onChangeDetachments={handleChangeDetachments}
         language={settings.language}
       />
+
+      {compareCards && currentList && (
+        <DatasourceUpdatesDialog
+          variant="mobile"
+          category={currentList}
+          cards={compareCards}
+          title="Compare with datasource"
+          onClose={() => setCompareCards(null)}
+        />
+      )}
 
       <MobileGwImporter isOpen={activeImporter === "gw"} onClose={() => setActiveImporter(null)} />
 

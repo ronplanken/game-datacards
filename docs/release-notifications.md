@@ -46,6 +46,16 @@ desktop/mobile `VERSION_REGISTRY` (see `src/Components/WhatsNewWizard/`). A patc
 bump that adds no registry entry shows **no** modal, which is exactly what the
 release-note channel relies on.
 
+When a user has missed several feature releases, the wizard shows the unseen
+versions in one flow (`mergeVersionSteps` / `mergeMobileVersionSteps`). Each
+version is normally one step flagged `isThankYou`. Only the newest version keeps
+that flag's usual role as the closing step; a single-step version is kept when it
+is one of the last `RECENT_SINGLE_STEP_VERSIONS` (3) unseen versions and dropped
+otherwise. Older multi-step releases (3.0.0, 3.1.0, 3.1.1, 3.2.0, 3.5.0) keep
+their feature steps and lose only their dedicated thank-you step. This keeps a
+user who skipped a release or two from missing a feature, while a long-idle user
+does not get a very long wizard.
+
 The separate "new build available, reload" prompt (`src/Hooks/useUpdateChecker.js`)
 is unrelated to either channel — it is driven by `buildId` and fires on any deploy.
 

@@ -6,6 +6,7 @@ import {
   getLatestWizardVersion,
   getUnseenVersions,
   mergeVersionSteps,
+  RECENT_SINGLE_STEP_VERSIONS,
 } from "../index";
 
 describe("WhatsNewWizard version registry", () => {
@@ -21,8 +22,8 @@ describe("WhatsNewWizard version registry", () => {
     }
   });
 
-  it("has v3.11.0 as the latest version", () => {
-    expect(getLatestWizardVersion()).toBe("3.11.0");
+  it("has v3.13.0 as the latest version", () => {
+    expect(getLatestWizardVersion()).toBe("3.13.0");
   });
 
   it("returns v3.2.2 config via getVersionConfig", () => {
@@ -44,5 +45,34 @@ describe("WhatsNewWizard version registry", () => {
     const lastStep = merged[merged.length - 1];
     expect(lastStep.isThankYou).toBe(true);
     expect(lastStep.version).toBe("3.2.2");
+  });
+
+  it("keeps single-step releases when several versions are merged", () => {
+    const merged = mergeVersionSteps(getUnseenVersions("3.11.0", "3.13.0"));
+    expect(merged.map((step) => step.key)).toEqual(["3.12.0-data-version", "3.13.0-compare-datasource"]);
+    expect(merged[merged.length - 1].isThankYou).toBe(true);
+  });
+
+  it("only keeps single-step releases among the most recent unseen versions", () => {
+    const unseen = getUnseenVersions("3.5.0", "3.13.0");
+    const merged = mergeVersionSteps(unseen);
+    expect(RECENT_SINGLE_STEP_VERSIONS).toBe(3);
+    expect(merged.map((step) => step.version)).toEqual(unseen.slice(-3).map((v) => v.version));
+  });
+
+  it("keeps the step count bounded for a long-idle user", () => {
+    const merged = mergeVersionSteps(getUnseenVersions("3.0.0", "3.13.0"));
+    const keys = merged.map((step) => step.key);
+    expect(keys.slice(-3)).toEqual(["3.11.0-11th-edition", "3.12.0-data-version", "3.13.0-compare-datasource"]);
+    expect(keys).not.toContain("3.10.0-patch-notes");
+  });
+
+  it("still drops the dedicated thank-you step of an older multi-step release", () => {
+    const merged = mergeVersionSteps(getUnseenVersions("3.0.0", "3.2.1"));
+    const keys = merged.map((step) => step.key);
+    expect(keys).not.toContain("3.1.0-thankyou");
+    expect(keys).not.toContain("3.2.0-thankyou");
+    expect(keys).toContain("3.2.1-update");
+    expect(keys[keys.length - 1]).toBe("3.2.1-update");
   });
 });
