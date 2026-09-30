@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   LATEST_DATA_VERSION,
   build11eDataVersionOptions,
+  get11eDataVersionBadge,
   get11eDataVersionValue,
   get11eVersionsManifestUrl,
   is11eDataVersionUrlAllowed,
@@ -131,5 +132,28 @@ describe("get11eDataVersionValue", () => {
   it("maps no selection to Latest and a pinned entry to its version", () => {
     expect(get11eDataVersionValue(null)).toBe(LATEST_DATA_VERSION);
     expect(get11eDataVersionValue(v946)).toBe("946");
+  });
+});
+
+describe("get11eDataVersionBadge", () => {
+  it("shows the pinned version, marked as pinned", () => {
+    expect(get11eDataVersionBadge({ compatibleDataVersion: 963 }, v946)).toMatchObject({ version: 946, pinned: true });
+  });
+
+  it("shows the pinned version even when 11th edition is not the active datasource", () => {
+    expect(get11eDataVersionBadge({}, v946, false)).toMatchObject({ version: 946, pinned: true });
+  });
+
+  it("shows the loaded data version when nothing is pinned", () => {
+    expect(get11eDataVersionBadge({ compatibleDataVersion: 963 }, null)).toMatchObject({ version: 963, pinned: false });
+  });
+
+  it("reads the version from the faction files for caches built before it was recorded", () => {
+    expect(get11eDataVersionBadge({ data: [{ compatibleDataVersion: 963 }] }, null)).toMatchObject({ version: 963 });
+  });
+
+  it("shows nothing when the version is unknown or 11th edition is not active", () => {
+    expect(get11eDataVersionBadge({ data: [] }, null)).toBeNull();
+    expect(get11eDataVersionBadge({ compatibleDataVersion: 963 }, null, false)).toBeNull();
   });
 });

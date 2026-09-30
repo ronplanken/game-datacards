@@ -14,6 +14,7 @@ file_locations:
   settings: src/Hooks/useSettingsStorage.jsx
   desktop_ui: src/Components/SettingsModal.jsx
   mobile_ui: src/Components/Viewer/MobileSettings40k.jsx
+  header_badge: src/Components/DatasourceSelector/DatasourceSelector.jsx
 ---
 
 # 40k 11th Edition Data Versions
@@ -81,6 +82,12 @@ The selection is stored in `settings.dataVersion11e`:
 - `null` means Latest.
 - `{ version, url }` pins a version. The URL is stored with the version so the
   app can load the pinned data without fetching the manifest first.
+
+The datasource selector in the header shows the data version as a badge, on the
+button and on the "40k 11th Edition" row. A pinned version is shown in amber with
+a pin icon; Latest shows the loaded version in a neutral badge
+(`get11eDataVersionBadge`). Caches built before `compatibleDataVersion` was
+recorded fall back to the version in the first faction file.
 
 If the manifest cannot be fetched, the selector still lists Latest and the
 pinned version. Desktop Settings then shows a short message, and the mobile

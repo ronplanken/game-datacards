@@ -49,3 +49,13 @@ export const resolve11eDataVersion = (value, versions = [], pinned = null) => {
 };
 
 export const get11eDataVersionValue = (pinned) => (pinned?.version ? String(pinned.version) : LATEST_DATA_VERSION);
+
+export const get11eDataVersionBadge = (dataSource, pinned, isActive = true) => {
+  if (pinned?.version) {
+    return { version: pinned.version, pinned: true, title: `Pinned to data version ${pinned.version}` };
+  }
+  if (!isActive) return null;
+  const version = dataSource?.compatibleDataVersion ?? dataSource?.data?.[0]?.compatibleDataVersion;
+  if (!Number.isInteger(version)) return null;
+  return { version, pinned: false, title: `Data version ${version} (latest)` };
+};
