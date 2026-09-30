@@ -69,12 +69,15 @@ export const getMobileVersionConfig = (version) => MOBILE_VERSION_REGISTRY.find(
  */
 export const getLatestMobileWizardVersion = () => MOBILE_VERSION_REGISTRY[MOBILE_VERSION_REGISTRY.length - 1]?.version;
 
+export const RECENT_SINGLE_STEP_VERSIONS = 3;
+
 /**
  * Merges multiple mobile version wizard steps into a single flow
  *
  * Rules:
  * 1. Each version's welcome step becomes a version introduction
- * 2. Thank you steps are removed from all but the final version, unless they are the version's only step
+ * 2. Thank you steps are removed from all but the final version, unless they are the only step of one of
+ *    the last RECENT_SINGLE_STEP_VERSIONS versions
  * 3. Steps maintain their original order within each version
  * 4. Version context is added to each step for display purposes
  *
@@ -88,8 +91,10 @@ export const mergeMobileVersionSteps = (versions) => {
     const isLastVersion = versionIndex === versions.length - 1;
 
     versionConfig.steps.forEach((step, stepIndex) => {
-      // Skip thank you steps except for the final version or a version's only step
-      if (step.isThankYou && !isLastVersion && versionConfig.steps.length > 1) {
+      // Skip thank you steps except for the final version or a recent version's only step
+      const keepsOnlyStep =
+        versionConfig.steps.length === 1 && versionIndex >= versions.length - RECENT_SINGLE_STEP_VERSIONS;
+      if (step.isThankYou && !isLastVersion && !keepsOnlyStep) {
         return;
       }
 
