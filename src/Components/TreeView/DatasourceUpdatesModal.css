@@ -154,7 +154,8 @@
 .dsu-values {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: flex-start;
+  align-content: flex-start;
   gap: 4px 6px;
   min-width: 0;
 }
@@ -181,10 +182,11 @@
 .dsu-arrow {
   color: var(--text-muted);
   flex-shrink: 0;
-  align-self: center;
+  margin-top: 3px;
 }
 
 .dsu-tag {
+  margin-top: 2px;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;

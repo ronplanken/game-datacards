@@ -12,6 +12,7 @@ file_locations:
   - src/Components/TreeView/DatasourceUpdatesDialog.jsx
   - src/Components/TreeView/TreeCategory.jsx
   - src/Components/TreeView/TreeItem.jsx
+  - src/Components/WhatsNewWizard/versions/v3.13.0/
 ---
 
 # Comparing saved cards with the datasource
@@ -116,6 +117,9 @@ that card (a renamed card, edited stats) are replaced. The dialog says so.
   marks the category pending for sync, and refreshes the active card when it
   was updated.
 - `DatasourceUpdatesModal.jsx`: the presentational dialog.
+- What's New 3.13.0 (desktop only, `WhatsNewWizard/versions/v3.13.0/`) introduces
+  the feature with two screenshots from `src/Images/whatsnew/`. There is no mobile
+  step because the action is desktop only.
 
 ## Limitations
 

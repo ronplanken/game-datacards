@@ -476,6 +476,10 @@
   height: auto;
 }
 
+.wnw-screenshot--narrow {
+  max-width: 400px;
+}
+
 .wnw-screenshot figcaption {
   padding: 8px 14px;
   font-size: 12px;
