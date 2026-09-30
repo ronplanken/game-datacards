@@ -1,5 +1,0 @@
-{
-  "title": "Custom On and Off text shows on designed cards",
-  "body": "Yes/no fields on cards that use a Card Designer template showed true or false. They now show the On and Off text you set.",
-  "severity": "info"
-}

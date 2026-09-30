@@ -194,5 +194,12 @@
     "body": "The GW 40k app export now includes your battle size, detachments and the wargear you paid points for. Unit points now match the list total.",
     "severity": "info",
     "timestamp": 1789716627
+  },
+  {
+    "version": "3.13.1",
+    "title": "Custom On and Off text shows on designed cards",
+    "body": "Yes/no fields on cards that use a Card Designer template showed true or false. They now show the On and Off text you set.",
+    "severity": "info",
+    "timestamp": 1790782327
   }
 ]
