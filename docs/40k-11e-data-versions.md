@@ -57,8 +57,10 @@ from. The app derives the manifest URL from `VITE_DATASOURCE_11TH_URL`.
   files never change after they are listed.
 - The latest version is not listed. "Latest" always means the `main` branch.
 
-Entries with a non-integer `version` or an empty `url` are ignored. The app
-sorts entries newest first.
+Entries with a non-integer `version`, or a `url` on another origin than
+`VITE_DATASOURCE_11TH_URL`, are ignored. The app sorts entries newest first.
+`get40k11eData` also refuses a pinned URL on another origin, so a hand-edited
+setting cannot point the app at a different host.
 
 ## Adding a version after a data update
 
@@ -81,7 +83,8 @@ The selection is stored in `settings.dataVersion11e`:
   app can load the pinned data without fetching the manifest first.
 
 If the manifest cannot be fetched, the selector still lists Latest and the
-pinned version.
+pinned version. Desktop Settings then shows a short message, and the mobile
+selector shows a disabled "Older versions unavailable" entry.
 
 ## Loading and caching
 

@@ -1,7 +1,11 @@
 import clone from "just-clone";
 import { v4 as uuidv4 } from "uuid";
 import { localize } from "./localization.helpers";
-import { get11eVersionsManifestUrl, parse11eVersionsManifest } from "./dataVersion11e.helpers";
+import {
+  get11eVersionsManifestUrl,
+  is11eDataVersionUrlAllowed,
+  parse11eVersionsManifest,
+} from "./dataVersion11e.helpers";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -501,7 +505,11 @@ const resolve11eRuleNames = (rules, language) => {
 };
 
 export const get40k11eData = async (language = "en", dataVersion = null) => {
-  const baseUrl = dataVersion?.url || import.meta.env.VITE_DATASOURCE_11TH_URL;
+  const defaultUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
+  if (dataVersion && !is11eDataVersionUrlAllowed(dataVersion.url, defaultUrl)) {
+    throw new Error(`Data version ${dataVersion.version} points to an unexpected location`);
+  }
+  const baseUrl = dataVersion?.url || defaultUrl;
 
   const factions = [
     "adeptasororitas",
@@ -643,8 +651,9 @@ export const get40k11eData = async (language = "en", dataVersion = null) => {
 };
 
 export const get40k11eDataVersions = async () => {
-  const data = await readCsv(`${get11eVersionsManifestUrl(import.meta.env.VITE_DATASOURCE_11TH_URL)}?${Date.now()}`);
-  return parse11eVersionsManifest(data);
+  const baseUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
+  const data = await readCsv(`${get11eVersionsManifestUrl(baseUrl)}?${Date.now()}`);
+  return parse11eVersionsManifest(data, baseUrl);
 };
 
 export const get40k10eCombatPatrolData = async () => {

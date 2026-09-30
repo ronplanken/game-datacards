@@ -16,7 +16,7 @@ const SettingsRow = ({ label, checked, onChange }) => (
 );
 
 const DataVersionRow = ({ settings, updateSettings }) => {
-  const { versions } = use11eDataVersions();
+  const { versions, error } = use11eDataVersions();
   return (
     <div className="settings-row settings-row-select">
       <span className="settings-label">Data version</span>
@@ -35,6 +35,11 @@ const DataVersionRow = ({ settings, updateSettings }) => {
             {option.label}
           </option>
         ))}
+        {error && (
+          <option value="unavailable" disabled>
+            Older versions unavailable
+          </option>
+        )}
       </select>
     </div>
   );

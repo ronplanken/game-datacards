@@ -382,6 +382,12 @@ export const SettingsModal = () => {
                           }
                           options={build11eDataVersionOptions(dataVersions11e.versions, settings.dataVersion11e)}
                         />
+                        {dataVersions11e.error && (
+                          <p className="datasource-section-description" style={{ margin: "12px 0 0" }}>
+                            Older data versions could not be loaded. Check your connection and reopen Settings to try
+                            again.
+                          </p>
+                        )}
                         {settings.dataVersion11e && (
                           <p className="datasource-section-description" style={{ margin: "12px 0 0" }}>
                             You are using data version {settings.dataVersion11e.version}. New updates are not applied

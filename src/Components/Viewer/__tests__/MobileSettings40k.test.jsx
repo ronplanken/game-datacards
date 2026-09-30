@@ -51,6 +51,19 @@ describe("MobileSettings40k data version picker", () => {
     expect([...select.querySelectorAll("option")].map((o) => o.value)).toEqual(["latest", "946"]);
   });
 
+  it("shows a disabled hint when older versions cannot be loaded", () => {
+    mockVersions.versions = [];
+    mockVersions.error = new Error("offline");
+    const { getByLabelText } = render(
+      <MobileSettings40k settings={{ selectedDataSource: "40k-11e" }} updateSettings={vi.fn()} />,
+    );
+    const hint = [...getByLabelText("Data version").querySelectorAll("option")].find(
+      (o) => o.textContent === "Older versions unavailable",
+    );
+    expect(hint.disabled).toBe(true);
+    mockVersions.error = null;
+  });
+
   it("hides the data version select for 10th edition", () => {
     const { queryByLabelText } = render(
       <MobileSettings40k settings={{ selectedDataSource: "40k-10e" }} updateSettings={vi.fn()} />,

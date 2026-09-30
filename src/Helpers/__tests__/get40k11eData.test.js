@@ -172,6 +172,13 @@ describe("get40k11eData", () => {
     expect(result.dataVersion).toBe(946);
   });
 
+  it("refuses a pinned data version on another origin without fetching", async () => {
+    await expect(get40k11eData("en", { version: 946, url: "https://evil.test/sha946/11th/gdc" })).rejects.toThrow(
+      /Data version 946/,
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+
   it("records no pinned data version when loading the latest data", async () => {
     const result = await get40k11eData("en");
     expect(result.dataVersion).toBeNull();

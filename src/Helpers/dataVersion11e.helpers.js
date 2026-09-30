@@ -6,10 +6,23 @@ export const get11eVersionsManifestUrl = (baseUrl) => {
   return new URL("../versions.json", base).href;
 };
 
-export const parse11eVersionsManifest = (data) => {
+export const is11eDataVersionUrlAllowed = (url, baseUrl) => {
+  try {
+    return new URL(url).origin === new URL(baseUrl).origin;
+  } catch {
+    return false;
+  }
+};
+
+export const parse11eVersionsManifest = (data, baseUrl) => {
   const entries = Array.isArray(data?.versions) ? data.versions : [];
   return entries
-    .filter((entry) => Number.isInteger(entry?.version) && typeof entry?.url === "string" && entry.url)
+    .filter(
+      (entry) =>
+        Number.isInteger(entry?.version) &&
+        typeof entry?.url === "string" &&
+        is11eDataVersionUrlAllowed(entry.url, baseUrl),
+    )
     .map((entry) => ({ version: entry.version, url: entry.url.replace(/\/+$/, "") }))
     .sort((a, b) => b.version - a.version);
 };
