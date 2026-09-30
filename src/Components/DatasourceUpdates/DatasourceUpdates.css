@@ -230,3 +230,85 @@
     transition: none;
   }
 }
+
+.dsu-mobile {
+  --glass-bg-subtle: var(--bs-surface);
+  --glass-border-subtle: var(--bs-border);
+  --accent-primary: var(--bs-accent);
+  --accent-secondary: var(--bs-accent-secondary);
+  --accent-light: var(--bs-accent-light);
+  --text-primary: var(--bs-text);
+  --text-secondary: var(--bs-text-secondary);
+  --text-muted: var(--bs-text-muted);
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dsu-mobile .dsu-summary {
+  font-size: 14px;
+}
+
+.dsu-mobile .dsu-card-toggle {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+
+.dsu-mobile .dsu-card-name {
+  font-size: 14px;
+  white-space: normal;
+}
+
+.dsu-mobile .dsu-change {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--glass-border-subtle);
+  font-size: 13px;
+}
+
+.dsu-mobile .dsu-change:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dsu-mobile .dsu-change--legend {
+  font-size: 10px;
+}
+
+.dsu-mobile .dsu-change--legend .dsu-path {
+  display: none;
+}
+
+.dsu-mobile .dsu-note {
+  font-size: 12px;
+}
+
+.dsu-mobile-footer {
+  position: sticky;
+  bottom: -16px;
+  margin: 0 -20px -16px;
+  padding: 12px 20px 16px;
+  background: #f8fafc;
+  border-top: 1px solid var(--bs-border);
+}
+
+.dsu-mobile-submit {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  background: var(--bs-accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.dsu-mobile-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

@@ -7,8 +7,9 @@ import { useUmami } from "../../Hooks/useUmami";
 import { applyCardUpdates } from "../../Helpers/cardUpdates.helpers";
 import { getArmyContext, getListFactionId } from "../../Helpers/listRoster.helpers";
 import { DatasourceUpdatesModal } from "./DatasourceUpdatesModal";
+import { MobileDatasourceUpdatesSheet } from "./MobileDatasourceUpdatesSheet";
 
-export const DatasourceUpdatesDialog = ({ category, cards, title, onClose }) => {
+export const DatasourceUpdatesDialog = ({ category, cards, title, onClose, variant = "desktop" }) => {
   const { cardStorage, updateCategory, markCategoryPending, activeCard, updateActiveCard } = useCardStorage();
   const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings } = useSettingsStorage();
@@ -46,8 +47,10 @@ export const DatasourceUpdatesDialog = ({ category, cards, title, onClose }) => 
     );
   };
 
+  const Dialog = variant === "mobile" ? MobileDatasourceUpdatesSheet : DatasourceUpdatesModal;
+
   return (
-    <DatasourceUpdatesModal
+    <Dialog
       isOpen
       title={title}
       cards={cards}

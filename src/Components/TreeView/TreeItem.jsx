@@ -25,7 +25,7 @@ import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import { ContextMenu } from "./ContextMenu";
 import { UnitConfigModal } from "./UnitConfigModal";
-import { DatasourceUpdatesDialog } from "./DatasourceUpdatesDialog";
+import { DatasourceUpdatesDialog } from "../DatasourceUpdates";
 import "./TreeView.css";
 
 export function TreeItem({

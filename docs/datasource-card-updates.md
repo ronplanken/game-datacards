@@ -8,11 +8,12 @@ related:
   - 40k-11e-list-building.md
 file_locations:
   - src/Helpers/cardUpdates.helpers.js
-  - src/Components/TreeView/DatasourceUpdatesModal.jsx
-  - src/Components/TreeView/DatasourceUpdatesDialog.jsx
+  - src/Components/DatasourceUpdates/
   - src/Components/TreeView/TreeCategory.jsx
   - src/Components/TreeView/TreeItem.jsx
+  - src/Components/Viewer/ListCreator/ListOverview.jsx
   - src/Components/WhatsNewWizard/versions/v3.13.0/
+  - src/Components/MobileWhatsNewWizard/versions/v3.13.0/
 ---
 
 # Comparing saved cards with the datasource
@@ -31,10 +32,16 @@ file_locations:
 
 A card added to a category or list is a full copy of the datasource card. When
 the datasource is updated later (new points, changed weapons, reworded
-abilities), the saved copy does not change. On desktop, right-click a category,
-list or single card and choose **Compare with datasource**. The dialog lists
-every card that differs from the loaded datasource, shows each change, and lets
-the user update the cards they select.
+abilities), the saved copy does not change.
+
+- Desktop: right-click a category, list or single card and choose **Compare
+  with datasource**.
+- Mobile: open **Lists**, tap the menu next to the list name and choose
+  **Compare with datasource**. This checks every unit in the list; untick the
+  ones to leave alone.
+
+The dialog lists every card that differs from the loaded datasource, shows each
+change, and lets the user update the cards they select.
 
 ## How a saved card is matched
 
@@ -109,17 +116,32 @@ that card (a renamed card, edited stats) are replaced. The dialog says so.
 
 ## Where it is wired in
 
-- `TreeCategory.jsx`: category and list context menu, checks all cards in that
-  category (not its sub-categories).
-- `TreeItem.jsx`: card context menu, checks one card.
+Shared code lives in `src/Components/DatasourceUpdates/`:
+
+- `useDatasourceUpdates.js`: runs the comparison and holds the selected and
+  expanded cards.
+- `DatasourceUpdatesBody.jsx`: the summary, card list, change rows and notes,
+  used by both layouts.
+- `DatasourceUpdatesModal.jsx`: desktop dialog (`ucm-*` glass modal).
+- `MobileDatasourceUpdatesSheet.jsx`: mobile dialog in a `MobileModal`, with a
+  single-column change list and a sticky update button. The `.dsu-mobile`
+  wrapper maps the mobile `--bs-*` tokens onto the variables the body uses.
 - `DatasourceUpdatesDialog.jsx`: mounted only while open. It reads the loaded
   datasource and settings, applies the update with one `updateCategory` write,
   marks the category pending for sync, and refreshes the active card when it
-  was updated.
-- `DatasourceUpdatesModal.jsx`: the presentational dialog.
-- What's New 3.13.0 (desktop only, `WhatsNewWizard/versions/v3.13.0/`) introduces
-  the feature with two screenshots from `src/Images/whatsnew/`. There is no mobile
-  step because the action is desktop only.
+  was updated. `variant="mobile"` renders the mobile sheet.
+
+Entry points:
+
+- `TreeCategory.jsx`: desktop category and list context menu, checks all cards
+  in that category (not its sub-categories).
+- `TreeItem.jsx`: desktop card context menu, checks one card.
+- `ListOverview.jsx`: mobile list menu, checks all units in the selected local
+  list. Cloud categories opened on mobile are read-only and do not offer it.
+
+What's New 3.13.0 has a desktop step (`WhatsNewWizard/versions/v3.13.0/`) and a
+mobile step (`MobileWhatsNewWizard/versions/v3.13.0/`), each with two
+screenshots from `src/Images/whatsnew/`.
 
 ## Limitations
 
@@ -128,5 +150,5 @@ that card (a renamed card, edited stats) are replaced. The dialog says so.
 - The stored `selectedEnhancement` is not refreshed from the datasource.
 - 40K rule card ids are built from the rule name. For 11th edition the name is
   localised, so after switching card language rule cards show as not found.
-- Mobile lists do not have the action yet. The helpers are shared and can be
-  reused there.
+- Mobile has no per-unit entry point. The list-level check covers it: untick
+  the units that should stay as they are.

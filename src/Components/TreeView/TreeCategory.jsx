@@ -30,7 +30,7 @@ import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
 import { ArmyRosterModal } from "./ArmyRosterModal";
-import { DatasourceUpdatesDialog } from "./DatasourceUpdatesDialog";
+import { DatasourceUpdatesDialog } from "../DatasourceUpdates";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import "./TreeView.css";
