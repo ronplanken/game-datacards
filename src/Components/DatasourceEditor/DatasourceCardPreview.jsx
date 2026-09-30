@@ -5,6 +5,7 @@ import { CustomRuleCard } from "../Custom/CustomRuleCard";
 import { CustomEnhancementCard } from "../Custom/CustomEnhancementCard";
 import { CustomStratagemCard } from "../Custom/CustomStratagemCard";
 import { TemplateRenderer } from "../../Premium";
+import { applyBooleanDisplayValues } from "../../Helpers/customSchemaBindings";
 import { resolveDatasourceRenderer } from "./cards/resolveDatasourceRenderer";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { DatasourcePreviewToolbar } from "./DatasourcePreviewToolbar";
@@ -46,7 +47,11 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
   if (card.templateId) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", padding: 24 }}>
-        <TemplateRenderer templateId={card.templateId} card={card} faction={cardFaction} />
+        <TemplateRenderer
+          templateId={card.templateId}
+          card={applyBooleanDisplayValues(card, cardTypeDef)}
+          faction={cardFaction}
+        />
       </div>
     );
   }

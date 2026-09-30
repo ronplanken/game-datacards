@@ -7,6 +7,7 @@ import { CustomStratagemCard } from "./CustomStratagemCard";
 import { CustomUnitCard } from "./CustomUnitCard";
 import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
 import { TemplateRenderer } from "../../Premium";
+import { applyBooleanDisplayValues } from "../../Helpers/customSchemaBindings";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -98,7 +99,11 @@ export const CustomCardDisplay = ({
   if (displayCard.templateId) {
     return (
       <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
-        <TemplateRenderer templateId={displayCard.templateId} card={displayCard} faction={cardFaction} />
+        <TemplateRenderer
+          templateId={displayCard.templateId}
+          card={applyBooleanDisplayValues(displayCard, cardTypeDef)}
+          faction={cardFaction}
+        />
       </Col>
     );
   }
