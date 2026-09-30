@@ -305,6 +305,35 @@ export const CardStorageProviderComponent = (props) => {
     });
   };
 
+  const replaceCategoryCards = (categoryUuid, replacements) => {
+    const byUuid = new Map((replacements || []).filter(Boolean).map((card) => [card.uuid, card]));
+    if (byUuid.size === 0) {
+      return;
+    }
+    setCardStorage((prevStorage) => {
+      const newStorage = clone(prevStorage);
+      const catIndex = newStorage.categories.findIndex((cat) => cat.uuid === categoryUuid);
+      if (catIndex === -1) return prevStorage;
+      const cat = newStorage.categories[catIndex];
+      newStorage.categories[catIndex] = {
+        ...cat,
+        cards: cat.cards.map((card) => (byUuid.has(card.uuid) ? clone(byUuid.get(card.uuid)) : card)),
+        ...(cat.syncEnabled
+          ? {
+              localVersion: (cat.localVersion || 1) + 1,
+              syncStatus: "pending",
+              syncError: null,
+            }
+          : {}),
+      };
+      return newStorage;
+    });
+    const active = activeCardRef.current;
+    if (active && byUuid.has(active.uuid)) {
+      updateActiveCard(byUuid.get(active.uuid), true);
+    }
+  };
+
   const removeCardFromCategory = (cardId, categoryId) => {
     if (!cardId) {
       return;
@@ -559,6 +588,7 @@ export const CardStorageProviderComponent = (props) => {
     addSubCategory,
     getSubCategories,
     updateCategory,
+    replaceCategoryCards,
     saveCard,
     // Sync-related functions
     markCategoryPending,

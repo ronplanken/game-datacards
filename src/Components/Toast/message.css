@@ -40,6 +40,23 @@
   transform: translateY(calc(var(--toast-index, 0) * -8px));
 }
 
+.toast-action {
+  margin-left: 4px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.toast-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 /* Toast Type Icons */
 .toast-success svg {
   color: #4ade80;

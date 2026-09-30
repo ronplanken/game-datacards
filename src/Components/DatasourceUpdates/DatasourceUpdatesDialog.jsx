@@ -10,7 +10,7 @@ import { DatasourceUpdatesModal } from "./DatasourceUpdatesModal";
 import { MobileDatasourceUpdatesSheet } from "./MobileDatasourceUpdatesSheet";
 
 export const DatasourceUpdatesDialog = ({ category, cards, title, onClose, variant = "desktop" }) => {
-  const { cardStorage, updateCategory, markCategoryPending, activeCard, updateActiveCard } = useCardStorage();
+  const { cardStorage, replaceCategoryCards } = useCardStorage();
   const { dataSource, selectedFaction } = useDataSourceStorage();
   const { settings } = useSettingsStorage();
   const { trackEvent } = useUmami();
@@ -29,22 +29,28 @@ export const DatasourceUpdatesDialog = ({ category, cards, title, onClose, varia
     );
     if (updatedUuids.length === 0) return;
 
-    updateCategory({ ...current, cards: nextCards }, current.uuid);
-    markCategoryPending(current.uuid);
-
-    if (activeCard && updatedUuids.includes(activeCard.uuid)) {
-      updateActiveCard(
-        nextCards.find((card) => card.uuid === activeCard.uuid),
-        true,
-      );
-    }
+    const previousCards = current.cards.filter((card) => updatedUuids.includes(card.uuid));
+    replaceCategoryCards(
+      current.uuid,
+      nextCards.filter((card) => updatedUuids.includes(card.uuid)),
+    );
 
     trackEvent("datasource-card-update", { count: updatedUuids.length });
-    message.success(
-      updatedUuids.length === 1
-        ? "Updated 1 card from the datasource."
-        : `Updated ${updatedUuids.length} cards from the datasource.`,
-    );
+    message.success({
+      content:
+        updatedUuids.length === 1
+          ? "Updated 1 card from the datasource."
+          : `Updated ${updatedUuids.length} cards from the datasource.`,
+      duration: 8,
+      action: {
+        label: "Undo",
+        onClick: () => {
+          replaceCategoryCards(current.uuid, previousCards);
+          trackEvent("datasource-card-update-undo", { count: previousCards.length });
+          message.info(previousCards.length === 1 ? "Restored 1 card." : `Restored ${previousCards.length} cards.`);
+        },
+      },
+    });
   };
 
   const Dialog = variant === "mobile" ? MobileDatasourceUpdatesSheet : DatasourceUpdatesModal;

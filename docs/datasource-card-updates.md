@@ -127,9 +127,17 @@ Shared code lives in `src/Components/DatasourceUpdates/`:
   single-column change list and a sticky update button. The `.dsu-mobile`
   wrapper maps the mobile `--bs-*` tokens onto the variables the body uses.
 - `DatasourceUpdatesDialog.jsx`: mounted only while open. It reads the loaded
-  datasource and settings, applies the update with one `updateCategory` write,
-  marks the category pending for sync, and refreshes the active card when it
-  was updated. `variant="mobile"` renders the mobile sheet.
+  datasource and settings and applies the update with `replaceCategoryCards`.
+  The success toast has an **Undo** button (8 seconds) that puts the previous
+  versions of the updated cards back. `variant="mobile"` renders the mobile
+  sheet.
+
+`replaceCategoryCards(categoryUuid, cards)` in `useCardStorage` replaces cards by
+`uuid` on the latest stored state, so an update or undo never overwrites other
+edits made in the meantime. It skips cards that are no longer in the category,
+marks a synced category as pending, and refreshes the active card when it is one
+of the replaced cards. The toast action comes from `message.success({ content,
+duration, action: { label, onClick } })`.
 
 Entry points:
 

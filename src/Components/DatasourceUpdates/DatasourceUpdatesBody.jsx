@@ -125,7 +125,8 @@ export const DatasourceUpdatesBody = ({ state, language = "en" }) => {
           <p className="dsu-note">
             Updating replaces the card content (stats, weapons, abilities, keywords, points and text) with the
             datasource version. Unit size, warlord, enhancement, wargear, attached leaders, hidden weapons and
-            abilities, and card styling are kept. Other edits you made to the card content are lost.
+            abilities, and card styling are kept. Other edits you made to the card content are replaced. You can undo
+            this right after updating.
           </p>
         </div>
       )}

@@ -4,9 +4,9 @@ import { DatasourceUpdatesDialog } from "../DatasourceUpdatesDialog";
 
 let modalProps;
 let storage;
-const updateCategory = vi.fn();
-const markCategoryPending = vi.fn();
-const updateActiveCard = vi.fn();
+const replaceCategoryCards = vi.fn();
+const success = vi.fn();
+const info = vi.fn();
 
 vi.mock("../DatasourceUpdatesModal", () => ({
   DatasourceUpdatesModal: (props) => {
@@ -39,7 +39,7 @@ vi.mock("../../../Hooks/useUmami", () => ({
 }));
 
 vi.mock("../../Toast/message", () => ({
-  message: { success: vi.fn() },
+  message: { success: (...args) => success(...args), info: (...args) => info(...args) },
 }));
 
 const source = { id: "u1", name: "Belial", cardType: "DataCard", source: "40k-11e", keywords: ["Infantry"] };
@@ -50,15 +50,12 @@ const results = [{ card: saved, status: "changed", sourceCard: source, changes: 
 describe("DatasourceUpdatesDialog", () => {
   beforeEach(() => {
     modalProps = null;
-    updateCategory.mockClear();
-    markCategoryPending.mockClear();
-    updateActiveCard.mockClear();
+    replaceCategoryCards.mockClear();
+    success.mockClear();
+    info.mockClear();
     storage = {
       cardStorage: { categories: [category] },
-      updateCategory,
-      markCategoryPending,
-      activeCard: null,
-      updateActiveCard,
+      replaceCategoryCards,
     };
   });
 
@@ -69,30 +66,37 @@ describe("DatasourceUpdatesDialog", () => {
     expect(modalProps.variant).toBe("mobile");
   });
 
-  it("writes the updated cards in one category update and marks it pending", () => {
+  it("replaces only the updated cards in the category", () => {
     const onClose = vi.fn();
     render(<DatasourceUpdatesDialog variant="mobile" category={category} cards={category.cards} onClose={onClose} />);
     modalProps.onApply(results, ["a"]);
 
     expect(onClose).toHaveBeenCalled();
-    expect(updateCategory).toHaveBeenCalledTimes(1);
-    const [written, uuid] = updateCategory.mock.calls[0];
+    expect(replaceCategoryCards).toHaveBeenCalledTimes(1);
+    const [uuid, written] = replaceCategoryCards.mock.calls[0];
     expect(uuid).toBe("list-1");
-    expect(written.cards[0].keywords).toEqual(["Infantry"]);
-    expect(written.cards[0].isWarlord).toBe(true);
-    expect(markCategoryPending).toHaveBeenCalledWith("list-1");
+    expect(written).toHaveLength(1);
+    expect(written[0].keywords).toEqual(["Infantry"]);
+    expect(written[0].isWarlord).toBe(true);
   });
 
-  it("refreshes the active card when it was updated", () => {
-    storage.activeCard = saved;
+  it("offers an undo that restores the previous cards", () => {
     render(<DatasourceUpdatesDialog category={category} cards={category.cards} onClose={vi.fn()} />);
     modalProps.onApply(results, ["a"]);
-    expect(updateActiveCard).toHaveBeenCalledWith(expect.objectContaining({ uuid: "a", keywords: ["Infantry"] }), true);
+
+    const toast = success.mock.calls[0][0];
+    expect(toast.content).toBe("Updated 1 card from the datasource.");
+    expect(toast.action.label).toBe("Undo");
+
+    toast.action.onClick();
+    expect(replaceCategoryCards).toHaveBeenCalledTimes(2);
+    expect(replaceCategoryCards.mock.calls[1]).toEqual(["list-1", [saved]]);
+    expect(info).toHaveBeenCalledWith("Restored 1 card.");
   });
 
   it("writes nothing when no card was selected", () => {
     render(<DatasourceUpdatesDialog category={category} cards={category.cards} onClose={vi.fn()} />);
     modalProps.onApply(results, []);
-    expect(updateCategory).not.toHaveBeenCalled();
+    expect(replaceCategoryCards).not.toHaveBeenCalled();
   });
 });
