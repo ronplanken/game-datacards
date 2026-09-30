@@ -58,6 +58,24 @@ describe("buildGwAppListText", () => {
     expect(text).toContain("Strike Force (2000 Points)");
   });
 
+  it("lists every force disposition of a detachment", () => {
+    const text = buildGwAppListText(
+      {
+        ...category,
+        detachments: [
+          {
+            name: { en: "Gladius Task Force" },
+            detachmentPoints: 2,
+            forceDisposition: { name: { en: "Take and Hold" } },
+            forceDispositions: [{ name: { en: "Take and Hold" } }, { name: { en: "Disruption" } }],
+          },
+        ],
+      },
+      [unit()],
+    );
+    expect(text).toContain("Force Dispositions: Take and Hold, Disruption");
+  });
+
   it("writes every detachment the army holds", () => {
     const text = buildGwAppListText(
       { ...category, detachments: [{ name: "Gladius Task Force" }, { name: "Ironstorm Spearhead" }] },

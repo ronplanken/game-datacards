@@ -51,6 +51,15 @@ describe("ArmyRosterSheet battle size", () => {
 });
 
 describe("ArmyRosterSheet detachments", () => {
+  it("shows every force disposition of a detachment", () => {
+    const both = {
+      ...lions,
+      forceDispositions: [{ name: { en: "Disruption" } }, { name: { en: "Take and Hold" } }],
+    };
+    renderSheet({ detachments: [both] });
+    expect(screen.getByText("Disruption, Take and Hold")).toBeInTheDocument();
+  });
+
   it("lists each detachment with its DP cost and force disposition", () => {
     renderSheet();
     expect(screen.getByText("Lions of the Emperor")).toBeInTheDocument();

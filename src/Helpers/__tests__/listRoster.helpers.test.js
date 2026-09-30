@@ -9,6 +9,8 @@ import {
   getDetachmentNamesEn,
   getEnhancementUsage,
   getForceDispositions,
+  getDetachmentForceDispositions,
+  getDetachmentDispositionNames,
   getSpentDetachmentPoints,
   isDetachmentSelected,
   isDetachmentSelectionOverBudget,
@@ -85,8 +87,55 @@ describe("force dispositions", () => {
   it("lists one disposition per selected detachment", () => {
     const list = [det("Lions of the Emperor", 2, "a", "Disruption"), det("Shield Host", 1, "b", "Vanguard")];
     expect(getForceDispositions(list)).toEqual([
-      { detachment: "Lions of the Emperor", disposition: "Disruption" },
-      { detachment: "Shield Host", disposition: "Vanguard" },
+      { detachment: "Lions of the Emperor", dispositions: ["Disruption"], disposition: "Disruption" },
+      { detachment: "Shield Host", dispositions: ["Vanguard"], disposition: "Vanguard" },
+    ]);
+  });
+
+  const takeAndHold = { id: "th", name: { en: "Take and Hold", de: "Einnehmen und halten" } };
+  const disruption = { id: "dis", name: { en: "Disruption", de: "Störangriff" } };
+
+  it("prefers the forceDispositions list over the single forceDisposition", () => {
+    const detachment = {
+      name: { en: "Shield Host" },
+      forceDisposition: takeAndHold,
+      forceDispositions: [takeAndHold, disruption],
+    };
+    expect(getDetachmentForceDispositions(detachment)).toEqual([takeAndHold, disruption]);
+    expect(getDetachmentDispositionNames(detachment)).toEqual(["Take and Hold", "Disruption"]);
+    expect(getDetachmentDispositionNames(detachment, "de")).toEqual(["Einnehmen und halten", "Störangriff"]);
+  });
+
+  it("falls back to forceDisposition when the list is missing or empty", () => {
+    expect(getDetachmentDispositionNames({ forceDisposition: takeAndHold })).toEqual(["Take and Hold"]);
+    expect(getDetachmentDispositionNames({ forceDisposition: takeAndHold, forceDispositions: [] })).toEqual([
+      "Take and Hold",
+    ]);
+    expect(getDetachmentDispositionNames({ forceDisposition: takeAndHold, forceDispositions: [null, {}] })).toEqual([
+      "Take and Hold",
+    ]);
+  });
+
+  it("returns nothing for a detachment without dispositions", () => {
+    expect(getDetachmentForceDispositions({ name: { en: "Talons" } })).toEqual([]);
+    expect(getDetachmentForceDispositions(undefined)).toEqual([]);
+  });
+
+  it("does not repeat a disposition listed twice", () => {
+    expect(getDetachmentDispositionNames({ forceDispositions: [takeAndHold, takeAndHold] })).toEqual(["Take and Hold"]);
+  });
+
+  it("lists every disposition of a detachment and skips detachments without one", () => {
+    const list = [
+      { name: { en: "Shield Host" }, forceDisposition: takeAndHold, forceDispositions: [takeAndHold, disruption] },
+      { name: { en: "Talons of the Emperor" } },
+    ];
+    expect(getForceDispositions(list)).toEqual([
+      {
+        detachment: "Shield Host",
+        dispositions: ["Take and Hold", "Disruption"],
+        disposition: "Take and Hold, Disruption",
+      },
     ]);
   });
 });

@@ -100,7 +100,7 @@ and `dataVersion` match the settings. Changing the selection triggers a refetch.
 ## Limitations
 
 - Older data may lack fields that newer app features use. Versions before 963
-  have no `forceDispositions`, so the list builder shows no force dispositions
-  for them.
+  have only the single `forceDisposition` per detachment, so the list builder
+  shows one force disposition per detachment for them.
 - Cards already saved to categories are copies and do not change when the data
   version changes.

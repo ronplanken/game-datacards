@@ -1,7 +1,7 @@
 import { capitalizeSentence } from "./external.helpers";
 import { cardHasKeyword } from "./listCategories.helpers";
 import { getCardDisplayCost, getCategoryPointsTotal } from "./listPoints.helpers";
-import { getBattleSize, getDetachmentCost } from "./listRoster.helpers";
+import { getBattleSize, getDetachmentCost, getDetachmentDispositionNames } from "./listRoster.helpers";
 import { localize } from "./localization.helpers";
 
 const SECTIONS = [
@@ -48,8 +48,8 @@ const headerLines = (category, cards, language) => {
     const name = localize(detachment?.name, language);
     if (!name) return;
     lines.push(`${name} (${getDetachmentCost(detachment)} Detachment Points)`);
-    const disposition = localize(detachment?.forceDisposition?.name, language);
-    if (disposition) lines.push(`Force Dispositions: ${disposition}`);
+    const dispositions = getDetachmentDispositionNames(detachment, language);
+    if (dispositions.length > 0) lines.push(`Force Dispositions: ${dispositions.join(", ")}`);
   });
 
   const battleSize = listBattleSize(category, cards);
