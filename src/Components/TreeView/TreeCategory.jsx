@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { ChevronRight, GripVertical, Trash2, FolderOpen, Folder, Plus, SlidersHorizontal } from "lucide-react";
+import {
+  ChevronRight,
+  GripVertical,
+  Trash2,
+  FolderOpen,
+  Folder,
+  Plus,
+  SlidersHorizontal,
+  GitCompare,
+} from "lucide-react";
 import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -21,6 +30,7 @@ import { List } from "../../Icons/List";
 import { ContextMenu } from "./ContextMenu";
 import { RenameModal } from "./RenameModal";
 import { ArmyRosterModal } from "./ArmyRosterModal";
+import { DatasourceUpdatesDialog } from "./DatasourceUpdatesDialog";
 import { confirmDialog } from "../ConfirmChangesModal";
 import { deleteConfirmDialog } from "../DeleteConfirmModal";
 import "./TreeView.css";
@@ -55,6 +65,7 @@ export function TreeCategory({
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
+  const [compareCards, setCompareCards] = useState(null);
 
   // Army roster (11e): battle size, Detachment Points and the detachments the
   // list holds. Only offered while the 11e datasource is loaded, since the
@@ -164,6 +175,13 @@ export function TreeCategory({
       key: "rename",
       label: "Rename",
       onClick: () => setIsRenameModalOpen(true),
+    },
+    {
+      key: "compare-datasource",
+      label: "Compare with datasource",
+      icon: <GitCompare size={14} />,
+      disabled: !category.cards?.length,
+      onClick: () => setCompareCards(category.cards),
     },
     {
       type: "divider",
@@ -297,6 +315,15 @@ export function TreeCategory({
         onConfirm={handleAddSubCategory}
         onCancel={() => setIsSubCategoryModalOpen(false)}
       />
+
+      {compareCards && (
+        <DatasourceUpdatesDialog
+          category={category}
+          cards={compareCards}
+          title={`Compare '${category.name}' with datasource`}
+          onClose={() => setCompareCards(null)}
+        />
+      )}
 
       <ArmyRosterModal
         isOpen={isRosterModalOpen}

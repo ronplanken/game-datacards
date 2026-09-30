@@ -1,0 +1,5 @@
+{
+  "title": "Compare saved cards with the datasource",
+  "body": "Right-click a category, list or card and choose Compare with datasource. You see what changed and can update the cards you pick.",
+  "severity": "info"
+}
