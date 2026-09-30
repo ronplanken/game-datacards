@@ -99,7 +99,7 @@ export const getMajorWizardVersion = (currentVersion) => {
  *
  * Rules:
  * 1. Each version's welcome step becomes a version introduction
- * 2. Thank you steps are removed from all but the final version
+ * 2. Thank you steps are removed from all but the final version, unless they are the version's only step
  * 3. Steps maintain their original order within each version
  * 4. Version context is added to each step for display purposes
  *
@@ -113,8 +113,8 @@ export const mergeVersionSteps = (versions) => {
     const isLastVersion = versionIndex === versions.length - 1;
 
     versionConfig.steps.forEach((step, stepIndex) => {
-      // Skip thank you steps except for the final version
-      if (step.isThankYou && !isLastVersion) {
+      // Skip thank you steps except for the final version or a version's only step
+      if (step.isThankYou && !isLastVersion && versionConfig.steps.length > 1) {
         return;
       }
 

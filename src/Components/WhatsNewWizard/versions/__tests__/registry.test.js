@@ -45,4 +45,19 @@ describe("WhatsNewWizard version registry", () => {
     expect(lastStep.isThankYou).toBe(true);
     expect(lastStep.version).toBe("3.2.2");
   });
+
+  it("keeps single-step releases when several versions are merged", () => {
+    const merged = mergeVersionSteps(getUnseenVersions("3.11.0", "3.13.0"));
+    expect(merged.map((step) => step.key)).toEqual(["3.12.0-data-version", "3.13.0-compare-datasource"]);
+    expect(merged[merged.length - 1].isThankYou).toBe(true);
+  });
+
+  it("still drops the dedicated thank-you step of an older multi-step release", () => {
+    const merged = mergeVersionSteps(getUnseenVersions("3.0.0", "3.2.1"));
+    const keys = merged.map((step) => step.key);
+    expect(keys).not.toContain("3.1.0-thankyou");
+    expect(keys).not.toContain("3.2.0-thankyou");
+    expect(keys).toContain("3.2.1-update");
+    expect(keys[keys.length - 1]).toBe("3.2.1-update");
+  });
 });
