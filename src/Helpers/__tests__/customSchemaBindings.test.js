@@ -387,9 +387,22 @@ describe("customSchemaBindings", () => {
       expect(card.weapons.main[0].profiles[0].ap_available).toBe(true);
     });
 
-    it("returns the same object for repeated calls with the same inputs", () => {
+    it("reflects On and Off text changes on the same card", () => {
       const card = buildCard();
-      expect(applyBooleanDisplayValues(card, cardTypeDef)).toBe(applyBooleanDisplayValues(card, cardTypeDef));
+      const column = cardTypeDef.schema.weaponTypes.types[0].columns[0];
+      const updated = {
+        ...cardTypeDef,
+        schema: {
+          ...cardTypeDef.schema,
+          weaponTypes: {
+            types: [
+              { ...cardTypeDef.schema.weaponTypes.types[0], columns: [{ ...column, onValue: "Armour piercing" }] },
+            ],
+          },
+        },
+      };
+      expect(applyBooleanDisplayValues(card, cardTypeDef).weapons.main[0].profiles[0].ap_available).toBe("AP");
+      expect(applyBooleanDisplayValues(card, updated).weapons.main[0].profiles[0].ap_available).toBe("Armour piercing");
     });
 
     it("returns the card unchanged when no boolean has custom text", () => {

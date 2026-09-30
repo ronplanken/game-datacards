@@ -330,8 +330,6 @@ export const buildCustomFormat = (datasourceId, cardTypeKey) => {
   return `${datasourceId}:${cardTypeKey}`;
 };
 
-const booleanDisplayCache = new WeakMap();
-
 const hasCustomBooleanText = (def) =>
   def?.type === "boolean" && (def.onValue !== undefined || def.offValue !== undefined);
 
@@ -387,17 +385,5 @@ const buildBooleanDisplayCard = (card, schema) => {
 
 export const applyBooleanDisplayValues = (card, cardTypeDef) => {
   if (!card || typeof card !== "object" || !cardTypeDef?.schema) return card;
-
-  let byDef = booleanDisplayCache.get(card);
-  if (!byDef) {
-    byDef = new WeakMap();
-    booleanDisplayCache.set(card, byDef);
-  }
-
-  const cached = byDef.get(cardTypeDef);
-  if (cached) return cached;
-
-  const result = buildBooleanDisplayCard(card, cardTypeDef.schema);
-  byDef.set(cardTypeDef, result);
-  return result;
+  return buildBooleanDisplayCard(card, cardTypeDef.schema);
 };

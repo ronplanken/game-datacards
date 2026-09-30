@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -67,6 +68,10 @@ export const CustomCardDisplay = ({
   const cardFaction = dataSource?.data?.find((faction) => faction.id === displayCard?.faction_id);
 
   const { cardTypeDef, baseType } = resolveCardType(displayCard, schema);
+  const templateCard = useMemo(
+    () => (displayCard?.templateId ? applyBooleanDisplayValues(displayCard, cardTypeDef) : displayCard),
+    [displayCard, cardTypeDef],
+  );
 
   // Get colours from faction or custom overrides
   const headerColour = displayCard?.useCustomColours
@@ -99,11 +104,7 @@ export const CustomCardDisplay = ({
   if (displayCard.templateId) {
     return (
       <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
-        <TemplateRenderer
-          templateId={displayCard.templateId}
-          card={applyBooleanDisplayValues(displayCard, cardTypeDef)}
-          faction={cardFaction}
-        />
+        <TemplateRenderer templateId={displayCard.templateId} card={templateCard} faction={cardFaction} />
       </Col>
     );
   }
