@@ -282,6 +282,8 @@ Stat fields support the following types: `string`, `enum`, `boolean`. Each field
 | `onValue`        | string  | Display text when the value is true. Only applies when `type` is `"boolean"`. |
 | `offValue`       | string  | Display text when the value is false. Only applies when `type` is `"boolean"`. |
 
+The `onValue` and `offValue` text of stat fields and weapon columns is also what Card Designer template bindings output for those fields (for example `{{stats[0].tracked}}` or `{{weapons.main[0].ap}}`). A missing value counts as false when Off text is set. A field with no On or Off text still outputs `true` or `false`. The substitution is done by `applyBooleanDisplayValues` in `src/Helpers/customSchemaBindings.js` before the card reaches `TemplateRenderer`.
+
 #### AoS-specific stat properties
 
 When `baseSystem` is not a 40K edition (`40k-10e`/`40k-11e` — checked via `is40kBaseSystem`), stat fields gain additional properties:

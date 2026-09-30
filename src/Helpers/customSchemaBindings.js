@@ -329,3 +329,61 @@ export const parseCustomFormat = (format) => {
 export const buildCustomFormat = (datasourceId, cardTypeKey) => {
   return `${datasourceId}:${cardTypeKey}`;
 };
+
+const hasCustomBooleanText = (def) =>
+  def?.type === "boolean" && (def.onValue !== undefined || def.offValue !== undefined);
+
+const toBooleanDisplay = (value, def) => {
+  if (value === true) return def.onValue !== undefined ? def.onValue : value;
+  if (value === false || value == null) return def.offValue !== undefined ? def.offValue : value;
+  return value;
+};
+
+const applyToRow = (row, defs) => {
+  if (!row || typeof row !== "object" || Array.isArray(row)) return row;
+  const result = { ...row };
+  for (const def of defs) {
+    const value = toBooleanDisplay(row[def.key], def);
+    if (value !== undefined) result[def.key] = value;
+  }
+  return result;
+};
+
+const applyToWeapon = (weapon, defs) => {
+  const result = applyToRow(weapon, defs);
+  if (result && Array.isArray(result.profiles)) {
+    result.profiles = result.profiles.map((profile) => applyToRow(profile, defs));
+  }
+  return result;
+};
+
+const buildBooleanDisplayCard = (card, schema) => {
+  const statDefs = (schema.stats?.fields || []).filter(hasCustomBooleanText);
+  const weaponTypes = (schema.weaponTypes?.types || [])
+    .map((type) => ({ key: type.key, defs: (type.columns || []).filter(hasCustomBooleanText) }))
+    .filter((type) => type.defs.length > 0);
+
+  if (statDefs.length === 0 && weaponTypes.length === 0) return card;
+
+  const result = { ...card };
+
+  if (statDefs.length > 0 && Array.isArray(card.stats)) {
+    result.stats = card.stats.map((row) => applyToRow(row, statDefs));
+  }
+
+  if (weaponTypes.length > 0 && card.weapons && typeof card.weapons === "object" && !Array.isArray(card.weapons)) {
+    result.weapons = { ...card.weapons };
+    for (const { key, defs } of weaponTypes) {
+      if (Array.isArray(card.weapons[key])) {
+        result.weapons[key] = card.weapons[key].map((weapon) => applyToWeapon(weapon, defs));
+      }
+    }
+  }
+
+  return result;
+};
+
+export const applyBooleanDisplayValues = (card, cardTypeDef) => {
+  if (!card || typeof card !== "object" || !cardTypeDef?.schema) return card;
+  return buildBooleanDisplayCard(card, cardTypeDef.schema);
+};

@@ -4,7 +4,9 @@ import {
   generateArraySourcesFromSchema,
   parseCustomFormat,
   buildCustomFormat,
+  applyBooleanDisplayValues,
 } from "../customSchemaBindings";
+import { normalizeCardForBinding, resolveTemplate } from "../bindingResolver";
 import { create40kPreset, createAoSPreset } from "../customSchema.helpers";
 
 describe("customSchemaBindings", () => {
@@ -283,6 +285,140 @@ describe("customSchemaBindings", () => {
         datasourceId: "custom-abc-123",
         cardTypeKey: "warscroll",
       });
+    });
+  });
+
+  describe("applyBooleanDisplayValues", () => {
+    const cardTypeDef = {
+      key: "unit",
+      baseType: "unit",
+      schema: {
+        stats: {
+          fields: [
+            { key: "move", label: "M", type: "string" },
+            { key: "tracked", label: "Tracked", type: "boolean", onValue: "Tracks", offValue: "Wheels" },
+            { key: "plain", label: "Plain", type: "boolean" },
+          ],
+        },
+        weaponTypes: {
+          types: [
+            {
+              key: "main",
+              label: "Main Gun",
+              hasProfiles: true,
+              columns: [
+                { key: "ap_available", label: "AP", type: "boolean", onValue: "AP", offValue: "nope" },
+                { key: "he", label: "HE", type: "boolean", onValue: "HE" },
+                { key: "range", label: "Range", type: "string" },
+              ],
+            },
+            {
+              key: "secondary",
+              label: "Secondary",
+              hasProfiles: false,
+              columns: [{ key: "smoke", label: "Smoke", type: "boolean", onValue: "Smoke", offValue: "-" }],
+            },
+          ],
+        },
+      },
+    };
+
+    const buildCard = () => ({
+      name: "Tank",
+      cardType: "unit",
+      stats: [
+        { move: "6", tracked: true, plain: true },
+        { move: "4", tracked: false, plain: false },
+      ],
+      weapons: {
+        main: [
+          {
+            name: "45mm L46",
+            profiles: [
+              { name: "Standard", ap_available: true, he: true, range: "24" },
+              { name: "Close", ap_available: false, he: false, range: "12" },
+            ],
+          },
+        ],
+        secondary: [
+          { name: "Launcher", smoke: false },
+          { name: "Launcher 2", smoke: true },
+        ],
+      },
+    });
+
+    it("replaces stat booleans with their on and off text", () => {
+      const result = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      expect(result.stats[0].tracked).toBe("Tracks");
+      expect(result.stats[1].tracked).toBe("Wheels");
+      expect(result.stats[0].move).toBe("6");
+    });
+
+    it("keeps booleans without custom text unchanged", () => {
+      const result = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      expect(result.stats[0].plain).toBe(true);
+      expect(result.stats[1].plain).toBe(false);
+      expect(result.weapons.main[0].profiles[1].he).toBe(false);
+    });
+
+    it("replaces weapon profile and flat weapon booleans", () => {
+      const result = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      const profiles = result.weapons.main[0].profiles;
+      expect(profiles[0].ap_available).toBe("AP");
+      expect(profiles[0].he).toBe("HE");
+      expect(profiles[1].ap_available).toBe("nope");
+      expect(profiles[0].range).toBe("24");
+      expect(result.weapons.secondary[0].smoke).toBe("-");
+      expect(result.weapons.secondary[1].smoke).toBe("Smoke");
+    });
+
+    it("treats a missing boolean as off when off text is set", () => {
+      const card = buildCard();
+      delete card.stats[0].tracked;
+      const result = applyBooleanDisplayValues(card, cardTypeDef);
+      expect(result.stats[0].tracked).toBe("Wheels");
+      expect(result.stats[0].plain).toBe(true);
+    });
+
+    it("does not mutate the original card", () => {
+      const card = buildCard();
+      applyBooleanDisplayValues(card, cardTypeDef);
+      expect(card.stats[0].tracked).toBe(true);
+      expect(card.weapons.main[0].profiles[0].ap_available).toBe(true);
+    });
+
+    it("reflects On and Off text changes on the same card", () => {
+      const card = buildCard();
+      const column = cardTypeDef.schema.weaponTypes.types[0].columns[0];
+      const updated = {
+        ...cardTypeDef,
+        schema: {
+          ...cardTypeDef.schema,
+          weaponTypes: {
+            types: [
+              { ...cardTypeDef.schema.weaponTypes.types[0], columns: [{ ...column, onValue: "Armour piercing" }] },
+            ],
+          },
+        },
+      };
+      expect(applyBooleanDisplayValues(card, cardTypeDef).weapons.main[0].profiles[0].ap_available).toBe("AP");
+      expect(applyBooleanDisplayValues(card, updated).weapons.main[0].profiles[0].ap_available).toBe("Armour piercing");
+    });
+
+    it("returns the card unchanged when no boolean has custom text", () => {
+      const card = buildCard();
+      const def = { ...cardTypeDef, schema: { stats: { fields: [{ key: "plain", type: "boolean" }] } } };
+      expect(applyBooleanDisplayValues(card, def)).toBe(card);
+      expect(applyBooleanDisplayValues(card, null)).toBe(card);
+      expect(applyBooleanDisplayValues(null, cardTypeDef)).toBe(null);
+    });
+
+    it("resolves template bindings to the custom text", () => {
+      const card = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      const context = normalizeCardForBinding(card);
+      expect(resolveTemplate("{{weapons.main[0].ap_available}}", context)).toBe("AP");
+      expect(resolveTemplate("{{weapons.main[0].profiles[1].ap_available}}", context)).toBe("nope");
+      expect(resolveTemplate("{{stats[1].tracked}}", context)).toBe("Wheels");
     });
   });
 });

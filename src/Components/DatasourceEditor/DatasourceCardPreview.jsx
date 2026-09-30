@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { resolveCardType } from "../Custom/CustomCardDisplay";
 import { CustomUnitCard } from "../Custom/CustomUnitCard";
 import { CustomRuleCard } from "../Custom/CustomRuleCard";
 import { CustomEnhancementCard } from "../Custom/CustomEnhancementCard";
 import { CustomStratagemCard } from "../Custom/CustomStratagemCard";
 import { TemplateRenderer } from "../../Premium";
+import { applyBooleanDisplayValues } from "../../Helpers/customSchemaBindings";
 import { resolveDatasourceRenderer } from "./cards/resolveDatasourceRenderer";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { DatasourcePreviewToolbar } from "./DatasourcePreviewToolbar";
@@ -23,10 +24,15 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
   const [isAutoFit, setIsAutoFit] = useState(true);
   const [zoom, setZoom] = useState(100);
 
+  const schema = activeDatasource?.schema;
+  const { cardTypeDef, baseType } = resolveCardType(card, schema);
+  const templateCard = useMemo(
+    () => (card?.templateId ? applyBooleanDisplayValues(card, cardTypeDef) : card),
+    [card, cardTypeDef],
+  );
+
   if (!card || !activeDatasource) return null;
 
-  const schema = activeDatasource.schema;
-  const { cardTypeDef, baseType } = resolveCardType(card, schema);
   const cardFaction = activeDatasource.data?.find((faction) => faction.id === card.faction_id);
 
   const cardType = baseType === "unit" && card.variant === "full" ? "unitFull" : baseType || "unit";
@@ -46,7 +52,7 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
   if (card.templateId) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", padding: 24 }}>
-        <TemplateRenderer templateId={card.templateId} card={card} faction={cardFaction} />
+        <TemplateRenderer templateId={card.templateId} card={templateCard} faction={cardFaction} />
       </div>
     );
   }
