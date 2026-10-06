@@ -37,14 +37,19 @@ vi.mock("../../../../Hooks/useUmami", () => ({
   useUmami: () => ({ trackEvent: vi.fn() }),
 }));
 
+let lists;
+const addDatacard = vi.fn();
+
 vi.mock("../../useMobileList", () => ({
-  useMobileList: () => ({ lists: [{ cards: [] }], selectedList: 0, addDatacard: vi.fn() }),
+  useMobileList: () => ({ lists, selectedList: 0, addDatacard }),
 }));
 
 describe("ListAdd", () => {
   let modalRoot;
 
   beforeEach(() => {
+    lists = [{ cards: [] }];
+    addDatacard.mockClear();
     modalRoot = document.createElement("div");
     modalRoot.setAttribute("id", "modal-root");
     document.body.appendChild(modalRoot);
@@ -107,5 +112,69 @@ describe("ListAdd", () => {
     fireEvent.click(screen.getByText("5 models").closest("button"));
 
     expect(addButton).toBeEnabled();
+  });
+
+  it("clears the chosen unit size when the sheet stays open on a different card", () => {
+    activeCard = {
+      name: "Intercessor Squad",
+      id: "unit-2",
+      faction_id: "faction-1",
+      source: "40k-11e",
+      keywords: [],
+      points: [
+        { models: 5, cost: 75 },
+        { models: 10, cost: 150 },
+      ],
+    };
+
+    const { rerender } = render(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
+    fireEvent.click(screen.getByText("10 models").closest("button"));
+    expect(screen.getByRole("button", { name: "Add to List" })).toBeEnabled();
+
+    activeCard = {
+      name: "Hellblaster Squad",
+      id: "unit-3",
+      faction_id: "faction-1",
+      source: "40k-11e",
+      keywords: [],
+      points: [
+        { models: 5, cost: 110 },
+        { models: 10, cost: 220 },
+      ],
+    };
+    rerender(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "Add to List" })).toBeDisabled();
+  });
+
+  it("moves the chosen unit size to the price that applies when the army changes", () => {
+    activeCard = {
+      name: "Intercessor Squad",
+      id: "unit-2",
+      faction_id: "faction-1",
+      source: "40k-11e",
+      keywords: [],
+      points: [
+        { models: 5, cost: 75 },
+        { models: 5, cost: 80, detachment: "Gladius Task Force" },
+        { models: 10, cost: 150 },
+      ],
+    };
+    lists = [{ cards: [], detachments: [{ name: "Gladius Task Force" }] }];
+
+    const { rerender } = render(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
+    fireEvent.click(screen.getByText("5 models").closest("button"));
+    expect(screen.getByText("80 pts")).toBeInTheDocument();
+
+    lists = [{ cards: [] }];
+    rerender(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Add to List" }));
+
+    expect(addDatacard).toHaveBeenCalledWith(
+      activeCard,
+      expect.objectContaining({ models: 5, cost: 75 }),
+      undefined,
+      false,
+    );
   });
 });

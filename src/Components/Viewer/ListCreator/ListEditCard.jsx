@@ -39,10 +39,6 @@ import { MobileModal } from "../Mobile/MobileModal";
 import { DetachmentPicker } from "../Mobile/DetachmentPicker";
 import "./ListAdd.css";
 
-// Same stable fallback as ListAdd: `|| []` would rebuild the array every render
-// and churn the memoised `army`/`availableTiers` below.
-const EMPTY_DETACHMENTS = [];
-
 // Custom toggle for warlord selection
 const Toggle = ({ checked, onChange, disabled }) => (
   <button
@@ -67,7 +63,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   // 11e armies hold several detachments; enhancements from any of them are available.
-  const armyDetachments = lists[selectedList]?.detachments || EMPTY_DETACHMENTS;
+  const armyDetachments = lists[selectedList]?.detachments;
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   // The faction the list is built for, which its faction-scoped prices key off.
   const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(lists[selectedList]));
