@@ -63,7 +63,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
 
   const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
   // 11e armies hold several detachments; enhancements from any of them are available.
-  const armyDetachments = lists[selectedList]?.detachments || [];
+  const armyDetachments = lists[selectedList]?.detachments;
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   // The faction the list is built for, which its faction-scoped prices key off.
   const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(lists[selectedList]));
