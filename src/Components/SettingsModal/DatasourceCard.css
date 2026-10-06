@@ -1,33 +1,60 @@
+/* DatasourceCard.css - Glassmorphism Card Styling */
+
 .datasource-card {
-  background: #fff;
-  border: 1px solid #d9d9d9;
-  border-radius: 6px;
-  padding: 4px 12px;
-  margin-bottom: 6px;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 14px;
+  padding: 6px 16px;
+  margin-bottom: 8px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .datasource-card:hover {
-  border-color: #1677ff;
+  border-color: rgba(22, 119, 255, 0.3);
 }
 
 .datasource-card.active {
-  border-color: #1677ff;
-  background: #e6f4ff;
-  padding: 8px 12px;
+  border-color: rgba(22, 119, 255, 0.35);
+  background: rgba(230, 244, 255, 0.8);
+  padding: 10px 16px;
+  box-shadow:
+    0 4px 20px rgba(22, 119, 255, 0.12),
+    0 0 0 1px rgba(22, 119, 255, 0.1);
+}
+
+.datasource-card.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 28px;
+  background: #1677ff;
+  border-radius: 0 3px 3px 0;
 }
 
 .datasource-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .datasource-card-title {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 48px;
-  color: rgba(0, 0, 0, 0.88);
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.3;
+  color: #1e1b4b;
+  letter-spacing: -0.01em;
+}
+
+.datasource-card.active .datasource-card-title {
+  color: #0958d9;
 }
 
 .datasource-card-actions {
@@ -40,65 +67,70 @@
 .datasource-details {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2px 8px;
-  padding-top: 6px;
-  border-top: 1px solid #f0f0f0;
-  margin-top: 6px;
+  gap: 4px 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(22, 119, 255, 0.12);
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .datasource-detail-item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0;
+  gap: 1px;
 }
 
 .datasource-detail-label {
   font-size: 10px;
-  color: rgba(0, 0, 0, 0.45);
+  font-weight: 500;
+  color: #8b8aa8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   line-height: 1.3;
 }
 
 .datasource-detail-value {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.88);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #1e1b4b;
   line-height: 1.3;
 }
 
 button.datasource-update-btn,
 .datasource-details .datasource-update-btn {
   margin-top: 0;
-  padding: 4px 15px;
-  height: 24px;
-  background-color: #1677ff;
-  border: 1px solid #1677ff;
+  padding: 6px 14px;
+  height: 28px;
+  background: #1677ff;
+  border: none;
   color: #fff !important;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 12px;
+  font-weight: 550;
   line-height: 1;
   white-space: nowrap;
   width: fit-content;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   -webkit-appearance: none;
   appearance: none;
 }
 
 button.datasource-update-btn:hover,
 .datasource-details .datasource-update-btn:hover {
-  background-color: #4096ff;
-  border-color: #4096ff;
-  color: #fff !important;
 }
 
 button.datasource-update-btn:disabled,
 .datasource-details .datasource-update-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .datasource-update-row {
@@ -109,16 +141,17 @@ button.datasource-update-btn:disabled,
 
 .datasource-update-label {
   font-size: 10px;
-  color: rgba(0, 0, 0, 0.45);
+  color: #8b8aa8;
+  font-weight: 500;
 }
 
 .loading-spinner {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border: 2px solid rgba(22, 119, 255, 0.2);
   border-top-color: #1677ff;
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {

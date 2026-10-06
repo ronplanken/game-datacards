@@ -13,25 +13,31 @@ import React from "react";
  * @param {boolean} props.isMultiVersion - Whether showing multiple versions (shows per-step version)
  * @returns {JSX.Element} Header component
  */
-export const WizardHeader = ({ step, steps, version, isMultiVersion = false }) => (
-  <header className="wnw-header">
-    <div className="wnw-header-content">
-      <div>
-        <div className="wnw-title-row">
-          <h1 className="wnw-title">{steps[step].title}</h1>
-          <span className="wnw-step-badge">
-            Step {step + 1} of {steps.length}
-          </span>
+export const WizardHeader = ({ step, steps, version, isMultiVersion = false }) => {
+  const isSingleStep = steps.length === 1;
+
+  return (
+    <header className="wnw-header">
+      <div className="wnw-header-content">
+        <div>
+          <div className="wnw-title-row">
+            <h1 className="wnw-title">{steps[step].title}</h1>
+            {!isSingleStep && (
+              <span className="wnw-step-badge">
+                Step {step + 1} of {steps.length}
+              </span>
+            )}
+          </div>
+          <p className="wnw-subtitle">
+            {isMultiVersion ? `What's new in version ${steps[step].version}` : `What's new in version ${version}`}
+          </p>
         </div>
-        <p className="wnw-subtitle">
-          {isMultiVersion ? `What's new in version ${steps[step].version}` : `What's new in version ${version}`}
-        </p>
       </div>
-    </div>
-    <div className="wnw-progress">
-      <div className="wnw-progress-bar" style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
-    </div>
-  </header>
-);
+      <div className="wnw-progress">
+        <div className="wnw-progress-bar" style={{ width: `${((step + 1) / steps.length) * 100}%` }} />
+      </div>
+    </header>
+  );
+};
 
 export default WizardHeader;

@@ -5,6 +5,7 @@ const getCardTypeLabel = (card) => {
   const source = card.source || "40k";
 
   switch (source) {
+    case "40k-11e":
     case "40k-10e":
       if (card.cardType === "stratagem") return "Stratagem";
       if (card.cardType === "enhancement") return "Enhancement";

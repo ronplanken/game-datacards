@@ -2,6 +2,7 @@ import { Search } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalSearch } from "../../Hooks/useGlobalSearch";
+import { getMobileCardPath } from "../../Helpers/mobileRouting.helpers";
 import "./MobileSearchDropdown.css";
 
 const getCardTypeLabel = (type) =>
@@ -12,7 +13,7 @@ const getCardTypeLabel = (type) =>
     rule: "Rule",
     spell: "Spell",
     manifestation: "Manifestation",
-  }[type] || "Card");
+  })[type] || "Card";
 
 export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit }) => {
   const { results, isSearching } = useGlobalSearch(searchText);
@@ -53,18 +54,7 @@ export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit
     // Call the onSelectUnit callback (for adding to recent searches)
     onSelectUnit?.(card);
 
-    // Build route based on card type
-    const routeMap = {
-      unit: `/${cardSlug}`,
-      stratagem: `/stratagem/${cardSlug}`,
-      enhancement: `/enhancement/${cardSlug}`,
-      rule: `/rule/${cardSlug}`,
-      spell: `/spell-lore/${cardSlug}`,
-      manifestation: `/manifestation-lore/${cardSlug}`,
-    };
-
-    const path = `/mobile/${factionSlug}${routeMap[card.cardType] || `/${cardSlug}`}`;
-    navigate(path);
+    navigate(getMobileCardPath(factionSlug, cardSlug, card.cardType));
     onClose();
   };
 
@@ -90,7 +80,7 @@ export const MobileSearchDropdown = ({ isOpen, onClose, searchText, onSelectUnit
 
       {showResults && !isSearching && !hasResults && (
         <div className="search-dropdown-empty">
-          <span>No units found for &quot;{searchText}&quot;</span>
+          <span>No results found for &quot;{searchText}&quot;</span>
         </div>
       )}
 

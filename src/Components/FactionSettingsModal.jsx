@@ -8,6 +8,14 @@ import "./FactionSettingsModal.css";
 
 const modalRoot = document.getElementById("modal-root");
 
+// The 40k datasources that share the datasheet display options, and the heading
+// each one shows them under.
+const FORTY_K_OPTION_TITLES = {
+  "40k-11e": "Warhammer 11th edition options",
+  "40k-10e": "Warhammer 10th edition options",
+  "40k-10e-cp": "Combat Patrol options",
+};
+
 const SettingCard = ({ title, checked, onChange }) => (
   <div className="faction-setting-card clickable" onClick={() => onChange(!checked)}>
     <span className="faction-setting-card-title">{title}</span>
@@ -49,9 +57,8 @@ export const FactionSettingsModal = () => {
   const renderSubfactionsTab = () => (
     <>
       <p className="faction-section-description">
-        By default all subfactions are shown. If you want to hide certain subfactions you can toggle them here. This
-        will filter stratagems &amp; secondaries. At the moment Datasheets cannot be filtered by subfaction yet because
-        of datasource limitations.
+        Toggle subfactions on or off. Hidden subfactions are also filtered from stratagems and secondaries. Datasheets
+        are not affected by this filter.
       </p>
       <div className="faction-bulk-actions">
         <button
@@ -108,79 +115,69 @@ export const FactionSettingsModal = () => {
     </>
   );
 
-  const renderDatasheetsTab = () => (
-    <>
-      {!dataSource.noDatasheetByRole && (
-        <>
-          <p className="faction-section-title">Generic options</p>
-          <SettingCard
-            title="Split datasheets by role"
-            checked={settings.splitDatasheetsByRole}
-            onChange={(value) => updateSettings({ ...settings, splitDatasheetsByRole: value })}
-          />
-        </>
-      )}
-      {settings.selectedDataSource === "40k-10e" && (
-        <>
-          <p className="faction-section-title">Warhammer 10th edition options</p>
-          <p className="faction-subsection-title">Datacards</p>
-          <SettingCard
-            title="Add Legends datacards to factions"
-            checked={settings.showLegends}
-            onChange={(value) => updateSettings({ ...settings, showLegends: value })}
-          />
-          <SettingCard
-            title="Add Space Marine cards to subchapter factions"
-            checked={settings.combineParentFactions}
-            onChange={(value) => updateSettings({ ...settings, combineParentFactions: value })}
-          />
-          <SettingCard
-            title="Add allied faction cards to factions"
-            checked={settings.combineAlliedFactions}
-            onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
-          />
-          <p className="faction-subsection-title">Display</p>
-          <SettingCard
-            title="Show points in listview"
-            checked={settings.showPointsInListview}
-            onChange={(value) => updateSettings({ ...settings, showPointsInListview: value })}
-          />
-          <SettingCard
-            title="Always show cards in single-side view"
-            checked={settings.showCardsAsDoubleSided || false}
-            onChange={(value) => updateSettings({ ...settings, showCardsAsDoubleSided: value })}
-          />
-          <SettingCard
-            title="Group cards by role"
-            checked={settings.groupByRole}
-            onChange={(value) => updateSettings({ ...settings, groupByRole: value })}
-          />
-        </>
-      )}
-      {settings.selectedDataSource === "40k-10e-cp" && (
-        <>
-          <p className="faction-section-title">Warhammer 10th Combat Patrol options</p>
-          <p className="faction-subsection-title">Datacards</p>
-          <p className="faction-subsection-title">Display</p>
-          <SettingCard
-            title="Show points in listview"
-            checked={settings.showPointsInListview}
-            onChange={(value) => updateSettings({ ...settings, showPointsInListview: value })}
-          />
-          <SettingCard
-            title="Always show cards in single-side view"
-            checked={settings.showCardsAsDoubleSided || false}
-            onChange={(value) => updateSettings({ ...settings, showCardsAsDoubleSided: value })}
-          />
-          <SettingCard
-            title="Group cards by role"
-            checked={settings.groupByRole}
-            onChange={(value) => updateSettings({ ...settings, groupByRole: value })}
-          />
-        </>
-      )}
-    </>
-  );
+  const renderDatasheetsTab = () => {
+    const fortyKTitle = FORTY_K_OPTION_TITLES[settings.selectedDataSource];
+    // Only the 10th edition data ships Legends sheets, sub-chapter parents and
+    // allied factions, so those toggles stay 10e-only. The display options below
+    // work on every 40k edition.
+    const hasDatacardOptions = settings.selectedDataSource === "40k-10e";
+
+    return (
+      <>
+        {!dataSource.noDatasheetByRole && (
+          <>
+            <p className="faction-section-title">Layout</p>
+            <SettingCard
+              title="Split datasheets by role"
+              checked={settings.splitDatasheetsByRole}
+              onChange={(value) => updateSettings({ ...settings, splitDatasheetsByRole: value })}
+            />
+          </>
+        )}
+        {fortyKTitle && (
+          <>
+            <p className="faction-section-title">{fortyKTitle}</p>
+            {hasDatacardOptions && (
+              <>
+                <p className="faction-subsection-title">Datacards</p>
+                <SettingCard
+                  title="Add Legends datacards to factions"
+                  checked={settings.showLegends}
+                  onChange={(value) => updateSettings({ ...settings, showLegends: value })}
+                />
+                <SettingCard
+                  title="Add Space Marine cards to subchapter factions"
+                  checked={settings.combineParentFactions}
+                  onChange={(value) => updateSettings({ ...settings, combineParentFactions: value })}
+                />
+                <SettingCard
+                  title="Add allied faction cards to factions"
+                  checked={settings.combineAlliedFactions}
+                  onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
+                />
+              </>
+            )}
+            <p className="faction-subsection-title">Display</p>
+            <SettingCard
+              title="Show points in listview"
+              checked={settings.showPointsInListview}
+              onChange={(value) => updateSettings({ ...settings, showPointsInListview: value })}
+            />
+            <SettingCard
+              title="Show both sides on one page"
+              checked={settings.showCardsAsDoubleSided || false}
+              onChange={(value) => updateSettings({ ...settings, showCardsAsDoubleSided: value })}
+            />
+            <SettingCard
+              title="Group cards by role"
+              checked={settings.groupByRole}
+              onChange={(value) => updateSettings({ ...settings, groupByRole: value })}
+            />
+          </>
+        )}
+      </>
+    );
+  };
 
   const renderWarscrollsTab = () => (
     <>
@@ -211,18 +208,28 @@ export const FactionSettingsModal = () => {
 
   const renderStratagemsTab = () => (
     <>
-      <p className="faction-section-description">Please select your preferred options here.</p>
+      <p className="faction-section-description">Choose which stratagems appear in the list.</p>
       <SettingCard
         title="Hide basic stratagems"
         checked={settings.hideBasicStratagems}
         onChange={(value) => updateSettings({ ...settings, hideBasicStratagems: value })}
       />
+      {FORTY_K_OPTION_TITLES[settings.selectedDataSource] && (
+        <>
+          <p className="faction-section-title">Layout</p>
+          <SettingCard
+            title="Group stratagems by detachment"
+            checked={settings.groupStratagemsByDetachment}
+            onChange={(value) => updateSettings({ ...settings, groupStratagemsByDetachment: value })}
+          />
+        </>
+      )}
     </>
   );
 
   const renderSecondariesTab = () => (
     <>
-      <p className="faction-section-description">Please select your preferred options here.</p>
+      <p className="faction-section-description">Choose which secondaries appear in the list.</p>
       <SettingCard
         title="Hide basic secondaries"
         checked={settings.hideBasicSecondaries}
@@ -306,7 +313,7 @@ export const FactionSettingsModal = () => {
               </div>
             </div>
           </div>,
-          modalRoot
+          modalRoot,
         )}
       <button
         className="faction-settings-trigger"

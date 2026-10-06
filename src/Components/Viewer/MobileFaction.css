@@ -47,11 +47,11 @@
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
-  transition: opacity 0.15s ease;
+  transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .mobile-faction-units-button:active {
-  opacity: 0.9;
+  transform: scale(0.97);
 }
 
 .mobile-faction-units-button svg:first-child {
@@ -151,7 +151,10 @@
   color: rgba(0, 0, 0, 0.65);
   cursor: pointer;
   font-family: inherit;
-  transition: all 0.15s ease;
+  transition:
+    background 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .stratagem-toggle-btn:active {
@@ -183,6 +186,7 @@
 
 .expandable-item {
   background: #f5f5f5;
+  border: 1px solid #e8e8e8;
   border-radius: 10px;
   overflow: hidden;
 }
@@ -226,8 +230,20 @@
   flex-shrink: 0;
 }
 
+.expandable-item-chevron {
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.expandable-item-chevron.open {
+  transform: rotate(180deg);
+}
+
 .expandable-item-content {
   padding: 0 16px 16px;
+}
+
+.stratagem-list .expandable-item-content {
+  padding-top: 12px;
 }
 
 .expandable-item.open .expandable-item-header {
@@ -273,46 +289,45 @@
 .detachment-picker-list {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .detachment-picker-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
-  background: none;
-  border: none;
-  border-bottom: 1px solid #f0f2f5;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
   font-size: 15px;
   color: rgba(0, 0, 0, 0.88);
-  transition: background 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s cubic-bezier(0.25, 1, 0.5, 1);
   width: 100%;
-  margin: 0 -16px;
-  width: calc(100% + 32px);
-}
-
-.detachment-picker-item:first-child {
-  margin-top: -8px;
-}
-
-.detachment-picker-item:last-child {
-  border-bottom: none;
 }
 
 .detachment-picker-item:active {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(0.98);
 }
 
 .detachment-picker-item.selected {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--header-colour, #0070d6);
   color: var(--header-colour, #0070d6);
+  font-weight: 500;
 }
 
 .detachment-check {
   color: var(--header-colour, #0070d6);
   font-weight: 600;
+  font-size: 16px;
 }
 
 /* ===========================================
@@ -438,4 +453,21 @@
 .mobile-faction-army-rules,
 .mobile-faction-detachment-rules {
   margin-bottom: 0;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-faction-units-button,
+  .detachment-picker-item,
+  .expandable-item-chevron {
+    transition: none;
+  }
+
+  .mobile-faction-units-button:active,
+  .detachment-picker-item:active {
+    transform: none;
+  }
 }

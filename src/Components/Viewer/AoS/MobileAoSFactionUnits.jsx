@@ -43,7 +43,7 @@ const groupWarscrollsByRole = (warscrolls) => {
       factionTerrain: [],
       manifestations: [],
       other: [],
-    }
+    },
   );
 };
 

@@ -1,0 +1,581 @@
+/* MobileImporter.shared.css - Shared styles for mobile import wizards */
+
+/* ===========================================
+   CONTAINER & STEP LAYOUT
+   =========================================== */
+.mi-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.mi-step {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===========================================
+   BACK BUTTON
+   =========================================== */
+.mi-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  background: transparent;
+  border: none;
+  color: var(--bs-accent);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.mi-back-btn:active {
+  opacity: 0.7;
+}
+
+/* ===========================================
+   DESCRIPTION TEXT
+   =========================================== */
+.mi-description {
+  font-size: 14px;
+  color: var(--bs-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ===========================================
+   ERROR MESSAGE
+   =========================================== */
+.mi-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bs-danger-bg);
+  border-radius: 8px;
+  color: var(--bs-danger);
+  font-size: 14px;
+}
+
+/* ===========================================
+   PRIMARY BUTTON
+   =========================================== */
+.mi-primary-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--bs-accent);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.mi-primary-btn:active {
+  opacity: 0.9;
+}
+
+.mi-primary-btn:disabled {
+  background: var(--bs-surface-hover);
+  color: var(--bs-text-muted);
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   FACTION ROW
+   =========================================== */
+.mi-faction-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bs-surface);
+  border-radius: 10px;
+}
+
+.mi-faction-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bs-text-secondary);
+}
+
+.mi-faction-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mi-faction-select {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  background: var(--bs-bg);
+  color: var(--bs-text);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23475569' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.mi-faction-select:focus {
+  outline: none;
+  border-color: var(--bs-accent);
+}
+
+/* ===========================================
+   STATUS ICON
+   =========================================== */
+.mi-status-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mi-status-icon.matched {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.mi-status-icon.ambiguous {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mi-status-icon.unmatched {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ===========================================
+   UNIT LIST
+   =========================================== */
+.mi-unit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 40vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mi-unit-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bs-surface);
+  border-radius: 10px;
+  transition: opacity 0.15s ease;
+}
+
+.mi-unit-card.skipped {
+  opacity: 0.5;
+}
+
+.mi-unit-main {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mi-unit-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mi-unit-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mi-unit-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bs-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mi-unit-points {
+  font-size: 13px;
+  color: var(--bs-text-secondary);
+  flex-shrink: 0;
+}
+
+.mi-unit-size {
+  font-size: 12px;
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   UNIT BADGES
+   =========================================== */
+.mi-unit-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mi-badge.warlord {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.mi-badge.enhancement {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* ===========================================
+   UNIT MATCH DISPLAY
+   =========================================== */
+.mi-unit-match {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.mi-match-arrow {
+  color: var(--bs-text-muted);
+  font-size: 12px;
+}
+
+.mi-match-name {
+  font-size: 13px;
+  color: var(--bs-accent);
+}
+
+/* ===========================================
+   UNIT SELECT / CHANGE BUTTON
+   =========================================== */
+.mi-unit-select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid var(--bs-accent);
+  border-radius: 6px;
+  background: var(--bs-bg);
+  color: var(--bs-text);
+}
+
+.mi-change-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  color: var(--bs-text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.mi-change-btn:active {
+  background: var(--bs-surface-hover);
+}
+
+/* ===========================================
+   SKIP BUTTON
+   =========================================== */
+.mi-skip-btn {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--bs-border);
+  border-radius: 6px;
+  color: var(--bs-text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.mi-skip-btn:active {
+  background: var(--bs-surface-hover);
+}
+
+.mi-skip-btn.skipped {
+  border-color: var(--bs-accent);
+  color: var(--bs-accent);
+}
+
+/* ===========================================
+   SUMMARY BAR
+   =========================================== */
+.mi-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 12px;
+  background: var(--bs-surface);
+  border-radius: 8px;
+}
+
+.mi-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mi-summary-item.ready {
+  color: #059669;
+}
+
+.mi-summary-item.review {
+  color: #d97706;
+}
+
+.mi-summary-item.unmatched {
+  color: #dc2626;
+}
+
+.mi-summary-item.skipped {
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   CONFIRM STEP
+   =========================================== */
+.mi-step-confirm {
+  align-items: center;
+  text-align: center;
+}
+
+.mi-confirm-icon {
+  color: #059669;
+  margin: 16px 0;
+}
+
+.mi-confirm-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--bs-text);
+  margin: 0;
+}
+
+.mi-confirm-subtitle {
+  font-size: 15px;
+  color: var(--bs-text-secondary);
+  margin: 4px 0 24px;
+}
+
+/* ===========================================
+   NAME INPUT FIELD
+   =========================================== */
+.mi-name-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.mi-name-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--bs-text-secondary);
+}
+
+.mi-name-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid var(--bs-border);
+  border-radius: 8px;
+  background: var(--bs-surface);
+  color: var(--bs-text);
+  box-sizing: border-box;
+}
+
+.mi-name-input:focus {
+  outline: none;
+  border-color: var(--bs-accent);
+}
+
+.mi-name-input::placeholder {
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   ENTRANCE ANIMATIONS
+   =========================================== */
+@keyframes miStepIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes miFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes miStatusScaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes miConfirmBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes miSummaryPop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Step transitions */
+.mi-step {
+  animation: miStepIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Staggered unit cards */
+.mi-unit-card {
+  animation: miFadeSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.mi-unit-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.mi-unit-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.mi-unit-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.mi-unit-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.mi-unit-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.mi-unit-card:nth-child(n + 6) {
+  animation-delay: 0.3s;
+}
+
+/* Status badge scale-in */
+.mi-status-icon {
+  animation: miStatusScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Confirm icon spring bounce */
+.mi-confirm-icon {
+  animation: miConfirmBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+/* Import button press feedback */
+.mi-primary-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Summary bar badge animations */
+.mi-summary-item {
+  animation: miSummaryPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.mi-summary-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.mi-summary-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.mi-summary-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.mi-summary-item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .mi-unit-card,
+  .mi-primary-btn,
+  .mi-back-btn,
+  .mi-step,
+  .mi-status-icon,
+  .mi-confirm-icon,
+  .mi-summary-item {
+    animation: none;
+    transition: none;
+  }
+}

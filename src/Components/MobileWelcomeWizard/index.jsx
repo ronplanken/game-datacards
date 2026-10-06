@@ -3,12 +3,14 @@ import React, { useState, useEffect, useCallback } from "react";
 import * as ReactDOM from "react-dom";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useUmami } from "../../Hooks/useUmami";
 import { StepWelcome } from "./steps/StepWelcome";
 import { StepImportList } from "./steps/StepImportList";
 import { StepDesktopInfo } from "./steps/StepDesktopInfo";
 import { StepGameSystem } from "./steps/StepGameSystem";
 import { Step40KSettings } from "./steps/Step40KSettings";
 import { StepAoSSettings } from "./steps/StepAoSSettings";
+import { StepCloudSync } from "./steps/StepCloudSync";
 import { StepComplete } from "./steps/StepComplete";
 import "./MobileWelcomeWizard.css";
 
@@ -23,7 +25,8 @@ const STEPS = {
   DESKTOP_INFO: 2,
   GAME_SYSTEM: 3,
   SETTINGS: 4,
-  COMPLETE: 5,
+  CLOUD_SYNC: 5,
+  COMPLETE: 6,
 };
 
 // Step titles for progress indicator
@@ -33,18 +36,20 @@ const STEP_TITLES = {
   [STEPS.DESKTOP_INFO]: "Desktop",
   [STEPS.GAME_SYSTEM]: "Game System",
   [STEPS.SETTINGS]: "Settings",
+  [STEPS.CLOUD_SYNC]: "Cloud Sync",
   [STEPS.COMPLETE]: "Done",
 };
 
 export const MobileWelcomeWizard = () => {
   const [isWizardVisible, setIsWizardVisible] = useState(false);
   const [step, setStep] = useState(STEPS.WELCOME);
-  const [selectedSystem, setSelectedSystem] = useState(null);
+  const [selectedSystem, setSelectedSystem] = useState("40k-11e");
   const [isExiting, setIsExiting] = useState(false);
   const [isStepTransitioning, setIsStepTransitioning] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState("forward");
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { trackEvent } = useUmami();
 
   // Get visible steps based on selected system
   const getVisibleSteps = () => {
@@ -57,6 +62,7 @@ export const MobileWelcomeWizard = () => {
       baseSteps.push(STEPS.SETTINGS);
     }
 
+    baseSteps.push(STEPS.CLOUD_SYNC);
     baseSteps.push(STEPS.COMPLETE);
     return baseSteps;
   };
@@ -93,6 +99,7 @@ export const MobileWelcomeWizard = () => {
 
   // Handle wizard completion
   const handleComplete = () => {
+    trackEvent("wizard-complete", { type: "mobile-welcome" });
     setIsExiting(true);
     setTimeout(() => {
       updateSettings({
@@ -103,8 +110,9 @@ export const MobileWelcomeWizard = () => {
           ...settings.mobile,
           gameSystemSelected: true,
         },
-        wizardCompleted: process.env.REACT_APP_VERSION,
-        lastMajorWizardVersion: process.env.REACT_APP_VERSION,
+        wizardCompleted: import.meta.env.VITE_VERSION,
+        lastMajorWizardVersion: import.meta.env.VITE_VERSION,
+        lastReadReleaseVersion: import.meta.env.VITE_VERSION,
       });
       setIsWizardVisible(false);
       setIsExiting(false);
@@ -149,6 +157,8 @@ export const MobileWelcomeWizard = () => {
           return <StepAoSSettings />;
         }
         return <Step40KSettings />;
+      case STEPS.CLOUD_SYNC:
+        return <StepCloudSync />;
       case STEPS.COMPLETE:
         return <StepComplete />;
       default:
@@ -228,6 +238,6 @@ export const MobileWelcomeWizard = () => {
         </footer>
       </div>
     </div>,
-    modalRoot
+    modalRoot,
   );
 };

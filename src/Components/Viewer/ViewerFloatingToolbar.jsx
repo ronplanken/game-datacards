@@ -96,7 +96,7 @@ export const ViewerFloatingToolbar = ({ side, setSide, onShareLink, onShareFullC
     setSide?.((current) => (current === "front" ? "back" : "front"));
   };
 
-  const is40k10e = activeCard?.source === "40k-10e";
+  const is40k10e = activeCard?.source === "40k-10e" || activeCard?.source === "40k-11e";
   const showFrontBackToggle =
     is40k10e &&
     settings.showCardsAsDoubleSided !== true &&

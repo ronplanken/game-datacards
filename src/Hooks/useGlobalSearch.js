@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useDataSourceStorage } from "./useDataSourceStorage";
 import { useDebounce } from "./useDebounce";
+import { getBrowsableEnhancements } from "../Helpers/faction.helpers";
 
 /**
  * Custom hook for cross-faction search
@@ -35,7 +36,9 @@ export function useGlobalSearch(searchText, factionFilter = null) {
         { items: toArray(faction.datasheets || faction.warscrolls), type: "unit", isBasic: false },
         { items: toArray(faction.stratagems), type: "stratagem", isBasic: false },
         { items: toArray(faction.basicStratagems), type: "stratagem", isBasic: true },
-        { items: toArray(faction.enhancements), type: "enhancement", isBasic: false },
+        // AoS factions group enhancements by artefact/heroic trait/other, so they
+        // need flattening before they can be searched alongside the 40K array.
+        { items: getBrowsableEnhancements(faction), type: "enhancement", isBasic: false },
         { items: toArray(faction.rules?.army), type: "rule", isBasic: false },
         { items: toArray(faction.rules?.detachment).flatMap((d) => toArray(d.rules)), type: "rule", isBasic: false },
         // AoS lores

@@ -1,0 +1,18 @@
+# Dependencies
+node_modules
+
+# Build output
+build
+coverage
+
+# Generated files
+/csv
+/public/json
+/public/svg
+
+# Supabase temp
+supabase/.temp/
+
+# Misc
+.DS_Store
+*.log

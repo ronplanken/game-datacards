@@ -1,0 +1,45 @@
+-- Migration: Set search_path on all public functions to prevent search-path hijacking
+-- Resolves: function_search_path_mutable linter warnings
+
+ALTER FUNCTION public.update_updated_at_column() SET search_path = public;
+ALTER FUNCTION public.handle_new_user() SET search_path = public;
+ALTER FUNCTION public.generate_share_code(INTEGER) SET search_path = public;
+ALTER FUNCTION public.update_last_modified_column() SET search_path = public;
+ALTER FUNCTION public.get_effective_tier(UUID) SET search_path = public;
+ALTER FUNCTION public.get_tier_limits(TEXT) SET search_path = public;
+ALTER FUNCTION public.validate_category_limit() SET search_path = public;
+ALTER FUNCTION public.validate_datasource_limit() SET search_path = public;
+ALTER FUNCTION public.check_subscription_limit(TEXT, UUID) SET search_path = public;
+ALTER FUNCTION public.get_subscription_usage(UUID) SET search_path = public;
+ALTER FUNCTION public.update_subscriber_count() SET search_path = public;
+ALTER FUNCTION public.browse_public_datasources(TEXT, TEXT, TEXT, INTEGER, INTEGER) SET search_path = public;
+ALTER FUNCTION public.get_datasource_by_share_code(TEXT) SET search_path = public;
+ALTER FUNCTION public.subscribe_to_datasource(UUID) SET search_path = public;
+ALTER FUNCTION public.unsubscribe_from_datasource(UUID) SET search_path = public;
+ALTER FUNCTION public.get_my_subscriptions() SET search_path = public;
+ALTER FUNCTION public.get_subscription_updates() SET search_path = public;
+ALTER FUNCTION public.mark_subscription_synced(UUID, INTEGER) SET search_path = public;
+ALTER FUNCTION public.publish_datasource(UUID, TEXT, TEXT) SET search_path = public;
+ALTER FUNCTION public.unpublish_datasource(UUID) SET search_path = public;
+ALTER FUNCTION public.update_published_datasource(UUID, JSONB, TEXT) SET search_path = public;
+ALTER FUNCTION public.get_my_datasources() SET search_path = public;
+ALTER FUNCTION public.get_featured_datasources(INTEGER) SET search_path = public;
+ALTER FUNCTION public.sync_local_datasource(TEXT, TEXT, JSONB, INTEGER, TEXT, TEXT, TEXT, TEXT, TEXT) SET search_path = public;
+ALTER FUNCTION public.publish_local_datasource(UUID, TEXT, TEXT) SET search_path = public;
+ALTER FUNCTION public.push_datasource_update(UUID, TEXT) SET search_path = public;
+ALTER FUNCTION public.get_local_datasource_edit(TEXT) SET search_path = public;
+ALTER FUNCTION public.delete_local_datasource(UUID) SET search_path = public;
+ALTER FUNCTION public.admin_get_deleted_datasources(UUID) SET search_path = public;
+ALTER FUNCTION public.validate_template_limit() SET search_path = public;
+ALTER FUNCTION public.update_template_subscriber_count() SET search_path = public;
+ALTER FUNCTION public.browse_public_templates(TEXT, TEXT, TEXT, INTEGER, INTEGER) SET search_path = public;
+ALTER FUNCTION public.get_template_by_share_code(TEXT) SET search_path = public;
+ALTER FUNCTION public.get_featured_templates(INTEGER) SET search_path = public;
+ALTER FUNCTION public.subscribe_to_template(UUID) SET search_path = public;
+ALTER FUNCTION public.unsubscribe_from_template(UUID) SET search_path = public;
+ALTER FUNCTION public.publish_template(UUID, TEXT, TEXT) SET search_path = public;
+ALTER FUNCTION public.push_template_update(UUID) SET search_path = public;
+ALTER FUNCTION public.unpublish_template(UUID) SET search_path = public;
+ALTER FUNCTION public.get_my_template_subscriptions() SET search_path = public;
+ALTER FUNCTION public.get_my_published_templates() SET search_path = public;
+ALTER FUNCTION public.get_my_published_works() SET search_path = public;

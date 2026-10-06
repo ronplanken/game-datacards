@@ -1,0 +1,721 @@
+import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import { MobileListProvider, useMobileList } from "../useMobileList";
+
+// Mock uuid
+vi.mock("uuid", () => ({
+  v4: vi.fn(() => `uuid-${Math.random().toString(36).slice(2, 8)}`),
+}));
+
+// Mock useSettingsStorage
+const mockSettings = { selectedDataSource: "40k-10e" };
+vi.mock("../../../Hooks/useSettingsStorage", () => ({
+  useSettingsStorage: () => ({ settings: mockSettings }),
+}));
+
+// Mock useCardStorage
+const mockImportCategory = vi.fn();
+const mockUpdateCategory = vi.fn();
+const mockRemoveCategory = vi.fn();
+const mockRenameCategory = vi.fn();
+const mockMarkCategoryPending = vi.fn();
+let mockCategories = [];
+
+vi.mock("../../../Hooks/useCardStorage", () => ({
+  useCardStorage: () => ({
+    cardStorage: { categories: mockCategories },
+    importCategory: mockImportCategory,
+    updateCategory: mockUpdateCategory,
+    removeCategory: mockRemoveCategory,
+    renameCategory: mockRenameCategory,
+    markCategoryPending: mockMarkCategoryPending,
+  }),
+}));
+
+// Mock migrateListsToCategories
+vi.mock("../../../Helpers/listMigration.helpers", () => ({
+  migrateListsToCategories: vi.fn(() => []),
+}));
+
+// Mock localStorage
+const localStorageMock = (() => {
+  let store = {};
+  return {
+    getItem: vi.fn((key) => store[key] ?? null),
+    setItem: vi.fn((key, val) => {
+      store[key] = val;
+    }),
+    removeItem: vi.fn((key) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      store = {};
+    }),
+  };
+})();
+Object.defineProperty(window, "localStorage", { value: localStorageMock });
+
+describe("useMobileList", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock.clear();
+    mockCategories = [];
+    mockSettings.selectedDataSource = "40k-10e";
+  });
+
+  const wrapper = ({ children }) => <MobileListProvider>{children}</MobileListProvider>;
+
+  describe("context requirement", () => {
+    it("should throw if used outside MobileListProvider", () => {
+      // Suppress console.error for expected error
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      expect(() => renderHook(() => useMobileList())).toThrow(
+        "`useMobileList` must be used with an `MobileListProvider`",
+      );
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe("list derivation", () => {
+    it("should return only list-type categories for current datasource", () => {
+      mockCategories = [
+        { uuid: "1", name: "My List", type: "list", dataSource: "40k-10e", cards: [] },
+        { uuid: "2", name: "Regular Cat", type: "category", dataSource: "40k-10e", cards: [] },
+        { uuid: "3", name: "AoS List", type: "list", dataSource: "aos", cards: [] },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+      expect(result.current.lists).toHaveLength(1);
+      expect(result.current.lists[0].name).toBe("My List");
+    });
+
+    it("should return empty array when no categories exist", () => {
+      mockCategories = [];
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+      expect(result.current.lists).toEqual([]);
+    });
+  });
+
+  describe("addDatacard", () => {
+    it("should call updateCategory with flat card appended and then markCategoryPending", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.addDatacard({ name: "Marine" }, { cost: 100 }, null, false);
+      });
+
+      expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+      const [updatedCat, uuid] = mockUpdateCategory.mock.calls[0];
+      expect(uuid).toBe("cat-1");
+      expect(updatedCat.cards).toHaveLength(1);
+      expect(updatedCat.cards[0].name).toBe("Marine");
+      expect(updatedCat.cards[0].unitSize).toEqual({ cost: 100 });
+      expect(updatedCat.cards[0].isWarlord).toBe(false);
+      expect(updatedCat.cards[0].isCustom).toBe(true);
+      expect(updatedCat.cards[0]).toHaveProperty("uuid");
+
+      expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
+    });
+
+    it("should not call updateCategory when no datacard is provided", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.addDatacard(null, { cost: 100 }, null, false);
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("removeDatacard", () => {
+    it("should call updateCategory with card removed and then markCategoryPending", () => {
+      mockCategories = [
+        {
+          uuid: "cat-1",
+          name: "Test",
+          type: "list",
+          dataSource: "40k-10e",
+          cards: [
+            { name: "A", unitSize: { cost: 100 }, uuid: "card-1", isCustom: true },
+            { name: "B", unitSize: { cost: 200 }, uuid: "card-2", isCustom: true },
+          ],
+        },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.removeDatacard("card-1");
+      });
+
+      expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+      const [updatedCat] = mockUpdateCategory.mock.calls[0];
+      expect(updatedCat.cards).toHaveLength(1);
+      expect(updatedCat.cards[0].uuid).toBe("card-2");
+
+      expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
+    });
+
+    it("should not call updateCategory when id is null", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.removeDatacard(null);
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("updateDatacard", () => {
+    it("should update a card in-place and call markCategoryPending", () => {
+      mockCategories = [
+        {
+          uuid: "cat-1",
+          name: "Test",
+          type: "list",
+          dataSource: "40k-10e",
+          cards: [
+            { name: "A", unitSize: { cost: 100 }, uuid: "card-1", isCustom: true },
+            { name: "B", unitSize: { cost: 200 }, uuid: "card-2", isCustom: true },
+          ],
+        },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateDatacard("card-1", { cost: 150 }, { name: "Shield", cost: 10 }, true);
+      });
+
+      expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+      const [updatedCat, uuid] = mockUpdateCategory.mock.calls[0];
+      expect(uuid).toBe("cat-1");
+      expect(updatedCat.cards).toHaveLength(2);
+      expect(updatedCat.cards[0].unitSize).toEqual({ cost: 150 });
+      expect(updatedCat.cards[0].selectedEnhancement).toEqual({ name: "Shield", cost: 10 });
+      expect(updatedCat.cards[0].isWarlord).toBe(true);
+      // Second card should be unchanged
+      expect(updatedCat.cards[1].unitSize).toEqual({ cost: 200 });
+
+      expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
+    });
+
+    it("should not call updateCategory when uuid is null", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateDatacard(null, { cost: 100 }, null, false);
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+
+    it("should not call updateCategory when category does not exist", () => {
+      mockCategories = [];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateDatacard("card-1", { cost: 100 }, null, false);
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("updateCardData", () => {
+    it("should replace full card data while preserving UUID", () => {
+      mockCategories = [
+        {
+          uuid: "cat-1",
+          name: "Test",
+          type: "list",
+          dataSource: "40k-10e",
+          cards: [
+            { name: "Old Name", stats: [{ m: 6, t: 4 }], uuid: "card-1", isCustom: true },
+            { name: "B", uuid: "card-2", isCustom: true },
+          ],
+        },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateCardData("card-1", {
+          name: "New Name",
+          stats: [{ m: 8, t: 5 }],
+          keywords: ["Infantry"],
+        });
+      });
+
+      expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+      const [updatedCat, uuid] = mockUpdateCategory.mock.calls[0];
+      expect(uuid).toBe("cat-1");
+      expect(updatedCat.cards).toHaveLength(2);
+      // Card data replaced
+      expect(updatedCat.cards[0].name).toBe("New Name");
+      expect(updatedCat.cards[0].stats).toEqual([{ m: 8, t: 5 }]);
+      expect(updatedCat.cards[0].keywords).toEqual(["Infantry"]);
+      // UUID preserved
+      expect(updatedCat.cards[0].uuid).toBe("card-1");
+      // Other card unchanged
+      expect(updatedCat.cards[1].name).toBe("B");
+
+      expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
+    });
+
+    it("should not call updateCategory when uuid is null", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateCardData(null, { name: "X" });
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+
+    it("should not call updateCategory when category does not exist", () => {
+      mockCategories = [];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.updateCardData("card-1", { name: "X" });
+      });
+
+      expect(mockUpdateCategory).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("createList", () => {
+    it("should call importCategory with a new list category", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Default", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.createList("My New List");
+      });
+
+      expect(mockImportCategory).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "My New List",
+          type: "list",
+          dataSource: "40k-10e",
+          cards: [],
+        }),
+      );
+    });
+
+    it("should record the faction the list is built for", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Default", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.createList("Blood Angels", { factionId: "BA" });
+      });
+
+      expect(mockImportCategory).toHaveBeenCalledWith(expect.objectContaining({ factionId: "BA" }));
+    });
+
+    it("should default name to 'New List' when name is empty", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Default", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.createList("");
+      });
+
+      expect(mockImportCategory).toHaveBeenCalledWith(expect.objectContaining({ name: "New List" }));
+    });
+  });
+
+  describe("renameList", () => {
+    it("should call renameCategory with the correct uuid and name", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Old Name", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.renameList(0, "New Name");
+      });
+
+      expect(mockRenameCategory).toHaveBeenCalledWith("cat-1", "New Name");
+    });
+
+    it("should not rename with empty name", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Old Name", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.renameList(0, "");
+      });
+
+      expect(mockRenameCategory).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("deleteList", () => {
+    it("should call removeCategory with the correct uuid", () => {
+      mockCategories = [
+        { uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] },
+        { uuid: "cat-2", name: "List B", type: "list", dataSource: "40k-10e", cards: [] },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      let deleted;
+      act(() => {
+        deleted = result.current.deleteList(1);
+      });
+
+      expect(deleted).toBe(true);
+      expect(mockRemoveCategory).toHaveBeenCalledWith("cat-2");
+    });
+
+    it("should not delete the last remaining list", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Only List", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      let deleted;
+      act(() => {
+        deleted = result.current.deleteList(0);
+      });
+
+      expect(deleted).toBe(false);
+      expect(mockRemoveCategory).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("getListPoints", () => {
+    it("should calculate total points including enhancements", () => {
+      mockCategories = [
+        {
+          uuid: "cat-1",
+          name: "Test",
+          type: "list",
+          dataSource: "40k-10e",
+          cards: [
+            { name: "A", unitSize: { cost: 100 }, selectedEnhancement: { cost: 15 }, uuid: "1", isCustom: true },
+            { name: "B", unitSize: { cost: 200 }, uuid: "2", isCustom: true },
+          ],
+        },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+      expect(result.current.getListPoints(0)).toBe(315);
+    });
+
+    it("should return 0 for non-existent list index", () => {
+      mockCategories = [];
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+      expect(result.current.getListPoints(99)).toBe(0);
+    });
+  });
+
+  describe("selectedList", () => {
+    it("should default to 0", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+      expect(result.current.selectedList).toBe(0);
+    });
+
+    it("should update selected list when setSelectedList is called", () => {
+      mockCategories = [
+        { uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] },
+        { uuid: "cat-2", name: "List B", type: "list", dataSource: "40k-10e", cards: [] },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.setSelectedList(1);
+      });
+
+      expect(result.current.selectedList).toBe(1);
+    });
+
+    it("should clear cloud category selection when selecting a list", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.selectCloudCategory("cloud-uuid");
+      });
+      expect(result.current.selectedCloudCategoryId).toBe("cloud-uuid");
+
+      act(() => {
+        result.current.setSelectedList(0);
+      });
+      expect(result.current.selectedCloudCategoryId).toBeNull();
+    });
+
+    it("should persist selected list to localStorage", () => {
+      mockCategories = [
+        { uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] },
+        { uuid: "cat-2", name: "List B", type: "list", dataSource: "40k-10e", cards: [] },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.setSelectedList(1);
+      });
+
+      expect(localStorageMock.setItem).toHaveBeenCalledWith("selectedListPerDS", JSON.stringify({ "40k-10e": 1 }));
+    });
+
+    it("should restore selected list from localStorage on mount", () => {
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === "selectedListPerDS") return JSON.stringify({ "40k-10e": 1 });
+        if (key === "lists_migrated") return "true";
+        return null;
+      });
+
+      mockCategories = [
+        { uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] },
+        { uuid: "cat-2", name: "List B", type: "list", dataSource: "40k-10e", cards: [] },
+      ];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      expect(result.current.selectedList).toBe(1);
+    });
+
+    it("should fall back to {} when localStorage contains invalid JSON", () => {
+      localStorageMock.getItem.mockImplementation((key) => {
+        if (key === "selectedListPerDS") return "not-valid-json";
+        if (key === "lists_migrated") return "true";
+        return null;
+      });
+
+      mockCategories = [{ uuid: "cat-1", name: "List A", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      expect(result.current.selectedList).toBe(0);
+    });
+  });
+
+  describe("cloud category selection", () => {
+    it("should select and clear cloud categories", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.selectCloudCategory("cloud-1");
+      });
+      expect(result.current.selectedCloudCategoryId).toBe("cloud-1");
+
+      act(() => {
+        result.current.clearCloudCategory();
+      });
+      expect(result.current.selectedCloudCategoryId).toBeNull();
+    });
+  });
+});
+
+describe("useMobileList 11e roster and attachments", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock.clear();
+    mockSettings.selectedDataSource = "40k-11e";
+    mockCategories = [
+      {
+        uuid: "list-1",
+        name: "My 11e List",
+        type: "list",
+        dataSource: "40k-11e",
+        cards: [
+          { uuid: "card-1", name: "Captain", unitSize: { models: 1, cost: 80 } },
+          { uuid: "squad-1", name: "Intercessor Squad" },
+        ],
+      },
+    ];
+  });
+
+  const wrapper = ({ children }) => <MobileListProvider>{children}</MobileListProvider>;
+
+  it("writes unit size, enhancement and attachment in a single category update", () => {
+    // Regression: these used to be two chained updateCategory calls, and because
+    // updateCategory replaces the whole category the second overwrote the first.
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.updateDatacard("card-1", { models: 1, cost: 90 }, { name: "Relic" }, true, {
+        attachedTo: "squad-1",
+      });
+    });
+
+    expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+    const saved = mockUpdateCategory.mock.calls[0][0].cards.find((c) => c.uuid === "card-1");
+    expect(saved.unitSize).toEqual({ models: 1, cost: 90 });
+    expect(saved.selectedEnhancement).toEqual({ name: "Relic" });
+    expect(saved.isWarlord).toBe(true);
+    expect(saved.attachedTo).toBe("squad-1");
+  });
+
+  it("leaves attachedTo untouched when no attachment option is passed", () => {
+    mockCategories[0].cards[0].attachedTo = "squad-1";
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.updateDatacard("card-1", { models: 1, cost: 90 }, undefined, false);
+    });
+    const saved = mockUpdateCategory.mock.calls[0][0].cards.find((c) => c.uuid === "card-1");
+    expect(saved.attachedTo).toBe("squad-1");
+  });
+
+  it("clears the attachment when attachedTo is empty", () => {
+    mockCategories[0].cards[0].attachedTo = "squad-1";
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.updateDatacard("card-1", { models: 1, cost: 90 }, undefined, false, { attachedTo: undefined });
+    });
+    const saved = mockUpdateCategory.mock.calls[0][0].cards.find((c) => c.uuid === "card-1");
+    expect(saved.attachedTo).toBeUndefined();
+  });
+
+  it("stores the army detachments on the list category", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    const detachments = [{ id: "d1", name: { en: "Lions of the Emperor" }, detachmentPoints: 2 }];
+    act(() => {
+      result.current.setListDetachments(detachments);
+    });
+    expect(mockUpdateCategory).toHaveBeenCalledWith(expect.objectContaining({ detachments }), "list-1");
+    expect(mockMarkCategoryPending).toHaveBeenCalledWith("list-1");
+  });
+
+  it("clears the detachments when given an empty selection", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.setListDetachments([]);
+    });
+    expect(mockUpdateCategory).toHaveBeenCalledWith(expect.objectContaining({ detachments: undefined }), "list-1");
+  });
+
+  it("stores the battle size on the list category", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+    act(() => {
+      result.current.setListBattleSize("incursion");
+    });
+    expect(mockUpdateCategory).toHaveBeenCalledWith(expect.objectContaining({ battleSize: "incursion" }), "list-1");
+  });
+});
+
+describe("useMobileList detachment repricing", () => {
+  // A datasheet priced 100 generally and 120 in the Lions of the Emperor
+  // detachment — 11e scopes some prices to a detachment.
+  const detachment = { id: "d1", name: { en: "Lions of the Emperor" }, detachmentPoints: 2 };
+  const tiers = [
+    { models: 5, cost: 100 },
+    { models: 5, cost: 120, detachment: { en: "Lions of the Emperor" } },
+    { models: 10, cost: 200 },
+  ];
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorageMock.clear();
+    mockSettings.selectedDataSource = "40k-11e";
+    mockCategories = [
+      {
+        uuid: "list-1",
+        name: "My 11e List",
+        type: "list",
+        dataSource: "40k-11e",
+        cards: [
+          { uuid: "card-1", name: "Intercessor Squad", points: tiers, unitSize: { models: 5, cost: 100 } },
+          { uuid: "card-2", name: "Unconfigured Squad", points: tiers },
+        ],
+      },
+    ];
+  });
+
+  const wrapper = ({ children }) => <MobileListProvider>{children}</MobileListProvider>;
+
+  it("reprices configured units for the chosen detachment and reports the change", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    let changes;
+    act(() => {
+      changes = result.current.setListDetachments([detachment]);
+    });
+
+    // One write only: detachments and repriced cards go in together.
+    expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
+    const saved = mockUpdateCategory.mock.calls[0][0];
+    expect(saved.cards.find((c) => c.uuid === "card-1").unitSize.cost).toBe(120);
+    expect(changes).toEqual([{ name: "Intercessor Squad", from: 100, to: 120 }]);
+  });
+
+  it("restores the generic price when the detachment is removed", () => {
+    mockCategories[0].detachments = [detachment];
+    mockCategories[0].cards[0].unitSize = { models: 5, cost: 120, detachment: { en: "Lions of the Emperor" } };
+
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    let changes;
+    act(() => {
+      changes = result.current.setListDetachments([]);
+    });
+
+    const saved = mockUpdateCategory.mock.calls[0][0];
+    expect(saved.detachments).toBeUndefined();
+    expect(saved.cards.find((c) => c.uuid === "card-1").unitSize.cost).toBe(100);
+    expect(changes).toEqual([{ name: "Intercessor Squad", from: 120, to: 100 }]);
+  });
+
+  it("leaves unconfigured units alone and reports nothing when no price moves", () => {
+    mockCategories[0].cards = [{ uuid: "card-2", name: "Unconfigured Squad", points: tiers }];
+
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    let changes;
+    act(() => {
+      changes = result.current.setListDetachments([detachment]);
+    });
+
+    expect(changes).toEqual([]);
+    expect(mockUpdateCategory.mock.calls[0][0].cards[0].unitSize).toBeUndefined();
+  });
+
+  it("records the faction on a list that does not have one yet", () => {
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    act(() => {
+      result.current.setListDetachments([detachment], { faction: { id: "BA", name: "Blood Angels" } });
+    });
+
+    expect(mockUpdateCategory.mock.calls[0][0].factionId).toBe("BA");
+  });
+
+  it("keeps a faction the list already has", () => {
+    mockCategories[0].factionId = "SM";
+
+    const { result } = renderHook(() => useMobileList(), { wrapper });
+
+    act(() => {
+      result.current.setListDetachments([detachment], { faction: { id: "BA", name: "Blood Angels" } });
+    });
+
+    expect(mockUpdateCategory.mock.calls[0][0].factionId).toBe("SM");
+  });
+});

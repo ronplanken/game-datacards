@@ -1,5 +1,6 @@
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { Warhammer40K10eCardDisplay } from "../Warhammer40k-10e/CardDisplay";
+import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { NecromundaCardDisplay } from "../Necromunda/CardDisplay";
 import { WarscrollCard } from "../AgeOfSigmar/WarscrollCard";
 import { SpellCard } from "../AgeOfSigmar/SpellCard";
@@ -33,6 +34,13 @@ export const SharedCardDisplay = ({ card, isMobile = false }) => {
         const displayCard =
           card.cardType === "DataCard" && card.variant !== "full" ? { ...card, variant: "full" } : card;
         return <Warhammer40K10eCardDisplay card={displayCard} type={isMobile ? "viewer" : "print"} />;
+      }
+
+      case "40k-11e": {
+        // Force DataCards to show as full (both sides) variant
+        const displayCard =
+          card.cardType === "DataCard" && card.variant !== "full" ? { ...card, variant: "full" } : card;
+        return <Warhammer40K11eCardDisplay card={displayCard} type={isMobile ? "viewer" : "print"} />;
       }
 
       case "basic":

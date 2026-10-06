@@ -1,0 +1,212 @@
+[
+  {
+    "version": "3.10.1",
+    "title": "Legends label no longer overlaps points",
+    "body": "The Legends label used to sit on top of the points when a datasheet showed more than one points value. It now moves to the left and stays clear.",
+    "severity": "info",
+    "timestamp": 1779861089
+  },
+  {
+    "version": "3.10.2",
+    "title": "Patch notes take up less space",
+    "body": "The date line under each patch note in the notification list was too tall. It now sits tighter, so the list is quicker to scan.",
+    "severity": "info",
+    "timestamp": 1779869126
+  },
+  {
+    "version": "3.10.3",
+    "title": "Sub-categories sync with their parent",
+    "body": "You could start syncing a sub-category before its parent, which never worked. Its sync button now stays off until you sync the parent category.",
+    "severity": "info",
+    "timestamp": 1779902166
+  },
+  {
+    "version": "3.11.1",
+    "title": "Group 11th edition datasheets and stratagems again",
+    "body": "Faction settings are back for 11th edition, including card grouping, points and double-sided options. You can also group stratagems by detachment.",
+    "severity": "info",
+    "timestamp": 1788204838
+  },
+  {
+    "version": "3.11.2",
+    "title": "Edit stratagem restrictions and weapon abilities",
+    "body": "You can edit stratagem restrictions, weapon abilities and enhancement eligibility in 11th edition. Coloured text now appears correctly on cards.",
+    "severity": "info",
+    "timestamp": 1788204838
+  },
+  {
+    "version": "3.11.3",
+    "title": "Edit wargear and pay for it in your lists",
+    "body": "You can edit wargear and special abilities on 11th edition cards. Paid wargear now counts towards your army total and appears on the card with its cost.",
+    "severity": "info",
+    "timestamp": 1788204838
+  },
+  {
+    "version": "3.11.4",
+    "title": "Age of Sigmar artefacts and heroic traits",
+    "body": "You can browse and search Age of Sigmar artefacts, heroic traits and other enhancements. Open them as cards to see their costs and rules.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.5",
+    "title": "Age of Sigmar warscrolls open again on mobile",
+    "body": "Tapping a warscroll on mobile showed an error instead of the card. Warscrolls now open normally, for every faction.",
+    "severity": "error",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.6",
+    "title": "Faction symbols stay on your datacards",
+    "body": "Your faction symbol changes now stay saved after a reload, including on 11th edition cards. Cards without a custom symbol use their faction’s default symbol.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.7",
+    "title": "Image Generator no longer crashes on some factions",
+    "body": "Picking a faction such as Adeptus Titanicus threw an error. Every faction can now be generated.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.8",
+    "title": "Melee weapon keywords line up with ranged",
+    "body": "Melee weapon keywords now line up the same way as ranged weapon keywords. Long lists no longer push the columns out of place.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.9",
+    "title": "Edit 11th edition cards on mobile",
+    "body": "You can now edit 11th edition units, stratagems, enhancements and rules on mobile. Changes apply only to your selected card language.",
+    "severity": "info",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.10",
+    "title": "Share cloud categories from your phone",
+    "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories, not just local lists. A list that cannot be shared tells you why instead of doing nothing.",
+    "severity": "success",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.11",
+    "title": "Starcraft weapon keywords link to the glossary again",
+    "body": "Keywords added to a Starcraft weapon were printed as plain text and matched no glossary entry. They now show as keyword tags with their tooltips and explanations.",
+    "severity": "warning",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.12",
+    "title": "Weapons tab no longer breaks after adding a keyword",
+    "body": "Adding a weapon keyword could stop the weapons tab from opening, even after a refresh. Those cards open again and the stray keyword can simply be deleted.",
+    "severity": "error",
+    "timestamp": 1788204839
+  },
+  {
+    "version": "3.11.13",
+    "title": "Choose how weapon keywords wrap",
+    "body": "Long weapon keyword lists now wrap neatly below the weapon name. Use Wrap Keywords in the Styling section to turn this off for a card on desktop or mobile.",
+    "severity": "info",
+    "timestamp": 1788207017
+  },
+  {
+    "version": "3.11.14",
+    "title": "Reuse faction symbols and keep their colours",
+    "body": "You can reuse uploaded faction symbols from Saved symbols and keep their original colours. Replacing a symbol now updates the preview straight away.",
+    "severity": "info",
+    "timestamp": 1788263596
+  },
+  {
+    "version": "3.11.15",
+    "title": "Security and dependency updates",
+    "body": "This update fixes reported security issues in the app’s supporting software.",
+    "severity": "info",
+    "timestamp": 1788266742
+  },
+  {
+    "version": "3.11.16",
+    "title": "Card Designer gets undo, a data panel and more",
+    "body": "The Card Designer now has undo and redo, drag-and-drop data fields and support for 11th edition cards. Improved layout and styling controls make cards easier to customise.",
+    "severity": "success",
+    "timestamp": 1788811348
+  },
+  {
+    "version": "3.11.17",
+    "title": "Ork rule formatting on mobile",
+    "body": "You now see formatted text in new Ork army and detachment rules on mobile, where formatting tags used to appear. Translated codex rules also keep their combined bold and italic text on mobile and desktop.",
+    "severity": "info",
+    "timestamp": 1788813398
+  },
+  {
+    "version": "3.11.18",
+    "title": "Import and export icons match their action",
+    "body": "A couple of import and export buttons showed the wrong arrow. Importing now always shows the upload icon and exporting the download icon.",
+    "severity": "info",
+    "timestamp": 1789026611
+  },
+  {
+    "version": "3.11.19",
+    "title": "Delete a list from mobile",
+    "body": "You can now delete a list from its details menu on mobile. You’ll be asked to confirm before it is deleted.",
+    "severity": "info",
+    "timestamp": 1789026654
+  },
+  {
+    "version": "3.11.20",
+    "title": "Import army lists into 11th edition",
+    "body": "You can now import army lists into 11th edition on desktop and mobile. Imports also set up your faction, battle size, detachments and unit points.",
+    "severity": "info",
+    "timestamp": 1789026679
+  },
+  {
+    "version": "3.11.21",
+    "title": "Tapping cards on mobile opens them again",
+    "body": "On mobile, tapping an enhancement, stratagem, or rule card used to do nothing. Now it opens the card, the same as tapping a unit.",
+    "severity": "info",
+    "timestamp": 1789027324
+  },
+  {
+    "version": "3.11.22",
+    "title": "Type exact slider values",
+    "body": "You can now type exact values next to sliders in the 10th- and 11th-edition card editors, including faction symbol size and position. Numeric inputs are also available for Age of Sigmar styling, printing and image exports.",
+    "severity": "info",
+    "timestamp": 1789041817
+  },
+  {
+    "version": "3.11.23",
+    "title": "Fix importing an 11th edition army list",
+    "body": "Importing a Warhammer 40,000 app list into an 11th edition army did nothing when you pressed the import button. The list is now imported, and an import that cannot be completed shows you why instead of failing in silence.",
+    "severity": "info",
+    "timestamp": 1789547582
+  },
+  {
+    "version": "3.11.24",
+    "title": "Combat Patrol label now prints",
+    "body": "The Combat Patrol Datasheet label showed in the print preview but was missing from the printed page or PDF. It now prints. The Legends label had the same problem and is fixed too.",
+    "severity": "info",
+    "timestamp": 1789547651
+  },
+  {
+    "version": "3.11.25",
+    "title": "Richer GW app list export",
+    "body": "The GW 40k app export now includes your battle size, detachments and the wargear you paid points for. Unit points now match the list total.",
+    "severity": "info",
+    "timestamp": 1789716627
+  },
+  {
+    "version": "3.13.1",
+    "title": "Custom On and Off text shows on designed cards",
+    "body": "Yes/no fields on cards that use a Card Designer template showed true or false. They now show the On and Off text you set.",
+    "severity": "info",
+    "timestamp": 1790782327
+  },
+  {
+    "version": "3.13.2",
+    "title": "Unit size stays selected",
+    "body": "Picking a unit size on a mobile list used to reset the moment you tapped it, leaving Add to List disabled. Your choice now sticks.",
+    "severity": "info",
+    "timestamp": 1791277106
+  }
+]

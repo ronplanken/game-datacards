@@ -1,0 +1,101 @@
+.notfound-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #001529;
+  overflow-y: auto;
+}
+
+.notfound-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 440px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.notfound-logo {
+  width: 72px;
+  height: auto;
+  margin-bottom: 24px;
+}
+
+.notfound-code {
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: #1677ff;
+}
+
+.notfound-title {
+  margin: 12px 0 8px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.notfound-text {
+  margin: 0 0 28px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+.notfound-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.notfound-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #1677ff;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.notfound-button:hover {
+  background: #4096ff;
+  color: #fff;
+}
+
+.notfound-button--ghost {
+  background: transparent;
+  border-color: #1a3a5c;
+  color: #94a3b8;
+}
+
+.notfound-button--ghost:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #f1f5f9;
+}
+
+.notfound-detail {
+  max-width: 100%;
+  margin: 0 0 24px;
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #94a3b8;
+  background: #0d2240;
+  border: 1px solid #1a3a5c;
+  border-radius: 8px;
+}

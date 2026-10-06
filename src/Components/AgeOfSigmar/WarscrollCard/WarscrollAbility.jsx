@@ -19,12 +19,10 @@ export const WarscrollAbility = ({ ability, grandAlliance }) => {
     return "phase-passive"; // Default/passive
   };
 
-  // Build the tag text - only show phaseDetails
   const getTagText = () => {
     if (ability.phaseDetails) {
       return ability.phaseDetails.toUpperCase();
     }
-    // Fallback to phase or PASSIVE
     if (ability.phase && ability.phase.toLowerCase() !== "passive") {
       return ability.phase.toUpperCase();
     }

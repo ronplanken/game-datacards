@@ -1,0 +1,67 @@
+.mobile-glossary-page {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.mobile-glossary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--banner-colour, #001529);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-glossary-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--header-colour, #0070d6);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mobile-glossary-back:active {
+  opacity: 0.9;
+}
+
+.mobile-glossary-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-glossary-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* Keep the shared search bar sticky below the mobile header. */
+.mobile-glossary-page .glossary-search {
+  position: sticky;
+  top: 60px;
+  z-index: 99;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-glossary-back {
+    transition: none;
+  }
+}

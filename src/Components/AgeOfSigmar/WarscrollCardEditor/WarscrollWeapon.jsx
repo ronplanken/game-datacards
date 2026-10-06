@@ -1,7 +1,8 @@
 import { Trash2 } from "lucide-react";
 import { Button, Card, Input, Popconfirm, Space, Switch, Typography } from "antd";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { normalizeKeywords } from "../../../Helpers/weaponProfile.helpers";
 
 export function WarscrollWeapon({ weapon, index, type }) {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -30,7 +31,17 @@ export function WarscrollWeapon({ weapon, index, type }) {
     });
   };
 
-  const keywords = weapon.keywords || weapon.abilities || [];
+  // Saved cards can carry a plain string in either field (see normalizeKeywords).
+  const resolveKeywords = () => {
+    const abilities = normalizeKeywords(weapon.abilities);
+    return abilities.length ? abilities : normalizeKeywords(weapon.keywords);
+  };
+  const [keywordsText, setKeywordsText] = useState(resolveKeywords().join(", "));
+
+  useEffect(() => {
+    const abilities = normalizeKeywords(weapon.abilities);
+    setKeywordsText((abilities.length ? abilities : normalizeKeywords(weapon.keywords)).join(", "));
+  }, [weapon.abilities, weapon.keywords]);
 
   return (
     <Card
@@ -106,11 +117,15 @@ export function WarscrollWeapon({ weapon, index, type }) {
           <div className="editor-keywords_row">
             <Input
               size="small"
-              value={keywords.join(", ")}
-              onChange={(e) =>
+              value={keywordsText}
+              onChange={(e) => setKeywordsText(e.target.value)}
+              onBlur={() =>
                 handleChange(
                   "abilities",
-                  e.target.value.split(",").map((k) => k.trim())
+                  keywordsText
+                    .split(",")
+                    .map((k) => k.trim())
+                    .filter(Boolean),
                 )
               }
               placeholder="Keywords (e.g. Crit (Mortal), Anti-Infantry)"

@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { Button, Col, Collapse, Form, Layout, Row, Select, Slider, Input, Typography } from "antd";
+import { useEffect, useMemo } from "react";
+import { Button, Col, Collapse, Form, Layout, Row, Select, Input, Typography } from "antd";
 import { useNavigate, Navigate, useParams } from "react-router-dom";
 import split from "just-split";
 
@@ -7,6 +7,7 @@ import "../App.css";
 import "../Components/Print/Print.css";
 
 import { AppHeader } from "../Components/AppHeader";
+import { SliderWithInput } from "../Components/Shared/SliderWithInput";
 import { Page } from "../Components/Print/Page";
 import { Printer } from "../Components/Print/Printer";
 import { CardRenderer } from "../Components/Print/CardRenderer";
@@ -14,6 +15,7 @@ import { PrintFaq } from "../Components/PrintFaq";
 import { useCardStorage } from "../Hooks/useCardStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
 import { usePrintSettings } from "../Hooks/usePrintSettings";
+import { useUmami } from "../Hooks/useUmami";
 
 const { Panel } = Collapse;
 const { Header, Sider, Content } = Layout;
@@ -39,6 +41,7 @@ export const Print = () => {
 
   // Use the custom hook for all print settings
   const printSettings = usePrintSettings(settings, updateSettings);
+  const { trackEvent } = useUmami();
 
   // Memoize cards to prevent unnecessary recalculations
   const cards = useMemo(() => {
@@ -46,10 +49,28 @@ export const Print = () => {
     return getAllCategoryCards(cardStorage.categories[CategoryId], cardStorage.categories);
   }, [CategoryId, cardStorage.categories]);
 
-  // Memoize pages split
+  // Expand each card into separate front/back entries so they respect cardsPerPage grid layout.
+  const printEntries = useMemo(() => {
+    if (printSettings.print_side !== "frontAndBack") {
+      return cards.map((card) => ({ card, side: null }));
+    }
+    return cards.flatMap((card) => [
+      { card, side: "front" },
+      { card, side: "back" },
+    ]);
+  }, [cards, printSettings.print_side]);
+
   const pages = useMemo(() => {
-    return split(cards, printSettings.cardsPerPage);
-  }, [cards, printSettings.cardsPerPage]);
+    return split(printEntries, printSettings.cardsPerPage);
+  }, [printEntries, printSettings.cardsPerPage]);
+
+  // Track print page open (only on mount)
+  const cardCount = cards.length;
+  useEffect(() => {
+    if (cardCount > 0) {
+      trackEvent("print-open", { cardCount });
+    }
+  }, [cardCount, trackEvent]);
 
   // Redirect if invalid category
   if (!CategoryId || CategoryId >= cardStorage?.categories?.length) {
@@ -58,7 +79,7 @@ export const Print = () => {
 
   return (
     <Layout>
-      <AppHeader showModals={false} pageTitle="Print" showNav={false} showActions={false} className="no-print" />
+      <AppHeader pageTitle="Print" showNav={false} showActions={false} className="no-print" />
       <Layout>
         <Sider width={220} className="no-print small-form print-sider">
           {/* Header */}
@@ -134,8 +155,8 @@ export const Print = () => {
                       size="small"
                     />
                   </Form.Item>
-                  <Form.Item label={`Page padding (${printSettings.pagePadding}px)`}>
-                    <Slider
+                  <Form.Item label="Page padding">
+                    <SliderWithInput
                       min={0}
                       max={64}
                       step={2}
@@ -179,16 +200,16 @@ export const Print = () => {
                       size="small"
                     />
                   </Form.Item>
-                  <Form.Item label={`Cards per page (${printSettings.cardsPerPage})`}>
-                    <Slider
+                  <Form.Item label="Cards per page">
+                    <SliderWithInput
                       min={1}
                       max={12}
                       value={printSettings.cardsPerPage}
                       onChange={printSettings.setCardsPerPage}
                     />
                   </Form.Item>
-                  <Form.Item label={`Card scaling (${printSettings.cardScaling}%)`}>
-                    <Slider
+                  <Form.Item label="Card scaling">
+                    <SliderWithInput
                       min={25}
                       max={200}
                       step={1}
@@ -196,11 +217,17 @@ export const Print = () => {
                       onChange={printSettings.setCardScaling}
                     />
                   </Form.Item>
-                  <Form.Item label={`Row padding (${printSettings.rowGap}px)`}>
-                    <Slider min={0} max={64} step={2} value={printSettings.rowGap} onChange={printSettings.setRowGap} />
+                  <Form.Item label="Row padding">
+                    <SliderWithInput
+                      min={0}
+                      max={64}
+                      step={2}
+                      value={printSettings.rowGap}
+                      onChange={printSettings.setRowGap}
+                    />
                   </Form.Item>
-                  <Form.Item label={`Column padding (${printSettings.columnGap}px)`}>
-                    <Slider
+                  <Form.Item label="Column padding">
+                    <SliderWithInput
                       min={0}
                       max={64}
                       step={2}
@@ -289,13 +316,13 @@ export const Print = () => {
                   rowGap: printSettings.rowGap,
                   columnGap: printSettings.columnGap,
                 }}>
-                {pageCards.map((card, index) => (
+                {pageCards.map((entry, index) => (
                   <CardRenderer
-                    key={`${card.name}-${index}`}
-                    card={card}
+                    key={`${entry.card.name}-${entry.side || ""}-${index}`}
+                    card={entry.card}
                     cardScaling={printSettings.cardScaling}
-                    printSide={printSettings.print_side}
-                    forcePrintSide={printSettings.force_print_side}
+                    printSide={entry.side || printSettings.print_side}
+                    forcePrintSide={entry.side ? true : printSettings.force_print_side}
                     backgrounds={printSettings.backgrounds}
                   />
                 ))}

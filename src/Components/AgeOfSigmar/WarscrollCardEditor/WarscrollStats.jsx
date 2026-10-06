@@ -57,13 +57,37 @@ export function WarscrollStats() {
           </Form.Item>
         </Col>
       </Row>
-      <Form.Item label={"Ward"}>
-        <Input
-          type={"text"}
-          value={activeCard.stats?.ward || ""}
-          onChange={(e) => updateStat("ward", e.target.value)}
-        />
-      </Form.Item>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label={"Ward"}>
+            <Input
+              type={"text"}
+              value={activeCard.stats?.ward || ""}
+              onChange={(e) => updateStat("ward", e.target.value)}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={16}>
+        <Col span={12}>
+          <Form.Item label={"Wizard"}>
+            <Input
+              type={"text"}
+              value={activeCard.stats?.wizard || ""}
+              onChange={(e) => updateStat("wizard", e.target.value)}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item label={"Priest"}>
+            <Input
+              type={"text"}
+              value={activeCard.stats?.priest || ""}
+              onChange={(e) => updateStat("priest", e.target.value)}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
     </Form>
   );
 }

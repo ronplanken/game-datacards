@@ -58,7 +58,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
                         `/mobile/${dataSource.data
                           .find((faction) => faction.id === item.id)
                           ?.name?.toLowerCase()
-                          .replaceAll(" ", "-")}`
+                          .replaceAll(" ", "-")}`,
                       );
                     }}
                     className={selectedFaction?.id === item?.id ? "selected" : ""}>
@@ -72,7 +72,7 @@ export const MobileHeader = ({ setOpen, padding }) => {
               }}></List>
           </div>
         </div>,
-        document.body
+        document.body,
       )}
       <Row
         style={{

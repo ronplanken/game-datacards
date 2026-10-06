@@ -1,0 +1,132 @@
+.glossary-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.glossary-search-icon {
+  color: rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+
+.glossary-search-input {
+  flex: 1;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.glossary-search-input:focus {
+  outline: none;
+  border-color: var(--header-colour, #0070d6);
+}
+
+.glossary-list {
+  padding: 12px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.glossary-entry {
+  background: #f5f5f5;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.glossary-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.glossary-entry-header:active {
+  background: #e8e8e8;
+}
+
+.glossary-entry-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  flex-shrink: 0;
+}
+
+.glossary-entry-prefix {
+  color: rgba(0, 0, 0, 0.35);
+  margin-left: 2px;
+}
+
+.glossary-entry-scopes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.glossary-scope-chip {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.55);
+  background: #e4e4e4;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.glossary-entry-chevron {
+  color: rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.glossary-entry-chevron.open {
+  transform: rotate(180deg);
+}
+
+.glossary-entry-content {
+  padding: 0 16px 14px;
+}
+
+.glossary-description p {
+  margin: 0 0 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.glossary-description p:last-child {
+  margin-bottom: 0;
+}
+
+.glossary-description p:empty {
+  display: none;
+}
+
+.glossary-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 15px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glossary-entry-chevron {
+    transition: none;
+  }
+}

@@ -6,6 +6,7 @@
 .faction-filter-content {
   display: flex;
   flex-direction: column;
+  gap: 2px;
   padding-bottom: 20px;
 }
 
@@ -16,30 +17,29 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--bs-border); /* High contrast border */
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
   font-size: 16px;
   color: var(--bs-text);
-  transition: background 0.2s ease;
-  width: calc(100% + 40px);
-  margin: 0 -20px;
-}
-
-.faction-filter-item:first-child {
-  margin-top: -6px;
-}
-
-.faction-filter-item:last-child {
-  border-bottom: none;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+  width: 100%;
 }
 
 .faction-filter-item:active {
-  background: var(--bs-surface-hover);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.faction-filter-item.selected {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--faction-colour, var(--bs-accent));
+  font-weight: 500;
 }
 
 /* ===========================================
@@ -68,5 +68,10 @@
 .faction-filter-chevron {
   color: var(--bs-text-muted);
   flex-shrink: 0;
-  opacity: 0.6; /* Increased opacity */
+  opacity: 0.6;
+}
+
+.faction-filter-check {
+  color: var(--faction-colour, var(--bs-accent));
+  flex-shrink: 0;
 }

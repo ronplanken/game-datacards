@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { ChevronLeft, AlertCircle, Check, X, AlertTriangle, Star, Sparkles, CheckCircle } from "lucide-react";
-import { message } from "antd";
-import Fuse from "fuse.js";
-import { BottomSheet } from "../Mobile/BottomSheet";
+import { message } from "../../Toast/message";
+import { MobileModal } from "../Mobile/MobileModal";
 import { useMobileList } from "../useMobileList";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useCardLanguage } from "../../../Hooks/useSettingsStorage";
 import {
   parseGwAppText,
   matchFaction,
@@ -13,81 +13,32 @@ import {
   countMatchStatuses,
   getImportableUnits,
   filterCardWeapons,
+  matchEnhancementsToFaction,
+  getImportRoster,
+  getImportUnitSize,
 } from "../../../Helpers/gwAppImport.helpers";
+import { getArmyContext } from "../../../Helpers/listRoster.helpers";
+import "./MobileImporter.shared.css";
 import "./MobileGwImporter.css";
-
-// Match enhancements to faction data (copied from desktop Importer)
-const matchEnhancementsToFaction = (units, faction, listDetachment) => {
-  if (!faction?.enhancements?.length) return units;
-
-  return units.map((unit) => {
-    if (!unit.enhancement) return unit;
-
-    const enhancements = faction.enhancements;
-    let factionEnhancement = null;
-
-    // 1. First try exact match with BOTH name AND detachment
-    if (listDetachment) {
-      factionEnhancement = enhancements.find(
-        (e) =>
-          e.name.toLowerCase() === unit.enhancement.name.toLowerCase() &&
-          e.detachment?.toLowerCase() === listDetachment.toLowerCase()
-      );
-    }
-
-    // 2. If no detachment-specific match, try just name match
-    if (!factionEnhancement) {
-      factionEnhancement = enhancements.find((e) => e.name.toLowerCase() === unit.enhancement.name.toLowerCase());
-    }
-
-    // 3. If still no match, try Fuse.js
-    if (!factionEnhancement) {
-      const enhancementFuse = new Fuse(enhancements, {
-        keys: ["name"],
-        threshold: 0.4,
-        includeScore: true,
-      });
-      const results = enhancementFuse.search(unit.enhancement.name);
-      if (results.length > 0) {
-        factionEnhancement = results[0].item;
-      }
-    }
-
-    if (factionEnhancement) {
-      return {
-        ...unit,
-        enhancement: {
-          ...unit.enhancement,
-          ...factionEnhancement,
-          cost: unit.enhancement.cost || factionEnhancement.cost,
-          matched: true,
-        },
-        detachment: factionEnhancement.detachment,
-      };
-    }
-
-    return unit;
-  });
-};
 
 // Status icon component
 const StatusIcon = ({ status }) => {
   if (status === "exact" || status === "confident") {
     return (
-      <span className="mgw-status-icon matched">
+      <span className="mi-status-icon matched">
         <Check size={12} />
       </span>
     );
   }
   if (status === "ambiguous") {
     return (
-      <span className="mgw-status-icon ambiguous">
+      <span className="mi-status-icon ambiguous">
         <AlertTriangle size={12} />
       </span>
     );
   }
   return (
-    <span className="mgw-status-icon unmatched">
+    <span className="mi-status-icon unmatched">
       <X size={12} />
     </span>
   );
@@ -98,32 +49,32 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
   const [showSelect, setShowSelect] = useState(false);
 
   return (
-    <div className={`mgw-unit-card ${unit.skipped ? "skipped" : ""}`}>
-      <div className="mgw-unit-main">
+    <div className={`mi-unit-card ${unit.skipped ? "skipped" : ""}`}>
+      <div className="mi-unit-main">
         <StatusIcon status={unit.matchStatus} />
-        <div className="mgw-unit-content">
-          <div className="mgw-unit-header">
-            <span className="mgw-unit-name">{unit.originalName}</span>
-            <span className="mgw-unit-points">{unit.points} pts</span>
+        <div className="mi-unit-content">
+          <div className="mi-unit-header">
+            <span className="mi-unit-name">{unit.originalName}</span>
+            <span className="mi-unit-points">{unit.points} pts</span>
           </div>
-          {unit.models > 1 && <span className="mgw-unit-size">{unit.models} models</span>}
-          <div className="mgw-unit-badges">
+          {unit.models > 1 && <span className="mi-unit-size">{unit.models} models</span>}
+          <div className="mi-unit-badges">
             {unit.isWarlord && (
-              <span className="mgw-badge warlord">
+              <span className="mi-badge warlord">
                 <Star size={10} /> Warlord
               </span>
             )}
             {unit.enhancement && (
-              <span className="mgw-badge enhancement">
+              <span className="mi-badge enhancement">
                 <Sparkles size={10} /> {unit.enhancement.name} (+
                 {unit.enhancement.cost})
               </span>
             )}
           </div>
           {unit.matchedCard && !unit.skipped && (
-            <div className="mgw-unit-match">
-              <span className="mgw-match-arrow">→</span>
-              <span className="mgw-match-name">{unit.matchedCard.name}</span>
+            <div className="mi-unit-match">
+              <span className="mi-match-arrow">→</span>
+              <span className="mi-match-name">{unit.matchedCard.name}</span>
             </div>
           )}
           {(unit.matchStatus === "ambiguous" || unit.matchStatus === "none") &&
@@ -132,7 +83,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
               <>
                 {showSelect ? (
                   <select
-                    className="mgw-unit-select"
+                    className="mi-unit-select"
                     value={unit.matchedCard?.id || ""}
                     onChange={(e) => {
                       onSelect(e.target.value);
@@ -148,7 +99,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
                     ))}
                   </select>
                 ) : (
-                  <button className="mgw-change-btn" onClick={() => setShowSelect(true)}>
+                  <button className="mi-change-btn" onClick={() => setShowSelect(true)}>
                     {unit.matchedCard ? "Change" : "Select unit"}
                   </button>
                 )}
@@ -156,7 +107,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
             )}
         </div>
       </div>
-      <button className={`mgw-skip-btn ${unit.skipped ? "skipped" : ""}`} onClick={onSkip}>
+      <button className={`mi-skip-btn ${unit.skipped ? "skipped" : ""}`} onClick={onSkip}>
         {unit.skipped ? "Undo" : "Skip"}
       </button>
     </div>
@@ -165,6 +116,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
 
 export const MobileGwImporter = ({ isOpen, onClose }) => {
   const { dataSource } = useDataSourceStorage();
+  const language = useCardLanguage();
   const { createListWithCards } = useMobileList();
 
   // Wizard state
@@ -175,6 +127,8 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
   const [matchedFaction, setMatchedFaction] = useState(null);
   const [units, setUnits] = useState([]);
   const [listName, setListName] = useState("");
+  // Battle size and detachments read out of the export, for 11th edition lists.
+  const [roster, setRoster] = useState({ battleSize: null, detachments: [] });
 
   const resetState = () => {
     setStep(1);
@@ -184,6 +138,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
     setMatchedFaction(null);
     setUnits([]);
     setListName("");
+    setRoster({ battleSize: null, detachments: [] });
   };
 
   const handleClose = () => {
@@ -219,6 +174,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
     // Match units
     if (factionMatch.matchedFaction) {
+      setRoster(getImportRoster(parsed, factionMatch.matchedFaction));
       let matchedUnits = matchUnitsToDatasheets(parsed.units, factionMatch.matchedFaction, dataSource?.data || []);
       matchedUnits = matchEnhancementsToFaction(matchedUnits, factionMatch.matchedFaction, parsed.detachment);
       setUnits(matchedUnits);
@@ -229,7 +185,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
           matchStatus: "none",
           matchedCard: null,
           alternatives: [],
-        }))
+        })),
       );
     }
 
@@ -242,6 +198,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
     if (faction) {
       setMatchedFaction(faction);
       const parsed = parseGwAppText(gwAppText);
+      setRoster(getImportRoster(parsed, faction));
       let matchedUnits = matchUnitsToDatasheets(parsed.units, faction, dataSource?.data || []);
       matchedUnits = matchEnhancementsToFaction(matchedUnits, faction, parsedDetachment);
       setUnits(matchedUnits);
@@ -254,8 +211,8 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
     if (datasheet) {
       setUnits((prev) =>
         prev.map((unit, idx) =>
-          idx === unitIndex ? { ...unit, matchedCard: datasheet, matchStatus: "confident", skipped: false } : unit
-        )
+          idx === unitIndex ? { ...unit, matchedCard: datasheet, matchStatus: "confident", skipped: false } : unit,
+        ),
       );
     }
   };
@@ -267,6 +224,8 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
   // Step 3: Import
   const handleImport = () => {
+    setError(null);
+
     const importableUnits = getImportableUnits(units);
 
     if (!importableUnits.length) {
@@ -274,45 +233,62 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Build cards array
-    const cardsToImport = importableUnits.map((unit) => {
-      let card = { ...unit.matchedCard };
-      card.uuid = uuidv4();
-      card.isCustom = true;
+    try {
+      // The army the units are priced in: 11th edition prices some datasheets per
+      // detachment and per faction keyword, so the roster the export stated and the
+      // datasheets it matched both have to be known before a unit's size tier can
+      // be picked. The matched cards are what identify a chapter — a shared
+      // datasheet only carries the parent keyword.
+      const army = getArmyContext(
+        { detachments: roster.detachments, cards: importableUnits.map((unit) => unit.matchedCard) },
+        matchedFaction,
+      );
 
-      // Build points object
-      const points = {
-        cost: unit.points - (unit.enhancement?.cost || 0),
-        models: unit.models || 1,
-      };
+      // Build cards array
+      const cardsToImport = importableUnits.map((unit) => {
+        let card = { ...unit.matchedCard };
+        card.uuid = uuidv4();
+        card.isCustom = true;
 
-      // Get enhancement if present
-      let enhancement = null;
-      if (unit.enhancement) {
-        enhancement = {
-          name: unit.enhancement.name,
-          cost: unit.enhancement.cost || 0,
-          ...(unit.enhancement.matched ? unit.enhancement : {}),
-        };
-        // Set detachment from matched enhancement
-        if (unit.detachment) {
-          card.detachment = unit.detachment;
+        // The size tier the unit lands on, from the card's own tiers where it has
+        // them (11th edition) and from the pasted points where it does not.
+        const points = getImportUnitSize(card, unit, army);
+
+        // Get enhancement if present
+        let enhancement = null;
+        if (unit.enhancement) {
+          enhancement = {
+            name: unit.enhancement.name,
+            cost: unit.enhancement.cost || 0,
+            ...(unit.enhancement.matched ? unit.enhancement : {}),
+          };
+          // Set detachment from matched enhancement
+          if (unit.detachment) {
+            card.detachment = unit.detachment;
+          }
         }
-      }
 
-      // Filter weapons
-      if (unit.weapons?.length) {
-        card = filterCardWeapons(card, unit.weapons);
-      }
+        // Filter weapons
+        if (unit.weapons?.length) {
+          card = filterCardWeapons(card, unit.weapons, language);
+        }
 
-      return { card, points, enhancement, isWarlord: unit.isWarlord };
-    });
+        return { card, points, enhancement, isWarlord: unit.isWarlord };
+      });
 
-    // Create list with all cards atomically
-    createListWithCards(listName || "Imported List", cardsToImport);
+      // Create list with all cards atomically, with the roster the export stated
+      createListWithCards(listName || "Imported List", cardsToImport, {
+        factionId: matchedFaction?.id,
+        battleSize: roster.battleSize,
+        detachments: roster.detachments,
+      });
 
-    message.success(`Imported ${importableUnits.length} units to "${listName || "Imported List"}"`);
-    handleClose();
+      message.success(`Imported ${importableUnits.length} units to "${listName || "Imported List"}"`);
+      handleClose();
+    } catch (err) {
+      console.error("GW app list import failed", err);
+      setError(`Could not import this list: ${err.message}`);
+    }
   };
 
   const matchCounts = countMatchStatuses(units);
@@ -325,12 +301,12 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
   };
 
   return (
-    <BottomSheet isOpen={isOpen} onClose={handleClose} title={getTitle()} maxHeight="90vh">
-      <div className="mgw-container">
+    <MobileModal isOpen={isOpen} onClose={handleClose} title={getTitle()}>
+      <div className="mi-container">
         {/* Step 1: Paste */}
         {step === 1 && (
-          <div className="mgw-step mgw-step-paste">
-            <p className="mgw-description">Paste your army list from the GW Warhammer 40k app</p>
+          <div className="mi-step mgw-step-paste">
+            <p className="mi-description">Paste your army list from the official Warhammer 40,000 app</p>
 
             <textarea
               className="mgw-textarea"
@@ -342,32 +318,32 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
             />
 
             {error && (
-              <div className="mgw-error">
+              <div className="mi-error">
                 <AlertCircle size={16} />
                 <span>{error}</span>
               </div>
             )}
 
-            <button className="mgw-primary-btn" onClick={handleParse} disabled={!gwAppText.trim()}>
-              Parse List
+            <button className="mi-primary-btn" onClick={handleParse} disabled={!gwAppText.trim()}>
+              Continue
             </button>
           </div>
         )}
 
         {/* Step 2: Review */}
         {step === 2 && (
-          <div className="mgw-step mgw-step-review">
-            <button className="mgw-back-btn" onClick={() => setStep(1)}>
+          <div className="mi-step mgw-step-review">
+            <button className="mi-back-btn" onClick={() => setStep(1)}>
               <ChevronLeft size={16} /> Back
             </button>
 
             {/* Faction selector */}
-            <div className="mgw-faction-row">
-              <label className="mgw-faction-label">Faction</label>
-              <div className="mgw-faction-select-wrapper">
+            <div className="mi-faction-row">
+              <label className="mi-faction-label">Faction</label>
+              <div className="mi-faction-select-wrapper">
                 <StatusIcon status={matchedFaction ? "exact" : "none"} />
                 <select
-                  className="mgw-faction-select"
+                  className="mi-faction-select"
                   value={matchedFaction?.id || ""}
                   onChange={(e) => handleFactionChange(e.target.value)}>
                   {!matchedFaction && <option value="">Select faction...</option>}
@@ -381,7 +357,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
             </div>
 
             {/* Unit list */}
-            <div className="mgw-unit-list">
+            <div className="mi-unit-list">
               {units.map((unit, idx) => (
                 <UnitCard
                   key={idx}
@@ -394,26 +370,26 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
             </div>
 
             {/* Summary bar */}
-            <div className="mgw-summary">
-              <span className="mgw-summary-item ready">
+            <div className="mi-summary">
+              <span className="mi-summary-item ready">
                 <Check size={14} /> {matchCounts.ready}
               </span>
               {matchCounts.needsReview > 0 && (
-                <span className="mgw-summary-item review">
+                <span className="mi-summary-item review">
                   <AlertTriangle size={14} /> {matchCounts.needsReview}
                 </span>
               )}
               {matchCounts.notMatched > 0 && (
-                <span className="mgw-summary-item unmatched">
+                <span className="mi-summary-item unmatched">
                   <X size={14} /> {matchCounts.notMatched}
                 </span>
               )}
               {matchCounts.skipped > 0 && (
-                <span className="mgw-summary-item skipped">{matchCounts.skipped} skipped</span>
+                <span className="mi-summary-item skipped">{matchCounts.skipped} skipped</span>
               )}
             </div>
 
-            <button className="mgw-primary-btn" onClick={() => setStep(3)} disabled={importableCount === 0}>
+            <button className="mi-primary-btn" onClick={() => setStep(3)} disabled={importableCount === 0}>
               Continue
             </button>
           </div>
@@ -421,37 +397,44 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
         {/* Step 3: Confirm */}
         {step === 3 && (
-          <div className="mgw-step mgw-step-confirm">
-            <button className="mgw-back-btn" onClick={() => setStep(2)}>
+          <div className="mi-step mi-step-confirm">
+            <button className="mi-back-btn" onClick={() => setStep(2)}>
               <ChevronLeft size={16} /> Back
             </button>
 
-            <div className="mgw-confirm-icon">
+            <div className="mi-confirm-icon">
               <CheckCircle size={48} />
             </div>
 
-            <h2 className="mgw-confirm-title">Ready to Import</h2>
-            <p className="mgw-confirm-subtitle">
+            <h2 className="mi-confirm-title">Ready to Import</h2>
+            <p className="mi-confirm-subtitle">
               {importableCount} unit{importableCount !== 1 ? "s" : ""} will be added to your list
             </p>
 
-            <div className="mgw-name-field">
-              <label className="mgw-name-label">List Name</label>
+            <div className="mi-name-field">
+              <label className="mi-name-label">List Name</label>
               <input
                 type="text"
-                className="mgw-name-input"
+                className="mi-name-input"
                 value={listName}
                 onChange={(e) => setListName(e.target.value)}
                 placeholder="My Army List"
               />
             </div>
 
-            <button className="mgw-primary-btn" onClick={handleImport} disabled={importableCount === 0}>
+            {error && (
+              <div className="mi-error">
+                <AlertCircle size={16} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button className="mi-primary-btn" onClick={handleImport} disabled={importableCount === 0}>
               Import {importableCount} Unit{importableCount !== 1 ? "s" : ""}
             </button>
           </div>
         )}
       </div>
-    </BottomSheet>
+    </MobileModal>
   );
 };

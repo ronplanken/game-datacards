@@ -17,8 +17,8 @@ export const StepWelcome = () => (
     </div>
     <h2 className="wnw-welcome-title">Welcome to Version 3.0</h2>
     <p className="wnw-welcome-subtitle">
-      We&apos;ve been working hard to bring you some exciting new features and improvements. Let us walk you through the
-      highlights of this major release.
+      This major release adds Age of Sigmar support, custom colours, a redesigned mobile viewer, and improved editor
+      controls. Here&apos;s a quick overview.
     </p>
   </div>
 );

@@ -5,11 +5,11 @@
   width: fit-content;
   margin: auto auto 24px auto;
   background: #2c2c2c;
-  border-radius: 11px;
-  padding: 8px 14px;
+  border-radius: 12px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   z-index: 100;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -19,9 +19,10 @@
   background: transparent;
   border: none;
   color: rgba(255, 255, 255, 0.85);
-  padding: 8px 11px;
-  height: auto;
-  min-width: 43px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,6 +35,7 @@
 
 .floating-toolbar .ant-btn:disabled {
   color: rgba(255, 255, 255, 0.25);
+  opacity: 0.3;
 }
 
 .floating-toolbar .ant-btn.active {
@@ -43,7 +45,7 @@
 
 .floating-toolbar .toolbar-divider {
   width: 1px;
-  height: 27px;
+  height: 24px;
   background: rgba(255, 255, 255, 0.2);
   margin: 0 8px;
 }
@@ -89,9 +91,55 @@
   margin: 4px 8px;
 }
 
-/* Zoom button text styling */
-.floating-toolbar .zoom-button {
-  min-width: 65px;
-  font-size: 18px;
+/* Zoom control group */
+.floating-toolbar .zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.floating-toolbar .zoom-value {
+  font-size: 12px;
   font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 40px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+  font-family: inherit;
+}
+
+.floating-toolbar .zoom-value:hover {
+  color: white;
+}
+
+.floating-toolbar .zoom-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.floating-toolbar .zoom-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.floating-toolbar .zoom-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }

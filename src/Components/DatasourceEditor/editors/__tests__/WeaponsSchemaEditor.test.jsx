@@ -1,0 +1,506 @@
+import { useState } from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { WeaponsSchemaEditor } from "../WeaponsSchemaEditor";
+
+vi.mock("lucide-react", () => ({
+  Swords: (props) => <svg data-testid="icon-swords" {...props} />,
+  Plus: (props) => <svg data-testid="icon-plus" {...props} />,
+  X: (props) => <svg data-testid="icon-x" {...props} />,
+  Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
+  ChevronUp: (props) => <svg data-testid="icon-chevron-up" {...props} />,
+  ChevronDown: (props) => <svg data-testid="icon-chevron-down" {...props} />,
+  ChevronRight: (props) => <svg data-testid="icon-chevron-right" {...props} />,
+}));
+
+const mockSchema = {
+  weaponTypes: {
+    label: "Weapon Types",
+    allowMultiple: true,
+    types: [
+      {
+        key: "ranged",
+        label: "Ranged Weapons",
+        hasKeywords: true,
+        hasProfiles: true,
+        columns: [
+          { key: "range", label: "Range", type: "string", required: true },
+          { key: "a", label: "A", type: "string", required: true },
+          { key: "bs", label: "BS", type: "string", required: true },
+        ],
+      },
+      {
+        key: "melee",
+        label: "Melee Weapons",
+        hasKeywords: false,
+        hasProfiles: false,
+        columns: [
+          { key: "a", label: "A", type: "string", required: true },
+          { key: "ws", label: "WS", type: "string", required: false },
+        ],
+      },
+    ],
+  },
+};
+
+// Column rows render collapsed; click the header (its title) to reveal inputs.
+const expandColumn = (label) => fireEvent.click(screen.getByText(label));
+
+describe("WeaponsSchemaEditor", () => {
+  it("returns null when schema has no weaponTypes", () => {
+    const { container } = render(<WeaponsSchemaEditor schema={{}} onChange={vi.fn()} />);
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("returns null when schema is null", () => {
+    const { container } = render(<WeaponsSchemaEditor schema={null} onChange={vi.fn()} />);
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("renders section with Weapon Types title", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expect(screen.getByText("Weapon Types")).toBeInTheDocument();
+  });
+
+  it("renders tabs for each weapon type", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expect(screen.getByRole("tab", { name: /Ranged Weapons/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Melee Weapons/i })).toBeInTheDocument();
+  });
+
+  it("first tab is active by default", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    const tabs = screen.getAllByRole("tab");
+    expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+    expect(tabs[1]).toHaveAttribute("aria-selected", "false");
+  });
+
+  it("shows columns of the active weapon type", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    // First tab (Ranged) columns should be listed; expand to reveal inputs
+    expandColumn("Range");
+    expandColumn("BS");
+    expect(screen.getByDisplayValue("Range")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("BS")).toBeInTheDocument();
+  });
+
+  it("switches tab content on tab click", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    // Click on Melee tab
+    fireEvent.click(screen.getByRole("tab", { name: /Melee Weapons/i }));
+    // Melee columns should now be listed; expand to reveal inputs
+    expandColumn("WS");
+    expect(screen.getByDisplayValue("WS")).toBeInTheDocument();
+  });
+
+  it("renders hasKeywords toggle checked when true", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expect(screen.getByLabelText("Weapon keywords").checked).toBe(true);
+  });
+
+  it("renders hasProfiles toggle checked when true", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expect(screen.getByLabelText("Multiple profiles").checked).toBe(true);
+  });
+
+  it("toggles hasKeywords on checkbox change", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    fireEvent.click(screen.getByLabelText("Weapon keywords"));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([expect.objectContaining({ key: "ranged", hasKeywords: false })]),
+        }),
+      }),
+    );
+  });
+
+  it("toggles hasProfiles on checkbox change", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    fireEvent.click(screen.getByLabelText("Multiple profiles"));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([expect.objectContaining({ key: "ranged", hasProfiles: false })]),
+        }),
+      }),
+    );
+  });
+
+  it("updates weapon type key", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const keyInput = screen.getByDisplayValue("ranged");
+    fireEvent.change(keyInput, { target: { value: "shooting" } });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([expect.objectContaining({ key: "shooting" })]),
+        }),
+      }),
+    );
+  });
+
+  it("updates weapon type label", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const labelInput = screen.getByDisplayValue("Ranged Weapons");
+    fireEvent.change(labelInput, { target: { value: "Shooting Weapons" } });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([expect.objectContaining({ label: "Shooting Weapons" })]),
+        }),
+      }),
+    );
+  });
+
+  it("adds a new weapon type", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    fireEvent.click(screen.getByLabelText("Add weapon type"));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({ key: "ranged" }),
+            expect.objectContaining({ key: "melee" }),
+            expect.objectContaining({ key: "weapon_type_3", label: "Weapon Type 3", columns: [] }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("removes a weapon type via tab remove button", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const removeBtn = screen.getByTitle("Remove Ranged Weapons");
+    fireEvent.click(removeBtn);
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: [expect.objectContaining({ key: "melee" })],
+        }),
+      }),
+    );
+  });
+
+  it("adds a column to the active weapon type", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    fireEvent.click(screen.getByLabelText("Add column"));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({
+              key: "ranged",
+              columns: expect.arrayContaining([
+                expect.objectContaining({ key: "range" }),
+                expect.objectContaining({ key: "col_4", label: "Column 4" }),
+              ]),
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("removes a column", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const removeButtons = screen.getAllByTitle("Remove column");
+    fireEvent.click(removeButtons[0]); // Remove Range column
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({
+              key: "ranged",
+              columns: [expect.objectContaining({ key: "a" }), expect.objectContaining({ key: "bs" })],
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("moves a column up", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const moveUpButtons = screen.getAllByTitle("Move up");
+    fireEvent.click(moveUpButtons[1]); // Move A up (second column)
+    const call = onChange.mock.calls[0][0];
+    const rangedType = call.weaponTypes.types.find((t) => t.key === "ranged");
+    expect(rangedType.columns[0].key).toBe("a");
+    expect(rangedType.columns[1].key).toBe("range");
+  });
+
+  it("moves a column down", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const moveDownButtons = screen.getAllByTitle("Move down");
+    fireEvent.click(moveDownButtons[0]); // Move Range down
+    const call = onChange.mock.calls[0][0];
+    const rangedType = call.weaponTypes.types.find((t) => t.key === "ranged");
+    expect(rangedType.columns[0].key).toBe("a");
+    expect(rangedType.columns[1].key).toBe("range");
+  });
+
+  it("disables move up for first column", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    const moveUpButtons = screen.getAllByTitle("Move up");
+    expect(moveUpButtons[0]).toBeDisabled();
+  });
+
+  it("disables move down for last column", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    const moveDownButtons = screen.getAllByTitle("Move down");
+    // Last move-down button for columns in the active tab
+    const lastIdx = 2; // third column (BS) is last
+    expect(moveDownButtons[lastIdx]).toBeDisabled();
+  });
+
+  it("updates column type via select", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandColumn("Range");
+    const typeSelects = screen.getAllByLabelText("Column type");
+    fireEvent.change(typeSelects[0], { target: { value: "boolean" } });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({
+              key: "ranged",
+              columns: expect.arrayContaining([expect.objectContaining({ key: "range", type: "boolean" })]),
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("does not render required checkboxes for columns", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    const checkboxes = screen.getAllByRole("checkbox");
+    const requiredCheckbox = checkboxes.find((cb) => cb.closest("label")?.textContent?.includes("Required"));
+    expect(requiredCheckbox).toBeUndefined();
+  });
+
+  it("preserves other schema properties when updating weapon types", () => {
+    const onChange = vi.fn();
+    const schemaWithExtra = { ...mockSchema, stats: { fields: [] } };
+    render(<WeaponsSchemaEditor schema={schemaWithExtra} onChange={onChange} />);
+    fireEvent.click(screen.getByLabelText("Add weapon type"));
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stats: { fields: [] },
+      }),
+    );
+  });
+
+  it("renders empty state with no columns", () => {
+    const emptySchema = {
+      weaponTypes: {
+        label: "Weapon Types",
+        types: [{ key: "ranged", label: "Ranged", hasKeywords: false, hasProfiles: false, columns: [] }],
+      },
+    };
+    render(<WeaponsSchemaEditor schema={emptySchema} onChange={vi.fn()} />);
+    expect(screen.getByText("Columns")).toBeInTheDocument();
+    expect(screen.getByLabelText("Add column")).toBeInTheDocument();
+  });
+
+  it("renders with no weapon types and shows empty state with Add Weapon Type button", () => {
+    const emptySchema = { weaponTypes: { label: "Weapon Types", types: [] } };
+    render(<WeaponsSchemaEditor schema={emptySchema} onChange={vi.fn()} />);
+    expect(screen.getByText("No weapon types yet")).toBeInTheDocument();
+    expect(screen.getByLabelText("Add weapon type")).toBeInTheDocument();
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+  });
+
+  it("adjusts active tab when removing last weapon type in list", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    // Switch to the second tab (Melee)
+    fireEvent.click(screen.getByRole("tab", { name: /Melee Weapons/i }));
+    // Remove the second tab
+    fireEvent.click(screen.getByTitle("Remove Melee Weapons"));
+    // onChange should be called with only ranged remaining
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: [expect.objectContaining({ key: "ranged" })],
+        }),
+      }),
+    );
+  });
+
+  it("renders column display select for each column", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expandColumn("Range");
+    expandColumn("A");
+    expandColumn("BS");
+    const displaySelects = screen.getAllByLabelText("Column display");
+    expect(displaySelects.length).toBe(3); // 3 columns in ranged
+    expect(displaySelects[0].value).toBe("column");
+  });
+
+  it("updates column display to row", () => {
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+    expandColumn("Range");
+    const displaySelects = screen.getAllByLabelText("Column display");
+    fireEvent.change(displaySelects[0], { target: { value: "row" } });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({
+              key: "ranged",
+              columns: expect.arrayContaining([expect.objectContaining({ key: "range", display: "row" })]),
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("clears column display when set back to column", () => {
+    const schemaWithRowDisplay = {
+      weaponTypes: {
+        label: "Weapon Types",
+        types: [
+          {
+            key: "ranged",
+            label: "Ranged",
+            hasKeywords: false,
+            hasProfiles: false,
+            columns: [{ key: "kw", label: "Keywords", type: "string", display: "row" }],
+          },
+        ],
+      },
+    };
+    const onChange = vi.fn();
+    render(<WeaponsSchemaEditor schema={schemaWithRowDisplay} onChange={onChange} />);
+    expandColumn("Keywords");
+    const displaySelect = screen.getByLabelText("Column display");
+    expect(displaySelect.value).toBe("row");
+    fireEvent.change(displaySelect, { target: { value: "column" } });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        weaponTypes: expect.objectContaining({
+          types: expect.arrayContaining([
+            expect.objectContaining({
+              columns: expect.arrayContaining([expect.objectContaining({ key: "kw", display: undefined })]),
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it("shows displayLabel and visual inputs only when display is row", () => {
+    const schemaWithRowDisplay = {
+      weaponTypes: {
+        label: "Weapon Types",
+        types: [
+          {
+            key: "ranged",
+            label: "Ranged",
+            hasKeywords: false,
+            hasProfiles: false,
+            columns: [
+              { key: "atk", label: "Atk", type: "string" },
+              { key: "kw", label: "Keywords", type: "string", display: "row" },
+            ],
+          },
+        ],
+      },
+    };
+    render(<WeaponsSchemaEditor schema={schemaWithRowDisplay} onChange={vi.fn()} />);
+    expandColumn("Keywords");
+    // Display label and visual should be present for the row column
+    expect(screen.getByLabelText("Display label")).toBeInTheDocument();
+    expect(screen.getByLabelText("Visual style")).toBeInTheDocument();
+  });
+
+  it("does not show displayLabel and visual inputs when display is column", () => {
+    render(<WeaponsSchemaEditor schema={mockSchema} onChange={vi.fn()} />);
+    expect(screen.queryByLabelText("Display label")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Visual style")).not.toBeInTheDocument();
+  });
+
+  // A column keyed after a reserved weapon profile field makes the card editors
+  // render a plain text input over that field, so the first keystroke replaces
+  // e.g. the keywords array with a string and the card can no longer render.
+  describe("reserved column keys", () => {
+    it("rejects a column key that collides with a reserved profile field", () => {
+      const onChange = vi.fn();
+      render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+      expandColumn("Range");
+      fireEvent.change(screen.getByDisplayValue("range"), { target: { value: "keywords" } });
+      expect(onChange).not.toHaveBeenCalled();
+      expect(screen.getByRole("alert")).toHaveTextContent(/reserved key/i);
+    });
+
+    it("rejects reserved keys case-insensitively", () => {
+      const onChange = vi.fn();
+      render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+      expandColumn("Range");
+      const keyInput = screen.getByDisplayValue("range");
+      ["Keywords", "NAME", "active", "upgrade"].forEach((reserved) => {
+        fireEvent.change(keyInput, { target: { value: reserved } });
+      });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("clears the hint and applies the value once the key is no longer reserved", () => {
+      const onChange = vi.fn();
+      render(<WeaponsSchemaEditor schema={mockSchema} onChange={onChange} />);
+      expandColumn("Range");
+      const keyInput = screen.getByDisplayValue("range");
+      fireEvent.change(keyInput, { target: { value: "keywords" } });
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+
+      fireEvent.change(keyInput, { target: { value: "keyword_note" } });
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(onChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          weaponTypes: expect.objectContaining({
+            types: expect.arrayContaining([
+              expect.objectContaining({
+                key: "ranged",
+                columns: expect.arrayContaining([expect.objectContaining({ key: "keyword_note" })]),
+              }),
+            ]),
+          }),
+        }),
+      );
+    });
+
+    // The hint belongs to a column, not to a position: moving a column shifts
+    // every index above it, so a position-keyed hint would resurface under an
+    // unrelated column.
+    it("does not leave the hint behind on another column after a reorder", () => {
+      const ControlledEditor = () => {
+        const [schema, setSchema] = useState(mockSchema);
+        return <WeaponsSchemaEditor schema={schema} onChange={setSchema} />;
+      };
+      render(<ControlledEditor />);
+
+      expandColumn("Range");
+      fireEvent.change(screen.getByDisplayValue("range"), { target: { value: "keywords" } });
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+
+      // Range moves to second place, so "A" now sits where Range was.
+      fireEvent.click(screen.getByLabelText("Move Range down"));
+      expandColumn("A");
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+  });
+});

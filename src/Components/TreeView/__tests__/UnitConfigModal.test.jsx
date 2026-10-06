@@ -1,0 +1,496 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { UnitConfigModal } from "../UnitConfigModal";
+
+// Mock hooks
+vi.mock("../../../Hooks/useDataSourceStorage", () => ({
+  useDataSourceStorage: () => ({
+    dataSource: {
+      data: [
+        {
+          id: "faction-1",
+          detachments: [{ name: "Det A" }, { name: "Det B" }],
+          enhancements: [
+            {
+              name: "Enhancement 1",
+              cost: 20,
+              keywords: ["Character"],
+              detachment: "Det A",
+            },
+            {
+              name: "Enhancement 2",
+              cost: 15,
+              keywords: ["Character"],
+              detachment: "Det B",
+            },
+          ],
+        },
+      ],
+    },
+  }),
+}));
+
+const mockUpdateSettings = vi.fn();
+vi.mock("../../../Hooks/useSettingsStorage", () => ({
+  useSettingsStorage: () => ({
+    settings: {},
+    updateSettings: mockUpdateSettings,
+  }),
+}));
+
+// Mock ReactDOM.createPortal
+vi.mock("react-dom", async () => {
+  const actual = await vi.importActual("react-dom");
+  return {
+    ...actual,
+    createPortal: (node) => node,
+  };
+});
+
+const baseCard = {
+  name: "Test Unit",
+  uuid: "card-uuid-1",
+  id: "unit-1",
+  faction_id: "faction-1",
+  source: "40k-10e",
+  cardType: "DataCard",
+  keywords: [],
+  factions: [],
+  points: [
+    { models: 5, cost: 90, active: true },
+    { models: 10, cost: 170, active: true },
+  ],
+};
+
+const baseCategory = {
+  uuid: "cat-1",
+  type: "list",
+  cards: [],
+};
+
+describe("UnitConfigModal", () => {
+  let modalRoot;
+
+  beforeEach(() => {
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(modalRoot);
+    document.body.style.overflow = "";
+  });
+
+  it("renders nothing when isOpen is false", () => {
+    const { container } = render(
+      <UnitConfigModal isOpen={false} onClose={vi.fn()} card={baseCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    expect(container.innerHTML).toBe("");
+  });
+
+  it("renders modal content when isOpen is true", () => {
+    render(
+      <UnitConfigModal isOpen={true} onClose={vi.fn()} card={baseCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    expect(screen.getByText("Update Test Unit")).toBeInTheDocument();
+    expect(screen.getByText("5 models")).toBeInTheDocument();
+    expect(screen.getByText("10 models")).toBeInTheDocument();
+    expect(screen.getByText("Set unit values")).toBeInTheDocument();
+  });
+
+  it("calls onClose on Escape key press", () => {
+    const onClose = vi.fn();
+    render(
+      <UnitConfigModal isOpen={true} onClose={onClose} card={baseCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls onClose on backdrop click", () => {
+    const onClose = vi.fn();
+    render(
+      <UnitConfigModal isOpen={true} onClose={onClose} card={baseCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByTestId("ucm-overlay"));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not call onClose when clicking inside modal", () => {
+    const onClose = vi.fn();
+    render(
+      <UnitConfigModal isOpen={true} onClose={onClose} card={baseCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByTestId("ucm-modal"));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("disables submit when no unit size is selected", () => {
+    const card = { ...baseCard, points: [{ models: 5, cost: 90, active: true }] };
+    // Card has only 1 point option, so it auto-selects; use a card with no pre-selection
+    const multiCard = { ...baseCard };
+    render(
+      <UnitConfigModal isOpen={true} onClose={vi.fn()} card={multiCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    // When no unitSize is set on the card and there are multiple options, submit should be disabled
+    const submitBtn = screen.getByText("Set unit values");
+    expect(submitBtn).toBeDisabled();
+  });
+
+  it("enables submit when a unit size is selected", () => {
+    const card = { ...baseCard, unitSize: { models: 5, cost: 90, active: true } };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    const submitBtn = screen.getByText("Set unit values");
+    expect(submitBtn).not.toBeDisabled();
+  });
+
+  it("calls onSave with correct shape on submit", () => {
+    const onSave = vi.fn();
+    const card = { ...baseCard, unitSize: { models: 5, cost: 90, active: true } };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={onSave} />);
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledTimes(1);
+    const savedCard = onSave.mock.calls[0][0];
+    expect(savedCard).toHaveProperty("unitSize");
+    expect(savedCard).toHaveProperty("isWarlord");
+    expect(savedCard).toHaveProperty("name", "Test Unit");
+  });
+
+  it("shows warlord section for Character keywords", () => {
+    const card = { ...baseCard, keywords: ["Character"], unitSize: { models: 5, cost: 90 } };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    const warlordElements = screen.getAllByText("Warlord");
+    expect(warlordElements.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("shows single model text for unit size with 1 model", () => {
+    const card = {
+      ...baseCard,
+      points: [{ models: 1, cost: 50, active: true }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    expect(screen.getByText("1 model")).toBeInTheDocument();
+  });
+
+  it("calls onClose when close button is clicked", () => {
+    const onClose = vi.fn();
+    render(
+      <UnitConfigModal isOpen={true} onClose={onClose} card={baseCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByLabelText("Close"));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("locks body scroll when open", () => {
+    render(
+      <UnitConfigModal isOpen={true} onClose={vi.fn()} card={baseCard} category={baseCategory} onSave={vi.fn()} />,
+    );
+    expect(document.body.style.overflow).toBe("hidden");
+  });
+
+  it("shows warlord already added warning when category has a warlord", () => {
+    const card = { ...baseCard, keywords: ["Character"], unitSize: { models: 5, cost: 90 } };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "other-unit", isWarlord: true }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    expect(screen.getByText("You already have a warlord")).toBeInTheDocument();
+  });
+
+  it("disables submit and shows warning when a different Epic Hero instance with same id exists in category", () => {
+    const card = {
+      ...baseCard,
+      uuid: "card-uuid-1",
+      keywords: ["Epic Hero"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "unit-1", uuid: "card-uuid-other" }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    expect(screen.getByText("Set unit values")).toBeDisabled();
+    expect(screen.getByText("This Epic Hero has already been added to this list")).toBeInTheDocument();
+  });
+
+  it("allows submit and shows no warning when editing an existing Epic Hero (same uuid)", () => {
+    const card = {
+      ...baseCard,
+      uuid: "card-uuid-1",
+      keywords: ["Epic Hero"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "unit-1", uuid: "card-uuid-1" }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    expect(screen.getByText("Set unit values")).not.toBeDisabled();
+    expect(screen.queryByText("This Epic Hero has already been added to this list")).not.toBeInTheDocument();
+  });
+
+  it("highlights the saved 11e tier when reopening a configured card (storage round-trip)", () => {
+    const points = [
+      { models: "1", cost: "405", keyword: null, detachment: null },
+      { models: "2", cost: "425", keyword: { en: "Imperium" }, detachment: null },
+    ];
+    const card = {
+      ...baseCard,
+      source: "40k-11e",
+      points,
+      // Saved unitSize is a clone (different object references), as after localForage.
+      unitSize: JSON.parse(JSON.stringify(points[1])),
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    expect(screen.getByText("2 models (Imperium)").closest(".ucm-size-option")).toHaveClass("selected");
+    expect(screen.getByText("1 model").closest(".ucm-size-option")).not.toHaveClass("selected");
+  });
+
+  it("renders 11e size tiers (no active flags) with localised keywords and the surcharge note", () => {
+    const card = {
+      ...baseCard,
+      source: "40k-11e",
+      points: [
+        { models: "1", cost: "405", keyword: null, detachment: null },
+        { models: "2", cost: "425", keyword: { en: "Imperium" }, detachment: null },
+      ],
+      additionalCost: { cost: "20", afterSelections: 1 },
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+    expect(screen.getByText("1 model")).toBeInTheDocument();
+    expect(screen.getByText("2 models (Imperium)")).toBeInTheDocument();
+    expect(screen.getByText(/\+20 pts for each copy of this datasheet beyond 1/)).toBeInTheDocument();
+  });
+
+  it("disables enhancement already taken by another card in the category", () => {
+    const card = {
+      ...baseCard,
+      keywords: ["Character"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    const category = {
+      ...baseCategory,
+      cards: [{ id: "other-unit", selectedEnhancement: { name: "Enhancement 1", cost: 20 } }],
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+    const enhancement1 = screen.getByText("Enhancement 1").closest(".ucm-enhancement-option");
+    expect(enhancement1).toHaveClass("disabled");
+  });
+});
+
+describe("UnitConfigModal 11e wargear", () => {
+  let modalRoot;
+
+  beforeEach(() => {
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(modalRoot);
+    vi.clearAllMocks();
+  });
+
+  // Shaped like the real data: a paid option next to free ones, and the group
+  // repeated once per model.
+  const terminators = {
+    ...baseCard,
+    source: "40k-11e",
+    points: [{ models: 5, cost: 170 }],
+    wargearOptions: [
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: "5" },
+          { name: { en: "Lightning claw" }, cost: "0" },
+        ],
+      },
+      {
+        instruction: { en: "Any number of models can each have their power fist replaced." },
+        options: [
+          { name: { en: "Thunder hammer" }, cost: "5" },
+          { name: { en: "Lightning claw" }, cost: "0" },
+        ],
+      },
+    ],
+  };
+
+  it("lists each paid option once and hides the free ones", () => {
+    render(<UnitConfigModal isOpen card={terminators} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.getByText("Wargear")).toBeInTheDocument();
+    expect(screen.getAllByText("Thunder hammer")).toHaveLength(1);
+    expect(screen.queryByText("Lightning claw")).not.toBeInTheDocument();
+    expect(screen.getByText("+5 pts each")).toBeInTheDocument();
+  });
+
+  it("does not show the section for a card with no paid wargear", () => {
+    render(<UnitConfigModal isOpen card={baseCard} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.queryByText("Wargear")).not.toBeInTheDocument();
+  });
+
+  it("saves the chosen quantity on the card", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={terminators} category={baseCategory} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByLabelText("Add one Thunder hammer"));
+    fireEvent.click(screen.getByLabelText("Add one Thunder hammer"));
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 2 }],
+      }),
+    );
+  });
+
+  it("starts from the card's saved selection", () => {
+    const card = { ...terminators, selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 3 }] };
+    render(<UnitConfigModal isOpen card={card} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.getByText("3")).toBeInTheDocument();
+  });
+
+  it("cannot go below zero, and dropping to zero clears the selection", () => {
+    const onSave = vi.fn();
+    const card = { ...terminators, selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 1 }] };
+    render(<UnitConfigModal isOpen card={card} category={baseCategory} onClose={vi.fn()} onSave={onSave} />);
+
+    fireEvent.click(screen.getByLabelText("Remove one Thunder hammer"));
+    expect(screen.getByLabelText("Remove one Thunder hammer")).toBeDisabled();
+
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ selectedWargear: [] }));
+  });
+
+  it("caps the quantity at the model count of the chosen size tier", () => {
+    // Single 5-model tier, so it auto-selects and the cap is 5.
+    render(<UnitConfigModal isOpen card={terminators} category={baseCategory} onClose={vi.fn()} onSave={vi.fn()} />);
+    const add = screen.getByLabelText("Add one Thunder hammer");
+    for (let i = 0; i < 5; i += 1) fireEvent.click(add);
+    expect(screen.getByText("5")).toBeInTheDocument();
+    expect(add).toBeDisabled();
+  });
+
+  // Wargear is priced per model, so switching down to a smaller tier has to pull
+  // an already-chosen quantity down with it, or the list total keeps charging
+  // for models the unit no longer has.
+  it("lowers an already-chosen quantity when a smaller size tier is picked", () => {
+    const onSave = vi.fn();
+    const twoTiers = {
+      ...terminators,
+      points: [
+        { models: 10, cost: 340 },
+        { models: 5, cost: 170 },
+      ],
+      selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 10 }],
+      unitSize: { models: 10, cost: 340 },
+    };
+    render(<UnitConfigModal isOpen card={twoTiers} category={baseCategory} onClose={vi.fn()} onSave={onSave} />);
+    expect(screen.getByText("10")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("5 models"));
+    expect(screen.getByText("5")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(
+      expect.objectContaining({
+        selectedWargear: [{ name: { en: "Thunder hammer" }, cost: 5, quantity: 5 }],
+      }),
+    );
+  });
+});
+
+describe("UnitConfigModal 11e attachments", () => {
+  let modalRoot;
+
+  beforeEach(() => {
+    modalRoot = document.createElement("div");
+    modalRoot.setAttribute("id", "modal-root");
+    document.body.appendChild(modalRoot);
+  });
+
+  afterEach(() => {
+    document.body.removeChild(modalRoot);
+    vi.clearAllMocks();
+  });
+
+  const squad = { uuid: "squad-1", name: "Intercessor Squad", nameEn: "Intercessor Squad", keywords: [] };
+
+  const leaderCard = {
+    ...baseCard,
+    uuid: "leader-1",
+    name: "Captain",
+    nameEn: "Captain",
+    source: "40k-11e",
+    keywords: [{ en: "Character" }],
+    // Single size tier so it auto-selects and the submit button is enabled.
+    points: [{ models: 1, cost: 80 }],
+    attachesTo: [{ type: "leader", target: "Intercessor Squad", targetType: "datasheet" }],
+  };
+
+  const supportCard = {
+    ...leaderCard,
+    uuid: "sup-1",
+    name: "Lieutenant",
+    nameEn: "Lieutenant",
+    attachesTo: [{ type: "support", target: "Intercessor Squad", targetType: "datasheet" }],
+  };
+
+  const categoryWithSquad = { ...baseCategory, cards: [squad] };
+
+  it("offers eligible squads for a leader, plus a Not attached option", () => {
+    render(
+      <UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />,
+    );
+    expect(screen.getByText("Attach to unit")).toBeInTheDocument();
+    expect(screen.getByText("Not attached")).toBeInTheDocument();
+    expect(screen.getByText("Intercessor Squad")).toBeInTheDocument();
+  });
+
+  it("marks the attachment required for a Support unit and drops Not attached", () => {
+    render(
+      <UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />,
+    );
+    expect(screen.getByText("Attach to unit (required)")).toBeInTheDocument();
+    expect(screen.queryByText("Not attached")).not.toBeInTheDocument();
+    expect(screen.getByText("This Support unit must be attached to a unit.")).toBeInTheDocument();
+  });
+
+  it("saves the chosen attachment on the card", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByText("Intercessor Squad"));
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: "squad-1" }));
+  });
+
+  it("blocks saving a Support unit until it is attached", () => {
+    const onSave = vi.fn();
+    render(
+      <UnitConfigModal isOpen card={supportCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />,
+    );
+
+    // Unit size auto-selects (single tier), so the attachment is the only blocker.
+    const submit = screen.getByText("Set unit values");
+    expect(submit).toBeDisabled();
+    fireEvent.click(submit);
+    expect(onSave).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByText("Intercessor Squad"));
+    expect(submit).not.toBeDisabled();
+    fireEvent.click(submit);
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: "squad-1" }));
+  });
+
+  it("does not block saving a leader that is left unattached", () => {
+    const onSave = vi.fn();
+    render(<UnitConfigModal isOpen card={leaderCard} category={categoryWithSquad} onClose={vi.fn()} onSave={onSave} />);
+    fireEvent.click(screen.getByText("Set unit values"));
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ attachedTo: undefined }));
+  });
+
+  it("does not show the attach section for a unit with no attachesTo", () => {
+    render(<UnitConfigModal isOpen card={baseCard} category={categoryWithSquad} onClose={vi.fn()} onSave={vi.fn()} />);
+    expect(screen.queryByText("Attach to unit")).not.toBeInTheDocument();
+  });
+});

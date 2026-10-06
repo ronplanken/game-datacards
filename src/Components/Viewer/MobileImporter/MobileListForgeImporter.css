@@ -1,0 +1,181 @@
+/* MobileListForgeImporter.css - ListForge specific styles (shared styles in MobileImporter.shared.css) */
+
+/* ===========================================
+   FILE UPLOAD BUTTON
+   =========================================== */
+.mlf-file-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--bs-surface);
+  border: 2px dashed var(--bs-border);
+  border-radius: 10px;
+  color: var(--bs-text);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mlf-file-btn:active {
+  background: var(--bs-surface-hover);
+  border-color: var(--bs-accent);
+}
+
+.mlf-file-btn svg {
+  color: var(--bs-accent);
+}
+
+/* ===========================================
+   FILE INFO DISPLAY
+   =========================================== */
+.mlf-file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bs-surface);
+  border: 1px solid var(--bs-accent);
+  border-radius: 10px;
+}
+
+.mlf-file-info svg:first-child {
+  color: var(--bs-accent);
+  flex-shrink: 0;
+}
+
+.mlf-file-info span {
+  flex: 1;
+  font-size: 14px;
+  color: var(--bs-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mlf-file-info button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--bs-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mlf-file-info button:active {
+  background: var(--bs-danger-bg);
+  color: var(--bs-danger);
+}
+
+/* ===========================================
+   OR DIVIDER
+   =========================================== */
+.mlf-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--bs-text-muted);
+  font-size: 13px;
+}
+
+.mlf-or-divider::before,
+.mlf-or-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--bs-border);
+}
+
+/* ===========================================
+   TEXTAREA (reuse GW textarea pattern)
+   =========================================== */
+.mlf-textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 14px;
+  font-size: 15px;
+  font-family: inherit;
+  line-height: 1.5;
+  border: 1px solid var(--bs-border);
+  border-radius: 10px;
+  background: var(--bs-surface);
+  color: var(--bs-text);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.mlf-textarea:focus {
+  outline: none;
+  border-color: var(--bs-accent);
+}
+
+.mlf-textarea::placeholder {
+  color: var(--bs-text-muted);
+}
+
+/* ===========================================
+   MODE TOGGLE (Match / Direct)
+   =========================================== */
+.mlf-mode-toggle {
+  display: flex;
+  background: var(--bs-surface);
+  border-radius: 10px;
+  padding: 4px;
+  position: relative;
+}
+
+.mlf-mode-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--bs-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.mlf-mode-option.active {
+  color: var(--bs-text);
+  background: var(--bs-bg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* ===========================================
+   DETACHMENT ROW
+   =========================================== */
+.mlf-detachment-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--bs-surface);
+  border-radius: 10px;
+}
+
+/* ===========================================
+   DIRECT MODE INFO
+   =========================================== */
+.mlf-direct-info {
+  font-size: 12px;
+  color: var(--bs-text-muted);
+  margin-top: 2px;
+}

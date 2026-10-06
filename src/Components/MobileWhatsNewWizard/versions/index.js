@@ -1,5 +1,22 @@
 import compareVersions, { compare } from "compare-versions";
 import v310Config from "./v3.1.0";
+import v320Config from "./v3.2.0";
+import v321Config from "./v3.2.1";
+import v322Config from "./v3.2.2";
+import v330Config from "./v3.3.0";
+import v340Config from "./v3.4.0";
+import v342Config from "./v3.4.2";
+import v350Config from "./v3.5.0";
+import v352Config from "./v3.5.2";
+import v360Config from "./v3.6.0";
+import v370Config from "./v3.7.0";
+import v371Config from "./v3.7.1";
+import v372Config from "./v3.7.2";
+import v380Config from "./v3.8.0";
+import v390Config from "./v3.9.0";
+import v3110Config from "./v3.11.0";
+import v3120Config from "./v3.12.0";
+import v3130Config from "./v3.13.0";
 
 /**
  * Registry of all mobile version wizard configurations
@@ -10,7 +27,26 @@ import v310Config from "./v3.1.0";
  * 2. Create step components and index.js with MOBILE_VERSION_CONFIG
  * 3. Import and add to MOBILE_VERSION_REGISTRY array below
  */
-export const MOBILE_VERSION_REGISTRY = [v310Config]
+export const MOBILE_VERSION_REGISTRY = [
+  v310Config,
+  v320Config,
+  v321Config,
+  v322Config,
+  v330Config,
+  v340Config,
+  v342Config,
+  v350Config,
+  v352Config,
+  v360Config,
+  v370Config,
+  v371Config,
+  v372Config,
+  v380Config,
+  v390Config,
+  v3110Config,
+  v3120Config,
+  v3130Config,
+]
   .filter((config) => config && config.version)
   .sort((a, b) => compareVersions(a.version, b.version));
 
@@ -33,12 +69,15 @@ export const getMobileVersionConfig = (version) => MOBILE_VERSION_REGISTRY.find(
  */
 export const getLatestMobileWizardVersion = () => MOBILE_VERSION_REGISTRY[MOBILE_VERSION_REGISTRY.length - 1]?.version;
 
+export const RECENT_SINGLE_STEP_VERSIONS = 3;
+
 /**
  * Merges multiple mobile version wizard steps into a single flow
  *
  * Rules:
  * 1. Each version's welcome step becomes a version introduction
- * 2. Thank you steps are removed from all but the final version
+ * 2. Thank you steps are removed from all but the final version, unless they are the only step of one of
+ *    the last RECENT_SINGLE_STEP_VERSIONS versions
  * 3. Steps maintain their original order within each version
  * 4. Version context is added to each step for display purposes
  *
@@ -52,8 +91,10 @@ export const mergeMobileVersionSteps = (versions) => {
     const isLastVersion = versionIndex === versions.length - 1;
 
     versionConfig.steps.forEach((step, stepIndex) => {
-      // Skip thank you steps except for the final version
-      if (step.isThankYou && !isLastVersion) {
+      // Skip thank you steps except for the final version or a recent version's only step
+      const keepsOnlyStep =
+        versionConfig.steps.length === 1 && versionIndex >= versions.length - RECENT_SINGLE_STEP_VERSIONS;
+      if (step.isThankYou && !isLastVersion && !keepsOnlyStep) {
         return;
       }
 
@@ -82,6 +123,6 @@ export const mergeMobileVersionSteps = (versions) => {
 export const getMobileUnseenVersions = (lastSeenVersion, currentVersion) => {
   if (!lastSeenVersion || !currentVersion) return [];
   return MOBILE_VERSION_REGISTRY.filter(
-    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<=")
+    (v) => compare(v.version, lastSeenVersion, ">") && compare(v.version, currentVersion, "<="),
   );
 };

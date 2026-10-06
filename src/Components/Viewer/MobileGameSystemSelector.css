@@ -67,7 +67,9 @@
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .gss-option:active {
@@ -88,6 +90,10 @@
 
 .gss-option-aos .gss-option-marker {
   background: #c9a227;
+}
+
+.gss-option-starcraft .gss-option-marker {
+  background: #6d28d9;
 }
 
 /* Option content */
@@ -115,7 +121,9 @@
   height: 20px;
   color: rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
-  transition: color 0.15s ease, transform 0.15s ease;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 /* Hover states */
@@ -143,9 +151,166 @@
   transform: translateX(2px);
 }
 
-/* Footer */
+.gss-option-starcraft:hover,
+.gss-option-starcraft:focus {
+  background: rgba(109, 40, 217, 0.12);
+  border-color: rgba(109, 40, 217, 0.45);
+}
+
+.gss-option-starcraft:hover .gss-option-arrow,
+.gss-option-starcraft:focus .gss-option-arrow {
+  color: #6d28d9;
+  transform: translateX(2px);
+}
+
+/* ===========================================
+   LEGACY OPTIONS
+   ===========================================
+   Superseded systems (40k 10th edition) stay selectable but are rendered as a
+   compact, de-emphasised card so the current edition reads as the default. */
+
+.gss-option--legacy {
+  padding: 10px 14px;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.gss-option--legacy .gss-option-marker {
+  height: 22px;
+  width: 3px;
+  opacity: 0.65;
+}
+
+.gss-option--legacy .gss-option-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.gss-option--legacy .gss-option-meta {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.gss-option--legacy .gss-option-arrow {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===========================================
+   SECTION TITLES
+   =========================================== */
+
+.gss-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 8px 4px 4px;
+  margin-top: 4px;
+}
+
+/* ===========================================
+   CUSTOM / SUBSCRIBED OPTIONS
+   =========================================== */
+
+.gss-option-custom:hover,
+.gss-option-custom:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.gss-option-custom:hover .gss-option-arrow,
+.gss-option-custom:focus .gss-option-arrow {
+  color: rgba(255, 255, 255, 0.5);
+  transform: translateX(2px);
+}
+
+/* ===========================================
+   ENTRANCE ANIMATIONS
+   =========================================== */
+@keyframes gssFadeScale {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gssFadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gssFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Logo entrance */
+.gss-logo {
+  animation: gssFadeScale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Title entrance */
+.gss-title {
+  animation: gssFadeSlideUp 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
+}
+
+/* Option cards - staggered entrance */
+.gss-option {
+  animation: gssFadeSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.gss-option-40k {
+  animation-delay: 0.25s;
+}
+
+.gss-option-aos {
+  animation-delay: 0.35s;
+}
+
+.gss-option-starcraft {
+  animation-delay: 0.4s;
+}
+
+.gss-option-custom {
+  animation-delay: 0.45s;
+}
+
+/* Last in the list, so it lands after the current-edition options. */
+.gss-option--legacy {
+  animation-delay: 0.45s;
+}
+
+.gss-section-title {
+  animation: gssFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
+}
+
+/* Press feedback with spring bounce-back */
+.gss-option:active {
+  transform: scale(0.97);
+  transition: transform 0.1s ease;
+}
+
+/* Footer entrance */
 .gss-footer {
   text-align: center;
+  animation: gssFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both;
 }
 
 .gss-footer p {
@@ -153,4 +318,21 @@
   color: rgba(255, 255, 255, 0.35);
   margin: 0;
   line-height: 1.5;
+}
+
+/* ===========================================
+   REDUCED MOTION
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .gss-logo,
+  .gss-title,
+  .gss-option,
+  .gss-footer {
+    animation: none;
+  }
+
+  .gss-option:active {
+    transform: none;
+    transition: none;
+  }
 }

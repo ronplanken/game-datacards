@@ -1,0 +1,1904 @@
+/**
+ * Custom Schema Helpers
+ *
+ * Defines the schema data structure, presets, validation, and migration
+ * for custom datasources. A schema describes the shape of cards — not
+ * card data itself.
+ */
+
+import { WARHAMMER_40K_10E_KEYWORD_GLOSSARY } from "./keywordGlossaryDefaults";
+import { WARHAMMER_40K_11E_KEYWORD_GLOSSARY } from "./keywordGlossary11eDefaults";
+import { isReservedWeaponProfileKey } from "./weaponProfile.helpers";
+
+// Valid base types for card type definitions
+export const VALID_BASE_TYPES = ["unit", "rule", "enhancement", "stratagem"];
+
+// Valid match types for keyword glossary entries
+export const VALID_KEYWORD_MATCH_TYPES = ["exact", "prefix", "parameterized"];
+
+// Valid display modes for weapon-scoped keyword glossary entries.
+// Other scopes don't honour this field today.
+export const VALID_GLOSSARY_DISPLAY_MODES = ["explanation", "tooltip"];
+
+// Valid scopes for keyword glossary entries. Each scope corresponds to a
+// place in the rendered card where keyword references can appear; renderers
+// filter the glossary by the scope they care about. Plural form throughout.
+export const VALID_GLOSSARY_SCOPES = ["weapons", "abilities", "unit-keywords", "rules", "stratagems", "enhancements"];
+
+// Valid field types
+export const VALID_FIELD_TYPES = ["string", "richtext", "enum", "boolean"];
+
+// Valid base systems
+export const VALID_BASE_SYSTEMS = ["40k-10e", "40k-11e", "aos", "starcraft-tmg", "blank"];
+
+// Both Warhammer 40K editions share the fixed 40K card structure (locked stat
+// lines, weapon tables, ability sections) and the same editor behaviour; the
+// editions differ in the seeded keyword glossary, not in schema capabilities.
+export const is40kBaseSystem = (baseSystem) => baseSystem === "40k-10e" || baseSystem === "40k-11e";
+
+// Valid ability formats
+export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
+
+// Valid column display modes (for weapon columns)
+export const VALID_COLUMN_DISPLAY_MODES = ["column", "row"];
+
+// Valid column visual modes (for row-display columns)
+export const VALID_COLUMN_VISUAL_MODES = ["text", "badge"];
+
+// Valid ability layout modes
+// `inline` is used for movement-style phase rows that put the section heading
+// and body side-by-side rather than stacking the ability list in a grid.
+export const VALID_ABILITY_LAYOUTS = ["full", "half", "third", "quarter", "inline"];
+
+// Valid section formats
+export const VALID_SECTION_FORMATS = ["list", "richtext", "modelsSupplyTiers"];
+
+// Valid phase styles — drives section-heading icon and the inline-row variant
+export const VALID_PHASE_STYLES = ["movement", "assault", "combat", "special"];
+
+// Valid profile relations on a weapon type when hasProfiles is true:
+// - "equal"        — profiles render as flat siblings, reorderable
+// - "parent-child" — first profile is the base, subsequent profiles are
+//                    upgrades (indented in the editor + the renderer)
+export const VALID_PROFILE_RELATIONS = ["equal", "parent-child"];
+
+// Valid ability types (Starcraft TMG badge pill values)
+export const VALID_ABILITY_TYPES = ["PASSIVE", "ACTIVE", "REACTION"];
+
+// Valid ability cost units (Starcraft TMG chip units)
+export const VALID_ABILITY_COST_UNITS = ["CP", "BM", "VP", "PE"];
+
+// Valid points formats
+export const VALID_POINTS_FORMATS = ["per-model", "per-unit"];
+
+// Schema version
+export const SCHEMA_VERSION = "1.0.0";
+
+// Default colours for custom datasources
+export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", banner: "#16213e" });
+
+// --- JSDoc Type Definitions ---
+
+/**
+ * @typedef {"string" | "richtext" | "enum" | "boolean"} FieldType
+ */
+
+/**
+ * @typedef {"unit" | "rule" | "enhancement" | "stratagem"} BaseType
+ */
+
+/**
+ * @typedef {"40k-10e" | "40k-11e" | "aos" | "starcraft-tmg" | "blank"} BaseSystem
+ */
+
+/**
+ * @typedef {"name-only" | "name-description"} AbilityFormat
+ */
+
+/**
+ * @typedef {"per-model" | "per-unit"} PointsFormat
+ */
+
+/**
+ * A single field definition used throughout the schema.
+ * @typedef {Object} FieldDefinition
+ * @property {string} key - Unique key within the parent collection
+ * @property {string} label - Human-readable label
+ * @property {FieldType} type - Data type of the field
+ * @property {number} [displayOrder] - Order for display (used in stat fields)
+ * @property {string[]} [options] - Valid options when type is "enum"
+ * @property {string} [onValue] - Display value when boolean field is true
+ * @property {string} [offValue] - Display value when boolean field is false
+ * @property {"left" | "right"} [position] - Which side of the header stats render on (AoS)
+ * @property {string} [color] - Background color hex for the stat badge (AoS)
+ */
+
+/**
+ * A single section definition within the sections schema.
+ * @typedef {Object} SectionDefinition
+ * @property {string} key - Unique key for the section
+ * @property {string} label - Human-readable label
+ * @property {"list" | "richtext"} format - Display format for the section
+ */
+
+/**
+ * Sections definition for unit card types.
+ * @typedef {Object} SectionsDefinition
+ * @property {string} label - Section group label
+ * @property {SectionDefinition[]} sections - Section definitions
+ */
+
+/**
+ * Stats section for unit card types.
+ * @typedef {Object} StatsDefinition
+ * @property {string} label - Section label (e.g. "Stat Profiles")
+ * @property {boolean} allowMultipleProfiles - Whether cards can have multiple stat profiles
+ * @property {FieldDefinition[]} fields - Stat column definitions
+ */
+
+/**
+ * A single weapon type definition with its column layout.
+ * @typedef {Object} WeaponTypeDefinition
+ * @property {string} key - Unique key (e.g. "ranged", "melee")
+ * @property {string} label - Human-readable label (e.g. "Ranged Weapons")
+ * @property {boolean} hasKeywords - Whether weapons of this type have keywords
+ * @property {boolean} hasProfiles - Whether weapons of this type support profiles
+ * @property {FieldDefinition[]} columns - Column definitions for the weapon table
+ */
+
+/**
+ * Weapon types section for unit card types.
+ * @typedef {Object} WeaponTypesDefinition
+ * @property {string} label - Section label (e.g. "Weapon Types")
+ * @property {boolean} allowMultiple - Whether multiple weapon entries are allowed
+ * @property {WeaponTypeDefinition[]} types - Weapon type definitions
+ */
+
+/**
+ * A single ability category definition.
+ * @typedef {Object} AbilityCategoryDefinition
+ * @property {string} key - Unique key (e.g. "core", "faction")
+ * @property {string} label - Human-readable label
+ * @property {AbilityFormat} format - Display format
+ * @property {string} [header] - Optional header text displayed above the category
+ * @property {boolean} [hasColor] - Whether abilities in this category support per-ability strip color (AoS)
+ * @property {boolean} [hasPhase] - Whether abilities in this category support per-ability phase text (AoS)
+ * @property {boolean} [hasType] - Whether abilities show a PASSIVE/ACTIVE/REACTION pill (Starcraft TMG)
+ * @property {boolean} [hasCost] - Whether abilities can carry cost chips like CP/BM (Starcraft TMG)
+ * @property {boolean} [hasTriggerIcon] - Whether abilities can show a triggered-ability arrow glyph (Starcraft TMG)
+ * @property {"movement" | "assault" | "combat" | "special"} [phaseStyle] - Optional phase-header styling (Starcraft TMG)
+ */
+
+/**
+ * Abilities section for unit card types.
+ * @typedef {Object} AbilitiesDefinition
+ * @property {string} label - Section label
+ * @property {AbilityCategoryDefinition[]} categories - Ability category definitions
+ */
+
+/**
+ * Metadata flags for unit card types.
+ * @typedef {Object} UnitMetadataDefinition
+ * @property {boolean} hasKeywords - Whether cards have keywords
+ * @property {boolean} hasFactionKeywords - Whether cards have faction keywords
+ * @property {string} [keywordsLabel] - Display label for the keywords bar (defaults to "Keywords")
+ * @property {string} [factionKeywordsLabel] - Display label for the faction keywords bar (defaults to "Faction")
+ * @property {boolean} hasPoints - Whether cards have points costs
+ * @property {PointsFormat} pointsFormat - Points display format
+ * @property {boolean} [hasAutoResize] - Whether cards can opt into auto-resizing height to fit content (Starcraft TMG, 40k-10e)
+ */
+
+/**
+ * Schema for unit card types. Uses named sub-objects for deeply nested structure.
+ * @typedef {Object} UnitSchema
+ * @property {StatsDefinition} stats - Stat profile definitions
+ * @property {WeaponTypesDefinition} weaponTypes - Weapon type and column definitions
+ * @property {AbilitiesDefinition} abilities - Ability category definitions
+ * @property {SectionsDefinition} [sections] - Optional sections definitions
+ * @property {UnitMetadataDefinition} metadata - Metadata flag definitions
+ */
+
+/**
+ * A repeatable collection definition (used by rules, keywords).
+ * @typedef {Object} CollectionDefinition
+ * @property {string} label - Section label
+ * @property {boolean} allowMultiple - Whether multiple entries are allowed
+ * @property {FieldDefinition[]} fields - Field definitions for each entry
+ */
+
+/**
+ * Schema for rule card types.
+ * @typedef {Object} RuleSchema
+ * @property {FieldDefinition[]} fields - Top-level field definitions
+ * @property {CollectionDefinition} rules - Nested rules collection
+ */
+
+/**
+ * Schema for enhancement card types.
+ * @typedef {Object} EnhancementSchema
+ * @property {FieldDefinition[]} fields - Top-level field definitions
+ * @property {CollectionDefinition} keywords - Keywords collection
+ */
+
+/**
+ * Schema for stratagem card types.
+ * @typedef {Object} StratagemSchema
+ * @property {FieldDefinition[]} fields - Top-level field definitions
+ */
+
+/**
+ * A card type definition within the datasource schema.
+ * @typedef {Object} CardTypeDefinition
+ * @property {string} key - Unique key within the datasource
+ * @property {string} label - Human-readable label
+ * @property {BaseType} baseType - Discriminator for schema shape
+ * @property {UnitSchema | RuleSchema | EnhancementSchema | StratagemSchema} schema - Type-specific schema
+ */
+
+/**
+ * The datasource schema definition.
+ * @typedef {Object} DatasourceSchema
+ * @property {string} version - Schema format version (e.g. "1.0.0")
+ * @property {BaseSystem} baseSystem - Base game system this schema derives from
+ * @property {CardTypeDefinition[]} cardTypes - Card type definitions
+ */
+
+/**
+ * A complete custom datasource with schema.
+ * @typedef {Object} CustomDatasource
+ * @property {string} name - Datasource name
+ * @property {string} version - Datasource content version
+ * @property {string} id - Unique identifier
+ * @property {string} author - Author name
+ * @property {string} lastUpdated - ISO 8601 date
+ * @property {DatasourceSchema} schema - Schema definition
+ */
+
+// --- Helper: Create a field definition ---
+
+/**
+ * Creates a field definition with defaults
+ * @param {Object} overrides - Field properties to set
+ * @param {string} overrides.key - Unique key
+ * @param {string} overrides.label - Display label
+ * @param {FieldType} [overrides.type="string"] - Field type
+ * @param {number} [overrides.displayOrder] - Display order
+ * @param {string[]} [overrides.options] - Enum options
+ * @param {string} [overrides.onValue] - Display value when boolean is true
+ * @param {string} [overrides.offValue] - Display value when boolean is false
+ * @param {"left" | "right"} [overrides.position] - Stat badge position (AoS)
+ * @param {string} [overrides.color] - Stat badge background color hex (AoS)
+ * @returns {FieldDefinition}
+ */
+export const createFieldDefinition = ({
+  key,
+  label,
+  type = "string",
+  display,
+  displayLabel,
+  visual,
+  displayOrder,
+  options,
+  special,
+  specialColor,
+  hideWhenEmpty,
+  onValue,
+  offValue,
+  position,
+  color,
+}) => {
+  const field = { key, label, type };
+  if (display !== undefined) field.display = display;
+  if (displayLabel !== undefined) field.displayLabel = displayLabel;
+  if (visual !== undefined) field.visual = visual;
+  if (displayOrder !== undefined) field.displayOrder = displayOrder;
+  if (type === "enum" && options) field.options = [...options];
+  if (special !== undefined) field.special = special;
+  if (specialColor !== undefined) field.specialColor = specialColor;
+  if (hideWhenEmpty !== undefined) field.hideWhenEmpty = hideWhenEmpty;
+  if (type === "boolean" && onValue !== undefined) field.onValue = onValue;
+  if (type === "boolean" && offValue !== undefined) field.offValue = offValue;
+  if (position !== undefined) field.position = position;
+  if (color !== undefined) field.color = color;
+  return field;
+};
+
+// --- Helper: Create a collection definition ---
+
+/**
+ * Creates a collection definition with defaults
+ * @param {Object} options - Collection properties
+ * @param {string} options.label - Section label
+ * @param {boolean} [options.allowMultiple=true] - Whether multiple entries are allowed
+ * @param {FieldDefinition[]} [options.fields=[]] - Field definitions
+ * @returns {CollectionDefinition}
+ */
+export const createCollectionDefinition = ({ label, allowMultiple = true, fields = [] }) => ({
+  label,
+  allowMultiple,
+  fields: [...fields],
+});
+
+// --- Preset: Age of Sigmar ---
+
+/**
+ * Creates a schema preset matching the Age of Sigmar format.
+ * Includes card types for warscrolls, spells, enhancements, and battle tactics.
+ * @returns {DatasourceSchema}
+ */
+export const createAoSPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "aos",
+  cardTypes: [
+    {
+      key: "warscroll",
+      label: "Warscroll",
+      baseType: "unit",
+      schema: {
+        stats: {
+          label: "Characteristics",
+          allowMultipleProfiles: false,
+          fields: [
+            createFieldDefinition({ key: "move", label: "Move", type: "string", displayOrder: 1, position: "left" }),
+            createFieldDefinition({
+              key: "save",
+              label: "Save",
+              type: "string",
+              displayOrder: 2,
+              position: "left",
+              color: "#3a5228",
+            }),
+            createFieldDefinition({
+              key: "control",
+              label: "Control",
+              type: "string",
+              displayOrder: 3,
+              position: "left",
+            }),
+            createFieldDefinition({
+              key: "health",
+              label: "Health",
+              type: "string",
+              displayOrder: 4,
+              position: "left",
+            }),
+            createFieldDefinition({ key: "ward", label: "Ward", type: "string", displayOrder: 5, position: "right" }),
+            createFieldDefinition({
+              key: "wizard",
+              label: "Wizard",
+              type: "string",
+              displayOrder: 6,
+              position: "right",
+            }),
+            createFieldDefinition({
+              key: "priest",
+              label: "Priest",
+              type: "string",
+              displayOrder: 7,
+              position: "right",
+            }),
+          ],
+        },
+        weaponTypes: {
+          label: "Weapon Types",
+          allowMultiple: true,
+          types: [
+            {
+              key: "ranged",
+              label: "Ranged Weapons",
+              hasKeywords: true,
+              hasProfiles: false,
+              columns: [
+                createFieldDefinition({ key: "range", label: "Range", type: "string" }),
+                createFieldDefinition({ key: "attacks", label: "Atk", type: "string" }),
+                createFieldDefinition({ key: "hit", label: "Hit", type: "string" }),
+                createFieldDefinition({ key: "wound", label: "Wnd", type: "string" }),
+                createFieldDefinition({ key: "rend", label: "Rend", type: "string" }),
+                createFieldDefinition({ key: "damage", label: "Dmg", type: "string" }),
+              ],
+            },
+            {
+              key: "melee",
+              label: "Melee Weapons",
+              hasKeywords: true,
+              hasProfiles: false,
+              columns: [
+                createFieldDefinition({ key: "attacks", label: "Atk", type: "string" }),
+                createFieldDefinition({ key: "hit", label: "Hit", type: "string" }),
+                createFieldDefinition({ key: "wound", label: "Wnd", type: "string" }),
+                createFieldDefinition({ key: "rend", label: "Rend", type: "string" }),
+                createFieldDefinition({ key: "damage", label: "Dmg", type: "string" }),
+              ],
+            },
+          ],
+        },
+        abilities: {
+          label: "Abilities",
+          categories: [{ key: "abilities", label: "Abilities", format: "name-description" }],
+        },
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "unit-composition", label: "Unit Composition", format: "list" },
+          ],
+        },
+        metadata: {
+          hasKeywords: true,
+          hasFactionKeywords: true,
+          hasPoints: true,
+          pointsFormat: "per-unit",
+        },
+      },
+    },
+    {
+      key: "spell",
+      label: "Spell",
+      baseType: "rule",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "castingValue", label: "Casting Value", type: "string" }),
+          createFieldDefinition({
+            key: "type",
+            label: "Type",
+            type: "enum",
+            required: true,
+            options: ["spell", "prayer", "manifestation"],
+          }),
+        ],
+        rules: createCollectionDefinition({
+          label: "Effects",
+          allowMultiple: false,
+          fields: [
+            createFieldDefinition({ key: "declare", label: "Declare", type: "richtext" }),
+            createFieldDefinition({ key: "effect", label: "Effect", type: "richtext" }),
+          ],
+        }),
+      },
+    },
+    {
+      key: "enhancement",
+      label: "Enhancement",
+      baseType: "enhancement",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string" }),
+          createFieldDefinition({
+            key: "type",
+            label: "Type",
+            type: "enum",
+            required: true,
+            options: ["heroic-trait", "artefact", "prayer", "spell-lore"],
+          }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
+        ],
+        keywords: createCollectionDefinition({
+          label: "Keywords",
+          allowMultiple: true,
+          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string" })],
+        }),
+      },
+    },
+    {
+      key: "battle-tactic",
+      label: "Battle Tactic",
+      baseType: "stratagem",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({
+            key: "type",
+            label: "Type",
+            type: "enum",
+            required: true,
+            options: ["battle-tactic", "grand-strategy"],
+          }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
+        ],
+      },
+    },
+  ],
+});
+
+// --- Preset Step Defaults ---
+
+/**
+ * Returns pre-filled wizard step data for a given base system and card base type.
+ * Looks up the matching card type in the system preset and extracts the schema
+ * into the step data format the wizard expects.
+ *
+ * Returns null if no preset match exists (e.g. blank system, or a base type
+ * not defined in the preset).
+ *
+ * @param {BaseSystem} baseSystem - The selected base system
+ * @param {BaseType} baseType - The selected card base type
+ * @returns {Object<string, object>|null} Step data keyed by step ID, or null
+ */
+export const getPresetStepDefaults = (baseSystem, baseType) => {
+  if (baseSystem === "blank") return null;
+
+  const preset =
+    baseSystem === "40k-10e"
+      ? create40kPreset()
+      : baseSystem === "40k-11e"
+        ? create40k11ePreset()
+        : baseSystem === "aos"
+          ? createAoSPreset()
+          : baseSystem === "starcraft-tmg"
+            ? createStarcraftTmgPreset()
+            : null;
+  if (!preset) return null;
+
+  const cardType = preset.cardTypes.find((ct) => ct.baseType === baseType);
+  if (!cardType) return null;
+
+  const defaults = {
+    "card-type": { key: cardType.key, label: cardType.label },
+  };
+
+  if (baseType === "unit") {
+    defaults["stats"] = { stats: cardType.schema.stats };
+    defaults["weapons"] = { weaponTypes: cardType.schema.weaponTypes };
+    defaults["abilities"] = { abilities: cardType.schema.abilities };
+    if (cardType.schema.sections) {
+      defaults["sections"] = { sections: cardType.schema.sections };
+    }
+    defaults["unit-metadata"] = { metadata: cardType.schema.metadata };
+  } else {
+    defaults["fields"] = { fields: cardType.schema.fields };
+    if (cardType.schema.rules) {
+      defaults["rules"] = { rules: cardType.schema.rules };
+    }
+    if (cardType.schema.keywords) {
+      defaults["keywords"] = { keywords: cardType.schema.keywords };
+    }
+  }
+
+  return defaults;
+};
+
+// --- Preset: Blank ---
+
+/**
+ * Creates a minimal blank schema preset with no predefined card types.
+ * Users add their own card types from scratch.
+ * @returns {DatasourceSchema}
+ */
+export const createBlankPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "blank",
+  cardTypes: [],
+});
+
+// --- Validation ---
+
+/**
+ * Validation result object.
+ * @typedef {Object} ValidationResult
+ * @property {boolean} valid - Whether the schema passed all checks
+ * @property {string[]} errors - List of error messages (empty if valid)
+ */
+
+/**
+ * Validates a field definition for correctness.
+ * @param {object} field - The field definition to validate
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateFieldDefinition = (field, path) => {
+  const errors = [];
+  if (!field || typeof field !== "object") {
+    errors.push(`${path}: must be an object`);
+    return errors;
+  }
+  if (!field.key || typeof field.key !== "string") {
+    errors.push(`${path}: missing or invalid "key" (must be a non-empty string)`);
+  }
+  if (!field.label || typeof field.label !== "string") {
+    errors.push(`${path}: missing or invalid "label" (must be a non-empty string)`);
+  }
+  if (!field.type || !VALID_FIELD_TYPES.includes(field.type)) {
+    errors.push(`${path}: invalid "type" "${field.type}" (must be one of ${VALID_FIELD_TYPES.join(", ")})`);
+  }
+  if (field.type === "enum") {
+    if (!Array.isArray(field.options) || field.options.length === 0) {
+      errors.push(`${path}: enum field must have a non-empty "options" array`);
+    }
+  }
+  if (field.displayOrder !== undefined && typeof field.displayOrder !== "number") {
+    errors.push(`${path}: "displayOrder" must be a number`);
+  }
+  if (field.onValue !== undefined && typeof field.onValue !== "string") {
+    errors.push(`${path}: "onValue" must be a string`);
+  }
+  if (field.offValue !== undefined && typeof field.offValue !== "string") {
+    errors.push(`${path}: "offValue" must be a string`);
+  }
+  if (field.position !== undefined && !["left", "right", "above", "below"].includes(field.position)) {
+    errors.push(`${path}: "position" must be "left", "right", "above", or "below"`);
+  }
+  if (field.size !== undefined && !["large", "small"].includes(field.size)) {
+    errors.push(`${path}: "size" must be "large" or "small"`);
+  }
+  if (field.color !== undefined && typeof field.color !== "string") {
+    errors.push(`${path}: "color" must be a string`);
+  }
+  if (field.display !== undefined && !VALID_COLUMN_DISPLAY_MODES.includes(field.display)) {
+    errors.push(
+      `${path}: invalid "display" "${field.display}" (must be one of ${VALID_COLUMN_DISPLAY_MODES.join(", ")})`,
+    );
+  }
+  if (field.displayLabel !== undefined && typeof field.displayLabel !== "boolean") {
+    errors.push(`${path}: "displayLabel" must be a boolean`);
+  }
+  if (field.visual !== undefined && !VALID_COLUMN_VISUAL_MODES.includes(field.visual)) {
+    errors.push(`${path}: invalid "visual" "${field.visual}" (must be one of ${VALID_COLUMN_VISUAL_MODES.join(", ")})`);
+  }
+  return errors;
+};
+
+/**
+ * Validates an array of field definitions, including duplicate key checks.
+ * @param {object[]} fields - Array of field definitions
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateFieldArray = (fields, path) => {
+  const errors = [];
+  if (!Array.isArray(fields)) {
+    errors.push(`${path}: must be an array`);
+    return errors;
+  }
+  const keys = new Set();
+  fields.forEach((field, i) => {
+    errors.push(...validateFieldDefinition(field, `${path}[${i}]`));
+    if (field?.key) {
+      if (keys.has(field.key)) {
+        errors.push(`${path}[${i}]: duplicate key "${field.key}"`);
+      }
+      keys.add(field.key);
+    }
+  });
+  return errors;
+};
+
+/**
+ * Validates a collection definition (rules, keywords).
+ * @param {object} collection - The collection to validate
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateCollectionDefinition = (collection, path) => {
+  const errors = [];
+  if (!collection || typeof collection !== "object") {
+    errors.push(`${path}: must be an object`);
+    return errors;
+  }
+  if (!collection.label || typeof collection.label !== "string") {
+    errors.push(`${path}: missing or invalid "label"`);
+  }
+  if (typeof collection.allowMultiple !== "boolean") {
+    errors.push(`${path}: "allowMultiple" must be a boolean`);
+  }
+  errors.push(...validateFieldArray(collection.fields, `${path}.fields`));
+  return errors;
+};
+
+/**
+ * Validates a unit-type card schema.
+ * @param {object} schema - The unit schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateUnitSchema = (schema, path) => {
+  const errors = [];
+
+  // Stats
+  if (!schema.stats || typeof schema.stats !== "object") {
+    errors.push(`${path}.stats: must be an object`);
+  } else {
+    if (!schema.stats.label || typeof schema.stats.label !== "string") {
+      errors.push(`${path}.stats: missing or invalid "label"`);
+    }
+    if (typeof schema.stats.allowMultipleProfiles !== "boolean") {
+      errors.push(`${path}.stats: "allowMultipleProfiles" must be a boolean`);
+    }
+    errors.push(...validateFieldArray(schema.stats.fields, `${path}.stats.fields`));
+  }
+
+  // Weapon types
+  if (!schema.weaponTypes || typeof schema.weaponTypes !== "object") {
+    errors.push(`${path}.weaponTypes: must be an object`);
+  } else {
+    if (!schema.weaponTypes.label || typeof schema.weaponTypes.label !== "string") {
+      errors.push(`${path}.weaponTypes: missing or invalid "label"`);
+    }
+    if (typeof schema.weaponTypes.allowMultiple !== "boolean") {
+      errors.push(`${path}.weaponTypes: "allowMultiple" must be a boolean`);
+    }
+    if (!Array.isArray(schema.weaponTypes.types)) {
+      errors.push(`${path}.weaponTypes.types: must be an array`);
+    } else {
+      const weaponKeys = new Set();
+      schema.weaponTypes.types.forEach((wt, i) => {
+        const wtPath = `${path}.weaponTypes.types[${i}]`;
+        if (!wt || typeof wt !== "object") {
+          errors.push(`${wtPath}: must be an object`);
+          return;
+        }
+        if (!wt.key || typeof wt.key !== "string") {
+          errors.push(`${wtPath}: missing or invalid "key"`);
+        }
+        if (!wt.label || typeof wt.label !== "string") {
+          errors.push(`${wtPath}: missing or invalid "label"`);
+        }
+        if (typeof wt.hasKeywords !== "boolean") {
+          errors.push(`${wtPath}: "hasKeywords" must be a boolean`);
+        }
+        if (typeof wt.hasProfiles !== "boolean") {
+          errors.push(`${wtPath}: "hasProfiles" must be a boolean`);
+        }
+        if (wt.phaseStyle !== undefined && !VALID_PHASE_STYLES.includes(wt.phaseStyle)) {
+          errors.push(
+            `${wtPath}: invalid "phaseStyle" "${wt.phaseStyle}" (must be one of ${VALID_PHASE_STYLES.join(", ")})`,
+          );
+        }
+        if (wt.linkedAbilityCategory !== undefined && typeof wt.linkedAbilityCategory !== "string") {
+          errors.push(`${wtPath}: "linkedAbilityCategory" must be a string`);
+        }
+        if (wt.profileRelation !== undefined && !VALID_PROFILE_RELATIONS.includes(wt.profileRelation)) {
+          errors.push(
+            `${wtPath}: invalid "profileRelation" "${wt.profileRelation}" (must be one of ${VALID_PROFILE_RELATIONS.join(", ")})`,
+          );
+        }
+        if (wt.profileChildLabel !== undefined && typeof wt.profileChildLabel !== "string") {
+          errors.push(`${wtPath}: "profileChildLabel" must be a string`);
+        }
+        errors.push(...validateFieldArray(wt.columns, `${wtPath}.columns`));
+        if (wt.key) {
+          if (weaponKeys.has(wt.key)) {
+            errors.push(`${wtPath}: duplicate weapon type key "${wt.key}"`);
+          }
+          weaponKeys.add(wt.key);
+        }
+      });
+    }
+  }
+
+  // Abilities
+  if (!schema.abilities || typeof schema.abilities !== "object") {
+    errors.push(`${path}.abilities: must be an object`);
+  } else {
+    if (!schema.abilities.label || typeof schema.abilities.label !== "string") {
+      errors.push(`${path}.abilities: missing or invalid "label"`);
+    }
+    if (!Array.isArray(schema.abilities.categories)) {
+      errors.push(`${path}.abilities.categories: must be an array`);
+    } else {
+      const catKeys = new Set();
+      schema.abilities.categories.forEach((cat, i) => {
+        const catPath = `${path}.abilities.categories[${i}]`;
+        if (!cat || typeof cat !== "object") {
+          errors.push(`${catPath}: must be an object`);
+          return;
+        }
+        if (!cat.key || typeof cat.key !== "string") {
+          errors.push(`${catPath}: missing or invalid "key"`);
+        }
+        if (!cat.label || typeof cat.label !== "string") {
+          errors.push(`${catPath}: missing or invalid "label"`);
+        }
+        if (!VALID_ABILITY_FORMATS.includes(cat.format)) {
+          errors.push(
+            `${catPath}: invalid "format" "${cat.format}" (must be one of ${VALID_ABILITY_FORMATS.join(", ")})`,
+          );
+        }
+        if (cat.layout !== undefined && !VALID_ABILITY_LAYOUTS.includes(cat.layout)) {
+          errors.push(
+            `${catPath}: invalid "layout" "${cat.layout}" (must be one of ${VALID_ABILITY_LAYOUTS.join(", ")})`,
+          );
+        }
+        if (cat.hasColor !== undefined && typeof cat.hasColor !== "boolean") {
+          errors.push(`${catPath}: "hasColor" must be a boolean`);
+        }
+        if (cat.hasPhase !== undefined && typeof cat.hasPhase !== "boolean") {
+          errors.push(`${catPath}: "hasPhase" must be a boolean`);
+        }
+        if (cat.hasType !== undefined && typeof cat.hasType !== "boolean") {
+          errors.push(`${catPath}: "hasType" must be a boolean`);
+        }
+        if (cat.hasCost !== undefined && typeof cat.hasCost !== "boolean") {
+          errors.push(`${catPath}: "hasCost" must be a boolean`);
+        }
+        if (cat.hasTriggerIcon !== undefined && typeof cat.hasTriggerIcon !== "boolean") {
+          errors.push(`${catPath}: "hasTriggerIcon" must be a boolean`);
+        }
+        if (cat.phaseStyle !== undefined && !VALID_PHASE_STYLES.includes(cat.phaseStyle)) {
+          errors.push(
+            `${catPath}: invalid "phaseStyle" "${cat.phaseStyle}" (must be one of ${VALID_PHASE_STYLES.join(", ")})`,
+          );
+        }
+        if (cat.key) {
+          if (catKeys.has(cat.key)) {
+            errors.push(`${catPath}: duplicate category key "${cat.key}"`);
+          }
+          catKeys.add(cat.key);
+        }
+      });
+    }
+  }
+
+  // Sections (optional)
+  if (schema.sections !== undefined) {
+    if (!schema.sections || typeof schema.sections !== "object") {
+      errors.push(`${path}.sections: must be an object`);
+    } else {
+      if (!schema.sections.label || typeof schema.sections.label !== "string") {
+        errors.push(`${path}.sections: missing or invalid "label"`);
+      }
+      if (!Array.isArray(schema.sections.sections)) {
+        errors.push(`${path}.sections.sections: must be an array`);
+      } else {
+        const sectionKeys = new Set();
+        schema.sections.sections.forEach((section, i) => {
+          const sPath = `${path}.sections.sections[${i}]`;
+          if (!section || typeof section !== "object") {
+            errors.push(`${sPath}: must be an object`);
+            return;
+          }
+          if (!section.key || typeof section.key !== "string") {
+            errors.push(`${sPath}: missing or invalid "key"`);
+          }
+          if (!section.label || typeof section.label !== "string") {
+            errors.push(`${sPath}: missing or invalid "label"`);
+          }
+          if (!VALID_SECTION_FORMATS.includes(section.format)) {
+            errors.push(
+              `${sPath}: invalid "format" "${section.format}" (must be one of ${VALID_SECTION_FORMATS.join(", ")})`,
+            );
+          }
+          if (section.key) {
+            if (sectionKeys.has(section.key)) {
+              errors.push(`${sPath}: duplicate section key "${section.key}"`);
+            }
+            sectionKeys.add(section.key);
+          }
+        });
+      }
+    }
+  }
+
+  // Metadata
+  if (!schema.metadata || typeof schema.metadata !== "object") {
+    errors.push(`${path}.metadata: must be an object`);
+  } else {
+    if (typeof schema.metadata.hasKeywords !== "boolean") {
+      errors.push(`${path}.metadata: "hasKeywords" must be a boolean`);
+    }
+    if (typeof schema.metadata.hasFactionKeywords !== "boolean") {
+      errors.push(`${path}.metadata: "hasFactionKeywords" must be a boolean`);
+    }
+    if (typeof schema.metadata.hasPoints !== "boolean") {
+      errors.push(`${path}.metadata: "hasPoints" must be a boolean`);
+    }
+    if (!VALID_POINTS_FORMATS.includes(schema.metadata.pointsFormat)) {
+      errors.push(
+        `${path}.metadata: invalid "pointsFormat" "${schema.metadata.pointsFormat}" (must be one of ${VALID_POINTS_FORMATS.join(", ")})`,
+      );
+    }
+    if (schema.metadata.pointsLabel !== undefined && typeof schema.metadata.pointsLabel !== "string") {
+      errors.push(`${path}.metadata: "pointsLabel" must be a string`);
+    }
+  }
+
+  return errors;
+};
+
+/**
+ * Validates a rule-type card schema.
+ * @param {object} schema - The rule schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateRuleSchema = (schema, path) => {
+  const errors = [];
+  errors.push(...validateFieldArray(schema.fields, `${path}.fields`));
+  errors.push(...validateCollectionDefinition(schema.rules, `${path}.rules`));
+  return errors;
+};
+
+/**
+ * Validates an enhancement-type card schema.
+ * @param {object} schema - The enhancement schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateEnhancementSchema = (schema, path) => {
+  const errors = [];
+  errors.push(...validateFieldArray(schema.fields, `${path}.fields`));
+  errors.push(...validateCollectionDefinition(schema.keywords, `${path}.keywords`));
+  return errors;
+};
+
+/**
+ * Validates a stratagem-type card schema.
+ * @param {object} schema - The stratagem schema
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateStratagemSchema = (schema, path) => {
+  return validateFieldArray(schema.fields, `${path}.fields`);
+};
+
+/**
+ * Drops weapon columns whose `key` collides with a reserved weapon profile
+ * field (see `RESERVED_WEAPON_PROFILE_KEYS`).
+ *
+ * Such a column makes the card editors render a generic text input over a field
+ * the data model owns — the first keystroke replaces e.g. the keywords array
+ * with a string, and the card can no longer render. The schema editor blocks
+ * these keys, but imported and older schemas may still carry one, so they are
+ * stripped on the way in rather than rejected: keeping the datasource usable
+ * matters more than the extra column.
+ *
+ * Returns the schema unchanged (same reference) when there is nothing to strip.
+ *
+ * @param {object} schema - A datasource schema
+ * @returns {object} The schema, with colliding weapon columns removed
+ */
+export const stripReservedWeaponColumns = (schema) => {
+  if (!schema || typeof schema !== "object" || !Array.isArray(schema.cardTypes)) return schema;
+
+  let changed = false;
+  const cardTypes = schema.cardTypes.map((cardType) => {
+    const types = cardType?.schema?.weaponTypes?.types;
+    if (!Array.isArray(types)) return cardType;
+
+    let typeChanged = false;
+    const cleanedTypes = types.map((wt) => {
+      if (!Array.isArray(wt?.columns)) return wt;
+      const columns = wt.columns.filter((col) => !isReservedWeaponProfileKey(col?.key));
+      if (columns.length === wt.columns.length) return wt;
+      typeChanged = true;
+      return { ...wt, columns };
+    });
+    if (!typeChanged) return cardType;
+
+    changed = true;
+    return {
+      ...cardType,
+      schema: {
+        ...cardType.schema,
+        weaponTypes: { ...cardType.schema.weaponTypes, types: cleanedTypes },
+      },
+    };
+  });
+
+  return changed ? { ...schema, cardTypes } : schema;
+};
+
+/**
+ * Validates a complete datasource schema for structural integrity.
+ * Checks version, baseSystem, cardTypes, and all nested definitions.
+ * @param {object} schema - The datasource schema to validate
+ * @returns {ValidationResult} Result with valid flag and error list
+ */
+export const validateSchema = (schema) => {
+  const errors = [];
+
+  if (!schema || typeof schema !== "object") {
+    return { valid: false, errors: ["Schema must be an object"] };
+  }
+
+  // Version
+  if (!schema.version || typeof schema.version !== "string") {
+    errors.push('Missing or invalid "version" (must be a non-empty string)');
+  }
+
+  // Base system
+  if (!VALID_BASE_SYSTEMS.includes(schema.baseSystem)) {
+    errors.push(`Invalid "baseSystem" "${schema.baseSystem}" (must be one of ${VALID_BASE_SYSTEMS.join(", ")})`);
+  }
+
+  // Card types
+  if (!Array.isArray(schema.cardTypes)) {
+    errors.push('"cardTypes" must be an array');
+    return { valid: false, errors };
+  }
+
+  const cardTypeKeys = new Set();
+  schema.cardTypes.forEach((ct, i) => {
+    const ctPath = `cardTypes[${i}]`;
+
+    if (!ct || typeof ct !== "object") {
+      errors.push(`${ctPath}: must be an object`);
+      return;
+    }
+
+    if (!ct.key || typeof ct.key !== "string") {
+      errors.push(`${ctPath}: missing or invalid "key"`);
+    }
+    if (!ct.label || typeof ct.label !== "string") {
+      errors.push(`${ctPath}: missing or invalid "label"`);
+    }
+    if (!VALID_BASE_TYPES.includes(ct.baseType)) {
+      errors.push(`${ctPath}: invalid "baseType" "${ct.baseType}" (must be one of ${VALID_BASE_TYPES.join(", ")})`);
+      return;
+    }
+    if (!ct.schema || typeof ct.schema !== "object") {
+      errors.push(`${ctPath}: missing or invalid "schema"`);
+      return;
+    }
+
+    // Duplicate key check
+    if (ct.key) {
+      if (cardTypeKeys.has(ct.key)) {
+        errors.push(`${ctPath}: duplicate card type key "${ct.key}"`);
+      }
+      cardTypeKeys.add(ct.key);
+    }
+
+    // Type-specific validation
+    const schemaPath = `${ctPath}.schema`;
+    switch (ct.baseType) {
+      case "unit":
+        errors.push(...validateUnitSchema(ct.schema, schemaPath));
+        break;
+      case "rule":
+        errors.push(...validateRuleSchema(ct.schema, schemaPath));
+        break;
+      case "enhancement":
+        errors.push(...validateEnhancementSchema(ct.schema, schemaPath));
+        break;
+      case "stratagem":
+        errors.push(...validateStratagemSchema(ct.schema, schemaPath));
+        break;
+    }
+  });
+
+  // Keyword glossary (optional, datasource-level)
+  if (schema.keywordGlossary !== undefined) {
+    errors.push(...validateKeywordGlossary(schema.keywordGlossary, "keywordGlossary"));
+  }
+
+  return { valid: errors.length === 0, errors };
+};
+
+// --- Keyword Glossary ---
+
+/**
+ * Validates a keyword glossary array.
+ * Each entry must have a non-empty string key, name, description, and a
+ * non-empty `appliesTo` array drawn from VALID_GLOSSARY_SCOPES. `matchType`
+ * is optional and defaults to "exact" at the renderer.
+ * @param {object[]} glossary - The glossary array
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+const validateKeywordGlossary = (glossary, path) => {
+  const errors = [];
+  if (!Array.isArray(glossary)) {
+    errors.push(`${path}: must be an array`);
+    return errors;
+  }
+  const keys = new Set();
+  glossary.forEach((entry, i) => {
+    const entryPath = `${path}[${i}]`;
+    if (!entry || typeof entry !== "object") {
+      errors.push(`${entryPath}: must be an object`);
+      return;
+    }
+    if (!entry.key || typeof entry.key !== "string") {
+      errors.push(`${entryPath}: missing or invalid "key" (must be a non-empty string)`);
+    }
+    if (!entry.name || typeof entry.name !== "string") {
+      errors.push(`${entryPath}: missing or invalid "name" (must be a non-empty string)`);
+    }
+    if (typeof entry.description !== "string") {
+      errors.push(`${entryPath}: "description" must be a string`);
+    }
+    if (entry.matchType !== undefined && !VALID_KEYWORD_MATCH_TYPES.includes(entry.matchType)) {
+      errors.push(
+        `${entryPath}: invalid "matchType" "${entry.matchType}" (must be one of ${VALID_KEYWORD_MATCH_TYPES.join(", ")})`,
+      );
+    }
+    if (entry.displayMode !== undefined && !VALID_GLOSSARY_DISPLAY_MODES.includes(entry.displayMode)) {
+      errors.push(
+        `${entryPath}: invalid "displayMode" "${entry.displayMode}" (must be one of ${VALID_GLOSSARY_DISPLAY_MODES.join(", ")})`,
+      );
+    }
+    if (entry.style !== undefined) {
+      if (typeof entry.style !== "object" || entry.style === null || Array.isArray(entry.style)) {
+        errors.push(`${entryPath}: "style" must be an object`);
+      } else {
+        Object.entries(KEYWORD_STYLE_OPTIONS).forEach(([styleKey, allowed]) => {
+          const value = entry.style[styleKey];
+          if (value !== undefined && !allowed.includes(value)) {
+            errors.push(
+              `${entryPath}.style.${styleKey}: invalid value "${value}" (must be one of ${allowed.join(", ")})`,
+            );
+          }
+        });
+      }
+    }
+    if (!Array.isArray(entry.appliesTo) || entry.appliesTo.length === 0) {
+      errors.push(`${entryPath}: "appliesTo" must be a non-empty array of scopes`);
+    } else {
+      entry.appliesTo.forEach((scope, si) => {
+        if (!VALID_GLOSSARY_SCOPES.includes(scope)) {
+          errors.push(
+            `${entryPath}.appliesTo[${si}]: invalid scope "${scope}" (must be one of ${VALID_GLOSSARY_SCOPES.join(", ")})`,
+          );
+        }
+      });
+    }
+    if (entry.key) {
+      if (keys.has(entry.key)) {
+        errors.push(`${entryPath}: duplicate glossary entry key "${entry.key}"`);
+      }
+      keys.add(entry.key);
+    }
+  });
+  return errors;
+};
+
+/**
+ * Filters a glossary down to entries whose `appliesTo` includes the given
+ * scope. Entries missing `appliesTo` are skipped — every entry must declare
+ * at least one scope to render anywhere.
+ * @param {Array} glossary
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {Array}
+ */
+export const filterGlossaryByScope = (glossary, scope) => {
+  if (!Array.isArray(glossary) || !scope) return [];
+  return glossary.filter((entry) => Array.isArray(entry?.appliesTo) && entry.appliesTo.includes(scope));
+};
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// A trailing parameter value: a dice expression, a save "N+", or a plain
+// integer, each optionally followed by an inch mark so distance-valued keywords
+// such as Scouts 6" / Fall Back and Shoot 6" resolve like their bare names do.
+const PARAMETER_VALUE_PATTERN = String.raw`(?:(?:(?:\d+D\d+|D\d+)(?:\+\d+)?|\d+\+|\d+(?:\+\d+)?)"?)`;
+const PARAMETER_WORD_PATTERN = String.raw`[A-Za-z][A-Za-z-]*`;
+const PARAMETER_TOKEN_PATTERN = String.raw`(?:${PARAMETER_WORD_PATTERN}\s+){0,3}${PARAMETER_VALUE_PATTERN}`;
+const TEXT_ONLY_PARAMETER_PATTERN = String.raw`${PARAMETER_WORD_PATTERN}(?:\s+${PARAMETER_WORD_PATTERN}){0,2}`;
+
+const getMatchType = (entry) => (VALID_KEYWORD_MATCH_TYPES.includes(entry?.matchType) ? entry.matchType : "exact");
+
+const createParameterizedKeywordRegex = (needle) => {
+  const separator = /[\s-]$/.test(needle) ? "" : String.raw`\s+`;
+  const textOnlySuffix = /-$/.test(needle) ? String.raw`|${TEXT_ONLY_PARAMETER_PATTERN}` : "";
+  return new RegExp(
+    String.raw`^${escapeRegExp(needle)}(?:${separator}(?:${PARAMETER_TOKEN_PATTERN}${textOnlySuffix}))?$`,
+    "i",
+  );
+};
+
+const createGlossaryTextRegex = (needle, matchType) => {
+  const escaped = escapeRegExp(needle);
+  if (matchType === "parameterized") {
+    const separator = /[\s-]$/.test(needle) ? "" : String.raw`\s+`;
+    const textOnlySuffix = /-$/.test(needle) ? String.raw`|${TEXT_ONLY_PARAMETER_PATTERN}` : "";
+    // Keep the leading boundary permissive around "-" so entries like "Anti-"
+    // can start inside "Anti-Vehicle", but require a stricter trailing boundary
+    // so values like "5+" are not half-matched inside "5+1".
+    return new RegExp(
+      String.raw`(?<![A-Za-z0-9])${escaped}(?:${separator}(?:${PARAMETER_TOKEN_PATTERN}${textOnlySuffix}))?(?![A-Za-z0-9+-])`,
+      "gi",
+    );
+  }
+  return new RegExp(String.raw`(?<![A-Za-z0-9])${escaped}(?![A-Za-z0-9])`, "gi");
+};
+
+/**
+ * Resolves a keyword tag to its glossary entry, if any, within a given scope.
+ * Match rules:
+ *   - "exact"         → case-insensitive equality
+ *   - "prefix"        → case-insensitive startsWith match
+ *   - "parameterized" → exact entry name, optionally followed by a value
+ * When multiple entries match the same keyword, the entry with the longest
+ * `name` wins so specific entries (e.g. "Twin-linked") take precedence over
+ * shorter prefixes that happen to be substrings.
+ *
+ * @param {string} keyword - The keyword tag (e.g. on a weapon profile)
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {object|null} The matching glossary entry, or null
+ */
+export const resolveKeywordEntry = (keyword, glossary, scope) => {
+  if (typeof keyword !== "string" || !keyword.trim() || !Array.isArray(glossary) || glossary.length === 0) {
+    return null;
+  }
+  const scoped = scope ? filterGlossaryByScope(glossary, scope) : glossary;
+  if (scoped.length === 0) return null;
+  const haystack = keyword.toLowerCase().trim();
+  let best = null;
+  for (const entry of scoped) {
+    if (!entry?.name || typeof entry.name !== "string") continue;
+    const needle = entry.name.toLowerCase().trim();
+    if (!needle) continue;
+    const matchType = getMatchType(entry);
+    const matches =
+      matchType === "prefix"
+        ? haystack.startsWith(needle)
+        : matchType === "parameterized"
+          ? createParameterizedKeywordRegex(needle).test(haystack)
+          : haystack === needle;
+    if (matches && (!best || needle.length > best.name.toLowerCase().trim().length)) {
+      best = entry;
+    }
+  }
+  return best;
+};
+
+/**
+ * Returns the deduplicated set of glossary explanation entries that apply
+ * to the given list of keyword tags, scoped to a particular render context.
+ * Preserves the order in which matching entries first appear so renderers
+ * can emit explanation rows predictably.
+ *
+ * @param {string[]} keywords - Keyword tags (e.g. from weapon profiles)
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {object[]} Deduplicated glossary entries
+ */
+export const collectKeywordExplanations = (keywords, glossary, scope) => {
+  if (!Array.isArray(keywords) || !Array.isArray(glossary) || glossary.length === 0) {
+    return [];
+  }
+  const seen = new Set();
+  const out = [];
+  for (const keyword of keywords) {
+    const entry = resolveKeywordEntry(keyword, glossary, scope);
+    if (entry && !seen.has(entry.key)) {
+      seen.add(entry.key);
+      out.push(entry);
+    }
+  }
+  return out;
+};
+
+/**
+ * Scans free text for occurrences of glossary entry names, scoped and
+ * limited to entries that carry a hover tooltip (`displayMode: "tooltip"`).
+ * Returns sorted, non-overlapping match ranges so renderers can wrap the
+ * matched substrings with an underline + tooltip inside ability/rule
+ * descriptions. Longer names win when two entries would overlap (e.g.
+ * "Feel No Pain" beats "Pain"). Matching is case-insensitive and bounded
+ * so a name is not matched inside a larger word.
+ *
+ * @param {string} text - The free-text description to scan
+ * @param {Array} glossary - The schema's keywordGlossary array
+ * @param {string} scope - One of VALID_GLOSSARY_SCOPES
+ * @returns {{start:number,end:number,text:string,entry:object}[]}
+ */
+export const findGlossaryMatchesInText = (text, glossary, scope) => {
+  if (typeof text !== "string" || !text.trim() || !Array.isArray(glossary) || glossary.length === 0) {
+    return [];
+  }
+  const scoped = (scope ? filterGlossaryByScope(glossary, scope) : glossary).filter(
+    (entry) =>
+      entry?.displayMode === "tooltip" &&
+      typeof entry.name === "string" &&
+      entry.name.trim() &&
+      typeof entry.description === "string" &&
+      entry.description.trim(),
+  );
+  if (scoped.length === 0) return [];
+  // Longest name first so specific entries claim their span before shorter ones.
+  const sorted = [...scoped].sort((a, b) => b.name.trim().length - a.name.trim().length);
+  const matches = [];
+  for (const entry of sorted) {
+    const needle = entry.name.trim();
+    const re = createGlossaryTextRegex(needle, getMatchType(entry));
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const start = m.index;
+      const end = start + m[0].length;
+      if (matches.some((existing) => start < existing.end && end > existing.start)) continue;
+      matches.push({ start, end, text: m[0], entry });
+    }
+  }
+  return matches.sort((a, b) => a.start - b.start);
+};
+
+/**
+ * Allowed values for each per-keyword style field. Modelled as string enums
+ * (rather than booleans) so new presentation options — extra casings, bracket
+ * shapes, weights — can be added without a data migration.
+ */
+export const KEYWORD_STYLE_OPTIONS = {
+  casing: ["uppercase", "normal"],
+  brackets: ["square", "none"],
+  weight: ["bold", "normal"],
+};
+
+/**
+ * Default per-keyword presentation: matches the look custom datasource cards
+ * shipped with before the style options existed (uppercase, bracketed, bold).
+ */
+export const DEFAULT_KEYWORD_STYLE = { casing: "uppercase", brackets: "square", weight: "bold" };
+
+/**
+ * Resolves a glossary entry's optional `style` object to a complete style
+ * with every field defined. Unknown or missing values fall back to the
+ * default so entries (and non-glossary keywords, where `entry` is null) keep
+ * the original look unless they explicitly opt into something else.
+ *
+ * @param {object|null} entry - A glossary entry, or null for an unmatched keyword
+ * @returns {{casing:string,brackets:string,weight:string}}
+ */
+export const resolveKeywordStyle = (entry) => {
+  const style = entry && typeof entry.style === "object" && entry.style ? entry.style : {};
+  const pick = (field) =>
+    KEYWORD_STYLE_OPTIONS[field].includes(style[field]) ? style[field] : DEFAULT_KEYWORD_STYLE[field];
+  return {
+    casing: pick("casing"),
+    brackets: pick("brackets"),
+    weight: pick("weight"),
+  };
+};
+
+/**
+ * Returns the default seeded keyword glossary for the given base system.
+ * The 40K editions ship seeds (10e: weapon-keyword explanations; 11e: the full
+ * weapon + core-ability glossary from the edition's keywords.json); every other
+ * system starts empty.
+ * @param {BaseSystem} baseSystem
+ * @returns {object[]} A fresh copy of the seed array (safe to mutate)
+ */
+export const getDefaultKeywordGlossary = (baseSystem) => {
+  const seed =
+    baseSystem === "40k-10e"
+      ? WARHAMMER_40K_10E_KEYWORD_GLOSSARY
+      : baseSystem === "40k-11e"
+        ? WARHAMMER_40K_11E_KEYWORD_GLOSSARY
+        : null;
+  if (!seed) return [];
+  return seed.map((entry) => ({
+    ...entry,
+    appliesTo: [...entry.appliesTo],
+  }));
+};
+
+// --- Migration Helpers ---
+
+/**
+ * Returns the default value for a given field type.
+ * @param {FieldDefinition} fieldDef - The field definition
+ * @returns {string | boolean} Default value for the field type
+ */
+export const getDefaultValueForType = (fieldDef) => {
+  switch (fieldDef.type) {
+    case "boolean":
+      return false;
+    case "enum":
+      return fieldDef.options?.[0] ?? "";
+    case "richtext":
+    case "string":
+    default:
+      return "";
+  }
+};
+
+/**
+ * Migrates a flat object of field values from old field definitions to new ones.
+ * Preserves values for fields present in both, adds defaults for new fields,
+ * drops values for removed fields, and coerces values when types change.
+ * @param {object} data - The source data object
+ * @param {FieldDefinition[]} oldFields - Previous field definitions
+ * @param {FieldDefinition[]} newFields - Updated field definitions
+ * @returns {object} Migrated data with keys matching newFields
+ */
+const migrateFieldValues = (data, oldFields, newFields) => {
+  const result = {};
+  const oldFieldMap = new Map((oldFields || []).map((f) => [f.key, f]));
+
+  for (const field of newFields) {
+    if (data && field.key in data && oldFieldMap.has(field.key)) {
+      const oldField = oldFieldMap.get(field.key);
+      if (oldField.type === field.type) {
+        // Same type — preserve value
+        result[field.key] = data[field.key];
+      } else if (field.type === "enum") {
+        // Coerce to enum — keep if valid option, otherwise use default
+        result[field.key] = field.options?.includes(data[field.key]) ? data[field.key] : getDefaultValueForType(field);
+      } else if (field.type === "boolean") {
+        result[field.key] = Boolean(data[field.key]);
+      } else {
+        // Coerce to string/richtext
+        result[field.key] = data[field.key] != null ? String(data[field.key]) : getDefaultValueForType(field);
+      }
+    } else {
+      // New field or not present in data — use default
+      result[field.key] = getDefaultValueForType(field);
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Migrates collection entries (e.g. rules[], keywords[]) from old to new field definitions.
+ * @param {object[]} entries - Array of collection entry objects
+ * @param {CollectionDefinition} oldCollection - Previous collection definition
+ * @param {CollectionDefinition} newCollection - Updated collection definition
+ * @returns {object[]} Migrated entries
+ */
+const migrateCollectionEntries = (entries, oldCollection, newCollection) => {
+  if (!Array.isArray(entries) || !newCollection) return [];
+  if (!oldCollection) return entries;
+  return entries.map((entry) => migrateFieldValues(entry, oldCollection.fields || [], newCollection.fields || []));
+};
+
+/**
+ * Detects whether a card type schema is a unit schema (has named sub-objects).
+ * @param {object} schema - The card type schema
+ * @returns {boolean}
+ */
+const isUnitSchema = (schema) => {
+  return schema && typeof schema === "object" && "stats" in schema && "weaponTypes" in schema;
+};
+
+/**
+ * Migrates a unit card's data to a new unit schema.
+ * @param {object} card - Unit card data
+ * @param {UnitSchema} oldSchema - Previous unit schema
+ * @param {UnitSchema} newSchema - Updated unit schema
+ * @returns {object} Migrated unit card data
+ */
+const migrateUnitCard = (card, oldSchema, newSchema) => {
+  const result = {};
+
+  // Migrate stat profiles
+  if (newSchema.stats) {
+    if (Array.isArray(card.stats)) {
+      result.stats = card.stats.map((profile) =>
+        migrateFieldValues(profile, oldSchema.stats?.fields || [], newSchema.stats.fields),
+      );
+    } else {
+      result.stats = [];
+    }
+  }
+
+  // Migrate weapons by weapon type key
+  if (newSchema.weaponTypes) {
+    result.weapons = {};
+    const oldTypeMap = new Map((oldSchema.weaponTypes?.types || []).map((t) => [t.key, t]));
+
+    for (const weaponType of newSchema.weaponTypes.types) {
+      const oldType = oldTypeMap.get(weaponType.key);
+      const existingWeapons = card.weapons?.[weaponType.key];
+
+      if (Array.isArray(existingWeapons) && oldType) {
+        result.weapons[weaponType.key] = existingWeapons.map((weapon) => {
+          const migrated = migrateFieldValues(weapon, oldType.columns, weaponType.columns);
+          // Preserve weapon name (always present, not a schema column)
+          if ("name" in weapon) migrated.name = weapon.name;
+          return migrated;
+        });
+      } else {
+        result.weapons[weaponType.key] = [];
+      }
+    }
+  }
+
+  // Migrate abilities — filter to categories that still exist
+  if (newSchema.abilities) {
+    const newCategoryKeys = new Set(newSchema.abilities.categories.map((c) => c.key));
+    result.abilities = Array.isArray(card.abilities)
+      ? card.abilities.filter((a) => newCategoryKeys.has(a.category))
+      : [];
+  }
+
+  // Migrate sections
+  if (newSchema.sections?.sections) {
+    const newSectionKeys = new Set(newSchema.sections.sections.map((s) => s.key));
+    result.sections = {};
+    for (const section of newSchema.sections.sections) {
+      if (card.sections && section.key in card.sections) {
+        result.sections[section.key] = card.sections[section.key];
+      } else {
+        result.sections[section.key] = [];
+      }
+    }
+  }
+
+  // Migrate metadata-driven fields
+  if (newSchema.metadata) {
+    if (newSchema.metadata.hasKeywords) {
+      result.keywords = Array.isArray(card.keywords) ? [...card.keywords] : [];
+    }
+    if (newSchema.metadata.hasFactionKeywords) {
+      result.factionKeywords = Array.isArray(card.factionKeywords) ? [...card.factionKeywords] : [];
+    }
+    if (newSchema.metadata.hasPoints) {
+      result.points = card.points != null ? card.points : null;
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Migrates a field-based card (rule, enhancement, stratagem) to a new schema.
+ * @param {object} card - Card data
+ * @param {RuleSchema | EnhancementSchema | StratagemSchema} oldSchema - Previous schema
+ * @param {RuleSchema | EnhancementSchema | StratagemSchema} newSchema - Updated schema
+ * @returns {object} Migrated card data
+ */
+const migrateFieldCard = (card, oldSchema, newSchema) => {
+  const result = migrateFieldValues(card, oldSchema.fields || [], newSchema.fields || []);
+
+  // Migrate known collection types
+  const collectionKeys = ["rules", "keywords"];
+  for (const key of collectionKeys) {
+    if (newSchema[key]) {
+      result[key] = migrateCollectionEntries(card[key], oldSchema[key], newSchema[key]);
+    }
+  }
+
+  return result;
+};
+
+/**
+ * Migrates card data when the schema definition changes.
+ * Handles all base types: preserves data for unchanged fields,
+ * adds defaults for new fields, drops data for removed fields,
+ * and attempts type coercion for type changes.
+ *
+ * @param {object} card - The card data to migrate
+ * @param {object} oldSchema - The previous card type schema (the `schema` property of a CardTypeDefinition)
+ * @param {object} newSchema - The updated card type schema
+ * @returns {object} Migrated card data conforming to newSchema
+ */
+export const migrateCardToSchema = (card, oldSchema, newSchema) => {
+  if (!card || typeof card !== "object") return {};
+  if (!newSchema || typeof newSchema !== "object") return { ...card };
+  if (!oldSchema || typeof oldSchema !== "object") return { ...card };
+
+  if (isUnitSchema(newSchema)) {
+    return migrateUnitCard(card, oldSchema, newSchema);
+  }
+  return migrateFieldCard(card, oldSchema, newSchema);
+};
+
+// --- Preset: Starcraft TMG ---
+
+/**
+ * Weapon column set shared by Assault and Combat phase weapon tables.
+ * @returns {FieldDefinition[]}
+ */
+const starcraftWeaponColumns = () => [
+  createFieldDefinition({ key: "rng", label: "RNG", type: "string" }),
+  createFieldDefinition({ key: "roa", label: "RoA", type: "string" }),
+  createFieldDefinition({ key: "hit", label: "Hit", type: "string" }),
+  createFieldDefinition({ key: "surge", label: "Surge type", type: "string" }),
+  createFieldDefinition({ key: "sdice", label: "S Dice", type: "string" }),
+  createFieldDefinition({ key: "dmg", label: "Dmg", type: "string" }),
+  createFieldDefinition({ key: "keyword", label: "Keyword", type: "string" }),
+];
+
+/**
+ * Creates a schema preset matching the Starcraft Tabletop Miniatures Game datasheet format.
+ * Defines a single "unit" card type with Speed/Evade/Armour/HP/Size stats,
+ * tiered Models-per-Supply section, Assault and Combat weapon tables, and
+ * phase-grouped abilities with PASSIVE/ACTIVE/REACTION pills plus CP/BM cost chips.
+ * @returns {DatasourceSchema}
+ */
+export const createStarcraftTmgPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "starcraft-tmg",
+  cardTypes: [
+    {
+      key: "unit",
+      label: "Unit",
+      baseType: "unit",
+      schema: {
+        stats: {
+          label: "Stats",
+          allowMultipleProfiles: false,
+          fields: [
+            createFieldDefinition({ key: "speed", label: "Speed", type: "string", displayOrder: 1 }),
+            createFieldDefinition({ key: "evade", label: "Evade", type: "string", displayOrder: 2 }),
+            createFieldDefinition({ key: "armour", label: "Armour", type: "string", displayOrder: 3 }),
+            createFieldDefinition({ key: "hitPoints", label: "Hit Points", type: "string", displayOrder: 4 }),
+            createFieldDefinition({
+              key: "shield",
+              label: "Shield",
+              type: "string",
+              displayOrder: 5,
+              special: true,
+              hideWhenEmpty: true,
+            }),
+            createFieldDefinition({ key: "size", label: "Size", type: "string", displayOrder: 6 }),
+          ],
+        },
+        weaponTypes: {
+          label: "Weapons",
+          allowMultiple: true,
+          types: [
+            {
+              key: "assault",
+              label: "Assault Phase",
+              hasKeywords: false,
+              hasProfiles: true,
+              profileRelation: "parent-child",
+              profileChildLabel: "Upgrade",
+              phaseStyle: "assault",
+              linkedAbilityCategory: "assault",
+              columns: starcraftWeaponColumns(),
+            },
+            {
+              key: "combat",
+              label: "Combat Phase",
+              hasKeywords: false,
+              hasProfiles: true,
+              profileRelation: "parent-child",
+              profileChildLabel: "Upgrade",
+              phaseStyle: "combat",
+              linkedAbilityCategory: "combat",
+              columns: starcraftWeaponColumns(),
+            },
+          ],
+        },
+        abilities: {
+          label: "Abilities",
+          categories: [
+            {
+              key: "special",
+              label: "Special Abilities",
+              format: "name-description",
+              layout: "half",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "special",
+            },
+            {
+              key: "anyPhase",
+              label: "Any Phase",
+              format: "name-description",
+              layout: "half",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "special",
+            },
+            {
+              key: "movement",
+              label: "Movement Phase",
+              format: "name-description",
+              layout: "half",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "movement",
+            },
+            {
+              key: "assault",
+              label: "Assault Phase",
+              format: "name-description",
+              layout: "half",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "assault",
+            },
+            {
+              key: "combat",
+              label: "Combat Phase",
+              format: "name-description",
+              layout: "half",
+              hasType: true,
+              hasCost: true,
+              hasTriggerIcon: true,
+              phaseStyle: "combat",
+            },
+          ],
+        },
+        sections: {
+          label: "Sections",
+          sections: [],
+        },
+        metadata: {
+          hasKeywords: true,
+          hasFactionKeywords: true,
+          // Points carries the Models / Supply tiers in the renderer:
+          // { active, models, cost } → tier `{ models, supply: cost }`.
+          hasPoints: true,
+          pointsFormat: "per-unit",
+          pointsLabel: "Models / Supply",
+          hasCombatRole: true,
+          hasArmySlot: true,
+          hasAutoResize: true,
+        },
+      },
+    },
+  ],
+});
+
+// --- Preset: Warhammer 40K 10th Edition ---
+
+/**
+ * Creates a schema preset matching the Warhammer 40K 10th Edition format.
+ * Includes card types for units, rules, enhancements, and stratagems.
+ * @returns {DatasourceSchema}
+ */
+export const create40kPreset = () => ({
+  version: SCHEMA_VERSION,
+  baseSystem: "40k-10e",
+  keywordGlossary: getDefaultKeywordGlossary("40k-10e"),
+  cardTypes: [
+    {
+      key: "unit",
+      label: "Unit",
+      baseType: "unit",
+      schema: {
+        stats: {
+          label: "Stat Profiles",
+          allowMultipleProfiles: true,
+          fields: [
+            createFieldDefinition({ key: "m", label: "M", type: "string", displayOrder: 1 }),
+            createFieldDefinition({ key: "t", label: "T", type: "string", displayOrder: 2 }),
+            createFieldDefinition({ key: "sv", label: "SV", type: "string", displayOrder: 3 }),
+            createFieldDefinition({ key: "w", label: "W", type: "string", displayOrder: 4 }),
+            createFieldDefinition({ key: "ld", label: "LD", type: "string", displayOrder: 5 }),
+            createFieldDefinition({ key: "oc", label: "OC", type: "string", displayOrder: 6 }),
+            createFieldDefinition({
+              key: "inv",
+              label: "INV",
+              type: "string",
+              displayOrder: 7,
+              special: true,
+              specialColor: "#5b21b6",
+              hideWhenEmpty: true,
+            }),
+          ],
+        },
+        weaponTypes: {
+          label: "Weapon Types",
+          allowMultiple: true,
+          types: [
+            {
+              key: "ranged",
+              label: "Ranged Weapons",
+              hasKeywords: true,
+              hasProfiles: true,
+              profileRelation: "equal",
+              columns: [
+                createFieldDefinition({ key: "range", label: "Range", type: "string" }),
+                createFieldDefinition({ key: "a", label: "A", type: "string" }),
+                createFieldDefinition({ key: "bs", label: "BS", type: "string" }),
+                createFieldDefinition({ key: "s", label: "S", type: "string" }),
+                createFieldDefinition({ key: "ap", label: "AP", type: "string" }),
+                createFieldDefinition({ key: "d", label: "D", type: "string" }),
+              ],
+            },
+            {
+              key: "melee",
+              label: "Melee Weapons",
+              hasKeywords: true,
+              hasProfiles: true,
+              profileRelation: "equal",
+              columns: [
+                createFieldDefinition({ key: "range", label: "Range", type: "string" }),
+                createFieldDefinition({ key: "a", label: "A", type: "string" }),
+                createFieldDefinition({ key: "ws", label: "WS", type: "string" }),
+                createFieldDefinition({ key: "s", label: "S", type: "string" }),
+                createFieldDefinition({ key: "ap", label: "AP", type: "string" }),
+                createFieldDefinition({ key: "d", label: "D", type: "string" }),
+              ],
+            },
+          ],
+        },
+        abilities: {
+          label: "Abilities",
+          categories: [
+            { key: "core", label: "Core", format: "name-only" },
+            { key: "faction", label: "Faction", format: "name-description" },
+            { key: "unit", label: "Unit Abilities", format: "name-description" },
+            { key: "damaged", label: "Damaged", format: "name-description", header: "Damaged" },
+          ],
+        },
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "unit-composition", label: "Unit Composition", format: "list" },
+            { key: "loadout", label: "Loadout", format: "richtext" },
+          ],
+        },
+        metadata: {
+          hasKeywords: true,
+          hasFactionKeywords: true,
+          hasPoints: true,
+          pointsFormat: "per-model",
+        },
+      },
+    },
+    {
+      key: "rule",
+      label: "Rule",
+      baseType: "rule",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "ruleType", label: "Rule Type", type: "string" }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
+        ],
+        rules: createCollectionDefinition({
+          label: "Rules",
+          allowMultiple: true,
+          fields: [
+            createFieldDefinition({ key: "title", label: "Title", type: "string" }),
+            createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
+            createFieldDefinition({
+              key: "format",
+              label: "Format",
+              type: "enum",
+              options: ["name-description", "name-only", "table"],
+            }),
+          ],
+        }),
+      },
+    },
+    {
+      key: "enhancement",
+      label: "Enhancement",
+      baseType: "enhancement",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string" }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
+        ],
+        keywords: createCollectionDefinition({
+          label: "Keywords",
+          allowMultiple: true,
+          fields: [createFieldDefinition({ key: "keyword", label: "Keyword", type: "string" })],
+        }),
+      },
+    },
+    {
+      key: "stratagem",
+      label: "Stratagem",
+      baseType: "stratagem",
+      schema: {
+        fields: [
+          createFieldDefinition({ key: "name", label: "Name", type: "string" }),
+          createFieldDefinition({ key: "cost", label: "Cost", type: "string" }),
+          createFieldDefinition({
+            key: "phase",
+            label: "Phase",
+            type: "enum",
+            required: true,
+            options: ["command", "movement", "shooting", "charge", "fight", "any"],
+          }),
+          createFieldDefinition({ key: "type", label: "Stratagem Type", type: "string" }),
+          createFieldDefinition({ key: "description", label: "Description", type: "richtext" }),
+        ],
+      },
+    },
+  ],
+});
+
+// --- Preset: Warhammer 40K 11th Edition ---
+
+/**
+ * Creates a schema preset matching the Warhammer 40K 11th Edition format.
+ * 11th edition cards share the 10th edition card structure (stat line, weapon
+ * tables, ability sections), so the preset reuses the 40K card types and only
+ * differs in its base system and the seeded keyword glossary, which carries the
+ * full 11e weapon + core-ability glossary with parameterized matching.
+ * @returns {DatasourceSchema}
+ */
+export const create40k11ePreset = () => ({
+  ...create40kPreset(),
+  baseSystem: "40k-11e",
+  keywordGlossary: getDefaultKeywordGlossary("40k-11e"),
+});

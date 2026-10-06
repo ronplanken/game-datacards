@@ -26,3 +26,9 @@ yarn-error.log*
 /public/json
 /public/svg
 /.vscode
+.gemini-clipboard/
+.claude/
+.env
+supabase/.temp/
+/audit/
+*-service-account*.json

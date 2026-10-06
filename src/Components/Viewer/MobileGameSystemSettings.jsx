@@ -31,6 +31,7 @@ export const MobileGameSystemSettings = ({ gameSystem, onContinue }) => {
       case "aos":
         return "Age of Sigmar";
       case "40k-10e":
+      case "40k-11e":
         return "Warhammer 40,000";
       default:
         return gameSystem;
@@ -49,7 +50,7 @@ export const MobileGameSystemSettings = ({ gameSystem, onContinue }) => {
         <div className="gss-settings-options">
           <div className="gss-settings-option">
             <div className="gss-settings-option-info">
-              <span className="gss-settings-option-label">Use fancy fonts</span>
+              <span className="gss-settings-option-label">Decorative fonts</span>
               <span className="gss-settings-option-description">
                 Themed serif fonts for an authentic look. Disable for better readability.
               </span>

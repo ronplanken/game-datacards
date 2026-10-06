@@ -1,0 +1,26 @@
+## Managing Your Plan
+
+### Upgrading your plan
+
+To upgrade, open the subscription settings from your account menu. Select the plan you want and complete the checkout. Your new limits take effect immediately — no need to log out or refresh.
+
+### Downgrading or cancelling
+
+You can cancel your subscription at any time from the subscription settings. When you cancel:
+
+- Your paid features remain active until the end of the current billing period.
+- After expiration, your account reverts to the free tier.
+- **Your data is never deleted.** Cloud categories, datasources, and templates are preserved. You just cannot sync or publish until you re-subscribe.
+
+If you exceed the free tier limits after downgrading, you can still view your existing cloud data but cannot create new items until you are within limits.
+
+### Payment
+
+Payments are processed through Creem, a secure payment provider. You can manage your billing details, view invoices, and update your payment method through the billing portal accessible from your account settings.
+
+### Limit enforcement
+
+Subscription limits are enforced both in the app and on the server:
+
+- **Client-side**: The app checks your current tier before allowing actions like creating categories or publishing datasources. If you hit a limit, you will see a message explaining the restriction.
+- **Server-side**: Database triggers prevent operations that would exceed your tier limits, even if the client-side check is bypassed.

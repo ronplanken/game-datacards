@@ -1,5 +1,6 @@
-import { Collapse } from "antd";
+import { Collapse, Switch } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { usePanelVisibility } from "./usePanelVisibility";
 import { UnitBasicAbility } from "./UnitCardEditor/UnitBasicAbility";
 import { UnitBasicInfo } from "./UnitCardEditor/UnitBasicInfo";
 import { UnitDamageTable } from "./UnitCardEditor/UnitDamageTable";
@@ -15,10 +16,18 @@ import { UnitStylingInfo } from "./UnitCardEditor/UnitStylingInfo";
 const { Panel } = Collapse;
 
 export const UnitCardEditor = () => {
-  const { activeCard } = useCardStorage();
+  const { activeCard, updateActiveCard } = useCardStorage();
+  const {
+    activeKeys,
+    setActiveKeys,
+    handleWeaponVisibilityChange,
+    handleAbilityVisibilityChange,
+    handleDamagedVisibilityChange,
+    handleInvulVisibilityChange,
+  } = usePanelVisibility(activeCard, updateActiveCard);
 
   return (
-    <Collapse defaultActiveKey={["1"]}>
+    <Collapse activeKey={activeKeys} onChange={setActiveKeys}>
       <Panel header="Basic information" style={{ width: "100%" }} key="1">
         <UnitBasicInfo />
       </Panel>
@@ -31,33 +40,134 @@ export const UnitCardEditor = () => {
       <Panel header="Points" style={{ width: "100%" }} key="points">
         <UnitPoints />
       </Panel>
-      <Panel header="Ranged weapons" style={{ width: "100%" }} key="3">
-        <UnitWeapons type={"rangedWeapons"} />
+      <Panel
+        header="Ranged weapons"
+        style={{ width: "100%" }}
+        key="3"
+        collapsible={activeCard.showWeapons?.rangedWeapons === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showWeapons?.rangedWeapons !== false}
+            onClick={(value, e) => handleWeaponVisibilityChange("rangedWeapons", "3", value, e)}
+          />
+        }>
+        {activeCard.showWeapons?.rangedWeapons !== false && <UnitWeapons type={"rangedWeapons"} />}
       </Panel>
-      <Panel header="Melee weapons" style={{ width: "100%" }} key="4">
-        <UnitWeapons type={"meleeWeapons"} />
+      <Panel
+        header="Melee weapons"
+        style={{ width: "100%" }}
+        key="4"
+        collapsible={activeCard.showWeapons?.meleeWeapons === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showWeapons?.meleeWeapons !== false}
+            onClick={(value, e) => handleWeaponVisibilityChange("meleeWeapons", "4", value, e)}
+          />
+        }>
+        {activeCard.showWeapons?.meleeWeapons !== false && <UnitWeapons type={"meleeWeapons"} />}
       </Panel>
-      <Panel header="Basic abilities" style={{ width: "100%" }} key="5">
-        <UnitBasicAbility type={"core"} />
-        <UnitBasicAbility type={"faction"} />
+      <Panel
+        header="Core abilities"
+        style={{ width: "100%" }}
+        key="5a"
+        collapsible={activeCard.showAbilities?.core === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.core !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("core", "5a", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.core !== false && <UnitBasicAbility type={"core"} />}
       </Panel>
-      <Panel header="Extended abilities" style={{ width: "100%" }} key="6">
-        <UnitExtendedAbilities type={"other"} />
+      <Panel
+        header="Faction abilities"
+        style={{ width: "100%" }}
+        key="5b"
+        collapsible={activeCard.showAbilities?.faction === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.faction !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("faction", "5b", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.faction !== false && <UnitBasicAbility type={"faction"} />}
       </Panel>
-      <Panel header="Wargear abilities" style={{ width: "100%" }} key="7">
-        <UnitExtendedAbilities type={"wargear"} />
+      <Panel
+        header="Extended abilities"
+        style={{ width: "100%" }}
+        key="6"
+        collapsible={activeCard.showAbilities?.other === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.other !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("other", "6", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.other !== false && <UnitExtendedAbilities type={"other"} />}
       </Panel>
-      <Panel header="Special abilities" style={{ width: "100%" }} key="special">
-        <UnitExtendedAbilities type={"special"} />
+      <Panel
+        header="Wargear abilities"
+        style={{ width: "100%" }}
+        key="7"
+        collapsible={activeCard.showAbilities?.wargear === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.wargear !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("wargear", "7", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.wargear !== false && <UnitExtendedAbilities type={"wargear"} />}
       </Panel>
-      <Panel header="Damaged ability" style={{ width: "100%" }} key="8">
-        <UnitDamageTable />
+      <Panel
+        header="Special abilities"
+        style={{ width: "100%" }}
+        key="special"
+        collapsible={activeCard.showAbilities?.special === false ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={activeCard.showAbilities?.special !== false}
+            onClick={(value, e) => handleAbilityVisibilityChange("special", "special", value, e)}
+          />
+        }>
+        {activeCard.showAbilities?.special !== false && <UnitExtendedAbilities type={"special"} />}
+      </Panel>
+      <Panel
+        header="Damaged ability"
+        style={{ width: "100%" }}
+        key="8"
+        collapsible={!activeCard.abilities?.damaged?.showDamagedAbility ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={!!activeCard.abilities?.damaged?.showDamagedAbility}
+            onClick={(value, e) => handleDamagedVisibilityChange("8", value, e)}
+          />
+        }>
+        {activeCard.abilities?.damaged?.showDamagedAbility && <UnitDamageTable />}
       </Panel>
       <Panel header="Primarch ability" style={{ width: "100%" }} key="primarch">
         <UnitPrimarchAbilities />
       </Panel>
-      <Panel header="Invulnerable save" style={{ width: "100%" }} key="9">
-        <UnitInvulnerableSave />
+      <Panel
+        header="Invulnerable save"
+        style={{ width: "100%" }}
+        key="9"
+        collapsible={!activeCard.abilities?.invul?.showInvulnerableSave ? "disabled" : undefined}
+        extra={
+          <Switch
+            size="small"
+            checked={!!activeCard.abilities?.invul?.showInvulnerableSave}
+            onClick={(value, e) => handleInvulVisibilityChange("9", value, e)}
+          />
+        }>
+        {activeCard.abilities?.invul?.showInvulnerableSave && <UnitInvulnerableSave />}
       </Panel>
       <Panel header="Keywords" style={{ width: "100%" }} key="10">
         <UnitKeywords type={"keywords"} />

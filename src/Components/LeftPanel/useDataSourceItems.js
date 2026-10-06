@@ -1,5 +1,11 @@
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { getBrowsableEnhancements } from "../../Helpers/faction.helpers";
+import {
+  buildFactionDatasheetList,
+  groupStratagemsByDetachment,
+  is40kBrowseSource,
+} from "../../Helpers/browseList.helpers";
 
 /**
  * Group warscrolls by their role keywords (Hero, Battleline, Monster, etc.)
@@ -43,7 +49,7 @@ const groupWarscrollsByRole = (warscrolls) => {
       factionTerrain: [],
       manifestations: [],
       other: [],
-    }
+    },
   );
 };
 
@@ -71,106 +77,27 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
   const { settings } = useSettingsStorage();
 
   const getDataSourceItems = () => {
+    // Custom datasource: read cards from selectedFaction arrays
+    if (settings.selectedDataSource?.startsWith("custom-")) {
+      const cards = selectedFaction?.[selectedContentType] || [];
+      const sorted = [...cards].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      if (searchText) {
+        return sorted.filter((card) => card.name?.toLowerCase().includes(searchText.toLowerCase()));
+      }
+      return sorted;
+    }
+
     if (selectedContentType === "datasheets") {
-      let filteredSheets = [];
-      if (
-        selectedFaction &&
-        (settings.selectedDataSource === "40k-10e" || settings.selectedDataSource === "40k-10e-cp")
-      ) {
+      if (selectedFaction && is40kBrowseSource(settings.selectedDataSource)) {
         try {
-          filteredSheets = [
-            { type: "category", name: selectedFaction.name, id: selectedFaction.id, closed: false },
-            ...selectedFaction?.datasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-          ];
-          if (selectedFaction.is_subfaction && settings.combineParentFactions) {
-            let parentFaction = dataSource.data.find((faction) => faction.id === selectedFaction.parent_id);
-
-            let parentDatasheets = parentFaction?.datasheets
-              ?.filter((val) => val.factions.length === 1 && val.factions.includes(selectedFaction.parent_keyword))
-              .map((val) => {
-                return { ...val, nonBase: true };
-              });
-
-            filteredSheets = [
-              ...filteredSheets,
-              { type: "category", name: parentFaction.name, id: parentFaction.id, closed: true },
-              ...parentDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-            ];
-          }
-
-          if (!settings?.showLegends) {
-            filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
-          }
-          if (!settings.groupByFaction) {
-            filteredSheets = filteredSheets?.toSorted((a, b) => a.name.localeCompare(b.name));
-          }
-          if (settings.groupByRole) {
-            const types = ["Battleline", "Character", "Dedicated Transport"];
-            let byRole = [];
-
-            types.map((role) => {
-              byRole = [...byRole, { type: "role", name: role }];
-              byRole = [
-                ...byRole,
-                ...filteredSheets
-                  ?.filter((sheet) => sheet?.keywords?.includes(role))
-                  .map((val) => {
-                    return { ...val, role: role };
-                  }),
-              ];
-            });
-
-            byRole = [
-              ...byRole,
-              { type: "role", name: "Other" },
-              ...filteredSheets
-                ?.filter((sheet) => {
-                  return types.every((t) => !sheet?.keywords?.includes(t));
-                })
-                .map((val) => {
-                  return { ...val, role: "Other" };
-                }),
-            ];
-
-            filteredSheets = byRole;
-          }
-
-          if (
-            selectedFaction.allied_factions &&
-            selectedFaction.allied_factions.length > 0 &&
-            settings.combineAlliedFactions
-          ) {
-            selectedFaction.allied_factions.forEach((alliedFactionId) => {
-              let alliedFaction = dataSource.data.find((faction) => faction.id === alliedFactionId);
-
-              let alliedFactionDatasheets = alliedFaction?.datasheets.map((val) => {
-                return { ...val, nonBase: true, allied: true };
-              });
-
-              filteredSheets = [
-                ...filteredSheets,
-                { type: "allied", name: alliedFaction.name, id: alliedFaction.id, closed: true },
-                ...alliedFactionDatasheets?.toSorted((a, b) => a.name.localeCompare(b.name)),
-              ];
-            });
-          }
-          filteredSheets = searchText
-            ? filteredSheets.filter((sheet) => {
-                if (sheet.type === "category" || sheet.type === "header") {
-                  return true;
-                }
-                return sheet.name.toLowerCase().includes(searchText.toLowerCase());
-              })
-            : filteredSheets;
-
-          return filteredSheets;
+          return buildFactionDatasheetList({ dataSource, selectedFaction, settings, searchText });
         } catch (error) {
-          console.error("An error occured", error);
+          console.error("An error occurred", error);
           return [];
         }
       }
 
-      filteredSheets = searchText
+      let filteredSheets = searchText
         ? selectedFaction?.datasheets.filter((sheet) => sheet.name.toLowerCase().includes(searchText.toLowerCase()))
         : selectedFaction?.datasheets;
       if (!settings?.showLegends) {
@@ -189,21 +116,34 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "stratagems") {
-      const filteredStratagems = selectedFaction?.stratagems.filter((stratagem) => {
+      // Filter by subfaction
+      const filteredStratagems = selectedFaction?.stratagems?.filter((stratagem) => {
         return !settings?.ignoredSubFactions?.includes(stratagem.subfaction_id);
       });
-      const mainStratagems = searchText
+      const searchedStratagems = searchText
         ? filteredStratagems?.filter((stratagem) => stratagem.name.toLowerCase().includes(searchText.toLowerCase()))
         : filteredStratagems;
+
+      // A faction ships six stratagems per detachment, so the flat list runs to
+      // 60+ entries. Splitting it into collapsible detachment sections is opt-in.
+      const mainStratagems = settings.groupStratagemsByDetachment
+        ? groupStratagemsByDetachment(searchedStratagems, settings.language)
+        : searchedStratagems;
 
       if (settings.hideBasicStratagems || settings?.noStratagemOptions) {
         return mainStratagems;
       } else {
         const basicStratagems = searchText
           ? selectedFaction.basicStratagems?.filter((stratagem) =>
-              stratagem.name.toLowerCase().includes(searchText.toLowerCase())
+              stratagem.name.toLowerCase().includes(searchText.toLowerCase()),
             )
-          : selectedFaction.basicStratagems ?? [];
+          : (selectedFaction.basicStratagems ?? []);
+
+        // Datasources without core stratagems skip the Basic section entirely
+        // instead of rendering an empty header.
+        if (!basicStratagems || basicStratagems.length === 0) {
+          return [{ type: "header", name: "Faction stratagems" }, ...mainStratagems];
+        }
 
         return [
           { type: "header", name: "Basic stratagems" },
@@ -215,13 +155,21 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
     }
 
     if (selectedContentType === "enhancements") {
-      const filteredEnhancements = selectedFaction?.enhancements.map((enhancement) => {
-        return { ...enhancement, cardType: "enhancement", source: "40k-10e" };
+      const isAoSFaction = Boolean(selectedFaction?.warscrolls);
+      const filteredEnhancements = getBrowsableEnhancements(selectedFaction).map((enhancement) => {
+        // Preserve the card's own source (e.g. "40k-11e") so it routes to the
+        // correct renderer; fall back to the faction/datasource source. AoS
+        // entries carry "aos-4e", which no renderer is keyed on.
+        return {
+          ...enhancement,
+          cardType: "enhancement",
+          source: isAoSFaction ? "aos" : (enhancement.source ?? selectedFaction?.source ?? "40k-10e"),
+        };
       });
 
       const mainEnhancements = searchText
-        ? filteredEnhancements?.filter((enhancement) =>
-            enhancement.name.toLowerCase().includes(searchText.toLowerCase())
+        ? filteredEnhancements.filter((enhancement) =>
+            enhancement.name.toLowerCase().includes(searchText.toLowerCase()),
           )
         : filteredEnhancements;
       return mainEnhancements;
@@ -236,9 +184,9 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
       } else {
         const basicSecondaries = searchText
           ? selectedFaction.basicSecondaries?.filter((secondary) =>
-              secondary.name.toLowerCase().includes(searchText.toLowerCase())
+              secondary.name.toLowerCase().includes(searchText.toLowerCase()),
             )
-          : selectedFaction.basicSecondaries ?? [];
+          : (selectedFaction.basicSecondaries ?? []);
 
         return [
           { type: "header", name: "Basic secondaries" },
@@ -274,13 +222,14 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
         : detachmentRules;
 
       // Transform rules into card-compatible objects
+      const ruleSource = selectedFaction?.source ?? settings.selectedDataSource ?? "40k-10e";
       const armyRuleCards = filteredArmyRules.map((rule) => ({
         ...rule,
         id: `army-rule-${rule.name}`,
         cardType: "rule",
         ruleType: "army",
         faction_id: selectedFaction.id,
-        source: "40k-10e",
+        source: ruleSource,
       }));
 
       // Flatten detachment rules - each detachment can have multiple rules
@@ -293,7 +242,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
             ruleType: "detachment",
             detachment: detachmentRule.detachment,
             faction_id: selectedFaction.id,
-            source: "40k-10e",
+            source: ruleSource,
           }));
         }
         return [];
@@ -344,7 +293,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               cardType: "warscroll",
               source: "aos",
               faction_id: w.faction_id || selectedFaction.id,
-            }))
+            })),
           );
         }
       });
@@ -384,7 +333,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               loreName: lore.name,
               source: "aos",
               faction_id: lore.faction_id || selectedFaction.id,
-            }))
+            })),
           );
         }
       });
@@ -417,7 +366,7 @@ export const useDataSourceItems = (selectedContentType, searchText) => {
               loreName: lore.name,
               source: "aos",
               faction_id: selectedFaction.id,
-            }))
+            })),
           );
         }
       });

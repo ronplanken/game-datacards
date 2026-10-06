@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "./useDataSourceStorage";
 import { useCardStorage } from "./useCardStorage";
 import { useSettingsStorage } from "./useSettingsStorage";
+import { getBrowsableEnhancements } from "../Helpers/faction.helpers";
 
 export function useViewerNavigation() {
   const { faction, unit, alliedFaction, alliedUnit, stratagem, spell, enhancement, rule } = useParams();
@@ -39,9 +40,15 @@ export function useViewerNavigation() {
       if (unit) {
         // Check if we have a pre-filtered card from a mobile list (passed via router state)
         const listCard = location.state?.listCard;
+        // Check if we have a card from cloud category (passed via router state)
+        const cloudCard = location.state?.cloudCard;
+
         if (listCard && listCard.name?.replaceAll(" ", "-").toLowerCase() === unit) {
           // Use the stored card with filtered weapons/wargear
           setActiveCard(listCard);
+        } else if (cloudCard && cloudCard.name?.replaceAll(" ", "-").toLowerCase() === unit) {
+          // Use the cloud card directly - it's self-contained
+          setActiveCard(cloudCard);
         } else {
           // Support both datasheets (40K) and warscrolls (AoS)
           const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
@@ -71,7 +78,7 @@ export function useViewerNavigation() {
       if (faction === "core") {
         // First check if the currently selected faction has this basic stratagem
         const hasStratagem = selectedFaction?.basicStratagems?.some(
-          (s) => s.name.replaceAll(" ", "-").toLowerCase() === stratagem
+          (s) => s.name.replaceAll(" ", "-").toLowerCase() === stratagem,
         );
         if (hasStratagem) {
           foundFaction = selectedFaction;
@@ -121,17 +128,26 @@ export function useViewerNavigation() {
         updateSelectedFaction(foundFaction);
       }
 
-      const foundEnhancement = foundFaction?.enhancements?.find((e) => {
+      const foundEnhancement = getBrowsableEnhancements(foundFaction).find((e) => {
         return e.name.replaceAll(" ", "-").toLowerCase() === enhancement;
       });
 
       if (foundEnhancement) {
+        // AoS enhancements carry their own `source` ("aos-4e"), which no renderer
+        // is keyed on — the faction's shape decides which card display to use.
+        // 40k cards keep their own source so 11e enhancements reach the 11e
+        // renderer, falling back to the faction's for data that omits it.
+        const enhancementSource = foundFaction?.warscrolls
+          ? "aos"
+          : foundFaction?.datasheets
+            ? (foundEnhancement.source ?? foundFaction.source ?? "40k-10e")
+            : "40k";
         setActiveCard({
           ...foundEnhancement,
           id: `enhancement-${foundEnhancement.name}`, // Add unique id for changeActiveCard comparison
           cardType: "enhancement",
           faction_id: foundFaction?.id,
-          source: foundFaction?.datasheets ? "40k-10e" : "40k",
+          source: enhancementSource,
         });
       } else {
         setActiveCard();
@@ -173,7 +189,9 @@ export function useViewerNavigation() {
           id: `rule-${foundRule.name}`, // Add unique id for changeActiveCard comparison
           cardType: "rule",
           faction_id: foundFaction?.id,
-          source: foundFaction?.datasheets ? "40k-10e" : "40k",
+          // Same as enhancements: the rule's own source routes 11e rules to the
+          // 11e renderer, with the faction's as a fallback.
+          source: foundFaction?.datasheets ? (foundRule.source ?? foundFaction.source ?? "40k-10e") : "40k",
         });
       } else {
         setActiveCard();
@@ -305,16 +323,16 @@ export function useViewerNavigation() {
     (factionName) => {
       navigate(`/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}`);
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToUnit = useCallback(
     (factionName, unitName) => {
       navigate(
-        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToStratagem = useCallback(
@@ -322,10 +340,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/stratagem/${stratagemName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToAlliedUnit = useCallback(
@@ -333,10 +351,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${mainFactionName.toLowerCase().replaceAll(" ", "-")}/allied/${alliedFactionName
           .toLowerCase()
-          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToManifestationLore = useCallback(
@@ -344,10 +362,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/manifestation-lore/${spellName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToSpellLore = useCallback(
@@ -355,10 +373,10 @@ export function useViewerNavigation() {
       navigate(
         `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/spell-lore/${spellName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   // Mobile navigation helpers
@@ -366,16 +384,16 @@ export function useViewerNavigation() {
     (factionName) => {
       navigate(`/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}`);
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileUnit = useCallback(
     (factionName, unitName) => {
       navigate(
-        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileStratagem = useCallback(
@@ -383,10 +401,10 @@ export function useViewerNavigation() {
       navigate(
         `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/stratagem/${stratagemName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileAlliedUnit = useCallback(
@@ -394,10 +412,10 @@ export function useViewerNavigation() {
       navigate(
         `/mobile/${mainFactionName.toLowerCase().replaceAll(" ", "-")}/allied/${alliedFactionName
           .toLowerCase()
-          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`
+          .replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileEnhancement = useCallback(
@@ -405,19 +423,19 @@ export function useViewerNavigation() {
       navigate(
         `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/enhancement/${enhancementName
           .replaceAll(" ", "-")
-          .toLowerCase()}`
+          .toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const navigateToMobileRule = useCallback(
     (factionName, ruleName) => {
       navigate(
-        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/rule/${ruleName.replaceAll(" ", "-").toLowerCase()}`
+        `/mobile/${factionName.toLowerCase().replaceAll(" ", "-")}/rule/${ruleName.replaceAll(" ", "-").toLowerCase()}`,
       );
     },
-    [navigate]
+    [navigate],
   );
 
   return {

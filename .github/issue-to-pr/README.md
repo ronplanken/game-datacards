@@ -1,0 +1,139 @@
+# Issue to PR pipeline
+
+Turns an approved Discord-sourced feature or bug issue into a draft pull request,
+implemented by an [OpenCode](https://opencode.ai) agent (1M-context model). A
+human reviews and merges; nothing is auto-merged.
+
+## How it works
+
+1. The idea-to-issue Discord bot files a feature or bug issue here with the
+   `from-discord` + `enhancement` (or `bug`) labels.
+2. An approver adds the **`ai-build`** label when they want the bot to attempt it.
+3. `issue-to-pr.yml` runs: it checks out **both** `game-datacards` and
+   `gdc-premium` as sibling directories (matching the `vite.config.js` /
+   `scripts/build-premium.sh` layout), runs OpenCode with the prompt in
+   `prompt.md`, then runs `yarn lint:fix` + `yarn test:ci`. The app is OpenCode's
+   project root; the premium package is reachable via the `external_directory`
+   grant in `opencode.json`.
+   - The prompt is the issue title and body plus any **maintainer comments** on
+     the issue (comments by the repo owner/members/collaborators, excluding bots),
+     so a maintainer can clarify or narrow the scope after the issue is filed.
+     Outside users' comments are not included.
+   - The agent does **not** bump the version or edit `releaseNotes.json`. Instead
+     it writes one release fragment to `changes/unreleased/<issue>.json` (the
+     player-facing note). The version bump and notes are applied automatically
+     **after merge** by `release.yml` (see "Releasing" below). This is what lets
+     several pipeline PRs be open at once without colliding on the version number
+     or the notes file. A no-op run writes no fragment.
+   - The prompt has the agent re-run `yarn lint:fix` + `yarn test:ci` *after*
+     writing the fragment and fix anything that broke. The workflow's own
+     lint/test step is a reporting backstop on top of that.
+   - The DeepSeek model runs at maximum reasoning effort (`reasoningEffort: max`
+     in `opencode.json`), and after the run the workflow records the run's token
+     and cost totals via `opencode stats` — shown in the Actions job summary and
+     embedded in the PR (and issue comment).
+4. For each repo the agent changed, it pushes a branch named for the issue type
+   and number — `feature/<n>-<slug>` for an enhancement, `bug/<n>-<slug>` for a
+   bug (the `<slug>` is a short, sanitised form of the issue title) — and opens a
+   **draft** PR, cross-linked to the issue. The branch name is computed once in
+   the `gate` job; because both repos use the same name, the premium build links
+   them automatically.
+   - The PR body is built by `create-prs.sh` from the agent's own plain-language
+     summary (written to `pr-summary.md` in the app repo, which `create-prs.sh`
+     deletes before committing so it never lands in the PR), the actual
+     `git diff --stat` of the change, the issue link (`Closes #<n>` on the app
+     PR), the lint/test status, and the OpenCode usage.
+5. The PRs are opened with a PAT, so `ci.yml` and `claude-review.yml` run on them
+   automatically. The bot also comments the result back on the issue.
+
+Each issue is attempted **once** — the `ai-attempted` label is added up front. To
+retry, remove `ai-attempted` and re-add `ai-build`.
+
+## Setup (one-time)
+
+### Secrets (repo settings → Secrets and variables → Actions)
+
+| Secret | Purpose |
+|--------|---------|
+| `DEEPSEEK_API_KEY` | API key for the model (same key the idea-bot uses). |
+| `GH_PAT` | Fine-grained PAT with **Contents: write**, **Pull requests: write**, **Issues: write** on **both** `ronplanken/game-datacards` and `ronplanken/gdc-premium`. Needed so the AI PR triggers CI + Claude review (the default `GITHUB_TOKEN` cannot trigger other workflows). |
+
+### Labels (create in both repos)
+
+| Label | Meaning |
+|-------|---------|
+| `ai-build` | Approver opt-in: attempt this issue. |
+| `ai-generated` | Applied to PRs the pipeline opens. |
+| `ai-attempted` | Set automatically; blocks re-runs. |
+
+The pipeline relies on the `from-discord` and `enhancement`/`bug` labels the
+idea-bot already applies. Pipeline PRs always ship as a **patch** (a quiet
+notification note); the full What's New wizard is reserved for feature releases a
+human cuts by hand.
+
+## Releasing
+
+The pipeline keeps release bookkeeping out of the feature PR so parallel PRs
+never conflict on it. Releasing happens after merge instead:
+
+- Each PR carries a fragment in `changes/unreleased/` (see `changes/README.md`).
+- When a PR merges to `main`, `release.yml` consumes the fragment(s): it bumps
+  the **patch** version in `package.json`, appends the note to
+  `src/data/releaseNotes.json`, deletes the fragment, commits, and tags
+  `v<x.y.z>`. Back-to-back merges queue (a `release` concurrency group) so each
+  gets a sequential version.
+- That version-bump commit is the **only** thing that changes `package.json`.
+  Cloudflare Pages is configured with a **build watch path** of `package.json`,
+  so production deploys only on release commits — routine merges that carry no
+  fragment never deploy.
+- **Feature releases** (the full What's New wizard + a minor bump) are cut
+  manually by a human; the pipeline never produces them. Old patch notes stay in
+  `releaseNotes.json`, so nothing is lost.
+
+## Tuning
+
+- **Prompt**: edit `prompt.md` — it is the agent's task brief. The workflow
+  appends the repository locations and the issue title/body to it at runtime.
+- **Model**: change `--model` in `issue-to-pr.yml` and the `models` block in
+  `opencode.json` (e.g. to a cheaper model to cut cost).
+- **Guardrails**: `opencode.json` `permission` fences what the agent may edit
+  (`src/` + `docs/` in both repos, plus the app's `package.json` for the version
+  bump) and blocks network/destructive shell. The `gate` job controls which issues
+  qualify.
+
+## Security / threat model
+
+Issue bodies originate from untrusted Discord users, so the pipeline is built
+defensively:
+
+- The agent is told to treat the issue as a spec, not instructions.
+- `opencode.json` denies edits outside `src/`/`docs/` (the only exceptions are the
+  release fragment and the PR summary file), denies `curl`/`wget`/`ssh`/`webfetch`
+  (no exfiltration), and denies `npm`.
+- Issue text is passed via environment variables, never interpolated into shell.
+  Issue **comments** are restricted to maintainers (owner/member/collaborator, not
+  bots) and are likewise only printed into the prompt as data, never executed.
+- Output is always a **draft** PR gated behind human review + the existing Claude
+  review.
+
+**Residual risk**: the model API key is present in the job environment for the
+model call, so it is technically reachable by the agent's shell. The draft-PR +
+review gate is the backstop. Use a dedicated, rotatable key for this pipeline.
+
+## Gotchas
+
+- `opencode.json` uses the `GDCWS` placeholder for the runner workspace path; the
+  "Run OpenCode" step substitutes the real absolute path (via `sed`) before
+  running, so the permission globs and the `external_directory` grant resolve
+  correctly. Edit the placeholders, not hardcoded `/home/runner/...` paths.
+- OpenCode matches **in-project** `edit` rules against paths relative to the app
+  root (`src/**`, `docs/**`); only the **external** (`gdc-premium`) rules use
+  absolute paths. Don't make the app's edit rules absolute or they won't match.
+- OpenCode auto-installs the `@ai-sdk/openai-compatible` provider package named in
+  `opencode.json` (confirmed working in CI).
+- If the model rejects the request over `max_tokens`, lower `limit.output` in
+  `opencode.json`.
+- `gdc-premium` is Yarn 1 (`--frozen-lockfile`); `game-datacards` uses
+  `--immutable`. Keep the install flags as-is.
+- The premium PR targets `main`; set `PREMIUM_BASE` in the final workflow step if
+  that ever changes.

@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+    paths-ignore:
+      - "**/*.md"
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - "**/*.md"
+
+# A branch with an open PR fires this workflow twice — once for the push and once
+# for the pull_request — and both resolved to the same group, so whichever
+# started second cancelled the other. Only the pull_request run executes `test`,
+# so when the push run won the race the PR went green having run no tests at all.
+# Keying the group on the event as well lets the two runs stand alongside each
+# other, while a second push to the same branch still cancels its own predecessor.
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.head.ref || github.ref_name }}"
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "yarn"
+
+      - name: Install packages
+        run: yarn install --immutable
+
+      - name: Run Linting
+        run: yarn lint
+
+  test:
+    name: Test
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "yarn"
+
+      - name: Install packages
+        run: yarn install --immutable
+
+      - name: Run Tests with Coverage
+        run: yarn test:coverage
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+      - name: Coverage Summary
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          json-summary-path: ./coverage/coverage-summary.json
+          json-final-path: ./coverage/coverage-final.json
+          vite-config-path: none
+          file-coverage-mode: none

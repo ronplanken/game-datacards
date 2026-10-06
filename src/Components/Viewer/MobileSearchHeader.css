@@ -16,6 +16,9 @@
   left: 0;
   right: 0;
   z-index: 100;
+  /* Constrain children from overflowing on narrow viewports (e.g. Android display-zoom) */
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* ===========================================
@@ -34,7 +37,8 @@
    =========================================== */
 
 .mobile-search-input-wrapper {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   position: relative;
 }
 
@@ -45,6 +49,7 @@
   border-radius: 8px;
   padding: 0 12px;
   height: 40px;
+  min-width: 0;
   transition: all 0.2s ease;
 }
 
@@ -124,4 +129,31 @@
 
 .mobile-search-faction-btn:active {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===========================================
+   NARROW-VIEWPORT ADJUSTMENTS
+   Tightens spacing on very narrow CSS widths
+   (e.g. Android phones with high display-zoom)
+   =========================================== */
+
+@media (max-width: 380px) {
+  .mobile-search-header {
+    gap: 8px;
+    padding: 0 8px;
+  }
+
+  .mobile-search-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-search-faction-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-search-input-container {
+    padding: 0 10px;
+  }
 }
