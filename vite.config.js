@@ -5,11 +5,42 @@ import react from "@vitejs/plugin-react";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 import path from "path";
 import fs from "fs";
+import { execSync } from "child_process";
 
 const packageJson = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
 const buildId = Date.now().toString(36);
 
 const usePremiumPackage = process.env.VITE_USE_PREMIUM_PACKAGE === "true";
+
+const shortSha = (sha) =>
+  typeof sha === "string" && /^[0-9a-f]{7,40}$/i.test(sha.trim()) ? sha.trim().slice(0, 7) : null;
+
+function gitSha(cwd) {
+  try {
+    return shortSha(execSync("git rev-parse HEAD", { cwd, stdio: ["ignore", "pipe", "ignore"] }).toString());
+  } catch {
+    return null;
+  }
+}
+
+function getCommit() {
+  return shortSha(process.env.CF_PAGES_COMMIT_SHA) || gitSha(__dirname) || "unknown";
+}
+
+function getPremiumCommit(premiumSrcPath) {
+  let lock = "";
+  try {
+    lock = fs.readFileSync(path.resolve(__dirname, "yarn.lock"), "utf-8");
+  } catch {
+    lock = "";
+  }
+  const entry = lock.split(/\n(?=\S)/).find((block) => block.includes("@gdc/premium@"));
+  const resolved = entry?.match(/resolved\s+"[^"]*#([0-9a-f]{7,40})"/i);
+  const premiumRoot = path.resolve(premiumSrcPath, "..");
+  const checkoutSha = fs.existsSync(path.join(premiumRoot, ".git")) ? gitSha(premiumRoot) : null;
+  return shortSha(resolved?.[1]) || checkoutSha || "unknown";
+}
+
 const mainAppSrc = path.resolve(__dirname, "src");
 
 // Detect premium package location and resolve symlinks for consistent path matching
@@ -150,5 +181,10 @@ export default defineConfig({
   define: {
     "import.meta.env.VITE_VERSION": JSON.stringify(packageJson.version),
     "import.meta.env.VITE_BUILD_ID": JSON.stringify(buildId),
+    "import.meta.env.VITE_COMMIT": JSON.stringify(getCommit()),
+    "import.meta.env.VITE_PREMIUM_COMMIT": JSON.stringify(
+      usePremiumPackage ? getPremiumCommit(premiumPackagePath) : "",
+    ),
+    "import.meta.env.VITE_EDITION": JSON.stringify(usePremiumPackage ? "premium" : "community"),
   },
 });

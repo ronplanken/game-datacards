@@ -73,6 +73,8 @@ import { DevFab } from "./Components/DevFab/DevFab";
 import { HelpLayout, HelpLanding, HelpArticle } from "./Pages/Help";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
+import { ErrorDetails } from "./Components/ErrorDetails/ErrorDetails";
+import { setErrorContextComponentStack } from "./Helpers/errorReport.helpers";
 
 const { Paragraph, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -101,18 +103,16 @@ function ErrorFallback({ error }) {
               </Col>
             </Row>
           </Paragraph>
-          <Paragraph>
-            <Row style={{ padding: "16px" }} justify={"center"}>
-              <Col span={16}>
-                <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: "more" }}>{error.stack}</Paragraph>
-              </Col>
-            </Row>
-          </Paragraph>
+          <ErrorDetails error={error} />
           <Paragraph>
             <Row style={{ padding: "4px", textAlign: "center" }} justify={"center"}>
               <Col span={24}>
                 <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
-                  <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
+                  <img
+                    src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"
+                    alt="Game Datacards Discord"
+                    style={{ maxWidth: "100%" }}
+                  />
                 </a>
               </Col>
             </Row>
@@ -338,7 +338,9 @@ const UmamiSessionIdentifier = () => {
 
 // Layout component that wraps all routes with providers
 const RootLayout = () => (
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
+  <ErrorBoundary
+    FallbackComponent={ErrorFallback}
+    onError={(_error, info) => setErrorContextComponentStack(info?.componentStack)}>
     <SettingsStorageProviderComponent>
       <AuthProvider>
         <SubscriptionProvider>
