@@ -22,6 +22,33 @@ import {
 import { DEFAULT_DATASOURCE_COLOURS } from "../Helpers/customSchema.helpers";
 import { useSettingsStorage } from "./useSettingsStorage";
 
+const ALLOWED_DATASOURCE_URL_PROTOCOLS = ["http:", "https:"];
+const BLOCKED_DATASOURCE_HOSTNAMES = ["localhost", "169.254.169.254", "metadata.google.internal"];
+
+function isSafeDatasourceUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (!ALLOWED_DATASOURCE_URL_PROTOCOLS.includes(parsed.protocol)) {
+      return false;
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    if (BLOCKED_DATASOURCE_HOSTNAMES.includes(hostname)) {
+      return false;
+    }
+    if (
+      /^(0|10|127)\./.test(hostname) ||
+      /^169\.254\./.test(hostname) ||
+      /^192\.168\./.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)
+    ) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const DataSourceStorageContext = React.createContext(undefined);
 
 export function useDataSourceStorage() {
@@ -482,6 +509,10 @@ export const DataSourceStorageProviderComponent = (props) => {
 
       if (entry.sourceType !== "url" || !entry.sourceUrl) {
         return { hasUpdate: false, error: "Not a URL datasource" };
+      }
+
+      if (!isSafeDatasourceUrl(entry.sourceUrl)) {
+        return { hasUpdate: false, error: "Unsafe or invalid source URL" };
       }
 
       try {
