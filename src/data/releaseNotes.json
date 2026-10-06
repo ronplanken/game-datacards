@@ -208,5 +208,12 @@
     "body": "Picking a unit size on a mobile list used to reset the moment you tapped it, leaving Add to List disabled. Your choice now sticks.",
     "severity": "info",
     "timestamp": 1791277106
+  },
+  {
+    "version": "3.13.3",
+    "title": "Designed 11th edition cards no longer crash",
+    "body": "Cards that use a Card Designer template could crash on 11th edition units with keyword tooltips. They now show the tooltip text in your card language.",
+    "severity": "info",
+    "timestamp": 1791312379
   }
 ]
