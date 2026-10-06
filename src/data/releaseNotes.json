@@ -201,5 +201,12 @@
     "body": "Yes/no fields on cards that use a Card Designer template showed true or false. They now show the On and Off text you set.",
     "severity": "info",
     "timestamp": 1790782327
+  },
+  {
+    "version": "3.13.2",
+    "title": "Unit size stays selected",
+    "body": "Picking a unit size on a mobile list used to reset the moment you tapped it, leaving Add to List disabled. Your choice now sticks.",
+    "severity": "info",
+    "timestamp": 1791277106
   }
 ]
