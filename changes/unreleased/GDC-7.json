@@ -1,0 +1,5 @@
+{
+  "title": "Designed 11th edition cards no longer crash",
+  "body": "Cards that use a Card Designer template could crash on 11th edition units with keyword tooltips. They now show the tooltip text in your card language.",
+  "severity": "info"
+}
