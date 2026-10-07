@@ -46,8 +46,6 @@ export const CardStorageProviderComponent = (props) => {
   const [cardUpdated, setCardUpdated] = React.useState(false);
   const [activeCategory, setActiveCategory] = React.useState(null);
 
-  setErrorContextCard(activeCard);
-
   useEffect(() => {
     const version = import.meta.env.VITE_VERSION;
     localStorage.setItem("storage", JSON.stringify({ ...cardStorage, version }));
@@ -72,6 +70,7 @@ export const CardStorageProviderComponent = (props) => {
       setCardUpdated(true);
     }
     activeCardRef.current = copiedCard;
+    setErrorContextCard(copiedCard);
     setActiveCard(copiedCard);
   };
 
@@ -82,6 +81,7 @@ export const CardStorageProviderComponent = (props) => {
         return prev;
       }
       setCardUpdated(false);
+      setErrorContextCard(card);
       return card;
     });
   };

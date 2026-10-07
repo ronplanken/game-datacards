@@ -2,25 +2,13 @@ import { localize } from "./localization.helpers";
 
 const MAX_STACK_LINES = 15;
 
-const errorContext = {
-  activeCard: null,
-  componentStack: null,
-};
+let errorContextCard = null;
 
 export const setErrorContextCard = (card) => {
-  errorContext.activeCard = card || null;
+  errorContextCard = card || null;
 };
 
-export const setErrorContextComponentStack = (componentStack) => {
-  errorContext.componentStack = typeof componentStack === "string" ? componentStack : null;
-};
-
-export const resetErrorContext = () => {
-  errorContext.activeCard = null;
-  errorContext.componentStack = null;
-};
-
-export const getErrorContext = () => ({ ...errorContext });
+export const getErrorContextCard = () => errorContextCard;
 
 const readSettings = (storage) => {
   try {
@@ -79,7 +67,8 @@ export const buildErrorReport = ({
   storage = typeof window !== "undefined" ? window.localStorage : null,
   userAgent = typeof navigator !== "undefined" ? navigator.userAgent : null,
   now = new Date(),
-  context = getErrorContext(),
+  activeCard = getErrorContextCard(),
+  componentStack = null,
 } = {}) => {
   const settings = readSettings(storage);
   const edition = env?.VITE_EDITION || "community";
@@ -94,7 +83,7 @@ export const buildErrorReport = ({
     ["Datasource", settings?.selectedDataSource || "none"],
     ["Card language", settings?.language || null],
     ["11e data version", settings?.dataVersion11e?.version ?? null],
-    ["Active card", describeCard(context?.activeCard)],
+    ["Active card", describeCard(activeCard)],
     ["Time", now.toISOString()],
     ["Browser", userAgent],
   ].filter(([, value]) => value !== null && value !== undefined && value !== "");
@@ -103,7 +92,7 @@ export const buildErrorReport = ({
     fields,
     message: describeError(error),
     stack: trimStack(error?.stack),
-    componentStack: trimStack(context?.componentStack),
+    componentStack: trimStack(componentStack),
   };
 };
 

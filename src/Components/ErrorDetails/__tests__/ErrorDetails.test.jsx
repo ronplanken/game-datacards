@@ -2,11 +2,11 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { ErrorDetails } from "../ErrorDetails";
-import { resetErrorContext, setErrorContextCard } from "../../../Helpers/errorReport.helpers";
+import { setErrorContextCard } from "../../../Helpers/errorReport.helpers";
 
 describe("ErrorDetails", () => {
   beforeEach(() => {
-    resetErrorContext();
+    setErrorContextCard(null);
     localStorage.setItem("settings", JSON.stringify({ selectedDataSource: "40k-11e", language: "en" }));
   });
 
@@ -18,6 +18,15 @@ describe("ErrorDetails", () => {
     expect(screen.getByText("40k-11e")).toBeInTheDocument();
     expect(screen.getByText("Crusader Squad, type DataCard, source 40k-11e")).toBeInTheDocument();
     expect(screen.getByText("Route")).toBeInTheDocument();
+  });
+
+  it("includes the component stack passed in after the boundary catches", () => {
+    const error = new Error("boom");
+    const { rerender, container } = render(<ErrorDetails error={error} />);
+    expect(container.querySelector("pre").textContent).not.toContain("Component stack:");
+
+    rerender(<ErrorDetails error={error} componentStack={"\n    at UnitCard"} />);
+    expect(container.querySelector("pre").textContent).toContain("Component stack:\n    at UnitCard");
   });
 
   it("copies the report to the clipboard", async () => {

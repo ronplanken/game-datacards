@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { buildErrorReport, formatErrorReport } from "../../Helpers/errorReport.helpers";
 import "./ErrorDetails.css";
 
@@ -19,13 +19,9 @@ const copyText = async (text) => {
   if (!copied) throw new Error("Copy failed");
 };
 
-export const ErrorDetails = ({ error, variant = "light" }) => {
-  const [report, setReport] = useState(() => buildErrorReport({ error }));
+export const ErrorDetails = ({ error, componentStack = null, variant = "light" }) => {
+  const report = useMemo(() => buildErrorReport({ error, componentStack }), [error, componentStack]);
   const [copyState, setCopyState] = useState("idle");
-
-  useEffect(() => {
-    setReport(buildErrorReport({ error }));
-  }, [error]);
 
   const handleCopy = async () => {
     try {

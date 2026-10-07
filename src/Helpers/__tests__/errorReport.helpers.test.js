@@ -1,12 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import {
-  buildErrorReport,
-  formatErrorReport,
-  resetErrorContext,
-  setErrorContextCard,
-  setErrorContextComponentStack,
-  getErrorContext,
-} from "../errorReport.helpers";
+import { buildErrorReport, formatErrorReport, setErrorContextCard, getErrorContextCard } from "../errorReport.helpers";
 
 const storageWith = (settings) => ({
   getItem: (key) => (key === "settings" && settings ? JSON.stringify(settings) : null),
@@ -26,7 +19,7 @@ const now = new Date("2026-10-06T10:00:00.000Z");
 const fieldMap = (report) => Object.fromEntries(report.fields);
 
 describe("buildErrorReport", () => {
-  beforeEach(() => resetErrorContext());
+  beforeEach(() => setErrorContextCard(null));
 
   it("collects version, commits, route, datasource and active card", () => {
     const report = buildErrorReport({
@@ -40,18 +33,16 @@ describe("buildErrorReport", () => {
       }),
       userAgent: "TestBrowser/1.0",
       now,
-      context: {
-        activeCard: {
-          name: { en: "Castellan", de: "Kastellan" },
-          cardType: "DataCard",
-          source: "40k-11e",
-          variant: "double",
-          faction_id: "bt",
-          id: "c754",
-          templateId: "tpl-1",
-        },
-        componentStack: "\n    at Tooltip\n    at CoreAbilitySpans",
+      activeCard: {
+        name: { en: "Castellan", de: "Kastellan" },
+        cardType: "DataCard",
+        source: "40k-11e",
+        variant: "double",
+        faction_id: "bt",
+        id: "c754",
+        templateId: "tpl-1",
       },
+      componentStack: "\n    at Tooltip\n    at CoreAbilitySpans",
     });
 
     expect(report.message).toBe("Minified React error #31");
@@ -80,7 +71,7 @@ describe("buildErrorReport", () => {
       storage: storageWith(null),
       userAgent: null,
       now,
-      context: { activeCard: null, componentStack: null },
+      activeCard: null,
     });
     const fields = fieldMap(report);
 
@@ -98,7 +89,6 @@ describe("buildErrorReport", () => {
       location: null,
       storage: { getItem: () => "{not json" },
       now,
-      context: {},
     });
     const fields = fieldMap(report);
 
@@ -112,18 +102,19 @@ describe("buildErrorReport", () => {
   it("limits long stacks to the first 15 lines", () => {
     const error = new Error("deep");
     error.stack = Array.from({ length: 40 }, (_, i) => `at frame${i}`).join("\n");
-    const report = buildErrorReport({ error, env, location, storage: storageWith(null), now, context: {} });
+    const report = buildErrorReport({ error, env, location, storage: storageWith(null), now });
     expect(report.stack.split("\n")).toHaveLength(15);
   });
 });
 
 describe("error context", () => {
-  beforeEach(() => resetErrorContext());
+  beforeEach(() => setErrorContextCard(null));
 
-  it("stores the active card and component stack", () => {
+  it("stores the active card and uses it as the report default", () => {
     setErrorContextCard({ name: "Marshal" });
-    setErrorContextComponentStack("at UnitCard");
-    expect(getErrorContext()).toEqual({ activeCard: { name: "Marshal" }, componentStack: "at UnitCard" });
+    expect(getErrorContextCard()).toEqual({ name: "Marshal" });
+    const report = buildErrorReport({ error: new Error("x"), env: {}, location: null, storage: null });
+    expect(Object.fromEntries(report.fields)["Active card"]).toBe("Marshal");
   });
 });
 
