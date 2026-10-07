@@ -1,6 +1,7 @@
 import { Link, isRouteErrorResponse, useRouteError } from "react-router-dom";
 import logo from "../Images/logo.png";
 import { NotFound } from "./NotFound";
+import { ErrorDetails } from "../Components/ErrorDetails/ErrorDetails";
 import "./NotFound.css";
 
 /**
@@ -34,6 +35,7 @@ export const RouteErrorBoundary = () => {
           us know on Discord.
         </p>
         {detail ? <pre className="notfound-detail">{String(detail)}</pre> : null}
+        <ErrorDetails error={error} variant="dark" />
         <div className="notfound-actions">
           <button type="button" className="notfound-button" onClick={() => window.location.reload()}>
             Reload page

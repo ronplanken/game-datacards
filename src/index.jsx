@@ -73,11 +73,12 @@ import { DevFab } from "./Components/DevFab/DevFab";
 import { HelpLayout, HelpLanding, HelpArticle } from "./Pages/Help";
 import { Col, Grid, Result, Row, Typography } from "antd";
 import { ErrorBoundary } from "react-error-boundary";
+import { ErrorDetails } from "./Components/ErrorDetails/ErrorDetails";
 
 const { Paragraph, Text } = Typography;
 const { useBreakpoint } = Grid;
 
-function ErrorFallback({ error }) {
+function ErrorFallback({ error, componentStack }) {
   const screens = useBreakpoint();
 
   return (
@@ -101,18 +102,16 @@ function ErrorFallback({ error }) {
               </Col>
             </Row>
           </Paragraph>
-          <Paragraph>
-            <Row style={{ padding: "16px" }} justify={"center"}>
-              <Col span={16}>
-                <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: "more" }}>{error.stack}</Paragraph>
-              </Col>
-            </Row>
-          </Paragraph>
+          <ErrorDetails error={error} componentStack={componentStack} />
           <Paragraph>
             <Row style={{ padding: "4px", textAlign: "center" }} justify={"center"}>
               <Col span={24}>
                 <a href="https://discord.gg/anfn4qTYC4" target={"_blank"} rel="noreferrer">
-                  <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"></img>
+                  <img
+                    src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2"
+                    alt="Game Datacards Discord"
+                    style={{ maxWidth: "100%" }}
+                  />
                 </a>
               </Col>
             </Row>
@@ -122,6 +121,18 @@ function ErrorFallback({ error }) {
     </div>
   );
 }
+
+const AppErrorBoundary = ({ children }) => {
+  const [componentStack, setComponentStack] = React.useState(null);
+
+  return (
+    <ErrorBoundary
+      fallbackRender={({ error }) => <ErrorFallback error={error} componentStack={componentStack} />}
+      onError={(_error, info) => setComponentStack(info?.componentStack ?? null)}>
+      {children}
+    </ErrorBoundary>
+  );
+};
 
 // Component to select wizard based on current route
 const WizardSelector = () => {
@@ -338,7 +349,7 @@ const UmamiSessionIdentifier = () => {
 
 // Layout component that wraps all routes with providers
 const RootLayout = () => (
-  <ErrorBoundary FallbackComponent={ErrorFallback}>
+  <AppErrorBoundary>
     <SettingsStorageProviderComponent>
       <AuthProvider>
         <SubscriptionProvider>
@@ -375,7 +386,7 @@ const RootLayout = () => (
         </SubscriptionProvider>
       </AuthProvider>
     </SettingsStorageProviderComponent>
-  </ErrorBoundary>
+  </AppErrorBoundary>
 );
 
 const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;

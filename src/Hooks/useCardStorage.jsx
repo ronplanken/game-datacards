@@ -3,6 +3,7 @@ import clone from "just-clone";
 import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { parseStorageJson } from "../Helpers/cardstorage.helpers";
+import { setErrorContextCard } from "../Helpers/errorReport.helpers";
 import { reorderWithSubCategories, reorderSubCategories } from "../Helpers/treeview.helpers";
 
 const CardStorageContext = React.createContext(undefined);
@@ -69,6 +70,7 @@ export const CardStorageProviderComponent = (props) => {
       setCardUpdated(true);
     }
     activeCardRef.current = copiedCard;
+    setErrorContextCard(copiedCard);
     setActiveCard(copiedCard);
   };
 
@@ -79,6 +81,7 @@ export const CardStorageProviderComponent = (props) => {
         return prev;
       }
       setCardUpdated(false);
+      setErrorContextCard(card);
       return card;
     });
   };
