@@ -215,5 +215,12 @@
     "body": "Cards that use a Card Designer template could crash on 11th edition units with keyword tooltips. They now show the tooltip text in your card language.",
     "severity": "info",
     "timestamp": 1791312379
+  },
+  {
+    "version": "3.13.4",
+    "title": "Error page shows details to share",
+    "body": "When something goes wrong, the error page now lists the app version and what you were working on. Use Copy error details and paste it on Discord so we can find the problem faster.",
+    "severity": "info",
+    "timestamp": 1791363600
   }
 ]
