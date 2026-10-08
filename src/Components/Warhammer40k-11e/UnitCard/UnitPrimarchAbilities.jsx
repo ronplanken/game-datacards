@@ -1,5 +1,6 @@
 import { MarkupText } from "./UnitAbilityDescription";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { use11eKeywordGlossary } from "../../../Hooks/use11eKeywordGlossary";
 import { localize } from "../../../Helpers/localization.helpers";
 
 // Primarch abilities nest a set of sub-abilities under a named group. They sit
@@ -7,6 +8,7 @@ import { localize } from "../../../Helpers/localization.helpers";
 // narrow abilities column, because the grouped rule text needs the extra width.
 export const UnitPrimarchAbilities = ({ unit }) => {
   const { settings } = useSettingsStorage();
+  const glossary = use11eKeywordGlossary();
   const lang = settings.language;
   const groups = unit.showAbilities?.primarch !== false ? (unit.abilities?.primarch || []).filter((a) => a?.name) : [];
 
@@ -22,6 +24,7 @@ export const UnitPrimarchAbilities = ({ unit }) => {
               <span className="description">
                 <MarkupText
                   content={`<k>${localize(ability.name, lang)}:</k> ${localize(ability.description, lang)}`}
+                  glossary={glossary}
                 />
               </span>
             </div>
