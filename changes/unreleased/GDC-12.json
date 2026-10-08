@@ -1,5 +1,0 @@
-{
-  "title": "Keyword tooltips in 11th edition ability text",
-  "body": "Hover a keyword such as Lone Operative in a unit's ability text to see its rule. This works when the datasource's keyword glossary has an entry for it.",
-  "severity": "info"
-}

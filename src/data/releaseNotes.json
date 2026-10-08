@@ -222,5 +222,12 @@
     "body": "When something goes wrong, the error page now lists the app version and what you were working on. Use Copy error details and paste it on Discord so we can find the problem faster.",
     "severity": "info",
     "timestamp": 1791363600
+  },
+  {
+    "version": "3.13.5",
+    "title": "Keyword tooltips in 11th edition ability text",
+    "body": "Hover a keyword such as Lone Operative in a unit's ability text to see its rule. This works when the datasource's keyword glossary has an entry for it.",
+    "severity": "info",
+    "timestamp": 1791490062
   }
 ]
