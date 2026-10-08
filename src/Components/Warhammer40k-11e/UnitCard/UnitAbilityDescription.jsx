@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import stringWidth from "string-width";
+import { Tooltip } from "../../Tooltip/Tooltip";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { use11eKeywordGlossary } from "../../../Hooks/use11eKeywordGlossary";
 import { localize } from "../../../Helpers/localization.helpers";
+import { resolveKeywordEntry } from "../../../Helpers/customSchema.helpers";
 
 // 11th edition descriptions use their own rich-text markup (instead of the 10e
 // bracket/regex keyword dictionary):
@@ -46,11 +49,71 @@ export const normalize11eMarkup = (text) => {
     .replace(/\s*■\s*/g, "\n■ "); // box bullets onto their own line
 };
 
+// Plain text of a hast element, or null when it holds anything but text (e.g.
+// <b><i>..</i></b>), so only simple keyword markup is looked up.
+const getPlainText = (node) => {
+  const children = node?.children || [];
+  if (children.length === 0 || children.some((child) => child.type !== "text")) return null;
+  return children.map((child) => child.value).join("");
+};
+
+// Square brackets (ASCII and full-width) that 11e text puts around weapon keywords.
+const BRACKETED_KEYWORD = /^\s*[[\uFF3B]\s*([\s\S]*?)\s*[\]\uFF3D]\s*$/;
+
 /**
- * Render a plain (already-localised) markup string.
+ * Add a copy of each entry under every localised name (`nameLoc`), so a keyword
+ * written in the card's display language resolves like its English name.
+ * @param {Array} glossary - The 11e keyword glossary.
+ * @returns {Array}
  */
-export const MarkupText = ({ content }) => {
+export const expandLocalizedGlossary = (glossary) => {
+  if (!Array.isArray(glossary)) return [];
+  return glossary.flatMap((entry) => {
+    const names = Object.values(entry?.nameLoc || {}).filter((name) => typeof name === "string" && name !== entry.name);
+    return [entry, ...[...new Set(names)].map((name) => ({ ...entry, name }))];
+  });
+};
+
+/**
+ * Resolve a keyword written inside ability text to its glossary entry. Ability
+ * keywords (e.g. <b>Lone Operative</b>) resolve against the "abilities" scope;
+ * bracketed weapon keywords (e.g. <k>[Lethal Hits]</k>) also fall back to the
+ * "weapons" scope.
+ * @param {string|null} text - The element's plain text.
+ * @param {Array} glossary - The 11e keyword glossary (see expandLocalizedGlossary).
+ * @returns {object|null}
+ */
+export const resolveInlineKeywordEntry = (text, glossary) => {
+  if (!text || !Array.isArray(glossary) || glossary.length === 0) return null;
+  // 11e text writes some hyphenated keywords (Anti-X) with a non-breaking hyphen.
+  const normalized = text.replace(/\u2011/g, "-");
+  const bracketed = normalized.match(BRACKETED_KEYWORD);
+  const keyword = bracketed ? bracketed[1] : normalized;
+  return (
+    resolveKeywordEntry(keyword, glossary, "abilities") ||
+    (bracketed ? resolveKeywordEntry(keyword, glossary, "weapons") : null)
+  );
+};
+
+/**
+ * Render a plain (already-localised) markup string. Pass `glossary` to give
+ * keywords (<k> and bold text) that match a glossary entry a hover tooltip.
+ */
+export const MarkupText = ({ content, glossary }) => {
+  const lookupGlossary = useMemo(() => (glossary ? expandLocalizedGlossary(glossary) : null), [glossary]);
   let paragraphCount = 0;
+  // Wraps a keyword element in a tooltip when its text resolves to a glossary entry.
+  const withGlossaryTooltip = (node, element) => {
+    const entry = lookupGlossary ? resolveInlineKeywordEntry(getPlainText(node), lookupGlossary) : null;
+    if (!entry) return element;
+    return (
+      <Tooltip placement="bottom" content={<LocalizedMarkup value={entry.descriptionLoc ?? entry.description} />}>
+        {React.cloneElement(element, {
+          className: [element.props.className, "keyword-info"].filter(Boolean).join(" "),
+        })}
+      </Tooltip>
+    );
+  };
   return (
     <ReactMarkdown
       remarkPlugins={[[remarkGfm, { stringLength: stringWidth }], remarkBreaks]}
@@ -79,7 +142,17 @@ export const MarkupText = ({ content }) => {
         // the colour, drop every other style (matching the 10e renderer).
         span(props) {
           const { node, style, ...rest } = props;
-          return <span style={style?.color ? { color: style.color } : undefined} {...rest} />;
+          const element = <span style={style?.color ? { color: style.color } : undefined} {...rest} />;
+          return rest.className === "gdc-keyword" ? withGlossaryTooltip(node, element) : element;
+        },
+        // Ability keywords are usually bolded (e.g. <b>Lone Operative</b>).
+        b(props) {
+          const { node, ...rest } = props;
+          return withGlossaryTooltip(node, <b {...rest} />);
+        },
+        strong(props) {
+          const { node, ...rest } = props;
+          return withGlossaryTooltip(node, <strong {...rest} />);
         },
         br() {
           return <br />;
@@ -99,15 +172,17 @@ export const LocalizedMarkup = ({ value }) => {
 };
 
 /**
- * Named ability block: localised name + localised markup description.
+ * Named ability block: localised name + localised markup description. Keywords
+ * in the description get keyword-glossary tooltips.
  */
 export const UnitAbilityDescription = ({ name, description }) => {
   const { settings } = useSettingsStorage();
+  const glossary = use11eKeywordGlossary();
   return (
     <div className="ability">
       <span className="name">{localize(name, settings.language)}</span>
       <span className="description">
-        <MarkupText content={localize(description, settings.language)} />
+        <MarkupText content={localize(description, settings.language)} glossary={glossary} />
       </span>
     </div>
   );

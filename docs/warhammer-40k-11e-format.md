@@ -195,6 +195,16 @@ add `nameLoc`/`descriptionLoc` language maps:
   hover tooltip whose description is localised (`descriptionLoc[lang]`, falling
   back to the English `description`) and rendered with the 11e
   `MarkupText`/`LocalizedMarkup` engine. Unmatched tags render plain.
+- **Ability text:** unit ability descriptions (other, wargear, special, primarch
+  and Damaged) pass the glossary to `MarkupText`, which looks up each `<k>` and
+  bold (`<b>`/`**`) element holding plain text. Ability keywords such as
+  `<b>Lone Operative</b>` resolve against `abilities`; bracketed text such as
+  `<k>[Lethal Hits]</k>` drops its brackets and also falls back to `weapons`.
+  Matching runs on the displayed (localised) text, against the English `name`
+  and every `nameLoc` value, so a translated keyword only gets a tooltip when
+  its entry carries that translation. Every other
+  `MarkupText` caller (weapon descriptions, loadout, wargear options,
+  stratagem/enhancement/rule cards) renders without lookups.
 
 ## Weapons
 
