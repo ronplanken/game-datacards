@@ -1,6 +1,10 @@
-import { UnitAbility } from "../../../Warhammer40k-10e/UnitCard/UnitAbility";
-import { UnitAbilityDescription } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
+import { Fragment } from "react";
+import { Button } from "antd";
+import { UnitAbilityDescription, replaceKeywords } from "../../../Warhammer40k-10e/UnitCard/UnitAbilityDescription";
 import { UnitInvul } from "../../../Warhammer40k-10e/UnitCard/UnitInvul";
+import { tooltipProps as ruleTooltipProps } from "../../../Warhammer40k-10e/UnitCard/RuleTooltip";
+import { Tooltip } from "../../../Tooltip/Tooltip";
+import { resolveKeywordEntry } from "../../../../Helpers/customSchema.helpers";
 
 /**
  * Gets abilities for a given category from the card data.
@@ -21,6 +25,27 @@ const getAbilitiesForCategory = (abilities, categoryKey) => {
   }
 
   return Array.isArray(categoryAbilities) ? categoryAbilities : [];
+};
+
+/**
+ * One ability name in a `name-only` category (e.g. "Support"). Names that
+ * resolve to a datasource glossary entry scoped to "abilities" get a hover
+ * tooltip with that entry's description. Anything else falls back to the
+ * built-in 40K keyword dictionary so 10e datasources keep their hardcoded
+ * Leader/Stealth/Deep Strike tooltips.
+ */
+const NameOnlyAbility = ({ name, glossary }) => {
+  const entry = resolveKeywordEntry(name, glossary, "abilities");
+  if (entry?.description) {
+    return (
+      <span className="rule">
+        <Tooltip {...ruleTooltipProps} content={entry.description}>
+          <Button type="text" size="small" className="rule-button">{`${name}`}</Button>
+        </Tooltip>
+      </span>
+    );
+  }
+  return replaceKeywords(name);
 };
 
 /**
@@ -65,11 +90,17 @@ export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary }) => {
               const visibleAbilities = abilities.filter((a) => a.showAbility !== false);
               if (!visibleAbilities.length) return null;
               content = (
-                <UnitAbility
-                  key={`cat-${category.key}`}
-                  name={category.label}
-                  value={visibleAbilities.map((a) => a.name).join(", ")}
-                />
+                <div className="ability" key={`cat-${category.key}`} data-name={category.label}>
+                  <span className="title">{category.label}</span>
+                  <span className="value">
+                    {visibleAbilities.map((ability, index) => (
+                      <Fragment key={`ability-${category.key}-${index}`}>
+                        {index > 0 && ", "}
+                        <NameOnlyAbility name={ability.name} glossary={keywordGlossary} />
+                      </Fragment>
+                    ))}
+                  </span>
+                </div>
               );
             } else {
               content = abilities
