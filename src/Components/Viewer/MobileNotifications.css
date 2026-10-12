@@ -165,3 +165,33 @@
 .mobile-notification-item-time {
   color: var(--menu-text-dim);
 }
+
+html[data-theme="dark"] .mobile-notifications-header,
+html[data-theme="dark"] .mobile-notification-item {
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .mobile-notifications-mark-read,
+html[data-theme="dark"] .mobile-notifications-empty p,
+html[data-theme="dark"] .mobile-notification-item-body {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .mobile-notifications-mark-read:active {
+  background: var(--gdc-bg-hover);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .mobile-notifications-empty,
+html[data-theme="dark"] .mobile-notification-item-meta,
+html[data-theme="dark"] .mobile-notification-item-time {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .mobile-notification-item--unread {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .mobile-notification-item-title {
+  color: var(--gdc-text);
+}

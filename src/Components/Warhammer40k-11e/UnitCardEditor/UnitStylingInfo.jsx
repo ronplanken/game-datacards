@@ -244,7 +244,7 @@ export function UnitStylingInfo() {
                     width: 40,
                     height: 28,
                     padding: 0,
-                    border: "1px solid #d9d9d9",
+                    border: "1px solid var(--gdc-border)",
                     borderRadius: 4,
                     cursor: "pointer",
                   }}
@@ -275,7 +275,7 @@ export function UnitStylingInfo() {
                     width: 40,
                     height: 28,
                     padding: 0,
-                    border: "1px solid #d9d9d9",
+                    border: "1px solid var(--gdc-border)",
                     borderRadius: 4,
                     cursor: "pointer",
                   }}

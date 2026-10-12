@@ -70,3 +70,32 @@
 .viewer-search-clear:hover {
   background: rgba(0, 0, 0, 0.45);
 }
+
+html[data-theme="dark"] .viewer-search-input {
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .viewer-search-input::placeholder,
+html[data-theme="dark"] .viewer-search-icon {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .viewer-search-input:hover {
+  border-color: var(--gdc-primary-hover);
+}
+
+html[data-theme="dark"] .viewer-search-input:focus {
+  border-color: var(--gdc-primary);
+  box-shadow: 0 0 0 2px rgba(60, 137, 232, 0.25);
+}
+
+html[data-theme="dark"] .viewer-search-clear {
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--gdc-text-inverse);
+}
+
+html[data-theme="dark"] .viewer-search-clear:hover {
+  background: rgba(255, 255, 255, 0.5);
+}

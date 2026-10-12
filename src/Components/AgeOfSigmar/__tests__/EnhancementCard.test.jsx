@@ -26,6 +26,11 @@ describe("EnhancementCard", () => {
     expect(screen.getByText("Effect")).toBeInTheDocument();
   });
 
+  it("marks its root as a datacard so dark mode keeps the light card colours", () => {
+    const { container } = render(<EnhancementCard enhancement={artefact} />);
+    expect(container.firstChild).toHaveClass("gdc-datacard");
+  });
+
   it("shows a command point cost when the enhancement is not priced in points", () => {
     render(<EnhancementCard enhancement={{ ...artefact, points: null, cpCost: 1 }} />);
     expect(screen.getByText("1")).toBeInTheDocument();

@@ -326,3 +326,118 @@
     border-radius: 0;
   }
 }
+
+html[data-theme="dark"] .pdm-modal-overlay {
+  background: var(--gdc-bg-mask);
+}
+
+html[data-theme="dark"] .pdm-modal {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .pdm-modal-header,
+html[data-theme="dark"] .pdm-modal-footer {
+  background: var(--gdc-bg-surface-alt);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .pdm-modal-title,
+html[data-theme="dark"] .pdm-label,
+html[data-theme="dark"] .pdm-version-number {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .pdm-modal-title svg {
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .pdm-modal-close {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .pdm-modal-close:hover {
+  background: var(--gdc-bg-hover);
+  border-color: var(--gdc-primary-text);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .pdm-description,
+html[data-theme="dark"] .pdm-version-label,
+html[data-theme="dark"] .pdm-info-box li {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .pdm-textarea,
+html[data-theme="dark"] .pdm-select {
+  background-color: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .pdm-select option {
+  background: var(--gdc-bg-elevated);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .pdm-textarea::placeholder {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .pdm-textarea:focus,
+html[data-theme="dark"] .pdm-select:focus {
+  border-color: var(--gdc-primary);
+  box-shadow: 0 0 0 3px rgba(60, 137, 232, 0.25);
+}
+
+html[data-theme="dark"] .pdm-char-count,
+html[data-theme="dark"] .pdm-version-arrow {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .pdm-version-info,
+html[data-theme="dark"] .pdm-info-box {
+  background: var(--gdc-info-bg);
+  border-color: var(--gdc-info-border);
+}
+
+html[data-theme="dark"] .pdm-version-number {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .pdm-version-number.new {
+  background: var(--gdc-primary-active);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .pdm-info-box p {
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .pdm-btn.secondary {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .pdm-btn.secondary:hover {
+  background: var(--gdc-bg-hover);
+  border-color: var(--gdc-primary-text);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .pdm-btn.primary {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .pdm-btn.primary:hover:not(:disabled) {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .pdm-btn.primary:disabled {
+  background: var(--gdc-bg-disabled);
+  color: var(--gdc-text-disabled);
+}

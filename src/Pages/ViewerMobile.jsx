@@ -349,10 +349,9 @@ export const ViewerMobile = ({
                   overflow: "auto",
                   "--banner-colour": cardFaction?.colours?.banner,
                   "--header-colour": cardFaction?.colours?.header,
-                  backgroundColor: "#d8d8da",
                   paddingBottom: "64px",
                 }}
-                className={cardConfig.cssClass}>
+                className={`mobile-viewer-scroll ${cardConfig.cssClass}`}>
                 {/* Back button header for non-scroll-reveal cards */}
                 {activeCard && !cardConfig.useScrollRevealHeader && (
                   <div className="mobile-card-header">

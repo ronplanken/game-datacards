@@ -165,3 +165,52 @@ button.datasource-update-btn:disabled,
     grid-template-columns: 1fr;
   }
 }
+
+html[data-theme="dark"] .datasource-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .datasource-card:hover {
+  border-color: var(--gdc-primary-border);
+}
+
+html[data-theme="dark"] .datasource-card.active {
+  background: rgba(60, 137, 232, 0.12);
+  border-color: rgba(106, 174, 255, 0.45);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(106, 174, 255, 0.12);
+}
+
+html[data-theme="dark"] .datasource-card.active::after {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .datasource-card-title,
+html[data-theme="dark"] .datasource-detail-value {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .datasource-card.active .datasource-card-title {
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .datasource-details {
+  border-top-color: rgba(106, 174, 255, 0.2);
+}
+
+html[data-theme="dark"] .datasource-detail-label,
+html[data-theme="dark"] .datasource-update-label {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .loading-spinner {
+  border-color: rgba(106, 174, 255, 0.25);
+  border-top-color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] button.datasource-update-btn,
+html[data-theme="dark"] .datasource-details .datasource-update-btn {
+  background: var(--gdc-primary-active);
+}

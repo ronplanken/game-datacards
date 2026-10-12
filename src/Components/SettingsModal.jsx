@@ -498,31 +498,38 @@ export const SettingsModal = () => {
                 {activeTab === "appearance" && (
                   <>
                     <p className="settings-section-description">Choose how Game Datacards looks on this device.</p>
-                    <div className="setting-row">
+                    <div className="setting-row setting-row-stacked">
                       <div className="setting-info">
                         <div className="setting-label">Theme</div>
                         <div className="setting-description">
                           System follows the light or dark setting of your device. Cards always keep their own colours.
                         </div>
                       </div>
-                    </div>
-                    <div className="theme-choice" role="radiogroup" aria-label="Theme">
-                      {[
-                        { value: "light", icon: <Sun size={18} /> },
-                        { value: "dark", icon: <Moon size={18} /> },
-                        { value: "system", icon: <Monitor size={18} /> },
-                      ].map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          role="radio"
-                          aria-checked={themePreference === option.value}
-                          className={`theme-choice-option ${themePreference === option.value ? "active" : ""}`}
-                          onClick={() => setThemePreference(option.value)}>
-                          {option.icon}
-                          <span>{THEME_LABELS[option.value]}</span>
-                        </button>
-                      ))}
+                      <div className="theme-choice" role="radiogroup" aria-label="Theme">
+                        {[
+                          { value: "light", icon: <Sun size={16} /> },
+                          { value: "dark", icon: <Moon size={16} /> },
+                          { value: "system", icon: <Monitor size={16} /> },
+                        ].map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={themePreference === option.value}
+                            className={`theme-choice-option ${themePreference === option.value ? "active" : ""}`}
+                            onClick={() => setThemePreference(option.value)}>
+                            <span className={`theme-choice-preview theme-choice-preview-${option.value}`}>
+                              <span className="theme-choice-preview-bar" />
+                              <span className="theme-choice-preview-line" />
+                              <span className="theme-choice-preview-line short" />
+                            </span>
+                            <span className="theme-choice-label">
+                              {option.icon}
+                              {THEME_LABELS[option.value]}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </>
                 )}

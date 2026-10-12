@@ -471,3 +471,110 @@
     transform: none;
   }
 }
+
+html[data-theme="dark"] .mobile-faction-page {
+  background: var(--gdc-bg-surface);
+}
+
+html[data-theme="dark"] .detachment-selector,
+html[data-theme="dark"] .expandable-item {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .detachment-selector:active,
+html[data-theme="dark"] .expandable-item-header:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .detachment-selector svg,
+html[data-theme="dark"] .expandable-item-header svg {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .stratagem-toggle {
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .stratagem-toggle-btn {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .stratagem-toggle-btn:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .stratagem-toggle-btn.active {
+  background: var(--banner-colour, #001529);
+  border-color: var(--gdc-border-strong);
+  color: #fff;
+}
+
+html[data-theme="dark"] .expandable-item-title,
+html[data-theme="dark"] .rule-header {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .expandable-item.open .expandable-item-header {
+  border-bottom-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .enhancement-description,
+html[data-theme="dark"] .rule-text,
+html[data-theme="dark"] .rule-accordion-item {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .empty-state {
+  color: var(--gdc-text-tertiary);
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .detachment-picker-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .detachment-picker-item:active,
+html[data-theme="dark"] .detachment-picker-item.selected {
+  background: var(--gdc-bg-active);
+}
+
+html[data-theme="dark"] .detachment-picker-item.selected {
+  border-color: var(--gdc-primary);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .detachment-check {
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .rule-quote,
+html[data-theme="dark"] .rule-text-italic {
+  color: var(--gdc-text-secondary);
+  background: var(--gdc-bg-sunken);
+}
+
+html[data-theme="dark"] .rule-accordion-item {
+  background: var(--gdc-bg-sunken);
+}
+
+html[data-theme="dark"] .rule-accordion-title {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .stratagem-list .expandable-item-content {
+  margin: 0 8px 8px;
+  padding: 12px 8px 8px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+html[data-theme="dark"] .stratagem-list .expandable-item.open .expandable-item-header {
+  border-bottom-color: transparent;
+}

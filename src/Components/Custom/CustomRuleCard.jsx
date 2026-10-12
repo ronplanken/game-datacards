@@ -40,7 +40,7 @@ export const CustomRuleCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
 
   return (
     <div
-      className={`custom-card custom-rule-card${isMobile ? " custom-card-mobile" : ""}`}
+      className={`custom-card custom-rule-card gdc-datacard${isMobile ? " custom-card-mobile" : ""}`}
       style={{
         "--width": `${card.styling?.width ?? 458}px`,
         "--height": useAutoHeight ? "auto" : `${card.styling?.height ?? 320}px`,

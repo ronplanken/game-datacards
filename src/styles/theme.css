@@ -92,7 +92,7 @@ html[data-theme="dark"] {
   --gdc-warning-bg: rgba(216, 150, 20, 0.14);
   --gdc-warning-border: #594214;
   --gdc-warning-text: #ffc53d;
-  --gdc-danger: #dc4446;
+  --gdc-danger: #c93a3c;
   --gdc-danger-bg: rgba(220, 68, 70, 0.14);
   --gdc-danger-border: #5b2526;
   --gdc-danger-text: #ff7875;
@@ -142,6 +142,11 @@ html[data-theme="dark"] .gdc-light-scope {
   --gdc-text-disabled: rgba(0, 0, 0, 0.25);
   --gdc-heading: rgba(0, 0, 0, 0.88);
   --gdc-link: #1677ff;
+  color-scheme: light;
+}
+
+:where(html[data-theme="dark"] .gdc-datacard) {
+  color: rgba(0, 0, 0, 0.85);
   color-scheme: light;
 }
 

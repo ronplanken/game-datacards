@@ -72,3 +72,8 @@
 .arm-hint--over {
   color: #dc3545;
 }
+
+html[data-theme="dark"] .arm-dp--over,
+html[data-theme="dark"] .arm-hint--over {
+  color: var(--gdc-danger-text);
+}

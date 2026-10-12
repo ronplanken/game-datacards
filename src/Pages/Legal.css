@@ -106,3 +106,32 @@
     padding: 8px;
   }
 }
+
+html[data-theme="dark"] .legal-page {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .legal-page h1,
+html[data-theme="dark"] .legal-page h2 {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .legal-page .legal-updated,
+html[data-theme="dark"] .legal-page .legal-back {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .legal-page a,
+html[data-theme="dark"] .legal-page .legal-back:hover {
+  color: var(--gdc-link);
+}
+
+html[data-theme="dark"] .legal-page th,
+html[data-theme="dark"] .legal-page td {
+  border-bottom-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .legal-page th {
+  color: var(--gdc-text);
+  background: var(--gdc-bg-surface-alt);
+}

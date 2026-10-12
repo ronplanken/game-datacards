@@ -220,3 +220,96 @@
 .print-sider.small-form .ant-input {
   font-size: 13px;
 }
+
+html[data-theme="dark"] .print-sider {
+  background: var(--gdc-bg-surface-alt) !important;
+  border-right-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .print-sider-header,
+html[data-theme="dark"] .print-sider-footer {
+  background: var(--gdc-bg-surface);
+  border-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .print-sider-title {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .print-sider .ant-collapse > .ant-collapse-item {
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .print-sider .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  color: var(--gdc-text);
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .print-sider .ant-collapse > .ant-collapse-item > .ant-collapse-header:hover {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .print-sider .ant-collapse-content {
+  background: var(--gdc-bg-surface);
+  border-top-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .print-sider .ant-form-item-label > label {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .print-sider .ant-slider-track {
+  background-color: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .print-sider .ant-slider:hover .ant-slider-track {
+  background-color: var(--gdc-primary-hover);
+}
+
+html[data-theme="dark"] .print-setting-row {
+  background: var(--gdc-bg-surface-alt);
+  border-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .print-setting-label {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .print-setting-description {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .print-settings-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html[data-theme="dark"] .print-settings-scroll::-webkit-scrollbar-thumb {
+  background: var(--gdc-scrollbar-thumb);
+}
+
+html[data-theme="dark"] .print-settings-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+html[data-theme="dark"] .printer,
+html[data-theme="dark"] .image-generator {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+@media print {
+  html[data-theme="dark"] .ant-layout {
+    background-color: #fff;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  html[data-theme="dark"] .print-content {
+    background: transparent;
+  }
+}
+
+html[data-theme="dark"] .whatsnew-container {
+  background: var(--gdc-bg-elevated);
+  border: 1px solid var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+  color: var(--gdc-text);
+}

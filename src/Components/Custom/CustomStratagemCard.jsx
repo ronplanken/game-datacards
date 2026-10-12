@@ -39,7 +39,7 @@ export const CustomStratagemCard = ({ card, cardTypeDef, cardStyle, isMobile }) 
 
   return (
     <div
-      className={`custom-card custom-stratagem-card ${turnClass}${isMobile ? " custom-card-mobile" : ""}`}
+      className={`custom-card custom-stratagem-card gdc-datacard ${turnClass}${isMobile ? " custom-card-mobile" : ""}`}
       style={{
         "--width": `${card.styling?.width ?? 260}px`,
         "--height": `${card.styling?.height ?? 458}px`,

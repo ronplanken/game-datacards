@@ -29,3 +29,14 @@
   border-color: #1677ff;
   color: #1677ff;
 }
+
+html[data-theme="dark"] .datasource-glossary-button {
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .datasource-glossary-button:hover {
+  border-color: var(--gdc-primary-hover);
+  color: var(--gdc-primary-text);
+}

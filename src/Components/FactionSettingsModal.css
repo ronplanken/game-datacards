@@ -493,3 +493,88 @@ button.faction-close-btn:hover,
     transition: none;
   }
 }
+
+html[data-theme="dark"] .faction-modal-overlay {
+  --glass-bg: rgba(24, 36, 58, 0.92);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.03);
+  --glass-border: var(--gdc-border-strong);
+  --glass-border-subtle: var(--gdc-border);
+  --accent-primary: var(--gdc-primary-text);
+  --accent-secondary: var(--gdc-primary-hover);
+  --accent-light: var(--gdc-primary-bg);
+  --accent-ultra-light: rgba(60, 137, 232, 0.1);
+  --text-primary: var(--gdc-text);
+  --text-secondary: var(--gdc-text-secondary);
+  --text-muted: var(--gdc-text-tertiary);
+  --shadow-sm: var(--gdc-shadow-sm);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: var(--gdc-shadow-lg);
+  background: var(--gdc-bg-mask);
+}
+
+html[data-theme="dark"] .faction-modal {
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="dark"] .faction-modal-header {
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .faction-sidebar {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+html[data-theme="dark"] .faction-nav-item:hover:not(.disabled) {
+  background: var(--gdc-bg-hover);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .faction-nav-item.active {
+  background: var(--gdc-bg-active);
+  border-color: var(--gdc-primary-border);
+}
+
+html[data-theme="dark"] .faction-nav-item.active::before,
+html[data-theme="dark"] .faction-section-title::after {
+  background: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .faction-content {
+  background: transparent;
+}
+
+html[data-theme="dark"] .faction-setting-card {
+  background: var(--gdc-bg-surface);
+}
+
+html[data-theme="dark"] .faction-setting-card.clickable:hover {
+  border-color: var(--gdc-primary-border);
+}
+
+html[data-theme="dark"] button.faction-bulk-btn,
+html[data-theme="dark"] .faction-bulk-actions .faction-bulk-btn {
+  background: var(--gdc-bg-surface);
+}
+
+html[data-theme="dark"] button.faction-bulk-btn:hover,
+html[data-theme="dark"] .faction-bulk-actions .faction-bulk-btn:hover {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .faction-modal-footer {
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .faction-content::-webkit-scrollbar-thumb {
+  background: var(--gdc-scrollbar-thumb);
+}
+
+html[data-theme="dark"] .faction-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+html[data-theme="dark"] .faction-settings-trigger {
+  color: var(--gdc-text-secondary);
+}

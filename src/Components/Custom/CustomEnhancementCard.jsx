@@ -37,7 +37,7 @@ export const CustomEnhancementCard = ({ card, cardTypeDef, cardStyle, isMobile }
 
   return (
     <div
-      className={`custom-card custom-enhancement-card${isMobile ? " custom-card-mobile" : ""}`}
+      className={`custom-card custom-enhancement-card gdc-datacard${isMobile ? " custom-card-mobile" : ""}`}
       style={{
         "--width": `${card.styling?.width ?? 260}px`,
         "--height": `${card.styling?.height ?? 458}px`,

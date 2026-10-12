@@ -3,6 +3,7 @@ import split from "just-split";
 import { useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import "../App.css";
+import "../Components/Print/Print.css";
 import { NecromundaCardDisplay } from "../Components/Necromunda/CardDisplay";
 import { Printer } from "../Components/Print/Printer";
 import { PrintFaq } from "../Components/PrintFaq";
@@ -44,7 +45,7 @@ export const LegacyPrint = () => {
           </Row>
         </Header>
         <Layout>
-          <Sider style={{ backgroundColor: "#F0F2F5", zIndex: 1000 }} className="no-print">
+          <Sider style={{ backgroundColor: "var(--gdc-bg-app)", zIndex: 1000 }} className="no-print">
             <Row style={{ paddingTop: 8, paddingLeft: 8 }}>
               <Col flex="auto">
                 <Typography.Title level={5}>Legacy print settings</Typography.Title>

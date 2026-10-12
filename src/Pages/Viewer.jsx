@@ -147,7 +147,9 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
                 "--header-colour": cardFaction?.colours?.header,
               }}
               className={`viewer-card-container ${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
-              <Row style={{ overflow: "hidden", justifyContent: "center" }}>{renderCard()}</Row>
+              <Row className="viewer-card-row" style={{ overflow: "hidden", justifyContent: "center" }}>
+                {renderCard()}
+              </Row>
               <ViewerFloatingToolbar
                 side={side}
                 setSide={setSide}
@@ -187,7 +189,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
             top: "0px",
             left: "0px",
           }}
-          className={`${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
+          className={`viewer-share-capture ${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
           <Row style={{ overflow: "hidden" }}>
             {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} />}
             {activeCard?.source === "40k-11e" && <Warhammer40K11eCardDisplay side={side} />}
@@ -211,7 +213,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
             top: "0px",
             left: "0px",
           }}
-          className={`${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
+          className={`viewer-share-capture ${useCustomScope ? "data-custom" : `data-${activeCard?.source}`}`}>
           <Row style={{ overflow: "hidden" }}>
             {activeCard?.source === "40k-10e" && <Warhammer40K10eCardDisplay side={side} type="viewer" />}
             {activeCard?.source === "40k-11e" && <Warhammer40K11eCardDisplay side={side} type="viewer" />}

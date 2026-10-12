@@ -153,3 +153,75 @@
 .viewer-left-panel .ant-list::-webkit-scrollbar-thumb:hover {
   background: #bfbfbf;
 }
+
+html[data-theme="dark"] .viewer-left-panel {
+  background-color: var(--gdc-bg-app);
+}
+
+html[data-theme="dark"] .viewer-left-panel .ant-list {
+  border-top-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .viewer-left-panel .ant-list-item {
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .viewer-left-panel .ant-list-item:hover {
+  background-color: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-header,
+html[data-theme="dark"] .viewer-left-panel .list-header:hover {
+  color: var(--gdc-text-secondary);
+  background-color: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-category {
+  color: var(--gdc-text);
+  background-color: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-category:hover {
+  background-color: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-category .icon {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-item {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-item.selected {
+  border-left-color: var(--gdc-primary-text);
+  background-color: var(--gdc-bg-active);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-item.selected:hover {
+  background-color: rgba(64, 150, 255, 0.26);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-item.legends {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .viewer-left-panel .list-cost {
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .viewer-left-panel .ant-list-empty-text {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .viewer-left-panel .ant-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html[data-theme="dark"] .viewer-left-panel .ant-list::-webkit-scrollbar-thumb {
+  background: var(--gdc-scrollbar-thumb);
+}
+
+html[data-theme="dark"] .viewer-left-panel .ant-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

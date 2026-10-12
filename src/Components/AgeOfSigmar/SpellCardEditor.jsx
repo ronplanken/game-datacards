@@ -127,18 +127,17 @@ export const SpellCardEditor = () => {
         </Form>
       </Panel>
       <Panel header="Links" style={{ width: "100%" }} key="4">
-        <div style={{ marginBottom: "8px", color: "#666", fontSize: "12px" }}>
+        <div className="editor-link-hint" style={{ marginBottom: "8px", fontSize: "12px" }}>
           Link this spell to a warscroll it summons.
         </div>
         {activeCard.linkedWarscroll ? (
           <div
+            className="editor-link-box"
             style={{
               display: "flex",
               alignItems: "center",
               gap: "8px",
               padding: "8px 12px",
-              background: "#f0f0f0",
-              border: "1px solid #d9d9d9",
               borderRadius: "4px",
               width: "100%",
             }}>

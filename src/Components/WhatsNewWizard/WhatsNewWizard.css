@@ -1088,3 +1088,7 @@
     transition: none;
   }
 }
+
+html[data-theme="dark"] .wnw-overlay {
+  --wnw-text-dim: #8291a7;
+}

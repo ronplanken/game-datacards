@@ -108,7 +108,6 @@ html[data-theme="dark"] .ant-divider-horizontal.ant-divider-with-text::after {
   border-top-color: var(--gdc-border-subtle);
 }
 
-/* Buttons */
 html[data-theme="dark"] .ant-btn {
   background: var(--gdc-bg-surface-alt);
   border-color: var(--gdc-border);
@@ -152,7 +151,14 @@ html[data-theme="dark"] .ant-btn-dangerous:focus {
   color: var(--gdc-danger-text);
 }
 
-html[data-theme="dark"] .ant-btn-primary.ant-btn-dangerous {
+html[data-theme="dark"] .ant-btn-primary.ant-btn-dangerous,
+html[data-theme="dark"] .ant-btn-primary.ant-btn-dangerous:focus {
+  background: #c23436;
+  border-color: #c23436;
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .ant-btn-primary.ant-btn-dangerous:hover {
   background: var(--gdc-danger);
   border-color: var(--gdc-danger);
   color: #ffffff;
@@ -213,7 +219,6 @@ html[data-theme="dark"] .ant-btn-link[disabled]:hover {
   border-color: transparent;
 }
 
-/* Inputs */
 html[data-theme="dark"] .ant-input,
 html[data-theme="dark"] .ant-input-affix-wrapper,
 html[data-theme="dark"] .ant-input-number,
@@ -325,7 +330,6 @@ html[data-theme="dark"] .ant-form-item-has-error .ant-input-affix-wrapper:hover 
   border-color: var(--gdc-danger);
 }
 
-/* Select dropdowns */
 html[data-theme="dark"] .ant-select-dropdown,
 html[data-theme="dark"] .ant-picker-dropdown .ant-picker-panel-container,
 html[data-theme="dark"] .ant-cascader-menus {
@@ -376,7 +380,6 @@ html[data-theme="dark"] .ant-empty-small {
   color: var(--gdc-text-tertiary);
 }
 
-/* Dropdown and menus */
 html[data-theme="dark"] .ant-dropdown-menu,
 html[data-theme="dark"] .ant-dropdown-menu-submenu-popup ul {
   background-color: var(--gdc-bg-elevated);
@@ -448,7 +451,6 @@ html[data-theme="dark"] .ant-menu-submenu-popup > .ant-menu:not(.ant-menu-dark) 
   background-color: var(--gdc-bg-elevated);
 }
 
-/* Modal and drawer */
 html[data-theme="dark"] .ant-modal-mask,
 html[data-theme="dark"] .ant-drawer-mask,
 html[data-theme="dark"] .ant-image-preview-mask {
@@ -497,7 +499,6 @@ html[data-theme="dark"] .ant-drawer-body {
   color: var(--gdc-text);
 }
 
-/* Popover and popconfirm */
 html[data-theme="dark"] .ant-popover-inner {
   background-color: var(--gdc-bg-elevated);
   box-shadow: var(--gdc-shadow);
@@ -528,7 +529,6 @@ html[data-theme="dark"] .ant-tooltip-arrow-content {
   --antd-arrow-background-color: #2a3850;
 }
 
-/* Card */
 html[data-theme="dark"] .ant-card {
   background: var(--gdc-bg-surface);
 }
@@ -560,7 +560,6 @@ html[data-theme="dark"] .ant-card-type-inner .ant-card-head {
   background: var(--gdc-bg-surface-alt);
 }
 
-/* Collapse */
 html[data-theme="dark"] .ant-collapse {
   background-color: var(--gdc-bg-surface-alt);
   border-color: var(--gdc-border-subtle);
@@ -589,7 +588,6 @@ html[data-theme="dark"] .ant-collapse-ghost > .ant-collapse-item > .ant-collapse
   background-color: transparent;
 }
 
-/* Tabs */
 html[data-theme="dark"] .ant-tabs-top > .ant-tabs-nav::before,
 html[data-theme="dark"] .ant-tabs-bottom > .ant-tabs-nav::before {
   border-bottom-color: var(--gdc-border-subtle);
@@ -620,7 +618,6 @@ html[data-theme="dark"] .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active {
   background: var(--gdc-bg-surface);
 }
 
-/* Tree */
 html[data-theme="dark"] .ant-tree {
   background: transparent;
 }
@@ -642,7 +639,6 @@ html[data-theme="dark"] .ant-tree .ant-tree-treenode-disabled .ant-tree-node-con
   color: var(--gdc-text-disabled);
 }
 
-/* Table */
 html[data-theme="dark"] .ant-table {
   background: var(--gdc-bg-surface);
 }
@@ -679,7 +675,6 @@ html[data-theme="dark"] .ant-table-column-sorter {
   color: var(--gdc-text-tertiary);
 }
 
-/* List */
 html[data-theme="dark"] .ant-list-bordered {
   border-color: var(--gdc-border);
 }
@@ -697,7 +692,6 @@ html[data-theme="dark"] .ant-list-item-action-split {
   background-color: var(--gdc-border-subtle);
 }
 
-/* Checkbox, radio, switch */
 html[data-theme="dark"] .ant-checkbox-inner,
 html[data-theme="dark"] .ant-radio-inner {
   background-color: var(--gdc-bg-input);
@@ -753,7 +747,6 @@ html[data-theme="dark"] .ant-switch-checked {
   background-color: var(--gdc-primary-active);
 }
 
-/* Slider */
 html[data-theme="dark"] .ant-slider-rail {
   background-color: var(--gdc-border);
 }
@@ -775,7 +768,6 @@ html[data-theme="dark"] .ant-slider-dot {
   border-color: var(--gdc-border);
 }
 
-/* Tags and badges */
 html[data-theme="dark"] .ant-tag {
   background: var(--gdc-bg-surface-alt);
   border-color: var(--gdc-border);
@@ -834,7 +826,6 @@ html[data-theme="dark"] .ant-badge-status-text {
   color: var(--gdc-text);
 }
 
-/* Alerts, results, feedback */
 html[data-theme="dark"] .ant-alert {
   color: var(--gdc-text);
 }
@@ -908,7 +899,6 @@ html[data-theme="dark"] .ant-skeleton-header .ant-skeleton-avatar {
   background: var(--gdc-bg-surface-alt);
 }
 
-/* Progress */
 html[data-theme="dark"] .ant-progress-inner {
   background-color: var(--gdc-border-subtle);
 }
@@ -917,7 +907,6 @@ html[data-theme="dark"] .ant-progress-circle-trail {
   stroke: var(--gdc-border-subtle) !important;
 }
 
-/* Segmented */
 html[data-theme="dark"] .ant-segmented {
   background-color: var(--gdc-bg-sunken);
   color: var(--gdc-text-secondary);
@@ -933,7 +922,6 @@ html[data-theme="dark"] .ant-segmented-thumb {
   color: var(--gdc-text);
 }
 
-/* Upload */
 html[data-theme="dark"] .ant-upload.ant-upload-drag {
   background: var(--gdc-bg-surface-alt);
   border-color: var(--gdc-border);
@@ -956,7 +944,6 @@ html[data-theme="dark"] .ant-upload-list-item:hover .ant-upload-list-item-info {
   background-color: var(--gdc-bg-hover);
 }
 
-/* Pagination, steps, descriptions, breadcrumb */
 html[data-theme="dark"] .ant-pagination-item,
 html[data-theme="dark"] .ant-pagination-prev .ant-pagination-item-link,
 html[data-theme="dark"] .ant-pagination-next .ant-pagination-item-link {
@@ -1041,4 +1028,26 @@ html[data-theme="dark"] .ant-image-preview-operations {
 
 html[data-theme="dark"] .ant-result-icon > .anticon {
   opacity: 0.9;
+}
+
+html[data-theme="dark"] .ant-form-item-explain,
+html[data-theme="dark"] .ant-form-item-extra,
+html[data-theme="dark"] .ant-list-empty-text {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .ant-form-item-tooltip {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .ant-result-content {
+  background-color: var(--gdc-bg-surface-alt);
+}
+
+@media print {
+  html[data-theme="dark"] .ant-layout,
+  html[data-theme="dark"] .ant-layout-content {
+    background-color: #ffffff;
+    color: rgba(0, 0, 0, 0.85);
+  }
 }

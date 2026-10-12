@@ -50,6 +50,49 @@
   --help-warning-border: #ffe58f;
 }
 
+html[data-theme="dark"] {
+  --help-bg: var(--gdc-bg-surface);
+  --help-bg-muted: var(--gdc-bg-surface-alt);
+  --help-bg-subtle: var(--gdc-bg-sunken);
+  --help-bg-hover: var(--gdc-bg-hover);
+
+  --help-border: var(--gdc-border-subtle);
+  --help-border-mid: var(--gdc-border);
+  --help-border-strong: var(--gdc-border-strong);
+
+  --help-text: var(--gdc-text);
+  --help-text-label: #cfd7e3;
+  --help-text-secondary: var(--gdc-text-secondary);
+  --help-text-body: #aab5c5;
+  --help-text-tertiary: #9ba7b9;
+  --help-text-desc: #95a1b3;
+  --help-text-muted: var(--gdc-text-tertiary);
+  --help-text-caption: var(--gdc-text-tertiary);
+  --help-text-faint: #808da3;
+  --help-text-btn: var(--gdc-text-secondary);
+
+  --help-accent: var(--gdc-primary-text);
+  --help-accent-bg: rgba(60, 137, 232, 0.14);
+  --help-accent-bg-faint: rgba(60, 137, 232, 0.08);
+  --help-accent-border: rgba(106, 174, 255, 0.22);
+  --help-accent-border-strong: rgba(106, 174, 255, 0.3);
+  --help-accent-hover: rgba(106, 174, 255, 0.45);
+
+  --help-icon-muted: var(--gdc-text-tertiary);
+  --help-icon-faint: #6b7a90;
+
+  --help-code: #ff85c0;
+
+  --help-success: var(--gdc-success-text);
+  --help-success-bg: var(--gdc-success-bg);
+  --help-success-border: var(--gdc-success-border);
+  --help-info-bg: var(--gdc-info-bg);
+  --help-info-border: var(--gdc-info-border);
+  --help-warning: var(--gdc-warning-text);
+  --help-warning-bg: var(--gdc-warning-bg);
+  --help-warning-border: var(--gdc-warning-border);
+}
+
 /* Layout */
 .help-layout {
   display: flex;
@@ -945,5 +988,35 @@
 
   .help-page-nav {
     grid-template-columns: 1fr;
+  }
+}
+
+html[data-theme="dark"] .help-step::before {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .help-search {
+  color: var(--help-text);
+}
+
+html[data-theme="dark"] .help-search::placeholder {
+  color: var(--help-text-muted);
+}
+
+html[data-theme="dark"] .help-kbd {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .help-figure-img {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 767px) {
+  html[data-theme="dark"] .help-sidebar {
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+  }
+
+  html[data-theme="dark"] .help-sidebar-overlay {
+    background: var(--gdc-bg-mask);
   }
 }

@@ -713,3 +713,19 @@
 .shared-swipe-hint {
   animation: swipeHint 1.5s ease-in-out 3;
 }
+
+html[data-theme="dark"] .shared-card-container {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+html[data-theme="dark"] {
+  --shared-text-muted: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .shared-mobile-list-item.selected .shared-mobile-list-item-index {
+  color: var(--gdc-text-inverse);
+}
+
+html[data-theme="dark"] .shared-mobile-list-item.selected .shared-mobile-list-item-type {
+  color: var(--gdc-text-secondary);
+}

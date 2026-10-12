@@ -215,3 +215,85 @@ button.datasource-publish-btn:hover,
     font-size: 11px;
   }
 }
+
+html[data-theme="dark"] .datasource-card-source-icon {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .datasource-card.active .datasource-card-source-icon,
+html[data-theme="dark"] .datasource-uploaded-status {
+  color: var(--gdc-primary-text) !important;
+}
+
+html[data-theme="dark"] .datasource-card-count-badge {
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .datasource-card.active .datasource-card-count-badge {
+  background: var(--gdc-primary-bg);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] button.datasource-delete-btn,
+html[data-theme="dark"] .datasource-card .datasource-delete-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] button.datasource-delete-btn:hover,
+html[data-theme="dark"] .datasource-card .datasource-delete-btn:hover {
+  background: var(--gdc-danger-bg);
+  border-color: var(--gdc-danger-border);
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .datasource-card.ghost {
+  border-color: rgba(106, 174, 255, 0.3);
+}
+
+html[data-theme="dark"] .datasource-card-ghost-label {
+  background: var(--gdc-primary-bg);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .datasource-card.subscribed {
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+html[data-theme="dark"] .datasource-card.subscribed .datasource-card-source-icon,
+html[data-theme="dark"] .datasource-published-status {
+  color: #34d399 !important;
+}
+
+html[data-theme="dark"] .datasource-subscribed-badge {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+}
+
+html[data-theme="dark"] button.datasource-upload-btn,
+html[data-theme="dark"] .datasource-card .datasource-upload-btn {
+  background: var(--gdc-primary-bg);
+  border-color: rgba(106, 174, 255, 0.35);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] button.datasource-upload-btn:hover:not(:disabled),
+html[data-theme="dark"] .datasource-card .datasource-upload-btn:hover:not(:disabled) {
+  background: rgba(60, 137, 232, 0.26);
+  border-color: rgba(106, 174, 255, 0.55);
+}
+
+html[data-theme="dark"] button.datasource-publish-btn,
+html[data-theme="dark"] .datasource-card .datasource-publish-btn {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(52, 211, 153, 0.35);
+  color: #34d399;
+}
+
+html[data-theme="dark"] button.datasource-publish-btn:hover,
+html[data-theme="dark"] .datasource-card .datasource-publish-btn:hover {
+  background: rgba(16, 185, 129, 0.24);
+  border-color: rgba(52, 211, 153, 0.55);
+}

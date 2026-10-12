@@ -259,3 +259,163 @@
 .card-editor .ant-input {
   border-radius: 6px !important;
 }
+
+.editor-link-hint {
+  color: #666;
+}
+
+.editor-link-box {
+  background: #f0f0f0;
+  border: 1px solid #d9d9d9;
+}
+
+@media screen {
+  html[data-theme="dark"] .print-content {
+    background: var(--gdc-bg-app);
+  }
+
+  html[data-theme="dark"] .print-page {
+    border-color: var(--gdc-border);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  html[data-theme="dark"] .print-page[data-page-number]::before {
+    color: var(--gdc-primary-text);
+    background: var(--gdc-primary-bg);
+  }
+}
+
+html[data-theme="dark"] .list-header {
+  border-bottom-color: var(--gdc-border) !important;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="dark"] .list-item {
+  border-bottom-color: var(--gdc-border-subtle) !important;
+}
+
+html[data-theme="dark"] .list-item:hover {
+  background-color: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .list-item.selected {
+  border-left-color: var(--gdc-primary-text);
+  background-color: var(--gdc-bg-active);
+}
+
+html[data-theme="dark"] .ant-list-empty-text,
+html[data-theme="dark"] .ant-list .ant-empty-description {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .card-editor .ant-collapse > .ant-collapse-item {
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .card-editor .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+  color: var(--gdc-text);
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .card-editor .ant-collapse > .ant-collapse-item > .ant-collapse-header:hover {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .card-editor .ant-collapse > .ant-collapse-item-disabled > .ant-collapse-header {
+  color: var(--gdc-text-disabled);
+}
+
+html[data-theme="dark"] .card-editor .ant-collapse-content {
+  background: var(--gdc-bg-surface);
+  border-top-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .card-editor .ant-form-item-label > label {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .card-editor .stats_container .stat .caption,
+html[data-theme="dark"] .card-editor .weapons_container .weapon .caption,
+html[data-theme="dark"] .card-editor .weapons_header .weapon .caption {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .card-editor .stats_container .stat .value_container .value,
+html[data-theme="dark"] .card-editor .weapons_container .weapon .value {
+  background-color: var(--gdc-bg-input);
+}
+
+html[data-theme="dark"] .card-editor .stats_container .stat .value_container .value input,
+html[data-theme="dark"] .card-editor .weapons_container .weapon .value input {
+  color: var(--gdc-text);
+  background-color: var(--gdc-bg-input);
+}
+
+html[data-theme="dark"] .card-editor .weapons_header,
+html[data-theme="dark"] .card-editor .keywords_header {
+  color: var(--gdc-text);
+  background-color: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .card-editor .keywords_container .keyword_container {
+  border-bottom-color: var(--gdc-border-strong);
+}
+
+html[data-theme="dark"] .w-md-editor {
+  color-scheme: dark;
+  --color-fg-default: var(--gdc-text);
+  --color-fg-muted: var(--gdc-text-secondary);
+  --color-fg-subtle: var(--gdc-text-tertiary);
+  --color-canvas-default: var(--gdc-bg-input);
+  --color-canvas-subtle: var(--gdc-bg-surface-alt);
+  --color-border-default: var(--gdc-border);
+  --color-border-muted: var(--gdc-border-subtle);
+  --color-neutral-muted: rgba(110, 118, 129, 0.4);
+  --color-accent-fg: var(--gdc-link);
+  --color-accent-emphasis: var(--gdc-primary);
+  --color-attention-subtle: rgba(187, 128, 9, 0.15);
+  --color-danger-fg: var(--gdc-danger-text);
+  --color-prettylights-syntax-comment: #8b949e;
+  --color-prettylights-syntax-constant: #79c0ff;
+  --color-prettylights-syntax-entity: #d2a8ff;
+  --color-prettylights-syntax-storage-modifier-import: #c9d1d9;
+  --color-prettylights-syntax-entity-tag: #7ee787;
+  --color-prettylights-syntax-keyword: #ff7b72;
+  --color-prettylights-syntax-string: #a5d6ff;
+  --color-prettylights-syntax-variable: #ffa657;
+  --color-prettylights-syntax-string-regexp: #7ee787;
+  --color-prettylights-syntax-markup-list: #f2cc60;
+  --color-prettylights-syntax-markup-heading: #6aaeff;
+  --color-prettylights-syntax-markup-italic: #c9d1d9;
+  --color-prettylights-syntax-markup-bold: #e6ebf2;
+  --color-prettylights-syntax-markup-deleted-text: #ffdcd7;
+  --color-prettylights-syntax-markup-deleted-bg: #67060c;
+  --color-prettylights-syntax-markup-inserted-text: #aff5b4;
+  --color-prettylights-syntax-markup-inserted-bg: #033a16;
+  --color-prettylights-syntax-markup-changed-text: #ffdfb6;
+  --color-prettylights-syntax-markup-changed-bg: #5a1e02;
+  --color-prettylights-syntax-markup-ignored-text: #c9d1d9;
+  --color-prettylights-syntax-markup-ignored-bg: #1158c7;
+  --color-prettylights-syntax-meta-diff-range: #d2a8ff;
+  --color-prettylights-syntax-brackethighlighter-angle: #8b949e;
+  --color-prettylights-syntax-constant-other-reference-link: #a5d6ff;
+}
+
+html[data-theme="dark"] .editor-link-hint {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .editor-link-box {
+  background: var(--gdc-bg-surface-alt);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .card-editor .ant-form-item-explain,
+html[data-theme="dark"] .card-editor .ant-form-item-extra {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .editor-weapons_header {
+  background: var(--gdc-bg-surface-alt);
+  border-bottom-color: var(--gdc-border-subtle);
+}

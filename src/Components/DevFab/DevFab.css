@@ -167,3 +167,9 @@
     animation: none;
   }
 }
+
+html[data-theme="dark"] .dev-fab {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(232, 180, 69, 0.2);
+}

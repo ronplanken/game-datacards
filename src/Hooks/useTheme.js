@@ -23,7 +23,7 @@ export function useTheme() {
 
   const setPreference = (next) => {
     if (!context?.updateSettings) return;
-    context.updateSettings({ ...context.settings, theme: normalizeThemePreference(next) });
+    context.updateSettings((prev) => ({ ...prev, theme: normalizeThemePreference(next) }));
   };
 
   return { preference, theme, isDark: theme === "dark", setPreference };

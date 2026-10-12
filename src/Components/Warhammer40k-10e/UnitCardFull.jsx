@@ -50,7 +50,7 @@ export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }
   }, [unit?.uuid, unit?.hasLocalImage, isReady]); // Removed getImageUrl from dependencies
   return (
     <div
-      className={`unit-card-full-wrapper ${className || ""}`}
+      className={`unit-card-full-wrapper gdc-datacard ${className || ""}`}
       style={{
         ...cardStyle,
       }}>

@@ -195,7 +195,9 @@
     background-color: #001529;
     color: rgb(165, 165, 165);
     font-size: 1.5rem;
-    transition: font-size 0.1s ease, color 0.1s ease;
+    transition:
+      font-size 0.1s ease,
+      color 0.1s ease;
 
     &.active {
       font-size: 1.7rem;
@@ -293,8 +295,9 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
 }
 
 .ant-form-small {
@@ -338,5 +341,61 @@ body {
   &:hover {
     background-color: grey;
     height: 2px;
+  }
+}
+
+html[data-theme="dark"] {
+  .list-select,
+  .list-cost {
+    border-color: var(--gdc-border-strong);
+    color: var(--gdc-text);
+  }
+
+  .list-select {
+    &:hover {
+      background-color: var(--gdc-primary-active);
+      border-color: var(--gdc-primary-active);
+      color: #ffffff;
+    }
+    &:active {
+      background-color: #0958d9;
+      border-color: #0958d9;
+      color: #ffffff;
+    }
+  }
+
+  .list-category {
+    border-bottom-color: var(--gdc-border) !important;
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .mobile-menu {
+    .ant-list-item {
+      &:hover {
+        background-color: var(--gdc-bg-hover);
+      }
+      &.disabled {
+        background-color: var(--gdc-bg-disabled);
+        span {
+          color: var(--gdc-text-disabled);
+        }
+      }
+    }
+  }
+
+  .vertical-resizer {
+    background-color: var(--gdc-border-subtle);
+
+    &:hover {
+      background-color: var(--gdc-border-strong);
+    }
+  }
+
+  .horizontal-resizer {
+    background-color: var(--gdc-border-subtle);
+
+    &:hover {
+      background-color: var(--gdc-border-strong);
+    }
   }
 }
