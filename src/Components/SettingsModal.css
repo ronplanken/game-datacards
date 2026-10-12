@@ -411,6 +411,39 @@ button.danger-btn:hover,
   line-height: 1.4;
 }
 
+.theme-choice {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.theme-choice-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.theme-choice-option:hover {
+  border-color: var(--accent-secondary);
+  color: var(--text-primary);
+}
+
+.theme-choice-option.active {
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
 /* ===========================================
    MODAL FOOTER
    =========================================== */

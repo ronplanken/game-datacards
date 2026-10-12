@@ -8,6 +8,8 @@ import { useAuth } from "../../Premium";
 import { getMessages } from "../../Helpers/external.helpers";
 import { countUnreadReleaseNotes } from "../../Helpers/releaseNotes";
 import { resolveMobileConfig } from "./mobileDatasourceConfig";
+import { useTheme } from "../../Hooks/useTheme";
+import { THEME_LABELS, THEME_PREFERENCES } from "../../Helpers/theme.helpers";
 import { BottomSheet } from "./Mobile/BottomSheet";
 import { MobileNotifications } from "./MobileNotifications";
 import "./MobileMenu.css";
@@ -30,6 +32,7 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
   const { dataSource, checkForUpdate } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
   const { user } = useAuth();
+  const { preference: themePreference, setPreference: setThemePreference } = useTheme();
 
   const config = resolveMobileConfig(settings.selectedDataSource, dataSource);
 
@@ -99,6 +102,26 @@ export const MobileMenu = ({ isVisible, setIsVisible }) => {
 
           {/* Game-system-specific settings section */}
           {config.SettingsSection && <config.SettingsSection settings={settings} updateSettings={updateSettings} />}
+
+          <div className="settings-section">
+            <h4 className="settings-section-title">Appearance</h4>
+            <div className="settings-section-content">
+              <div className="settings-row settings-row-select">
+                <span className="settings-label">Theme</span>
+                <select
+                  className="settings-select"
+                  aria-label="Theme"
+                  value={themePreference}
+                  onChange={(e) => setThemePreference(e.target.value)}>
+                  {THEME_PREFERENCES.map((value) => (
+                    <option key={value} value={value}>
+                      {THEME_LABELS[value]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
 
           {/* Card Types Section */}
           <div className="settings-section">

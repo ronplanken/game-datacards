@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import "./styles/theme.css";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
@@ -38,6 +39,7 @@ import {
 } from "./Premium";
 import { useFeatureFlags } from "./Hooks/useFeatureFlags";
 import { useUmami } from "./Hooks/useUmami";
+import { ThemeController } from "./Hooks/useTheme";
 import { isListForgeHash, decodeListForgeUrlPayload, cleanListForgeHash } from "./Helpers/listforgeUrl.helpers";
 import { validateListforgeJson } from "./Helpers/listforgeImport.helpers";
 import { CardStorageProviderComponent } from "./Hooks/useCardStorage";
@@ -49,6 +51,7 @@ import { UserProviderComponent } from "./Hooks/useUser";
 
 import { message } from "./Components/Toast/message";
 import App from "./App";
+import "./styles/antd-dark.css";
 import { ImageExport } from "./Pages/ImageExport";
 import { ImageGenerator } from "./Pages/ImageGenerator";
 import { LegacyPrint } from "./Pages/LegacyPrint";
@@ -351,6 +354,7 @@ const UmamiSessionIdentifier = () => {
 const RootLayout = () => (
   <AppErrorBoundary>
     <SettingsStorageProviderComponent>
+      <ThemeController />
       <AuthProvider>
         <SubscriptionProvider>
           <UserProviderComponent>

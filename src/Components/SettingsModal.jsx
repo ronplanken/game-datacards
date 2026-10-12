@@ -1,4 +1,4 @@
-import { Settings, Database, Trash2, Printer, History, Plus } from "lucide-react";
+import { Settings, Database, Trash2, Printer, History, Plus, Palette, Sun, Moon, Monitor } from "lucide-react";
 import { Popconfirm, Select } from "antd";
 import { SUPPORTED_LANGUAGES, LANGUAGE_LABELS } from "../Helpers/localization.helpers";
 import { message } from "./Toast/message";
@@ -14,6 +14,8 @@ import {
 } from "../Helpers/dataVersion11e.helpers";
 import { useAuth, useSubscription, useSync } from "../Premium";
 import { useUmami } from "../Hooks/useUmami";
+import { useTheme } from "../Hooks/useTheme";
+import { THEME_LABELS } from "../Helpers/theme.helpers";
 import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
 import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
 import { ImportDatasourceModal } from "./SettingsModal/ImportDatasourceModal";
@@ -51,6 +53,7 @@ export const SettingsModal = () => {
   const [uploadingDatasourceId, setUploadingDatasourceId] = useState(null);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { preference: themePreference, setPreference: setThemePreference } = useTheme();
   const { trackEvent } = useUmami();
   const dataVersions11e = use11eDataVersions(isModalVisible && settings.selectedDataSource === "40k-11e");
   const {
@@ -208,6 +211,7 @@ export const SettingsModal = () => {
   const navItems = [
     { key: "datasources", label: "Datasources", icon: <Database size={16} className="settings-nav-icon" /> },
     { key: "storage", label: "Storage", icon: <Trash2 size={16} className="settings-nav-icon" /> },
+    { key: "appearance", label: "Appearance", icon: <Palette size={16} className="settings-nav-icon" /> },
     { key: "printing", label: "Printing", icon: <Printer size={16} className="settings-nav-icon" /> },
     { key: "changelog", label: "Changelog", icon: <History size={16} className="settings-nav-icon" /> },
   ];
@@ -491,6 +495,38 @@ export const SettingsModal = () => {
                 )}
 
                 {/* Printing Tab */}
+                {activeTab === "appearance" && (
+                  <>
+                    <p className="settings-section-description">Choose how Game Datacards looks on this device.</p>
+                    <div className="setting-row">
+                      <div className="setting-info">
+                        <div className="setting-label">Theme</div>
+                        <div className="setting-description">
+                          System follows the light or dark setting of your device. Cards always keep their own colours.
+                        </div>
+                      </div>
+                    </div>
+                    <div className="theme-choice" role="radiogroup" aria-label="Theme">
+                      {[
+                        { value: "light", icon: <Sun size={18} /> },
+                        { value: "dark", icon: <Moon size={18} /> },
+                        { value: "system", icon: <Monitor size={18} /> },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={themePreference === option.value}
+                          className={`theme-choice-option ${themePreference === option.value ? "active" : ""}`}
+                          onClick={() => setThemePreference(option.value)}>
+                          {option.icon}
+                          <span>{THEME_LABELS[option.value]}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
                 {activeTab === "printing" && (
                   <>
                     <p className="settings-section-description">Adjust how your cards are printed.</p>
