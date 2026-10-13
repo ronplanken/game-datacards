@@ -72,6 +72,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       if (!dataStore) {
         return;
       }
+      setDataSource(getBasicData());
       const factionIndex = getFactionIndexForDataSource(settings.selectedDataSource);
 
       if (settings.selectedDataSource === "40k") {
