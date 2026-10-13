@@ -1,5 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
-import { validateSchema, getDefaultValueForType, stripReservedWeaponColumns } from "./customSchema.helpers";
+import {
+  validateSchema,
+  getDefaultValueForType,
+  getUnitCustomFieldDefault,
+  stripReservedWeaponColumns,
+} from "./customSchema.helpers";
 
 // Valid display formats that map to existing card renderers
 export const VALID_DISPLAY_FORMATS = ["40k-11e", "40k-10e", "40k", "basic", "necromunda", "aos", "custom"];
@@ -548,6 +553,9 @@ export const createBlankCardFromSchema = (cardTypeDef, factionId, datasourceId) 
     if (schema.metadata?.hasPoints) {
       card.points = null;
     }
+    (schema.metadata?.fields || []).forEach((field) => {
+      if (field?.key) card[field.key] = getUnitCustomFieldDefault(field);
+    });
   } else {
     // Field-based types: rule, enhancement, stratagem
     (schema.fields || []).forEach((field) => {

@@ -19,6 +19,8 @@ import {
   getDefaultValueForType,
   migrateCardToSchema,
   stripReservedWeaponColumns,
+  getUnitCustomFieldDefault,
+  RESERVED_UNIT_FIELD_KEYS,
 } from "../customSchema.helpers";
 
 describe("customSchema.helpers - constants", () => {
@@ -1963,5 +1965,69 @@ describe("customSchema.helpers - stripReservedWeaponColumns", () => {
     expect(stripReservedWeaponColumns(noCardTypes)).toBe(noCardTypes);
     const noWeapons = { version: SCHEMA_VERSION, baseSystem: "blank", cardTypes: [{ key: "r", schema: {} }] };
     expect(stripReservedWeaponColumns(noWeapons)).toBe(noWeapons);
+  });
+});
+
+describe("customSchema.helpers - unit custom fields", () => {
+  const unitSchemaWith = (fields) => {
+    const preset = create40kPreset();
+    const unitType = preset.cardTypes.find((cardType) => cardType.baseType === "unit");
+    unitType.schema.metadata.fields = fields;
+    return preset;
+  };
+
+  it("accepts string, enum and boolean fields with matching defaults", () => {
+    const result = validateSchema(
+      unitSchemaWith([
+        { key: "showRoleInName", label: "Show role in name", type: "boolean", default: true },
+        { key: "era", label: "Era", type: "enum", options: ["Early", "Late"], default: "Late" },
+        { key: "nickname", label: "Nickname", type: "string", default: "" },
+      ]),
+    );
+    expect(result.errors).toEqual([]);
+    expect(result.valid).toBe(true);
+  });
+
+  it("rejects reserved keys, bad keys, duplicates and richtext", () => {
+    const { errors } = validateSchema(
+      unitSchemaWith([
+        { key: "combatRole", label: "Role", type: "string" },
+        { key: "2nd", label: "Second", type: "string" },
+        { key: "dup", label: "Dup", type: "string" },
+        { key: "dup", label: "Dup again", type: "string" },
+        { key: "notes", label: "Notes", type: "richtext" },
+      ]),
+    );
+    expect(errors.some((error) => error.includes('"combatRole" is reserved'))).toBe(true);
+    expect(errors.some((error) => error.includes('"2nd" must start with a letter'))).toBe(true);
+    expect(errors.some((error) => error.includes('duplicate key "dup"'))).toBe(true);
+    expect(errors.some((error) => error.includes('type "richtext" is not allowed'))).toBe(true);
+  });
+
+  it("rejects defaults of the wrong type", () => {
+    const { errors } = validateSchema(
+      unitSchemaWith([
+        { key: "flag", label: "Flag", type: "boolean", default: "yes" },
+        { key: "era", label: "Era", type: "enum", options: ["Early"], default: "Late" },
+        { key: "nickname", label: "Nickname", type: "string", default: 3 },
+      ]),
+    );
+    expect(errors.some((error) => error.includes("must be a boolean for boolean fields"))).toBe(true);
+    expect(errors.some((error) => error.includes("must be one of the enum options"))).toBe(true);
+    expect(errors.some((error) => error.includes('"default" must be a string'))).toBe(true);
+  });
+
+  it("computes the starting value from the default", () => {
+    expect(getUnitCustomFieldDefault({ type: "boolean", default: true })).toBe(true);
+    expect(getUnitCustomFieldDefault({ type: "boolean" })).toBe(false);
+    expect(getUnitCustomFieldDefault({ type: "enum", options: ["A", "B"], default: "B" })).toBe("B");
+    expect(getUnitCustomFieldDefault({ type: "enum", options: ["A", "B"], default: "C" })).toBe("A");
+    expect(getUnitCustomFieldDefault({ type: "string", default: "x" })).toBe("x");
+    expect(getUnitCustomFieldDefault({ type: "string" })).toBe("");
+  });
+
+  it("does not treat built-in keys as free", () => {
+    expect(RESERVED_UNIT_FIELD_KEYS).toContain("name");
+    expect(RESERVED_UNIT_FIELD_KEYS).toContain("combatRole");
   });
 });

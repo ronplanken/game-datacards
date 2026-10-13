@@ -10,6 +10,7 @@ vi.mock("../../../Premium", () => ({
 // Mock lucide-react icons
 vi.mock("lucide-react", () => ({
   Bold: (props) => <svg data-testid="icon-bold" {...props} />,
+  ListPlus: (props) => <svg data-testid="icon-list-plus" {...props} />,
   Brackets: (props) => <svg data-testid="icon-brackets" {...props} />,
   CaseUpper: (props) => <svg data-testid="icon-case-upper" {...props} />,
   Link: (props) => <svg data-testid="icon-link" {...props} />,

@@ -360,6 +360,19 @@ describe("editorSchemaResolvers", () => {
       expect(nameSection.config.hasAutoResize).toBe(true);
     });
 
+    it("passes the extra unit fields to the name section", () => {
+      const fields = [{ key: "showRoleInName", label: "Show role in name", type: "boolean", default: true }];
+      const withFields = JSON.parse(JSON.stringify(schemaWithFlags));
+      withFields.cardTypes[0].schema.metadata.fields = fields;
+      const nameSection = resolveEditorSections(card, "my-ds", withFields).find((s) => s.type === "name");
+      expect(nameSection.config.fields).toEqual(fields);
+    });
+
+    it("gives the name section an empty field list when none are defined", () => {
+      const nameSection = resolveEditorSections(card, "my-ds", schemaWithFlags).find((s) => s.type === "name");
+      expect(nameSection.config.fields).toEqual([]);
+    });
+
     it("forwards ability category flags (hasType / hasCost / hasTriggerIcon / layout / phaseStyle)", () => {
       const sections = resolveEditorSections(card, "my-ds", schemaWithFlags);
       const abilities = sections.find((s) => s.type === "abilities");

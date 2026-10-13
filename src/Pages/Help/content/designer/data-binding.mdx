@@ -54,6 +54,8 @@ order you want them applied.
 | `truncate` | Cuts text to a length and adds `...`                | `{{abilities.other[0].description \| truncate:"40"}}` |
 | `first`    | Takes the first item of a list                      | `{{keywords \| first}}` → Infantry                    |
 | `count`    | Counts the items in a list                          | `{{rangedWeapons \| count}}` → 2                      |
+| `if`       | Keeps the value only when another field is on       | `{{combatRole \| if:"showRoleInName" \| prefix:" "}}` |
+| `unless`   | Drops the value when another field is on            | `{{subname \| unless:"hideSubname"}}`                 |
 
 An unknown filter is ignored, so a plain `{{path}}` with no filter always
 keeps working.
@@ -64,6 +66,19 @@ Every text element has a "Hide when empty" checkbox in its Content section.
 Turn it on and the element disappears from the card whenever all of its
 bindings resolve to nothing — useful for an optional line like a subname or
 an invulnerable save that not every unit has.
+
+### Visibility rules
+
+Every element (text, image, shape or frame) has a Visibility section at the
+bottom of its properties. Add a rule to show the element only when a field
+has a certain value, for example "Show role in name is on" or "Points is
+greater than 100". With more than one rule, choose whether all rules or any
+rule must match. Inside a repeater frame the rules are checked for each row.
+
+Elements with rules carry an "If" badge in the Layers tree. The Visibility
+section tells you whether the element is shown for the current sample card.
+On the canvas the element stays visible so you can keep editing it; turn on
+Preview to see the result.
 
 ### Sample values on the canvas
 

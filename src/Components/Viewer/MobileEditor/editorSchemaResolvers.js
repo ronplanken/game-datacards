@@ -710,6 +710,7 @@ function resolveCustomSections(card, schema) {
         hasCombatRole: !!metadata.hasCombatRole,
         hasArmySlot: !!metadata.hasArmySlot,
         hasAutoResize: !!metadata.hasAutoResize,
+        fields: cardTypeDef.baseType === "unit" && Array.isArray(metadata.fields) ? metadata.fields : [],
       },
     },
   ];

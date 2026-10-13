@@ -7,6 +7,7 @@ import { WeaponsSchemaEditor } from "./editors/WeaponsSchemaEditor";
 import { AbilitiesSchemaEditor } from "./editors/AbilitiesSchemaEditor";
 import { SectionsSchemaEditor } from "./editors/SectionsSchemaEditor";
 import { MetadataSchemaEditor } from "./editors/MetadataSchemaEditor";
+import { UnitFieldsSchemaEditor } from "./editors/UnitFieldsSchemaEditor";
 import { FieldsSchemaEditor } from "./editors/FieldsSchemaEditor";
 import { useSectionState, SectionStateContext } from "./hooks/useSectionState";
 
@@ -111,6 +112,7 @@ const CardTypeEditorWithSections = ({ cardType, activeDatasource, onUpdateDataso
               onChange={handleCardTypeSchemaChange}
               baseSystem={baseSystem}
             />
+            <UnitFieldsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
           </div>
         );
 

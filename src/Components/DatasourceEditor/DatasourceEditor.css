@@ -1386,6 +1386,13 @@ select.props-compact-field {
   border-radius: var(--designer-radius-sm);
 }
 
+.props-section-note {
+  margin-bottom: 8px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--designer-text-tertiary);
+}
+
 /* Inline validation hint under a properties-panel field (e.g. a weapon column
    key that collides with a reserved weapon profile field). */
 .props-field-error {
