@@ -10,6 +10,25 @@ The metadata editor controls supplementary information that appears on unit card
 | <IconLabel icon="Tags" label="Faction Keywords" /> | Enable a separate faction keywords section (e.g., "Adeptus Astartes", "Ultramarines"). Displayed separately from regular keywords. |
 | **Points** | Enable a points cost field on each card. |
 | **Points format** | How points are displayed: **per model** (shows cost per individual model) or **per unit** (shows total unit cost). |
+| **Combat role** | Adds a free-text Combat Role field to each card (e.g., "Tank destroyer"). |
+| **Army slot** | Adds a free-text Army Slot field to each card (e.g., "Core"). |
+
+### Extra fields
+
+Unit card types can add their own fields in the Extra Fields section. Each
+field shows up under Basic information on every card:
+
+| Type | What users get |
+|------|----------------|
+| **Toggle** | An on/off switch, for example "Show role in name". |
+| **Text** | A text input. |
+| **Choice** | A dropdown with the options you list. |
+
+Give each field a key (letters, digits and `_`, starting with a letter) and a
+default. The default is used for new cards and for cards made before the
+field existed. In the Card Designer the field is listed under Basic Info, so
+you can bind it as `{{key}}`, use it in a visibility rule, or use it with the
+`if` filter. A toggle lets users switch part of the card on or off.
 
 ### Age of Sigmar banner properties
 

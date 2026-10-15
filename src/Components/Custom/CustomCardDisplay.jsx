@@ -8,7 +8,7 @@ import { CustomStratagemCard } from "./CustomStratagemCard";
 import { CustomUnitCard } from "./CustomUnitCard";
 import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
 import { TemplateRenderer } from "../../Premium";
-import { applyBooleanDisplayValues } from "../../Helpers/customSchemaBindings";
+import { applyBooleanDisplayValues, applyUnitFieldDefaults } from "../../Helpers/customSchemaBindings";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -68,9 +68,13 @@ export const CustomCardDisplay = ({
   const cardFaction = dataSource?.data?.find((faction) => faction.id === displayCard?.faction_id);
 
   const { cardTypeDef, baseType } = resolveCardType(displayCard, schema);
-  const templateCard = useMemo(
-    () => (displayCard?.templateId ? applyBooleanDisplayValues(displayCard, cardTypeDef) : displayCard),
+  const rawTemplateCard = useMemo(
+    () => (displayCard?.templateId ? applyUnitFieldDefaults(displayCard, cardTypeDef) : displayCard),
     [displayCard, cardTypeDef],
+  );
+  const templateCard = useMemo(
+    () => (displayCard?.templateId ? applyBooleanDisplayValues(rawTemplateCard, cardTypeDef) : displayCard),
+    [displayCard, rawTemplateCard, cardTypeDef],
   );
 
   // Get colours from faction or custom overrides
@@ -106,7 +110,12 @@ export const CustomCardDisplay = ({
   if (displayCard.templateId) {
     return (
       <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
-        <TemplateRenderer templateId={displayCard.templateId} card={templateCard} faction={cardFaction} />
+        <TemplateRenderer
+          templateId={displayCard.templateId}
+          card={templateCard}
+          rawCard={rawTemplateCard}
+          faction={cardFaction}
+        />
       </Col>
     );
   }

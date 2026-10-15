@@ -297,6 +297,9 @@ const UnitSchemaTree = ({ schema }) => {
           )}
           {schema.metadata.hasCombatRole && <FlagRow label="Combat Role badge enabled" depth={1} />}
           {schema.metadata.hasArmySlot && <FlagRow label="Army Slot badge enabled" depth={1} />}
+          {(schema.metadata.fields || []).map((field) => (
+            <FlagRow key={field.key} label={`${field.label || field.key} (${field.key}, ${field.type})`} depth={1} />
+          ))}
           {schema.metadata.hasPoints && (
             <TreeNode label={`Points (${schema.metadata.pointsFormat || "per-unit"})`} defaultOpen={false} depth={1}>
               {schema.metadata.pointsLabel && <FlagRow label={`Label: ${schema.metadata.pointsLabel}`} depth={2} />}

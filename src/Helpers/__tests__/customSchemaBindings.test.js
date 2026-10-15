@@ -5,6 +5,7 @@ import {
   parseCustomFormat,
   buildCustomFormat,
   applyBooleanDisplayValues,
+  applyUnitFieldDefaults,
 } from "../customSchemaBindings";
 import { normalizeCardForBinding, resolveTemplate } from "../bindingResolver";
 import { create40kPreset, createAoSPreset } from "../customSchema.helpers";
@@ -29,12 +30,45 @@ describe("customSchemaBindings", () => {
       const unitType = preset.cardTypes.find((ct) => ct.baseType === "unit");
       const result = generateBindingsFromSchema(unitType, "40K");
 
-      it("includes Basic Info group with name and cardType", () => {
+      it("includes Basic Info group with name, subname and cardType", () => {
         const basicInfo = result.groups.find((g) => g.name === "Basic Info");
         expect(basicInfo).toBeDefined();
         expect(basicInfo.bindings).toEqual([
           { path: "name", label: "Name", type: "string" },
+          { path: "subname", label: "Subname", type: "string" },
           { path: "cardType", label: "Card Type", type: "string" },
+        ]);
+      });
+
+      it("lists enabled built-in values and custom unit fields under Basic Info", () => {
+        const withFields = {
+          ...unitType,
+          schema: {
+            ...unitType.schema,
+            metadata: {
+              ...unitType.schema.metadata,
+              hasCombatRole: true,
+              hasArmySlot: true,
+              hasSubcategory: true,
+              fields: [
+                { key: "showRoleInName", label: "Show role in name", type: "boolean" },
+                { key: "era", label: "Era", type: "enum", options: ["Early", "Late"] },
+                { key: "nickname", label: "Nickname", type: "string" },
+              ],
+            },
+          },
+        };
+        const basicInfo = generateBindingsFromSchema(withFields, "40K").groups.find((g) => g.name === "Basic Info");
+        expect(basicInfo.bindings.map((binding) => [binding.path, binding.type])).toEqual([
+          ["name", "string"],
+          ["subname", "string"],
+          ["cardType", "string"],
+          ["combatRole", "string"],
+          ["armySlot", "string"],
+          ["subcategory", "string"],
+          ["showRoleInName", "boolean"],
+          ["era", "enum"],
+          ["nickname", "string"],
         ]);
       });
 
@@ -419,6 +453,51 @@ describe("customSchemaBindings", () => {
       expect(resolveTemplate("{{weapons.main[0].ap_available}}", context)).toBe("AP");
       expect(resolveTemplate("{{weapons.main[0].profiles[1].ap_available}}", context)).toBe("nope");
       expect(resolveTemplate("{{stats[1].tracked}}", context)).toBe("Wheels");
+    });
+  });
+
+  describe("applyUnitFieldDefaults", () => {
+    const unitType = {
+      baseType: "unit",
+      schema: {
+        metadata: {
+          fields: [
+            { key: "showRoleInName", label: "Show role", type: "boolean", default: true },
+            { key: "era", label: "Era", type: "enum", options: ["Early", "Late"] },
+          ],
+        },
+      },
+    };
+
+    it("fills in missing field values from their defaults", () => {
+      expect(applyUnitFieldDefaults({ name: "A" }, unitType)).toEqual({
+        name: "A",
+        showRoleInName: true,
+        era: "Early",
+      });
+    });
+
+    it("keeps values the card already has and returns the same object when nothing is missing", () => {
+      const card = { name: "A", showRoleInName: false, era: "Late" };
+      expect(applyUnitFieldDefaults(card, unitType)).toBe(card);
+    });
+
+    it("ignores non-unit card types", () => {
+      const card = { name: "A" };
+      expect(applyUnitFieldDefaults(card, { ...unitType, baseType: "rule" })).toBe(card);
+    });
+  });
+
+  describe("applyBooleanDisplayValues for unit fields", () => {
+    it("uses the on and off text of custom unit boolean fields", () => {
+      const unitType = {
+        baseType: "unit",
+        schema: {
+          metadata: { fields: [{ key: "elite", label: "Elite", type: "boolean", onValue: "Elite", offValue: "" }] },
+        },
+      };
+      expect(applyBooleanDisplayValues({ elite: true }, unitType).elite).toBe("Elite");
+      expect(applyBooleanDisplayValues({ elite: false }, unitType).elite).toBe("");
     });
   });
 });

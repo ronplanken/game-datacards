@@ -1,4 +1,5 @@
 import { SUPPORTED_LANGUAGES, localize } from "./localization.helpers";
+import { isOnValue } from "./visibilityRules";
 
 const LANGUAGE_KEYS = new Set(SUPPORTED_LANGUAGES);
 
@@ -242,6 +243,8 @@ export const BINDING_FILTERS = [
   { name: "truncate", takesArg: true, defaultArg: "20" },
   { name: "first", takesArg: false },
   { name: "count", takesArg: false },
+  { name: "if", takesArg: true, defaultArg: "" },
+  { name: "unless", takesArg: true, defaultArg: "" },
 ];
 
 const FILTER_NAMES = new Set(BINDING_FILTERS.map((filter) => filter.name));
@@ -346,8 +349,20 @@ const stateText = (state, language) => (state.text != null ? state.text : format
 const toTitleCase = (text) =>
   text.replace(/\S+/g, (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
 
-const applyFilter = (state, filter, language) => {
+const conditionPath = (filter) => String(filter.arg ?? "").trim();
+
+const conditionHolds = (context, path) => isOnValue(getNestedValue(context, path));
+
+const applyFilter = (state, filter, language, context) => {
   switch (filter.name) {
+    case "if": {
+      const path = conditionPath(filter);
+      return path === "" || conditionHolds(context, path) ? state : { text: "" };
+    }
+    case "unless": {
+      const path = conditionPath(filter);
+      return path !== "" && conditionHolds(context, path) ? { text: "" } : state;
+    }
     case "upper":
       return { text: stateText(state, language).toUpperCase() };
     case "lower":
@@ -411,7 +426,7 @@ export const resolveExpression = (context, expressionText, options = {}) => {
 
   for (const filter of parsed.filters || []) {
     if (!FILTER_NAMES.has(filter.name)) continue;
-    const next = applyFilter(state, filter, language);
+    const next = applyFilter(state, filter, language, context);
     state = { value: next.value, text: next.text ?? null };
   }
 

@@ -1,8 +1,10 @@
 import { EditorTextField } from "../shared/EditorTextField";
 import { EditorToggle } from "../shared/EditorToggle";
+import { SchemaFieldEditor } from "../shared/SchemaFieldEditor";
+import { getUnitCustomFieldDefault } from "../../../../Helpers/customSchema.helpers";
 
 export const NameSection = ({ card, config = {}, updateField, replaceCard }) => {
-  const { hasCombatRole, hasArmySlot, hasAutoResize } = config;
+  const { hasCombatRole, hasArmySlot, hasAutoResize, fields = [] } = config;
 
   return (
     <div className="mobile-editor-name-section">
@@ -36,6 +38,14 @@ export const NameSection = ({ card, config = {}, updateField, replaceCard }) => 
           placeholder="e.g. Core"
         />
       )}
+      {fields.map((field) => (
+        <SchemaFieldEditor
+          key={field.key}
+          field={field}
+          value={card[field.key] === undefined ? getUnitCustomFieldDefault(field) : card[field.key]}
+          onChange={(value) => updateField(field.key, value)}
+        />
+      ))}
       {hasAutoResize && (
         <EditorToggle
           label="Auto-resize card"

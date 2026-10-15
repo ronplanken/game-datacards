@@ -214,6 +214,8 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
       pointsFormat: "per-model" | "per-unit",
       bannerType: "faction" | "custom" | "hidden",
       bannerCustomText: "WARSCROLL",
+      hasCombatRole: true,
+      fields: [{ key: "showRoleInName", label: "Show role in name", type: "boolean", default: true }],
     },
   },
 }
@@ -227,7 +229,7 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
 | `weaponTypes` | Defines weapon categories, each with their own column definitions.      |
 | `abilities`   | Defines ability groupings and their display format.                     |
 | `sections`    | Defines optional content sections (e.g. transport, lore) with format.   |
-| `metadata`    | Flags for keywords, faction keywords, points, and banner configuration. |
+| `metadata`    | Flags for keywords, faction keywords, points, combat role, army slot and banner configuration, plus extra per-card `fields`. |
 
 ### Weapon type properties
 
@@ -370,6 +372,33 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `bannerCustomText` | string  | Custom banner text. Only applies when `bannerType` is `"custom"`.       |
 | `hasAutoResize`    | boolean | Starcraft TMG, 40k-10e and 40k-11e only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
 | `hasSubcategory`   | boolean | Exposes a per-card "Subcategory" text field in the Basic Information panel. When set, cards are grouped under their `subcategory` value (uncategorised cards under "Uncategorized") in the datasource editor card list. Toggled via the card type settings. |
+| `hasCombatRole`    | boolean | Exposes a per-card free-text "Combat Role" field, stored as `card.combatRole`. Bindable as `{{combatRole}}`. |
+| `hasArmySlot`      | boolean | Exposes a per-card free-text "Army Slot" field, stored as `card.armySlot`. Bindable as `{{armySlot}}`. |
+| `pointsLabel`      | string  | Optional. Label shown next to the points value. |
+| `fields`           | array   | Optional. Extra per-card fields shown under Basic Information (see below). |
+
+#### Extra fields (`metadata.fields`)
+
+Unit card types can define extra per-card fields. Each card stores the value flat on the card as `card[key]`, so a field with key `showRoleInName` is bound in the Card Designer as `{{showRoleInName}}` and is available to visibility rules and the `if` / `unless` binding filters.
+
+```js
+fields: [
+  { key: "showRoleInName", label: "Show role in name", type: "boolean", default: true },
+  { key: "era", label: "Era", type: "enum", options: ["Early", "Late"], default: "Early" },
+  { key: "nickname", label: "Nickname", type: "string" },
+]
+```
+
+| Property   | Type    | Description |
+|------------|---------|-------------|
+| `key`      | string  | Required. Starts with a letter, then letters, digits or `_`. Must be unique and must not be a built-in card key (`name`, `subname`, `combatRole`, `armySlot`, `points`, `keywords`, `stats`, `weapons`, and the others in `RESERVED_UNIT_FIELD_KEYS`). |
+| `label`    | string  | Required. Label shown in the card editor. |
+| `type`     | string  | `"boolean"`, `"string"` or `"enum"`. `richtext` is not allowed here. |
+| `options`  | array   | Required for `enum`. |
+| `default`  | boolean or string | Optional. Starting value for new cards, and the value used for cards saved before the field existed. Must match the type (and be one of `options` for `enum`). |
+| `onValue` / `offValue` | string | Optional, boolean only. Display text when a binding shows the value. Visibility rules and the `if` / `unless` filters still see the raw `true` / `false`. |
+
+New cards get the defaults through `createBlankCardFromSchema`. Cards saved before a field was added have no value; the card editors show the default, and `applyUnitFieldDefaults` (in `customSchemaBindings.js`) fills it in before a card is passed to the Card Designer renderer.
 
 #### Banner type values (AoS / non-40k only)
 
@@ -473,9 +502,9 @@ These are the valid values for `type` on field definitions:
 | `string`   | Plain text value.                                                  | Stats, Weapons, Fields        |
 | `richtext` | Formatted text (HTML, depending on renderer).                      | Fields only                   |
 | `enum`     | Constrained to one of the values listed in `options`.              | Stats, Weapons, Fields        |
-| `boolean`  | True/false toggle. Stat booleans support `onValue`/`offValue`.     | Stats, Weapons, Fields        |
+| `boolean`  | True/false toggle. Stat booleans support `onValue`/`offValue`.     | Stats, Weapons, Fields, Unit extra fields |
 
-Note: `richtext` is not available in stat or weapon column definitions — only in top-level fields (rule, enhancement, stratagem card types).
+Note: `richtext` is not available in stat or weapon column definitions or in unit extra fields — only in top-level fields (rule, enhancement, stratagem card types). `string` and `enum` are also available in unit extra fields.
 
 ### Section Format Reference
 

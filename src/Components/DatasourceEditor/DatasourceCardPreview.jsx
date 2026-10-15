@@ -5,7 +5,7 @@ import { CustomRuleCard } from "../Custom/CustomRuleCard";
 import { CustomEnhancementCard } from "../Custom/CustomEnhancementCard";
 import { CustomStratagemCard } from "../Custom/CustomStratagemCard";
 import { TemplateRenderer } from "../../Premium";
-import { applyBooleanDisplayValues } from "../../Helpers/customSchemaBindings";
+import { applyBooleanDisplayValues, applyUnitFieldDefaults } from "../../Helpers/customSchemaBindings";
 import { resolveDatasourceRenderer } from "./cards/resolveDatasourceRenderer";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { DatasourcePreviewToolbar } from "./DatasourcePreviewToolbar";
@@ -26,9 +26,13 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
 
   const schema = activeDatasource?.schema;
   const { cardTypeDef, baseType } = resolveCardType(card, schema);
-  const templateCard = useMemo(
-    () => (card?.templateId ? applyBooleanDisplayValues(card, cardTypeDef) : card),
+  const rawTemplateCard = useMemo(
+    () => (card?.templateId ? applyUnitFieldDefaults(card, cardTypeDef) : card),
     [card, cardTypeDef],
+  );
+  const templateCard = useMemo(
+    () => (card?.templateId ? applyBooleanDisplayValues(rawTemplateCard, cardTypeDef) : card),
+    [card, rawTemplateCard, cardTypeDef],
   );
 
   if (!card || !activeDatasource) return null;
@@ -52,7 +56,12 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
   if (card.templateId) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-start", padding: 24 }}>
-        <TemplateRenderer templateId={card.templateId} card={templateCard} faction={cardFaction} />
+        <TemplateRenderer
+          templateId={card.templateId}
+          card={templateCard}
+          rawCard={rawTemplateCard}
+          faction={cardFaction}
+        />
       </div>
     );
   }
