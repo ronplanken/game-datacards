@@ -133,3 +133,36 @@
     transform: translateY(0);
   }
 }
+
+html[data-theme="dark"] .user-menu-dropdown {
+  background: var(--gdc-bg-elevated);
+  border: 1px solid var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .user-menu-dropdown-header {
+  background: var(--gdc-bg-surface-alt);
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .user-menu-dropdown-name,
+html[data-theme="dark"] .user-menu-dropdown-item {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .user-menu-dropdown-email {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .user-menu-dropdown-divider {
+  background: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .user-menu-dropdown-item:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .user-menu-dropdown-item-danger:hover {
+  background: var(--gdc-danger-bg);
+  color: var(--gdc-danger-text);
+}

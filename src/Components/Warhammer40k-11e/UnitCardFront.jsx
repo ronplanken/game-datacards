@@ -48,7 +48,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
   const fullName = unit.subname ? `${unit.name} ${unit.subname}` : unit.name;
   return (
     <div
-      className={`unit-card-front-wrapper ${className || ""}`}
+      className={`unit-card-front-wrapper gdc-datacard ${className || ""}`}
       style={{
         ...cardStyle,
       }}>

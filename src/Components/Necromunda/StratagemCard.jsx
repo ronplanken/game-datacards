@@ -9,7 +9,7 @@ export const StratagemCard = ({ stratagem, cardStyle, paddingTop = "32px" }) => 
         justifyItems: "center",
         display: "flex",
       }}
-      className="stratagem">
+      className="stratagem gdc-datacard">
       <div className={`page ${stratagem.variant || "card"}`} style={cardStyle}>
         <div className="frame">
           <div className={`${stratagem.faction}`}>

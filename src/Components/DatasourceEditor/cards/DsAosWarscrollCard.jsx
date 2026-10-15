@@ -97,7 +97,7 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMo
       className={`data-aos ds-warscroll ${grandAlliance}${isMobile ? " aos-mobile-wrapper" : ""}`}
       data-testid="ds-aos-warscroll"
       style={cardStyle}>
-      <div className="warscroll">
+      <div className="warscroll gdc-datacard">
         <div className="stat-display-area">
           {isMobile && onBack && (
             <button className="warscroll-back-button" onClick={onBack} type="button">

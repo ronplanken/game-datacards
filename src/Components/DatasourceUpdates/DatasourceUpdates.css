@@ -312,3 +312,29 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+html[data-theme="dark"] .dsu-before {
+  background: var(--gdc-danger-bg);
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .dsu-after {
+  background: var(--gdc-success-bg);
+  color: var(--gdc-success-text);
+}
+
+html[data-theme="dark"] .dsu-tag--added {
+  color: var(--gdc-success-text);
+}
+
+html[data-theme="dark"] .dsu-tag--removed {
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .dsu-mobile-footer {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .dsu-mobile-submit {
+  background: var(--gdc-primary-active);
+}

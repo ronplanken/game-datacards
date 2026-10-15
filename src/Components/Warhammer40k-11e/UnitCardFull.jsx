@@ -50,7 +50,7 @@ export const UnitCardFull = ({ unit, cardStyle, paddingTop = "32px", className }
   const fullName = unit.subname ? `${unit.name} ${unit.subname}` : unit.name;
   return (
     <div
-      className={`unit-card-full-wrapper ${className || ""}`}
+      className={`unit-card-full-wrapper gdc-datacard ${className || ""}`}
       style={{
         ...cardStyle,
       }}>

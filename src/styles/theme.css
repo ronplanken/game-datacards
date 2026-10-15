@@ -1,0 +1,158 @@
+:root {
+  --gdc-bg-app: #f0f2f5;
+  --gdc-bg-surface: #ffffff;
+  --gdc-bg-surface-alt: #fafafa;
+  --gdc-bg-elevated: #ffffff;
+  --gdc-bg-sunken: #f5f5f5;
+  --gdc-bg-hover: rgba(0, 0, 0, 0.04);
+  --gdc-bg-active: #e6f4ff;
+  --gdc-bg-input: #ffffff;
+  --gdc-bg-disabled: #f5f5f5;
+  --gdc-bg-mask: rgba(0, 0, 0, 0.45);
+  --gdc-bg-card-area: #f0f2f5;
+
+  --gdc-border: #d9d9d9;
+  --gdc-border-strong: #bfbfbf;
+  --gdc-border-subtle: #f0f0f0;
+
+  --gdc-text: rgba(0, 0, 0, 0.88);
+  --gdc-text-secondary: rgba(0, 0, 0, 0.65);
+  --gdc-text-tertiary: rgba(0, 0, 0, 0.45);
+  --gdc-text-disabled: rgba(0, 0, 0, 0.25);
+  --gdc-text-inverse: #ffffff;
+  --gdc-heading: rgba(0, 0, 0, 0.88);
+
+  --gdc-primary: #1677ff;
+  --gdc-primary-hover: #4096ff;
+  --gdc-primary-active: #0958d9;
+  --gdc-primary-bg: #e6f4ff;
+  --gdc-primary-border: #91caff;
+  --gdc-primary-text: #1677ff;
+  --gdc-link: #1677ff;
+
+  --gdc-success: #52c41a;
+  --gdc-success-bg: #f6ffed;
+  --gdc-success-border: #b7eb8f;
+  --gdc-success-text: #389e0d;
+  --gdc-warning: #faad14;
+  --gdc-warning-bg: #fffbe6;
+  --gdc-warning-border: #ffe58f;
+  --gdc-warning-text: #d48806;
+  --gdc-danger: #ff4d4f;
+  --gdc-danger-bg: #fff2f0;
+  --gdc-danger-border: #ffccc7;
+  --gdc-danger-text: #cf1322;
+  --gdc-info-bg: #e6f4ff;
+  --gdc-info-border: #91caff;
+
+  --gdc-header-bg: #001529;
+  --gdc-scrollbar-thumb: rgba(0, 0, 0, 0.2);
+  --gdc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --gdc-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08);
+  --gdc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+html[data-theme="dark"] {
+  --gdc-bg-app: #0b1220;
+  --gdc-bg-surface: #111a2b;
+  --gdc-bg-surface-alt: #152034;
+  --gdc-bg-elevated: #18243a;
+  --gdc-bg-sunken: #0d1626;
+  --gdc-bg-hover: rgba(255, 255, 255, 0.06);
+  --gdc-bg-active: rgba(64, 150, 255, 0.18);
+  --gdc-bg-input: #0d1626;
+  --gdc-bg-disabled: #1a2436;
+  --gdc-bg-mask: rgba(0, 0, 0, 0.65);
+  --gdc-bg-card-area: #0b1220;
+
+  --gdc-border: #2b3a52;
+  --gdc-border-strong: #3d4f6b;
+  --gdc-border-subtle: #1f2b40;
+
+  --gdc-text: #e6ebf2;
+  --gdc-text-secondary: #b0bbcb;
+  --gdc-text-tertiary: #8b98ab;
+  --gdc-text-disabled: #5d6b80;
+  --gdc-text-inverse: #0b1220;
+  --gdc-heading: #f1f5f9;
+
+  --gdc-primary: #3c89e8;
+  --gdc-primary-hover: #65a9f3;
+  --gdc-primary-active: #1668dc;
+  --gdc-primary-bg: rgba(60, 137, 232, 0.16);
+  --gdc-primary-border: #15417e;
+  --gdc-primary-text: #6aaeff;
+  --gdc-link: #6aaeff;
+
+  --gdc-success: #49aa19;
+  --gdc-success-bg: rgba(73, 170, 25, 0.14);
+  --gdc-success-border: #274916;
+  --gdc-success-text: #73d13d;
+  --gdc-warning: #d89614;
+  --gdc-warning-bg: rgba(216, 150, 20, 0.14);
+  --gdc-warning-border: #594214;
+  --gdc-warning-text: #ffc53d;
+  --gdc-danger: #c93a3c;
+  --gdc-danger-bg: rgba(220, 68, 70, 0.14);
+  --gdc-danger-border: #5b2526;
+  --gdc-danger-text: #ff7875;
+  --gdc-info-bg: rgba(60, 137, 232, 0.14);
+  --gdc-info-border: #15417e;
+
+  --gdc-header-bg: #001529;
+  --gdc-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --gdc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --gdc-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.5), 0 6px 16px 0 rgba(0, 0, 0, 0.4);
+  --gdc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] body {
+  background-color: var(--gdc-bg-app);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] ::selection {
+  background: rgba(60, 137, 232, 0.45);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] * {
+  scrollbar-color: var(--gdc-scrollbar-thumb) transparent;
+}
+
+.gdc-light-scope,
+html[data-theme="dark"] .gdc-light-scope {
+  --gdc-bg-app: #f0f2f5;
+  --gdc-bg-surface: #ffffff;
+  --gdc-bg-surface-alt: #fafafa;
+  --gdc-bg-elevated: #ffffff;
+  --gdc-bg-sunken: #f5f5f5;
+  --gdc-bg-hover: rgba(0, 0, 0, 0.04);
+  --gdc-bg-active: #e6f4ff;
+  --gdc-bg-input: #ffffff;
+  --gdc-bg-disabled: #f5f5f5;
+  --gdc-border: #d9d9d9;
+  --gdc-border-strong: #bfbfbf;
+  --gdc-border-subtle: #f0f0f0;
+  --gdc-text: rgba(0, 0, 0, 0.88);
+  --gdc-text-secondary: rgba(0, 0, 0, 0.65);
+  --gdc-text-tertiary: rgba(0, 0, 0, 0.45);
+  --gdc-text-disabled: rgba(0, 0, 0, 0.25);
+  --gdc-heading: rgba(0, 0, 0, 0.88);
+  --gdc-link: #1677ff;
+  color-scheme: light;
+}
+
+:where(html[data-theme="dark"] .gdc-datacard) {
+  color: rgba(0, 0, 0, 0.85);
+  color-scheme: light;
+}
+
+@media print {
+  html[data-theme="dark"] body {
+    background-color: #ffffff;
+    color: #000000;
+  }
+}

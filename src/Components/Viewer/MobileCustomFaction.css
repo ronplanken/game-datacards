@@ -74,3 +74,21 @@
     transform: none;
   }
 }
+
+html[data-theme="dark"] .custom-faction-card-item {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .custom-faction-card-item:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .custom-faction-card-name {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .custom-faction-card-arrow,
+html[data-theme="dark"] .custom-faction-empty {
+  color: var(--gdc-text-tertiary);
+}

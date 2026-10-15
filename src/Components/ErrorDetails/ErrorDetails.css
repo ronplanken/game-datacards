@@ -97,3 +97,13 @@
     margin-bottom: 6px;
   }
 }
+
+html[data-theme="dark"] .error-details--light {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .error-details--light .error-details-technical pre {
+  color: var(--gdc-text-secondary);
+  background: var(--gdc-bg-sunken);
+  border-color: var(--gdc-border);
+}

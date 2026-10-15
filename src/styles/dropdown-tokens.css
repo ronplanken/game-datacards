@@ -41,3 +41,7 @@
   --menu-radius-sm: 8px;
   --menu-radius-xs: 6px;
 }
+
+html[data-theme="dark"] .dark-dropdown {
+  --menu-text-dim: #8291a7;
+}

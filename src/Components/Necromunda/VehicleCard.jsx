@@ -9,7 +9,7 @@ export const VehicleCard = ({ vehicle, cardStyle, paddingTop = "32px" }) => {
         justifyItems: "center",
         display: "flex",
       }}
-      className="vehicle">
+      className="vehicle gdc-datacard">
       <div className={`page ${vehicle.variant || "card"}`} style={cardStyle}>
         <div style={{ display: "grid", gridTemplateColumns: "5fr 4fr 1fr", columnGap: "8px" }}>
           <div className="header">

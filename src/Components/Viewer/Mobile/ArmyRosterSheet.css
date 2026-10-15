@@ -114,3 +114,7 @@
 .army-roster-hint--over {
   color: var(--bs-danger, #dc3545);
 }
+
+html[data-theme="dark"] .army-roster-battle-size.selected {
+  background: var(--bs-accent-light);
+}

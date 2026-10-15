@@ -411,6 +411,123 @@ button.danger-btn:hover,
   line-height: 1.4;
 }
 
+.setting-row-stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  line-height: 1.5;
+}
+
+.setting-row-stacked .setting-label {
+  line-height: 1.4;
+}
+
+.theme-choice {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.theme-choice-option {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 8px 8px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.theme-choice-option:hover {
+  border-color: var(--accent-secondary);
+  color: var(--text-primary);
+}
+
+.theme-choice-option:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.theme-choice-option.active {
+  background: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.12);
+}
+
+.theme-choice-preview {
+  position: relative;
+  display: block;
+  height: 56px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  overflow: hidden;
+}
+
+.theme-choice-preview-light {
+  background: #f0f2f5;
+}
+
+.theme-choice-preview-dark {
+  background: #0b1220;
+  border-color: #2b3a52;
+}
+
+.theme-choice-preview-system {
+  background: linear-gradient(135deg, #f0f2f5 50%, #0b1220 50%);
+}
+
+.theme-choice-preview-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: #001529;
+}
+
+.theme-choice-preview-line {
+  position: absolute;
+  top: 22px;
+  left: 10px;
+  width: 60%;
+  height: 8px;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.theme-choice-preview-line.short {
+  top: 36px;
+  width: 35%;
+}
+
+.theme-choice-preview-dark .theme-choice-preview-line {
+  background: #18243a;
+  box-shadow: 0 0 0 1px #2b3a52;
+}
+
+.theme-choice-preview-system .theme-choice-preview-line {
+  background: rgba(148, 163, 184, 0.55);
+  box-shadow: none;
+}
+
+.theme-choice-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 /* ===========================================
    MODAL FOOTER
    =========================================== */
@@ -592,4 +709,136 @@ button.close-btn:hover,
     animation: none;
     transition: none;
   }
+}
+
+html[data-theme="dark"] .settings-modal-overlay {
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.02);
+  --glass-border: var(--gdc-border-strong);
+  --glass-border-subtle: var(--gdc-border);
+  --accent-primary: var(--gdc-primary-text);
+  --accent-secondary: var(--gdc-primary-hover);
+  --accent-tertiary: var(--gdc-primary-hover);
+  --accent-light: var(--gdc-primary-bg);
+  --accent-ultra-light: rgba(60, 137, 232, 0.14);
+  --warm-light: rgba(244, 114, 182, 0.14);
+  --text-primary: var(--gdc-heading);
+  --text-secondary: var(--gdc-text-secondary);
+  --text-muted: var(--gdc-text-tertiary);
+  --text-subtle: var(--gdc-text-disabled);
+  --bg-base: var(--gdc-bg-app);
+  --bg-elevated: var(--gdc-bg-elevated);
+  --bg-overlay: var(--gdc-bg-mask);
+  --danger-light: var(--gdc-danger-bg);
+  --danger-border: var(--gdc-danger-border);
+  --shadow-sm: var(--gdc-shadow-sm);
+  --shadow-md: var(--gdc-shadow);
+  --shadow-lg: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .settings-modal {
+  background: rgba(24, 36, 58, 0.97);
+  border-color: var(--gdc-border);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .settings-modal-header,
+html[data-theme="dark"] .settings-modal-footer {
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .settings-sidebar {
+  background: rgba(11, 18, 32, 0.35);
+}
+
+html[data-theme="dark"] .settings-nav-item:hover {
+  background: var(--gdc-bg-hover);
+  border-color: transparent;
+}
+
+html[data-theme="dark"] .settings-nav-item.active {
+  background: var(--gdc-primary-bg);
+  border-color: transparent;
+}
+
+html[data-theme="dark"] .settings-nav-item.active::before,
+html[data-theme="dark"] .datasource-section-title::after,
+html[data-theme="dark"] .datasource-section-header::after {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .settings-content {
+  background: transparent;
+}
+
+html[data-theme="dark"] .datasource-add-btn {
+  border-color: var(--gdc-border-strong);
+}
+
+html[data-theme="dark"] .datasource-add-btn:hover {
+  background: var(--gdc-primary-bg);
+}
+
+html[data-theme="dark"] .datasource-empty-text {
+  background: var(--gdc-info-bg);
+  border-color: var(--gdc-info-border);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .warning-box {
+  background: var(--gdc-warning-bg);
+  border-color: var(--gdc-warning-border);
+}
+
+html[data-theme="dark"] .warning-box-text {
+  color: var(--gdc-warning-text);
+}
+
+html[data-theme="dark"] .setting-row:hover {
+  border-color: var(--gdc-border-strong);
+}
+
+html[data-theme="dark"] .theme-choice-option {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+html[data-theme="dark"] .theme-choice-option:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .theme-choice-option.active {
+  background: var(--gdc-primary-bg);
+  box-shadow: 0 0 0 3px rgba(106, 174, 255, 0.16);
+}
+
+html[data-theme="dark"] .settings-content::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .changelog-container::-webkit-scrollbar-thumb {
+  background: var(--gdc-scrollbar-thumb);
+}
+
+html[data-theme="dark"] .local-datasource-share code {
+  background: rgba(146, 84, 222, 0.2);
+  color: #d3adf7;
+}
+
+html[data-theme="dark"] button.close-btn,
+html[data-theme="dark"] .settings-modal-footer .close-btn {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] button.close-btn:hover,
+html[data-theme="dark"] .settings-modal-footer .close-btn:hover {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] button.danger-btn,
+html[data-theme="dark"] .settings-content .danger-btn {
+  background: #c93537;
+}
+
+html[data-theme="dark"] button.danger-btn:hover,
+html[data-theme="dark"] .settings-content .danger-btn:hover {
+  background: var(--gdc-danger);
 }

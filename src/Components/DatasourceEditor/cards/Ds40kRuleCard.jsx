@@ -74,7 +74,7 @@ export const Ds40kRuleCard = ({ card, cardTypeDef, cardStyle, isMobile }) => {
   return (
     <div className="data-40k-10e" data-testid="ds-40k-rule">
       <div
-        className={isMobile ? "shared-rule" : ""}
+        className={isMobile ? "shared-rule gdc-datacard" : "gdc-datacard"}
         style={{
           "--width": `${card.styling?.width ?? 460}px`,
           "--height": useAutoHeight ? "auto" : `${card.styling?.height ?? 620}px`,

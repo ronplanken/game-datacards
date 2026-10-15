@@ -64,7 +64,7 @@ export const RuleCard = ({ rule, cardStyle, paddingTop = "32px", className = "ru
         paddingTop: paddingTop,
         ...cardStyle,
       }}
-      className={containerClass}>
+      className={classNames("gdc-datacard", containerClass)}>
       <div className={classNames(`own ${className}`, rule.faction_id, { "auto-height": useAutoHeight })}>
         <div className="border">
           <div className="background-side-bar"></div>

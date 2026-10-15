@@ -179,3 +179,7 @@
   color: var(--bs-text-muted);
   margin-top: 2px;
 }
+
+html[data-theme="dark"] .mlf-mode-option.active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}

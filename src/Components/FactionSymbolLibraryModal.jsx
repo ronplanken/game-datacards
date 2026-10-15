@@ -96,9 +96,9 @@ export const FactionSymbolLibraryModal = ({ open, onCancel, onSelect }) => {
                   alignItems: "center",
                   gap: 6,
                   padding: 8,
-                  border: "1px solid #d9d9d9",
+                  border: "1px solid var(--gdc-border)",
                   borderRadius: 6,
-                  background: "#fff",
+                  background: "var(--gdc-bg-surface)",
                   cursor: "pointer",
                 }}>
                 <img

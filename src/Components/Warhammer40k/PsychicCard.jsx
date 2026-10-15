@@ -10,7 +10,7 @@ export const PsychicCard = ({ power, cardStyle, paddingTop = "32px" }) => {
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`power`}>
+      <div className={`power gdc-datacard`}>
         <div className={`page ${power.variant || "card"}`} style={cardStyle}>
           <div className="frame">
             <div className={`${power.faction_id || "basic"} background`} style={style}>

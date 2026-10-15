@@ -1760,3 +1760,186 @@ button.gw-import-mode-option:not(.active):hover,
     transition: none;
   }
 }
+
+html[data-theme="dark"] .import-export-modal-overlay {
+  --ie-glass-bg: rgba(255, 255, 255, 0.03);
+  --ie-glass-bg-subtle: rgba(255, 255, 255, 0.02);
+  --ie-glass-border: var(--gdc-border-strong);
+  --ie-glass-border-subtle: var(--gdc-border);
+  --ie-accent-primary: var(--gdc-primary-text);
+  --ie-accent-secondary: var(--gdc-primary-hover);
+  --ie-accent-light: var(--gdc-primary-bg);
+  --ie-accent-ultra-light: rgba(60, 137, 232, 0.1);
+  --ie-text-primary: var(--gdc-heading);
+  --ie-text-secondary: var(--gdc-text-secondary);
+  --ie-text-muted: var(--gdc-text-tertiary);
+  --ie-success: var(--gdc-success-text);
+  --ie-success-bg: var(--gdc-success-bg);
+  --ie-success-border: rgba(115, 209, 61, 0.35);
+  --ie-error: var(--gdc-danger-text);
+  --ie-error-bg: var(--gdc-danger-bg);
+  --ie-error-border: rgba(255, 120, 117, 0.35);
+  --ie-warning: var(--gdc-warning-text);
+  --ie-warning-bg: var(--gdc-warning-bg);
+  --ie-warning-border: rgba(255, 197, 61, 0.35);
+  --ie-shadow-sm: var(--gdc-shadow-sm);
+  --ie-shadow-md: var(--gdc-shadow);
+  --ie-shadow-lg: var(--gdc-shadow-lg);
+  background: var(--gdc-bg-mask);
+}
+
+html[data-theme="dark"] .import-export-modal {
+  background: rgba(24, 36, 58, 0.97);
+  border-color: var(--gdc-border);
+  box-shadow:
+    var(--ie-shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+html[data-theme="dark"] .import-export-modal-header,
+html[data-theme="dark"] .import-export-modal-footer {
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .import-export-modal-close:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .import-export-sidebar {
+  background: rgba(11, 18, 32, 0.35);
+}
+
+html[data-theme="dark"] .import-export-nav-item:hover:not(.disabled) {
+  background: var(--gdc-bg-hover);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .import-export-nav-item.active {
+  background: var(--gdc-primary-bg);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .import-export-nav-item.active::before {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .import-export-content {
+  background: transparent;
+}
+
+html[data-theme="dark"] .import-dropzone:hover {
+  border-color: rgba(106, 174, 255, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="dark"] .import-dropzone.dragging {
+  box-shadow: 0 0 0 4px rgba(60, 137, 232, 0.2);
+}
+
+html[data-theme="dark"] .export-preview,
+html[data-theme="dark"] .gw-import-textarea,
+html[data-theme="dark"] .gw-import-category-input,
+html[data-theme="dark"] .ie-ds-url-input {
+  background: var(--gdc-bg-input);
+}
+
+html[data-theme="dark"] .export-preview:focus,
+html[data-theme="dark"] .gw-import-textarea:focus,
+html[data-theme="dark"] .gw-import-category-input:focus {
+  box-shadow: 0 0 0 3px rgba(60, 137, 232, 0.25);
+}
+
+html[data-theme="dark"] .gw-import-category-input:hover,
+html[data-theme="dark"] .ie-ds-url-input:hover,
+html[data-theme="dark"] .ie-ds-color-input-wrapper:hover {
+  border-color: rgba(106, 174, 255, 0.45);
+}
+
+html[data-theme="dark"] .ie-ds-url-input:focus {
+  box-shadow: 0 0 0 3px rgba(60, 137, 232, 0.25);
+}
+
+html[data-theme="dark"] button.ie-btn:hover,
+html[data-theme="dark"] .import-export-modal-footer .ie-btn:hover,
+html[data-theme="dark"] .export-actions .ie-btn:hover,
+html[data-theme="dark"] .gw-import-back-btn:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] button.ie-btn-primary,
+html[data-theme="dark"] .import-export-modal-footer .ie-btn-primary,
+html[data-theme="dark"] .export-actions .ie-btn-primary,
+html[data-theme="dark"] button.ie-action-btn,
+html[data-theme="dark"] .import-export-content .ie-action-btn,
+html[data-theme="dark"] .ie-ds-fetch-btn,
+html[data-theme="dark"] .ie-ds-activation-buttons .ie-btn-primary,
+html[data-theme="dark"] .gw-import-parse-btn {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] button.ie-btn-primary:disabled,
+html[data-theme="dark"] .import-export-modal-footer .ie-btn-primary:disabled,
+html[data-theme="dark"] .export-actions .ie-btn-primary:disabled,
+html[data-theme="dark"] button.ie-action-btn:disabled,
+html[data-theme="dark"] .import-export-content .ie-action-btn:disabled,
+html[data-theme="dark"] .gw-import-parse-btn:disabled {
+  background: var(--gdc-bg-disabled);
+  color: var(--gdc-text-disabled) !important;
+}
+
+html[data-theme="dark"] .import-export-content::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .gw-import-unit-list::-webkit-scrollbar-thumb {
+  background: var(--gdc-scrollbar-thumb);
+}
+
+html[data-theme="dark"] .import-export-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+html[data-theme="dark"] .ie-ds-color-input::-webkit-color-swatch {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+html[data-theme="dark"] .gw-import-skip-btn {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .gw-import-skip-btn:hover {
+  color: var(--ie-error);
+}
+
+html[data-theme="dark"] .gw-import-skip-btn.skipped {
+  color: var(--ie-accent-primary);
+}
+
+html[data-theme="dark"] .gw-import-unit-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+html[data-theme="dark"] .gw-import-unit-faction-badge {
+  background: rgba(91, 106, 255, 0.2);
+  color: #aab3ff;
+}
+
+html[data-theme="dark"] .gw-import-unit-badge.warlord {
+  background: rgba(250, 140, 22, 0.14);
+  border-color: rgba(250, 140, 22, 0.35);
+  color: #ffa940;
+}
+
+html[data-theme="dark"] .gw-import-unit-badge.enhancement {
+  background: rgba(146, 84, 222, 0.18);
+  border-color: rgba(179, 127, 235, 0.35);
+  color: #d3adf7;
+}
+
+html[data-theme="dark"] .gw-import-unit-badge.models,
+html[data-theme="dark"] .gw-import-skip-btn.skipped {
+  border-color: rgba(106, 174, 255, 0.35);
+}
+
+html[data-theme="dark"] .gw-import-mode-slider {
+  background: rgba(255, 255, 255, 0.08);
+}

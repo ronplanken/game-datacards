@@ -41,3 +41,7 @@
   top: 60px;
   z-index: 99;
 }
+
+html[data-theme="dark"] .glossary-view {
+  background: var(--gdc-bg-surface);
+}

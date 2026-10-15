@@ -93,7 +93,9 @@ export const CustomCardDisplay = ({
   if (!cardTypeDef) {
     return (
       <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
-        <div className="data-custom" style={{ padding: "24px", textAlign: "center", color: "rgba(0,0,0,0.45)" }}>
+        <div
+          className="data-custom"
+          style={{ padding: "24px", textAlign: "center", color: "var(--gdc-text-tertiary)" }}>
           No matching card type definition found for &quot;{displayCard.cardType}&quot;
         </div>
       </Col>

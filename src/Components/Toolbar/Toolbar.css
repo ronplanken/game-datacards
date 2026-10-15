@@ -66,3 +66,44 @@
   outline: none;
   box-shadow: none;
 }
+
+html[data-theme="dark"] .treeview-toolbar {
+  background: var(--gdc-bg-surface-alt);
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .treeview-toolbar-divider {
+  background: var(--gdc-border);
+}
+
+html[data-theme="dark"] .treeview-toolbar .ant-btn {
+  color: var(--gdc-text-secondary);
+  background: transparent;
+}
+
+html[data-theme="dark"] .treeview-toolbar .ant-btn:hover:not(:disabled) {
+  background: var(--gdc-bg-hover);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .treeview-toolbar .ant-btn:active:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .treeview-toolbar .ant-btn:disabled {
+  color: var(--gdc-text-disabled);
+  background: transparent;
+}
+
+html[data-theme="dark"] .treeview-toolbar .ant-btn:focus-visible {
+  outline-color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .treeview-toolbar svg [stroke="black"] {
+  stroke: currentColor;
+}
+
+html[data-theme="dark"] .treeview-toolbar svg [fill="black"] {
+  fill: currentColor;
+}

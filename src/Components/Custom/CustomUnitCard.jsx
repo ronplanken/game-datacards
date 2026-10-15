@@ -59,7 +59,7 @@ export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle, isMobile }) => {
 
   return (
     <div
-      className={`custom-card custom-unit-card${isMobile ? " custom-card-mobile" : ""}`}
+      className={`custom-card custom-unit-card gdc-datacard${isMobile ? " custom-card-mobile" : ""}`}
       style={cardStyle}
       data-testid="custom-unit-card">
       <div className="unit front" data-name={unit.name}>

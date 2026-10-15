@@ -362,3 +362,113 @@
     gap: 12px;
   }
 }
+
+html[data-theme="dark"] .dsd-modal-overlay {
+  background: var(--gdc-bg-mask);
+}
+
+html[data-theme="dark"] .dsd-modal {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .dsd-modal-header,
+html[data-theme="dark"] .dsd-modal-footer {
+  background: var(--gdc-bg-surface-alt);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .dsd-back-btn,
+html[data-theme="dark"] .dsd-modal-close,
+html[data-theme="dark"] .dsd-copy-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .dsd-back-btn:hover,
+html[data-theme="dark"] .dsd-modal-close:hover,
+html[data-theme="dark"] .dsd-copy-btn:hover {
+  background: var(--gdc-bg-hover);
+  border-color: var(--gdc-primary-text);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .dsd-modal-title,
+html[data-theme="dark"] .dsd-stat-value {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .dsd-author,
+html[data-theme="dark"] .dsd-description p,
+html[data-theme="dark"] .dsd-share-label {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .dsd-author svg,
+html[data-theme="dark"] .dsd-stat-item svg {
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .dsd-game-badge {
+  color: var(--gdc-text-secondary);
+  background: rgba(148, 163, 184, 0.15);
+}
+
+html[data-theme="dark"] .dsd-version-badge {
+  color: var(--gdc-primary-text);
+  background: var(--gdc-primary-bg);
+}
+
+html[data-theme="dark"] .dsd-description,
+html[data-theme="dark"] .dsd-stat-item {
+  background: var(--gdc-bg-surface);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .dsd-stat-label {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .dsd-share-input {
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .dsd-btn.secondary {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .dsd-btn.secondary:hover {
+  background: var(--gdc-bg-hover);
+  border-color: var(--gdc-primary-text);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .dsd-btn.primary {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .dsd-btn.primary:hover:not(:disabled) {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .dsd-btn.primary:disabled {
+  background: var(--gdc-bg-disabled);
+  color: var(--gdc-text-disabled);
+}
+
+html[data-theme="dark"] .dsd-btn.danger {
+  background: var(--gdc-danger-bg);
+  border-color: var(--gdc-danger-border);
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .dsd-btn.danger:hover:not(:disabled) {
+  background: rgba(220, 68, 70, 0.24);
+  border-color: var(--gdc-danger);
+}

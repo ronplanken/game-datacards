@@ -14,7 +14,7 @@ export const SpellCard = ({
   if (!spell) return null;
 
   return (
-    <div className={`spell-card ${grandAlliance} ${isMobile ? "mobile" : ""}`}>
+    <div className={`spell-card gdc-datacard ${grandAlliance} ${isMobile ? "mobile" : ""}`}>
       {/* Header */}
       <div className="spell-card-header">
         {/* Mobile Back Button */}

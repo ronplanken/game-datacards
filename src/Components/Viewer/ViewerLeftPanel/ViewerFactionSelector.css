@@ -207,3 +207,77 @@
   background: #f0f0f0;
   margin: 8px 0;
 }
+
+html[data-theme="dark"] .viewer-faction-trigger {
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .viewer-faction-trigger:hover {
+  border-color: var(--gdc-primary-hover);
+}
+
+html[data-theme="dark"] .viewer-faction-trigger.open {
+  border-color: var(--gdc-primary);
+  box-shadow: 0 0 0 2px rgba(60, 137, 232, 0.25);
+}
+
+html[data-theme="dark"] .viewer-faction-trigger-text.placeholder,
+html[data-theme="dark"] .viewer-faction-trigger-icon,
+html[data-theme="dark"] .viewer-faction-search-icon,
+html[data-theme="dark"] .viewer-faction-empty {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .viewer-faction-dropdown {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .viewer-faction-search {
+  background: var(--gdc-bg-surface-alt);
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .viewer-faction-search input {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .viewer-faction-search input::placeholder {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .viewer-faction-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html[data-theme="dark"] .viewer-faction-list::-webkit-scrollbar-thumb {
+  background: var(--gdc-scrollbar-thumb);
+}
+
+html[data-theme="dark"] .viewer-faction-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+html[data-theme="dark"] .viewer-faction-option {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .viewer-faction-option:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .viewer-faction-option.selected {
+  background: var(--gdc-bg-active);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .viewer-faction-option.selected:hover {
+  background: rgba(64, 150, 255, 0.26);
+}
+
+html[data-theme="dark"] .viewer-faction-divider {
+  background: var(--gdc-border-subtle);
+}

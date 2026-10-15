@@ -1898,3 +1898,57 @@
     transition: none !important;
   }
 }
+
+html[data-theme="dark"] .wz-overlay {
+  --wz-text-dim: #8291a7;
+}
+
+html[data-theme="dark"] .wz-tree {
+  background: var(--gdc-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--gdc-border);
+}
+
+html[data-theme="dark"] .wz-tree-category,
+html[data-theme="dark"] .wz-tree-card,
+html[data-theme="dark"] .wz-tree-name {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .wz-tree-toggle,
+html[data-theme="dark"] .wz-tree-icon {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .wz-tree-grip {
+  color: var(--gdc-text-disabled);
+}
+
+html[data-theme="dark"] .wz-tree-category:hover,
+html[data-theme="dark"] .wz-tree-card:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .wz-tree-category--selected,
+html[data-theme="dark"] .wz-tree-card--selected {
+  background: var(--gdc-bg-active);
+  border-left-color: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .wz-tree-category--selected:hover,
+html[data-theme="dark"] .wz-tree-card--selected:hover {
+  background: rgba(64, 150, 255, 0.26);
+}
+
+html[data-theme="dark"] .wz-tree-category--drag-over,
+html[data-theme="dark"] .wz-tree-card--drag-over {
+  background: var(--gdc-bg-active);
+  box-shadow: inset 0 0 0 2px rgba(64, 150, 255, 0.45);
+}
+
+html[data-theme="dark"] .wz-btn--primary {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .wz-btn--primary:hover:not(:disabled) {
+  background: var(--gdc-primary);
+}

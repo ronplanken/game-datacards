@@ -1017,3 +1017,60 @@
     animation: none;
   }
 }
+
+html[data-theme="dark"] .list-overview-import-action {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--gdc-border);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .list-overview-import-action:active {
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .list-overview-more-menu,
+html[data-theme="dark"] .list-overview-more-menu::before {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .list-overview-more-menu {
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .list-share-visibility-toggle.active,
+html[data-theme="dark"] .list-share-result-copy,
+html[data-theme="dark"] .list-share-btn {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .list-share-btn--secondary {
+  background: transparent;
+}
+
+html[data-theme="dark"] .list-overview-item-configure:active {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .list-overview-total,
+html[data-theme="dark"] .list-overview-surcharge,
+html[data-theme="dark"] .list-overview-cloud-footer {
+  background: var(--gdc-bg-elevated);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"] .list-overview-cloud-badge--40k {
+  color: #93c5fd;
+}
+
+html[data-theme="dark"] .list-overview-cloud-badge--aos {
+  color: #d8b4fe;
+}
+
+html[data-theme="dark"] .list-overview-cloud-badge--necro {
+  color: #fcd34d;
+}
+
+html[data-theme="dark"] .list-overview-cloud-badge--custom {
+  color: #cbd5e1;
+}

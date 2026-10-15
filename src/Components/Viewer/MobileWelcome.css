@@ -272,3 +272,72 @@
   max-width: 100%;
   border-radius: 8px;
 }
+
+html[data-theme="dark"] .mobile-welcome-title {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .mobile-welcome-subtitle,
+html[data-theme="dark"] .recent-searches-clear,
+html[data-theme="dark"] .mobile-welcome-empty p {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .mobile-welcome-browse {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  box-shadow: var(--gdc-shadow-sm);
+}
+
+html[data-theme="dark"] .mobile-welcome-browse:active {
+  background: var(--gdc-bg-surface-alt);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .mobile-welcome-browse span {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .mobile-welcome-browse svg:first-child {
+  color: var(--gdc-primary-text);
+  opacity: 1;
+}
+
+html[data-theme="dark"] .mobile-welcome-browse svg:last-child {
+  color: var(--gdc-text-tertiary);
+  opacity: 1;
+}
+
+html[data-theme="dark"] .recent-searches-title,
+html[data-theme="dark"] .mobile-welcome-discord p {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .recent-searches-title svg {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .recent-searches-clear:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .recent-search-item {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .recent-search-item:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .recent-search-name {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .recent-search-faction {
+  color: var(--gdc-text-secondary);
+  background: var(--gdc-bg-sunken);
+}
+
+html[data-theme="dark"] .mobile-welcome-empty-icon {
+  color: var(--gdc-text-disabled);
+}

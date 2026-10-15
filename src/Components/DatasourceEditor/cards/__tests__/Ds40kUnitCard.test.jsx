@@ -63,6 +63,12 @@ describe("Ds40kUnitCard", () => {
     expect(container.querySelector(".unit.front")).toBeTruthy();
   });
 
+  it("marks the card wrapper as a datacard so dark mode keeps the light card colours", () => {
+    const card = { name: "Space Marine", stats: [], abilities: [] };
+    const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
+    expect(container.querySelector(".unit-card-front-wrapper")).toHaveClass("gdc-datacard");
+  });
+
   it("renders unit name", () => {
     const card = { name: "Intercessors", stats: [], abilities: [] };
     render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);

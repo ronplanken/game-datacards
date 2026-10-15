@@ -36,7 +36,7 @@ export const Ds40kEnhancementCard = ({ card, cardTypeDef, cardStyle, isMobile })
   return (
     <div className="data-40k-10e" data-testid="ds-40k-enhancement">
       <div
-        className={isMobile ? "shared-enhancement" : ""}
+        className={isMobile ? "shared-enhancement gdc-datacard" : "gdc-datacard"}
         style={{
           "--width": `${card.styling?.width ?? 260}px`,
           "--height": `${card.styling?.height ?? 458}px`,

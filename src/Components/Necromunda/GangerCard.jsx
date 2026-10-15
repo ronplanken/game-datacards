@@ -3,7 +3,7 @@ import { MarkdownDisplay } from "../MarkdownDisplay";
 export const GangerCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
   return (
     <div
-      className="ganger"
+      className="ganger gdc-datacard"
       style={{
         paddingTop,
         justifyContent: "center",
