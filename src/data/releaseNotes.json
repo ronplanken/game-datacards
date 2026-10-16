@@ -229,5 +229,12 @@
     "body": "Hover a keyword such as Lone Operative in a unit's ability text to see its rule. This works when the datasource's keyword glossary has an entry for it.",
     "severity": "info",
     "timestamp": 1791490062
+  },
+  {
+    "version": "3.13.6",
+    "title": "Keywords show which model has them",
+    "body": "11th edition cards now list keywords for all models and for each model that has extra ones, such as a Character in a squad.",
+    "severity": "info",
+    "timestamp": 1792175837
   }
 ]
