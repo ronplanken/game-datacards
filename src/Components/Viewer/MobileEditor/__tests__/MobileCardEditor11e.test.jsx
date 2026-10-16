@@ -184,3 +184,59 @@ describe("MobileCardEditor with a 40k-11e card", () => {
     expect(onClose.mock.calls[0][0]).toEqual(original);
   });
 });
+
+describe("MobileCardEditor model keywords (40k-11e)", () => {
+  const heroes = () => ({
+    ...card11e(),
+    keywords: [
+      { en: "Infantry", de: "Infanterie" },
+      { en: "Character", de: "Charaktermodell" },
+    ],
+    modelKeywords: [
+      { name: { en: "Ancient", de: "Standartenträger" }, keywords: [{ en: "Character", de: "Charaktermodell" }] },
+    ],
+  });
+
+  beforeEach(() => {
+    updateCardData.mockClear();
+    document.body.innerHTML = "";
+  });
+
+  const tagsUnder = (labelText) =>
+    [...document.querySelectorAll(".mobile-editor-tags")].find(
+      (el) => el.querySelector(".mobile-editor-field-label")?.textContent === labelText,
+    );
+
+  it("lists only the shared keywords under all models", () => {
+    renderEditor(heroes());
+    const shared = tagsUnder("Keywords (all models)");
+    expect([...shared.querySelectorAll(".mobile-editor-tag-text")].map((el) => el.textContent)).toEqual(["Infanterie"]);
+  });
+
+  it("removes a model keyword from the model and the full list", () => {
+    const { getByDisplayValue } = renderEditor(heroes());
+    const model = getByDisplayValue("Standartenträger").closest(".mobile-editor-model-keywords");
+    fireEvent.click(model.querySelector(".mobile-editor-tag-remove"));
+
+    const saved = lastSavedCard();
+    expect(saved.keywords).toEqual([{ en: "Infantry", de: "Infanterie" }]);
+    expect(saved.modelKeywords).toEqual([{ name: { en: "Ancient", de: "Standartenträger" }, keywords: [] }]);
+  });
+
+  it("adds a model with a name in the active language", () => {
+    const { getByText } = renderEditor(heroes());
+    fireEvent.click(getByText("Add model"));
+
+    const saved = lastSavedCard();
+    expect(saved.modelKeywords[1]).toEqual({ name: { de: "Model 2" }, keywords: [] });
+    expect(saved.keywords).toEqual(heroes().keywords);
+  });
+
+  it("leaves model keywords exactly as shipped when untouched", () => {
+    const original = heroes();
+    const onClose = vi.fn();
+    renderEditor(original, onClose);
+    fireEvent.click(document.querySelector(".mobile-editor-back"));
+    expect(onClose.mock.calls[0][0]).toEqual(original);
+  });
+});

@@ -518,6 +518,7 @@ function resolve11eUnitSections(card) {
       // Keywords are language-keyed and project to `{ name }` objects; factions
       // are plain strings the glossary matches in English.
       keywordsAreObjects: true,
+      modelKeywordsPath: "modelKeywords",
     },
   });
 

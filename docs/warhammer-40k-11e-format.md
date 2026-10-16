@@ -177,7 +177,14 @@ is a `CHARACTER`, the other three models are not. Newer data carries this as
 `UnitCard/UnitKeywords.jsx` renders it as `ALL MODELS: Infantry, Tacticus
 ANCIENT: Character`, the way the official app shows it. Older data versions have
 no `modelKeywords` (or an empty one); those cards render `keywords` as one line,
-as before. The card editor still edits `keywords` only.
+as before.
+
+The card editors (desktop and mobile) edit the two fields together. With
+`modelKeywords` present, the Keywords list shows only the shared keywords and a
+Model keywords block edits each model's name and keywords. Every edit rewrites
+`keywords` as the shared keywords plus all model keywords (`withModelKeywords`),
+so the two fields stay consistent. The mobile editor's language projection
+covers `modelKeywords` too.
 
 ## Keyword glossary (tooltips)
 
