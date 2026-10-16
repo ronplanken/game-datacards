@@ -6,6 +6,7 @@ import { reorder } from "../../../Helpers/generic.helpers";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
 import { localize, setLocalizedArrayItem } from "../../../Helpers/localization.helpers";
+import { joinKeywords, splitKeywords } from "../../../Helpers/unitKeywords.helpers";
 
 // 11th edition keywords are language-keyed (rendered via localize); factions are
 // plain strings (rendered with a plain join). The `localized` flag selects the
@@ -14,8 +15,13 @@ export function UnitKeywords({ type, localized = false }) {
   const { activeCard, updateActiveCard } = useCardStorage();
   const { settings } = useSettingsStorage();
   const lang = settings.language;
-  const entries = activeCard[type] || [];
+  const split = type === "keywords" && Array.isArray(activeCard.modelKeywords);
+  const entries = split ? splitKeywords(activeCard.keywords, activeCard.modelKeywords) : activeCard[type] || [];
   const typeLabel = type === "keywords" ? "keyword" : "faction";
+  const withEntries = (newEntries) => ({
+    ...activeCard,
+    [type]: split ? joinKeywords(newEntries, activeCard.modelKeywords) : newEntries,
+  });
 
   return (
     <>
@@ -25,12 +31,16 @@ export function UnitKeywords({ type, localized = false }) {
             return;
           }
           const newEntries = reorder(entries, result.source.index, result.destination.index);
-          updateActiveCard({ ...activeCard, [type]: newEntries });
+          updateActiveCard(withEntries(newEntries));
         }}>
         <Card
           type={"inner"}
           size={"small"}
-          title={<Typography.Text>{type === "keywords" ? "Keywords" : "Factions"}</Typography.Text>}
+          title={
+            <Typography.Text>
+              {type === "keywords" ? (split ? "Keywords (all models)" : "Keywords") : "Factions"}
+            </Typography.Text>
+          }
           style={{ marginBottom: "16px" }}>
           <div className="keywords_container" style={{ paddingBottom: "4px", paddingTop: "4px" }}>
             <Droppable droppableId={`droppable-keywords-${type}`}>
@@ -59,7 +69,7 @@ export function UnitKeywords({ type, localized = false }) {
                                       if (!localized) {
                                         newEntries[index] = value;
                                       }
-                                      updateActiveCard({ ...activeCard, [type]: newEntries });
+                                      updateActiveCard(withEntries(newEntries));
                                     },
                                   }}>
                                   {localized ? localize(entry, lang) : entry}
@@ -72,7 +82,7 @@ export function UnitKeywords({ type, localized = false }) {
                                     updateActiveCard(() => {
                                       const newEntries = [...entries];
                                       newEntries.splice(index, 1);
-                                      return { ...activeCard, [type]: newEntries };
+                                      return withEntries(newEntries);
                                     })
                                   }></Button>
                               </div>
@@ -95,7 +105,7 @@ export function UnitKeywords({ type, localized = false }) {
                 const newEntries = [...entries];
                 const label = `New ${typeLabel} ${newEntries.length + 1}`;
                 newEntries.push(localized ? { [lang]: label } : label);
-                return { ...activeCard, [type]: newEntries };
+                return withEntries(newEntries);
               })
             }>
             {`Add ${typeLabel}`}

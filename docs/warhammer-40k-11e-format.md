@@ -14,6 +14,7 @@ file_locations:
   - src/Helpers/listPoints.helpers.js
   - src/Hooks/useDataSourceStorage.jsx
   - src/Hooks/use11eKeywordGlossary.js
+  - src/Helpers/unitKeywords.helpers.js
   - src/Components/Warhammer40k-11e/
   - src/Components/Viewer/useMobileList.jsx
   - src/styles/40k-11e.less
@@ -49,6 +50,7 @@ detachments, rules).
 - [The dedicated renderset](#the-dedicated-renderset)
 - [Datasheet column layout](#datasheet-column-layout)
 - [Rich-text markup](#rich-text-markup)
+- [Model-specific keywords](#model-specific-keywords)
 - [Keyword glossary (tooltips)](#keyword-glossary-tooltips)
 - [Weapons](#weapons)
 - [Stratagems](#stratagems)
@@ -154,6 +156,35 @@ writes — matching the 10e renderer. No keyword dictionary
 is needed for this **highlighting** because keywords are already explicitly
 tagged in the data. Hover **explanations** for keywords and core abilities come
 from a separate glossary file — see [Keyword glossary](#keyword-glossary-tooltips).
+
+## Model-specific keywords
+
+Not every model in a unit has the same keywords. The Ancient in Company Heroes
+is a `CHARACTER`, the other three models are not. Newer data carries this as
+`modelKeywords` next to `keywords`:
+
+```json
+"keywords": [{ "en": "Infantry" }, { "en": "Tacticus" }, { "en": "Character" }],
+"modelKeywords": [{ "name": { "en": "Ancient" }, "keywords": [{ "en": "Character" }] }]
+```
+
+- `keywords` lists every keyword any model has.
+- `modelKeywords` lists, per model, only the keywords that not every model has.
+  It is `[]` when all models match.
+- The shared keywords are `keywords` minus everything in `modelKeywords`.
+
+`getKeywordGroups` (`src/Helpers/unitKeywords.helpers.js`) does that split, and
+`UnitCard/UnitKeywords.jsx` renders it as `ALL MODELS: Infantry, Tacticus
+ANCIENT: Character`, the way the official app shows it. Older data versions have
+no `modelKeywords` (or an empty one); those cards render `keywords` as one line,
+as before.
+
+The card editors (desktop and mobile) edit the two fields together. With
+`modelKeywords` present, the Keywords list shows only the shared keywords and a
+Model keywords block edits each model's name and keywords. Every edit rewrites
+`keywords` as the shared keywords plus all model keywords (`withModelKeywords`),
+so the two fields stay consistent. The mobile editor's language projection
+covers `modelKeywords` too.
 
 ## Keyword glossary (tooltips)
 

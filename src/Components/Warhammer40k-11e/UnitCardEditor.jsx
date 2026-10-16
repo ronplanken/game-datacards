@@ -7,6 +7,7 @@ import { UnitDamageTable } from "./UnitCardEditor/UnitDamageTable";
 import { UnitExtendedAbilities } from "./UnitCardEditor/UnitExtendedAbilities";
 import { UnitInvulnerableSave } from "./UnitCardEditor/UnitInvulnerableSave";
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
+import { UnitModelKeywords } from "./UnitCardEditor/UnitModelKeywords";
 import { UnitPoints } from "./UnitCardEditor/UnitPoints";
 import { UnitPrimarchAbilities } from "./UnitCardEditor/UnitPrimarchAbilities";
 import { UnitStats } from "./UnitCardEditor/UnitStats";
@@ -185,6 +186,7 @@ export const UnitCardEditor = () => {
       </Panel>
       <Panel header="Keywords" style={{ width: "100%" }} key="10">
         <UnitKeywords type={"keywords"} localized />
+        <UnitModelKeywords />
         <UnitKeywords type={"factions"} />
       </Panel>
     </Collapse>

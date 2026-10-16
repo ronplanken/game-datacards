@@ -76,6 +76,7 @@ const FIELD_LABELS = {
   weapons: "Weapons",
   abilities: "Abilities",
   keywords: "Keywords",
+  modelKeywords: "Model keywords",
   factions: "Faction keywords",
   factionKeywords: "Faction keywords",
   points: "Points",
