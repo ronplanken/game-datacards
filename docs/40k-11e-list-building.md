@@ -155,6 +155,19 @@ requiresKeyword }`:
 lists the valid squads already in the list, and `groupListForDisplay` nests
 attached units under their squad.
 
+Some enhancements add targets to their bearer, such as Murdermind, whose card
+lists SUPPORT: Skorpekh, Lokhust, Ophydian and Lokhust Heavy Destroyers. The
+11e data does not carry these, so `getEnhancementAttachesTo` keeps the printed
+targets in a small table keyed by English enhancement name (an `attachesTo`
+array on the enhancement data takes precedence). `canAttachTo` and
+`getEligibleSquads` take the leader's selected `enhancement` and add those
+targets to the unit's own, so any unit that can take the enhancement gains
+them and keeps its usual squads. The unit config modal and the mobile list
+editor pass the selected enhancement in, and `keepEligibleAttachment` drops a
+chosen squad when a change of enhancement (or detachment, on mobile) makes it
+ineligible. The 11e loader keeps `nameEn` on enhancements so the match works
+in every card language.
+
 ## Where it is wired in
 
 - Army/roster helpers: `src/Helpers/listRoster.helpers.js`.

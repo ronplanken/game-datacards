@@ -25,6 +25,7 @@ import {
   getAttachmentType,
   getEligibleSquads,
   isAttachableLeader,
+  keepEligibleAttachment,
   requiresAttachment,
 } from "../../../Helpers/listAttachments.helpers";
 import {
@@ -127,6 +128,9 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
       selectedDetachment: { ...settings.selectedDetachment, [card.faction_id]: detachment },
     });
     setSelectedEnhancement(undefined);
+    setSelectedAttachment((current) =>
+      keepEligibleAttachment(card, current, lists[selectedList]?.cards, { detachment, enhancement: undefined }),
+    );
   };
 
   const handleSave = () => {
@@ -143,12 +147,17 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const changeWargearQuantity = (option, quantity) =>
     setSelectedWargear((current) => setWargearQuantity(current, option, quantity));
 
+  // Some attachments depend on the enhancement (e.g. Murdermind), so drop a
+  // chosen squad that the new enhancement no longer allows.
   const selectEnhancement = (enhancement) => {
-    if (selectedEnhancement?.name === enhancement?.name) {
-      setSelectedEnhancement(undefined);
-    } else {
-      setSelectedEnhancement(enhancement);
-    }
+    const next = selectedEnhancement?.name === enhancement?.name ? undefined : enhancement;
+    setSelectedEnhancement(next);
+    setSelectedAttachment((current) =>
+      keepEligibleAttachment(card, current, lists[selectedList]?.cards, {
+        detachment: selectedDetachment,
+        enhancement: next,
+      }),
+    );
   };
 
   // Regular enhancements are once per army; Upgrades may be taken up to three
@@ -178,7 +187,10 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const attachmentType = getAttachmentType(card);
   const mustAttach = requiresAttachment(card);
   const eligibleSquads = isAttachableLeader(card)
-    ? getEligibleSquads(card, lists[selectedList]?.cards || [], { detachment: selectedDetachment })
+    ? getEligibleSquads(card, lists[selectedList]?.cards || [], {
+        detachment: selectedDetachment,
+        enhancement: selectedEnhancement,
+      })
     : [];
 
   if (!card || !Array.isArray(card?.points)) return null;
