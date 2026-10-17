@@ -145,7 +145,7 @@ would make the second overwrite the first.
 ## Leaders and Support units
 
 11e datasheets carry `attachesTo: { type, requiresDetachment, excludesDetachment,
-requiresKeyword }`:
+requiresKeyword, requiresEnhancement }`:
 
 - `leader` — may join an eligible squad, but can also stand alone.
 - `support` — **must** be attached; the config UI blocks saving until a squad is
@@ -154,6 +154,15 @@ requiresKeyword }`:
 `canAttachTo` honours the detachment/keyword restrictions, `getEligibleSquads`
 lists the valid squads already in the list, and `groupListForDisplay` nests
 attached units under their squad.
+
+`requiresEnhancement` names an enhancement (English) the leader must have for
+that entry to apply. It covers enhancements that add attachment targets, such
+as Murdermind, whose card lets a Technomancer support Skorpekh, Lokhust,
+Ophydian and Lokhust Heavy Destroyers on top of its usual units. The unit
+config modal and the mobile list editor pass the selected enhancement in, and
+`keepEligibleAttachment` drops a chosen squad when a change of enhancement (or
+detachment, on mobile) makes it ineligible. The 11e loader keeps `nameEn` on
+enhancements so the match works in every card language.
 
 ## Where it is wired in
 

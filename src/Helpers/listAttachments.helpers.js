@@ -43,34 +43,50 @@ export const getAttachTargetNames = (leaderCard) =>
     .map((a) => a.target);
 
 /**
- * Whether a single attachesTo entry applies, given the army detachment and the
- * target squad. Entries can be qualified by:
+ * The English name of an enhancement (an enhancement object or a plain name).
+ * The 11e loader keeps `nameEn` alongside the localised `name`.
+ */
+export const enhancementEnglishName = (enhancement) => {
+  if (!enhancement) return "";
+  if (typeof enhancement === "string") return enhancement;
+  return enhancement.nameEn || localize(enhancement.name, "en") || "";
+};
+
+/**
+ * Whether a single attachesTo entry applies, given the army detachment, the
+ * leader's enhancement and the target squad. Entries can be qualified by:
  *   requiresDetachment  - only when the army uses that detachment
  *   excludesDetachment  - not when the army uses that detachment
  *   requiresKeyword     - the target squad must have that keyword
+ *   requiresEnhancement - only when the leader has that enhancement
  * Detachment qualifiers are ignored when the army detachment is unknown, so the
- * builder stays permissive until a detachment is chosen.
+ * builder stays permissive until a detachment is chosen. An enhancement
+ * qualifier always needs that enhancement to be selected.
  */
-const entryApplies = (entry, squadCard, detachmentName) => {
+const entryApplies = (entry, squadCard, detachmentName, enhancement) => {
   const detachment = norm(detachmentName);
   if (detachment) {
     if (entry.requiresDetachment && norm(entry.requiresDetachment) !== detachment) return false;
     if (entry.excludesDetachment && norm(entry.excludesDetachment) === detachment) return false;
   }
   if (entry.requiresKeyword && !cardHasKeyword(squadCard, localize(entry.requiresKeyword, "en"))) return false;
+  if (entry.requiresEnhancement && norm(entry.requiresEnhancement) !== norm(enhancementEnglishName(enhancement))) {
+    return false;
+  }
   return true;
 };
 
 /**
  * Can `leaderCard` attach to `squadCard`? Matches by English datasheet name and
- * honours each entry's detachment/keyword qualifiers.
+ * honours each entry's detachment/keyword/enhancement qualifiers.
  *
  * @param {Object} leaderCard
  * @param {Object} squadCard
  * @param {Object} [options]
  * @param {string} [options.detachment] - the army's detachment name, if chosen
+ * @param {Object|string} [options.enhancement] - the leader's selected enhancement, if any
  */
-export const canAttachTo = (leaderCard, squadCard, { detachment } = {}) => {
+export const canAttachTo = (leaderCard, squadCard, { detachment, enhancement } = {}) => {
   if (!isAttachableLeader(leaderCard) || !squadCard) return false;
   if (leaderCard.uuid && squadCard.uuid && leaderCard.uuid === squadCard.uuid) return false;
   const squadName = norm(cardEnglishName(squadCard));
@@ -80,7 +96,7 @@ export const canAttachTo = (leaderCard, squadCard, { detachment } = {}) => {
       entry?.target &&
       (entry.targetType ?? "datasheet") === "datasheet" &&
       norm(entry.target) === squadName &&
-      entryApplies(entry, squadCard, detachment),
+      entryApplies(entry, squadCard, detachment, enhancement),
   );
 };
 
@@ -90,6 +106,18 @@ export const canAttachTo = (leaderCard, squadCard, { detachment } = {}) => {
  */
 export const getEligibleSquads = (leaderCard, listCards, options = {}) =>
   (listCards || []).filter((card) => card?.uuid !== leaderCard?.uuid && canAttachTo(leaderCard, card, options));
+
+/**
+ * The attachment to keep after the leader's options change (e.g. a different
+ * enhancement): `attachedTo` when that squad is still eligible, otherwise
+ * undefined. A squad that is not in `listCards` is left alone.
+ */
+export const keepEligibleAttachment = (leaderCard, attachedTo, listCards, options = {}) => {
+  if (!attachedTo) return attachedTo;
+  const squad = (listCards || []).find((card) => card?.uuid === attachedTo);
+  if (!squad) return attachedTo;
+  return canAttachTo(leaderCard, squad, options) ? attachedTo : undefined;
+};
 
 /**
  * Support units in a list that are not attached to a squad (or whose squad is

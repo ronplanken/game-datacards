@@ -9,6 +9,7 @@ import {
   getAttachmentType,
   requiresAttachment,
   getUnattachedSupportCards,
+  keepEligibleAttachment,
 } from "../listAttachments.helpers";
 
 const leader = (extra = {}) => ({
@@ -155,5 +156,78 @@ describe("attachesTo qualifiers", () => {
   it("filters eligible squads by the army detachment", () => {
     const list = [plainChosen, khorneChosen];
     expect(getEligibleSquads(abaddon, list, { detachment: "Pactbound Zealots" }).map((c) => c.uuid)).toEqual(["c2"]);
+  });
+});
+
+describe("requiresEnhancement qualifier (Technomancer with Murdermind)", () => {
+  const destroyerTargets = [
+    "Skorpekh Destroyers",
+    "Lokhust Destroyers",
+    "Ophydian Destroyers",
+    "Lokhust Heavy Destroyers",
+  ];
+  const technomancer = {
+    uuid: "tm-1",
+    nameEn: "Technomancer",
+    attachesTo: [
+      { type: "support", target: "Canoptek Wraiths", targetType: "datasheet" },
+      { type: "support", target: "Immortals", targetType: "datasheet" },
+      { type: "support", target: "Necron Warriors", targetType: "datasheet" },
+      ...destroyerTargets.map((target) => ({
+        type: "support",
+        target,
+        targetType: "datasheet",
+        requiresEnhancement: "Murdermind",
+      })),
+    ],
+  };
+  const baseSquads = [squad("Canoptek Wraiths", "w1"), squad("Immortals", "i1"), squad("Necron Warriors", "n1")];
+  const destroyerSquads = destroyerTargets.map((name, i) => squad(name, `d${i}`));
+  const list = [technomancer, ...baseSquads, ...destroyerSquads];
+  const murdermind = { name: "Murdermind", nameEn: "Murdermind", cost: "15" };
+  const otherEnhancement = { name: "Other", nameEn: "Other" };
+
+  it("offers only the base three squads without Murdermind", () => {
+    expect(getEligibleSquads(technomancer, list).map((c) => c.uuid)).toEqual(["w1", "i1", "n1"]);
+    expect(getEligibleSquads(technomancer, list, { enhancement: otherEnhancement }).map((c) => c.uuid)).toEqual([
+      "w1",
+      "i1",
+      "n1",
+    ]);
+  });
+
+  it("adds the four Destroyer squads when Murdermind is selected, keeping the base three", () => {
+    expect(getEligibleSquads(technomancer, list, { enhancement: murdermind }).map((c) => c.uuid)).toEqual([
+      "w1",
+      "i1",
+      "n1",
+      "d0",
+      "d1",
+      "d2",
+      "d3",
+    ]);
+  });
+
+  it("matches the enhancement by English name, case-insensitively", () => {
+    const germanMurdermind = { name: "Mordgeist", nameEn: "Murdermind" };
+    expect(canAttachTo(technomancer, destroyerSquads[0], { enhancement: germanMurdermind })).toBe(true);
+    expect(canAttachTo(technomancer, destroyerSquads[0], { enhancement: "murdermind" })).toBe(true);
+    expect(canAttachTo(technomancer, destroyerSquads[0], { enhancement: { name: { en: "Murdermind" } } })).toBe(true);
+  });
+
+  it("combines with the detachment qualifiers", () => {
+    expect(
+      canAttachTo(technomancer, destroyerSquads[0], { detachment: "Cursed Legion", enhancement: murdermind }),
+    ).toBe(true);
+    expect(canAttachTo(technomancer, destroyerSquads[0], { detachment: "Cursed Legion" })).toBe(false);
+  });
+
+  it("keepEligibleAttachment drops a Destroyer squad once Murdermind is removed", () => {
+    expect(keepEligibleAttachment(technomancer, "d0", list, { enhancement: murdermind })).toBe("d0");
+    expect(keepEligibleAttachment(technomancer, "d0", list, {})).toBeUndefined();
+    expect(keepEligibleAttachment(technomancer, "i1", list, {})).toBe("i1");
+    // squads not in the list and empty selections are left alone
+    expect(keepEligibleAttachment(technomancer, "gone", list, {})).toBe("gone");
+    expect(keepEligibleAttachment(technomancer, undefined, list, {})).toBeUndefined();
   });
 });
