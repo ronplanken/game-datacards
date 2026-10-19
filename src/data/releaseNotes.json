@@ -236,5 +236,12 @@
     "body": "11th edition cards now list keywords for all models and for each model that has extra ones, such as a Character in a squad.",
     "severity": "info",
     "timestamp": 1792175837
+  },
+  {
+    "version": "3.13.7",
+    "title": "Murdermind Crypteks can join Destroyer units",
+    "body": "In 11th edition Necron lists, a Cryptek with Murdermind can now be attached to Skorpekh, Lokhust, Ophydian and Lokhust Heavy Destroyers. Its usual units stay available too.",
+    "severity": "info",
+    "timestamp": 1792422338
   }
 ]
