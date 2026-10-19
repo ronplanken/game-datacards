@@ -43,6 +43,40 @@ export const getAttachTargetNames = (leaderCard) =>
     .map((a) => a.target);
 
 /**
+ * Enhancements whose card adds Support/Leader targets to the bearer, keyed by
+ * normalised English name. The 11e data does not carry these yet, so the
+ * targets printed on the enhancement card are kept here. Any unit that can take
+ * the enhancement gains them on top of its own attachesTo targets.
+ */
+const ENHANCEMENT_ATTACHES_TO = {
+  // Necrons, Cursed Legion: "SUPPORT: SKORPEKH DESTROYERS, LOKHUST DESTROYERS,
+  // OPHYDIAN DESTROYERS, LOKHUST HEAVY DESTROYERS".
+  murdermind: ["Skorpekh Destroyers", "Lokhust Destroyers", "Ophydian Destroyers", "Lokhust Heavy Destroyers"].map(
+    (target) => ({ type: "support", target, targetType: "datasheet" }),
+  ),
+};
+
+/**
+ * The English name of an enhancement (an enhancement object or a plain name).
+ * The 11e loader keeps `nameEn` alongside the localised `name`.
+ */
+export const enhancementEnglishName = (enhancement) => {
+  if (!enhancement) return "";
+  if (typeof enhancement === "string") return enhancement;
+  return enhancement.nameEn || localize(enhancement.name, "en") || "";
+};
+
+/**
+ * The attachesTo entries an enhancement grants its bearer: the enhancement's own
+ * `attachesTo` when the data carries one, otherwise the known card targets.
+ */
+export const getEnhancementAttachesTo = (enhancement) => {
+  if (!enhancement) return [];
+  if (Array.isArray(enhancement.attachesTo)) return enhancement.attachesTo;
+  return ENHANCEMENT_ATTACHES_TO[norm(enhancementEnglishName(enhancement))] || [];
+};
+
+/**
  * Whether a single attachesTo entry applies, given the army detachment and the
  * target squad. Entries can be qualified by:
  *   requiresDetachment  - only when the army uses that detachment
@@ -63,19 +97,21 @@ const entryApplies = (entry, squadCard, detachmentName) => {
 
 /**
  * Can `leaderCard` attach to `squadCard`? Matches by English datasheet name and
- * honours each entry's detachment/keyword qualifiers.
+ * honours each entry's detachment/keyword qualifiers. The leader's selected
+ * enhancement adds the targets it grants (see getEnhancementAttachesTo).
  *
  * @param {Object} leaderCard
  * @param {Object} squadCard
  * @param {Object} [options]
  * @param {string} [options.detachment] - the army's detachment name, if chosen
+ * @param {Object|string} [options.enhancement] - the leader's selected enhancement, if any
  */
-export const canAttachTo = (leaderCard, squadCard, { detachment } = {}) => {
+export const canAttachTo = (leaderCard, squadCard, { detachment, enhancement } = {}) => {
   if (!isAttachableLeader(leaderCard) || !squadCard) return false;
   if (leaderCard.uuid && squadCard.uuid && leaderCard.uuid === squadCard.uuid) return false;
   const squadName = norm(cardEnglishName(squadCard));
   if (!squadName) return false;
-  return (leaderCard.attachesTo || []).some(
+  return [...(leaderCard.attachesTo || []), ...getEnhancementAttachesTo(enhancement)].some(
     (entry) =>
       entry?.target &&
       (entry.targetType ?? "datasheet") === "datasheet" &&
@@ -90,6 +126,18 @@ export const canAttachTo = (leaderCard, squadCard, { detachment } = {}) => {
  */
 export const getEligibleSquads = (leaderCard, listCards, options = {}) =>
   (listCards || []).filter((card) => card?.uuid !== leaderCard?.uuid && canAttachTo(leaderCard, card, options));
+
+/**
+ * The attachment to keep after the leader's options change (e.g. a different
+ * enhancement): `attachedTo` when that squad is still eligible, otherwise
+ * undefined. A squad that is not in `listCards` is left alone.
+ */
+export const keepEligibleAttachment = (leaderCard, attachedTo, listCards, options = {}) => {
+  if (!attachedTo) return attachedTo;
+  const squad = (listCards || []).find((card) => card?.uuid === attachedTo);
+  if (!squad) return attachedTo;
+  return canAttachTo(leaderCard, squad, options) ? attachedTo : undefined;
+};
 
 /**
  * Support units in a list that are not attached to a squad (or whose squad is

@@ -639,6 +639,9 @@ export const get40k11eData = async (language = "en", dataVersion = null) => {
             cardType: "enhancement",
             source: "40k-11e",
             name: localize(enhancement.name, language),
+            // English name kept so attachment targets granted by an enhancement
+            // (e.g. Murdermind) match regardless of the user's card language.
+            nameEn: localize(enhancement.name, "en"),
           };
         }),
         rules: resolve11eRuleNames(val?.rules, language),

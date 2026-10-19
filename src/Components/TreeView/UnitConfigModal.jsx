@@ -21,7 +21,12 @@ import {
   isEnhancementAtCopyLimit,
   isUnitEnhancementEligible,
 } from "../../Helpers/listCategories.helpers";
-import { getEligibleSquads, isAttachableLeader, requiresAttachment } from "../../Helpers/listAttachments.helpers";
+import {
+  getEligibleSquads,
+  isAttachableLeader,
+  keepEligibleAttachment,
+  requiresAttachment,
+} from "../../Helpers/listAttachments.helpers";
 import {
   getArmyFactionKeywords,
   getDetachmentNamesEn,
@@ -151,15 +156,20 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
   // that is already in this list.
   const mustAttach = requiresAttachment(card);
   const eligibleSquads = isAttachableLeader(card)
-    ? getEligibleSquads(card, category?.cards || [], { detachment: selectedDetachment })
+    ? getEligibleSquads(card, category?.cards || [], {
+        detachment: selectedDetachment,
+        enhancement: selectedEnhancement,
+      })
     : [];
 
+  // Some attachments depend on the enhancement (e.g. Murdermind), so drop a
+  // chosen squad that the new enhancement no longer allows.
   const selectEnhancement = (enhancement) => {
-    if (selectedEnhancement?.name === enhancement?.name) {
-      setSelectedEnhancement(undefined);
-    } else {
-      setSelectedEnhancement(enhancement);
-    }
+    const next = selectedEnhancement?.name === enhancement?.name ? undefined : enhancement;
+    setSelectedEnhancement(next);
+    setSelectedAttachment((current) =>
+      keepEligibleAttachment(card, current, category?.cards, { detachment: selectedDetachment, enhancement: next }),
+    );
   };
 
   const handleDetachmentChange = (value) => {
