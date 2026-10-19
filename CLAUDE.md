@@ -271,6 +271,7 @@ Self-hosted Supabase on Coolify with 18 migrations. Payment processing via Creem
 | 018 | category_sharing | Enhanced category sharing with owned shares |
 | 028 | datamissions_tracker_sync | Cross-app tracker sync tables/RPCs for game-datamissions |
 | 029 | signup_source | Track which app (datacards/datamissions) an account first signed in on |
+| 030 | cleanup_cron_jobs | Daily pg_cron cleanup: revoked refresh tokens (7d), auth audit log (90d), analytics logs (7d) |
 
 ### Feature Flags
 
