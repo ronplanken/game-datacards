@@ -63,4 +63,11 @@
     opacity: 0.8;
     font-style: italic;
   }
+
+  // The single-price points display is an antd Button with a 1px border. Give
+  // the "Show all points" row the same invisible border so both are equally
+  // tall and the stat line below does not move when the option is toggled.
+  .unit .header .header_container .points_container--all {
+    border: 1px solid transparent;
+  }
 }
