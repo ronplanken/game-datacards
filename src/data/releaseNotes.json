@@ -264,5 +264,12 @@
     "body": "On 10th edition unit cards, editing the card could leave extra \"OR\" lines or a repeated line under Unit Composition. The card now shows exactly the entries you typed.",
     "severity": "info",
     "timestamp": 1793100494
+  },
+  {
+    "version": "3.13.11",
+    "title": "Support core ability shows its rule",
+    "body": "The Support core ability now shows its explanation when you hover it, matching Leader and Stealth.",
+    "severity": "info",
+    "timestamp": 1793101719
   }
 ]
