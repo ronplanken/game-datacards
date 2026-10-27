@@ -257,5 +257,12 @@
     "body": "In the Card Designer preview, 11th edition abilities with a bullet list showed a blank line after every bullet. Lists now look the same as on the normal card.",
     "severity": "info",
     "timestamp": 1793100461
+  },
+  {
+    "version": "3.13.10",
+    "title": "Unit Composition no longer shows extra lines",
+    "body": "On 10th edition unit cards, editing the card could leave extra \"OR\" lines or a repeated line under Unit Composition. The card now shows exactly the entries you typed.",
+    "severity": "info",
+    "timestamp": 1793100494
   }
 ]
