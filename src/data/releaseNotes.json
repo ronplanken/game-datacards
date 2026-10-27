@@ -243,5 +243,12 @@
     "body": "In 11th edition Necron lists, a Cryptek with Murdermind can now be attached to Skorpekh, Lokhust, Ophydian and Lokhust Heavy Destroyers. Its usual units stay available too.",
     "severity": "info",
     "timestamp": 1792422338
+  },
+  {
+    "version": "3.13.8",
+    "title": "Legends label no longer covers the points",
+    "body": "On 11th edition cards with Show all points on, the Warhammer Legends label now stays clear of the points, including the extra copy cost. The stat line also stays in place when you turn Show all points on.",
+    "severity": "info",
+    "timestamp": 1793100393
   }
 ]
