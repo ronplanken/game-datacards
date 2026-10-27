@@ -48,7 +48,7 @@ Each base system wires the glossary through its own card renderer:
 | `aos` | `DsAosWeapons` | `DsAosAbilities` | `profile.keywords` array |
 | `starcraft-tmg` | `StarcraftWeaponTable` | `StarcraftAbility` | comma-separated string column whose key is `keyword`/`keywords` |
 
-The abilities renderers scan ability descriptions for glossary entry names scoped to `"abilities"` with `displayMode: "tooltip"` and wrap each match with an underline + hover tooltip. Custom datasource cards parse ability text against the glossary **only** — the built-in 40K keyword dictionary (bracket tags, hard-coded rule/weapon keywords) is skipped for them. The shared render logic lives in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx` (`GlossaryKeywordTags`, `GlossaryExplanationRows`, `GlossaryText`).
+The abilities renderers scan ability descriptions for glossary entry names scoped to `"abilities"` with `displayMode: "tooltip"` and wrap each match with an underline + hover tooltip. Custom datasource cards parse ability text against the glossary **only** — the built-in 40K keyword dictionary (bracket tags, hard-coded rule/weapon keywords) is skipped for them. On `40k-10e` and `40k-11e` cards, each name in a `name-only` ability category (for example the Core row) is resolved against the glossary scoped to `"abilities"` as a whole name, including parameterized matches such as `Feel No Pain 5+`. A matched entry shows its description as a hover tooltip regardless of `displayMode`, because name-only categories have no explanation rows. Names without a glossary match fall back to the built-in 40K keyword dictionary, so 10e datasources keep their built-in Leader, Stealth and Deep Strike tooltips. The shared render logic lives in `src/Components/DatasourceEditor/cards/shared/GlossaryKeywords.jsx` (`GlossaryKeywordTags`, `GlossaryExplanationRows`, `GlossaryText`).
 
 ```js
 keywordGlossary: [
@@ -85,7 +85,7 @@ keywordGlossary: [
 | Scope            | Where it renders |
 |------------------|------------------|
 | `weapons`        | Inline weapon keyword tags (styled + hover tooltip for `displayMode: "tooltip"`) and explanation rows below the weapon table. Rendered by `40k-10e`, `aos`, and `starcraft-tmg`. |
-| `abilities`      | Inside ability descriptions — `displayMode: "tooltip"` entries get an underline + hover tooltip on each name match. Rendered by `40k-10e`, `aos`, and `starcraft-tmg`. |
+| `abilities`      | Inside ability descriptions — `displayMode: "tooltip"` entries get an underline + hover tooltip on each name match. On `40k-10e`/`40k-11e` cards, names in `name-only` categories (the Core row) also get a hover tooltip on a full-name match, for any `displayMode`. Rendered by `40k-10e`, `aos`, and `starcraft-tmg`. |
 | `unit-keywords`  | Tooltips on the unit-level keywords bar at the bottom of a card (future renderer). |
 | `rules`          | Rule cards (future renderer). |
 | `stratagems`     | Stratagem cards (future renderer). |

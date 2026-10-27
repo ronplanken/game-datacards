@@ -167,4 +167,15 @@ describe("Ds40kUnitExtra name-only glossary tooltips", () => {
     expect(tooltip).toBeTruthy();
     expect(tooltip.getAttribute("data-tooltip-content")).toMatch(/Ignore wounds on a roll of X\+/i);
   });
+
+  it("skips a name-only ability with an empty name", () => {
+    const { container } = render(
+      <Ds40kUnitExtra
+        unit={unitWith({ core: ["", "Support"] })}
+        abilitiesSchema={abilitiesSchema}
+        keywordGlossary={[]}
+      />,
+    );
+    expect(container.querySelector(".value").textContent).toBe(", Support");
+  });
 });

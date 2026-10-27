@@ -35,6 +35,7 @@ const getAbilitiesForCategory = (abilities, categoryKey) => {
  * Leader/Stealth/Deep Strike tooltips.
  */
 const NameOnlyAbility = ({ name, glossary }) => {
+  if (!name) return null;
   const entry = resolveKeywordEntry(name, glossary, "abilities");
   if (entry?.description) {
     return (
