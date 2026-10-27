@@ -42,6 +42,10 @@ beforeEach(() => {
   vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockImplementation(function () {
     return offsetWidthFor(this);
   });
+  const computedStyle = window.getComputedStyle;
+  vi.spyOn(window, "getComputedStyle").mockImplementation((el, ...rest) =>
+    el.classList?.contains("legends") ? { right: "110px" } : computedStyle(el, ...rest),
+  );
 });
 
 afterEach(() => {
@@ -63,7 +67,14 @@ describe("UnitName (11e) Legends label", () => {
     expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("316px");
   });
 
-  it("clears a single wide tier, e.g. a large models count", () => {
+  it("keeps the fixed position for a single tier that fits beside it", () => {
+    layout.pointsLeft = 910;
+    const label = renderLegends({ points: [tier], showAllPoints: true });
+    expect(label.classList.contains("legends--multi")).toBe(false);
+    expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("");
+  });
+
+  it("moves the label clear of a single wide tier, e.g. a large models count", () => {
     layout.pointsLeft = 760;
     const label = renderLegends({
       points: [{ ...tier, models: "10000" }],
@@ -74,10 +85,17 @@ describe("UnitName (11e) Legends label", () => {
     expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("256px");
   });
 
-  it("clears the points when Show all points is off", () => {
+  it("moves the label clear of a single wide tier when Show all points is off", () => {
+    layout.pointsLeft = 760;
     const label = renderLegends({ points: [tier, tier], additionalCost: surcharge, showAllPoints: false });
     expect(label.classList.contains("legends--multi")).toBe(true);
-    expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("316px");
+    expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("256px");
+  });
+
+  it("keeps the fixed position when Show all points is off and the value fits", () => {
+    layout.pointsLeft = 910;
+    const label = renderLegends({ points: [tier, tier], additionalCost: surcharge, showAllPoints: false });
+    expect(label.classList.contains("legends--multi")).toBe(false);
   });
 
   it("keeps the fixed position when the unit has no points", () => {

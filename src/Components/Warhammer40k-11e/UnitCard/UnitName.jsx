@@ -35,17 +35,21 @@ export const UnitName = ({
 }) => {
   const imageUrl = localImageUrl || externalImage;
 
-  // The points row can be wider than the fixed label position allows (several
-  // tiers, a roster surcharge, or one tier with a large models count), so the
-  // label is placed against the measured points whenever any are shown.
-  const hasPoints = points?.length > 0;
+  // 11th edition points carry no `active` flag. The roster surcharge renders as
+  // its own chip next to the tiers, so a single tier plus a surcharge is just as
+  // wide a points row as two tiers.
+  const hasMultiplePoints = showAllPoints && points?.length > 0 && (points.length > 1 || additionalCost?.cost != null);
+  // A single points value keeps the fixed label position unless it is wide
+  // enough to reach the label (e.g. a large models count).
+  const hasSinglePoints = points?.length > 0 && !hasMultiplePoints;
 
   const headerRef = useRef(null);
   const legendsRef = useRef(null);
+  const fixedRightRef = useRef(null);
   const [legendsLayout, setLegendsLayout] = useState(null);
 
   useLayoutEffect(() => {
-    if (!legends || !hasPoints) {
+    if (!legends || (!hasMultiplePoints && !hasSinglePoints)) {
       setLegendsLayout(null);
       return undefined;
     }
@@ -58,12 +62,19 @@ export const UnitName = ({
     }
     const GAP = 16;
     const measure = () => {
+      if (fixedRightRef.current == null && !label.classList.contains("legends--multi")) {
+        fixedRightRef.current = parseFloat(window.getComputedStyle(label).right) || 0;
+      }
       const headerRect = header.getBoundingClientRect();
       // Rects are in screen pixels, but the card is often scaled with a CSS
       // transform while the offsets below are applied in the card's own pixels.
       const scale = header.offsetWidth && headerRect.width ? headerRect.width / header.offsetWidth : 1;
       const pointsRect = pointsContainer.getBoundingClientRect();
       const right = Math.round((headerRect.right - pointsRect.left) / scale + GAP);
+      if (hasSinglePoints && right <= fixedRightRef.current) {
+        setLegendsLayout(null);
+        return;
+      }
       const nameRight = nameContainer
         ? Math.max(0, ...[...nameContainer.children].map((el) => el.getBoundingClientRect().right - headerRect.left))
         : 0;
@@ -97,7 +108,17 @@ export const UnitName = ({
       observer.observe(nameContainer);
     }
     return () => observer.disconnect();
-  }, [legends, hasPoints, points, additionalCost, showAllPoints, showPointsModels, name, subname]);
+  }, [
+    legends,
+    hasMultiplePoints,
+    hasSinglePoints,
+    points,
+    additionalCost,
+    showAllPoints,
+    showPointsModels,
+    name,
+    subname,
+  ]);
 
   const legendsStyle = legendsLayout
     ? {
