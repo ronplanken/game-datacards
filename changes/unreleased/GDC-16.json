@@ -1,0 +1,5 @@
+{
+  "title": "Tighter bullet lists in the Card Designer",
+  "body": "In the Card Designer preview, 11th edition abilities with a bullet list showed a blank line after every bullet. Lists now look the same as on the normal card.",
+  "severity": "info"
+}
