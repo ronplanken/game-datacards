@@ -39,13 +39,17 @@ export const UnitName = ({
   // its own chip next to the tiers, so a single tier plus a surcharge is just as
   // wide a points row as two tiers.
   const hasMultiplePoints = showAllPoints && points?.length > 0 && (points.length > 1 || additionalCost?.cost != null);
+  // A single points value keeps the fixed label position unless it is wide
+  // enough to reach the label (e.g. a large models count).
+  const hasSinglePoints = points?.length > 0 && !hasMultiplePoints;
 
   const headerRef = useRef(null);
   const legendsRef = useRef(null);
+  const fixedRightRef = useRef(null);
   const [legendsLayout, setLegendsLayout] = useState(null);
 
   useLayoutEffect(() => {
-    if (!legends || !hasMultiplePoints) {
+    if (!legends || (!hasMultiplePoints && !hasSinglePoints)) {
       setLegendsLayout(null);
       return undefined;
     }
@@ -58,12 +62,19 @@ export const UnitName = ({
     }
     const GAP = 16;
     const measure = () => {
+      if (fixedRightRef.current == null && !label.classList.contains("legends--multi")) {
+        fixedRightRef.current = parseFloat(window.getComputedStyle(label).right) || 0;
+      }
       const headerRect = header.getBoundingClientRect();
       // Rects are in screen pixels, but the card is often scaled with a CSS
       // transform while the offsets below are applied in the card's own pixels.
       const scale = header.offsetWidth && headerRect.width ? headerRect.width / header.offsetWidth : 1;
       const pointsRect = pointsContainer.getBoundingClientRect();
       const right = Math.round((headerRect.right - pointsRect.left) / scale + GAP);
+      if (hasSinglePoints && right <= fixedRightRef.current) {
+        setLegendsLayout(null);
+        return;
+      }
       const nameRight = nameContainer
         ? Math.max(0, ...[...nameContainer.children].map((el) => el.getBoundingClientRect().right - headerRect.left))
         : 0;
@@ -97,7 +108,17 @@ export const UnitName = ({
       observer.observe(nameContainer);
     }
     return () => observer.disconnect();
-  }, [legends, hasMultiplePoints, points, additionalCost, showAllPoints, showPointsModels, name, subname]);
+  }, [
+    legends,
+    hasMultiplePoints,
+    hasSinglePoints,
+    points,
+    additionalCost,
+    showAllPoints,
+    showPointsModels,
+    name,
+    subname,
+  ]);
 
   const legendsStyle = legendsLayout
     ? {
@@ -119,7 +140,7 @@ export const UnitName = ({
         {subname && <div className="subname">{subname}</div>}
       </div>
       {legends && (
-        <div ref={legendsRef} className={`legends${hasMultiplePoints ? " legends--multi" : ""}`} style={legendsStyle} />
+        <div ref={legendsRef} className={`legends${legendsLayout ? " legends--multi" : ""}`} style={legendsStyle} />
       )}
       {combatPatrol && <div className="combatpatrol" />}
       <UnitPoints
