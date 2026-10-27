@@ -65,3 +65,55 @@
     transition: none;
   }
 }
+
+html[data-theme="dark"] .mobile-glossary-page {
+  background: var(--gdc-bg-surface);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-search {
+  background: var(--gdc-bg-surface-alt);
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-search-icon,
+html[data-theme="dark"] .mobile-glossary-page .glossary-entry-prefix,
+html[data-theme="dark"] .mobile-glossary-page .glossary-entry-chevron,
+html[data-theme="dark"] .mobile-glossary-page .glossary-empty {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-search-input {
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-search-input::placeholder {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-search-input:focus {
+  border-color: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-entry {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-entry-header:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-entry-name {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-scope-chip {
+  color: var(--gdc-text-secondary);
+  background: var(--gdc-bg-sunken);
+}
+
+html[data-theme="dark"] .mobile-glossary-page .glossary-description p {
+  color: var(--gdc-text-secondary);
+}

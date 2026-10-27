@@ -40,7 +40,7 @@ export const StratagemCard = ({
         paddingTop: paddingTop,
         ...cardStyle,
       }}
-      className={containerClass}>
+      className={classNames("gdc-datacard", containerClass)}>
       <div
         className={classNames(
           {

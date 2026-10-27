@@ -1,4 +1,4 @@
-import { Upload, Smartphone, FileInput } from "lucide-react";
+import { Upload, Smartphone, Download } from "lucide-react";
 
 export const StepImportList = () => {
   return (
@@ -30,7 +30,7 @@ export const StepImportList = () => {
             <div className="mww-info-step-desc">Use the export button or copy the list to your clipboard</div>
           </div>
           <div className="mww-info-step-icon">
-            <FileInput />
+            <Download />
           </div>
         </div>
 

@@ -44,7 +44,7 @@ describe("11e cache migration", () => {
     state.store["40k-11e"] = { ...dataset, schemaVersion: undefined };
     const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
     await waitFor(() => expect(result.current.dataSource.schemaVersion).toBe(2));
-    expect(state.normal).toHaveBeenCalledWith("en");
+    expect(state.normal).toHaveBeenCalledWith("en", undefined);
     expect(state.setItem).toHaveBeenCalledWith("40k-11e", dataset);
   });
   it("uses a distinct patrol cache and falls back when a saved patrol index was retired", async () => {
@@ -61,6 +61,24 @@ describe("11e cache migration", () => {
     const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
     await waitFor(() => expect(result.current.selectedFaction?.id).toBe("p1"));
     expect(state.patrol).not.toHaveBeenCalled();
+  });
+  it("loads the pinned data version for the normal 11e datasource", async () => {
+    const pinned = { version: 946, url: "https://example.test/sha946/11th/gdc" };
+    state.settings.dataVersion11e = pinned;
+    state.store["40k-11e"] = { ...dataset, dataVersion: null };
+    state.normal.mockResolvedValue({ ...dataset, dataVersion: 946 });
+    const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
+    await waitFor(() => expect(result.current.dataSource.dataVersion).toBe(946));
+    expect(state.normal).toHaveBeenCalledWith("en", pinned);
+  });
+  it("ignores a pinned 11e data version for Combat Patrol", async () => {
+    state.settings.selectedDataSource = "40k-11e-cp";
+    state.settings.dataVersion11e = { version: 946, url: "https://example.test/sha946/11th/gdc" };
+    state.store["40k-11e-cp"] = dataset;
+    const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
+    await waitFor(() => expect(result.current.selectedFaction?.id).toBe("p1"));
+    expect(state.patrol).not.toHaveBeenCalled();
+    expect(state.normal).not.toHaveBeenCalled();
   });
   it("keeps the last complete cache when an explicit refresh fails", async () => {
     state.store["40k-11e"] = dataset;

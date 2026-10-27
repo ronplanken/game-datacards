@@ -22,7 +22,7 @@ export const EnhancementCard = ({
   const cost = getEnhancementCost(enhancement);
 
   return (
-    <div className={`spell-card enhancement-card ${grandAlliance} ${isMobile ? "mobile" : ""}`}>
+    <div className={`spell-card enhancement-card gdc-datacard ${grandAlliance} ${isMobile ? "mobile" : ""}`}>
       {/* Header */}
       <div className="spell-card-header">
         {/* Mobile Back Button */}

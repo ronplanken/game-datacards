@@ -3,6 +3,7 @@ import { UnitAbilityDescription, MarkupText } from "./UnitAbilityDescription";
 import { UnitCoreAbilities } from "./UnitCoreAbilities";
 import { DamagedIcon } from "../../Icons/WeaponTypeIcon";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { use11eKeywordGlossary } from "../../../Hooks/use11eKeywordGlossary";
 import { localize } from "../../../Helpers/localization.helpers";
 
 // 11th edition abilities:
@@ -12,6 +13,7 @@ import { localize } from "../../../Helpers/localization.helpers";
 //   invul        -> { value }  (rendered in the header, see UnitCardFront/Full)
 export const UnitExtra = ({ unit }) => {
   const { settings } = useSettingsStorage();
+  const glossary = use11eKeywordGlossary();
   const lang = settings.language;
   const abilities = unit.abilities || {};
 
@@ -69,7 +71,7 @@ export const UnitExtra = ({ unit }) => {
           {ability?.description && (
             <div className="description-container">
               <span className="description">
-                <MarkupText content={localize(ability.description, lang)} />
+                <MarkupText content={localize(ability.description, lang)} glossary={glossary} />
               </span>
             </div>
           )}
@@ -84,7 +86,7 @@ export const UnitExtra = ({ unit }) => {
             <div className="title">Damaged: {localize(damaged.range, lang)}</div>
           </div>
           <div className="description">
-            <MarkupText content={localize(damaged.description, lang)} />
+            <MarkupText content={localize(damaged.description, lang)} glossary={glossary} />
           </div>
         </div>
       )}

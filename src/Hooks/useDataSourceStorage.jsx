@@ -26,6 +26,13 @@ import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
 
+const get11eDataVersion = (settings) => (settings.selectedDataSource === "40k-11e-cp" ? null : settings.dataVersion11e);
+
+const load11eData = (settings) =>
+  settings.selectedDataSource === "40k-11e-cp"
+    ? get40k11eCombatPatrolData(settings.language)
+    : get40k11eData(settings.language, settings.dataVersion11e);
+
 export function useDataSourceStorage() {
   const context = React.useContext(DataSourceStorageContext);
   if (context === undefined) {
@@ -113,15 +120,15 @@ export const DataSourceStorageProviderComponent = (props) => {
         if (
           storedData &&
           storedData.language === settings.language &&
-          storedData.schemaVersion === DATASOURCE_11E_CACHE_VERSION
+          storedData.schemaVersion === DATASOURCE_11E_CACHE_VERSION &&
+          (storedData.dataVersion ?? null) === (get11eDataVersion(settings)?.version ?? null)
         ) {
           setDataSource(storedData);
           setSelectedFaction(storedData.data[factionIndex] || storedData.data[0] || null);
           return;
         }
         setIsLoading(true);
-        const load = settings.selectedDataSource === "40k-11e-cp" ? get40k11eCombatPatrolData : get40k11eData;
-        const dataFactions = await load(settings.language);
+        const dataFactions = await load11eData(settings);
 
         dataStore.setItem(settings.selectedDataSource, dataFactions);
         setDataSource(dataFactions);
@@ -206,7 +213,7 @@ export const DataSourceStorageProviderComponent = (props) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [settings.selectedDataSource, settings.language]);
+  }, [settings.selectedDataSource, settings.language, settings.dataVersion11e?.version]);
 
   // Reload active custom/subscribed datasource when sync writes new data to localForage
   useEffect(() => {
@@ -255,8 +262,7 @@ export const DataSourceStorageProviderComponent = (props) => {
         setSelectedFaction(dataFactions.data[factionIndex]);
       }
       if (["40k-11e", "40k-11e-cp"].includes(settings.selectedDataSource)) {
-        const load = settings.selectedDataSource === "40k-11e-cp" ? get40k11eCombatPatrolData : get40k11eData;
-        const dataFactions = await load(settings.language);
+        const dataFactions = await load11eData(settings);
         dataStore.setItem(settings.selectedDataSource, dataFactions);
 
         setDataSource(dataFactions);

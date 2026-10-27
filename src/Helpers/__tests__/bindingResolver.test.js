@@ -564,6 +564,31 @@ describe("bindingResolver", () => {
       expect(resolveTemplate("{{subname | title}}", context)).toBe("Chapter Master");
     });
 
+    it("shows a value only when the if path is on", () => {
+      const unit = { name: "Jagdpanzer IV", combatRole: "tank destroyer", showRole: true, hideRole: false };
+      expect(resolveTemplate('{{name}}{{combatRole | if:"showRole" | prefix:" "}}', unit)).toBe(
+        "Jagdpanzer IV tank destroyer",
+      );
+      expect(resolveTemplate('{{name}}{{combatRole | if:"hideRole" | prefix:" "}}', unit)).toBe("Jagdpanzer IV");
+      expect(resolveTemplate('{{name}}{{combatRole | if:"missing" | prefix:" "}}', unit)).toBe("Jagdpanzer IV");
+      expect(resolveTemplate('{{combatRole | if:"showRole" | upper}}', unit)).toBe("TANK DESTROYER");
+    });
+
+    it("hides a value when the unless path is on", () => {
+      const unit = { combatRole: "tank destroyer", showRole: true, hideRole: false };
+      expect(resolveTemplate('{{combatRole | unless:"showRole"}}', unit)).toBe("");
+      expect(resolveTemplate('{{combatRole | unless:"hideRole"}}', unit)).toBe("tank destroyer");
+    });
+
+    it("keeps the value when if or unless has no path", () => {
+      expect(resolveTemplate("{{name | if}}", { name: "A" })).toBe("A");
+      expect(resolveTemplate('{{name | unless:""}}', { name: "A" })).toBe("A");
+    });
+
+    it("counts an if-hidden value as empty", () => {
+      expect(areBindingsEmpty('{{combatRole | if:"showRole"}}', { combatRole: "x", showRole: false })).toBe(true);
+    });
+
     it("applies trim", () => {
       expect(resolveExpression({ value: "  spaced  " }, "value | trim")).toBe("spaced");
     });

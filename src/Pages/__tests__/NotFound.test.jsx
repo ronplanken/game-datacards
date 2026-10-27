@@ -52,8 +52,10 @@ describe("RouteErrorBoundary", () => {
     render(<RouterProvider router={router} />);
 
     expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
-    expect(screen.getByText(/boom/)).toBeInTheDocument();
+    expect(screen.getByText("boom", { selector: ".notfound-detail" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /reload page/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy error details" })).toBeInTheDocument();
+    expect(screen.getByText("Route")).toBeInTheDocument();
   });
 
   it("falls through to the 404 page for a thrown 404 response", async () => {

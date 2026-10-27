@@ -4,6 +4,7 @@ import { usePanelVisibility } from "./usePanelVisibility";
 import { UnitBasicInfo } from "./UnitCardEditor/UnitBasicInfo";
 import { UnitComposition } from "./UnitCardEditor/UnitComposition";
 import { UnitKeywords } from "./UnitCardEditor/UnitKeywords";
+import { UnitModelKeywords } from "./UnitCardEditor/UnitModelKeywords";
 import { UnitLeader } from "./UnitCardEditor/UnitLeader";
 import { UnitLoadout } from "./UnitCardEditor/UnitLoadout";
 import { UnitTransport } from "./UnitCardEditor/UnitTransport";
@@ -92,6 +93,7 @@ export const UnitCardBackEditor = () => {
       </Panel>
       <Panel header="Keywords" style={{ width: "100%" }} key="10">
         <UnitKeywords type={"keywords"} localized />
+        <UnitModelKeywords />
         <UnitKeywords type={"factions"} />
       </Panel>
     </Collapse>

@@ -1,4 +1,5 @@
-import { Button, Card, Form, Input, Slider, Space, Switch, Typography, Upload } from "antd";
+import { SliderWithInput } from "../Shared/SliderWithInput";
+import { Button, Card, Form, Input, Space, Switch, Typography, Upload } from "antd";
 import { Images, Trash2, Upload as UploadIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { formatFileSize } from "../../Helpers/generic.helpers";
@@ -203,55 +204,49 @@ export function FactionSymbolPanel() {
           </Form.Item>
 
           <Form.Item label={"Scale"}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={0.5}
-                max={2}
-                step={0.1}
-                value={activeCard.factionSymbolScale || 0.8}
-                onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolScale: value })}
-                marks={{
-                  0.5: "50%",
-                  1: "100%",
-                  2: "200%",
-                }}
-                tooltip={{ formatter: (value) => `${Math.round(value * 100)}%` }}
-              />
-            </div>
+            <SliderWithInput
+              min={0.5}
+              max={2}
+              step={0.1}
+              value={activeCard.factionSymbolScale || 0.8}
+              onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolScale: value })}
+              marks={{
+                0.5: "50%",
+                1: "100%",
+                2: "200%",
+              }}
+              tooltip={{ formatter: (value) => `${Math.round(value * 100)}%` }}
+            />
           </Form.Item>
 
           <Form.Item label={"Horizontal Position"}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-30}
-                max={30}
-                value={activeCard.factionSymbolPositionX || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionX: value })}
-                marks={{
-                  [-30]: "Left",
-                  0: "Center",
-                  30: "Right",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-30}
+              max={30}
+              value={activeCard.factionSymbolPositionX || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionX: value })}
+              marks={{
+                [-30]: "Left",
+                0: "Center",
+                30: "Right",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
 
           <Form.Item label={"Vertical Position"} style={{ marginBottom: 0 }}>
-            <div style={{ paddingRight: "20px" }}>
-              <Slider
-                min={-30}
-                max={30}
-                value={activeCard.factionSymbolPositionY || 0}
-                onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionY: value })}
-                marks={{
-                  [-30]: "Top",
-                  0: "Center",
-                  30: "Bottom",
-                }}
-                tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
-              />
-            </div>
+            <SliderWithInput
+              min={-30}
+              max={30}
+              value={activeCard.factionSymbolPositionY || 0}
+              onChange={(value) => updateActiveCard({ ...activeCard, factionSymbolPositionY: value })}
+              marks={{
+                [-30]: "Top",
+                0: "Center",
+                30: "Bottom",
+              }}
+              tooltip={{ formatter: (value) => `${value > 0 ? "+" : ""}${value}px` }}
+            />
           </Form.Item>
 
           <FactionSymbolLibraryModal

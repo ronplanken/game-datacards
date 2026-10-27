@@ -75,3 +75,25 @@
   color: var(--faction-colour, var(--bs-accent));
   flex-shrink: 0;
 }
+
+html[data-theme="dark"] .faction-filter-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .faction-filter-item:active,
+html[data-theme="dark"] .faction-filter-item.selected {
+  background: var(--gdc-bg-active);
+}
+
+html[data-theme="dark"] .faction-filter-item.selected {
+  border-color: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .faction-colour-indicator {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+html[data-theme="dark"] .faction-filter-check {
+  color: var(--gdc-primary-text);
+}

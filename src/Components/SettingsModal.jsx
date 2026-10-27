@@ -1,4 +1,4 @@
-import { Settings, Database, Trash2, Printer, History, Plus } from "lucide-react";
+import { Settings, Database, Trash2, Printer, History, Plus, Palette, Sun, Moon, Monitor } from "lucide-react";
 import { Popconfirm, Select } from "antd";
 import { SUPPORTED_LANGUAGES, LANGUAGE_LABELS } from "../Helpers/localization.helpers";
 import { message } from "./Toast/message";
@@ -6,8 +6,16 @@ import { Tooltip } from "./Tooltip/Tooltip";
 import React, { useEffect, useCallback, useState } from "react";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../Hooks/useSettingsStorage";
+import { use11eDataVersions } from "../Hooks/use11eDataVersions";
+import {
+  build11eDataVersionOptions,
+  get11eDataVersionValue,
+  resolve11eDataVersion,
+} from "../Helpers/dataVersion11e.helpers";
 import { useAuth, useSubscription, useSync } from "../Premium";
 import { useUmami } from "../Hooks/useUmami";
+import { useTheme } from "../Hooks/useTheme";
+import { THEME_LABELS } from "../Helpers/theme.helpers";
 import { useDatasourceSharing } from "../Hooks/useDatasourceSharing";
 import { Toggle, DatasourceCard, CustomDatasourceCard, ChangelogEntry } from "./SettingsModal/index";
 import { ImportDatasourceModal } from "./SettingsModal/ImportDatasourceModal";
@@ -45,7 +53,9 @@ export const SettingsModal = () => {
   const [uploadingDatasourceId, setUploadingDatasourceId] = useState(null);
 
   const { settings, updateSettings } = useSettingsStorage();
+  const { preference: themePreference, setPreference: setThemePreference } = useTheme();
   const { trackEvent } = useUmami();
+  const dataVersions11e = use11eDataVersions(isModalVisible && settings.selectedDataSource === "40k-11e");
   const {
     dataSource,
     checkForUpdate,
@@ -201,6 +211,7 @@ export const SettingsModal = () => {
   const navItems = [
     { key: "datasources", label: "Datasources", icon: <Database size={16} className="settings-nav-icon" /> },
     { key: "storage", label: "Storage", icon: <Trash2 size={16} className="settings-nav-icon" /> },
+    { key: "appearance", label: "Appearance", icon: <Palette size={16} className="settings-nav-icon" /> },
     { key: "printing", label: "Printing", icon: <Printer size={16} className="settings-nav-icon" /> },
     { key: "changelog", label: "Changelog", icon: <History size={16} className="settings-nav-icon" /> },
   ];
@@ -216,6 +227,15 @@ export const SettingsModal = () => {
         <span className="datasource-detail-label">Data version date</span>
         <span className="datasource-detail-value">{formatDate(dataSource.lastUpdated)}</span>
       </div>
+      {dataSource.compatibleDataVersion && (
+        <div className="datasource-detail-item">
+          <span className="datasource-detail-label">Data version</span>
+          <span className="datasource-detail-value">
+            {dataSource.compatibleDataVersion}
+            {dataSource.dataVersion ? " (pinned)" : ""}
+          </span>
+        </div>
+      )}
       <div className="datasource-detail-item">
         <span className="datasource-detail-label">Version</span>
         <span className="datasource-detail-value">{dataSource.version}</span>
@@ -344,6 +364,44 @@ export const SettingsModal = () => {
                       </div>
                     )}
 
+                    {settings.selectedDataSource === "40k-11e" && (
+                      <div className="datasource-section">
+                        <h3 className="datasource-section-title">Data version</h3>
+                        <p className="datasource-section-description">
+                          Use an older data version, for example for an event that has not moved to the latest points
+                          and rules yet. Latest follows every new update.
+                        </p>
+                        <Select
+                          value={get11eDataVersionValue(settings.dataVersion11e)}
+                          loading={dataVersions11e.isLoading}
+                          style={{ width: "100%", maxWidth: 280 }}
+                          onChange={(value) =>
+                            updateSettings({
+                              ...settings,
+                              dataVersion11e: resolve11eDataVersion(
+                                value,
+                                dataVersions11e.versions,
+                                settings.dataVersion11e,
+                              ),
+                            })
+                          }
+                          options={build11eDataVersionOptions(dataVersions11e.versions, settings.dataVersion11e)}
+                        />
+                        {dataVersions11e.error && (
+                          <p className="datasource-section-description" style={{ margin: "12px 0 0" }}>
+                            Older data versions could not be loaded. Check your connection and reopen Settings to try
+                            again.
+                          </p>
+                        )}
+                        {settings.dataVersion11e && (
+                          <p className="datasource-section-description" style={{ margin: "12px 0 0" }}>
+                            You are using data version {settings.dataVersion11e.version}. New updates are not applied
+                            until you switch back to Latest.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
                     {/* Custom Datasources Section */}
                     <div className="datasource-section">
                       <div className="datasource-section-header">
@@ -439,6 +497,45 @@ export const SettingsModal = () => {
                 )}
 
                 {/* Printing Tab */}
+                {activeTab === "appearance" && (
+                  <>
+                    <p className="settings-section-description">Choose how Game Datacards looks on this device.</p>
+                    <div className="setting-row setting-row-stacked">
+                      <div className="setting-info">
+                        <div className="setting-label">Theme</div>
+                        <div className="setting-description">
+                          System follows the light or dark setting of your device. Cards always keep their own colours.
+                        </div>
+                      </div>
+                      <div className="theme-choice" role="radiogroup" aria-label="Theme">
+                        {[
+                          { value: "light", icon: <Sun size={16} /> },
+                          { value: "dark", icon: <Moon size={16} /> },
+                          { value: "system", icon: <Monitor size={16} /> },
+                        ].map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={themePreference === option.value}
+                            className={`theme-choice-option ${themePreference === option.value ? "active" : ""}`}
+                            onClick={() => setThemePreference(option.value)}>
+                            <span className={`theme-choice-preview theme-choice-preview-${option.value}`}>
+                              <span className="theme-choice-preview-bar" />
+                              <span className="theme-choice-preview-line" />
+                              <span className="theme-choice-preview-line short" />
+                            </span>
+                            <span className="theme-choice-label">
+                              {option.icon}
+                              {THEME_LABELS[option.value]}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 {activeTab === "printing" && (
                   <>
                     <p className="settings-section-description">Adjust how your cards are printed.</p>

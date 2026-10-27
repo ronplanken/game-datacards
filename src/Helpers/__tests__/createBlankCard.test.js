@@ -7,6 +7,20 @@ describe("createBlankCardFromSchema", () => {
   const datasourceId = "custom-test-123";
 
   describe("unit base type", () => {
+    it("seeds custom unit fields with their defaults", () => {
+      const preset = create40kPreset();
+      const unitType = preset.cardTypes.find((ct) => ct.baseType === "unit");
+      unitType.schema.metadata.fields = [
+        { key: "showRoleInName", label: "Show role in name", type: "boolean", default: true },
+        { key: "era", label: "Era", type: "enum", options: ["Early", "Late"] },
+        { key: "nickname", label: "Nickname", type: "string" },
+      ];
+      const card = createBlankCardFromSchema(unitType, factionId, datasourceId);
+      expect(card.showRoleInName).toBe(true);
+      expect(card.era).toBe("Early");
+      expect(card.nickname).toBe("");
+    });
+
     it("creates a blank unit card from 40k preset", () => {
       const preset = create40kPreset();
       const unitType = preset.cardTypes.find((ct) => ct.baseType === "unit");

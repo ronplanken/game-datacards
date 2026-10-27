@@ -130,3 +130,56 @@
     transition: none;
   }
 }
+
+html[data-theme="dark"] .glossary-search {
+  background: var(--gdc-bg-surface-alt);
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .glossary-search-icon,
+html[data-theme="dark"] .glossary-entry-prefix,
+html[data-theme="dark"] .glossary-entry-chevron,
+html[data-theme="dark"] .glossary-empty {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .glossary-search-input {
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .glossary-search-input::placeholder {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .glossary-search-input:focus {
+  border-color: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .glossary-entry {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .glossary-entry-header:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .glossary-entry-header:focus-visible {
+  outline: 2px solid var(--gdc-primary-text);
+  outline-offset: -2px;
+}
+
+html[data-theme="dark"] .glossary-entry-name {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .glossary-scope-chip {
+  color: var(--gdc-text-secondary);
+  background: var(--gdc-bg-sunken);
+}
+
+html[data-theme="dark"] .glossary-description p {
+  color: var(--gdc-text-secondary);
+}

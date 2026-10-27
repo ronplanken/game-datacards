@@ -31,6 +31,9 @@ vi.mock("../UnitCardEditor/UnitPrimarchAbilities", () => ({
 }));
 vi.mock("../UnitCardEditor/UnitDamageTable", () => ({ UnitDamageTable: () => <div data-testid="damaged" /> }));
 vi.mock("../UnitCardEditor/UnitInvulnerableSave", () => ({ UnitInvulnerableSave: () => <div data-testid="invul" /> }));
+vi.mock("../UnitCardEditor/UnitModelKeywords", () => ({
+  UnitModelKeywords: () => <div data-testid="model-keywords" />,
+}));
 vi.mock("../UnitCardEditor/UnitKeywords", () => ({
   UnitKeywords: ({ type }) => <div data-testid={`keywords-${type}`} />,
 }));

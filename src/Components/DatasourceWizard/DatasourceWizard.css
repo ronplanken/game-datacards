@@ -41,6 +41,11 @@
   --wz-warning-border: rgba(245, 158, 11, 0.2);
 }
 
+html[data-theme="dark"] .dsw-overlay {
+  --wz-text-dim: #8c9ab0;
+  --wz-border: rgba(255, 255, 255, 0.1);
+}
+
 /* ===========================================
    OVERLAY
    =========================================== */

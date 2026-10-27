@@ -4,7 +4,10 @@ import {
   generateArraySourcesFromSchema,
   parseCustomFormat,
   buildCustomFormat,
+  applyBooleanDisplayValues,
+  applyUnitFieldDefaults,
 } from "../customSchemaBindings";
+import { normalizeCardForBinding, resolveTemplate } from "../bindingResolver";
 import { create40kPreset, createAoSPreset } from "../customSchema.helpers";
 
 describe("customSchemaBindings", () => {
@@ -27,12 +30,45 @@ describe("customSchemaBindings", () => {
       const unitType = preset.cardTypes.find((ct) => ct.baseType === "unit");
       const result = generateBindingsFromSchema(unitType, "40K");
 
-      it("includes Basic Info group with name and cardType", () => {
+      it("includes Basic Info group with name, subname and cardType", () => {
         const basicInfo = result.groups.find((g) => g.name === "Basic Info");
         expect(basicInfo).toBeDefined();
         expect(basicInfo.bindings).toEqual([
           { path: "name", label: "Name", type: "string" },
+          { path: "subname", label: "Subname", type: "string" },
           { path: "cardType", label: "Card Type", type: "string" },
+        ]);
+      });
+
+      it("lists enabled built-in values and custom unit fields under Basic Info", () => {
+        const withFields = {
+          ...unitType,
+          schema: {
+            ...unitType.schema,
+            metadata: {
+              ...unitType.schema.metadata,
+              hasCombatRole: true,
+              hasArmySlot: true,
+              hasSubcategory: true,
+              fields: [
+                { key: "showRoleInName", label: "Show role in name", type: "boolean" },
+                { key: "era", label: "Era", type: "enum", options: ["Early", "Late"] },
+                { key: "nickname", label: "Nickname", type: "string" },
+              ],
+            },
+          },
+        };
+        const basicInfo = generateBindingsFromSchema(withFields, "40K").groups.find((g) => g.name === "Basic Info");
+        expect(basicInfo.bindings.map((binding) => [binding.path, binding.type])).toEqual([
+          ["name", "string"],
+          ["subname", "string"],
+          ["cardType", "string"],
+          ["combatRole", "string"],
+          ["armySlot", "string"],
+          ["subcategory", "string"],
+          ["showRoleInName", "boolean"],
+          ["era", "enum"],
+          ["nickname", "string"],
         ]);
       });
 
@@ -283,6 +319,185 @@ describe("customSchemaBindings", () => {
         datasourceId: "custom-abc-123",
         cardTypeKey: "warscroll",
       });
+    });
+  });
+
+  describe("applyBooleanDisplayValues", () => {
+    const cardTypeDef = {
+      key: "unit",
+      baseType: "unit",
+      schema: {
+        stats: {
+          fields: [
+            { key: "move", label: "M", type: "string" },
+            { key: "tracked", label: "Tracked", type: "boolean", onValue: "Tracks", offValue: "Wheels" },
+            { key: "plain", label: "Plain", type: "boolean" },
+          ],
+        },
+        weaponTypes: {
+          types: [
+            {
+              key: "main",
+              label: "Main Gun",
+              hasProfiles: true,
+              columns: [
+                { key: "ap_available", label: "AP", type: "boolean", onValue: "AP", offValue: "nope" },
+                { key: "he", label: "HE", type: "boolean", onValue: "HE" },
+                { key: "range", label: "Range", type: "string" },
+              ],
+            },
+            {
+              key: "secondary",
+              label: "Secondary",
+              hasProfiles: false,
+              columns: [{ key: "smoke", label: "Smoke", type: "boolean", onValue: "Smoke", offValue: "-" }],
+            },
+          ],
+        },
+      },
+    };
+
+    const buildCard = () => ({
+      name: "Tank",
+      cardType: "unit",
+      stats: [
+        { move: "6", tracked: true, plain: true },
+        { move: "4", tracked: false, plain: false },
+      ],
+      weapons: {
+        main: [
+          {
+            name: "45mm L46",
+            profiles: [
+              { name: "Standard", ap_available: true, he: true, range: "24" },
+              { name: "Close", ap_available: false, he: false, range: "12" },
+            ],
+          },
+        ],
+        secondary: [
+          { name: "Launcher", smoke: false },
+          { name: "Launcher 2", smoke: true },
+        ],
+      },
+    });
+
+    it("replaces stat booleans with their on and off text", () => {
+      const result = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      expect(result.stats[0].tracked).toBe("Tracks");
+      expect(result.stats[1].tracked).toBe("Wheels");
+      expect(result.stats[0].move).toBe("6");
+    });
+
+    it("keeps booleans without custom text unchanged", () => {
+      const result = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      expect(result.stats[0].plain).toBe(true);
+      expect(result.stats[1].plain).toBe(false);
+      expect(result.weapons.main[0].profiles[1].he).toBe(false);
+    });
+
+    it("replaces weapon profile and flat weapon booleans", () => {
+      const result = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      const profiles = result.weapons.main[0].profiles;
+      expect(profiles[0].ap_available).toBe("AP");
+      expect(profiles[0].he).toBe("HE");
+      expect(profiles[1].ap_available).toBe("nope");
+      expect(profiles[0].range).toBe("24");
+      expect(result.weapons.secondary[0].smoke).toBe("-");
+      expect(result.weapons.secondary[1].smoke).toBe("Smoke");
+    });
+
+    it("treats a missing boolean as off when off text is set", () => {
+      const card = buildCard();
+      delete card.stats[0].tracked;
+      const result = applyBooleanDisplayValues(card, cardTypeDef);
+      expect(result.stats[0].tracked).toBe("Wheels");
+      expect(result.stats[0].plain).toBe(true);
+    });
+
+    it("does not mutate the original card", () => {
+      const card = buildCard();
+      applyBooleanDisplayValues(card, cardTypeDef);
+      expect(card.stats[0].tracked).toBe(true);
+      expect(card.weapons.main[0].profiles[0].ap_available).toBe(true);
+    });
+
+    it("reflects On and Off text changes on the same card", () => {
+      const card = buildCard();
+      const column = cardTypeDef.schema.weaponTypes.types[0].columns[0];
+      const updated = {
+        ...cardTypeDef,
+        schema: {
+          ...cardTypeDef.schema,
+          weaponTypes: {
+            types: [
+              { ...cardTypeDef.schema.weaponTypes.types[0], columns: [{ ...column, onValue: "Armour piercing" }] },
+            ],
+          },
+        },
+      };
+      expect(applyBooleanDisplayValues(card, cardTypeDef).weapons.main[0].profiles[0].ap_available).toBe("AP");
+      expect(applyBooleanDisplayValues(card, updated).weapons.main[0].profiles[0].ap_available).toBe("Armour piercing");
+    });
+
+    it("returns the card unchanged when no boolean has custom text", () => {
+      const card = buildCard();
+      const def = { ...cardTypeDef, schema: { stats: { fields: [{ key: "plain", type: "boolean" }] } } };
+      expect(applyBooleanDisplayValues(card, def)).toBe(card);
+      expect(applyBooleanDisplayValues(card, null)).toBe(card);
+      expect(applyBooleanDisplayValues(null, cardTypeDef)).toBe(null);
+    });
+
+    it("resolves template bindings to the custom text", () => {
+      const card = applyBooleanDisplayValues(buildCard(), cardTypeDef);
+      const context = normalizeCardForBinding(card);
+      expect(resolveTemplate("{{weapons.main[0].ap_available}}", context)).toBe("AP");
+      expect(resolveTemplate("{{weapons.main[0].profiles[1].ap_available}}", context)).toBe("nope");
+      expect(resolveTemplate("{{stats[1].tracked}}", context)).toBe("Wheels");
+    });
+  });
+
+  describe("applyUnitFieldDefaults", () => {
+    const unitType = {
+      baseType: "unit",
+      schema: {
+        metadata: {
+          fields: [
+            { key: "showRoleInName", label: "Show role", type: "boolean", default: true },
+            { key: "era", label: "Era", type: "enum", options: ["Early", "Late"] },
+          ],
+        },
+      },
+    };
+
+    it("fills in missing field values from their defaults", () => {
+      expect(applyUnitFieldDefaults({ name: "A" }, unitType)).toEqual({
+        name: "A",
+        showRoleInName: true,
+        era: "Early",
+      });
+    });
+
+    it("keeps values the card already has and returns the same object when nothing is missing", () => {
+      const card = { name: "A", showRoleInName: false, era: "Late" };
+      expect(applyUnitFieldDefaults(card, unitType)).toBe(card);
+    });
+
+    it("ignores non-unit card types", () => {
+      const card = { name: "A" };
+      expect(applyUnitFieldDefaults(card, { ...unitType, baseType: "rule" })).toBe(card);
+    });
+  });
+
+  describe("applyBooleanDisplayValues for unit fields", () => {
+    it("uses the on and off text of custom unit boolean fields", () => {
+      const unitType = {
+        baseType: "unit",
+        schema: {
+          metadata: { fields: [{ key: "elite", label: "Elite", type: "boolean", onValue: "Elite", offValue: "" }] },
+        },
+      };
+      expect(applyBooleanDisplayValues({ elite: true }, unitType).elite).toBe("Elite");
+      expect(applyBooleanDisplayValues({ elite: false }, unitType).elite).toBe("");
     });
   });
 });

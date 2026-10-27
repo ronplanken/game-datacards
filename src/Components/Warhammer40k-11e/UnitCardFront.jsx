@@ -48,7 +48,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
   const fullName = unit.subname ? `${unit.name} ${unit.subname}` : unit.name;
   return (
     <div
-      className={`unit-card-front-wrapper ${className || ""}`}
+      className={`unit-card-front-wrapper gdc-datacard ${className || ""}`}
       style={{
         ...cardStyle,
       }}>
@@ -81,7 +81,7 @@ export const UnitCardFront = ({ unit, cardStyle, paddingTop = "32px", className 
           </div>
         </div>
         <div className="footer">
-          <UnitKeywords keywords={unit.keywords} />
+          <UnitKeywords keywords={unit.keywords} modelKeywords={unit.modelKeywords} />
           <UnitFactions factions={unit.factions} />
         </div>
         <UnitFactionSymbol unit={unit} />

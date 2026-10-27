@@ -160,3 +160,55 @@
   padding: 4px 10px;
   border-radius: 6px;
 }
+
+html[data-theme="dark"] .dsc-card {
+  background: var(--gdc-bg-surface);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .dsc-card:hover {
+  border-color: rgba(106, 174, 255, 0.45);
+  box-shadow: var(--gdc-shadow-sm);
+}
+
+html[data-theme="dark"] .dsc-card.subscribed {
+  border-color: rgba(115, 209, 61, 0.35);
+  background: linear-gradient(rgba(73, 170, 25, 0.08), rgba(73, 170, 25, 0.08)), var(--gdc-bg-surface);
+}
+
+html[data-theme="dark"] .dsc-card-icon {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .dsc-game-system {
+  color: var(--gdc-text-secondary);
+  background: rgba(148, 163, 184, 0.15);
+}
+
+html[data-theme="dark"] .dsc-featured-badge {
+  color: var(--gdc-primary-text);
+  background: var(--gdc-primary-bg);
+}
+
+html[data-theme="dark"] .dsc-card-title {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .dsc-card-description {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .dsc-card-author,
+html[data-theme="dark"] .dsc-stat,
+html[data-theme="dark"] .dsc-stat svg {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .dsc-card-footer {
+  border-top-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .dsc-subscribed-badge {
+  color: var(--gdc-success-text);
+  background: var(--gdc-success-bg);
+}

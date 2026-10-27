@@ -17,7 +17,7 @@ export function GangerWeaponTraits({ weaponIndex, profileIndex }) {
   };
 
   return (
-    <div style={{ padding: "16px", border: "1px solid #f0f0f0" }}>
+    <div style={{ padding: "16px", border: "1px solid var(--gdc-border-subtle)" }}>
       <DragDropContext
         onDragEnd={(result) => {
           if (!result.destination) {

@@ -1,3 +1,8 @@
 /* ViewerFloatingToolbar.css - Viewer-specific floating toolbar positioning */
 
 /* No overrides needed - base sticky positioning works for panel centering */
+
+html[data-theme="dark"] .viewer-card-row,
+html[data-theme="dark"] .viewer-share-capture {
+  color: rgba(0, 0, 0, 0.85);
+}

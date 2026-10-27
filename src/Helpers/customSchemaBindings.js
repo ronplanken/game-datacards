@@ -6,6 +6,8 @@
  * custom datasource formats for data binding.
  */
 
+import { getUnitCustomFieldDefault } from "./customSchema.helpers";
+
 /**
  * Generates a binding schema from a unit card type definition.
  * @param {import('./customSchema.helpers').CardTypeDefinition} cardTypeDef
@@ -17,13 +19,24 @@ const generateUnitBindings = (cardTypeDef, datasourceName) => {
   const groups = [];
 
   // Basic Info group (always present)
-  groups.push({
-    name: "Basic Info",
-    bindings: [
-      { path: "name", label: "Name", type: "string" },
-      { path: "cardType", label: "Card Type", type: "string" },
-    ],
-  });
+  const metadata = schema.metadata || {};
+  const basicBindings = [
+    { path: "name", label: "Name", type: "string" },
+    { path: "subname", label: "Subname", type: "string" },
+    { path: "cardType", label: "Card Type", type: "string" },
+  ];
+  if (metadata.hasCombatRole) basicBindings.push({ path: "combatRole", label: "Combat Role", type: "string" });
+  if (metadata.hasArmySlot) basicBindings.push({ path: "armySlot", label: "Army Slot", type: "string" });
+  if (metadata.hasSubcategory) basicBindings.push({ path: "subcategory", label: "Subcategory", type: "string" });
+  for (const field of metadata.fields || []) {
+    if (!field?.key) continue;
+    basicBindings.push({
+      path: field.key,
+      label: field.label || field.key,
+      type: field.type === "boolean" ? "boolean" : field.type === "enum" ? "enum" : "string",
+    });
+  }
+  groups.push({ name: "Basic Info", bindings: basicBindings });
 
   // Stats group
   if (schema.stats?.fields?.length > 0) {
@@ -328,4 +341,76 @@ export const parseCustomFormat = (format) => {
  */
 export const buildCustomFormat = (datasourceId, cardTypeKey) => {
   return `${datasourceId}:${cardTypeKey}`;
+};
+
+const hasCustomBooleanText = (def) =>
+  def?.type === "boolean" && (def.onValue !== undefined || def.offValue !== undefined);
+
+const toBooleanDisplay = (value, def) => {
+  if (value === true) return def.onValue !== undefined ? def.onValue : value;
+  if (value === false || value == null) return def.offValue !== undefined ? def.offValue : value;
+  return value;
+};
+
+const applyToRow = (row, defs) => {
+  if (!row || typeof row !== "object" || Array.isArray(row)) return row;
+  const result = { ...row };
+  for (const def of defs) {
+    const value = toBooleanDisplay(row[def.key], def);
+    if (value !== undefined) result[def.key] = value;
+  }
+  return result;
+};
+
+const applyToWeapon = (weapon, defs) => {
+  const result = applyToRow(weapon, defs);
+  if (result && Array.isArray(result.profiles)) {
+    result.profiles = result.profiles.map((profile) => applyToRow(profile, defs));
+  }
+  return result;
+};
+
+const buildBooleanDisplayCard = (card, schema) => {
+  const fieldDefs = (schema.metadata?.fields || []).filter(hasCustomBooleanText);
+  const statDefs = (schema.stats?.fields || []).filter(hasCustomBooleanText);
+  const weaponTypes = (schema.weaponTypes?.types || [])
+    .map((type) => ({ key: type.key, defs: (type.columns || []).filter(hasCustomBooleanText) }))
+    .filter((type) => type.defs.length > 0);
+
+  if (fieldDefs.length === 0 && statDefs.length === 0 && weaponTypes.length === 0) return card;
+
+  const result = fieldDefs.length > 0 ? applyToRow(card, fieldDefs) : { ...card };
+
+  if (statDefs.length > 0 && Array.isArray(card.stats)) {
+    result.stats = card.stats.map((row) => applyToRow(row, statDefs));
+  }
+
+  if (weaponTypes.length > 0 && card.weapons && typeof card.weapons === "object" && !Array.isArray(card.weapons)) {
+    result.weapons = { ...card.weapons };
+    for (const { key, defs } of weaponTypes) {
+      if (Array.isArray(card.weapons[key])) {
+        result.weapons[key] = card.weapons[key].map((weapon) => applyToWeapon(weapon, defs));
+      }
+    }
+  }
+
+  return result;
+};
+
+export const applyUnitFieldDefaults = (card, cardTypeDef) => {
+  if (!card || typeof card !== "object" || cardTypeDef?.baseType !== "unit") return card;
+  const fields = cardTypeDef.schema?.metadata?.fields;
+  if (!Array.isArray(fields) || fields.length === 0) return card;
+  const missing = fields.filter((field) => field?.key && card[field.key] === undefined);
+  if (missing.length === 0) return card;
+  const result = { ...card };
+  for (const field of missing) {
+    result[field.key] = getUnitCustomFieldDefault(field);
+  }
+  return result;
+};
+
+export const applyBooleanDisplayValues = (card, cardTypeDef) => {
+  if (!card || typeof card !== "object" || !cardTypeDef?.schema) return card;
+  return buildBooleanDisplayCard(card, cardTypeDef.schema);
 };

@@ -473,3 +473,31 @@
     animation: none;
   }
 }
+
+html[data-theme="dark"] .list-selector-create-save {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .list-selector-create-save:disabled {
+  background: var(--bs-surface-hover);
+}
+
+html[data-theme="dark"] .cloud-category-badge--40k {
+  color: #93c5fd;
+}
+
+html[data-theme="dark"] .cloud-category-badge--aos {
+  color: #d8b4fe;
+}
+
+html[data-theme="dark"] .cloud-category-badge--necro {
+  color: #fcd34d;
+}
+
+html[data-theme="dark"] .cloud-category-badge--custom {
+  color: #cbd5e1;
+}
+
+html[data-theme="dark"] .list-selector-row--cloud.selected .list-selector-row-cloud-icon {
+  background: var(--gdc-primary-active);
+}

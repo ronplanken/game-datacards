@@ -102,16 +102,34 @@ export const isDetachmentSelectionOverBudget = (detachments, battleSizeKey) => {
   return !(list.length === 1 && battleSize.allowsSoloOverBudgetDetachment);
 };
 
+export const getDetachmentForceDispositions = (detachment) => {
+  const list = Array.isArray(detachment?.forceDispositions)
+    ? detachment.forceDispositions.filter((entry) => entry?.name)
+    : [];
+  if (list.length > 0) return list;
+  return detachment?.forceDisposition?.name ? [detachment.forceDisposition] : [];
+};
+
+export const getDetachmentDispositionNames = (detachment, language = "en") => [
+  ...new Set(
+    getDetachmentForceDispositions(detachment)
+      .map((entry) => localize(entry.name, language))
+      .filter(Boolean),
+  ),
+];
+
 /**
- * The force dispositions the army has access to — one per selected detachment.
- * @returns {Array<{ detachment: string, disposition: string }>} localized pairs
+ * The force dispositions the army has access to, per selected detachment.
+ * @returns {Array<{ detachment: string, dispositions: string[], disposition: string }>} localized entries
  */
 export const getForceDispositions = (detachments, language = "en") =>
   (detachments || [])
-    .filter((d) => d?.forceDisposition)
-    .map((d) => ({
-      detachment: localize(d.name, language),
-      disposition: localize(d.forceDisposition?.name, language),
+    .map((d) => ({ detachment: d, dispositions: getDetachmentDispositionNames(d, language) }))
+    .filter((entry) => entry.dispositions.length > 0)
+    .map((entry) => ({
+      detachment: localize(entry.detachment.name, language),
+      dispositions: entry.dispositions,
+      disposition: entry.dispositions.join(", "),
     }));
 
 /**

@@ -247,13 +247,19 @@ export const MobileListProvider = (props) => {
     }));
   };
 
-  const createListWithCards = (name, cards) => {
+  // `options` records the army the import read out of the list it came from:
+  // the faction it is built for, and for 11th edition the battle size and the
+  // detachments it bought with that battle size's Detachment Points.
+  const createListWithCards = (name, cards, options = {}) => {
     const listName = name?.trim() || "New List";
     importCategory({
       uuid: uuidv4(),
       name: listName,
       type: "list",
       dataSource,
+      factionId: options.factionId || undefined,
+      battleSize: options.battleSize || undefined,
+      detachments: options.detachments?.length ? options.detachments : undefined,
       cards: cards.map((cardData) => ({
         ...cardData.card,
         unitSize: cardData.points,

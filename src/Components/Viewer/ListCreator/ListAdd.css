@@ -303,3 +303,35 @@
   color: var(--bs-text);
   font-variant-numeric: tabular-nums;
 }
+
+html[data-theme="dark"] .list-add-option.selected,
+html[data-theme="dark"] .list-add-wargear.selected {
+  background: var(--bs-accent-light);
+}
+
+html[data-theme="dark"] .list-add-option.disabled {
+  background: var(--gdc-bg-disabled);
+}
+
+html[data-theme="dark"] .list-add-toggle {
+  background: #4b5a72;
+}
+
+html[data-theme="dark"] .list-add-toggle.active {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .list-add-warning {
+  background: var(--gdc-warning-bg);
+  border-color: var(--gdc-warning-border);
+  color: var(--gdc-warning-text);
+}
+
+html[data-theme="dark"] .list-add-submit {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .list-add-submit:disabled {
+  background: var(--gdc-bg-disabled);
+  color: var(--gdc-text-disabled);
+}

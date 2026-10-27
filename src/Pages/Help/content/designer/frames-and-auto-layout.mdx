@@ -25,6 +25,9 @@ The Layers tree always selects exactly the row you click, at any depth.
 - <IconLabel icon="ArrowRight" label="Horizontal" /> — Children are arranged in a row, left to right
 - <IconLabel icon="ArrowDown" label="Vertical" /> — Children are stacked in a column, top to bottom
 
+In the Layers tree, a frame with auto-layout shows a small arrow on its icon
+for the direction, or a grid for a horizontal layout that wraps.
+
 ### Layout settings
 
 When auto-layout is active, you can adjust:
@@ -55,6 +58,20 @@ gets a taller row and a short one stays compact. See Repeater Frames.
 ### Clipping
 
 Enable "Clip content" to hide anything that extends beyond the frame boundaries. This keeps your layout tidy when elements are larger than the available space.
+
+### Fit text
+
+Turn on "Scale text down to fit the frame" in the Fit text section of a
+frame to make its texts shrink when they do not fit. Every text in the frame
+shrinks by the same factor of its own font size, so a 20pt name and a 12pt
+subtitle become, for example, 14pt and 8pt together. Set the smallest scale
+with Min (in percent). The font sizes you set are kept; the scaling only
+happens when the card is rendered.
+
+The frame needs a fixed width or a fixed height, because that is the size the
+text has to fit in. With horizontal or vertical auto-layout, the texts are
+laid out again with their real widths, so a longer name pushes the next text
+along and a hidden text leaves no gap. Use auto width on texts in a row.
 
 ### Repeater row styling
 

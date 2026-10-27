@@ -5,6 +5,7 @@ import { message } from "../../Toast/message";
 import { MobileModal } from "../Mobile/MobileModal";
 import { useMobileList } from "../useMobileList";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
+import { useCardLanguage } from "../../../Hooks/useSettingsStorage";
 import {
   parseGwAppText,
   matchFaction,
@@ -13,7 +14,10 @@ import {
   getImportableUnits,
   filterCardWeapons,
   matchEnhancementsToFaction,
+  getImportRoster,
+  getImportUnitSize,
 } from "../../../Helpers/gwAppImport.helpers";
+import { getArmyContext } from "../../../Helpers/listRoster.helpers";
 import "./MobileImporter.shared.css";
 import "./MobileGwImporter.css";
 
@@ -112,6 +116,7 @@ const UnitCard = ({ unit, onSkip, onSelect, datasheets }) => {
 
 export const MobileGwImporter = ({ isOpen, onClose }) => {
   const { dataSource } = useDataSourceStorage();
+  const language = useCardLanguage();
   const { createListWithCards } = useMobileList();
 
   // Wizard state
@@ -122,6 +127,8 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
   const [matchedFaction, setMatchedFaction] = useState(null);
   const [units, setUnits] = useState([]);
   const [listName, setListName] = useState("");
+  // Battle size and detachments read out of the export, for 11th edition lists.
+  const [roster, setRoster] = useState({ battleSize: null, detachments: [] });
 
   const resetState = () => {
     setStep(1);
@@ -131,6 +138,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
     setMatchedFaction(null);
     setUnits([]);
     setListName("");
+    setRoster({ battleSize: null, detachments: [] });
   };
 
   const handleClose = () => {
@@ -166,6 +174,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
     // Match units
     if (factionMatch.matchedFaction) {
+      setRoster(getImportRoster(parsed, factionMatch.matchedFaction));
       let matchedUnits = matchUnitsToDatasheets(parsed.units, factionMatch.matchedFaction, dataSource?.data || []);
       matchedUnits = matchEnhancementsToFaction(matchedUnits, factionMatch.matchedFaction, parsed.detachment);
       setUnits(matchedUnits);
@@ -189,6 +198,7 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
     if (faction) {
       setMatchedFaction(faction);
       const parsed = parseGwAppText(gwAppText);
+      setRoster(getImportRoster(parsed, faction));
       let matchedUnits = matchUnitsToDatasheets(parsed.units, faction, dataSource?.data || []);
       matchedUnits = matchEnhancementsToFaction(matchedUnits, faction, parsedDetachment);
       setUnits(matchedUnits);
@@ -214,6 +224,8 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
 
   // Step 3: Import
   const handleImport = () => {
+    setError(null);
+
     const importableUnits = getImportableUnits(units);
 
     if (!importableUnits.length) {
@@ -221,45 +233,62 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Build cards array
-    const cardsToImport = importableUnits.map((unit) => {
-      let card = { ...unit.matchedCard };
-      card.uuid = uuidv4();
-      card.isCustom = true;
+    try {
+      // The army the units are priced in: 11th edition prices some datasheets per
+      // detachment and per faction keyword, so the roster the export stated and the
+      // datasheets it matched both have to be known before a unit's size tier can
+      // be picked. The matched cards are what identify a chapter — a shared
+      // datasheet only carries the parent keyword.
+      const army = getArmyContext(
+        { detachments: roster.detachments, cards: importableUnits.map((unit) => unit.matchedCard) },
+        matchedFaction,
+      );
 
-      // Build points object
-      const points = {
-        cost: unit.points - (unit.enhancement?.cost || 0),
-        models: unit.models || 1,
-      };
+      // Build cards array
+      const cardsToImport = importableUnits.map((unit) => {
+        let card = { ...unit.matchedCard };
+        card.uuid = uuidv4();
+        card.isCustom = true;
 
-      // Get enhancement if present
-      let enhancement = null;
-      if (unit.enhancement) {
-        enhancement = {
-          name: unit.enhancement.name,
-          cost: unit.enhancement.cost || 0,
-          ...(unit.enhancement.matched ? unit.enhancement : {}),
-        };
-        // Set detachment from matched enhancement
-        if (unit.detachment) {
-          card.detachment = unit.detachment;
+        // The size tier the unit lands on, from the card's own tiers where it has
+        // them (11th edition) and from the pasted points where it does not.
+        const points = getImportUnitSize(card, unit, army);
+
+        // Get enhancement if present
+        let enhancement = null;
+        if (unit.enhancement) {
+          enhancement = {
+            name: unit.enhancement.name,
+            cost: unit.enhancement.cost || 0,
+            ...(unit.enhancement.matched ? unit.enhancement : {}),
+          };
+          // Set detachment from matched enhancement
+          if (unit.detachment) {
+            card.detachment = unit.detachment;
+          }
         }
-      }
 
-      // Filter weapons
-      if (unit.weapons?.length) {
-        card = filterCardWeapons(card, unit.weapons);
-      }
+        // Filter weapons
+        if (unit.weapons?.length) {
+          card = filterCardWeapons(card, unit.weapons, language);
+        }
 
-      return { card, points, enhancement, isWarlord: unit.isWarlord };
-    });
+        return { card, points, enhancement, isWarlord: unit.isWarlord };
+      });
 
-    // Create list with all cards atomically
-    createListWithCards(listName || "Imported List", cardsToImport);
+      // Create list with all cards atomically, with the roster the export stated
+      createListWithCards(listName || "Imported List", cardsToImport, {
+        factionId: matchedFaction?.id,
+        battleSize: roster.battleSize,
+        detachments: roster.detachments,
+      });
 
-    message.success(`Imported ${importableUnits.length} units to "${listName || "Imported List"}"`);
-    handleClose();
+      message.success(`Imported ${importableUnits.length} units to "${listName || "Imported List"}"`);
+      handleClose();
+    } catch (err) {
+      console.error("GW app list import failed", err);
+      setError(`Could not import this list: ${err.message}`);
+    }
   };
 
   const matchCounts = countMatchStatuses(units);
@@ -392,6 +421,13 @@ export const MobileGwImporter = ({ isOpen, onClose }) => {
                 placeholder="My Army List"
               />
             </div>
+
+            {error && (
+              <div className="mi-error">
+                <AlertCircle size={16} />
+                <span>{error}</span>
+              </div>
+            )}
 
             <button className="mi-primary-btn" onClick={handleImport} disabled={importableCount === 0}>
               Import {importableCount} Unit{importableCount !== 1 ? "s" : ""}

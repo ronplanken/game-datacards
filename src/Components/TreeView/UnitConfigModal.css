@@ -702,3 +702,80 @@
     transition: none;
   }
 }
+
+html[data-theme="dark"] .ucm-overlay {
+  --glass-bg: rgba(24, 36, 58, 0.92);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.03);
+  --glass-border: var(--gdc-border-strong);
+  --glass-border-subtle: var(--gdc-border);
+  --accent-primary: var(--gdc-primary-text);
+  --accent-secondary: var(--gdc-primary-hover);
+  --accent-light: var(--gdc-primary-bg);
+  --accent-ultra-light: rgba(60, 137, 232, 0.1);
+  --text-primary: var(--gdc-text);
+  --text-secondary: var(--gdc-text-secondary);
+  --text-muted: var(--gdc-text-tertiary);
+  --bg-elevated: var(--gdc-bg-elevated);
+  --bg-overlay: var(--gdc-bg-mask);
+  --shadow-sm: var(--gdc-shadow-sm);
+  --shadow-lg: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .ucm-modal {
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="dark"] .ucm-header {
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .ucm-close:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .ucm-content::-webkit-scrollbar-thumb {
+  background: var(--gdc-scrollbar-thumb);
+}
+
+html[data-theme="dark"] .ucm-size-option.selected,
+html[data-theme="dark"] .ucm-enhancement-option.selected,
+html[data-theme="dark"] .ucm-wargear-option.selected {
+  border-color: var(--gdc-primary-border);
+}
+
+html[data-theme="dark"] .ucm-radio.checked {
+  border-color: var(--gdc-primary);
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .ucm-detachment-menu {
+  border-color: var(--gdc-primary);
+  box-shadow: var(--gdc-shadow);
+}
+
+html[data-theme="dark"] .ucm-footer {
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"] .ucm-submit {
+  background: #1677ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .ucm-submit:hover:not(:disabled) {
+  background: #4096ff;
+}
+
+html[data-theme="dark"] .ucm-epic-hero-warning {
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .ucm-submit {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .ucm-submit:hover:not(:disabled) {
+  background: var(--gdc-primary);
+}

@@ -644,6 +644,11 @@
   padding: 0 20px;
 }
 
+.designer-empty-state .designer-card-list-empty {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
 .designer-empty-state.full-height {
   flex: 1;
 }
@@ -1384,6 +1389,13 @@ select.props-compact-field {
   background: var(--designer-bg-secondary);
   border: 1px dashed var(--designer-border-subtle);
   border-radius: var(--designer-radius-sm);
+}
+
+.props-section-note {
+  margin-bottom: 8px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--designer-text-tertiary);
 }
 
 /* Inline validation hint under a properties-panel field (e.g. a weapon column
@@ -2355,4 +2367,183 @@ select.props-compact-field {
 
 .props-glossary-description-field::placeholder {
   color: var(--designer-text-muted);
+}
+
+html[data-theme="dark"] .datasource-editor-layout {
+  --designer-bg-deep: var(--gdc-bg-app);
+  --designer-bg-primary: var(--gdc-bg-surface);
+  --designer-bg-secondary: var(--gdc-bg-surface-alt);
+  --designer-bg-tertiary: var(--gdc-bg-elevated);
+  --designer-bg-elevated: var(--gdc-bg-elevated);
+  --designer-border: var(--gdc-border);
+  --designer-border-subtle: var(--gdc-border-subtle);
+  --designer-text-primary: var(--gdc-text);
+  --designer-text-secondary: var(--gdc-text-secondary);
+  --designer-text-tertiary: var(--gdc-text-tertiary);
+  --designer-text-muted: #8592a8;
+  --designer-accent: var(--gdc-primary-text);
+  --designer-accent-hover: var(--gdc-primary);
+  --designer-accent-subtle: var(--gdc-primary-bg);
+  --designer-success: var(--gdc-success);
+  --designer-warning: var(--gdc-warning);
+  --designer-error: var(--gdc-danger-text);
+  --designer-canvas-bg: var(--gdc-bg-sunken);
+  --designer-grid-color: rgba(255, 255, 255, 0.06);
+  --designer-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  --designer-shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-template-btn,
+html[data-theme="dark"] .datasource-editor-layout .designer-btn-primary,
+html[data-theme="dark"] .datasource-editor-layout .designer-btn-primary:disabled {
+  background: var(--gdc-primary-active);
+  border-color: var(--gdc-primary-active);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-template-btn:hover,
+html[data-theme="dark"] .datasource-editor-layout .designer-btn-primary:hover {
+  background: var(--gdc-primary);
+  border-color: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-onboarding-step-number {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-onboarding-step {
+  border: 1px solid var(--designer-border-subtle);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-layer-item.selected,
+html[data-theme="dark"] .datasource-editor-layout .props-weapon-tab-add:hover {
+  border-color: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-card-type-tab.active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-faction-select,
+html[data-theme="dark"] .datasource-editor-layout .props-compact-input,
+html[data-theme="dark"] .datasource-editor-layout .props-compact-field,
+html[data-theme="dark"] .datasource-editor-layout .props-color-text,
+html[data-theme="dark"] .datasource-editor-layout .props-glossary-description-field {
+  background-color: var(--gdc-bg-input);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .props-compact-label {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .datasource-editor-layout select.props-compact-field {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+html[data-theme="dark"] .datasource-editor-layout .props-faction-confirm-delete,
+html[data-theme="dark"] .datasource-editor-layout .designer-confirm-footer .designer-btn-danger {
+  background: #d03a3c;
+  border-color: #d03a3c;
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-confirm-footer .designer-btn-danger:hover {
+  background: var(--gdc-danger);
+  border-color: var(--gdc-danger);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-layer-action-btn.danger:hover {
+  background: var(--gdc-danger-bg);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .props-field-error {
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .props-field-item:hover,
+html[data-theme="dark"] .datasource-editor-layout .schema-tree-header,
+html[data-theme="dark"] .datasource-editor-layout .schema-tree-content,
+html[data-theme="dark"] .datasource-editor-layout .schema-tree-overview {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .schema-type-badge.string {
+  background: rgba(60, 137, 232, 0.16);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .schema-type-badge.richtext {
+  background: rgba(146, 84, 222, 0.18);
+  color: #b37feb;
+}
+
+html[data-theme="dark"] .datasource-editor-layout .schema-type-badge.enum {
+  background: rgba(216, 150, 20, 0.16);
+  color: var(--gdc-warning-text);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .schema-type-badge.boolean {
+  background: rgba(73, 170, 25, 0.16);
+  color: var(--gdc-success-text);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .schema-tree-enum-option-value {
+  color: var(--gdc-warning-text);
+  background: rgba(216, 150, 20, 0.1);
+  border-color: rgba(216, 150, 20, 0.3);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-confirm-overlay {
+  background: var(--gdc-bg-mask);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-confirm-dialog {
+  background: var(--gdc-bg-elevated);
+  border: 1px solid var(--gdc-border);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .designer-empty-state .designer-card-list-empty {
+  opacity: 1;
+}
+
+html[data-theme="dark"] .datasource-editor-layout .card-editor .ant-collapse > .ant-collapse-item {
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"]
+  .datasource-editor-layout
+  .card-editor
+  .ant-collapse
+  > .ant-collapse-item
+  > .ant-collapse-header {
+  color: var(--gdc-text);
+  background: var(--gdc-bg-surface-alt);
+}
+
+html[data-theme="dark"]
+  .datasource-editor-layout
+  .card-editor
+  .ant-collapse
+  > .ant-collapse-item
+  > .ant-collapse-header:hover {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .card-editor .ant-collapse-content {
+  background: var(--gdc-bg-surface);
+  border-top-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .card-editor .ant-form-item-label > label {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .datasource-editor-layout .card-editor .ant-form-item-tooltip {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .designer-import-status-invalid,
+html[data-theme="dark"] .designer-import-error-list,
+html[data-theme="dark"] .designer-import-error-list li {
+  color: var(--gdc-danger-text);
 }

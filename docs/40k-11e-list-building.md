@@ -70,8 +70,16 @@ From the core rules' Select Battle Size table (`BATTLE_SIZES`):
 | Strike Force | 2000 | 3 | 4 | 3 |
 
 An army buys several detachments with its DP budget; each detachment costs
-1-3 DP (`detachmentPoints`) and grants its own force disposition, rules,
+1-3 DP (`detachmentPoints`) and grants its own force dispositions, rules,
 enhancements and stratagems. The same detachment cannot be taken twice.
+
+A detachment can grant more than one force disposition. From data 963 each
+detachment carries a `forceDispositions` list, and the older single
+`forceDisposition` stays alongside it (equal to the first entry). Older data
+and lists saved before 963 only have `forceDisposition`.
+`getDetachmentForceDispositions` reads the list when it has entries and falls
+back to the single field otherwise. The roster picker, the list overview and the
+GW app export show every disposition, joined with a comma.
 
 One exception is implemented: at Incursion a 3 DP detachment may be taken as the
 army's **only** detachment (`allowsSoloOverBudgetDetachment`). Once taken it
@@ -146,6 +154,19 @@ requiresKeyword }`:
 `canAttachTo` honours the detachment/keyword restrictions, `getEligibleSquads`
 lists the valid squads already in the list, and `groupListForDisplay` nests
 attached units under their squad.
+
+Some enhancements add targets to their bearer, such as Murdermind, whose card
+lists SUPPORT: Skorpekh, Lokhust, Ophydian and Lokhust Heavy Destroyers. The
+11e data does not carry these, so `getEnhancementAttachesTo` keeps the printed
+targets in a small table keyed by English enhancement name (an `attachesTo`
+array on the enhancement data takes precedence). `canAttachTo` and
+`getEligibleSquads` take the leader's selected `enhancement` and add those
+targets to the unit's own, so any unit that can take the enhancement gains
+them and keeps its usual squads. The unit config modal and the mobile list
+editor pass the selected enhancement in, and `keepEligibleAttachment` drops a
+chosen squad when a change of enhancement (or detachment, on mobile) makes it
+ineligible. The 11e loader keeps `nameEn` on enhancements so the match works
+in every card language.
 
 ## Where it is wired in
 

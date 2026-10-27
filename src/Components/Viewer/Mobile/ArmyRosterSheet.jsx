@@ -4,6 +4,7 @@ import {
   canAddDetachment,
   getBattleSize,
   getDetachmentCost,
+  getDetachmentDispositionNames,
   getSpentDetachmentPoints,
   isDetachmentSelected,
   isDetachmentSelectionOverBudget,
@@ -83,7 +84,7 @@ export const ArmyRosterSheet = ({
                 // Unaffordable options stay visible but disabled so the DP budget
                 // is obvious rather than silently hiding choices.
                 const disabled = !selected && !canAddDetachment(selectedDetachments, detachment, size.key);
-                const disposition = localize(detachment?.forceDisposition?.name, language);
+                const disposition = getDetachmentDispositionNames(detachment, language).join(", ");
                 return (
                   <button
                     key={detachment.id || name}

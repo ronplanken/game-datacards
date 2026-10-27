@@ -49,7 +49,7 @@ export const Ds40kStratagemCard = ({ card, cardTypeDef, cardStyle, isMobile }) =
   return (
     <div className="data-40k-10e" data-testid="ds-40k-stratagem">
       <div
-        className={isMobile ? "shared-stratagem" : ""}
+        className={isMobile ? "shared-stratagem gdc-datacard" : "gdc-datacard"}
         style={{
           "--width": `${card.styling?.width ?? 260}px`,
           "--height": `${card.styling?.height ?? 458}px`,

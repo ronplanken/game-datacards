@@ -100,7 +100,7 @@ export const UnitLoadout = ({ unit }) => {
 
             {unit?.composition?.map((composition, index) => {
               return (
-                <div className="composition" key={`composition-${composition}`}>
+                <div className="composition" key={`composition-${index}`}>
                   <span className="description">{composition}</span>
                 </div>
               );

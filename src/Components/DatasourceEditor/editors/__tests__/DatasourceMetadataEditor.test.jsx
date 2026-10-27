@@ -19,6 +19,7 @@ vi.mock("lucide-react", () => ({
   MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,
   RotateCcw: (props) => <svg data-testid="icon-restore" {...props} />,
   Download: (props) => <svg data-testid="icon-download" {...props} />,
+  Upload: (props) => <svg data-testid="icon-upload" {...props} />,
   Eye: (props) => <svg data-testid="icon-eye" {...props} />,
 }));
 

@@ -11,7 +11,7 @@ export const SecondaryCard = ({ secondary, cardStyle, paddingTop = "32px" }) => 
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`secondary`} style={cardStyle}>
+      <div className={`secondary gdc-datacard`} style={cardStyle}>
         <div className={`page ${secondary.variant || "secondary"}`} style={style}>
           <div className="frame">
             <div

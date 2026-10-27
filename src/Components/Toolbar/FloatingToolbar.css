@@ -143,3 +143,50 @@
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+html[data-theme="dark"] .floating-toolbar {
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .floating-toolbar .ant-btn,
+html[data-theme="dark"] .floating-toolbar .ant-btn:focus {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+html[data-theme="dark"] .floating-toolbar .ant-btn:hover:not(:disabled),
+html[data-theme="dark"] .floating-toolbar .ant-btn.active {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .floating-toolbar .ant-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] .floating-toolbar-menu {
+  background: #2c2c2c;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="dark"] .floating-toolbar-menu .ant-dropdown-menu-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+html[data-theme="dark"] .floating-toolbar-menu .ant-dropdown-menu-item:hover,
+html[data-theme="dark"] .floating-toolbar-menu .ant-dropdown-menu-item-active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .floating-toolbar-menu .ant-dropdown-menu-item-selected {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .floating-toolbar-menu .ant-dropdown-menu-item-divider {
+  background: rgba(255, 255, 255, 0.15);
+}

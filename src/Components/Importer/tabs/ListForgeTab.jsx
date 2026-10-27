@@ -291,23 +291,28 @@ export const ListForgeTab = ({ dataSource, settings, importCategory, onClose, fo
       return;
     }
 
-    const cards = buildCardsFromUnits(importableUnits);
+    try {
+      const cards = buildCardsFromUnits(importableUnits);
 
-    const category = {
-      uuid: uuidv4(),
-      name: categoryName || "Imported List",
-      type: "list",
-      dataSource: settings.selectedDataSource,
-      factionId: matchedFaction?.id || null,
-      factionName: matchedFaction?.name || null,
-      detachment: detachment || null,
-      cards,
-    };
+      const category = {
+        uuid: uuidv4(),
+        name: categoryName || "Imported List",
+        type: "list",
+        dataSource: settings.selectedDataSource,
+        factionId: matchedFaction?.id || null,
+        factionName: matchedFaction?.name || null,
+        detachment: detachment || null,
+        cards,
+      };
 
-    importCategory(category);
-    trackEvent("import-listforge", { faction: matchedFaction?.name, unitCount: cards.length, mode: importMode });
-    message.success(`Imported ${cards.length} units to "${category.name}"`);
-    onClose();
+      importCategory(category);
+      trackEvent("import-listforge", { faction: matchedFaction?.name, unitCount: cards.length, mode: importMode });
+      message.success(`Imported ${cards.length} units to "${category.name}"`);
+      onClose();
+    } catch (err) {
+      console.error("List Forge import failed", err);
+      message.error(`Could not import this list: ${err.message}`);
+    }
   };
 
   const matchCounts = countMatchStatuses(units);

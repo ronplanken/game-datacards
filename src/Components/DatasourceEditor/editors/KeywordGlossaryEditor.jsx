@@ -1,6 +1,6 @@
 import React from "react";
 import { nanoid } from "nanoid";
-import { Bold, BookOpen, Brackets, CaseUpper, Download, Eye, Link, MoreHorizontal, Trash2 } from "lucide-react";
+import { Bold, BookOpen, Brackets, CaseUpper, Eye, Link, MoreHorizontal, Trash2, Upload } from "lucide-react";
 import { IconKey, IconTag, IconTemplate } from "@tabler/icons-react";
 import { Dropdown, Menu, Select } from "antd";
 import { Section, CompactInput, CollapsibleFieldItem } from "../components";
@@ -302,7 +302,7 @@ export const KeywordGlossaryEditor = ({ schema, onChange }) => {
           key: "restore-defaults",
           label: (
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-              <Download size={14} />
+              <Upload size={14} />
               {importLabel}
             </span>
           ),

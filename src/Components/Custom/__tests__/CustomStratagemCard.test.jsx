@@ -40,6 +40,11 @@ describe("CustomStratagemCard", () => {
     expect(screen.getByTestId("custom-stratagem-card")).toBeInTheDocument();
   });
 
+  it("marks its root as a datacard so dark mode keeps the light card colours", () => {
+    render(<CustomStratagemCard card={makeCard()} cardTypeDef={stratagemCardTypeDef} cardStyle={{}} />);
+    expect(screen.getByTestId("custom-stratagem-card")).toHaveClass("gdc-datacard");
+  });
+
   it("displays card name in header", () => {
     render(<CustomStratagemCard card={makeCard()} cardTypeDef={stratagemCardTypeDef} cardStyle={{}} />);
     expect(screen.getByText("Overwatch")).toBeInTheDocument();

@@ -74,6 +74,7 @@ const UNIT_11E = {
   },
   // Keywords are localized; `factions` are plain strings matched in English.
   keywords: TEXT_LIST,
+  modelKeywords: { each: { name: TEXT, keywords: TEXT_LIST } },
   composition: TEXT_LIST,
   wargear: TEXT_LIST,
   wargearOptions: { each: { instruction: TEXT, options: { each: NAMED } } },

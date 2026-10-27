@@ -153,3 +153,56 @@
 .pwa-install-prompt-btn.secondary:active {
   background: #e8e8e8;
 }
+
+html[data-theme="dark"] .pwa-install-prompt-content {
+  background: var(--gdc-bg-elevated);
+  border: 1px solid var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-icon {
+  background: var(--gdc-primary-bg);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-text h3 {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-text p,
+html[data-theme="dark"] .pwa-install-prompt-instructions li {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-close {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-close:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-instructions {
+  background: var(--gdc-bg-sunken);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-instructions-title {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-btn.primary {
+  background: var(--gdc-primary-active);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-btn.primary:active {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-btn.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .pwa-install-prompt-btn.secondary:active {
+  background: rgba(255, 255, 255, 0.14);
+}

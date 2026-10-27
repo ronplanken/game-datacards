@@ -638,3 +638,214 @@
 .tree-item-row.in-datasource.selected {
   padding-left: 45px;
 }
+
+html[data-theme="dark"] .tree-droppable {
+  background-color: transparent !important;
+}
+
+html[data-theme="dark"] .tree-droppable--over {
+  background-color: var(--gdc-bg-hover) !important;
+}
+
+html[data-theme="dark"] .tree-droppable--from {
+  background-color: var(--gdc-bg-active) !important;
+}
+
+html[data-theme="dark"] .tree-category,
+html[data-theme="dark"] .tree-item-row,
+html[data-theme="dark"] .tree-datasource {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .tree-category:hover,
+html[data-theme="dark"] .tree-item-row:hover,
+html[data-theme="dark"] .tree-datasource:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .tree-category.selected,
+html[data-theme="dark"] .tree-item-row.selected,
+html[data-theme="dark"] .tree-datasource.selected {
+  background: var(--gdc-bg-active);
+  border-left-color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .tree-category.selected:hover,
+html[data-theme="dark"] .tree-item-row.selected:hover,
+html[data-theme="dark"] .tree-datasource.selected:hover {
+  background: rgba(64, 150, 255, 0.26);
+}
+
+html[data-theme="dark"] .tree-category-toggle,
+html[data-theme="dark"] .tree-category-icon,
+html[data-theme="dark"] .tree-item-icon,
+html[data-theme="dark"] .tree-datasource-toggle {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .tree-drag-handle {
+  color: var(--gdc-text-disabled);
+}
+
+html[data-theme="dark"] .tree-roster-button {
+  border-color: var(--gdc-border);
+  background: var(--gdc-bg-input);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .tree-roster-button:hover {
+  border-color: var(--gdc-primary-hover);
+  background: var(--gdc-primary-bg);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .tree-roster-over {
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .category-dragging,
+html[data-theme="dark"] .tree-item-row.dragging {
+  background: var(--gdc-bg-elevated);
+  box-shadow: var(--gdc-shadow);
+}
+
+html[data-theme="dark"] .tree-item-indicator:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .tree-item-indicator.enhancement {
+  color: #f759ab;
+  background: rgba(235, 47, 150, 0.16);
+}
+
+html[data-theme="dark"] .tree-item-indicator.enhancement:hover {
+  background: rgba(235, 47, 150, 0.3);
+}
+
+html[data-theme="dark"] .tree-item-indicator.warlord {
+  color: #fadb14;
+  background: rgba(250, 219, 20, 0.14);
+}
+
+html[data-theme="dark"] .tree-item-indicator.warlord:hover {
+  background: rgba(250, 219, 20, 0.26);
+}
+
+html[data-theme="dark"] .tree-item-points:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+html[data-theme="dark"] .tree-item-select {
+  background: var(--gdc-bg-surface-alt);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .tree-item-select:hover {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-primary-hover);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .tree-context-menu {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .tree-context-menu-item {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .tree-context-menu-item:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .tree-context-menu-item.danger {
+  color: var(--gdc-danger-text);
+}
+
+html[data-theme="dark"] .tree-context-menu-item.danger:hover {
+  background: var(--gdc-danger-bg);
+}
+
+html[data-theme="dark"] .tree-context-menu-item.disabled {
+  color: var(--gdc-text-disabled);
+}
+
+html[data-theme="dark"] .tree-context-menu-item.disabled:hover {
+  background: transparent;
+}
+
+html[data-theme="dark"] .tree-context-menu-divider {
+  background: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .tree-rename-modal-overlay {
+  background: var(--gdc-bg-mask);
+}
+
+html[data-theme="dark"] .tree-rename-modal {
+  background: var(--gdc-bg-elevated);
+  border: 1px solid var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .tree-rename-modal-header {
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .tree-rename-modal-footer {
+  border-top-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .tree-rename-modal-title {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .tree-rename-modal-close {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .tree-rename-modal-close:hover {
+  background: var(--gdc-bg-hover);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .tree-rename-modal-input {
+  color: var(--gdc-text);
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .tree-rename-modal-input:hover {
+  border-color: var(--gdc-primary-hover);
+}
+
+html[data-theme="dark"] .tree-rename-modal-input:focus {
+  border-color: var(--gdc-primary);
+  box-shadow: 0 0 0 2px rgba(60, 137, 232, 0.25);
+}
+
+html[data-theme="dark"] .tree-rename-modal-btn-cancel {
+  background: transparent;
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .tree-rename-modal-btn-cancel:hover {
+  border-color: var(--gdc-primary-hover);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .tree-item-icon svg [stroke="black"],
+html[data-theme="dark"] .tree-category-icon svg [stroke="black"],
+html[data-theme="dark"] .tree-datasource-icon svg [stroke="black"] {
+  stroke: currentColor;
+}
+
+html[data-theme="dark"] .tree-item-icon svg [fill="black"],
+html[data-theme="dark"] .tree-category-icon svg [fill="black"],
+html[data-theme="dark"] .tree-datasource-icon svg [fill="black"] {
+  fill: currentColor;
+}

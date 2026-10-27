@@ -20,7 +20,7 @@ export const EnhancementCard = ({
         paddingTop: paddingTop,
         ...cardStyle,
       }}
-      className={containerClass}>
+      className={classNames("gdc-datacard", containerClass)}>
       <div className={`own ${className} ${enhancement.faction_id}`}>
         <div className={`border`}>
           <div className="background-side-bar"></div>

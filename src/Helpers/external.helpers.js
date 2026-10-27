@@ -7,6 +7,11 @@ import {
   merge11eLegends,
   expand11ePatrols,
 } from "./datasource11e.helpers";
+import {
+  get11eVersionsManifestUrl,
+  is11eDataVersionUrlAllowed,
+  parse11eVersionsManifest,
+} from "./dataVersion11e.helpers";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -507,7 +512,13 @@ const resolve11eRuleNames = (rules, language) => {
   };
 };
 
-export const get40k11eData = async (language = "en", { combatPatrol = false } = {}) => {
+export const get40k11eData = async (language = "en", dataVersion = null, { combatPatrol = false } = {}) => {
+  const defaultUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
+  if (dataVersion && !is11eDataVersionUrlAllowed(dataVersion.url, defaultUrl)) {
+    throw new Error(`Data version ${dataVersion.version} points to an unexpected location`);
+  }
+  const baseUrl = dataVersion?.url || defaultUrl;
+
   const factions = [
     "adeptasororitas",
     "adeptuscustodes",
@@ -540,7 +551,6 @@ export const get40k11eData = async (language = "en", { combatPatrol = false } = 
     "worldeaters",
   ];
 
-  const baseUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
   const cacheBuster = Date.now();
   let index = null;
   try {
@@ -577,7 +587,7 @@ export const get40k11eData = async (language = "en", { combatPatrol = false } = 
   // predate the file, so a failed fetch degrades to an empty glossary.
   const fetchKeywordGlossary = async () => {
     try {
-      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/keywords.json?${new Date().getTime()}`);
+      const data = await readCsv(`${baseUrl}/keywords.json?${new Date().getTime()}`);
       if (Array.isArray(data?.keywords)) return data.keywords;
       return Array.isArray(data) ? data : [];
     } catch {
@@ -590,7 +600,7 @@ export const get40k11eData = async (language = "en", { combatPatrol = false } = 
   // basicStratagems below; older datasources without the file degrade to none.
   const fetchCoreStratagems = async () => {
     try {
-      const data = await readCsv(`${import.meta.env.VITE_DATASOURCE_11TH_URL}/core.json?${new Date().getTime()}`);
+      const data = await readCsv(`${baseUrl}/core.json?${new Date().getTime()}`);
       return Array.isArray(data?.stratagems) ? data.stratagems : [];
     } catch {
       return [];
@@ -613,6 +623,8 @@ export const get40k11eData = async (language = "en", { combatPatrol = false } = 
     isCombatPatrol: combatPatrol,
     lastUpdated: index?.updated || allFactionsData[0]?.updated,
     lastCheckedForUpdate: new Date().toISOString(),
+    compatibleDataVersion: index?.compatibleDataVersion ?? allFactionsData[0]?.compatibleDataVersion,
+    dataVersion: dataVersion?.version ?? null,
     // Shared 11e keyword glossary (weapon keywords + core abilities), multilingual.
     keywordGlossary,
     // The language this cache was built for. useDataSourceStorage refetches when
@@ -654,6 +666,9 @@ export const get40k11eData = async (language = "en", { combatPatrol = false } = 
             cardType: "enhancement",
             source: "40k-11e",
             name: localize(enhancement.name, language),
+            // English name kept so attachment targets granted by an enhancement
+            // (e.g. Murdermind) match regardless of the user's card language.
+            nameEn: localize(enhancement.name, "en"),
           };
         }),
         rules: resolve11eRuleNames(val?.rules, language),
@@ -665,7 +680,13 @@ export const get40k11eData = async (language = "en", { combatPatrol = false } = 
   };
 };
 
-export const get40k11eCombatPatrolData = (language = "en") => get40k11eData(language, { combatPatrol: true });
+export const get40k11eCombatPatrolData = (language = "en") => get40k11eData(language, null, { combatPatrol: true });
+
+export const get40k11eDataVersions = async () => {
+  const baseUrl = import.meta.env.VITE_DATASOURCE_11TH_URL;
+  const data = await readCsv(`${get11eVersionsManifestUrl(baseUrl)}?${Date.now()}`);
+  return parse11eVersionsManifest(data, baseUrl);
+};
 
 export const get40k10eCombatPatrolData = async () => {
   const baseUrl = import.meta.env.VITE_DATASOURCE_10TH_COMBATPATROL_URL;

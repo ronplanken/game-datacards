@@ -186,6 +186,15 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {boolean} hasPoints - Whether cards have points costs
  * @property {PointsFormat} pointsFormat - Points display format
  * @property {boolean} [hasAutoResize] - Whether cards can opt into auto-resizing height to fit content (Starcraft TMG, 40k-10e)
+ * @property {boolean} [hasCombatRole] - Whether cards have a free-text combat role (stored as card.combatRole)
+ * @property {boolean} [hasArmySlot] - Whether cards have a free-text army slot (stored as card.armySlot)
+ * @property {string} [pointsLabel] - Display label for points
+ * @property {UnitCustomField[]} [fields] - Extra per-card fields shown under Basic information
+ */
+
+/**
+ * An extra per-card field on a unit card type. The value is stored flat on the card as card[key].
+ * @typedef {FieldDefinition & { default?: string | boolean }} UnitCustomField
  */
 
 /**
@@ -664,6 +673,88 @@ const validateFieldArray = (fields, path) => {
   return errors;
 };
 
+export const RESERVED_UNIT_FIELD_KEYS = [
+  "id",
+  "uuid",
+  "name",
+  "subname",
+  "faction_id",
+  "factionId",
+  "cardType",
+  "source",
+  "templateId",
+  "combatRole",
+  "armySlot",
+  "subcategory",
+  "points",
+  "keywords",
+  "factionKeywords",
+  "stats",
+  "weapons",
+  "abilities",
+  "sections",
+  "styling",
+  "variant",
+  "isCustom",
+  "useCustomColours",
+  "customHeaderColour",
+  "customBannerColour",
+  "faction",
+];
+
+const UNIT_CUSTOM_FIELD_TYPES = ["string", "enum", "boolean"];
+
+/**
+ * Validates the extra per-card fields of a unit card type.
+ * @param {UnitCustomField[]} fields - The field definitions
+ * @param {string} path - Dot-separated path for error messages
+ * @returns {string[]} Array of error messages
+ */
+export const validateUnitCustomFields = (fields, path) => {
+  const errors = validateFieldArray(fields, path);
+  if (!Array.isArray(fields)) return errors;
+  fields.forEach((field, i) => {
+    if (!field || typeof field !== "object") return;
+    if (field.key && RESERVED_UNIT_FIELD_KEYS.includes(field.key)) {
+      errors.push(`${path}[${i}]: key "${field.key}" is reserved for a built-in card value`);
+    }
+    if (field.key && !/^[A-Za-z][A-Za-z0-9_]*$/.test(field.key)) {
+      errors.push(`${path}[${i}]: key "${field.key}" must start with a letter and use only letters, digits and _`);
+    }
+    if (field.type && !UNIT_CUSTOM_FIELD_TYPES.includes(field.type)) {
+      errors.push(
+        `${path}[${i}]: type "${field.type}" is not allowed here (use ${UNIT_CUSTOM_FIELD_TYPES.join(", ")})`,
+      );
+    }
+    if (field.default !== undefined) {
+      if (field.type === "boolean" && typeof field.default !== "boolean") {
+        errors.push(`${path}[${i}]: "default" must be a boolean for boolean fields`);
+      }
+      if (field.type !== "boolean" && typeof field.default !== "string") {
+        errors.push(`${path}[${i}]: "default" must be a string`);
+      }
+      if (field.type === "enum" && Array.isArray(field.options) && !field.options.includes(field.default)) {
+        errors.push(`${path}[${i}]: "default" must be one of the enum options`);
+      }
+    }
+  });
+  return errors;
+};
+
+/**
+ * Returns the starting value of a unit custom field, honouring its default.
+ * @param {UnitCustomField} field - The field definition
+ * @returns {string | boolean}
+ */
+export const getUnitCustomFieldDefault = (field) => {
+  if (field?.default !== undefined) {
+    if (field.type === "boolean") return Boolean(field.default);
+    if (field.type === "enum" && !field.options?.includes(field.default)) return getDefaultValueForType(field);
+    return String(field.default);
+  }
+  return getDefaultValueForType(field);
+};
+
 /**
  * Validates a collection definition (rules, keywords).
  * @param {object} collection - The collection to validate
@@ -890,6 +981,9 @@ const validateUnitSchema = (schema, path) => {
     }
     if (schema.metadata.pointsLabel !== undefined && typeof schema.metadata.pointsLabel !== "string") {
       errors.push(`${path}.metadata: "pointsLabel" must be a string`);
+    }
+    if (schema.metadata.fields !== undefined) {
+      errors.push(...validateUnitCustomFields(schema.metadata.fields, `${path}.metadata.fields`));
     }
   }
 

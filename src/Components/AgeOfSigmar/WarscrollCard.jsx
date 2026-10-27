@@ -61,7 +61,7 @@ export const WarscrollCard = ({
   const showBadges = statDisplayMode === "badges";
 
   return (
-    <div className="warscroll">
+    <div className="warscroll gdc-datacard">
       {/* Stat Display Area - includes back button on mobile */}
       <div className="stat-display-area">
         {isMobile && onBack && (

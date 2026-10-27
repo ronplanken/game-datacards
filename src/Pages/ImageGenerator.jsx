@@ -4,6 +4,7 @@ import { Content, Header } from "antd/lib/layout/layout";
 import { captureToBlob } from "../Helpers/screenshot.helpers";
 import { useEffect, useRef, useState } from "react";
 import "../App.css";
+import "../Components/Print/Print.css";
 import { Warhammer40K10eCardDisplay } from "../Components/Warhammer40k-10e/CardDisplay";
 import { Warhammer40K11eCardDisplay } from "../Components/Warhammer40k-11e/CardDisplay";
 import { useDataSourceStorage } from "../Hooks/useDataSourceStorage";

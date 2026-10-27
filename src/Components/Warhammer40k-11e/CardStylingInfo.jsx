@@ -1,4 +1,5 @@
-import { Card, Form, Slider } from "antd";
+import { SliderWithInput } from "../Shared/SliderWithInput";
+import { Card, Form } from "antd";
 import React from "react";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 
@@ -26,7 +27,7 @@ export function CardStylingInfo({
     <Form>
       <Card style={{ width: "100%" }} title={"Card"} type="inner">
         <Form.Item label={"Width"}>
-          <Slider
+          <SliderWithInput
             min={100}
             max={1000}
             step={10}
@@ -36,7 +37,7 @@ export function CardStylingInfo({
           />
         </Form.Item>
         <Form.Item label={"Height"}>
-          <Slider
+          <SliderWithInput
             min={100}
             max={1000}
             step={1}
@@ -48,7 +49,7 @@ export function CardStylingInfo({
       </Card>
       <Card style={{ width: "100%" }} title={"Content"} type="inner">
         <Form.Item label={"Text size"}>
-          <Slider
+          <SliderWithInput
             min={4}
             max={64}
             step={1}
@@ -58,7 +59,7 @@ export function CardStylingInfo({
           />
         </Form.Item>
         <Form.Item label={"Line height"}>
-          <Slider
+          <SliderWithInput
             min={0.2}
             max={3}
             step={0.1}

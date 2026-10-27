@@ -223,3 +223,81 @@ button.changelog-older-toggle:hover,
 .changelog-discord img {
   border-radius: 12px;
 }
+
+html[data-theme="dark"] .changelog-timeline::before {
+  background: rgba(106, 174, 255, 0.3);
+}
+
+html[data-theme="dark"] .changelog-entry::before {
+  background: var(--gdc-primary);
+  border-color: var(--gdc-bg-elevated);
+  box-shadow: 0 0 0 3px rgba(60, 137, 232, 0.2);
+}
+
+html[data-theme="dark"] .changelog-entry.collapsed::before {
+  background: var(--gdc-border-strong);
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.12);
+}
+
+html[data-theme="dark"] .changelog-entry-header:hover {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .changelog-version {
+  background: var(--gdc-primary-bg);
+  color: var(--gdc-primary-text);
+  border-color: var(--gdc-primary-border);
+}
+
+html[data-theme="dark"] .changelog-entry.collapsed .changelog-version {
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--gdc-text-secondary);
+  border-color: var(--gdc-border);
+}
+
+html[data-theme="dark"] .changelog-date,
+html[data-theme="dark"] .changelog-expand-icon {
+  color: var(--gdc-text-tertiary);
+}
+
+html[data-theme="dark"] .changelog-entry-header:hover .changelog-expand-icon,
+html[data-theme="dark"] .changelog-entry:not(.collapsed) .changelog-expand-icon {
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .changelog-section-title {
+  color: var(--gdc-primary-text);
+  background: var(--gdc-primary-bg);
+}
+
+html[data-theme="dark"] .changelog-list-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--gdc-border-subtle);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .changelog-list-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--gdc-primary-border);
+}
+
+html[data-theme="dark"] .changelog-list-item strong {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] button.changelog-older-toggle,
+html[data-theme="dark"] .changelog-timeline .changelog-older-toggle {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(106, 174, 255, 0.35);
+  color: var(--gdc-primary-text) !important;
+}
+
+html[data-theme="dark"] button.changelog-older-toggle:hover,
+html[data-theme="dark"] .changelog-timeline .changelog-older-toggle:hover {
+  background: var(--gdc-primary-bg);
+  border-color: rgba(106, 174, 255, 0.6);
+}
+
+html[data-theme="dark"] .changelog-discord {
+  border-top-color: var(--gdc-border);
+}

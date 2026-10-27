@@ -408,3 +408,32 @@
     transition: none;
   }
 }
+
+html[data-theme="dark"] .settings-select {
+  background: var(--gdc-bg-input);
+  border-color: var(--gdc-border-strong);
+  color: var(--gdc-text);
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] .settings-select:focus {
+  outline: none;
+  border-color: var(--gdc-primary);
+  box-shadow: 0 0 0 2px var(--gdc-primary-bg);
+}
+
+html[data-theme="dark"] .settings-toggle {
+  background: #4b5a72;
+}
+
+html[data-theme="dark"] .settings-toggle.active {
+  background: var(--gdc-primary);
+}
+
+html[data-theme="dark"] .settings-action-button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="dark"] .settings-action-button.secondary:active:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+}

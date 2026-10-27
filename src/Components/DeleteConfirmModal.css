@@ -170,3 +170,56 @@
     flex: 1;
   }
 }
+
+html[data-theme="dark"] .delete-modal-overlay {
+  background: var(--gdc-bg-mask);
+}
+
+html[data-theme="dark"] .delete-modal {
+  background: var(--gdc-bg-elevated);
+  border: 1px solid var(--gdc-border);
+  box-shadow: var(--gdc-shadow-lg);
+}
+
+html[data-theme="dark"] .delete-modal-header,
+html[data-theme="dark"] .delete-modal-body,
+html[data-theme="dark"] .delete-modal-footer {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .delete-modal-header {
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .delete-modal-footer {
+  border-top-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .delete-modal-title {
+  color: var(--gdc-heading);
+}
+
+html[data-theme="dark"] .delete-modal-content {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .delete-modal-btn-cancel {
+  background-color: transparent;
+  border-color: var(--gdc-border);
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .delete-modal-btn-cancel:hover {
+  border-color: var(--gdc-primary-hover);
+  color: var(--gdc-primary-text);
+}
+
+html[data-theme="dark"] .delete-modal-btn-delete {
+  background-color: #d9363e;
+  border-color: #d9363e;
+}
+
+html[data-theme="dark"] .delete-modal-btn-delete:hover {
+  background-color: #e5484d;
+  border-color: #e5484d;
+}

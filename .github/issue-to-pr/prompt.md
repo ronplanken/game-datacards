@@ -121,8 +121,8 @@ the team would jot a short, honest note to players. Distilled from the existing
 entries:
 
 - **Keep it short.** The note is read in a narrow notification dropdown, so the
-  `title` stays under roughly 55 characters and the `body` runs to two or three
-  short sentences (about 300 characters at most). Cover the change itself. A full
+  `title` stays under roughly 55 characters and the `body` uses at most two short, easy-to-understand
+  sentences (about 300 characters at most). Cover the change itself. A full
   list of everything you touched belongs in the pull request.
 - **Talk to the reader as "you", in the present tense.** Open with one plain
   sentence that says what changed and why it helps.

@@ -327,3 +327,55 @@
 .aos-units-page.aos-regular-fonts .aos-units-title {
   font-family: "Heebo", sans-serif;
 }
+
+html[data-theme="dark"] .mobile-aos-faction,
+html[data-theme="dark"] .aos-units-page {
+  background: var(--gdc-bg-surface);
+}
+
+html[data-theme="dark"] .aos-units-toggle {
+  background: var(--gdc-bg-surface-alt);
+  border-bottom-color: var(--gdc-border-subtle);
+}
+
+html[data-theme="dark"] .aos-units-toggle-btn {
+  background: var(--gdc-bg-elevated);
+  border-color: var(--gdc-border);
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .aos-units-toggle-btn:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .aos-units-toggle-btn.active {
+  background: var(--aos-primary);
+  border-color: var(--gdc-border-strong);
+  color: #fff;
+}
+
+html[data-theme="dark"] .aos-units-section-header span:first-child {
+  color: var(--gdc-text-secondary);
+}
+
+html[data-theme="dark"] .aos-units-section-count {
+  color: var(--gdc-text-secondary);
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .aos-units-item {
+  background: var(--gdc-bg-elevated);
+}
+
+html[data-theme="dark"] .aos-units-item:active {
+  background: var(--gdc-bg-hover);
+}
+
+html[data-theme="dark"] .aos-units-item-name {
+  color: var(--gdc-text);
+}
+
+html[data-theme="dark"] .aos-units-item-points {
+  color: var(--gdc-text-secondary);
+  background: var(--gdc-bg-sunken);
+}

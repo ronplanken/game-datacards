@@ -14,7 +14,7 @@ export const UnitCard = ({ unit, cardStyle, paddingTop = "32px" }) => {
         justifyItems: "center",
         display: "flex",
       }}>
-      <div className={`unit`} style={cardStyle}>
+      <div className={`unit gdc-datacard`} style={cardStyle}>
         <div className={`page ${unit.variant || "card"} ${unit.icons || "icons"}`} style={style}>
           <div className="frame">
             <div className={`${unit.background || "NONE"} background`}>

@@ -8,6 +8,20 @@ import { vi } from "vitest";
 // Create jest compatibility layer for existing tests
 globalThis.jest = vi;
 
+// jsdom does not implement window.matchMedia, which antd's responsive grid (Row/Col) requires.
+if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
+  window.matchMedia = (query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  });
+}
+
 // Node 22+ exposes a native localStorage that conflicts with jsdom's implementation.
 // Ensure localStorage has all standard Web Storage API methods.
 if (typeof localStorage !== "undefined" && typeof localStorage.getItem !== "function") {

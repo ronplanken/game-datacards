@@ -49,7 +49,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
 
   const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
   // 11e armies hold several detachments; enhancements from any of them are available.
-  const armyDetachments = lists[selectedList]?.detachments || [];
+  const armyDetachments = lists[selectedList]?.detachments;
   // The faction the list is built for, which its faction-scoped prices key off.
   const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(lists[selectedList]));
   // Restricted prices (a detachment or a faction keyword) only apply to armies
@@ -104,7 +104,15 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
       setIsWarlord(false);
       setSelectedUnitSize(availableTiers.length === 1 ? availableTiers[0] : undefined);
     }
-  }, [isVisible, activeCard, availableTiers]);
+  }, [isVisible, activeCard]);
+
+  useEffect(() => {
+    setSelectedUnitSize((current) => {
+      const match = current && availableTiers.find((tier) => isSamePointsTier(tier, current));
+      if (match) return match;
+      return availableTiers.length === 1 ? availableTiers[0] : undefined;
+    });
+  }, [availableTiers]);
 
   const handleClose = () => setIsVisible(false);
 

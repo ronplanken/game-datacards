@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Col } from "antd";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
@@ -7,6 +8,7 @@ import { CustomStratagemCard } from "./CustomStratagemCard";
 import { CustomUnitCard } from "./CustomUnitCard";
 import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
 import { TemplateRenderer } from "../../Premium";
+import { applyBooleanDisplayValues, applyUnitFieldDefaults } from "../../Helpers/customSchemaBindings";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -66,6 +68,14 @@ export const CustomCardDisplay = ({
   const cardFaction = dataSource?.data?.find((faction) => faction.id === displayCard?.faction_id);
 
   const { cardTypeDef, baseType } = resolveCardType(displayCard, schema);
+  const rawTemplateCard = useMemo(
+    () => (displayCard?.templateId ? applyUnitFieldDefaults(displayCard, cardTypeDef) : displayCard),
+    [displayCard, cardTypeDef],
+  );
+  const templateCard = useMemo(
+    () => (displayCard?.templateId ? applyBooleanDisplayValues(rawTemplateCard, cardTypeDef) : displayCard),
+    [displayCard, rawTemplateCard, cardTypeDef],
+  );
 
   // Get colours from faction or custom overrides
   const headerColour = displayCard?.useCustomColours
@@ -87,7 +97,9 @@ export const CustomCardDisplay = ({
   if (!cardTypeDef) {
     return (
       <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
-        <div className="data-custom" style={{ padding: "24px", textAlign: "center", color: "rgba(0,0,0,0.45)" }}>
+        <div
+          className="data-custom"
+          style={{ padding: "24px", textAlign: "center", color: "var(--gdc-text-tertiary)" }}>
           No matching card type definition found for &quot;{displayCard.cardType}&quot;
         </div>
       </Col>
@@ -98,7 +110,12 @@ export const CustomCardDisplay = ({
   if (displayCard.templateId) {
     return (
       <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
-        <TemplateRenderer templateId={displayCard.templateId} card={displayCard} faction={cardFaction} />
+        <TemplateRenderer
+          templateId={displayCard.templateId}
+          card={templateCard}
+          rawCard={rawTemplateCard}
+          faction={cardFaction}
+        />
       </Col>
     );
   }

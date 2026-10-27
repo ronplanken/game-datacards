@@ -1,9 +1,16 @@
 import React from "react";
 import clone from "just-clone";
+import classNames from "classnames";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { TreeCategory, TreeItem, TreeDatasource } from "../TreeView";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { getBackgroundColor, getMinHeight, move, reorder } from "../../Helpers/treeview.helpers";
+
+const getDroppableClassName = (snapshot) =>
+  classNames("tree-droppable", {
+    "tree-droppable--over": snapshot.isDraggingOver,
+    "tree-droppable--from": !snapshot.isDraggingOver && snapshot.draggingFromThisWith,
+  });
 
 export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
   const { cardStorage, updateCategory, getSubCategories, reorderCategories, reorderChildCategories } = useCardStorage();
@@ -86,6 +93,7 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
                         <div
                           ref={provided.innerRef}
                           {...provided.droppableProps}
+                          className={getDroppableClassName(snapshot)}
                           style={{
                             minHeight: getMinHeight(snapshot),
                             backgroundColor: subDragSnapshot.isDragging ? "transparent" : getBackgroundColor(snapshot),
@@ -128,7 +136,7 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
       style={{
         height: "100%",
         overflow: "auto",
-        background: "white",
+        background: "var(--gdc-bg-surface)",
       }}>
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* Render legacy local datasources as a static list (no drag-and-drop) */}
@@ -138,6 +146,7 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
+                className={getDroppableClassName(snapshot)}
                 style={{
                   minHeight: getMinHeight(snapshot),
                   backgroundColor: getBackgroundColor(snapshot),
@@ -183,6 +192,7 @@ export const CategoryTree = ({ selectedTreeIndex, setSelectedTreeIndex }) => {
                           <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
+                            className={getDroppableClassName(snapshot)}
                             style={{
                               minHeight: getMinHeight(snapshot),
                               backgroundColor: catDragSnapshot.isDragging

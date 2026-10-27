@@ -38,6 +38,17 @@ const renderToasts = () => {
             style={{ "--toast-index": toasts.length - 1 - index }}>
             <Icon size={16} />
             <span>{toast.content}</span>
+            {toast.action && (
+              <button
+                type="button"
+                className="toast-action"
+                onClick={() => {
+                  removeToast(toast.id);
+                  toast.action.onClick();
+                }}>
+                {toast.action.label}
+              </button>
+            )}
           </div>
         );
       })}
@@ -63,10 +74,12 @@ const showToast = (type, contentOrConfig, duration = 2.5) => {
 
   // Handle both string and object config
   let content;
+  let action;
   let actualDuration = duration;
 
   if (typeof contentOrConfig === "object" && contentOrConfig !== null) {
     content = contentOrConfig.content || contentOrConfig.message || "";
+    action = contentOrConfig.action;
     if (contentOrConfig.duration !== undefined) {
       actualDuration = contentOrConfig.duration;
     }
@@ -78,6 +91,7 @@ const showToast = (type, contentOrConfig, duration = 2.5) => {
     id,
     type,
     content,
+    action,
     visible: false,
   };
 

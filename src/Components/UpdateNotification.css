@@ -120,3 +120,8 @@
     animation: none;
   }
 }
+
+html[data-theme="dark"] .update-notification {
+  border-bottom-color: rgba(96, 165, 250, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}

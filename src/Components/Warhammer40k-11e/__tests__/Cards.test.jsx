@@ -35,6 +35,13 @@ describe("StratagemCard (11e)", () => {
     expect(container.textContent).toContain("1 CP");
     expect(container.querySelector(".gdc-keyword")?.textContent).toBe("Adeptus Astartes");
   });
+
+  it("marks its root as a datacard so dark mode keeps the light card colours", () => {
+    const stratagem = { name: { en: "Test" }, type: "Battle Tactic", turn: "your", cost: 1, phase: [] };
+    const { container } = render(<StratagemCard stratagem={stratagem} containerClass="mobile" />);
+    expect(container.firstChild).toHaveClass("gdc-datacard");
+    expect(container.firstChild).toHaveClass("mobile");
+  });
 });
 
 describe("EnhancementCard (11e)", () => {
@@ -50,5 +57,11 @@ describe("EnhancementCard (11e)", () => {
     expect(getByText("Temporal Corridor")).toBeInTheDocument();
     expect(container.textContent).toContain("15");
     expect(container.querySelector(".gdc-keyword")?.textContent).toBe("Psyker");
+  });
+
+  it("marks its root as a datacard so dark mode keeps the light card colours", () => {
+    const enhancement = { name: { en: "Test" }, detachment: "Test", cost: "10", description: { en: "Text" } };
+    const { container } = render(<EnhancementCard enhancement={enhancement} />);
+    expect(container.firstChild).toHaveClass("gdc-datacard");
   });
 });

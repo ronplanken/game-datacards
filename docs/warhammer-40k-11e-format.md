@@ -14,6 +14,7 @@ file_locations:
   - src/Helpers/listPoints.helpers.js
   - src/Hooks/useDataSourceStorage.jsx
   - src/Hooks/use11eKeywordGlossary.js
+  - src/Helpers/unitKeywords.helpers.js
   - src/Components/Warhammer40k-11e/
   - src/Components/Viewer/useMobileList.jsx
   - src/styles/40k-11e.less
@@ -49,6 +50,7 @@ detachments, rules).
 - [The dedicated renderset](#the-dedicated-renderset)
 - [Datasheet column layout](#datasheet-column-layout)
 - [Rich-text markup](#rich-text-markup)
+- [Model-specific keywords](#model-specific-keywords)
 - [Keyword glossary (tooltips)](#keyword-glossary-tooltips)
 - [Weapons](#weapons)
 - [Stratagems](#stratagems)
@@ -155,6 +157,35 @@ is needed for this **highlighting** because keywords are already explicitly
 tagged in the data. Hover **explanations** for keywords and core abilities come
 from a separate glossary file — see [Keyword glossary](#keyword-glossary-tooltips).
 
+## Model-specific keywords
+
+Not every model in a unit has the same keywords. The Ancient in Company Heroes
+is a `CHARACTER`, the other three models are not. Newer data carries this as
+`modelKeywords` next to `keywords`:
+
+```json
+"keywords": [{ "en": "Infantry" }, { "en": "Tacticus" }, { "en": "Character" }],
+"modelKeywords": [{ "name": { "en": "Ancient" }, "keywords": [{ "en": "Character" }] }]
+```
+
+- `keywords` lists every keyword any model has.
+- `modelKeywords` lists, per model, only the keywords that not every model has.
+  It is `[]` when all models match.
+- The shared keywords are `keywords` minus everything in `modelKeywords`.
+
+`getKeywordGroups` (`src/Helpers/unitKeywords.helpers.js`) does that split, and
+`UnitCard/UnitKeywords.jsx` renders it as `ALL MODELS: Infantry, Tacticus
+ANCIENT: Character`, the way the official app shows it. Older data versions have
+no `modelKeywords` (or an empty one); those cards render `keywords` as one line,
+as before.
+
+The card editors (desktop and mobile) edit the two fields together. With
+`modelKeywords` present, the Keywords list shows only the shared keywords and a
+Model keywords block edits each model's name and keywords. Every edit rewrites
+`keywords` as the shared keywords plus all model keywords (`withModelKeywords`),
+so the two fields stay consistent. The mobile editor's language projection
+covers `modelKeywords` too.
+
 ## Keyword glossary (tooltips)
 
 The 11e datasource ships a shared keyword glossary as `11th/gdc/keywords.json` (a
@@ -195,6 +226,16 @@ add `nameLoc`/`descriptionLoc` language maps:
   hover tooltip whose description is localised (`descriptionLoc[lang]`, falling
   back to the English `description`) and rendered with the 11e
   `MarkupText`/`LocalizedMarkup` engine. Unmatched tags render plain.
+- **Ability text:** unit ability descriptions (other, wargear, special, primarch
+  and Damaged) pass the glossary to `MarkupText`, which looks up each `<k>` and
+  bold (`<b>`/`**`) element holding plain text. Ability keywords such as
+  `<b>Lone Operative</b>` resolve against `abilities`; bracketed text such as
+  `<k>[Lethal Hits]</k>` drops its brackets and also falls back to `weapons`.
+  Matching runs on the displayed (localised) text, against the English `name`
+  and every `nameLoc` value, so a translated keyword only gets a tooltip when
+  its entry carries that translation. Every other
+  `MarkupText` caller (weapon descriptions, loadout, wargear options,
+  stratagem/enhancement/rule cards) renders without lookups.
 
 ## Weapons
 

@@ -1,0 +1,22 @@
+.slider-with-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 24px;
+}
+
+.slider-with-input-track {
+  min-width: 0;
+}
+
+.slider-with-input .slider-with-input-track > .ant-slider {
+  margin: 6px 6px 12px 20px;
+}
+
+.slider-with-input .slider-with-input-track > .ant-slider-with-marks {
+  margin-bottom: 28px;
+}
+
+.slider-with-input-number {
+  line-height: 24px;
+}

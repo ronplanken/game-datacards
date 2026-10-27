@@ -1048,3 +1048,21 @@
     transition: none;
   }
 }
+
+html[data-theme="dark"] .mww-header-step,
+html[data-theme="dark"] .mww-info-step-number {
+  color: #4096ff;
+}
+
+html[data-theme="dark"] .mww-welcome-feature-desc,
+html[data-theme="dark"] .mww-info-step-desc,
+html[data-theme="dark"] .mww-desktop-feature-desc,
+html[data-theme="dark"] .mww-settings-option-desc,
+html[data-theme="dark"] .mww-info-note,
+html[data-theme="dark"] .mww-settings-note {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+html[data-theme="dark"] .mww-desktop-url-value {
+  color: #f87171;
+}

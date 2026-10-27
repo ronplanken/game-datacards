@@ -1,6 +1,7 @@
-import { Card, Form, Slider, Switch } from "antd";
+import { Card, Form, Switch } from "antd";
 import React from "react";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
+import { SliderWithInput } from "../../Shared/SliderWithInput";
 
 export function RuleStylingInfo() {
   const { activeCard, updateActiveCard } = useCardStorage();
@@ -9,7 +10,7 @@ export function RuleStylingInfo() {
     <Form>
       <Card style={{ width: "100%" }} title={"Card"} type="inner">
         <Form.Item label={"Width"}>
-          <Slider
+          <SliderWithInput
             min={200}
             max={800}
             step={10}
@@ -26,7 +27,7 @@ export function RuleStylingInfo() {
         </Form.Item>
         {activeCard.styling?.autoHeight === false && (
           <Form.Item label={"Height"}>
-            <Slider
+            <SliderWithInput
               min={200}
               max={1200}
               step={10}
@@ -39,7 +40,7 @@ export function RuleStylingInfo() {
       </Card>
       <Card style={{ width: "100%", marginTop: "8px" }} title={"Content"} type="inner">
         <Form.Item label={"Text size"}>
-          <Slider
+          <SliderWithInput
             min={8}
             max={24}
             step={1}

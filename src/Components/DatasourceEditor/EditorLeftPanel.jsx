@@ -426,7 +426,7 @@ const CardList = ({
     return (
       <div className="designer-card-list">
         <div className="designer-empty-state" style={{ padding: "12px 0" }}>
-          <p style={{ fontSize: 12, opacity: 0.6 }}>No {cardTypeDef.label.toLowerCase()} cards yet</p>
+          <p className="designer-card-list-empty">No {cardTypeDef.label.toLowerCase()} cards yet</p>
         </div>
       </div>
     );

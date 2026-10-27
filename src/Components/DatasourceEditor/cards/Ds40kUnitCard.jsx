@@ -70,7 +70,7 @@ export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle, isMobile, keywordG
 
   return (
     <div className="data-40k-10e" data-testid="ds-40k-unit">
-      <div className={`unit-card-front-wrapper ds-unit${isMobile ? " viewer" : ""}`} style={cardStyle}>
+      <div className={`unit-card-front-wrapper ds-unit gdc-datacard${isMobile ? " viewer" : ""}`} style={cardStyle}>
         <div
           className={`unit front${autoHeight ? " auto-height" : ""}`}
           data-name={card.name}

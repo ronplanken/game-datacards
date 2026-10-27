@@ -33,7 +33,7 @@ export const DatasourceCardEditor = ({ card, activeDatasource, onUpdateCard }) =
 
   if (!cardTypeDef) {
     return (
-      <div style={{ padding: 16, color: "rgba(0,0,0,0.45)" }}>
+      <div style={{ padding: 16, color: "var(--gdc-text-tertiary)" }}>
         No matching card type definition found for &quot;{card.cardType}&quot;
       </div>
     );
