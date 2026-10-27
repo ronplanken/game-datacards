@@ -250,5 +250,12 @@
     "body": "On 11th edition cards with Show all points on, the Warhammer Legends label now stays clear of the points, including the extra copy cost. The stat line also stays in place when you turn Show all points on.",
     "severity": "info",
     "timestamp": 1793100393
+  },
+  {
+    "version": "3.13.9",
+    "title": "Tighter bullet lists in the Card Designer",
+    "body": "In the Card Designer preview, 11th edition abilities with a bullet list showed a blank line after every bullet. Lists now look the same as on the normal card.",
+    "severity": "info",
+    "timestamp": 1793100461
   }
 ]
