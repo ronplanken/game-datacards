@@ -102,4 +102,21 @@ describe("saveActiveCard", () => {
     expect(storedCard().hasCustomFactionSymbol).toBe(false);
     expect(JSON.parse(localStorage.getItem("storage")).categories[0].cards).toHaveLength(1);
   });
+
+  it("stores the card, not the function, when updateActiveCard is given a function", () => {
+    const api = renderStorage();
+    act(() => {
+      api.setActiveCategory({ uuid: CATEGORY_UUID });
+      api.setActiveCard({ uuid: CARD_UUID, name: "Chosen", hasCustomFactionSymbol: false });
+    });
+
+    act(() => {
+      api.updateActiveCard(() => ({ uuid: CARD_UUID, name: "Chosen", hasCustomFactionSymbol: true }));
+      api.saveActiveCard();
+    });
+
+    expect(typeof api.activeCard).toBe("object");
+    expect(api.activeCard.hasCustomFactionSymbol).toBe(true);
+    expect(storedCard().hasCustomFactionSymbol).toBe(true);
+  });
 });

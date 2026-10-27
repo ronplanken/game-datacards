@@ -98,4 +98,52 @@ describe("UnitLoadout", () => {
     const loadoutDivs = container.querySelectorAll(".loadout");
     expect(loadoutDivs).toHaveLength(0);
   });
+
+  describe("unit composition", () => {
+    const compositionTexts = (container) =>
+      [...container.querySelectorAll(".composition")].map((node) => node.textContent);
+
+    const rerenderLoadout = (rerender, unit) =>
+      rerender(
+        <MemoryRouter>
+          <UnitLoadout unit={unit} />
+        </MemoryRouter>,
+      );
+
+    it("renders each entry once, including repeated OR separators", () => {
+      const composition = ["1 Team Leader", "OR", "2 Marksmen", "OR", "3 Riflemen"];
+      const { container } = renderLoadout({ composition });
+
+      expect(compositionTexts(container)).toEqual(composition);
+    });
+
+    it("does not leave stale lines behind when an entry is removed and the card re-renders", () => {
+      // Regression: entries were keyed by their text, so repeated "OR" lines
+      // shared a key and React left extra lines on the card after an edit.
+      const composition = ["1 Team Leader", "OR", "2 Marksmen", "OR", "3 Riflemen", "OR", "4 Grenadiers"];
+      const { container, rerender } = renderLoadout({ composition });
+
+      const afterDelete = composition.slice(1);
+      rerenderLoadout(rerender, { composition: afterDelete });
+      rerenderLoadout(rerender, { composition: [...afterDelete], name: "Edited elsewhere" });
+
+      expect(compositionTexts(container)).toEqual(afterDelete);
+    });
+
+    it("keeps blank entries in step with the data when they are added and removed", () => {
+      const { container, rerender } = renderLoadout({ composition: ["1 Team Leader", "OR", "2 Marksmen"] });
+
+      const steps = [
+        ["1 Team Leader", "OR", "2 Marksmen", ""],
+        ["1 Team Leader", "OR", "2 Marksmen", "", ""],
+        ["", "OR", "2 Marksmen", "", ""],
+        ["OR", "2 Marksmen", ""],
+        ["OR", "2 Marksmen", "OR"],
+      ];
+      steps.forEach((composition, index) => {
+        rerenderLoadout(rerender, { composition, name: `edit ${index}` });
+        expect(compositionTexts(container)).toEqual(composition);
+      });
+    });
+  });
 });

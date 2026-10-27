@@ -1,0 +1,5 @@
+{
+  "title": "Unit Composition no longer shows extra lines",
+  "body": "On 10th edition unit cards, editing the card could leave extra \"OR\" lines or a repeated line under Unit Composition. The card now shows exactly the entries you typed.",
+  "severity": "info"
+}
