@@ -1,0 +1,5 @@
+{
+  "title": "Legends label clears a single wide points value",
+  "body": "On 11th edition cards, the Warhammer Legends label no longer overlaps the points when a single price is shown with a large models count.",
+  "severity": "info"
+}

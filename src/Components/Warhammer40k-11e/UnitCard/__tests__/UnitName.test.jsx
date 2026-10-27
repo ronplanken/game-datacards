@@ -63,14 +63,25 @@ describe("UnitName (11e) Legends label", () => {
     expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("316px");
   });
 
-  it("keeps the fixed position for a single tier without a surcharge", () => {
-    const label = renderLegends({ points: [tier], showAllPoints: true });
-    expect(label.classList.contains("legends--multi")).toBe(false);
-    expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("");
+  it("clears a single wide tier, e.g. a large models count", () => {
+    layout.pointsLeft = 760;
+    const label = renderLegends({
+      points: [{ ...tier, models: "10000" }],
+      showAllPoints: true,
+      showPointsModels: true,
+    });
+    expect(label.classList.contains("legends--multi")).toBe(true);
+    expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("256px");
   });
 
-  it("keeps the fixed position when Show all points is off", () => {
+  it("clears the points when Show all points is off", () => {
     const label = renderLegends({ points: [tier, tier], additionalCost: surcharge, showAllPoints: false });
+    expect(label.classList.contains("legends--multi")).toBe(true);
+    expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("316px");
+  });
+
+  it("keeps the fixed position when the unit has no points", () => {
+    const label = renderLegends({ points: [], showAllPoints: true });
     expect(label.classList.contains("legends--multi")).toBe(false);
     expect(label.style.getPropertyValue("--legends-multi-offset")).toBe("");
   });

@@ -35,17 +35,17 @@ export const UnitName = ({
 }) => {
   const imageUrl = localImageUrl || externalImage;
 
-  // 11th edition points carry no `active` flag. The roster surcharge renders as
-  // its own chip next to the tiers, so a single tier plus a surcharge is just as
-  // wide a points row as two tiers.
-  const hasMultiplePoints = showAllPoints && points?.length > 0 && (points.length > 1 || additionalCost?.cost != null);
+  // The points row can be wider than the fixed label position allows (several
+  // tiers, a roster surcharge, or one tier with a large models count), so the
+  // label is placed against the measured points whenever any are shown.
+  const hasPoints = points?.length > 0;
 
   const headerRef = useRef(null);
   const legendsRef = useRef(null);
   const [legendsLayout, setLegendsLayout] = useState(null);
 
   useLayoutEffect(() => {
-    if (!legends || !hasMultiplePoints) {
+    if (!legends || !hasPoints) {
       setLegendsLayout(null);
       return undefined;
     }
@@ -97,7 +97,7 @@ export const UnitName = ({
       observer.observe(nameContainer);
     }
     return () => observer.disconnect();
-  }, [legends, hasMultiplePoints, points, additionalCost, showAllPoints, showPointsModels, name, subname]);
+  }, [legends, hasPoints, points, additionalCost, showAllPoints, showPointsModels, name, subname]);
 
   const legendsStyle = legendsLayout
     ? {
@@ -119,7 +119,7 @@ export const UnitName = ({
         {subname && <div className="subname">{subname}</div>}
       </div>
       {legends && (
-        <div ref={legendsRef} className={`legends${hasMultiplePoints ? " legends--multi" : ""}`} style={legendsStyle} />
+        <div ref={legendsRef} className={`legends${legendsLayout ? " legends--multi" : ""}`} style={legendsStyle} />
       )}
       {combatPatrol && <div className="combatpatrol" />}
       <UnitPoints
