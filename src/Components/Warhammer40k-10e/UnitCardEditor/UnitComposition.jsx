@@ -43,16 +43,11 @@ export function UnitComposition() {
                                 <Popconfirm
                                   title={"Are you sure you want to delete this composition option?"}
                                   placement="topRight"
-                                  onConfirm={(value) =>
-                                    updateActiveCard(() => {
-                                      const newComposition = [...activeCard.composition];
-                                      newComposition.splice(index, 1);
-                                      return {
-                                        ...activeCard,
-                                        composition: newComposition,
-                                      };
-                                    })
-                                  }>
+                                  onConfirm={() => {
+                                    const newComposition = [...activeCard.composition];
+                                    newComposition.splice(index, 1);
+                                    updateActiveCard({ ...activeCard, composition: newComposition });
+                                  }}>
                                   <Button type="icon" shape="circle" size="small" icon={<Trash2 size={14} />}></Button>
                                 </Popconfirm>
                               </Space>
@@ -62,14 +57,9 @@ export function UnitComposition() {
                                 <CustomMarkdownEditor
                                   value={compositionOption}
                                   onChange={(value) => {
-                                    updateActiveCard(() => {
-                                      const newComposition = [...activeCard.composition];
-                                      newComposition[index] = value;
-                                      return {
-                                        ...activeCard,
-                                        composition: newComposition,
-                                      };
-                                    });
+                                    const newComposition = [...activeCard.composition];
+                                    newComposition[index] = value;
+                                    updateActiveCard({ ...activeCard, composition: newComposition });
                                   }}
                                 />
                               </Form.Item>
@@ -89,13 +79,11 @@ export function UnitComposition() {
       <Button
         type="dashed"
         style={{ width: "100%" }}
-        onClick={() =>
-          updateActiveCard(() => {
-            const newComposition = [...activeCard.composition];
-            newComposition.push("");
-            return { ...activeCard, composition: newComposition };
-          })
-        }>
+        onClick={() => {
+          const newComposition = [...activeCard.composition];
+          newComposition.push("");
+          updateActiveCard({ ...activeCard, composition: newComposition });
+        }}>
         Add composition option
       </Button>
     </>

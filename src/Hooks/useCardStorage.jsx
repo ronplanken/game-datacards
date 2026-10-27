@@ -61,7 +61,11 @@ export const CardStorageProviderComponent = (props) => {
     activeCardRef.current = activeCard;
   }, [activeCard]);
 
-  const updateActiveCard = (card, noUpdate = false) => {
+  // Many editors pass `() => ({ ...activeCard, ... })` instead of a card.
+  // Resolve that here, so the ref, the error context and React state all get
+  // the card itself rather than the function.
+  const updateActiveCard = (cardOrUpdater, noUpdate = false) => {
+    const card = typeof cardOrUpdater === "function" ? cardOrUpdater(activeCardRef.current) : cardOrUpdater;
     if (!card) {
       return;
     }
