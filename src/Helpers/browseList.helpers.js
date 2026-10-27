@@ -9,7 +9,7 @@ import { localize } from "./localization.helpers";
 // cards the same way.
 
 /** 40K datasources whose factions browse as datasheets + stratagems. */
-export const BROWSE_40K_SOURCES = ["40k-10e", "40k-10e-cp", "40k-11e"];
+export const BROWSE_40K_SOURCES = ["40k-10e", "40k-10e-cp", "40k-11e", "40k-11e-cp"];
 
 /**
  * True for the 40K datasources that use the faction/role grouped browser.
@@ -158,7 +158,7 @@ export const buildFactionDatasheetList = ({ dataSource, selectedFaction, setting
   }
 
   if (!settings?.showLegends) {
-    filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends);
+    filteredSheets = filteredSheets?.filter((sheet) => !sheet.legends && !sheet.isLegends);
   }
   if (!settings.groupByFaction) {
     filteredSheets = filteredSheets?.toSorted((a, b) => a.name.localeCompare(b.name));

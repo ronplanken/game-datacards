@@ -1,3 +1,4 @@
+import { PatrolRosterSummary } from "../PatrolRosterSummary";
 import React, { useState } from "react";
 import { Dropdown, List } from "antd";
 import classNames from "classnames";
@@ -306,6 +307,7 @@ export const DataSourceList = ({ isLoading, dataSource, selectedFaction, setSele
           className={card.nonBase ? card.faction_id : ""}>
           <span style={{ flexDirection: "column", display: "flex" }}>
             {card.name}
+            <PatrolRosterSummary card={card} />
             {/* The detachment subtitle is redundant once the list is grouped by
                 detachment, and "core" stratagems belong to none. */}
             {detachmentSubtitle(card)}

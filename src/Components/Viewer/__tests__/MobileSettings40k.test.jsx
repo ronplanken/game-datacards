@@ -18,6 +18,13 @@ describe("MobileSettings40k card language picker", () => {
     expect(select.querySelectorAll("option").length).toBeGreaterThanOrEqual(8);
   });
 
+  it("shows the language select for 11th edition Combat Patrol", () => {
+    const { getByLabelText } = render(
+      <MobileSettings40k settings={{ selectedDataSource: "40k-11e-cp", language: "fr" }} updateSettings={vi.fn()} />,
+    );
+    expect(getByLabelText("Card language").value).toBe("fr");
+  });
+
   it("hides the language select for 10th edition", () => {
     const { queryByLabelText } = render(
       <MobileSettings40k settings={{ selectedDataSource: "40k-10e" }} updateSettings={vi.fn()} />,
@@ -62,6 +69,13 @@ describe("MobileSettings40k data version picker", () => {
     );
     expect(hint.disabled).toBe(true);
     mockVersions.error = null;
+  });
+
+  it("hides the data version select for 11th edition Combat Patrol", () => {
+    const { queryByLabelText } = render(
+      <MobileSettings40k settings={{ selectedDataSource: "40k-11e-cp" }} updateSettings={vi.fn()} />,
+    );
+    expect(queryByLabelText("Data version")).toBeNull();
   });
 
   it("hides the data version select for 10th edition", () => {

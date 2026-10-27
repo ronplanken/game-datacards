@@ -14,6 +14,7 @@ const FORTY_K_OPTION_TITLES = {
   "40k-11e": "Warhammer 11th edition options",
   "40k-10e": "Warhammer 10th edition options",
   "40k-10e-cp": "Combat Patrol options",
+  "40k-11e-cp": "Combat Patrol options",
 };
 
 const SettingCard = ({ title, checked, onChange }) => (

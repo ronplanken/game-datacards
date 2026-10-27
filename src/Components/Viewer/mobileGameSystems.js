@@ -36,6 +36,13 @@ export const PRIMARY_MOBILE_SYSTEMS = [
     cssClass: "gss-option-starcraft",
     color: "#7c3aed",
   },
+  {
+    id: "40k-11e-cp",
+    name: "Combat Patrol",
+    meta: "11th Edition",
+    cssClass: "gss-option-40k",
+    color: "#0891b2",
+  },
   // Superseded by 11th edition — kept available, but last and compact.
   {
     id: "40k-10e",

@@ -1,3 +1,4 @@
+import { resolveUnitRoute } from "../Helpers/datasource11e.helpers";
 import { useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "./useDataSourceStorage";
@@ -52,9 +53,7 @@ export function useViewerNavigation() {
         } else {
           // Support both datasheets (40K) and warscrolls (AoS)
           const units = foundFaction?.datasheets || foundFaction?.warscrolls || [];
-          let foundUnit = units.find((u) => {
-            return u.name.replaceAll(" ", "-").toLowerCase() === unit;
-          });
+          let foundUnit = resolveUnitRoute(units, unit, location.search);
 
           // If not found and generic manifestations are enabled, search generic warscrolls
           if (!foundUnit && settings?.showGenericManifestations && dataSource?.genericData?.warscrolls) {
@@ -314,6 +313,7 @@ export function useViewerNavigation() {
     rule,
     dataSource,
     location.pathname,
+    location.search,
     location.state,
     settings?.showGenericManifestations,
   ]);
@@ -327,9 +327,9 @@ export function useViewerNavigation() {
   );
 
   const navigateToUnit = useCallback(
-    (factionName, unitName) => {
+    (factionName, unitName, cardId) => {
       navigate(
-        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}`,
+        `/viewer/${factionName.toLowerCase().replaceAll(" ", "-")}/${unitName.replaceAll(" ", "-").toLowerCase()}${cardId ? `?cardId=${encodeURIComponent(cardId)}` : ""}`,
       );
     },
     [navigate],

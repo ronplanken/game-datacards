@@ -60,7 +60,7 @@ export const MobileSettings40k = ({ settings, updateSettings }) => (
         onChange={(value) => updateSettings({ ...settings, combineAlliedFactions: value })}
       />
       {/* Card language (multi-language datasources; mirrors the desktop Settings picker) */}
-      {settings.selectedDataSource === "40k-11e" && (
+      {["40k-11e", "40k-11e-cp"].includes(settings.selectedDataSource) && (
         <div className="settings-row settings-row-select">
           <span className="settings-label">Card language</span>
           <select

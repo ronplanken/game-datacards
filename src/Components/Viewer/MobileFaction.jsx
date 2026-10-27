@@ -99,7 +99,7 @@ export const MobileFaction = () => {
   const factionSlug = selectedFaction?.name?.toLowerCase().replaceAll(" ", "-");
 
   // Multi-language datasource (40k-11e) needs language resolution + the 11e cards.
-  const is11e = settings.selectedDataSource === "40k-11e";
+  const is11e = ["40k-11e", "40k-11e-cp"].includes(settings.selectedDataSource);
   const lang = settings.language || "en";
 
   const handleBrowseUnits = () => {

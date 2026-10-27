@@ -15,12 +15,14 @@ const defaultSettings = {
   selectedFactionIndex: {
     "40k-10e": 0,
     "40k-11e": 0,
+    "40k-11e-cp": 0,
     aos: 0,
   },
   // Tracks whether user has explicitly selected a faction (per datasource)
   hasFactionSelected: {
     "40k-10e": false,
     "40k-11e": false,
+    "40k-11e-cp": false,
     aos: false,
   },
   ignoredSubFactions: [],
@@ -84,6 +86,7 @@ export const SettingsStorageProviderComponent = (props) => {
           merged.selectedFactionIndex = {
             "40k-10e": merged.selectedFactionIndex,
             "40k-11e": 0,
+            "40k-11e-cp": 0,
             aos: 0,
           };
         }
