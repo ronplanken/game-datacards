@@ -13,11 +13,12 @@ import {
   IconBadge,
   IconCoin,
   IconArrowUp,
+  IconArrowsExchange,
 } from "@tabler/icons-react";
 import { Section, CompactInput, CollapsibleFieldItem } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
-import { is40kBaseSystem } from "../../../Helpers/customSchema.helpers";
+import { getAbilityCategorySide, is40kBaseSystem, schemaHasBackSide } from "../../../Helpers/customSchema.helpers";
 
 const FORMAT_OPTIONS = [
   { value: "name-only", label: "Name Only" },
@@ -41,6 +42,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
   if (!abilities) return null;
 
   const categories = ensureIds(abilities.categories);
+  const showSide = schemaHasBackSide(schema, baseSystem);
 
   const updateAbilities = (updates) => {
     onChange({ ...schema, abilities: { ...abilities, ...updates } });
@@ -185,6 +187,23 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
                 ))}
               </select>
             </div>
+            {showSide && (
+              <div className="props-compact-input">
+                <Tooltip content="Card side" placement="top">
+                  <span className="props-compact-label">
+                    <IconArrowsExchange size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
+                <select
+                  className="props-compact-field"
+                  value={getAbilityCategorySide(schema, category)}
+                  onChange={(e) => updateCategory(index, "side", e.target.value)}
+                  aria-label="Card side">
+                  <option value="front">Front</option>
+                  <option value="back">Back</option>
+                </select>
+              </div>
+            )}
             <CompactInput
               label={<IconHeading size={10} stroke={1.5} />}
               ariaLabel="Header"

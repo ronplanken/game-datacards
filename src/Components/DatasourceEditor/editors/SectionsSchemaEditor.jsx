@@ -1,10 +1,11 @@
 import React from "react";
 import { nanoid } from "nanoid";
 import { LayoutList, Trash2, ChevronUp, ChevronDown } from "lucide-react";
-import { IconKey, IconTag, IconTemplate } from "@tabler/icons-react";
+import { IconKey, IconTag, IconTemplate, IconArrowsExchange } from "@tabler/icons-react";
 import { Section, CompactInput, CollapsibleFieldItem } from "../components";
 import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
+import { getSectionSide, schemaHasBackSide } from "../../../Helpers/customSchema.helpers";
 
 const FORMAT_OPTIONS = [
   { value: "list", label: "List" },
@@ -15,9 +16,10 @@ const FORMAT_OPTIONS = [
  * Editor for unit section definitions.
  * Allows add/remove/reorder sections with key, label, and format.
  */
-export const SectionsSchemaEditor = ({ schema, onChange }) => {
+export const SectionsSchemaEditor = ({ schema, onChange, baseSystem }) => {
   const sectionsData = schema?.sections;
   const sections = ensureIds(sectionsData?.sections);
+  const showSide = schemaHasBackSide(schema, baseSystem);
 
   const updateSections = (updatedSections) => {
     onChange({
@@ -129,6 +131,23 @@ export const SectionsSchemaEditor = ({ schema, onChange }) => {
                 ))}
               </select>
             </div>
+            {showSide && (
+              <div className="props-compact-input">
+                <Tooltip content="Card side" placement="top">
+                  <span className="props-compact-label">
+                    <IconArrowsExchange size={10} stroke={1.5} />
+                  </span>
+                </Tooltip>
+                <select
+                  className="props-compact-field"
+                  value={getSectionSide(schema, section)}
+                  onChange={(e) => updateSection(index, "side", e.target.value)}
+                  aria-label="Card side">
+                  <option value="front">Front</option>
+                  <option value="back">Back</option>
+                </select>
+              </div>
+            )}
           </CollapsibleFieldItem>
         ))}
       </div>

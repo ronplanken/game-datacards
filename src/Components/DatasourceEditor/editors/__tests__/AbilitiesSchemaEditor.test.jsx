@@ -204,4 +204,25 @@ describe("AbilitiesSchemaEditor", () => {
       }),
     );
   });
+
+  describe("card side", () => {
+    const makeSchema = (hasBackSide) => ({ ...mockSchema, metadata: { hasBackSide } });
+
+    it("is hidden while the option is off", () => {
+      render(<AbilitiesSchemaEditor schema={makeSchema(false)} onChange={vi.fn()} baseSystem="40k-11e" />);
+      expandCategory("Core");
+      expect(screen.queryByLabelText("Card side")).toBeNull();
+    });
+
+    it("defaults to the front and writes the choice", () => {
+      const onChange = vi.fn();
+      render(<AbilitiesSchemaEditor schema={makeSchema(true)} onChange={onChange} baseSystem="40k-11e" />);
+      expandCategory("Core");
+      const select = screen.getByLabelText("Card side");
+      expect(select.value).toBe("front");
+
+      fireEvent.change(select, { target: { value: "back" } });
+      expect(onChange.mock.calls[0][0].abilities.categories[0].side).toBe("back");
+    });
+  });
 });

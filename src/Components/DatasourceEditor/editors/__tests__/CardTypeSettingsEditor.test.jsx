@@ -217,4 +217,72 @@ describe("CardTypeSettingsEditor", () => {
   afterEach(() => {
     mockPremiumFeatures.hasCardDesigner = false;
   });
+
+  describe("Back side", () => {
+    const makeCardType = (overrides = {}) => ({
+      ...mockCardType,
+      schema: {
+        metadata: {},
+        sections: {
+          label: "Sections",
+          sections: [
+            { key: "wargear-options", label: "Wargear Options", format: "list" },
+            { key: "special", label: "Special Rules", format: "list", side: "back" },
+            { key: "loadout", label: "Loadout", format: "richtext", side: "front" },
+          ],
+        },
+      },
+      ...overrides,
+    });
+
+    const renderEditor = (props) =>
+      render(
+        <CardTypeSettingsEditor
+          cardType={makeCardType()}
+          activeDatasource={mockDatasource}
+          onUpdateCardType={vi.fn()}
+          onUpdateSchema={vi.fn()}
+          baseSystem="40k-11e"
+          {...props}
+        />,
+      );
+
+    it("is off by default on both 40K editions", () => {
+      ["40k-10e", "40k-11e"].forEach((baseSystem) => {
+        const { unmount } = renderEditor({ baseSystem });
+        expect(screen.getByLabelText("Back side")).not.toBeChecked();
+        unmount();
+      });
+    });
+
+    it("is hidden on other base systems and card types", () => {
+      const { unmount } = renderEditor({ baseSystem: "aos" });
+      expect(screen.queryByLabelText("Back side")).toBeNull();
+      unmount();
+      renderEditor({ cardType: makeCardType({ baseType: "stratagem" }) });
+      expect(screen.queryByLabelText("Back side")).toBeNull();
+    });
+
+    it("applies the default split without touching explicit choices", () => {
+      const onUpdateSchema = vi.fn();
+      renderEditor({ onUpdateSchema });
+      fireEvent.click(screen.getByLabelText("Back side"));
+
+      const updated = onUpdateSchema.mock.calls[0][0];
+      expect(updated.metadata.hasBackSide).toBe(true);
+      expect(updated.sections.sections.map((s) => s.side)).toEqual(["back", "back", "front"]);
+    });
+
+    it("keeps stored sides when turned off", () => {
+      const onUpdateSchema = vi.fn();
+      const cardType = makeCardType();
+      cardType.schema.metadata.hasBackSide = true;
+      renderEditor({ onUpdateSchema, cardType });
+      fireEvent.click(screen.getByLabelText("Back side"));
+
+      const updated = onUpdateSchema.mock.calls[0][0];
+      expect(updated.metadata.hasBackSide).toBe(false);
+      expect(updated.sections).toBe(cardType.schema.sections);
+    });
+  });
 });

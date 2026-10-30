@@ -2,12 +2,15 @@ import { Check, ArrowLeftRight, Share2, Link, Image } from "lucide-react";
 import { Button, Dropdown, Menu } from "antd";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { useCardStorage } from "../../Hooks/useCardStorage";
+import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { customCardHasBackSide } from "../Custom/CustomCardDisplay";
 import "../Toolbar/FloatingToolbar.css";
 
 export const ViewerFloatingToolbar = ({ side, setSide, onShareLink, onShareFullCard, onShareMobileCard }) => {
   const { activeCard } = useCardStorage();
   const { settings, updateSettings } = useSettingsStorage();
+  const { dataSource, isCustomDatasource } = useDataSourceStorage();
 
   if (!activeCard) return null;
 
@@ -97,11 +100,13 @@ export const ViewerFloatingToolbar = ({ side, setSide, onShareLink, onShareFullC
   };
 
   const is40k10e = activeCard?.source === "40k-10e" || activeCard?.source === "40k-11e";
+  // Custom cards show one face at a time on desktop, so they flip even with double-sided display on.
   const showFrontBackToggle =
-    is40k10e &&
-    settings.showCardsAsDoubleSided !== true &&
-    activeCard?.variant !== "full" &&
-    activeCard?.cardType === "DataCard";
+    (is40k10e &&
+      settings.showCardsAsDoubleSided !== true &&
+      activeCard?.variant !== "full" &&
+      activeCard?.cardType === "DataCard") ||
+    (isCustomDatasource && customCardHasBackSide(activeCard, dataSource?.schema));
 
   const showZoom = is40k10e;
   const showShare = onShareLink || onShareFullCard || onShareMobileCard;

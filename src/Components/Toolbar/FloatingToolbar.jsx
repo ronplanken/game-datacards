@@ -5,12 +5,14 @@ import { Tooltip } from "../Tooltip/Tooltip";
 import { AddCard } from "../../Icons/AddCard";
 import "./FloatingToolbar.css";
 import { buildCategoryMenuItems } from "../../util/menu-helper";
+import { customCardHasBackSide } from "../Custom/CustomCardDisplay";
 
 const ZOOM_LEVELS = [25, 50, 75, 100, 125, 150, 200];
 
 export const FloatingToolbar = ({
   activeCard,
   settings,
+  dataSource,
   cardUpdated,
   currentZoom,
   isAutoFit,
@@ -109,11 +111,13 @@ export const FloatingToolbar = ({
   const is40k = ["40k-10e", "40k-11e"].includes(activeCard?.source);
   const isAos = activeCard?.source === "aos";
   const isCustomDs = activeCard?.source?.startsWith("custom-");
+  // Custom cards show one face at a time on desktop, so they flip even with double-sided display on.
   const showFrontBackToggle =
-    is40k &&
-    settings.showCardsAsDoubleSided !== true &&
-    activeCard?.variant !== "full" &&
-    activeCard?.cardType === "DataCard";
+    (is40k &&
+      settings.showCardsAsDoubleSided !== true &&
+      activeCard?.variant !== "full" &&
+      activeCard?.cardType === "DataCard") ||
+    (isCustomDs && customCardHasBackSide(activeCard, dataSource?.schema));
 
   // Determine which button groups are visible
   const showZoom = is40k || isAos || isCustomDs;

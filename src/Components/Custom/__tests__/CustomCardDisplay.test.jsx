@@ -1,11 +1,15 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { CustomCardDisplay, resolveCardType } from "../CustomCardDisplay";
+import { CustomCardDisplay, customCardHasBackSide, resolveCardType } from "../CustomCardDisplay";
 
 // Mock react-fitty (used by CustomUnitCard)
 vi.mock("react-fitty", () => ({
   ReactFitty: ({ children }) => <span>{children}</span>,
+}));
+
+vi.mock("../../../Hooks/useIndexedDBImages", () => ({
+  useIndexedDBImages: () => ({ getImageUrl: vi.fn(), getFactionSymbolUrl: vi.fn(), isReady: false }),
 }));
 
 // Mock hooks
@@ -331,5 +335,47 @@ describe("CustomCardDisplay", () => {
     };
     render(<CustomCardDisplay />);
     expect(screen.getByText("Untitled Unit")).toBeInTheDocument();
+  });
+});
+
+describe("customCardHasBackSide", () => {
+  const schema = {
+    baseSystem: "40k-11e",
+    cardTypes: [{ key: "unit", baseType: "unit", schema: { metadata: { hasBackSide: true } } }],
+  };
+
+  it("is true for a card of a two-sided card type", () => {
+    expect(customCardHasBackSide({ cardType: "unit" }, schema)).toBe(true);
+  });
+
+  it("is false for a card drawn by a template", () => {
+    expect(customCardHasBackSide({ cardType: "unit", templateId: "t1" }, schema)).toBe(false);
+  });
+
+  it("is false without a schema", () => {
+    expect(customCardHasBackSide({ cardType: "unit" }, undefined)).toBe(false);
+  });
+});
+
+describe("CustomCardDisplay side", () => {
+  it("passes the side to the native 40K unit card", () => {
+    mockDataSource.ref = {
+      schema: {
+        baseSystem: "40k-11e",
+        cardTypes: [
+          {
+            key: "unit",
+            baseType: "unit",
+            schema: { stats: { fields: [] }, metadata: { hasBackSide: true } },
+          },
+        ],
+      },
+      data: [],
+    };
+    const { container } = render(
+      <CustomCardDisplay card={{ name: "Unit", cardType: "unit" }} type="print" cardScaling={100} side="back" />,
+    );
+    expect(container.querySelector(".unit.back")).toBeTruthy();
+    expect(container.querySelector(".unit.front")).toBeNull();
   });
 });

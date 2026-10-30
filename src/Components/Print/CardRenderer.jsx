@@ -5,6 +5,7 @@ import { Warhammer40K11eCardDisplay } from "../Warhammer40k-11e/CardDisplay";
 import { Warhammer40KCardDisplay } from "../Warhammer40k/CardDisplay";
 import { CustomCardDisplay } from "../Custom/CustomCardDisplay";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 
 /**
  * CardRenderer - Abstracts card rendering logic for print page.
@@ -12,6 +13,7 @@ import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
  */
 export const CardRenderer = ({ card, cardScaling, printSide, backgrounds, forcePrintSide }) => {
   const { isCustomDatasource } = useDataSourceStorage();
+  const { settings } = useSettingsStorage();
 
   if (!card) return null;
 
@@ -56,7 +58,14 @@ export const CardRenderer = ({ card, cardScaling, printSide, backgrounds, forceP
       // Cards from custom datasources have a source that doesn't match any known system.
       // Check both the global isCustomDatasource flag and the card's own source.
       if (isCustomDatasource || card?.source) {
-        return <CustomCardDisplay card={card} type="print" cardScaling={cardScaling} />;
+        return (
+          <CustomCardDisplay
+            card={card}
+            type="print"
+            cardScaling={cardScaling}
+            side={settings?.showCardsAsDoubleSided ? "frontAndBack" : effectiveSide}
+          />
+        );
       }
       // Fallback for unknown sources - try 40k display
       return <Warhammer40KCardDisplay card={card} type="print" cardScaling={cardScaling} />;

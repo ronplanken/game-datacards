@@ -4,7 +4,7 @@ import { UnitAbilityDescription, replaceKeywords } from "../../../Warhammer40k-1
 import { UnitInvul } from "../../../Warhammer40k-10e/UnitCard/UnitInvul";
 import { tooltipProps as ruleTooltipProps } from "../../../Warhammer40k-10e/UnitCard/RuleTooltip";
 import { Tooltip } from "../../../Tooltip/Tooltip";
-import { resolveKeywordEntry } from "../../../../Helpers/customSchema.helpers";
+import { getAbilityCategorySide, resolveKeywordEntry } from "../../../../Helpers/customSchema.helpers";
 
 /**
  * Gets abilities for a given category from the card data.
@@ -59,9 +59,14 @@ const NameOnlyAbility = ({ name, glossary }) => {
  * @param {Object} props.abilitiesSchema - The abilities schema definition
  * @param {Array} [props.keywordGlossary] - Datasource-level keyword glossary; ability
  *   descriptions underline + tooltip glossary entries scoped to "abilities".
+ * @param {Object} [props.schema] - The card type schema, used to resolve each category's side
+ * @param {"front" | "back"} [props.side] - The card side being rendered. The invulnerable
+ *   save and damaged block only exist on the front.
  */
-export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary }) => {
-  const categories = abilitiesSchema?.categories || [];
+export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary, schema, side = "front" }) => {
+  const categories = (abilitiesSchema?.categories || []).filter(
+    (category) => getAbilityCategorySide(schema, category) === side,
+  );
 
   const hasAnyAbilities = categories.some((cat) => {
     const abilities = getAbilitiesForCategory(unit.abilities, cat.key);
@@ -69,8 +74,9 @@ export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary }) => {
   });
 
   // Check for invulnerable save in abilities (supports both flat and nested format)
-  const invul = Array.isArray(unit.abilities) ? null : unit.abilities?.invul;
-  const damaged = Array.isArray(unit.abilities) ? null : unit.abilities?.damaged;
+  const isFront = side === "front";
+  const invul = isFront && !Array.isArray(unit.abilities) ? unit.abilities?.invul : null;
+  const damaged = isFront && !Array.isArray(unit.abilities) ? unit.abilities?.damaged : null;
 
   return (
     <div className="extra">

@@ -1,10 +1,19 @@
-import { Check, ZoomIn, ZoomOut } from "lucide-react";
-import { Dropdown, Menu } from "antd";
+import { ArrowLeftRight, Check, ZoomIn, ZoomOut } from "lucide-react";
+import { Button, Dropdown, Menu } from "antd";
+import { Tooltip } from "../Tooltip/Tooltip";
 import "../Toolbar/FloatingToolbar.css";
 
 const ZOOM_LEVELS = [25, 50, 75, 100, 125, 150, 200];
 
-export const DatasourcePreviewToolbar = ({ currentZoom, isAutoFit, onZoomChange, onAutoFitToggle }) => {
+export const DatasourcePreviewToolbar = ({
+  currentZoom,
+  isAutoFit,
+  onZoomChange,
+  onAutoFitToggle,
+  showFrontBackToggle = false,
+  side = "front",
+  onToggleSide,
+}) => {
   const renderZoomOption = (value) => {
     const isSelected = !isAutoFit && currentZoom === value;
     return (
@@ -76,6 +85,19 @@ export const DatasourcePreviewToolbar = ({ currentZoom, isAutoFit, onZoomChange,
           <ZoomIn size={14} />
         </button>
       </div>
+      {showFrontBackToggle && (
+        <>
+          <div className="toolbar-divider" />
+          <Tooltip content={side === "back" ? "Show front" : "Show back"}>
+            <Button
+              type="text"
+              icon={<ArrowLeftRight size={18} />}
+              onClick={onToggleSide}
+              aria-label={side === "back" ? "Show front" : "Show back"}
+            />
+          </Tooltip>
+        </>
+      )}
     </div>
   );
 };

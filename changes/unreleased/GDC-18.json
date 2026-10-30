@@ -1,0 +1,5 @@
+{
+  "title": "Custom 40K unit cards can have a back",
+  "body": "Turn on Back side for a unit card type to flip and print its cards. Wargear Options, Unit Composition and Loadout move to the back by default.",
+  "severity": "info"
+}

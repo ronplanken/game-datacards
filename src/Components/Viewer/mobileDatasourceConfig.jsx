@@ -183,8 +183,13 @@ export const buildCustomConfig = (dataSource) => {
     labelMeta: null,
     cssClass,
     selectorCssClass: "gss-option-custom",
+    // Mobile has no flip control, so two-sided cards show both faces like built-in 40K cards do.
     renderCard: (type, { onBack } = {}) => (
-      <CustomCardDisplay type={type} onBack={type === "viewer" && (isAos || isStarcraft) ? onBack : undefined} />
+      <CustomCardDisplay
+        type={type}
+        side="frontAndBack"
+        onBack={type === "viewer" && (isAos || isStarcraft) ? onBack : undefined}
+      />
     ),
     FactionComponent: MobileCustomFaction,
     FactionUnitsComponent: MobileCustomFactionUnits,

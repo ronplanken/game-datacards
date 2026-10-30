@@ -106,7 +106,11 @@ const CardTypeEditorWithSections = ({ cardType, activeDatasource, onUpdateDataso
               onChange={handleCardTypeSchemaChange}
               baseSystem={baseSystem}
             />
-            <SectionsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
+            <SectionsSchemaEditor
+              schema={cardType.schema}
+              onChange={handleCardTypeSchemaChange}
+              baseSystem={baseSystem}
+            />
             <MetadataSchemaEditor
               schema={cardType.schema}
               onChange={handleCardTypeSchemaChange}

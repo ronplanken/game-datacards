@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { DatasourceCardPreview } from "../DatasourceCardPreview";
 
@@ -19,7 +19,12 @@ vi.mock("../../../Hooks/useIndexedDBImages", () => ({
 
 // Mock antd (used by native unit card sub-components and toolbar)
 vi.mock("antd", () => ({
-  Button: ({ children, ...props }) => <button {...props}>{children}</button>,
+  Button: ({ children, icon, ...props }) => (
+    <button {...props}>
+      {icon}
+      {children}
+    </button>
+  ),
   Popover: ({ children }) => <>{children}</>,
   Grid: { useBreakpoint: () => ({}) },
   Col: ({ children, ...props }) => <div {...props}>{children}</div>,
@@ -211,5 +216,62 @@ describe("DatasourceCardPreview", () => {
 
     expect(mockTemplateRenderer).not.toHaveBeenCalled();
     expect(container.querySelector(".custom-unit-card")).toBeTruthy();
+  });
+
+  describe("back side", () => {
+    const makeDatasource = (hasBackSide) => ({
+      id: "ds-back",
+      schema: makeSchema(
+        [
+          {
+            key: "unit",
+            label: "Unit",
+            baseType: "unit",
+            schema: {
+              stats: { label: "Stats", fields: [] },
+              weaponTypes: { label: "Weapons", types: [] },
+              abilities: { label: "Abilities", categories: [] },
+              sections: {
+                label: "Sections",
+                sections: [{ key: "loadout", label: "Loadout", format: "list" }],
+              },
+              metadata: { hasBackSide },
+            },
+          },
+        ],
+        "40k-11e",
+      ),
+      data: [],
+    });
+
+    const card = { id: "c1", name: "Back Test", cardType: "unit", sections: { loadout: ["Sword"] } };
+
+    it("hides the flip button when the option is off", () => {
+      render(<DatasourceCardPreview card={card} activeDatasource={makeDatasource(false)} />);
+      expect(screen.queryByLabelText("Show back")).toBeNull();
+    });
+
+    it("flips to the back and returns to the front for another card", () => {
+      const datasource = makeDatasource(true);
+      const { container, rerender } = render(<DatasourceCardPreview card={card} activeDatasource={datasource} />);
+      expect(container.querySelector(".unit.front")).toBeTruthy();
+
+      fireEvent.click(screen.getByLabelText("Show back"));
+      expect(container.querySelector(".unit.back")).toBeTruthy();
+      expect(screen.getByText("Sword")).toBeInTheDocument();
+
+      rerender(<DatasourceCardPreview card={{ ...card, id: "c2" }} activeDatasource={datasource} />);
+      expect(container.querySelector(".unit.front")).toBeTruthy();
+    });
+
+    it("returns to the front when the option is turned off", () => {
+      const { container, rerender } = render(
+        <DatasourceCardPreview card={card} activeDatasource={makeDatasource(true)} />,
+      );
+      fireEvent.click(screen.getByLabelText("Show back"));
+      rerender(<DatasourceCardPreview card={card} activeDatasource={makeDatasource(false)} />);
+      expect(container.querySelector(".unit.front")).toBeTruthy();
+      expect(container.querySelector(".unit.back")).toBeNull();
+    });
   });
 });
