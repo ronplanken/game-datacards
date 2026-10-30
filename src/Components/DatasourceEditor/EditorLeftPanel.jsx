@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Database,
   Plus,
@@ -66,6 +66,19 @@ export const EditorLeftPanel = ({
   const [datasourceListOpen, setDatasourceListOpen] = useState(false);
   const [activeCardTypeTab, setActiveCardTypeTab] = useState(null);
   const [activeFactionId, setActiveFactionId] = useState(null);
+  const selectedCard = selectedItem?.type === "card" ? selectedItem.data : null;
+  const selectedCardFactionId = selectedCard?.faction_id;
+  const selectedCardTypeKey = selectedCard?.cardType;
+
+  useEffect(() => {
+    if (selectedCardFactionId) setActiveFactionId(selectedCardFactionId);
+  }, [selectedCardFactionId]);
+
+  useEffect(() => {
+    if (!selectedCardTypeKey) return;
+    const exists = activeDatasource?.schema?.cardTypes?.some((ct) => ct.key === selectedCardTypeKey);
+    if (exists) setActiveCardTypeTab(selectedCardTypeKey);
+  }, [selectedCardTypeKey, activeDatasource?.schema?.cardTypes]);
   // Sort order is tracked per card type so each tab keeps its own choice.
   const [sortOrders, setSortOrders] = useState({});
 

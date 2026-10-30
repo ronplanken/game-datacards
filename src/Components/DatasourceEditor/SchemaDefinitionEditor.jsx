@@ -6,6 +6,7 @@ import { StatsSchemaEditor } from "./editors/StatsSchemaEditor";
 import { WeaponsSchemaEditor } from "./editors/WeaponsSchemaEditor";
 import { AbilitiesSchemaEditor } from "./editors/AbilitiesSchemaEditor";
 import { SectionsSchemaEditor } from "./editors/SectionsSchemaEditor";
+import { UnitLinksSchemaEditor } from "./editors/UnitLinksSchemaEditor";
 import { MetadataSchemaEditor } from "./editors/MetadataSchemaEditor";
 import { UnitFieldsSchemaEditor } from "./editors/UnitFieldsSchemaEditor";
 import { FieldsSchemaEditor } from "./editors/FieldsSchemaEditor";
@@ -107,6 +108,7 @@ const CardTypeEditorWithSections = ({ cardType, activeDatasource, onUpdateDataso
               baseSystem={baseSystem}
             />
             <SectionsSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
+            <UnitLinksSchemaEditor schema={cardType.schema} onChange={handleCardTypeSchemaChange} />
             <MetadataSchemaEditor
               schema={cardType.schema}
               onChange={handleCardTypeSchemaChange}

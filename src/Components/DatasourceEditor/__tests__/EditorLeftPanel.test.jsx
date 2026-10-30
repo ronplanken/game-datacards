@@ -464,4 +464,36 @@ describe("EditorLeftPanel", () => {
       });
     });
   });
+
+  describe("following the selected card", () => {
+    const twoFactionDs = {
+      ...mockDatasource,
+      data: [
+        mockDatasource.data[0],
+        {
+          id: "faction-2",
+          name: "Second Faction",
+          datasheets: [{ id: "card-9", name: "Other Unit", cardType: "infantry", faction_id: "faction-2" }],
+        },
+      ],
+    };
+
+    it("switches to the faction and card type of a card selected elsewhere", () => {
+      const { rerender } = render(
+        <EditorLeftPanel datasources={mockDatasources} activeDatasource={twoFactionDs} selectedItem={null} />,
+      );
+      expect(screen.getByLabelText("Faction")).toHaveValue("faction-1");
+      expect(screen.queryByText("Other Unit")).not.toBeInTheDocument();
+
+      rerender(
+        <EditorLeftPanel
+          datasources={mockDatasources}
+          activeDatasource={twoFactionDs}
+          selectedItem={{ type: "card", data: twoFactionDs.data[1].datasheets[0] }}
+        />,
+      );
+      expect(screen.getByLabelText("Faction")).toHaveValue("faction-2");
+      expect(screen.getByText("Other Unit")).toBeInTheDocument();
+    });
+  });
 });

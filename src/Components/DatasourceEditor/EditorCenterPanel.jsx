@@ -13,6 +13,7 @@ export const EditorCenterPanel = ({
   onDismissPostCreate,
   onAddCardType,
   onSelectDatasource,
+  onSelectCard,
 }) => {
   const hasSelection = selectedItem && activeDatasource;
 
@@ -35,7 +36,11 @@ export const EditorCenterPanel = ({
         />
       )}
       {hasSelection && selectedItem.type === "card" ? (
-        <DatasourceCardPreview card={selectedItem.data} activeDatasource={activeDatasource} />
+        <DatasourceCardPreview
+          card={selectedItem.data}
+          activeDatasource={activeDatasource}
+          onSelectCard={onSelectCard}
+        />
       ) : hasSelection ? (
         <SchemaTreeView selectedItem={selectedItem} activeDatasource={activeDatasource} />
       ) : (

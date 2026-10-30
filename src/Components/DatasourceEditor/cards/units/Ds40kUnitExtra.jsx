@@ -5,6 +5,7 @@ import { UnitInvul } from "../../../Warhammer40k-10e/UnitCard/UnitInvul";
 import { tooltipProps as ruleTooltipProps } from "../../../Warhammer40k-10e/UnitCard/RuleTooltip";
 import { Tooltip } from "../../../Tooltip/Tooltip";
 import { resolveKeywordEntry } from "../../../../Helpers/customSchema.helpers";
+import { DsUnitLinks } from "../shared/DsUnitLinks";
 
 /**
  * Gets abilities for a given category from the card data.
@@ -60,7 +61,7 @@ const NameOnlyAbility = ({ name, glossary }) => {
  * @param {Array} [props.keywordGlossary] - Datasource-level keyword glossary; ability
  *   descriptions underline + tooltip glossary entries scoped to "abilities".
  */
-export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary }) => {
+export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary, cardTypeDef }) => {
   const categories = abilitiesSchema?.categories || [];
 
   const hasAnyAbilities = categories.some((cat) => {
@@ -142,6 +143,7 @@ export const Ds40kUnitExtra = ({ unit, abilitiesSchema, keywordGlossary }) => {
           {damaged.showDescription && <div className="description">{damaged.description}</div>}
         </div>
       )}
+      <DsUnitLinks card={unit} cardTypeDef={cardTypeDef} />
     </div>
   );
 };

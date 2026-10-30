@@ -622,6 +622,22 @@ describe("useDatasourceWizard", () => {
         expect(cardType.schema.weaponTypes.types).toHaveLength(1);
         expect(cardType.schema.abilities.hasInvulnerableSave).toBe(true);
         expect(cardType.schema.metadata.hasKeywords).toBe(true);
+        expect(cardType.schema.unitLinks).toBeUndefined();
+      });
+
+      it("includes unit link groups from the unit metadata step", () => {
+        const { result } = renderHook(() => useDatasourceWizard());
+
+        act(() => {
+          result.current.changeBaseType("unit");
+          result.current.updateStepData("unit-metadata", {
+            metadata: { hasKeywords: true, hasFactionKeywords: true, hasPoints: false, pointsFormat: "per-model" },
+            unitLinks: { groups: [{ key: "leads", label: "Leader" }] },
+          });
+        });
+
+        const cardType = result.current.assembleResult().schema.cardTypes[0];
+        expect(cardType.schema.unitLinks.groups).toEqual([{ key: "leads", label: "Leader" }]);
       });
 
       it("assembles rule card type with rules collection", () => {

@@ -17,6 +17,7 @@ import {
   Users,
   ScrollText,
   WrapText,
+  Link2,
 } from "lucide-react";
 import { useMobileList } from "../useMobileList";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
@@ -41,6 +42,7 @@ import { TextFieldSection } from "./sections/TextFieldSection";
 import { LeaderInfoSection } from "./sections/LeaderInfoSection";
 import { WargearOptionsSection } from "./sections/WargearOptionsSection";
 import { StylingSection } from "./sections/StylingSection";
+import { UnitLinksSection } from "./sections/UnitLinksSection";
 import { DrillDownView } from "./shared/DrillDownView";
 import { WeaponListView } from "./weapons/WeaponListView";
 import { WeaponProfileEditor } from "./weapons/WeaponProfileEditor";
@@ -66,6 +68,7 @@ const SECTION_COMPONENTS = {
   leaderInfo: LeaderInfoSection,
   wargearOptions: WargearOptionsSection,
   styling: StylingSection,
+  unitLinks: UnitLinksSection,
 };
 
 const SECTION_ICONS = {
@@ -86,6 +89,7 @@ const SECTION_ICONS = {
   leaderInfo: Users,
   wargearOptions: Wrench,
   styling: WrapText,
+  unitLinks: Link2,
 };
 
 export const MobileCardEditor = ({ isOpen, onClose, card, cardUuid, gameSystem, schema, factionColours }) => {

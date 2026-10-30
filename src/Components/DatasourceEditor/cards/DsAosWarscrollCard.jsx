@@ -6,6 +6,7 @@ import { DsAosHeader } from "./warscroll/DsAosHeader";
 import { DsAosWeapons } from "./warscroll/DsAosWeapons";
 import { DsAosAbilities } from "./warscroll/DsAosAbilities";
 import { DsAosSections } from "./warscroll/DsAosSections";
+import { DsUnitLinks } from "./shared/DsUnitLinks";
 import { useIndexedDBImages } from "../../../Hooks/useIndexedDBImages";
 
 /**
@@ -153,6 +154,8 @@ export const DsAosWarscrollCard = ({ card, cardTypeDef, cardStyle, faction, isMo
           />
 
           <DsAosSections card={card} sectionsSchema={schema.sections} grandAlliance={grandAlliance} />
+
+          <DsUnitLinks card={card} cardTypeDef={cardTypeDef} variant="aos" grandAlliance={grandAlliance} />
 
           <div style={{ flexGrow: 1 }}></div>
 
