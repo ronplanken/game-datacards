@@ -203,4 +203,19 @@ describe("Ds40kUnitCard", () => {
     const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={cardTypeDef} cardStyle={{}} />);
     expect(container.querySelector(".unit.front.auto-height")).toBeTruthy();
   });
+
+  it("renders unit link groups from the schema", () => {
+    const linkedDef = {
+      ...cardTypeDef,
+      schema: {
+        ...cardTypeDef.schema,
+        unitLinks: { groups: [{ key: "leads", label: "Leader", description: "This unit can lead:" }] },
+      },
+    };
+    const card = { name: "Captain", stats: [], abilities: [], unitLinks: { leads: [{ name: "Intercessors" }] } };
+    const { container } = render(<Ds40kUnitCard card={card} cardTypeDef={linkedDef} cardStyle={{}} />);
+    expect(container.querySelector(".extra .composition_container .leader")).toBeTruthy();
+    expect(screen.getByText("Leader")).toBeInTheDocument();
+    expect(screen.getByText("Intercessors")).toBeInTheDocument();
+  });
 });

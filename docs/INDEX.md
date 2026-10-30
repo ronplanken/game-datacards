@@ -20,6 +20,7 @@ description: Table of contents for all Game Datacards documentation files
 |------|-------------|
 | [custom datasource/datasource-schema-architecture.md](custom%20datasource/datasource-schema-architecture.md) | Canonical reference for the custom datasource schema (card types, weapons, abilities, metadata, glossary). |
 | [custom datasource/keyword-glossary.md](custom%20datasource/keyword-glossary.md) | Datasource-level keyword glossary — define `One Shot`, `Anti-`, etc. once and the weapon/ability renderers for 40k-10e, AoS, and Starcraft TMG expand them into styled tags, hover tooltips, and explanation rows. Entries declare which scopes they apply to. |
+| [custom datasource/unit-links.md](custom%20datasource/unit-links.md) | Link unit cards to other unit cards (Leader, Support, or any custom group). Covers the schema, card data, renderers, editors and click navigation. |
 
 ## Features
 

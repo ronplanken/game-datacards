@@ -764,6 +764,16 @@ function resolveCustomSections(card, schema) {
       });
     }
 
+    (s.unitLinks?.groups || []).forEach((group) => {
+      if (!group?.key) return;
+      sections.push({
+        key: `unitLinks-${group.key}`,
+        label: group.label || group.key,
+        type: "unitLinks",
+        config: { groupKey: group.key, description: group.description || "" },
+      });
+    });
+
     // Keywords
     if (metadata.hasKeywords || metadata.hasFactionKeywords) {
       sections.push({

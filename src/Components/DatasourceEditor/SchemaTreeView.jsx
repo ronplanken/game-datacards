@@ -17,6 +17,7 @@ import {
   Palette,
   Info,
   Users,
+  Link2,
 } from "lucide-react";
 
 const BASE_SYSTEM_LABELS = {
@@ -280,6 +281,26 @@ const UnitSchemaTree = ({ schema }) => {
                 <span className="schema-tree-field-key">{section.key}</span>
                 {section.label && <span className="schema-tree-field-label">{section.label}</span>}
                 <span className="schema-type-badge string">{section.format}</span>
+              </div>
+            </div>
+          ))}
+        </TreeNode>
+      )}
+
+      {schema.unitLinks?.groups?.length > 0 && (
+        <TreeNode
+          label="Unit Links"
+          icon={Link2}
+          defaultOpen={true}
+          badge={`${schema.unitLinks.groups.length}`}
+          depth={0}>
+          {schema.unitLinks.groups.map((group) => (
+            <div key={group.key} className="schema-tree-node">
+              <div className="schema-tree-node-header schema-tree-field" style={{ paddingLeft: 12 + 1 * 16 }}>
+                <span className="schema-tree-chevron-spacer" />
+                <span className="schema-tree-field-key">{group.key}</span>
+                {group.label && <span className="schema-tree-field-label">{group.label}</span>}
+                <span className="schema-type-badge string">links</span>
               </div>
             </div>
           ))}

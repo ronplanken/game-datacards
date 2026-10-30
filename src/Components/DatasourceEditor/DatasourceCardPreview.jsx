@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { resolveCardType } from "../Custom/CustomCardDisplay";
 import { CustomUnitCard } from "../Custom/CustomUnitCard";
 import { CustomRuleCard } from "../Custom/CustomRuleCard";
@@ -9,6 +9,7 @@ import { applyBooleanDisplayValues, applyUnitFieldDefaults } from "../../Helpers
 import { resolveDatasourceRenderer } from "./cards/resolveDatasourceRenderer";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { DatasourcePreviewToolbar } from "./DatasourcePreviewToolbar";
+import { UnitLinkProvider } from "./cards/shared/UnitLinkContext";
 
 /**
  * Renders a card preview in the Datasource Editor center panel.
@@ -19,7 +20,7 @@ import { DatasourcePreviewToolbar } from "./DatasourcePreviewToolbar";
  * 2. Otherwise → try native DS renderer for the base system
  * 3. Fall back to Custom* base components for the card's baseType
  */
-export const DatasourceCardPreview = ({ card, activeDatasource }) => {
+export const DatasourceCardPreview = ({ card, activeDatasource, onSelectCard }) => {
   const containerRef = useRef(null);
   const [isAutoFit, setIsAutoFit] = useState(true);
   const [zoom, setZoom] = useState(100);
@@ -34,6 +35,7 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
     () => (card?.templateId ? applyBooleanDisplayValues(rawTemplateCard, cardTypeDef) : card),
     [card, rawTemplateCard, cardTypeDef],
   );
+  const handleUnitLinkNavigate = useCallback((link) => onSelectCard?.(link.card), [onSelectCard]);
 
   if (!card || !activeDatasource) return null;
 
@@ -103,18 +105,20 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
   };
 
   return (
-    <DatasourceCardPreviewScaled
-      containerRef={containerRef}
-      cardType={cardType}
-      isAutoFit={isAutoFit}
-      zoom={zoom}
-      renderCard={renderCard}
-      onZoomChange={(z) => {
-        setIsAutoFit(false);
-        setZoom(z);
-      }}
-      onAutoFitToggle={() => setIsAutoFit(true)}
-    />
+    <UnitLinkProvider factions={activeDatasource.data} onNavigate={onSelectCard ? handleUnitLinkNavigate : undefined}>
+      <DatasourceCardPreviewScaled
+        containerRef={containerRef}
+        cardType={cardType}
+        isAutoFit={isAutoFit}
+        zoom={zoom}
+        renderCard={renderCard}
+        onZoomChange={(z) => {
+          setIsAutoFit(false);
+          setZoom(z);
+        }}
+        onAutoFitToggle={() => setIsAutoFit(true)}
+      />
+    </UnitLinkProvider>
   );
 };
 

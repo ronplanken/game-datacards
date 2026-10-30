@@ -249,6 +249,7 @@ export const DatasourceEditorPage = () => {
               onDismissPostCreate={handleDismissPostCreate}
               onAddCardType={handleAddCardType}
               onSelectDatasource={() => activeDatasource && selectDatasource(activeDatasource)}
+              onSelectCard={selectCard}
             />
           </Panel>
           <PanelResizeHandle className="designer-resizer vertical" />

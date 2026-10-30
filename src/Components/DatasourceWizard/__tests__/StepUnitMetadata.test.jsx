@@ -14,7 +14,7 @@ describe("StepUnitMetadata", () => {
     render(<StepUnitMetadata wizard={wizard} />);
 
     expect(screen.getByText("Unit Metadata")).toBeInTheDocument();
-    expect(screen.getByText(/Configure keyword and points settings/)).toBeInTheDocument();
+    expect(screen.getByText(/Configure keyword, points and unit link settings/)).toBeInTheDocument();
   });
 
   it("has the correct test id on the root element", () => {
@@ -258,5 +258,44 @@ describe("StepUnitMetadata", () => {
     render(<StepUnitMetadata wizard={wizard} />);
 
     expect(screen.getByTestId("dsw-unit-metadata-section")).toBeInTheDocument();
+  });
+
+  describe("unit links", () => {
+    it("renders Leader and Support toggles unchecked by default", () => {
+      render(<StepUnitMetadata wizard={createMockWizard()} />);
+      expect(screen.getByTestId("dsw-unit-links-leads-toggle")).not.toBeChecked();
+      expect(screen.getByTestId("dsw-unit-links-supports-toggle")).not.toBeChecked();
+    });
+
+    it("checks toggles for groups in step data", () => {
+      const wizard = createMockWizard({
+        "unit-metadata": { unitLinks: { groups: [{ key: "supports", label: "Support" }] } },
+      });
+      render(<StepUnitMetadata wizard={wizard} />);
+      expect(screen.getByTestId("dsw-unit-links-leads-toggle")).not.toBeChecked();
+      expect(screen.getByTestId("dsw-unit-links-supports-toggle")).toBeChecked();
+    });
+
+    it("adds groups in preset order and keeps edited groups", () => {
+      const wizard = createMockWizard();
+      render(<StepUnitMetadata wizard={wizard} />);
+      fireEvent.click(screen.getByTestId("dsw-unit-links-leads-toggle"));
+      const updater = wizard.updateStepData.mock.calls[0][1];
+      const result = updater({ unitLinks: { groups: [{ key: "supports", label: "Custom Support" }] } });
+      expect(result.unitLinks.groups.map((g) => g.key)).toEqual(["leads", "supports"]);
+      expect(result.unitLinks.groups[1].label).toBe("Custom Support");
+    });
+
+    it("removes a group when unchecked", () => {
+      const wizard = createMockWizard({
+        "unit-metadata": { unitLinks: { groups: [{ key: "leads", label: "Leader" }] } },
+      });
+      render(<StepUnitMetadata wizard={wizard} />);
+      fireEvent.click(screen.getByTestId("dsw-unit-links-leads-toggle"));
+      const updater = wizard.updateStepData.mock.calls[0][1];
+      const result = updater({ metadata: { hasKeywords: true }, unitLinks: { groups: [{ key: "leads" }] } });
+      expect(result.unitLinks.groups).toEqual([]);
+      expect(result.metadata).toEqual({ hasKeywords: true });
+    });
   });
 });
