@@ -1,4 +1,5 @@
 import { MarkdownSpanWrapDisplay } from "../../../MarkdownSpanWrapDisplay";
+import { getSectionSide } from "../../../../Helpers/customSchema.helpers";
 
 /**
  * Schema-driven sections renderer using native 40K CSS structure.
@@ -11,14 +12,16 @@ import { MarkdownSpanWrapDisplay } from "../../../MarkdownSpanWrapDisplay";
  * @param {Object} props
  * @param {Object} props.unit - The card data
  * @param {Object} props.sectionsSchema - The sections schema definition
+ * @param {Object} [props.schema] - The card type schema, used to resolve each section's side
+ * @param {"front" | "back"} [props.side] - The card side being rendered
  */
-export const Ds40kUnitSections = ({ unit, sectionsSchema }) => {
+export const Ds40kUnitSections = ({ unit, sectionsSchema, schema, side = "front" }) => {
   const sections = sectionsSchema?.sections || [];
 
   const renderedSections = sections
     .filter((section) => {
       const data = unit.sections?.[section.key];
-      return Array.isArray(data) && data.length > 0;
+      return Array.isArray(data) && data.length > 0 && getSectionSide(schema, section) === side;
     })
     .map((section) => {
       const data = unit.sections[section.key];

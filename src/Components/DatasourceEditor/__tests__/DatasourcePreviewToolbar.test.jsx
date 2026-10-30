@@ -21,9 +21,11 @@ vi.mock("antd", () => ({
       {overlay}
     </div>
   ),
+  Button: ({ icon, ...props }) => <button {...props}>{icon}</button>,
 }));
 
 vi.mock("lucide-react", () => ({
+  ArrowLeftRight: () => <span data-testid="flip-icon" />,
   Check: () => <span data-testid="check-icon" />,
   ZoomIn: () => <span data-testid="zoom-in-icon" />,
   ZoomOut: () => <span data-testid="zoom-out-icon" />,
@@ -126,5 +128,29 @@ describe("DatasourcePreviewToolbar", () => {
     );
     fireEvent.click(screen.getByTestId("zoom-50"));
     expect(onZoomChange).toHaveBeenCalledWith(50);
+  });
+
+  it("hides the flip button by default", () => {
+    render(
+      <DatasourcePreviewToolbar currentZoom={100} isAutoFit={true} onZoomChange={vi.fn()} onAutoFitToggle={vi.fn()} />,
+    );
+    expect(screen.queryByLabelText("Show back")).toBeNull();
+  });
+
+  it("shows the flip button and reports clicks", () => {
+    const onToggleSide = vi.fn();
+    render(
+      <DatasourcePreviewToolbar
+        currentZoom={100}
+        isAutoFit={true}
+        onZoomChange={vi.fn()}
+        onAutoFitToggle={vi.fn()}
+        showFrontBackToggle
+        side="back"
+        onToggleSide={onToggleSide}
+      />,
+    );
+    fireEvent.click(screen.getByLabelText("Show front"));
+    expect(onToggleSide).toHaveBeenCalled();
   });
 });

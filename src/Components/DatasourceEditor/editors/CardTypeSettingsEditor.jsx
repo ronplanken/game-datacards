@@ -1,8 +1,9 @@
 import React from "react";
 import { Tag } from "lucide-react";
-import { IconTag, IconResize, IconCategory } from "@tabler/icons-react";
+import { IconTag, IconResize, IconCategory, IconArrowsExchange } from "@tabler/icons-react";
 import { Section, CompactInput } from "../components";
 import { TemplateSelector, usePremiumFeatures } from "../../../Premium";
+import { applyBackSideDefaults, is40kBaseSystem } from "../../../Helpers/customSchema.helpers";
 
 const BASE_TYPE_LABELS = {
   unit: "Unit",
@@ -32,6 +33,13 @@ export const CardTypeSettingsEditor = ({
   const metadata = cardType.schema?.metadata;
   const showAutoResize = !!metadata && AUTO_RESIZE_SYSTEMS.includes(baseSystem) && typeof onUpdateSchema === "function";
   const showSubcategory = !!metadata && typeof onUpdateSchema === "function";
+  const showBackSide =
+    !!metadata && cardType.baseType === "unit" && is40kBaseSystem(baseSystem) && typeof onUpdateSchema === "function";
+
+  const handleBackSideChange = (val) => {
+    const schema = val ? applyBackSideDefaults(cardType.schema) : cardType.schema;
+    onUpdateSchema({ ...schema, metadata: { ...metadata, hasBackSide: val } });
+  };
 
   return (
     <Section title="Card Type" icon={Tag} defaultOpen={true}>
@@ -55,6 +63,16 @@ export const CardTypeSettingsEditor = ({
           type="toggle"
           value={!!metadata.hasAutoResize}
           onChange={(val) => onUpdateSchema({ ...cardType.schema, metadata: { ...metadata, hasAutoResize: val } })}
+        />
+      )}
+      {showBackSide && (
+        <CompactInput
+          label={<IconArrowsExchange size={10} stroke={1.5} />}
+          ariaLabel="Back side"
+          tooltip="Give cards a back. Wargear Options, Unit Composition and Loadout move there by default"
+          type="toggle"
+          value={!!metadata.hasBackSide}
+          onChange={handleBackSideChange}
         />
       )}
       {showSubcategory && (

@@ -372,10 +372,24 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `bannerCustomText` | string  | Custom banner text. Only applies when `bannerType` is `"custom"`.       |
 | `hasAutoResize`    | boolean | Starcraft TMG, 40k-10e and 40k-11e only. Exposes a per-card "Auto-resize card" toggle in the Basic Information panel. When the card sets `styling.autoHeight = true`, the rendered card grows beyond its standard 714px frame to fit overflowing content. |
 | `hasSubcategory`   | boolean | Exposes a per-card "Subcategory" text field in the Basic Information panel. When set, cards are grouped under their `subcategory` value (uncategorised cards under "Uncategorized") in the datasource editor card list. Toggled via the card type settings. |
+| `hasBackSide`      | boolean | `40k-10e` and `40k-11e` unit card types only. Off when absent. Gives unit cards a back face. See [Back side](#back-side). |
 | `hasCombatRole`    | boolean | Exposes a per-card free-text "Combat Role" field, stored as `card.combatRole`. Bindable as `{{combatRole}}`. |
 | `hasArmySlot`      | boolean | Exposes a per-card free-text "Army Slot" field, stored as `card.armySlot`. Bindable as `{{armySlot}}`. |
 | `pointsLabel`      | string  | Optional. Label shown next to the points value. |
 | `fields`           | array   | Optional. Extra per-card fields shown under Basic Information (see below). |
+
+#### Back side
+
+With `metadata.hasBackSide` on, unit cards on a 40K base system have a front and a back. Stats, weapons, keywords, faction keywords, the invulnerable save and the damaged block always stay on the front. Sections and ability categories can move, using an optional `side` property (`"front"` or `"back"`) on each entry of `sections.sections[]` and `abilities.categories[]`.
+
+The side of an item is resolved as follows:
+
+1. With `hasBackSide` off, everything is on the front. Stored `side` values are kept, so turning it on again restores them.
+2. An explicit `side` wins.
+3. A section without `side` goes on the back when its key is `wargear-options`, `unit-composition` or `loadout`, or its label is Wargear Options, Unit Composition or Loadout (case-insensitive).
+4. Everything else is on the front. Ability categories have no default back placement.
+
+Turning the option on writes `side: "back"` to the default sections that have no `side` yet. Cards with a Designer `templateId` keep one face. The mobile viewer has no flip control and shows both faces. The helpers are in `src/Helpers/customSchema.helpers.js` (`getSectionSide`, `getAbilityCategorySide`, `applyBackSideDefaults`).
 
 #### Extra fields (`metadata.fields`)
 

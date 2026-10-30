@@ -9,6 +9,7 @@ import { CustomUnitCard } from "./CustomUnitCard";
 import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
 import { TemplateRenderer } from "../../Premium";
 import { applyBooleanDisplayValues, applyUnitFieldDefaults } from "../../Helpers/customSchemaBindings";
+import { cardTypeHasBackSide } from "../../Helpers/customSchema.helpers";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -50,6 +51,17 @@ export const resolveCardType = (card, schema) => {
 
   return { cardTypeDef: null, baseType: null };
 };
+
+/**
+ * Whether a custom datasource card can be flipped. Cards drawn by a Designer
+ * template have one face, whatever their card type says.
+ *
+ * @param {Object} card - The card to check
+ * @param {Object} schema - The datasource schema
+ * @returns {boolean}
+ */
+export const customCardHasBackSide = (card, schema) =>
+  !card?.templateId && cardTypeHasBackSide(resolveCardType(card, schema).cardTypeDef, schema?.baseSystem);
 
 export const CustomCardDisplay = ({
   type,
@@ -135,6 +147,7 @@ export const CustomCardDisplay = ({
           isMobile={isMobile}
           onBack={isMobile ? onBack : undefined}
           keywordGlossary={schema.keywordGlossary}
+          side={side}
         />
       );
     }

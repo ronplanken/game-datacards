@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { resolveCardType } from "../Custom/CustomCardDisplay";
 import { CustomUnitCard } from "../Custom/CustomUnitCard";
 import { CustomRuleCard } from "../Custom/CustomRuleCard";
@@ -7,6 +7,7 @@ import { CustomStratagemCard } from "../Custom/CustomStratagemCard";
 import { TemplateRenderer } from "../../Premium";
 import { applyBooleanDisplayValues, applyUnitFieldDefaults } from "../../Helpers/customSchemaBindings";
 import { resolveDatasourceRenderer } from "./cards/resolveDatasourceRenderer";
+import { cardTypeHasBackSide } from "../../Helpers/customSchema.helpers";
 import { useAutoFitScale } from "../../Hooks/useAutoFitScale";
 import { DatasourcePreviewToolbar } from "./DatasourcePreviewToolbar";
 
@@ -23,9 +24,16 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
   const containerRef = useRef(null);
   const [isAutoFit, setIsAutoFit] = useState(true);
   const [zoom, setZoom] = useState(100);
+  const [side, setSide] = useState("front");
 
   const schema = activeDatasource?.schema;
   const { cardTypeDef, baseType } = resolveCardType(card, schema);
+  const hasBackSide = cardTypeHasBackSide(cardTypeDef, schema?.baseSystem);
+
+  useEffect(() => {
+    setSide("front");
+  }, [card?.id, card?.cardType, hasBackSide]);
+
   const rawTemplateCard = useMemo(
     () => (card?.templateId ? applyUnitFieldDefaults(card, cardTypeDef) : card),
     [card, cardTypeDef],
@@ -84,6 +92,7 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
           cardStyle={cardStyle}
           faction={cardFaction}
           keywordGlossary={schema.keywordGlossary}
+          side={side}
         />
       );
     }
@@ -114,6 +123,9 @@ export const DatasourceCardPreview = ({ card, activeDatasource }) => {
         setZoom(z);
       }}
       onAutoFitToggle={() => setIsAutoFit(true)}
+      showFrontBackToggle={hasBackSide}
+      side={side}
+      onToggleSide={() => setSide((current) => (current === "back" ? "front" : "back"))}
     />
   );
 };
@@ -130,6 +142,9 @@ const DatasourceCardPreviewScaled = ({
   renderCard,
   onZoomChange,
   onAutoFitToggle,
+  showFrontBackToggle,
+  side,
+  onToggleSide,
 }) => {
   const { autoScale } = useAutoFitScale(containerRef, cardType, isAutoFit);
   const effectiveScale = isAutoFit ? autoScale : zoom / 100;
@@ -158,6 +173,9 @@ const DatasourceCardPreviewScaled = ({
         isAutoFit={isAutoFit}
         onZoomChange={onZoomChange}
         onAutoFitToggle={onAutoFitToggle}
+        showFrontBackToggle={showFrontBackToggle}
+        side={side}
+        onToggleSide={onToggleSide}
       />
     </div>
   );

@@ -140,3 +140,10 @@ describe("mobileDatasourceConfig", () => {
     });
   });
 });
+
+describe("buildCustomConfig card faces", () => {
+  it("asks for both faces, since mobile has no flip control", () => {
+    const element = buildCustomConfig({ schema: { baseSystem: "40k-11e" } }).renderCard("viewer");
+    expect(element.props.side).toBe("frontAndBack");
+  });
+});

@@ -115,7 +115,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
         return <CustomCardDisplay />;
       default:
         if (isCustomDatasource) {
-          return <CustomCardDisplay type="viewer" />;
+          return <CustomCardDisplay type="viewer" side={side} />;
         }
         return null;
     }
@@ -198,7 +198,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
             {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
             {activeCard?.source === "starcraft-tmg" && <CustomCardDisplay />}
-            {isCustomDatasource && <CustomCardDisplay />}
+            {isCustomDatasource && <CustomCardDisplay side={side} />}
           </Row>
         </div>
         <div
@@ -222,7 +222,7 @@ export const Viewer = ({ showManifestationLores = false, showSpellLores = false 
             {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
             {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay type="viewer" />}
             {activeCard?.source === "starcraft-tmg" && <CustomCardDisplay type="viewer" />}
-            {isCustomDatasource && <CustomCardDisplay type="viewer" />}
+            {isCustomDatasource && <CustomCardDisplay type="viewer" side={side} />}
           </Row>
         </div>
       </Content>

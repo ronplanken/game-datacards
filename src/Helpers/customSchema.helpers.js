@@ -36,6 +36,84 @@ export const VALID_BASE_SYSTEMS = ["40k-10e", "40k-11e", "aos", "starcraft-tmg",
 // editions differ in the seeded keyword glossary, not in schema capabilities.
 export const is40kBaseSystem = (baseSystem) => baseSystem === "40k-10e" || baseSystem === "40k-11e";
 
+/** Sides an item of a two-sided unit card can be placed on. */
+export const VALID_CARD_SIDES = ["front", "back"];
+
+/** Section keys that go on the back of a two-sided unit card unless the author says otherwise. */
+export const DEFAULT_BACK_SECTION_KEYS = ["wargear-options", "unit-composition", "loadout"];
+
+/** Labels matched case-insensitively, so hand-made sections with these names get the same default. */
+const DEFAULT_BACK_SECTION_LABELS = ["wargear options", "unit composition", "loadout"];
+
+/**
+ * Whether a section goes on the back by default.
+ * @param {Object} section - A section definition
+ * @returns {boolean}
+ */
+export const isDefaultBackSection = (section) =>
+  DEFAULT_BACK_SECTION_KEYS.includes(section?.key) ||
+  DEFAULT_BACK_SECTION_LABELS.includes(section?.label?.trim().toLowerCase());
+
+/**
+ * Whether a unit card type schema has its back side turned on. Only 40K base systems have one.
+ * @param {Object} schema - The card type schema
+ * @param {string} baseSystem - The datasource base system
+ * @returns {boolean}
+ */
+export const schemaHasBackSide = (schema, baseSystem) =>
+  is40kBaseSystem(baseSystem) && schema?.metadata?.hasBackSide === true;
+
+/**
+ * Whether a card type renders a back face.
+ * @param {Object} cardTypeDef - The card type definition
+ * @param {string} baseSystem - The datasource base system
+ * @returns {boolean}
+ */
+export const cardTypeHasBackSide = (cardTypeDef, baseSystem) =>
+  cardTypeDef?.baseType === "unit" && schemaHasBackSide(cardTypeDef.schema, baseSystem);
+
+/**
+ * The side a section renders on. Everything is on the front while the back side is
+ * off; stored choices stay on the schema so turning it on again restores them.
+ * @param {Object} schema - The card type schema
+ * @param {Object} section - A section definition
+ * @returns {"front" | "back"}
+ */
+export const getSectionSide = (schema, section) => {
+  if (schema?.metadata?.hasBackSide !== true) return "front";
+  if (section?.side) return section.side === "back" ? "back" : "front";
+  return isDefaultBackSection(section) ? "back" : "front";
+};
+
+/**
+ * The side an ability category renders on. Unlike sections, categories have no
+ * default back placement.
+ * @param {Object} schema - The card type schema
+ * @param {Object} category - An ability category definition
+ * @returns {"front" | "back"}
+ */
+export const getAbilityCategorySide = (schema, category) =>
+  schema?.metadata?.hasBackSide === true && category?.side === "back" ? "back" : "front";
+
+/**
+ * Marks the default back sections on a schema. Sections that already have a side
+ * are left alone, so turning the back side off and on keeps the author's choices.
+ * @param {Object} schema - The card type schema
+ * @returns {Object} The updated schema
+ */
+export const applyBackSideDefaults = (schema) => {
+  if (!schema?.sections?.sections) return schema;
+  return {
+    ...schema,
+    sections: {
+      ...schema.sections,
+      sections: schema.sections.sections.map((section) =>
+        !section.side && isDefaultBackSection(section) ? { ...section, side: "back" } : section,
+      ),
+    },
+  };
+};
+
 // Valid ability formats
 export const VALID_ABILITY_FORMATS = ["name-only", "name-description"];
 
@@ -119,6 +197,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {string} key - Unique key for the section
  * @property {string} label - Human-readable label
  * @property {"list" | "richtext"} format - Display format for the section
+ * @property {"front" | "back"} [side] - Card side when metadata.hasBackSide is on (40K only)
  */
 
 /**
@@ -167,6 +246,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {boolean} [hasCost] - Whether abilities can carry cost chips like CP/BM (Starcraft TMG)
  * @property {boolean} [hasTriggerIcon] - Whether abilities can show a triggered-ability arrow glyph (Starcraft TMG)
  * @property {"movement" | "assault" | "combat" | "special"} [phaseStyle] - Optional phase-header styling (Starcraft TMG)
+ * @property {"front" | "back"} [side] - Card side when metadata.hasBackSide is on (40K only)
  */
 
 /**
@@ -186,6 +266,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {boolean} hasPoints - Whether cards have points costs
  * @property {PointsFormat} pointsFormat - Points display format
  * @property {boolean} [hasAutoResize] - Whether cards can opt into auto-resizing height to fit content (Starcraft TMG, 40k-10e)
+ * @property {boolean} [hasBackSide] - Whether unit cards get a back face (40k-10e, 40k-11e)
  * @property {boolean} [hasCombatRole] - Whether cards have a free-text combat role (stored as card.combatRole)
  * @property {boolean} [hasArmySlot] - Whether cards have a free-text army slot (stored as card.armySlot)
  * @property {string} [pointsLabel] - Display label for points
@@ -950,6 +1031,9 @@ const validateUnitSchema = (schema, path) => {
               `${sPath}: invalid "format" "${section.format}" (must be one of ${VALID_SECTION_FORMATS.join(", ")})`,
             );
           }
+          if (section.side !== undefined && !VALID_CARD_SIDES.includes(section.side)) {
+            errors.push(`${sPath}: invalid "side" "${section.side}" (must be one of ${VALID_CARD_SIDES.join(", ")})`);
+          }
           if (section.key) {
             if (sectionKeys.has(section.key)) {
               errors.push(`${sPath}: duplicate section key "${section.key}"`);
@@ -978,6 +1062,9 @@ const validateUnitSchema = (schema, path) => {
       errors.push(
         `${path}.metadata: invalid "pointsFormat" "${schema.metadata.pointsFormat}" (must be one of ${VALID_POINTS_FORMATS.join(", ")})`,
       );
+    }
+    if (schema.metadata.hasBackSide !== undefined && typeof schema.metadata.hasBackSide !== "boolean") {
+      errors.push(`${path}.metadata: "hasBackSide" must be a boolean`);
     }
     if (schema.metadata.pointsLabel !== undefined && typeof schema.metadata.pointsLabel !== "string") {
       errors.push(`${path}.metadata: "pointsLabel" must be a string`);

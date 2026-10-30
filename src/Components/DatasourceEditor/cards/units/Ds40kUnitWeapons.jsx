@@ -211,10 +211,11 @@ const Ds40kWeaponProfiles = ({ weapon, columns, glossary }) => {
  * @param {Object} props.unit - The card data
  * @param {Object} props.weaponTypes - The weaponTypes schema definition
  * @param {Object} [props.sectionsSchema] - The sections schema definition
+ * @param {Object} [props.schema] - The card type schema, used to keep back sections off the front
  * @param {Array} [props.keywordGlossary] - Datasource-level keyword glossary; the weapons
  *   renderer consumes entries whose `appliesTo` includes "weapons".
  */
-export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, keywordGlossary }) => {
+export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, schema, keywordGlossary }) => {
   if (!weaponTypes?.types?.length) {
     return null;
   }
@@ -238,7 +239,7 @@ export const Ds40kUnitWeapons = ({ unit, weaponTypes, sectionsSchema, keywordGlo
           />
         );
       })}
-      {sectionsSchema && <Ds40kUnitSections unit={unit} sectionsSchema={sectionsSchema} />}
+      {sectionsSchema && <Ds40kUnitSections unit={unit} sectionsSchema={sectionsSchema} schema={schema} />}
     </div>
   );
 };

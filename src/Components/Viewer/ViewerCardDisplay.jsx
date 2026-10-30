@@ -62,7 +62,7 @@ export const ViewerCardDisplay = ({ side = "front", type, containerRef }) => {
         return <CustomCardDisplay />;
       default:
         if (isCustomDatasource) {
-          return <CustomCardDisplay type="viewer" />;
+          return <CustomCardDisplay type="viewer" side={side} />;
         }
         return null;
     }
@@ -115,7 +115,7 @@ export const HiddenCardDisplay = React.forwardRef(function HiddenCardDisplay({ s
         return <CustomCardDisplay />;
       default:
         if (isCustomDatasource) {
-          return <CustomCardDisplay />;
+          return <CustomCardDisplay side={side} />;
         }
         return null;
     }

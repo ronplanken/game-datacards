@@ -78,11 +78,12 @@ export const CardView = ({
         {activeCard?.source === "necromunda" && <NecromundaCardDisplay />}
         {activeCard?.source === "aos" && <AgeOfSigmarCardDisplay />}
         {activeCard?.source === "starcraft-tmg" && <CustomCardDisplay />}
-        {activeCard?.source?.startsWith("custom-") && <CustomCardDisplay />}
+        {activeCard?.source?.startsWith("custom-") && <CustomCardDisplay side={activeCard.print_side || "front"} />}
       </Row>
       <FloatingToolbar
         activeCard={activeCard}
         settings={settings}
+        dataSource={dataSource}
         cardUpdated={cardUpdated}
         currentZoom={currentZoom}
         isAutoFit={isAutoFit}
