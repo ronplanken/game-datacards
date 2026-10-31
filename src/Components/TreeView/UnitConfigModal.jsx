@@ -143,14 +143,15 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   // Characters take regular enhancements; non-character units can take upgrades
   // (equipableByNonCharacter). Epic Heroes take neither.
-  const filteredEnhancements = isEpicHero
+  const unitEnhancements = isEpicHero
     ? []
-    : getFactionEnhancements(cardFaction)
-        .filter((enhancement) => isEnhancementInDetachments(enhancement, category?.detachments, selectedDetachment))
-        .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
+    : getFactionEnhancements(cardFaction).filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
+  const filteredEnhancements = unitEnhancements.filter((enhancement) =>
+    isEnhancementInDetachments(enhancement, category?.detachments, selectedDetachment),
+  );
 
   const showEnhancements = !isEpicHero && filteredEnhancements.length > 0;
-  const showDetachments = showEnhancements && detachments?.length > 1;
+  const showDetachments = unitEnhancements.length > 0 && detachments?.length > 1;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
   // Leaders may stand alone; Support units must be attached to an eligible squad
   // that is already in this list.

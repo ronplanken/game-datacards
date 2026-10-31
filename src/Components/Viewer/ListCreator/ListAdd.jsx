@@ -151,16 +151,14 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   // Filter enhancements for current detachment and card. Characters take regular
   // enhancements; non-character units can take enhancements flagged as upgrades
   // (equipableByNonCharacter). Epic Heroes take neither.
-  const getAvailableEnhancements = () => {
-    if (isEpicHero) return [];
-
-    return getFactionEnhancements(cardFaction)
-      .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
-      .filter((enhancement) => isUnitEnhancementEligible(activeCard, enhancement));
-  };
-
-  const availableEnhancements = getAvailableEnhancements();
+  const unitEnhancements = isEpicHero
+    ? []
+    : getFactionEnhancements(cardFaction).filter((enhancement) => isUnitEnhancementEligible(activeCard, enhancement));
+  const availableEnhancements = unitEnhancements.filter((enhancement) =>
+    isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment),
+  );
   const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
+  const showDetachments = unitEnhancements.length > 0 && detachments?.length > 1;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
 
   // Don't show for cards without array-based points (e.g., AoS warscrolls)
@@ -213,7 +211,7 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
           )}
 
           {/* Detachment Section */}
-          {showEnhancements && detachments?.length > 1 && (
+          {showDetachments && (
             <div className="list-add-section">
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
                 <span>{selectedDetachment || "Select detachment"}</span>

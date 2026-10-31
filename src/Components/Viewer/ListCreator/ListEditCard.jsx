@@ -171,16 +171,14 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
 
   // Characters take regular enhancements; non-character units can take upgrades
   // (equipableByNonCharacter). Epic Heroes take neither.
-  const getAvailableEnhancements = () => {
-    if (isEpicHero) return [];
-
-    return getFactionEnhancements(cardFaction)
-      .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
-      .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
-  };
-
-  const availableEnhancements = getAvailableEnhancements();
+  const unitEnhancements = isEpicHero
+    ? []
+    : getFactionEnhancements(cardFaction).filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
+  const availableEnhancements = unitEnhancements.filter((enhancement) =>
+    isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment),
+  );
   const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
+  const showDetachments = unitEnhancements.length > 0 && detachments?.length > 1;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
   // Leaders/support units can attach to eligible squads already in this list.
   // Support units MUST be attached; leaders may stand alone.
@@ -242,7 +240,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           )}
 
           {/* Detachment Section */}
-          {showEnhancements && detachments?.length > 1 && (
+          {showDetachments && (
             <div className="list-add-section">
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
                 <span>{selectedDetachment || "Select detachment"}</span>
