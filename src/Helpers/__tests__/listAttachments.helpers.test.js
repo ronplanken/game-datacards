@@ -158,6 +158,19 @@ describe("attachesTo qualifiers", () => {
     const list = [plainChosen, khorneChosen];
     expect(getEligibleSquads(abaddon, list, { detachment: "Pactbound Zealots" }).map((c) => c.uuid)).toEqual(["c2"]);
   });
+
+  it("accepts several army detachments", () => {
+    const armyWithZealots = { detachment: ["Slaves to Darkness", "Pactbound Zealots"] };
+    expect(canAttachTo(abaddon, plainChosen, armyWithZealots)).toBe(false);
+    expect(canAttachTo(abaddon, khorneChosen, armyWithZealots)).toBe(true);
+    expect(canAttachTo(abaddon, plainChosen, { detachment: ["Slaves to Darkness", "Veterans of the Long War"] })).toBe(
+      true,
+    );
+  });
+
+  it("is permissive when the army detachment list is empty", () => {
+    expect(canAttachTo(abaddon, plainChosen, { detachment: [] })).toBe(true);
+  });
 });
 
 describe("enhancement-granted targets (Murdermind)", () => {

@@ -19,6 +19,7 @@ import {
   getListFactionId,
   getArmyContext,
   repriceListCards,
+  getUnitDetachmentOptions,
 } from "../listRoster.helpers";
 
 const det = (name, points, id, disposition) => ({
@@ -391,5 +392,72 @@ describe("isDetachmentSelectionOverBudget", () => {
   it("does not extend the solo allowance to other battle sizes", () => {
     const fourDp = det("Oversized", 4, "d");
     expect(isDetachmentSelectionOverBudget([fourDp], "strikeForce")).toBe(true);
+  });
+});
+
+describe("getUnitDetachmentOptions", () => {
+  const faction = {
+    detachments: [det("Cryptek Conclave", 2, "a"), det("Awakened Dynasty", 2, "b")],
+    enhancements: [
+      { name: "Atomic Disintegrators", keywords: ["Cryptek"], detachment: "Cryptek Conclave" },
+      { name: "Veil of Darkness", keywords: ["Necrons"], detachment: "Awakened Dynasty" },
+      {
+        name: "Mortality Shroud",
+        keywords: ["Necrons"],
+        detachment: "Awakened Dynasty",
+        equipableByNonCharacter: true,
+      },
+    ],
+  };
+  const overlord = { keywords: ["Character"], factions: ["Necrons"] };
+  const warriors = { keywords: ["Infantry"], factions: ["Necrons"] };
+  const nightbringer = { keywords: ["Character", "Epic Hero"], factions: ["Necrons"] };
+
+  it("offers the picker when the selected detachment has nothing for the unit", () => {
+    const options = getUnitDetachmentOptions(faction, overlord, undefined, "Cryptek Conclave");
+    expect(options.enhancements).toEqual([]);
+    expect(options.showDetachmentPicker).toBe(true);
+    expect(options.attachmentDetachment).toBe("Cryptek Conclave");
+  });
+
+  it("lists the selected detachment's enhancements for the unit", () => {
+    const options = getUnitDetachmentOptions(faction, overlord, undefined, "Awakened Dynasty");
+    expect(options.enhancements.map((e) => e.name)).toEqual(["Veil of Darkness", "Mortality Shroud"]);
+  });
+
+  it("offers non-characters only their upgrades", () => {
+    const options = getUnitDetachmentOptions(faction, warriors, undefined, "Awakened Dynasty");
+    expect(options.enhancements.map((e) => e.name)).toEqual(["Mortality Shroud"]);
+    expect(options.showDetachmentPicker).toBe(true);
+  });
+
+  it("hides the picker when no detachment has anything for the unit", () => {
+    const options = getUnitDetachmentOptions(faction, nightbringer, undefined, "Awakened Dynasty");
+    expect(options.enhancements).toEqual([]);
+    expect(options.showDetachmentPicker).toBe(false);
+  });
+
+  it("hides the picker for a faction with a single detachment", () => {
+    const single = { ...faction, detachments: [det("Awakened Dynasty", 2, "b")] };
+    expect(getUnitDetachmentOptions(single, overlord, undefined, "Awakened Dynasty").showDetachmentPicker).toBe(false);
+  });
+
+  it("uses the army detachments instead of the picker once the roster has some", () => {
+    const army = [det("Awakened Dynasty", 2, "b")];
+    const options = getUnitDetachmentOptions(faction, overlord, army, "Cryptek Conclave");
+    expect(options.showDetachmentPicker).toBe(false);
+    expect(options.enhancements.map((e) => e.name)).toEqual(["Veil of Darkness", "Mortality Shroud"]);
+    expect(options.attachmentDetachment).toEqual(["Awakened Dynasty"]);
+  });
+
+  it("returns nothing for a missing faction or card", () => {
+    expect(getUnitDetachmentOptions(undefined, overlord, undefined, undefined)).toEqual({
+      enhancements: [],
+      showDetachmentPicker: false,
+      attachmentDetachment: undefined,
+    });
+    expect(getUnitDetachmentOptions(faction, undefined, undefined, "Awakened Dynasty").showDetachmentPicker).toBe(
+      false,
+    );
   });
 });

@@ -11,17 +11,12 @@ import {
   getSelectablePointsTiers,
   isSamePointsTier,
 } from "../../../Helpers/listPoints.helpers";
-import {
-  cardHasKeyword,
-  getFactionEnhancements,
-  isEnhancementAtCopyLimit,
-  isUnitEnhancementEligible,
-} from "../../../Helpers/listCategories.helpers";
+import { cardHasKeyword, isEnhancementAtCopyLimit } from "../../../Helpers/listCategories.helpers";
 import {
   getArmyFactionKeywords,
   getDetachmentNamesEn,
   getListFactionId,
-  isEnhancementInDetachments,
+  getUnitDetachmentOptions,
 } from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useUmami } from "../../../Hooks/useUmami";
@@ -151,14 +146,13 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   // Filter enhancements for current detachment and card. Characters take regular
   // enhancements; non-character units can take enhancements flagged as upgrades
   // (equipableByNonCharacter). Epic Heroes take neither.
-  const unitEnhancements = isEpicHero
-    ? []
-    : getFactionEnhancements(cardFaction).filter((enhancement) => isUnitEnhancementEligible(activeCard, enhancement));
-  const availableEnhancements = unitEnhancements.filter((enhancement) =>
-    isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment),
+  const { enhancements: availableEnhancements, showDetachmentPicker: showDetachments } = getUnitDetachmentOptions(
+    cardFaction,
+    activeCard,
+    armyDetachments,
+    selectedDetachment,
   );
   const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
-  const showDetachments = unitEnhancements.length > 0 && detachments?.length > 1;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
 
   // Don't show for cards without array-based points (e.g., AoS warscrolls)

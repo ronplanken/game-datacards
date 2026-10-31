@@ -317,6 +317,20 @@ describe("UnitConfigModal", () => {
     expect(screen.getByText("Leader Relic")).toBeInTheDocument();
   });
 
+  it("hides the detachment picker and uses the roster detachments once the list has them", () => {
+    const card = {
+      ...baseCard,
+      faction_id: "faction-2",
+      keywords: ["Character"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    const category = { ...baseCategory, detachments: [{ name: { en: "Det Y" } }] };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
+
+    expect(screen.queryByText("Detachment")).not.toBeInTheDocument();
+    expect(screen.getByText("Leader Relic")).toBeInTheDocument();
+  });
+
   it("hides the detachment picker when no detachment has an enhancement for the unit", () => {
     const card = {
       ...baseCard,
