@@ -1,0 +1,5 @@
+{
+  "title": "Detachment choice stays available on units",
+  "body": "Some characters lost the detachment and enhancement options when the selected detachment had no enhancement for them. The detachment picker now always shows when another detachment has one.",
+  "severity": "info"
+}

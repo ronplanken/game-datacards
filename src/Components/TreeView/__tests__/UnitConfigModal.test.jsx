@@ -3,31 +3,51 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { UnitConfigModal } from "../UnitConfigModal";
 
 // Mock hooks
+const mockDataSourceStorage = vi.hoisted(() => ({
+  dataSource: {
+    data: [
+      {
+        id: "faction-1",
+        detachments: [{ name: "Det A" }, { name: "Det B" }],
+        enhancements: [
+          {
+            name: "Enhancement 1",
+            cost: 20,
+            keywords: ["Character"],
+            detachment: "Det A",
+          },
+          {
+            name: "Enhancement 2",
+            cost: 15,
+            keywords: ["Character"],
+            detachment: "Det B",
+          },
+        ],
+      },
+      {
+        id: "faction-2",
+        detachments: [{ name: "Det X" }, { name: "Det Y" }],
+        enhancements: [
+          {
+            name: "Psyker Relic",
+            cost: 25,
+            keywords: ["Psyker"],
+            detachment: "Det X",
+          },
+          {
+            name: "Leader Relic",
+            cost: 10,
+            keywords: ["Character"],
+            detachment: "Det Y",
+          },
+        ],
+      },
+    ],
+  },
+}));
+
 vi.mock("../../../Hooks/useDataSourceStorage", () => ({
-  useDataSourceStorage: () => ({
-    dataSource: {
-      data: [
-        {
-          id: "faction-1",
-          detachments: [{ name: "Det A" }, { name: "Det B" }],
-          enhancements: [
-            {
-              name: "Enhancement 1",
-              cost: 20,
-              keywords: ["Character"],
-              detachment: "Det A",
-            },
-            {
-              name: "Enhancement 2",
-              cost: 15,
-              keywords: ["Character"],
-              detachment: "Det B",
-            },
-          ],
-        },
-      ],
-    },
-  }),
+  useDataSourceStorage: () => mockDataSourceStorage,
 }));
 
 const mockUpdateSettings = vi.fn();
@@ -277,6 +297,36 @@ describe("UnitConfigModal", () => {
     render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={category} onSave={vi.fn()} />);
     const enhancement1 = screen.getByText("Enhancement 1").closest(".ucm-enhancement-option");
     expect(enhancement1).toHaveClass("disabled");
+  });
+
+  it("keeps the detachment picker when the current detachment has no enhancement for the unit", () => {
+    const card = {
+      ...baseCard,
+      faction_id: "faction-2",
+      keywords: ["Character"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+
+    expect(screen.getByText("Detachment")).toBeInTheDocument();
+    expect(screen.queryByText("Leader Relic")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Det X"));
+    fireEvent.click(screen.getByText("Det Y"));
+
+    expect(screen.getByText("Leader Relic")).toBeInTheDocument();
+  });
+
+  it("hides the detachment picker when no detachment has an enhancement for the unit", () => {
+    const card = {
+      ...baseCard,
+      faction_id: "faction-2",
+      keywords: ["Vehicle"],
+      unitSize: { models: 5, cost: 90 },
+    };
+    render(<UnitConfigModal isOpen={true} onClose={vi.fn()} card={card} category={baseCategory} onSave={vi.fn()} />);
+
+    expect(screen.queryByText("Detachment")).not.toBeInTheDocument();
   });
 });
 

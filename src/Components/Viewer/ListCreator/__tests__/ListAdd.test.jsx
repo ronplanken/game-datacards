@@ -19,6 +19,16 @@ const k40Faction = {
   enhancements: [{ name: "Artificer Armour", cost: 15, keywords: ["Adeptus Astartes"] }],
 };
 
+const twoDetachmentFaction = {
+  id: "faction-3",
+  name: "Necrons",
+  detachments: [{ name: "Cryptek Conclave" }, { name: "Awakened Dynasty" }],
+  enhancements: [
+    { name: "Atomic Disintegrators", cost: 20, keywords: ["Cryptek"], detachment: "Cryptek Conclave" },
+    { name: "Veil of Darkness", cost: 25, keywords: ["Necrons"], detachment: "Awakened Dynasty" },
+  ],
+};
+
 let activeCard;
 
 vi.mock("../../../../Hooks/useCardStorage", () => ({
@@ -26,7 +36,7 @@ vi.mock("../../../../Hooks/useCardStorage", () => ({
 }));
 
 vi.mock("../../../../Hooks/useDataSourceStorage", () => ({
-  useDataSourceStorage: () => ({ dataSource: { data: [aosFaction, k40Faction] } }),
+  useDataSourceStorage: () => ({ dataSource: { data: [aosFaction, k40Faction, twoDetachmentFaction] } }),
 }));
 
 vi.mock("../../../../Hooks/useSettingsStorage", () => ({
@@ -89,6 +99,22 @@ describe("ListAdd", () => {
     render(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
     expect(screen.getByText("Add Captain")).toBeInTheDocument();
     expect(screen.getByText("Artificer Armour")).toBeInTheDocument();
+  });
+
+  it("keeps the detachment picker when the current detachment has no enhancement for the unit", () => {
+    activeCard = {
+      name: "Overlord",
+      id: "unit-4",
+      faction_id: "faction-3",
+      source: "40k-11e",
+      keywords: ["Character"],
+      factions: ["Necrons"],
+      points: [{ models: 1, cost: 90 }],
+    };
+
+    render(<ListAdd isVisible={true} setIsVisible={vi.fn()} />);
+    expect(screen.getByText("Cryptek Conclave")).toBeInTheDocument();
+    expect(screen.queryByText("Veil of Darkness")).not.toBeInTheDocument();
   });
 
   it("keeps a chosen unit size selected on a list with no detachments", () => {
