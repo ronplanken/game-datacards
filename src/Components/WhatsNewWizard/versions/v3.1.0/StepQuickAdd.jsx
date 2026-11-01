@@ -25,10 +25,7 @@ export const StepQuickAdd = () => (
         </div>
       </div>
     </div>
-    <p className="wnw-feature-description">
-      Add units directly from the datasource list to a category with a single click. Streamline your workflow when
-      building card collections.
-    </p>
+    <p className="wnw-feature-description">Add units from the datasource list to a category with one click.</p>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />

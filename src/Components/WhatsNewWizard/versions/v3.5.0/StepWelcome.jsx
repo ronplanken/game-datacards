@@ -16,8 +16,8 @@ export const StepWelcome = () => (
     </div>
     <h2 className="wnw-welcome-title">Datasource Editor</h2>
     <p className="wnw-welcome-subtitle">
-      Build custom card structures for any game system. Define your own stats, weapons, abilities, and fields — then
-      fill in cards that match your exact format.
+      Build your own card structure for any game system. Define the stats, weapons, abilities and fields. Then fill in
+      your cards.
     </p>
   </div>
 );

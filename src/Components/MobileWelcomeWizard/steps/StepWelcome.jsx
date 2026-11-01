@@ -7,7 +7,7 @@ export const StepWelcome = () => {
       <header className="mww-welcome-header">
         <img src={logo} alt="Game Datacards" className="mww-welcome-logo" />
         <h1 className="mww-welcome-title">Welcome to Game Datacards</h1>
-        <p className="mww-welcome-subtitle">Your army lists and unit cards, always in your pocket.</p>
+        <p className="mww-welcome-subtitle">View your army lists and unit cards on your phone.</p>
       </header>
 
       <div className="mww-welcome-features">

@@ -57,7 +57,7 @@ export const StepMobileEditor = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Keywords and Points</span>
           <span className="mwnw-feature-item-desc">
-            Add or remove keywords, adjust points, and works with your custom datasources too
+            Add or remove keywords and change points. This also works with your own datasources
           </span>
         </div>
       </div>

@@ -47,8 +47,8 @@ export const StepSharing = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">A Fresh Start</span>
           <span className="mwnw-feature-item-desc">
-            We&apos;ve moved to a new backend to make sharing faster. Some older share links may no longer work — if
-            you&apos;re missing anything, let us know on Discord and we&apos;ll help
+            We moved sharing to a new backend to make it faster. Some older share links may no longer work. If something
+            is missing, tell us on Discord and we will help
           </span>
         </div>
       </div>

@@ -72,9 +72,8 @@ export const StepPremiumAnnouncement = () => {
         </div>
       </div>
       <p className="wnw-feature-description">
-        Thank you for being part of the Game Datacards community. If you&apos;d like to support ongoing development, you
-        can now optionally upgrade to a premium account for expanded cloud sync limits. All existing features remain
-        completely free.
+        Thank you for being part of the Game Datacards community. You can now upgrade to a premium account to support
+        development. It raises your cloud sync limits. All existing features stay free.
       </p>
 
       {/* Free tier emphasis */}

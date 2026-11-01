@@ -14,7 +14,7 @@ import {
 } from "../../../Helpers/customSchema.helpers";
 
 const MATCH_TYPE_TOOLTIP =
-  "Match type — exact matches the full keyword, prefix matches the start, parameterized matches the keyword plus a value";
+  "Match type. Exact matches the full keyword. Prefix matches the start. Parameterized matches the keyword plus a value.";
 
 const MATCH_TYPE_OPTIONS = [
   { value: "exact", label: "Exact" },
@@ -28,7 +28,7 @@ const DISPLAY_MODE_OPTIONS = [
 ];
 
 const DISPLAY_MODE_TOOLTIP =
-  "Weapons only — explanation shows a description row below the weapon profile, tooltip shows the description on hover over the inline keyword tag.";
+  "Weapons only. Explanation adds a description row below the weapon profile. Tooltip shows the description when you hover over the keyword tag.";
 
 // Per-keyword presentation. Modelled as dropdowns (not toggles) so extra
 // casings/bracket shapes/weights can be added later without a data migration.
@@ -36,7 +36,7 @@ const STYLE_CONTROLS = [
   {
     field: "casing",
     icon: CaseUpper,
-    tooltip: "Casing — how the keyword text is capitalised",
+    tooltip: "How the keyword text is capitalised",
     options: [
       { value: "uppercase", label: "Uppercase" },
       { value: "normal", label: "Normal" },
@@ -45,7 +45,7 @@ const STYLE_CONTROLS = [
   {
     field: "brackets",
     icon: Brackets,
-    tooltip: "Brackets — wrap the keyword in square brackets or leave it bare",
+    tooltip: "Show the keyword in square brackets or without them",
     options: [
       { value: "square", label: "Square [ ]" },
       { value: "none", label: "None" },
@@ -54,7 +54,7 @@ const STYLE_CONTROLS = [
   {
     field: "weight",
     icon: Bold,
-    tooltip: "Weight — render the keyword bold or at normal weight",
+    tooltip: "Show the keyword in bold or normal weight",
     options: [
       { value: "bold", label: "Bold" },
       { value: "normal", label: "Normal" },
@@ -147,7 +147,7 @@ const GlossaryEntry = ({ entry, index, updateEntry, updateKeyAndName, setApplies
         onChange={(val) => updateEntry(index, "key", val)}
       />
       <div className="props-compact-input props-compact-input--auto props-glossary-scopes-input">
-        <Tooltip content="Applies to — render scopes that may use this keyword" placement="top">
+        <Tooltip content="The card sections that can use this keyword" placement="top">
           <span className="props-compact-label">
             <Link size={12} />
           </span>

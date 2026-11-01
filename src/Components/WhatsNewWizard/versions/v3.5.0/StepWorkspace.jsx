@@ -17,8 +17,7 @@ export const StepWorkspace = () => (
       <h2 className="wnw-feature-title">The Workspace</h2>
     </div>
     <p className="wnw-feature-description">
-      A dedicated editor for building and managing your datasources. Define card types, configure fields, and preview
-      cards — all in one place.
+      An editor for building and managing your datasources. Define card types, set up fields and preview cards.
     </p>
 
     <div className="wnw-feature-highlights">

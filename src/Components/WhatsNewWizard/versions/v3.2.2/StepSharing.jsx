@@ -16,7 +16,7 @@ export const StepSharing = () => (
         <h2 className="wnw-feature-title">Sharing, Rebuilt</h2>
       </div>
     </div>
-    <p className="wnw-feature-description">Sharing has been rebuilt from the ground up for speed and reliability.</p>
+    <p className="wnw-feature-description">Sharing has been rebuilt. It is faster and more reliable.</p>
 
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
@@ -40,8 +40,8 @@ export const StepSharing = () => (
         <div>
           <strong>A Fresh Start</strong>
           <p>
-            We&apos;ve moved to a new backend to make sharing faster. Some older share links may no longer work — if
-            you&apos;re missing anything, let us know on Discord and we&apos;ll help.
+            We moved sharing to a new backend to make it faster. Some older share links may no longer work. If something
+            is missing, tell us on Discord and we will help.
           </p>
         </div>
       </div>

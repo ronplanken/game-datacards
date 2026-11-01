@@ -1,20 +1,20 @@
 ## Elements
 
-Elements are the building blocks of your template.
+A template is made of elements: text, images, shapes and frames.
 
 ### Text
 
 <IconLabel icon="Type" label="Text" />
 
-Add headings, labels, stat values, or any other text. Bind a text element to game data — see Data Binding.
+Add headings, labels, stat values, or any other text. You can bind a text element to game data. See Data Binding.
 
 #### Typography
 
 Choose the font family from the app's own bundled fonts, a curated set of
 Google Fonts, or the ten classic system fonts, along with weight, size,
 alignment and fill colour. You can also set line height, letter spacing,
-italic, underline and a text transform (uppercase, lowercase or capitalize)
-— uppercase is what most 40K headings use. Vertical alignment controls
+italic, underline and a text transform (uppercase, lowercase or capitalize).
+Most 40K headings use uppercase. Vertical alignment controls
 where the text sits inside its box (top, middle or bottom) when the box is
 taller than the text itself.
 
@@ -22,9 +22,9 @@ taller than the text itself.
 
 A text element's Sizing mode controls how its box responds to its content:
 
-- **Auto width** — The box grows or shrinks to fit the text on one line.
-- **Auto height** — The box keeps a fixed width and grows or shrinks in height as text wraps.
-- **Fixed** — The box keeps the size you set. Set an overflow behaviour for text that doesn't fit: Clip (cut off at the box edge) or Shrink to fit (the font size steps down until the text fits, without changing what you typed).
+- **Auto width**: the box grows or shrinks to fit the text on one line.
+- **Auto height**: the box keeps a fixed width and grows or shrinks in height as text wraps.
+- **Fixed**: the box keeps the size you set. Set an overflow behaviour for text that doesn't fit: Clip (cut off at the box edge) or Shrink to fit (the font size steps down until the text fits, without changing what you typed).
 
 ### Images
 
@@ -37,9 +37,9 @@ file or place a placeholder to fill in later.
 
 Choose how the image fills its box:
 
-- **Fill** — Stretches the image to exactly match the box, ignoring its aspect ratio.
-- **Contain** — Scales the image to fit entirely inside the box, keeping its aspect ratio; you may see empty space on two sides.
-- **Cover** — Scales the image to fill the box completely, keeping its aspect ratio; the parts that don't fit are cropped.
+- **Fill**: stretches the image to exactly match the box, ignoring its aspect ratio.
+- **Contain**: scales the image to fit inside the box and keeps its aspect ratio. Two sides may show empty space.
+- **Cover**: scales the image to fill the box and keeps its aspect ratio. Parts that do not fit are cropped.
 
 #### Crop
 
@@ -60,13 +60,13 @@ bound source has nothing to show, the same as for text.
 
 Add visual structure with basic shapes:
 
-- <IconLabel icon="Square" label="Rectangle" /> — Set fill color, border, and rounded corners
-- <IconLabel icon="Circle" label="Circle" /> — Set fill color and border
-- <IconLabel icon="Minus" label="Line" /> — Set color and thickness
-- <IconLabel icon="Pentagon" label="Polygon" /> — A shape with its own corner points. The styled presets use polygons for the header banner and the notched stat boxes. Resizing keeps the shape in proportion.
+- <IconLabel icon="Square" label="Rectangle" />: set fill color, border, and rounded corners
+- <IconLabel icon="Circle" label="Circle" />: set fill color and border
+- <IconLabel icon="Minus" label="Line" />: set color and thickness
+- <IconLabel icon="Pentagon" label="Polygon" />: a shape with its own corner points. The styled presets use polygons for the header banner and the notched stat boxes. Resizing keeps the shape in proportion.
 
 ### Frames
 
 <IconLabel icon="Frame" label="Frame" />
 
-Frames are special container elements that group other elements together. They are the key to building structured layouts. See the Frames and Auto-Layout section for details.
+Frames are containers that group other elements. Use them to build structured layouts. See the Frames and Auto-Layout section for details.

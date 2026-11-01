@@ -22,8 +22,7 @@ export const StepMobileEditor = () => (
         <span>How it works</span>
       </div>
       <p className="wnw-sub-free-text">
-        Add a card to your list, tap it to open, then tap the pencil icon in the top corner. That&apos;s it &mdash; no
-        desktop needed.
+        Add a card to your list and tap it. Then tap the pencil icon in the top corner.
       </p>
     </div>
 

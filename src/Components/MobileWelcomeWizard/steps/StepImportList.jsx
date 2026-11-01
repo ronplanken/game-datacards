@@ -8,7 +8,7 @@ export const StepImportList = () => {
           <Upload />
         </div>
         <h1 className="mww-info-title">Import Your Army List</h1>
-        <p className="mww-info-subtitle">Easily import your army list from the official Warhammer 40,000 App.</p>
+        <p className="mww-info-subtitle">Import your army list from the official Warhammer 40,000 App.</p>
       </header>
 
       <div className="mww-info-steps">

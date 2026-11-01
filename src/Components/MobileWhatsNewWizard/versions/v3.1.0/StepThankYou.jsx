@@ -13,9 +13,9 @@ export const StepThankYou = () => (
     <div className="mwnw-thankyou-icon">
       <CheckCircle2 size={40} />
     </div>
-    <h2 className="mwnw-thankyou-title">You&apos;re All Set!</h2>
+    <h2 className="mwnw-thankyou-title">You&apos;re all set</h2>
     <p className="mwnw-thankyou-text">
-      Thank you for using Game Datacards. Have feedback or suggestions? Join our Discord community!
+      Thank you for using Game Datacards. Send feedback and suggestions on our Discord.
     </p>
     <a href="https://discord.gg/anfn4qTYC4" target="_blank" rel="noreferrer" className="mwnw-discord-link">
       <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2" alt="Join our Discord" />

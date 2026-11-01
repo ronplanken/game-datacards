@@ -17,7 +17,7 @@ export const StepCustomColours = () => (
       </div>
       <h2 className="wnw-feature-title">Custom Colours</h2>
     </div>
-    <p className="wnw-feature-description">Take full control of your card appearance with custom colour options.</p>
+    <p className="wnw-feature-description">Set your own colours on any card.</p>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />

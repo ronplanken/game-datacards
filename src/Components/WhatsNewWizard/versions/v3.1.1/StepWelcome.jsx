@@ -17,8 +17,7 @@ export const StepWelcome = () => (
     </div>
     <h2 className="wnw-welcome-title">Welcome to Version 3.1.1</h2>
     <p className="wnw-welcome-subtitle">
-      This update brings a reorganized datasource structure for Space Marines and other chapters, making it easier to
-      find the detachments you need.
+      The Space Marines datasource is now organized by chapter. Each chapter&apos;s detachments are easier to find.
     </p>
   </div>
 );

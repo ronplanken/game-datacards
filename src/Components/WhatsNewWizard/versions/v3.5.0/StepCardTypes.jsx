@@ -17,8 +17,8 @@ export const StepCardTypes = () => (
       <h2 className="wnw-feature-title">Card Types & Fields</h2>
     </div>
     <p className="wnw-feature-description">
-      Each datasource can hold multiple card types — units, rules, enhancements, and stratagems. You define exactly what
-      fields each type contains.
+      Each datasource can hold several card types: units, rules, enhancements and stratagems. You choose the fields for
+      each type.
     </p>
 
     <div className="wnw-feature-highlights">

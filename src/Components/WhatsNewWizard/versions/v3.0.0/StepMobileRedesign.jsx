@@ -17,9 +17,7 @@ export const StepMobileRedesign = () => (
       </div>
       <h2 className="wnw-feature-title">Mobile Redesign</h2>
     </div>
-    <p className="wnw-feature-description">
-      The mobile viewer has been completely redesigned for a better experience on your phone or tablet.
-    </p>
+    <p className="wnw-feature-description">The mobile viewer has a new design for phones and tablets.</p>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />
@@ -32,7 +30,7 @@ export const StepMobileRedesign = () => (
         <div className="wnw-highlight-dot" />
         <div>
           <strong>Better Touch Interactions</strong>
-          <p>Swipe, tap, and navigate with ease</p>
+          <p>Swipe and tap to move between cards</p>
         </div>
       </div>
       <div className="wnw-highlight-item">

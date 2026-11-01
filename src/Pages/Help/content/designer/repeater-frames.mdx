@@ -8,8 +8,8 @@ for every item in that array.
 
 ### Creating a repeater
 
-The quickest way is to drag a list from the Data tab — Ranged Weapons,
-Abilities, Keywords, and so on — onto the canvas. This creates a frame with
+The quickest way is to drag a list from the Data tab onto the canvas, for
+example Ranged Weapons, Abilities or Keywords. This creates a frame with
 "Repeat" already enabled, its data source already set, and one text child per
 field in that list, laid out in a row.
 
@@ -17,11 +17,11 @@ You can also build one by hand:
 
 1. Draw a frame and add the elements you want repeated (one row of content).
 2. Open the frame's properties and turn on "Enable repeater".
-3. Choose a **data source** — which list to repeat over, for example Ranged
+3. Choose a **data source**: the list to repeat over, for example Ranged
    Weapons or Other Abilities. The list depends on the template's format;
    a custom datasource offers the lists its own schema defines.
-4. Choose a **direction** — Vertical stacks copies top to bottom, Horizontal
-   lays them out left to right.
+4. Choose a **direction**. Vertical stacks copies top to bottom. Horizontal
+   places them left to right.
 5. Optionally set **Max Items** to cap how many copies are shown, even if the
    unit has more entries than that.
 
@@ -30,21 +30,20 @@ Switch on Preview to see the repeater filled with a real unit's data.
 ### Editing the row
 
 Whatever you put inside the frame becomes the template for every row. Bind
-each child element to a field of the item, either by dragging a field from
-the Data tab (which shows that repeater's own fields first, since it knows
-you are working inside it) or by typing the field name directly, for example
-`{{name}}` or `{{range}}` for a weapon row. You do not include the list name
-or an index — each copy already resolves its fields against its own item.
+each child element to a field of the item. Drag a field from the Data tab,
+which lists the repeater's own fields first. Or type the field name, for
+example `{{name}}` or `{{range}}` for a weapon row. Do not include the list
+name or an index. Each copy reads its fields from its own item.
 
 ### $index, $count, $first and $last
 
 Inside a repeater, four extra values are available alongside the item's own
 fields:
 
-- `{{$index}}` — the row's position, starting at 0
-- `{{$count}}` — the total number of rows being drawn
-- `{{$first}}` — true on the first row
-- `{{$last}}` — true on the last row
+- `{{$index}}`: the row's position, starting at 0
+- `{{$count}}`: the total number of rows being drawn
+- `{{$first}}`: true on the first row
+- `{{$last}}`: true on the last row
 
 These are useful for numbering rows or for a binding that should only show
 something on the first or last item.
@@ -68,12 +67,11 @@ fit. Horizontal repeaters give every column the height of the tallest one.
 
 A repeater frame can take part in the card's vertical flow, so the rest of
 the card moves out of the way as it grows or shrinks. This is managed from
-the **Sections** list in the card's own properties, not from the frame — see
-Frames and Auto-Layout for how the list works. Turning Push on for a
-repeater's row in that list makes every section after it in the same column
-move down when the repeater draws more rows than it has space for by
-default, and move back up when it draws fewer. This is what keeps a weapons
-table from overlapping the abilities text below it as the unit's weapon
-count changes from card to card. A frame's own properties panel shows a
+the **Sections** list in the card's own properties, not from the frame. See
+Frames and Auto-Layout for how the list works. Turn Push on for the
+repeater's row in that list. When the repeater draws more rows than fit,
+every section after it in the same column moves down. When it draws fewer,
+they move back up. A weapons table then does not overlap the abilities text
+below it. A frame's own properties panel shows a
 read-only summary of its place in the flow, with a link to jump to the
 card's Sections list.

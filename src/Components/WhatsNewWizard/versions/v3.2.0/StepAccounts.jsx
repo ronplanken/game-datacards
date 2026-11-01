@@ -18,7 +18,7 @@ export const StepAccounts = () => (
       <h2 className="wnw-feature-title">User Accounts</h2>
     </div>
     <p className="wnw-feature-description">
-      Create a free account to unlock cloud sync and keep your datacards safe across devices.
+      Create a free account to use cloud sync. Your datacards are then backed up and available on all your devices.
     </p>
     <div className="wnw-mock-preview">
       <MockHeaderBar highlight="account" />

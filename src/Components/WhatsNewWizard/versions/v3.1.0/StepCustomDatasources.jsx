@@ -33,7 +33,7 @@ export const StepCustomDatasources = () => (
         <div className="wnw-highlight-dot" />
         <div>
           <strong>Export as Datasource</strong>
-          <p>Share your custom card categories as datasource files for others to enjoy and use</p>
+          <p>Share your card categories as datasource files</p>
         </div>
       </div>
       <div className="wnw-highlight-item">
