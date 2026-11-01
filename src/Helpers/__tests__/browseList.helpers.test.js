@@ -6,6 +6,7 @@ import {
   groupSheetsByRole,
   groupStratagemsByDetachment,
   is40kBrowseSource,
+  stripBrowseTags,
 } from "../browseList.helpers";
 
 // 10th edition keywords are plain strings, 11th edition keywords are
@@ -196,5 +197,30 @@ describe("section collapse keys", () => {
   it("falls back to the display name for rows built without a key", () => {
     expect(getSectionKey({ type: "role", name: "Heroes" })).toBe("Heroes");
     expect(getCardSectionKey({ name: "Warboss", role: "Character" })).toBe("Character");
+  });
+});
+
+describe("stripBrowseTags", () => {
+  it("removes the section tags groupSheetsByRole adds", () => {
+    const [, row] = groupSheetsByRole([sheet11e("Overlord", "Character")]);
+    const card = stripBrowseTags(row);
+    expect(card).not.toHaveProperty("role");
+    expect(card).not.toHaveProperty("roleKey");
+    expect(card.name).toBe("Overlord");
+  });
+
+  it("removes the section tags groupStratagemsByDetachment adds", () => {
+    const [, row] = groupStratagemsByDetachment([{ id: "s1", name: "Strat", detachment: "Gladius" }]);
+    expect(stripBrowseTags(row)).toEqual({ id: "s1", name: "Strat", detachment: "Gladius" });
+  });
+
+  it("keeps a role that is card data rather than a browser tag", () => {
+    expect(stripBrowseTags({ name: "Captain", role: "HQ" })).toEqual({ name: "Captain", role: "HQ" });
+  });
+
+  it("returns the input untouched when there is nothing to strip", () => {
+    const card = { name: "Captain" };
+    expect(stripBrowseTags(card)).toBe(card);
+    expect(stripBrowseTags(undefined)).toBeUndefined();
   });
 });

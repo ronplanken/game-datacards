@@ -1,3 +1,4 @@
+import { stripBrowseTags } from "./browseList.helpers";
 import { getBrowsableEnhancements } from "./faction.helpers";
 import { SUPPORTED_LANGUAGES, localize } from "./localization.helpers";
 import { filterPointsTiersForArmy, getSelectablePointsTiers, isSamePointsTier } from "./listPoints.helpers";
@@ -228,10 +229,11 @@ const diffValue = (before, after, path, out, language) => {
 export const diffCardContent = (savedCard, sourceCard, language = "en") => {
   const changes = [];
   if (!savedCard || !sourceCard) return changes;
-  const keys = [...new Set([...Object.keys(savedCard), ...Object.keys(sourceCard)])].filter(
+  const saved = stripBrowseTags(savedCard);
+  const keys = [...new Set([...Object.keys(saved), ...Object.keys(sourceCard)])].filter(
     (key) => !INSTANCE_FIELDS.includes(key) && !DISPLAY_FLAGS.includes(key),
   );
-  keys.forEach((key) => diffValue(savedCard[key], sourceCard[key], [key], changes, language));
+  keys.forEach((key) => diffValue(saved[key], sourceCard[key], [key], changes, language));
   return changes;
 };
 

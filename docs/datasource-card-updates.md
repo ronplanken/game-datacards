@@ -92,6 +92,13 @@ the instance fields listed below. It returns a flat list of
 - Display toggles at any depth are ignored: `active`, `showAbility`,
   `showDescription`, `showDamagedMarker`, `showDamagedAbility`, `showName`,
   `showInfo`, `showInvulnerableSave`, `showAtTop`.
+- The 40K faction browser tags each row with `role` and `roleKey` for its
+  collapsible sections (`browseList.helpers.js`). Cards are stored without
+  them (`stripBrowseTags` in `App.jsx` and `useMobileList.addDatacard`), and
+  cards saved before that fix still carry them. The diff strips both fields
+  from the saved card when `roleKey` is present, so those cards are not
+  reported as changed. A `role` without `roleKey` is card data and is still
+  compared.
 
 ## What an update keeps
 

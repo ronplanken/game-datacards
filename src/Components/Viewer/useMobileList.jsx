@@ -5,6 +5,7 @@ import { useCardStorage } from "../../Hooks/useCardStorage";
 import { migrateListsToCategories } from "../../Helpers/listMigration.helpers";
 import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
 import { getArmyContext, repriceListCards } from "../../Helpers/listRoster.helpers";
+import { stripBrowseTags } from "../../Helpers/browseList.helpers";
 
 const MobileListContext = React.createContext(undefined);
 
@@ -137,7 +138,7 @@ export const MobileListProvider = (props) => {
     const updatedCards = [
       ...category.cards,
       {
-        ...datacard,
+        ...stripBrowseTags(datacard),
         unitSize: points,
         selectedEnhancement: enhancement,
         isWarlord,

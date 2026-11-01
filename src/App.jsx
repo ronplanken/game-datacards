@@ -17,6 +17,7 @@ import { useCardStorage } from "./Hooks/useCardStorage";
 import { useDataSourceStorage } from "./Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "./Hooks/useSettingsStorage";
 import { CustomCardEditor } from "./Premium";
+import { stripBrowseTags } from "./Helpers/browseList.helpers";
 import "./style.less";
 
 const { Content } = Layout;
@@ -66,7 +67,7 @@ function App() {
     let lastCard = null;
     cards.forEach((cardContent) => {
       const newCard = {
-        ...cardContent,
+        ...stripBrowseTags(cardContent),
         isCustom: true,
         uuid: uuidv4(),
       };

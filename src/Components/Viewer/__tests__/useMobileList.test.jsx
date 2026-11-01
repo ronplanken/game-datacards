@@ -120,6 +120,25 @@ describe("useMobileList", () => {
       expect(mockMarkCategoryPending).toHaveBeenCalledWith("cat-1");
     });
 
+    it("drops the faction browser section tags from the stored card", () => {
+      mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
+
+      const { result } = renderHook(() => useMobileList(), { wrapper });
+
+      act(() => {
+        result.current.addDatacard(
+          { name: "Overlord", role: "Character", roleKey: "role:Character" },
+          { cost: 90 },
+          null,
+          false,
+        );
+      });
+
+      const [updatedCat] = mockUpdateCategory.mock.calls[0];
+      expect(updatedCat.cards[0]).not.toHaveProperty("role");
+      expect(updatedCat.cards[0]).not.toHaveProperty("roleKey");
+    });
+
     it("should not call updateCategory when no datacard is provided", () => {
       mockCategories = [{ uuid: "cat-1", name: "Test", type: "list", dataSource: "40k-10e", cards: [] }];
 
