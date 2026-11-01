@@ -292,5 +292,12 @@
     "body": "Cards added from the faction list showed a removed Role in the datasource compare. Fresh cards now match, and cards added earlier no longer show that change.",
     "severity": "info",
     "timestamp": 1793536468
+  },
+  {
+    "version": "3.13.15",
+    "title": "Hide the enhancement on 11th Edition cards",
+    "body": "A new Show enhancement switch in the card editor hides the enhancement block on a unit's datacard. It only appears when the unit has an enhancement.",
+    "severity": "info",
+    "timestamp": 1793536468
   }
 ]

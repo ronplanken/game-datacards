@@ -1,5 +1,0 @@
-{
-  "title": "Hide the enhancement on 11th Edition cards",
-  "body": "A new Show enhancement switch in the card editor hides the enhancement block on a unit's datacard. It only appears when the unit has an enhancement.",
-  "severity": "info"
-}
