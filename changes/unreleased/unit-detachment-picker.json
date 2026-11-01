@@ -1,0 +1,5 @@
+{
+  "title": "Detachment choice stays available on units",
+  "body": "Some characters lost the detachment and enhancement options when the selected detachment had nothing for them. The picker now stays available, and lists with army detachments use those for enhancements and leader attachments.",
+  "severity": "info"
+}

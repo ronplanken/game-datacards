@@ -15,12 +15,7 @@ import {
   isSamePointsTier,
   setWargearQuantity,
 } from "../../Helpers/listPoints.helpers";
-import {
-  cardHasKeyword,
-  getFactionEnhancements,
-  isEnhancementAtCopyLimit,
-  isUnitEnhancementEligible,
-} from "../../Helpers/listCategories.helpers";
+import { cardHasKeyword, isEnhancementAtCopyLimit } from "../../Helpers/listCategories.helpers";
 import {
   getEligibleSquads,
   isAttachableLeader,
@@ -31,7 +26,7 @@ import {
   getArmyFactionKeywords,
   getDetachmentNamesEn,
   getListFactionId,
-  isEnhancementInDetachments,
+  getUnitDetachmentOptions,
 } from "../../Helpers/listRoster.helpers";
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
@@ -143,21 +138,20 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
 
   // Characters take regular enhancements; non-character units can take upgrades
   // (equipableByNonCharacter). Epic Heroes take neither.
-  const filteredEnhancements = isEpicHero
-    ? []
-    : getFactionEnhancements(cardFaction)
-        .filter((enhancement) => isEnhancementInDetachments(enhancement, category?.detachments, selectedDetachment))
-        .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
+  const {
+    enhancements: filteredEnhancements,
+    showDetachmentPicker: showDetachments,
+    attachmentDetachment,
+  } = getUnitDetachmentOptions(cardFaction, card, category?.detachments, selectedDetachment);
 
   const showEnhancements = !isEpicHero && filteredEnhancements.length > 0;
-  const showDetachments = showEnhancements && detachments?.length > 1;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
   // Leaders may stand alone; Support units must be attached to an eligible squad
   // that is already in this list.
   const mustAttach = requiresAttachment(card);
   const eligibleSquads = isAttachableLeader(card)
     ? getEligibleSquads(card, category?.cards || [], {
-        detachment: selectedDetachment,
+        detachment: attachmentDetachment,
         enhancement: selectedEnhancement,
       })
     : [];
@@ -168,7 +162,7 @@ export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => 
     const next = selectedEnhancement?.name === enhancement?.name ? undefined : enhancement;
     setSelectedEnhancement(next);
     setSelectedAttachment((current) =>
-      keepEligibleAttachment(card, current, category?.cards, { detachment: selectedDetachment, enhancement: next }),
+      keepEligibleAttachment(card, current, category?.cards, { detachment: attachmentDetachment, enhancement: next }),
     );
   };
 

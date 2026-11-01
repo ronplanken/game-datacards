@@ -85,11 +85,11 @@ export const getEnhancementAttachesTo = (enhancement) => {
  * Detachment qualifiers are ignored when the army detachment is unknown, so the
  * builder stays permissive until a detachment is chosen.
  */
-const entryApplies = (entry, squadCard, detachmentName) => {
-  const detachment = norm(detachmentName);
-  if (detachment) {
-    if (entry.requiresDetachment && norm(entry.requiresDetachment) !== detachment) return false;
-    if (entry.excludesDetachment && norm(entry.excludesDetachment) === detachment) return false;
+const entryApplies = (entry, squadCard, detachmentNames) => {
+  const detachments = (Array.isArray(detachmentNames) ? detachmentNames : [detachmentNames]).map(norm).filter(Boolean);
+  if (detachments.length > 0) {
+    if (entry.requiresDetachment && !detachments.includes(norm(entry.requiresDetachment))) return false;
+    if (entry.excludesDetachment && detachments.includes(norm(entry.excludesDetachment))) return false;
   }
   if (entry.requiresKeyword && !cardHasKeyword(squadCard, localize(entry.requiresKeyword, "en"))) return false;
   return true;
@@ -103,7 +103,7 @@ const entryApplies = (entry, squadCard, detachmentName) => {
  * @param {Object} leaderCard
  * @param {Object} squadCard
  * @param {Object} [options]
- * @param {string} [options.detachment] - the army's detachment name, if chosen
+ * @param {string|string[]} [options.detachment] - the army's detachment name(s), if chosen
  * @param {Object|string} [options.enhancement] - the leader's selected enhancement, if any
  */
 export const canAttachTo = (leaderCard, squadCard, { detachment, enhancement } = {}) => {

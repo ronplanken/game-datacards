@@ -9,7 +9,7 @@
 // "Select Detachments" (25.04).
 
 import { localize } from "./localization.helpers";
-import { isUpgradeEnhancement } from "./listCategories.helpers";
+import { getFactionEnhancements, isUnitEnhancementEligible, isUpgradeEnhancement } from "./listCategories.helpers";
 import { filterPointsTiersForArmy, getSelectablePointsTiers, isSamePointsTier } from "./listPoints.helpers";
 
 /**
@@ -253,6 +253,21 @@ export const isEnhancementInDetachments = (enhancement, detachments, fallbackDet
   const pool = names.length > 0 ? names : [fallbackDetachment].filter(Boolean);
   if (pool.length === 0) return true;
   return pool.some((name) => String(name).toLowerCase() === String(required).toLowerCase());
+};
+
+export const getUnitDetachmentOptions = (faction, card, armyDetachments, selectedDetachment) => {
+  const unitEnhancements = getFactionEnhancements(faction).filter((enhancement) =>
+    isUnitEnhancementEligible(card, enhancement),
+  );
+  const armyDetachmentNames = getDetachmentNamesEn(armyDetachments);
+  const hasArmyDetachments = armyDetachmentNames.length > 0;
+  return {
+    enhancements: unitEnhancements.filter((enhancement) =>
+      isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment),
+    ),
+    showDetachmentPicker: !hasArmyDetachments && unitEnhancements.length > 0 && (faction?.detachments?.length || 0) > 1,
+    attachmentDetachment: hasArmyDetachments ? armyDetachmentNames : selectedDetachment,
+  };
 };
 
 /**

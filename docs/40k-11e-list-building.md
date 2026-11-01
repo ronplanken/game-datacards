@@ -141,6 +141,12 @@ would make the second overwrite the first.
 - Enhancements from **any** selected detachment are offered
   (`isEnhancementInDetachments`); enhancements with no detachment are always
   available.
+- `getUnitDetachmentOptions` drives the unit config UI on desktop
+  (`UnitConfigModal`) and mobile (`ListAdd`, `ListEditCard`). While the list has
+  no roster detachments, the unit shows a per-unit detachment picker whenever
+  any of the faction's detachments has an enhancement or Upgrade for it, even if
+  the currently picked one has none. Once the roster holds detachments, that
+  picker is hidden and the roster decides which enhancements are offered.
 
 ## Leaders and Support units
 
@@ -153,7 +159,11 @@ requiresKeyword }`:
 
 `canAttachTo` honours the detachment/keyword restrictions, `getEligibleSquads`
 lists the valid squads already in the list, and `groupListForDisplay` nests
-attached units under their squad.
+attached units under their squad. The `detachment` option takes one name or a
+list of names. The config UI passes the roster detachments when the list has
+them, and the per-unit picker's detachment otherwise. With several detachments,
+`requiresDetachment` is met when any of them matches and `excludesDetachment`
+blocks when any of them matches.
 
 Some enhancements add targets to their bearer, such as Murdermind, whose card
 lists SUPPORT: Skorpekh, Lokhust, Ophydian and Lokhust Heavy Destroyers. The

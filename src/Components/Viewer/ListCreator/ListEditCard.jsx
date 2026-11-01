@@ -15,12 +15,7 @@ import {
   isSamePointsTier,
   setWargearQuantity,
 } from "../../../Helpers/listPoints.helpers";
-import {
-  cardHasKeyword,
-  getFactionEnhancements,
-  isEnhancementAtCopyLimit,
-  isUnitEnhancementEligible,
-} from "../../../Helpers/listCategories.helpers";
+import { cardHasKeyword, isEnhancementAtCopyLimit } from "../../../Helpers/listCategories.helpers";
 import {
   getAttachmentType,
   getEligibleSquads,
@@ -32,7 +27,7 @@ import {
   getArmyFactionKeywords,
   getDetachmentNamesEn,
   getListFactionId,
-  isEnhancementInDetachments,
+  getUnitDetachmentOptions,
 } from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
 import { useMobileList } from "../useMobileList";
@@ -119,6 +114,19 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
     setSelectedWargear((current) => clampWargearQuantities(current, selectedUnitSize));
   }, [selectedUnitSize]);
 
+  const isCharacter = cardHasKeyword(card, "Character");
+  const isEpicHero = cardHasKeyword(card, "Epic Hero");
+  const showWarlord = isCharacter || isEpicHero;
+
+  // Characters take regular enhancements; non-character units can take upgrades
+  // (equipableByNonCharacter). Epic Heroes take neither.
+  const {
+    enhancements: availableEnhancements,
+    showDetachmentPicker: showDetachments,
+    attachmentDetachment,
+  } = getUnitDetachmentOptions(cardFaction, card, armyDetachments, selectedDetachment);
+  const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
+
   const handleClose = () => setIsVisible(false);
 
   const handleDetachmentSelect = (detachment) => {
@@ -154,7 +162,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
     setSelectedEnhancement(next);
     setSelectedAttachment((current) =>
       keepEligibleAttachment(card, current, lists[selectedList]?.cards, {
-        detachment: selectedDetachment,
+        detachment: attachmentDetachment,
         enhancement: next,
       }),
     );
@@ -165,22 +173,6 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const isEnhancementDisabled = (enhancement) =>
     isEnhancementAtCopyLimit(enhancement, lists[selectedList]?.cards, card?.uuid);
 
-  const isCharacter = cardHasKeyword(card, "Character");
-  const isEpicHero = cardHasKeyword(card, "Epic Hero");
-  const showWarlord = isCharacter || isEpicHero;
-
-  // Characters take regular enhancements; non-character units can take upgrades
-  // (equipableByNonCharacter). Epic Heroes take neither.
-  const getAvailableEnhancements = () => {
-    if (isEpicHero) return [];
-
-    return getFactionEnhancements(cardFaction)
-      .filter((enhancement) => isEnhancementInDetachments(enhancement, armyDetachments, selectedDetachment))
-      .filter((enhancement) => isUnitEnhancementEligible(card, enhancement));
-  };
-
-  const availableEnhancements = getAvailableEnhancements();
-  const showEnhancements = !isEpicHero && availableEnhancements.length > 0;
   const enhancementLabel = isCharacter ? "Enhancement" : "Upgrade";
   // Leaders/support units can attach to eligible squads already in this list.
   // Support units MUST be attached; leaders may stand alone.
@@ -188,7 +180,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const mustAttach = requiresAttachment(card);
   const eligibleSquads = isAttachableLeader(card)
     ? getEligibleSquads(card, lists[selectedList]?.cards || [], {
-        detachment: selectedDetachment,
+        detachment: attachmentDetachment,
         enhancement: selectedEnhancement,
       })
     : [];
@@ -242,7 +234,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
           )}
 
           {/* Detachment Section */}
-          {showEnhancements && detachments?.length > 1 && (
+          {showDetachments && (
             <div className="list-add-section">
               <button className="list-add-select" onClick={() => setDetachmentPickerOpen(true)}>
                 <span>{selectedDetachment || "Select detachment"}</span>
