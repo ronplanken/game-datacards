@@ -285,5 +285,12 @@
     "body": "Some characters lost the detachment and enhancement options when the selected detachment had nothing for them. The picker now stays available, and lists with army detachments use those for enhancements and leader attachments.",
     "severity": "info",
     "timestamp": 1793531590
+  },
+  {
+    "version": "3.13.14",
+    "title": "Compare no longer flags fresh cards as changed",
+    "body": "Cards added from the faction list showed a removed Role in the datasource compare. Fresh cards now match, and cards added earlier no longer show that change.",
+    "severity": "info",
+    "timestamp": 1793536468
   }
 ]

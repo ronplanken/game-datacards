@@ -1,5 +1,0 @@
-{
-  "title": "Compare no longer flags fresh cards as changed",
-  "body": "Cards added from the faction list showed a removed Role in the datasource compare. Fresh cards now match, and cards added earlier no longer show that change.",
-  "severity": "info"
-}
