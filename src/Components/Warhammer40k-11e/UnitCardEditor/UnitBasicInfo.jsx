@@ -82,6 +82,15 @@ export function UnitBasicInfo() {
           onChange={(value) => updateActiveCard({ ...activeCard, combatPatrol: value })}
         />
       </Form.Item>
+      {activeCard.selectedEnhancement && (
+        <Form.Item label={"Show enhancement"}>
+          <Switch
+            aria-label="Show enhancement"
+            checked={activeCard.showEnhancement !== false}
+            onChange={(value) => updateActiveCard({ ...activeCard, showEnhancement: value })}
+          />
+        </Form.Item>
+      )}
       {hasCardDesigner && designerEnabled && (
         <Form.Item label={"Template"}>
           <TemplateSelector

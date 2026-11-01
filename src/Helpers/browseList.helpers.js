@@ -96,6 +96,12 @@ export const groupStratagemsByDetachment = (stratagems, language = "en") => {
   });
 };
 
+export const stripBrowseTags = (card) => {
+  if (!card || card.roleKey === undefined) return card;
+  const { role, roleKey, ...rest } = card;
+  return rest;
+};
+
 const isCardRow = (row) => Boolean(row) && !row.type;
 
 /**

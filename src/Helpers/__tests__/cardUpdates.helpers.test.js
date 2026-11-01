@@ -129,6 +129,19 @@ describe("diffCardContent", () => {
     );
   });
 
+  it("ignores the enhancement visibility toggle", () => {
+    expect(diffCardContent(saved({ showEnhancement: false }), intercessors)).toEqual([]);
+  });
+
+  it("ignores the section tags a card picked up in the faction browser", () => {
+    expect(diffCardContent(saved({ role: "Character", roleKey: "role:Character" }), intercessors)).toEqual([]);
+  });
+
+  it("still compares a role that is part of the card data", () => {
+    const sourceWithRole = { ...intercessors, role: "Troops" };
+    expect(diffCardContent(saved({ role: "Elites" }), sourceWithRole)).toHaveLength(1);
+  });
+
   it("ignores display toggles the user changed", () => {
     const card = saved();
     card.rangedWeapons[0].active = false;
