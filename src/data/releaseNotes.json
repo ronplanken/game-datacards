@@ -278,5 +278,12 @@
     "body": "On 11th edition cards, the Warhammer Legends label no longer overlaps the points when a single price is shown with a large models count.",
     "severity": "info",
     "timestamp": 1793103753
+  },
+  {
+    "version": "3.13.13",
+    "title": "Detachment choice stays available on units",
+    "body": "Some characters lost the detachment and enhancement options when the selected detachment had nothing for them. The picker now stays available, and lists with army detachments use those for enhancements and leader attachments.",
+    "severity": "info",
+    "timestamp": 1793531590
   }
 ]
