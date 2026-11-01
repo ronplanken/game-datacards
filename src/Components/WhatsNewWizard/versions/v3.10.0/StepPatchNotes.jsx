@@ -12,9 +12,9 @@ export const StepPatchNotes = () => (
       </div>
     </div>
     <p className="wnw-feature-description">
-      The Datasource Editor can now group a card type&apos;s cards into subcategories and sort each card type on its
-      own. Turn on subcategories in the card type settings, set each card&apos;s group from the Basic Information panel,
-      and use the sort toggle on a card type to order its list A&ndash;Z or Z&ndash;A.
+      The Datasource Editor can now group cards into subcategories and sort each card type. Turn on subcategories in the
+      card type settings. Set a card&apos;s group in the Basic Information panel. Use the sort toggle on a card type to
+      sort A&ndash;Z or Z&ndash;A.
     </p>
   </div>
 );

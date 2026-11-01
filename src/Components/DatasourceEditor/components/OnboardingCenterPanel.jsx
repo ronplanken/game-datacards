@@ -45,7 +45,7 @@ export const OnboardingCenterPanel = ({ onNewDatasource }) => {
         Create a Datasource
       </button>
       <p className="designer-onboarding-help-link">
-        Want more detail? <Link to="/help/datasource-editor/getting-started">Read the docs</Link>
+        For more detail, <Link to="/help/datasource-editor/getting-started">read the docs</Link>.
       </p>
     </div>
   );

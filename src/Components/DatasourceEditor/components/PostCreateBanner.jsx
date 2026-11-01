@@ -26,7 +26,7 @@ export const PostCreateBanner = ({ datasourceName, onDismiss, onAddCardType, onS
           <X size={14} />
         </button>
       </div>
-      <p>Here are some things to try next:</p>
+      <p>Next steps:</p>
       <div className="designer-post-create-actions">
         <button className="designer-btn designer-btn-sm" onClick={onAddCardType}>
           <Plus size={12} />

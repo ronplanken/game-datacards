@@ -21,8 +21,7 @@ export const StepAgeOfSigmar = () => (
       <h2 className="wnw-feature-title">Age of Sigmar Support</h2>
     </div>
     <p className="wnw-feature-description">
-      Full support for Age of Sigmar is here! Create and customize warscrolls for your armies with all the features you
-      love.
+      Game Datacards now supports Age of Sigmar. Create and edit warscrolls for your armies.
     </p>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">

@@ -41,7 +41,7 @@ describe("PostCreateBanner", () => {
 
   it("renders next steps text", () => {
     renderBanner();
-    expect(screen.getByText("Here are some things to try next:")).toBeInTheDocument();
+    expect(screen.getByText("Next steps:")).toBeInTheDocument();
   });
 
   it("calls onDismiss when close button clicked", async () => {

@@ -148,25 +148,25 @@ export const PrivacyPolicy = () => {
       <p>You have the following rights regarding your personal data:</p>
       <ul>
         <li>
-          <strong>Access</strong> &mdash; request a copy of your data
+          <strong>Access</strong>: request a copy of your data
         </li>
         <li>
-          <strong>Rectification</strong> &mdash; correct inaccurate data
+          <strong>Rectification</strong>: correct inaccurate data
         </li>
         <li>
-          <strong>Erasure</strong> &mdash; request deletion of your data
+          <strong>Erasure</strong>: request deletion of your data
         </li>
         <li>
-          <strong>Restriction</strong> &mdash; limit how we process your data
+          <strong>Restriction</strong>: limit how we process your data
         </li>
         <li>
-          <strong>Portability</strong> &mdash; receive your data in a structured, machine-readable format
+          <strong>Portability</strong>: receive your data in a structured, machine-readable format
         </li>
         <li>
-          <strong>Objection</strong> &mdash; object to processing based on legitimate interest
+          <strong>Objection</strong>: object to processing based on legitimate interest
         </li>
         <li>
-          <strong>Withdraw consent</strong> &mdash; where processing is based on consent, withdraw it at any time
+          <strong>Withdraw consent</strong>: where processing is based on consent, withdraw it at any time
         </li>
       </ul>
       <p>

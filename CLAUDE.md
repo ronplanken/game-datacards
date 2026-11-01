@@ -118,7 +118,7 @@ The app has a dual-mode architecture: a community version with local-only featur
 
 | Tier | Categories | Datasources | Templates | Price |
 |------|-----------|-------------|-----------|-------|
-| Free | 2 | 0 | 2 | - |
+| Free | 2 | 1 | 2 | - |
 | Premium | 50 | 2 | 4 | €3.99/month |
 | Creator | 250 | 10 | 10 | €7.99/month |
 | Lifetime | 999 | 99 | 99 | Non-purchasable |

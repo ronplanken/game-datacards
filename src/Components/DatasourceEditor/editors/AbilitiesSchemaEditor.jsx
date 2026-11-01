@@ -166,7 +166,7 @@ export const AbilitiesSchemaEditor = ({ schema, onChange, baseSystem }) => {
               </select>
             </div>
             <div className="props-compact-input">
-              <Tooltip content="Phase style — drives section icon and inline rendering" placement="top">
+              <Tooltip content="Phase style. Sets the section icon and inline rendering." placement="top">
                 <span className="props-compact-label">
                   <IconActivityHeartbeat size={10} stroke={1.5} />
                 </span>

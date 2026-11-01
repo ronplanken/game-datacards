@@ -47,7 +47,7 @@ const BASE_SYSTEMS = [
     id: "blank",
     title: "Blank Template",
     subtitle: "Start from scratch",
-    description: "An empty schema with no pre-configured fields. Build your custom game system from the ground up.",
+    description: "An empty schema with no pre-configured fields. You add every field yourself.",
     icon: FileText,
     color: "#718096",
   },

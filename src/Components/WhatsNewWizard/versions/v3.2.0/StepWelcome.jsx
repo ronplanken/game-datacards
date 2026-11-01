@@ -16,8 +16,7 @@ export const StepWelcome = () => (
     </div>
     <h2 className="wnw-welcome-title">User Accounts &amp; Cloud Sync</h2>
     <p className="wnw-welcome-subtitle">
-      This update introduces user accounts and cloud sync, allowing you to access your datacards across devices and keep
-      everything backed up automatically.
+      This update adds user accounts and cloud sync. Your datacards are backed up and available on all your devices.
     </p>
   </div>
 );

@@ -16,9 +16,7 @@ export const StepUpdate = () => (
         <h2 className="wnw-feature-title">UI Improvements</h2>
       </div>
     </div>
-    <p className="wnw-feature-description">
-      This update brings a collection of interface refinements across desktop and mobile.
-    </p>
+    <p className="wnw-feature-description">This update improves the interface on desktop and mobile.</p>
 
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">

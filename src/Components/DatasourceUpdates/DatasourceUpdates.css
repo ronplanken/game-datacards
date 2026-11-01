@@ -138,14 +138,6 @@
   line-height: 1.4;
 }
 
-.dsu-change--legend {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-
 .dsu-path {
   color: var(--text-secondary);
   word-break: break-word;
@@ -272,14 +264,6 @@
 .dsu-mobile .dsu-change:last-child {
   border-bottom: none;
   padding-bottom: 0;
-}
-
-.dsu-mobile .dsu-change--legend {
-  font-size: 10px;
-}
-
-.dsu-mobile .dsu-change--legend .dsu-path {
-  display: none;
 }
 
 .dsu-mobile .dsu-note {

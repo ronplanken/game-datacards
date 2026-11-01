@@ -57,7 +57,7 @@ describe("OnboardingCenterPanel", () => {
 
   it("renders help link pointing to new help route", () => {
     renderPanel();
-    const link = screen.getByText("Read the docs");
+    const link = screen.getByText("read the docs");
     expect(link).toBeInTheDocument();
     expect(link.closest("a")).toHaveAttribute("href", "/help/datasource-editor/getting-started");
   });

@@ -29,9 +29,7 @@ export const StepDataPortability = ({ activeTab, onTabChange }) => {
   return (
     <div className="wz-step-data-portability">
       <h2 className="wz-step-title">Import, Export & Print</h2>
-      <p className="wz-step-description">
-        Your cards are portable. Import from other sources, export to share, or print for game day.
-      </p>
+      <p className="wz-step-description">Import cards from other apps, export them to share, or print them.</p>
 
       {/* Tab buttons */}
       <div className="wz-tabs">

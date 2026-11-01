@@ -44,7 +44,7 @@ export const StepCardDesigner = () => (
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />
         <div>
-          <strong>Beta — Account Required</strong>
+          <strong>Beta, account required</strong>
           <p>
             The Card Designer is in beta and requires a user account. Templates may need adjustments in future updates
             as the feature evolves.

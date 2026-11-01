@@ -21,7 +21,7 @@ import { Tooltip } from "../../Tooltip/Tooltip";
 import { ensureIds } from "./editorUtils";
 import { RESERVED_WEAPON_PROFILE_KEYS, isReservedWeaponProfileKey } from "../../../Helpers/weaponProfile.helpers";
 
-const RESERVED_KEY_HINT = `Reserved key — pick another. The weapon profile owns: ${RESERVED_WEAPON_PROFILE_KEYS.join(", ")}.`;
+const RESERVED_KEY_HINT = `This key is reserved. Pick another one. Reserved keys: ${RESERVED_WEAPON_PROFILE_KEYS.join(", ")}.`;
 
 const COLUMN_TYPES = [
   { value: "string", label: "Text" },
@@ -228,7 +228,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
           <CompactInput
             label={<IconLayersSubtract size={10} stroke={1.5} />}
             ariaLabel="Multiple profiles"
-            tooltip="Multiple profiles — let a weapon carry more than one stat profile"
+            tooltip="Allow more than one stat profile per weapon"
             type="toggle"
             value={!!activeType.hasProfiles}
             onChange={(val) => updateType(activeTab, { hasProfiles: val })}
@@ -238,7 +238,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
             <div className="props-tree-children">
               <div className="props-tree-child">
                 <div className="props-compact-input">
-                  <Tooltip content="Profile relation — how multiple profiles relate to each other" placement="top">
+                  <Tooltip content="How the profiles of one weapon relate to each other" placement="top">
                     <span className="props-compact-label">
                       <IconHierarchy size={10} stroke={1.5} />
                     </span>
@@ -279,7 +279,7 @@ export const WeaponsSchemaEditor = ({ schema, onChange, baseSystem }) => {
           {showPhaseFields && (
             <div className="props-compact-row-2col">
               <div className="props-compact-input">
-                <Tooltip content="Phase style — drives the section heading icon" placement="top">
+                <Tooltip content="Phase style. Sets the icon in the section heading." placement="top">
                   <span className="props-compact-label">
                     <IconActivityHeartbeat size={10} stroke={1.5} />
                   </span>

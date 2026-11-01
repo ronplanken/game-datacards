@@ -90,9 +90,7 @@ export const StepCardType = ({ wizard }) => {
   return (
     <div className="dsw-step-card-type" data-testid="dsw-step-card-type">
       <h2 className="dsw-step-title">Choose a Card Type</h2>
-      <p className="dsw-step-description">
-        Select the type of card to define. Each type has a different structure tailored to its purpose.
-      </p>
+      <p className="dsw-step-description">Select the type of card to define. Each type has its own structure.</p>
 
       <div className="dsw-system-grid" data-testid="dsw-card-type-grid">
         {CARD_TYPES.map((cardType) => {

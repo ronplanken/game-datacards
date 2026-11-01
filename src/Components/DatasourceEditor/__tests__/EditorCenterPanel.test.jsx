@@ -166,7 +166,7 @@ describe("EditorCenterPanel", () => {
           datasourceCount={1}
         />,
       );
-      expect(screen.queryByText("Here are some things to try next:")).not.toBeInTheDocument();
+      expect(screen.queryByText("Next steps:")).not.toBeInTheDocument();
     });
   });
 

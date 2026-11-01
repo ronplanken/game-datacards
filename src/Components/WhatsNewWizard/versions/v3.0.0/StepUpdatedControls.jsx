@@ -17,9 +17,7 @@ export const StepUpdatedControls = () => (
       </div>
       <h2 className="wnw-feature-title">Updated Controls</h2>
     </div>
-    <p className="wnw-feature-description">
-      The card editor now has smarter scaling and better zoom controls for a smoother editing experience.
-    </p>
+    <p className="wnw-feature-description">The card editor now scales cards to fit and has better zoom controls.</p>
     <div className="wnw-feature-highlights">
       <div className="wnw-highlight-item">
         <div className="wnw-highlight-dot" />

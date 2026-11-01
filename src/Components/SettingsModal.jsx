@@ -588,8 +588,7 @@ export const SettingsModal = () => {
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
                             <strong>Update Notification</strong>
-                            The app now detects new deployments and shows a banner prompting you to refresh. No more
-                            stale builds after a deploy.
+                            The app now detects new deployments and shows a banner that asks you to refresh.
                           </li>
                         </ul>
                         <h4 className="changelog-section-title">Removed</h4>
@@ -691,8 +690,8 @@ export const SettingsModal = () => {
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
                             <strong>Sharing, Rebuilt</strong>
-                            Sharing has been rebuilt from the ground up. One-click sharing, a manage panel for your
-                            shared links, and a new backend for better speed and reliability.
+                            Sharing has been rebuilt. You can share with one click and manage your shared links in a new
+                            panel. The new backend is faster and more reliable.
                           </li>
                         </ul>
                       </ChangelogEntry>
@@ -721,7 +720,7 @@ export const SettingsModal = () => {
                         <ul className="changelog-list">
                           <li className="changelog-list-item">
                             <strong>User Accounts</strong>
-                            Create a free account to unlock cloud sync and keep your datacards safe across devices.
+                            Create a free account to use cloud sync and keep your datacards on all your devices.
                           </li>
                           <li className="changelog-list-item">
                             <strong>Cloud Sync</strong>
@@ -814,7 +813,7 @@ export const SettingsModal = () => {
                           </li>
                           <li className="changelog-list-item">
                             <strong>Updated Styling</strong>
-                            Refreshed modal designs and UI components for a more modern look and feel.
+                            Modals and other UI components have a new design.
                           </li>
                           <li className="changelog-list-item">
                             <strong>Custom Faction Icons</strong>

@@ -86,7 +86,7 @@
   {
     "version": "3.11.10",
     "title": "Share cloud categories from your phone",
-    "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories, not just local lists. A list that cannot be shared tells you why instead of doing nothing.",
+    "body": "The \"...\" menu in the mobile list overview now offers Share List for cloud categories as well as local lists. A list that cannot be shared tells you why instead of doing nothing.",
     "severity": "success",
     "timestamp": 1788204839
   },
@@ -100,7 +100,7 @@
   {
     "version": "3.11.12",
     "title": "Weapons tab no longer breaks after adding a keyword",
-    "body": "Adding a weapon keyword could stop the weapons tab from opening, even after a refresh. Those cards open again and the stray keyword can simply be deleted.",
+    "body": "Adding a weapon keyword could stop the weapons tab from opening, even after a refresh. Those cards open again. You can delete the stray keyword.",
     "severity": "error",
     "timestamp": 1788204839
   },

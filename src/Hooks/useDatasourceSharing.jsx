@@ -419,7 +419,7 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
       const result = await publishDatasourceRpc(datasourceDbId, options);
       if (result.success) {
         await fetchMyDatasources();
-        message.success("Datasource published! Share code: " + result.shareCode);
+        message.success("Datasource published. Share code: " + result.shareCode);
       }
       return result;
     },
@@ -498,7 +498,7 @@ export function DatasourceSharingProvider({ children, user = null, canPerformAct
         }
 
         await fetchMyDatasources();
-        message.success("Datasource published! Share code: " + result.share_code);
+        message.success("Datasource published. Share code: " + result.share_code);
         return { success: true, shareCode: result.share_code, versionNumber: result.version_number };
       } catch (err) {
         console.error("Publish local datasource exception:", err);

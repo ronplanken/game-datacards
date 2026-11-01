@@ -21,9 +21,9 @@ The Layers tree always selects exactly the row you click, at any depth.
 
 ### Auto-layout modes
 
-- <IconLabel icon="LayoutList" label="None" /> — Children are positioned freely, just like on the main canvas
-- <IconLabel icon="ArrowRight" label="Horizontal" /> — Children are arranged in a row, left to right
-- <IconLabel icon="ArrowDown" label="Vertical" /> — Children are stacked in a column, top to bottom
+- <IconLabel icon="LayoutList" label="None" />: children are positioned freely, just like on the main canvas
+- <IconLabel icon="ArrowRight" label="Horizontal" />: children are arranged in a row, left to right
+- <IconLabel icon="ArrowDown" label="Vertical" />: children are stacked in a column, top to bottom
 
 In the Layers tree, a frame with auto-layout shows a small arrow on its icon
 for the direction, or a grid for a horizontal layout that wraps.
@@ -32,18 +32,18 @@ for the direction, or a grid for a horizontal layout that wraps.
 
 When auto-layout is active, you can adjust:
 
-- **Gap** — The space between each child element
-- **Padding** — The space between the frame edge and its contents
-- **Align** — Where children sit on the cross-axis (start, center, or end)
-- **Justify** — Where children sit on the main-axis when there is spare room (start, center, or end)
-- **Wrap to next line** — Only for horizontal layouts. When a row of children would run past the frame's width, the rest continue on a new line below.
+- **Gap**: the space between each child element
+- **Padding**: the space between the frame edge and its contents
+- **Align**: where children sit on the cross-axis (start, center, or end)
+- **Justify**: where children sit on the main-axis when there is spare room (start, center, or end)
+- **Wrap to next line**: only for horizontal layouts. When a row of children would run past the frame's width, the rest continue on a new line below.
 
 ### Sizing
 
 A frame has a separate sizing setting for its width and its height:
 
-- **Fixed** — The frame keeps the size you set on that axis. Content that does not fit is clipped or overflows, depending on Clip Content.
-- **Hug** — The frame resizes itself on that axis to fit its children plus padding, growing and shrinking automatically as children are added, removed or edited.
+- **Fixed**: the frame keeps the size you set on that axis. Content that does not fit is clipped or overflows, depending on Clip Content.
+- **Hug**: the frame resizes on that axis to fit its children plus padding. It grows and shrinks as children are added, removed or edited.
 
 Most section frames want a fixed width and a hugging height, so a block of
 text can grow downwards without changing the column width. A row of stats
@@ -78,23 +78,23 @@ along and a hidden text leaves no gap. Use auto width on texts in a row.
 A repeater frame (see Repeater Frames) has three extra options for how its
 rows are drawn:
 
-- **Alternate row fill** — A background colour painted behind every other row, for a striped table look.
-- **Separator** — Draws a line or dotted rule between rows, in the colour you choose.
-- **Empty state text** — Text shown as a single row when the data source array is empty. With no empty text set, a repeater with nothing to show hides itself entirely.
+- **Alternate row fill**: a background colour painted behind every other row, for a striped table look.
+- **Separator**: draws a line or dotted rule between rows, in the colour you choose.
+- **Empty state text**: text shown as a single row when the data source array is empty. With no empty text set, a repeater with nothing to show hides itself entirely.
 
 ### Sections and the card's vertical flow
 
 A frame with a Section Order takes part in the card's vertical flow, and a
 repeater whose "Push elements below" is on can push everything after it
 down as it grows. A frame's own properties panel only shows a read-only
-summary of its place in the flow, with a "Manage in card settings" link —
-the actual list lives on the card itself.
+summary of its place in the flow, with a "Manage in card settings" link.
+The list itself is in the card's properties.
 
 Select the card (click its background, or the root row in the Layers tree)
 to open its properties, then look for the **Sections** section. It lists
 every frame that takes part in the flow, grouped by column:
 
-- Drag a row to reorder it within its column — frames higher in a column are drawn first.
+- Drag a row to reorder it within its column. Frames higher in a column are drawn first.
 - Change a row's column to move it between independent flows (for example, a two-column layout where each side pushes separately).
 - Toggle Push on a row to make it push elements below it when it expands.
 - Use "Add to flow..." to bring an unplaced frame into the flow.
@@ -113,18 +113,17 @@ properties to let the card get taller instead.
 
 With it on, the card is measured against the unit being rendered: the lowest
 edge of everything that flows, every repeater row included. The card keeps
-its design height for as long as that content stays **Gap** px (16 by
-default) above the elements anchored to the bottom, and past that it grows by
-exactly what is missing, so a card with room to spare stays its designed
-size. **Max** caps how tall it may get (leave it blank for no limit).
+its design height while that content stays at least **Gap** px (16 by
+default) above the elements anchored to the bottom. Past that point it grows
+by the missing amount. A card with room to spare keeps its design size. **Max** caps how tall it may get (leave it blank for no limit).
 Repeaters ignore their Max Items cap while the card can grow, so every item
 is drawn.
 
 Two element checkboxes in the Transform section tell the rest of the card
 what to do with the extra height. They apply to shapes, frames and images:
 
-- **Stretch to card bottom** — The element gets taller by the same amount the card did. Use it for a background panel or a column divider that should cover the whole card. On a polygon, only the points in its lower half move, so notched corners keep their shape.
-- **Keep distance to card bottom** — The element moves down by the same amount, staying the same distance from the bottom edge. Use it for a footer bar or a badge that sits at the bottom of the card but is not part of the section flow.
+- **Stretch to card bottom**: the element gets taller by the same amount the card did. Use it for a background panel or a column divider that should cover the whole card. On a polygon, only the points in its lower half move, so notched corners keep their shape.
+- **Keep distance to card bottom**: the element moves down by the same amount, staying the same distance from the bottom edge. Use it for a footer bar or a badge that sits at the bottom of the card but is not part of the section flow.
 
 A section that is set to hug its contents grows too: its auto-height text is
 measured against the real card, the frame grows to fit it, and the sections

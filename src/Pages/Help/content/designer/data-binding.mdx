@@ -19,7 +19,7 @@ bound to it. Drag a field onto an existing text element to replace its
 content with that binding, or drop it at the cursor position if you are
 already editing the text.
 
-Drag a list — Ranged Weapons, Abilities, Keywords, and so on — onto the canvas
+Drag a list, such as Ranged Weapons, Abilities or Keywords, onto the canvas
 to create a repeater frame in one step. This lays out one row per item, side
 by side, with a text child for each of that list's fields. See Repeater
 Frames for how to adjust it afterwards.
@@ -32,9 +32,8 @@ sample value from the card you picked in the Data tab, not as raw
 filter, change the field, or remove the chip. Text and chips can be mixed
 freely, for example "Cost: " followed by a `points[0].cost` chip.
 
-Under the hood a chip is still stored as `{{path}}`, or `{{path | filter}}`
-once you add a filter, so older templates and the raw text editor below both
-keep working.
+A chip is still stored as `{{path}}`, or `{{path | filter}}` once you add a
+filter. Older templates and the raw text editor below keep working.
 
 ### Filters
 
@@ -63,9 +62,9 @@ keeps working.
 ### Hide when empty
 
 Every text element has a "Hide when empty" checkbox in its Content section.
-Turn it on and the element disappears from the card whenever all of its
-bindings resolve to nothing — useful for an optional line like a subname or
-an invulnerable save that not every unit has.
+Turn it on and the element is hidden when all of its bindings are empty. Use
+it for an optional line, such as a subname or an invulnerable save that not
+every unit has.
 
 ### Visibility rules
 
@@ -86,7 +85,7 @@ While you are editing, a bound text element shows the sample value from the
 card selected in the Data tab, not the raw `{{path}}` placeholder. This lets
 you judge width and wrapping against real data as you build the layout,
 without switching to preview mode. The stored template text is still the
-binding expression — the sample value is only what's drawn while you edit.
+binding expression. The sample value is only drawn while you edit.
 
 ### Validation and format changes
 
@@ -99,9 +98,9 @@ Changing the format in the Card properties panel checks every binding against
 the new format. If nothing breaks, the format switches immediately. If some
 bindings would stop resolving, a dialog lists them and offers:
 
-- **Keep** — leave the bindings as they are, so they show as unresolved until you fix them.
-- **Clear** — remove the broken bindings from the affected text.
-- **Remap** — switch each broken binding to the matching field in the new format, where one exists (for example a field that only changed which edition it comes from).
+- **Keep**: leave the bindings as they are, so they show as unresolved until you fix them.
+- **Clear**: remove the broken bindings from the affected text.
+- **Remap**: switch each broken binding to the matching field in the new format, where one exists (for example a field that only changed which edition it comes from).
 
 The whole change, including any remapping, is a single undo step.
 
@@ -137,19 +136,19 @@ repeater frame for a weapon with several profiles. `abilities.core` and
 `abilities.faction` are lists of names joined with commas, for example
 "Deep Strike, Leader".
 
-11th edition also localizes values to the card language set in Settings,
-falling back to English when a field has no translation, and strips markup
-(`<k>`, `<b>`, bullet lists) from ability text so a text element shows plain
-text with list items on their own lines.
+11th edition also translates values to the card language set in Settings. If
+a field has no translation, English is used. Markup (`<k>`, `<b>`, bullet
+lists) is removed from ability text, so a text element shows plain text with
+each list item on its own line.
 
 ### Preview mode
 
 Toggle Preview in the properties panel to see the whole card with real unit
 data instead of just the sample values inside each element. Select a faction
 and a datasheet from the dropdowns to choose which unit to preview. The
-faction and datasheet lists follow the template's format — if the app is
-showing a different datasource than the template targets, the panel tells
-you which datasource to switch to instead of listing unrelated units.
+faction and datasheet lists follow the template's format. If the app shows a
+different datasource than the template targets, the panel tells you which
+datasource to switch to.
 
 The original template text is preserved; preview mode only changes what is
 displayed. Turn preview off to keep editing. While preview is on, the canvas

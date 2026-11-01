@@ -16,9 +16,7 @@ export const StepComplete = ({ selectedGameSystem, onAction }) => {
 
       <h2 className="wz-complete-title">You&apos;re All Set!</h2>
 
-      <p className="wz-complete-subtitle">
-        Your workspace is ready. Browse units, create your first category, or open settings to customize your setup.
-      </p>
+      <p className="wz-complete-subtitle">Your workspace is ready.</p>
 
       {selectedSystem && (
         <div className="wz-complete-game" style={{ "--game-color": selectedSystem.color }}>

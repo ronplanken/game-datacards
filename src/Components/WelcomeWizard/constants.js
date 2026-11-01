@@ -131,7 +131,7 @@ export const ADVANCED_FEATURES = [
   {
     id: "mobile",
     title: "Mobile Companion",
-    description: "View your cards on the go. Perfect for game day reference.",
+    description: "View your cards on your phone during a game.",
     icon: "Smartphone",
   },
 ];

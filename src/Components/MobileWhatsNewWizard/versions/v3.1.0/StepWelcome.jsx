@@ -16,9 +16,7 @@ export const StepWelcome = () => (
         <span>Version 3.1</span>
       </div>
       <h1 className="mwnw-welcome-title">New Mobile Features</h1>
-      <p className="mwnw-welcome-subtitle">
-        We&apos;ve added some helpful improvements to enhance your mobile experience.
-      </p>
+      <p className="mwnw-welcome-subtitle">This update improves the mobile app.</p>
     </header>
   </div>
 );

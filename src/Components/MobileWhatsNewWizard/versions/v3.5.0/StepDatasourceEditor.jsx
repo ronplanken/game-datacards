@@ -35,7 +35,7 @@ export const StepDatasourceEditor = () => (
         <div className="mwnw-feature-item-content">
           <span className="mwnw-feature-item-title">Multiple Card Types</span>
           <span className="mwnw-feature-item-desc">
-            Add units, rules, enhancements, and stratagems — each with its own field structure
+            Add units, rules, enhancements and stratagems. Each has its own fields
           </span>
         </div>
       </div>

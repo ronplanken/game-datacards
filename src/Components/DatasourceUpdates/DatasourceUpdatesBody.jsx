@@ -109,10 +109,6 @@ export const DatasourceUpdatesBody = ({ state, language = "en" }) => {
                   </div>
                   {isExpanded && (
                     <ul className="dsu-change-list">
-                      <li className="dsu-change dsu-change--legend">
-                        <span className="dsu-path">Field</span>
-                        <span className="dsu-values">Your card, then the datasource</span>
-                      </li>
                       {result.changes.map((change, index) => (
                         <ChangeRow key={index} change={change} language={language} />
                       ))}

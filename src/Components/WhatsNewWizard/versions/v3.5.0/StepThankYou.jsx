@@ -11,8 +11,8 @@ export const StepThankYou = () => (
   <div className="wnw-thankyou-content">
     <h2 className="wnw-feature-title">Ready to Build</h2>
     <p className="wnw-feature-description">
-      Open the <strong>Datasources</strong> tab in the top navigation to start creating. This feature is in beta — your
-      feedback helps shape what comes next.
+      Open the <strong>Datasources</strong> tab in the top navigation to start. This feature is in beta. Share your
+      feedback on Discord.
     </p>
     <a href="https://discord.gg/anfn4qTYC4" target="_blank" rel="noreferrer" className="wnw-discord-link">
       <img src="https://discordapp.com/api/guilds/997166169540788244/widget.png?style=banner2" alt="Join our Discord" />

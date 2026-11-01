@@ -27,7 +27,7 @@ export const HelpLanding = () => {
             <span className="help-landing-title-accent">Game Datacards</span>
           </h1>
           <p className="help-landing-subtitle">
-            Everything you need to create custom datasources and design card templates for your tabletop games.
+            Guides for the Datasource Editor, Card Designer, cloud sync, plans and troubleshooting.
           </p>
         </div>
 

@@ -14,7 +14,7 @@ export const StepExploreMore = () => {
   return (
     <div className="wz-step-explore-more">
       <h2 className="wz-step-title">Explore More Features</h2>
-      <p className="wz-step-description">Game Datacards has even more to offer. Here are some additional features.</p>
+      <p className="wz-step-description">Other features in Game Datacards.</p>
 
       <div className="wz-explore-grid">
         {ADVANCED_FEATURES.map((feature) => {
@@ -33,7 +33,7 @@ export const StepExploreMore = () => {
       </div>
 
       <div className="wz-explore-hint">
-        Create an account in <strong>Settings</strong> to unlock cloud sync and community features.
+        Create an account in <strong>Settings</strong> to use cloud sync and community features.
       </div>
     </div>
   );
