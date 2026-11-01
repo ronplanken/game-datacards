@@ -112,7 +112,7 @@ datasource card and then:
    `selectedEnhancement`, `selectedWargear`, `isWarlord`, `attachedTo`,
    `leadBy`, `print_side`, `variant`, `styling`, `templateId`, `width`,
    `height`, `background`, custom colours, card image fields, faction symbol
-   fields, and the `show*` section toggles.
+   fields, and the `show*` section toggles (including `showEnhancement`).
 3. Re-resolves `unitSize` against the new `points`, using the list's army
    context (`getArmyContext`). The chosen size keeps its models and keyword;
    only the price follows the datasource. A size that no longer exists is kept

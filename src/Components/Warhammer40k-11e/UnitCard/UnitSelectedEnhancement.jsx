@@ -15,7 +15,7 @@ export const UnitSelectedEnhancement = ({ unit }) => {
   const enhancement = unit.selectedEnhancement;
   const name = localize(enhancement?.name, lang);
 
-  if (!name) {
+  if (!name || unit.showEnhancement === false) {
     return null;
   }
 

@@ -129,6 +129,10 @@ describe("diffCardContent", () => {
     );
   });
 
+  it("ignores the enhancement visibility toggle", () => {
+    expect(diffCardContent(saved({ showEnhancement: false }), intercessors)).toEqual([]);
+  });
+
   it("ignores the section tags a card picked up in the faction browser", () => {
     expect(diffCardContent(saved({ role: "Character", roleKey: "role:Character" }), intercessors)).toEqual([]);
   });

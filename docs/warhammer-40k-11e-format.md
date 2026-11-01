@@ -126,19 +126,26 @@ profile — stays in the abilities column.
 
 ### The list-selected enhancement
 
-An enhancement picked in the list builder is stored on the *list card* as
+An enhancement picked in the list builder is stored on the _list card_ as
 `selectedEnhancement` (written by `addDatacard` / `updateDatacard` in
 `src/Components/Viewer/useMobileList.jsx`), alongside `unitSize` and
 `isWarlord`. It is never merged into the datasheet's `abilities`, so it has no
-editor panel and no show/hide flag.
+editor panel.
+
+The block can be hidden per card with the "Show enhancement" switch in the
+basic info editor (`UnitCardEditor/UnitBasicInfo.jsx`). The switch only appears
+when the card has a `selectedEnhancement`, and turning it off stores
+`showEnhancement: false` on the card. An absent flag means shown. The flag is an
+instance field, so a datasource compare ignores it and an update keeps it.
 
 Because every display path (tree preview, print, viewer) passes the list card
 object straight to the renderer, `UnitSelectedEnhancement` can read the field
 directly and render it read-only, reusing the primarch block styling with an
 extra `.selected-enhancement` class. The enhancement name is the block heading —
 Upgrade names already carry their "(Upgrade)" suffix in the datasource, so no
-extra label is added. Cards outside a list have no `selectedEnhancement` and the
-component renders nothing.
+extra label is added. Cards outside a list have no `selectedEnhancement`, and
+cards with `showEnhancement: false` hide the block. In both cases the component
+renders nothing.
 
 Note the shape asymmetry: `get40k11eData` resolves each enhancement's top-level
 `name` to a plain string at load time while `description` stays language-keyed,
@@ -207,7 +214,7 @@ add `nameLoc`/`descriptionLoc` language maps:
 
 - **Scopes (`appliesTo`):** `weapons` (weapon-profile keywords such as `Assault`,
   `Rapid Fire`, `Anti-`) and `abilities` (unit core abilities such as `Deep
-  Strike`, `Feel No Pain`, `Scouts`). `matchType` is `exact` or `parameterized`.
+Strike`, `Feel No Pain`, `Scouts`). `matchType` is `exact` or `parameterized`.
 - **Fetch:** `get40k11eData` loads `keywords.json` alongside the faction files and
   attaches it to the datasource as `keywordGlossary`. A failed fetch (e.g. an
   older datasource that predates the file) degrades to an empty glossary.
@@ -217,7 +224,7 @@ add `nameLoc`/`descriptionLoc` language maps:
 - **Matching:** delegated to the shared `resolveKeywordEntry(tag, glossary, scope)`
   in `customSchema.helpers.js`, which honours `matchType`/`appliesTo`, the
   parameterized trailing value (`Rapid Fire 1`, `Deadly Demise D6+2`, `Feel No
-  Pain 5+`, `Scouts 6"`) and the hyphenated `Anti-` form, preferring the longest
+Pain 5+`, `Scouts 6"`) and the hyphenated `Anti-` form, preferring the longest
   matching name. Weapon keywords resolve against scope `weapons`; core abilities
   against `abilities` (matched on their canonical English name, which is what the
   card carries regardless of display language).

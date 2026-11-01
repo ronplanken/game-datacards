@@ -46,6 +46,7 @@ export const INSTANCE_FIELDS = [
   "showPoints",
   "showPointsModels",
   "showAllPoints",
+  "showEnhancement",
   "wrapKeywords",
 ];
 

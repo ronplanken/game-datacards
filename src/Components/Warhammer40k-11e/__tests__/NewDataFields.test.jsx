@@ -133,6 +133,13 @@ describe("11e UnitWeapons: primarch abilities and list enhancements", () => {
     expect(container.querySelector(".description-container")).not.toBeInTheDocument();
   });
 
+  it("hides the enhancement when the card turns it off", () => {
+    const unit = { selectedEnhancement: { name: "Perfervid Haste" }, showEnhancement: false };
+    const { container, queryByText } = render(<UnitWeapons unit={unit} />);
+    expect(queryByText("Perfervid Haste")).not.toBeInTheDocument();
+    expect(container.querySelector(".selected-enhancement")).not.toBeInTheDocument();
+  });
+
   it("renders nothing extra when the unit carries no enhancement", () => {
     const { container } = render(<UnitWeapons unit={{ abilities: {} }} />);
     expect(container.querySelector(".selected-enhancement")).not.toBeInTheDocument();
