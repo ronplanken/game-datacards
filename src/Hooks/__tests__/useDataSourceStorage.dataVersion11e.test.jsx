@@ -3,6 +3,7 @@ import React from "react";
 import { useDataSourceStorage, DataSourceStorageProviderComponent } from "../useDataSourceStorage";
 import { SettingsStorageProviderComponent } from "../useSettingsStorage";
 import { get40k11eData } from "../../Helpers/external.helpers";
+import { DATASOURCE_11E_CACHE_VERSION } from "../../Helpers/datasource11e.helpers";
 
 const mockStore = {};
 vi.mock("localforage", () => ({
@@ -60,7 +61,7 @@ describe("useDataSourceStorage 11th edition data version", () => {
 
   it("uses the cache when it matches the latest selection", async () => {
     setSettings({ dataVersion11e: null });
-    mockStore["40k-11e"] = { language: "en", data: [{ id: "cached" }] };
+    mockStore["40k-11e"] = { schemaVersion: DATASOURCE_11E_CACHE_VERSION, language: "en", data: [{ id: "cached" }] };
     const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
     await waitFor(() => expect(result.current.selectedFaction?.id).toBe("cached"));
     expect(get40k11eData).not.toHaveBeenCalled();
@@ -68,7 +69,12 @@ describe("useDataSourceStorage 11th edition data version", () => {
 
   it("refetches when a data version is pinned and the cache holds the latest data", async () => {
     setSettings({ dataVersion11e: v946 });
-    mockStore["40k-11e"] = { language: "en", dataVersion: null, data: [{ id: "cached" }] };
+    mockStore["40k-11e"] = {
+      schemaVersion: DATASOURCE_11E_CACHE_VERSION,
+      language: "en",
+      dataVersion: null,
+      data: [{ id: "cached" }],
+    };
     const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
     await waitFor(() => expect(result.current.selectedFaction?.id).toBe("fresh"));
     expect(get40k11eData).toHaveBeenCalledWith("en", v946);
@@ -77,7 +83,12 @@ describe("useDataSourceStorage 11th edition data version", () => {
 
   it("refetches the latest data when the pin is removed", async () => {
     setSettings({ dataVersion11e: null });
-    mockStore["40k-11e"] = { language: "en", dataVersion: 946, data: [{ id: "cached" }] };
+    mockStore["40k-11e"] = {
+      schemaVersion: DATASOURCE_11E_CACHE_VERSION,
+      language: "en",
+      dataVersion: 946,
+      data: [{ id: "cached" }],
+    };
     const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
     await waitFor(() => expect(result.current.selectedFaction?.id).toBe("fresh"));
     expect(get40k11eData).toHaveBeenCalledWith("en", null);
@@ -85,7 +96,12 @@ describe("useDataSourceStorage 11th edition data version", () => {
 
   it("uses the cache when it holds the pinned version", async () => {
     setSettings({ dataVersion11e: v946 });
-    mockStore["40k-11e"] = { language: "en", dataVersion: 946, data: [{ id: "cached" }] };
+    mockStore["40k-11e"] = {
+      schemaVersion: DATASOURCE_11E_CACHE_VERSION,
+      language: "en",
+      dataVersion: 946,
+      data: [{ id: "cached" }],
+    };
     const { result } = renderHook(() => useDataSourceStorage(), { wrapper });
     await waitFor(() => expect(result.current.selectedFaction?.id).toBe("cached"));
     expect(get40k11eData).not.toHaveBeenCalled();

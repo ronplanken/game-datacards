@@ -1,3 +1,4 @@
+import { PatrolRosterSummary } from "../../PatrolRosterSummary";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { List } from "antd";
 import classNames from "classnames";
@@ -307,7 +308,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
       return;
     } else if (card.cardType === "warscroll") {
       // Warscrolls - navigate to unit
-      navigateToUnit(cardFaction.name, card.name);
+      navigateToUnit(cardFaction.name, card.name, card.isCombatPatrol ? card.id : undefined);
     } else if (card.cardType === "spell") {
       // Spells - navigate based on spell type
       if (card.spellType === "manifestation") {
@@ -317,7 +318,7 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
       }
     } else {
       if (!card.nonBase) {
-        navigateToUnit(cardFaction.name, card.name);
+        navigateToUnit(cardFaction.name, card.name, card.isCombatPatrol ? card.id : undefined);
       } else {
         navigateToAlliedUnit(selectedFaction.name, cardFaction.name, card.name);
       }
@@ -397,7 +398,10 @@ export const ViewerUnitList = ({ searchText, selectedContentType }) => {
         <div
           style={{ display: "flex", width: "100%", marginRight: "48px", justifyContent: "space-between" }}
           className={card.nonBase ? card.faction_id : ""}>
-          <span>{card.name}</span>
+          <span>
+            {card.name}
+            <PatrolRosterSummary card={card} />
+          </span>
         </div>
       </List.Item>
     );

@@ -6,6 +6,7 @@ import {
   get40KData,
   get40k10eData,
   get40k11eData,
+  get40k11eCombatPatrolData,
   get40k10eCombatPatrolData,
   getAoSData,
   getBasicData,
@@ -19,10 +20,18 @@ import {
   compareVersions,
   getTargetArray,
 } from "../Helpers/customDatasource.helpers";
+import { DATASOURCE_11E_CACHE_VERSION } from "../Helpers/datasource11e.helpers";
 import { DEFAULT_DATASOURCE_COLOURS } from "../Helpers/customSchema.helpers";
 import { useSettingsStorage } from "./useSettingsStorage";
 
 const DataSourceStorageContext = React.createContext(undefined);
+
+const get11eDataVersion = (settings) => (settings.selectedDataSource === "40k-11e-cp" ? null : settings.dataVersion11e);
+
+const load11eData = (settings) =>
+  settings.selectedDataSource === "40k-11e-cp"
+    ? get40k11eCombatPatrolData(settings.language)
+    : get40k11eData(settings.language, settings.dataVersion11e);
 
 export function useDataSourceStorage() {
   const context = React.useContext(DataSourceStorageContext);
@@ -104,25 +113,26 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(dataFactions);
         setSelectedFaction(dataFactions.data[factionIndex]);
       }
-      if (settings.selectedDataSource === "40k-11e") {
-        const storedData = await dataStore.getItem("40k-11e");
+      if (["40k-11e", "40k-11e-cp"].includes(settings.selectedDataSource)) {
+        const storedData = await dataStore.getItem(settings.selectedDataSource);
         // Cache is language-specific: top-level names are resolved at fetch time.
         // Refetch when the user switched language since the cache was built.
         if (
           storedData &&
           storedData.language === settings.language &&
-          (storedData.dataVersion ?? null) === (settings.dataVersion11e?.version ?? null)
+          storedData.schemaVersion === DATASOURCE_11E_CACHE_VERSION &&
+          (storedData.dataVersion ?? null) === (get11eDataVersion(settings)?.version ?? null)
         ) {
           setDataSource(storedData);
-          setSelectedFaction(storedData.data[factionIndex]);
+          setSelectedFaction(storedData.data[factionIndex] || storedData.data[0] || null);
           return;
         }
         setIsLoading(true);
-        const dataFactions = await get40k11eData(settings.language, settings.dataVersion11e);
+        const dataFactions = await load11eData(settings);
 
-        dataStore.setItem("40k-11e", dataFactions);
+        dataStore.setItem(settings.selectedDataSource, dataFactions);
         setDataSource(dataFactions);
-        setSelectedFaction(dataFactions.data[factionIndex]);
+        setSelectedFaction(dataFactions.data[factionIndex] || dataFactions.data[0] || null);
       }
       if (settings.selectedDataSource === "40k-10e-cp") {
         const storedData = await dataStore.getItem("40k-10e-cp");
@@ -251,12 +261,12 @@ export const DataSourceStorageProviderComponent = (props) => {
         setDataSource(dataFactions);
         setSelectedFaction(dataFactions.data[factionIndex]);
       }
-      if (settings.selectedDataSource === "40k-11e") {
-        const dataFactions = await get40k11eData(settings.language, settings.dataVersion11e);
-        dataStore.setItem("40k-11e", dataFactions);
+      if (["40k-11e", "40k-11e-cp"].includes(settings.selectedDataSource)) {
+        const dataFactions = await load11eData(settings);
+        dataStore.setItem(settings.selectedDataSource, dataFactions);
 
         setDataSource(dataFactions);
-        setSelectedFaction(dataFactions.data[factionIndex]);
+        setSelectedFaction(dataFactions.data[factionIndex] || dataFactions.data[0] || null);
       }
       if (settings.selectedDataSource === "40k-10e-cp") {
         const dataFactions = await get40k10eCombatPatrolData();
