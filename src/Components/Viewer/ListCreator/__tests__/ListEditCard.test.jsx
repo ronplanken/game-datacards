@@ -32,6 +32,10 @@ vi.mock("../../../../Hooks/useDataSourceStorage", () => ({
   useDataSourceStorage: () => mocks.dataSourceStorage,
 }));
 
+vi.mock("../../../../Hooks/useFactionWithCustomContent", () => ({
+  useFactionWithCustomContent: (faction) => faction,
+}));
+
 vi.mock("../../../../Hooks/useSettingsStorage", () => ({
   useSettingsStorage: () => mocks.settingsStorage,
 }));

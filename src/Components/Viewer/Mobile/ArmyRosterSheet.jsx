@@ -11,6 +11,7 @@ import {
   toggleDetachment,
 } from "../../../Helpers/listRoster.helpers";
 import { localize } from "../../../Helpers/localization.helpers";
+import { splitRosterDetachments } from "../../../Helpers/customDetachments.helpers";
 import { BottomSheet } from "./BottomSheet";
 // Detachment rows reuse the picker's row styling; ArmyRosterSheet.css layers the
 // DP cost / disposition bits on top.
@@ -46,6 +47,30 @@ export const ArmyRosterSheet = ({
     onChangeDetachments(toggleDetachment(selectedDetachments, detachment, size.key));
   };
 
+  const { official, custom } = splitRosterDetachments(detachments, selectedDetachments);
+
+  const renderDetachment = (detachment) => {
+    const name = localize(detachment?.name, language);
+    const cost = getDetachmentCost(detachment);
+    const selected = isDetachmentSelected(selectedDetachments, detachment);
+    const disabled = !selected && !canAddDetachment(selectedDetachments, detachment, size.key);
+    const disposition = getDetachmentDispositionNames(detachment, language).join(", ");
+    return (
+      <button
+        key={detachment.id || name}
+        className={`detachment-option ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`}
+        onClick={() => !disabled && handleToggle(detachment)}
+        disabled={disabled}>
+        <span className="detachment-text">
+          <span className="detachment-name">{name}</span>
+          {disposition && <span className="detachment-disposition">{disposition}</span>}
+        </span>
+        <span className="detachment-cost">{cost} DP</span>
+        {selected && <Check size={18} />}
+      </button>
+    );
+  };
+
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Army Roster" elevated={elevated}>
       <div className="army-roster">
@@ -73,34 +98,20 @@ export const ArmyRosterSheet = ({
               {spent}/{size.dp} DP
             </span>
           </h4>
-          {detachments.length === 0 ? (
+          {official.length === 0 && custom.length === 0 ? (
             <p className="army-roster-empty">This faction has no detachments.</p>
           ) : (
-            <div className="detachment-list">
-              {detachments.map((detachment) => {
-                const name = localize(detachment?.name, language);
-                const cost = getDetachmentCost(detachment);
-                const selected = isDetachmentSelected(selectedDetachments, detachment);
-                // Unaffordable options stay visible but disabled so the DP budget
-                // is obvious rather than silently hiding choices.
-                const disabled = !selected && !canAddDetachment(selectedDetachments, detachment, size.key);
-                const disposition = getDetachmentDispositionNames(detachment, language).join(", ");
-                return (
-                  <button
-                    key={detachment.id || name}
-                    className={`detachment-option ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`}
-                    onClick={() => !disabled && handleToggle(detachment)}
-                    disabled={disabled}>
-                    <span className="detachment-text">
-                      <span className="detachment-name">{name}</span>
-                      {disposition && <span className="detachment-disposition">{disposition}</span>}
-                    </span>
-                    <span className="detachment-cost">{cost} DP</span>
-                    {selected && <Check size={18} />}
-                  </button>
-                );
-              })}
-            </div>
+            <>
+              {official.length > 0 && <div className="detachment-list">{official.map(renderDetachment)}</div>}
+              {custom.length > 0 && (
+                <>
+                  <h5 className="army-roster-group-label">Your detachments</h5>
+                  <div className="detachment-list" data-testid="army-roster-custom-detachments">
+                    {custom.map(renderDetachment)}
+                  </div>
+                </>
+              )}
+            </>
           )}
           {overBudget && (
             <p className="army-roster-hint army-roster-hint--over">

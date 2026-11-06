@@ -99,7 +99,7 @@ language, so the card returns to the shape the datasource ships.
 
 ### Panels beyond the card
 
-Two editor panels write data that is not printed on the card:
+Three editor panels write data that is not printed on the card:
 
 - **Enhancement → List eligibility** — `equipableByNonCharacter` (the
   "(Upgrade)" entries a non-Character unit may take), plus the `keywords` a unit
@@ -110,6 +110,13 @@ Two editor panels write data that is not printed on the card:
   rulebook examples `RuleCard` deliberately skips. They are offered (labelled
   "not shown on card") so an existing part keeps its type instead of silently
   turning into body text when it is edited.
+- **Rule → Detachment Points / Force dispositions** — shown only when the rule
+  type is "Detachment Rule". `detachmentPoints` is a plain number (1-3, shown as
+  1 when unset) and `forceDispositions` is a list of `{ name }` entries with
+  plain English names. The disposition picker suggests every name the loaded
+  datasource uses and accepts new ones. Clearing all dispositions removes the
+  field. These turn the card into a custom detachment in the list builder (see
+  [11th Edition list building](40k-11e-list-building.md#custom-detachments-and-enhancements)).
 
 ## The localisation helpers
 

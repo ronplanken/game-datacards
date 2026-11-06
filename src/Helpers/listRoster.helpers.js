@@ -247,7 +247,7 @@ export const describeRepricedCards = (changes) => {
  * and part-built 11e lists keep working.
  */
 export const isEnhancementInDetachments = (enhancement, detachments, fallbackDetachment) => {
-  const required = enhancement?.detachment;
+  const required = localize(enhancement?.detachment, "en");
   if (!required) return true;
   const names = getDetachmentNamesEn(detachments);
   const pool = names.length > 0 ? names : [fallbackDetachment].filter(Boolean);

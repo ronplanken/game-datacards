@@ -13,6 +13,8 @@ import { message } from "../Toast/message";
 import { useCardStorage } from "../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
+import { useFactionWithCustomContent } from "../../Hooks/useFactionWithCustomContent";
+import { refreshCustomDetachments } from "../../Helpers/customDetachments.helpers";
 import { getCategoryPointsTotal } from "../../Helpers/listPoints.helpers";
 import {
   describeRepricedCards,
@@ -75,10 +77,10 @@ export function TreeCategory({
   const showRoster = isEleventhEditionList && settings.selectedDataSource === "40k-11e";
   // The faction the list is built for. Lists made before the faction was
   // recorded fall back to their cards, an empty one to the faction being browsed.
-  const listFaction = dataSource?.data?.find(
-    (faction) => faction.id === (getListFactionId(category) || selectedFaction?.id),
+  const listFaction = useFactionWithCustomContent(
+    dataSource?.data?.find((faction) => faction.id === (getListFactionId(category) || selectedFaction?.id)),
   );
-  const armyDetachments = category.detachments || [];
+  const armyDetachments = refreshCustomDetachments(category.detachments || [], listFaction?.detachments);
   const armyBattleSize = getBattleSize(category.battleSize);
   const enhancementUsage = getEnhancementUsage(category.cards, category.battleSize);
 

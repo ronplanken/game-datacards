@@ -3,6 +3,7 @@ import { ChevronRight, Crown, Minus, Plus } from "lucide-react";
 import { message } from "../../Toast/message";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { useFactionWithCustomContent } from "../../../Hooks/useFactionWithCustomContent";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import {
   filterPointsTiersForArmy,
@@ -57,7 +58,7 @@ export const ListEditCard = ({ isVisible, setIsVisible, card }) => {
   const [selectedAttachment, setSelectedAttachment] = useState();
   const [selectedWargear, setSelectedWargear] = useState([]);
 
-  const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+  const cardFaction = useFactionWithCustomContent(dataSource.data.find((faction) => faction.id === card?.faction_id));
   // 11e armies hold several detachments; enhancements from any of them are available.
   const armyDetachments = lists[selectedList]?.detachments;
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);

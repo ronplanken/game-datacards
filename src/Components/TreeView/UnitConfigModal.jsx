@@ -31,13 +31,14 @@ import {
 import { localize } from "../../Helpers/localization.helpers";
 import { useSettingsStorage } from "../../Hooks/useSettingsStorage";
 import { useDataSourceStorage } from "../../Hooks/useDataSourceStorage";
+import { useFactionWithCustomContent } from "../../Hooks/useFactionWithCustomContent";
 import "./UnitConfigModal.css";
 
 export const UnitConfigModal = ({ isOpen, onClose, card, category, onSave }) => {
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
-  const cardFaction = dataSource.data.find((faction) => faction.id === card?.faction_id);
+  const cardFaction = useFactionWithCustomContent(dataSource.data.find((faction) => faction.id === card?.faction_id));
   const detachments = useMemo(() => cardFaction?.detachments || [], [cardFaction?.detachments]);
   // The faction the list is built for, which its faction-scoped prices key off.
   const listFaction = dataSource.data.find((faction) => faction.id === getListFactionId(category));

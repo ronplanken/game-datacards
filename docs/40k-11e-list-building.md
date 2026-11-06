@@ -1,13 +1,15 @@
 ---
 title: 11th Edition list building
-description: How 11e army lists work — the main faction, battle size and Detachment Points, detachment selection, enhancements and Upgrades, leader/support attachment, and how detachment- and faction-scoped points are resolved and repriced.
+description: How 11e army lists work — the main faction, battle size and Detachment Points, detachment selection (including custom detachments made from the user's own cards), enhancements and Upgrades, leader/support attachment, and how detachment- and faction-scoped points are resolved and repriced.
 category: Features
-tags: [40k-11e, lists, detachments, enhancements, points, leaders]
+tags: [40k-11e, lists, detachments, custom detachments, enhancements, points, leaders]
 related:
   - warhammer-40k-11e-format.md
   - listforge-direct-read-import.md
 file_locations:
   - src/Helpers/listRoster.helpers.js
+  - src/Helpers/customDetachments.helpers.js
+  - src/Hooks/useFactionWithCustomContent.js
   - src/Helpers/listPoints.helpers.js
   - src/Helpers/listCategories.helpers.js
   - src/Helpers/listAttachments.helpers.js
@@ -33,19 +35,20 @@ extra army-wide fields. Everything below applies to lists whose datasource is
 - [Points: detachment- and faction-scoped tiers](#points-detachment--and-faction-scoped-tiers)
 - [Repricing when the detachments change](#repricing-when-the-detachments-change)
 - [Enhancements and Upgrades](#enhancements-and-upgrades)
+- [Custom detachments and enhancements](#custom-detachments-and-enhancements)
 - [Leaders and Support units](#leaders-and-support-units)
 - [Where it is wired in](#where-it-is-wired-in)
 
 ## What a list stores
 
-| Field | Meaning |
-|-------|---------|
-| `factionId` | The faction the list is built for (its "main" faction) |
-| `battleSize` | `"incursion"` or `"strikeForce"` (defaults to Strike Force) |
-| `detachments` | The detachment objects the army has bought with its DP |
-| `cards[].unitSize` | The chosen `points` tier for that card |
-| `cards[].selectedEnhancement` | The enhancement/Upgrade given to that card |
-| `cards[].attachedTo` | The `uuid` of the squad a leader/support unit joins |
+| Field                         | Meaning                                                     |
+| ----------------------------- | ----------------------------------------------------------- |
+| `factionId`                   | The faction the list is built for (its "main" faction)      |
+| `battleSize`                  | `"incursion"` or `"strikeForce"` (defaults to Strike Force) |
+| `detachments`                 | The detachment objects the army has bought with its DP      |
+| `cards[].unitSize`            | The chosen `points` tier for that card                      |
+| `cards[].selectedEnhancement` | The enhancement/Upgrade given to that card                  |
+| `cards[].attachedTo`          | The `uuid` of the squad a leader/support unit joins         |
 
 ## The main faction
 
@@ -64,10 +67,10 @@ that faction is written onto the list the first time its detachments are set.
 
 From the core rules' Select Battle Size table (`BATTLE_SIZES`):
 
-| Battle size | Points | DP | Enhancements | Units per datasheet |
-|-------------|--------|----|--------------|---------------------|
-| Incursion | 1000 | 2 | 2 | 2 |
-| Strike Force | 2000 | 3 | 4 | 3 |
+| Battle size  | Points | DP  | Enhancements | Units per datasheet |
+| ------------ | ------ | --- | ------------ | ------------------- |
+| Incursion    | 1000   | 2   | 2            | 2                   |
+| Strike Force | 2000   | 3   | 4            | 3                   |
 
 An army buys several detachments with its DP budget; each detachment costs
 1-3 DP (`detachmentPoints`) and grants its own force dispositions, rules,
@@ -148,6 +151,45 @@ would make the second overwrite the first.
   the currently picked one has none. Once the roster holds detachments, that
   picker is hidden and the roster decides which enhancements are offered.
 
+## Custom detachments and enhancements
+
+Users can add their own detachments to an 11e list from cards they made.
+
+- **Detachment:** an 11e rule card with Rule Type "Detachment Rule" and a
+  detachment name. The rule editor adds `detachmentPoints` and
+  `forceDispositions` to it. Several rule cards with the same detachment name
+  (compared on the English name, ignoring case) form one detachment. Its DP
+  cost is the first card that sets one (default 1), and its force dispositions
+  are the union of all cards.
+- **Enhancement:** an 11e enhancement card whose `detachment` names a custom
+  detachment. Cost, keywords, excludes and the Upgrade flag work as for
+  official enhancements. Only enhancements of custom detachments are picked up,
+  so copies of official enhancement cards in a category do not appear twice.
+- **Faction:** both card kinds must carry the list's `faction_id`. Cards for
+  another faction, or with no faction, are ignored.
+- **Location:** the cards can live in any category, including the list itself.
+  Rule and enhancement cards in a list add 0 points.
+
+`withCustomContent(faction, categories, language)`
+(`customDetachments.helpers.js`) appends these to the faction's `detachments`
+and `enhancements`. Each custom detachment gets the id
+`custom:<factionId>:<lowercase English name>` and `custom: true`. A detachment
+whose name matches an official one is skipped. The
+`useFactionWithCustomContent` hook wraps this for components; it is used by
+`TreeCategory`, `UnitConfigModal`, `ListOverview`, `ListAdd` and
+`ListEditCard`, so the DP budget, enhancement limits, Upgrades and repricing
+apply unchanged.
+
+The roster picker shows custom detachments in a separate "Your detachments"
+group, rendered only when there are any. A selected custom detachment is stored
+on the list as a snapshot, like an official one. `refreshCustomDetachments`
+swaps the snapshot for the current version from the cards each time the list is
+shown, so a DP change on the card carries through. If the cards are gone, the
+snapshot is kept and still listed in the custom group, so it can be removed.
+
+The GW app export writes the custom detachment name as it is. A GW app import
+does not recognise it.
+
 ## Leaders and Support units
 
 11e datasheets carry `attachesTo: { type, requiresDetachment, excludesDetachment,
@@ -181,6 +223,8 @@ in every card language.
 ## Where it is wired in
 
 - Army/roster helpers: `src/Helpers/listRoster.helpers.js`.
+- Custom detachments: `src/Helpers/customDetachments.helpers.js`,
+  `src/Hooks/useFactionWithCustomContent.js`.
 - Points maths and tier filtering: `src/Helpers/listPoints.helpers.js`.
 - Sections, keyword checks and Upgrade limits: `src/Helpers/listCategories.helpers.js`.
 - Attachment rules: `src/Helpers/listAttachments.helpers.js`.

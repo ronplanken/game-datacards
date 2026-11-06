@@ -154,6 +154,11 @@ describe("enhancement availability across detachments", () => {
     expect(isEnhancementInDetachments({ name: "X" }, list)).toBe(true);
   });
 
+  it("matches a language-keyed detachment on its English name", () => {
+    expect(isEnhancementInDetachments({ detachment: { en: "Shield Host", de: "Schildwirt" } }, list)).toBe(true);
+    expect(isEnhancementInDetachments({ detachment: { en: "Auric Champions" } }, list)).toBe(false);
+  });
+
   it("falls back to the legacy single detachment when none are selected", () => {
     expect(isEnhancementInDetachments({ detachment: "Shield Host" }, [], "Shield Host")).toBe(true);
     expect(isEnhancementInDetachments({ detachment: "Shield Host" }, [], "Lions of the Emperor")).toBe(false);

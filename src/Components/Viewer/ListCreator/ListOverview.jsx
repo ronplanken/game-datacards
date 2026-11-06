@@ -21,6 +21,8 @@ import { message } from "../../Toast/message";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { useFactionWithCustomContent } from "../../../Hooks/useFactionWithCustomContent";
+import { refreshCustomDetachments } from "../../../Helpers/customDetachments.helpers";
 import { useCloudCategories, ListSyncButton } from "../../../Premium";
 import { useAuth } from "../../../Premium";
 import { useCategorySharing } from "../../../Hooks/useCategorySharing";
@@ -468,7 +470,10 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const currentCards = isCloudCategory ? selectedCloudCategory.cards : currentList?.cards || [];
 
   // Army-wide roster settings (11e): battle size, detachments and their DP.
-  const armyDetachments = currentList?.detachments || [];
+  const listFactionId = getListFactionId(currentList) || selectedFaction?.id;
+  const listFaction = useFactionWithCustomContent(dataSource.data.find((faction) => faction.id === listFactionId));
+  const availableDetachments = listFaction?.detachments || [];
+  const armyDetachments = refreshCustomDetachments(currentList?.detachments || [], availableDetachments);
   const armyBattleSize = getBattleSize(currentList?.battleSize);
   const spentDetachmentPoints = getSpentDetachmentPoints(armyDetachments);
   // Lowering the battle size can leave detachments the new budget cannot pay
@@ -476,12 +481,6 @@ export const ListOverview = ({ isVisible, setIsVisible }) => {
   const detachmentsOverBudget = isDetachmentSelectionOverBudget(armyDetachments, currentList?.battleSize);
   const forceDispositions = getForceDispositions(armyDetachments, settings.language);
   const enhancementUsage = getEnhancementUsage(currentCards, currentList?.battleSize);
-  // The list's own faction, so detachments can be picked before the first unit is
-  // added. Lists made before the faction was recorded fall back to their cards,
-  // and a list with neither to the faction being browsed.
-  const listFactionId = getListFactionId(currentList) || selectedFaction?.id;
-  const listFaction = dataSource.data.find((faction) => faction.id === listFactionId);
-  const availableDetachments = listFaction?.detachments || [];
 
   // Detachments can change what units cost, so the list is repriced in the same
   // write and the affected units are named in a toast.

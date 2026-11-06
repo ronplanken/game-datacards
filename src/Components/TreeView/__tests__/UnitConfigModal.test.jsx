@@ -51,6 +51,10 @@ vi.mock("../../../Hooks/useDataSourceStorage", () => ({
 }));
 
 const mockUpdateSettings = vi.fn();
+vi.mock("../../../Hooks/useFactionWithCustomContent", () => ({
+  useFactionWithCustomContent: (faction) => faction,
+}));
+
 vi.mock("../../../Hooks/useSettingsStorage", () => ({
   useSettingsStorage: () => ({
     settings: {},
