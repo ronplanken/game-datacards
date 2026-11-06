@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { Tags } from "lucide-react";
+import { Link2, Tags } from "lucide-react";
+import { UNIT_LINK_PRESETS } from "../../../Helpers/customSchema.helpers";
 
 /**
  * Default metadata structure for new wizard sessions.
@@ -29,6 +30,7 @@ const POINTS_FORMAT_OPTIONS = [
 export const StepUnitMetadata = ({ wizard }) => {
   const data = wizard.stepData["unit-metadata"] || {};
   const metadata = data.metadata || DEFAULT_METADATA;
+  const unitLinkGroups = data.unitLinks?.groups || [];
 
   const updateMetadata = useCallback(
     (updater) => {
@@ -62,6 +64,22 @@ export const StepUnitMetadata = ({ wizard }) => {
     }));
   }, [updateMetadata]);
 
+  const handleToggleUnitLink = useCallback(
+    (preset) => {
+      wizard.updateStepData("unit-metadata", (prev) => {
+        const groups = prev?.unitLinks?.groups || [];
+        const enabled = groups.some((g) => g.key === preset.key);
+        const nextGroups = enabled
+          ? groups.filter((g) => g.key !== preset.key)
+          : UNIT_LINK_PRESETS.filter((p) => p.key === preset.key || groups.some((g) => g.key === p.key)).map(
+              (p) => groups.find((g) => g.key === p.key) || { ...p },
+            );
+        return { ...prev, unitLinks: { ...(prev?.unitLinks || {}), groups: nextGroups } };
+      });
+    },
+    [wizard],
+  );
+
   const handlePointsFormatChange = useCallback(
     (e) => {
       const value = e.target.value;
@@ -76,7 +94,7 @@ export const StepUnitMetadata = ({ wizard }) => {
   return (
     <div className="dsw-step-unit-metadata" data-testid="dsw-step-unit-metadata">
       <h2 className="dsw-step-title">Unit Metadata</h2>
-      <p className="dsw-step-description">Configure keyword and points settings for this unit card type.</p>
+      <p className="dsw-step-description">Configure keyword, points and unit link settings for this unit card type.</p>
 
       <div className="dsw-stats-fields" data-testid="dsw-unit-metadata-section">
         <div className="dsw-stats-fields-header">
@@ -139,6 +157,33 @@ export const StepUnitMetadata = ({ wizard }) => {
               </select>
             </div>
           )}
+        </div>
+      </div>
+
+      <div className="dsw-stats-fields" data-testid="dsw-unit-links-section">
+        <div className="dsw-stats-fields-header">
+          <span className="dsw-stats-fields-title">
+            <Link2 size={14} />
+            Unit Links
+          </span>
+        </div>
+
+        <div className="dsw-abilities-toggles" data-testid="dsw-unit-links-toggles">
+          {UNIT_LINK_PRESETS.map((preset) => (
+            <label className="dsw-toggle-row" key={preset.key}>
+              <input
+                type="checkbox"
+                className="dsw-toggle-checkbox"
+                checked={unitLinkGroups.some((g) => g.key === preset.key)}
+                onChange={() => handleToggleUnitLink(preset)}
+                data-testid={`dsw-unit-links-${preset.key}-toggle`}
+              />
+              <span className="dsw-toggle-label">{preset.label}</span>
+              <span className="dsw-toggle-hint">
+                Link this unit to other unit cards in the datasource ({preset.description.replace(/:$/, "")}).
+              </span>
+            </label>
+          ))}
         </div>
       </div>
     </div>

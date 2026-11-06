@@ -74,6 +74,11 @@ export const VALID_POINTS_FORMATS = ["per-model", "per-unit"];
 // Schema version
 export const SCHEMA_VERSION = "1.0.0";
 
+export const UNIT_LINK_PRESETS = Object.freeze([
+  Object.freeze({ key: "leads", label: "Leader", description: "This unit can lead the following units:" }),
+  Object.freeze({ key: "supports", label: "Support", description: "This unit can support the following units:" }),
+]);
+
 // Default colours for custom datasources
 export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", banner: "#16213e" });
 
@@ -204,6 +209,7 @@ export const DEFAULT_DATASOURCE_COLOURS = Object.freeze({ header: "#1a1a2e", ban
  * @property {WeaponTypesDefinition} weaponTypes - Weapon type and column definitions
  * @property {AbilitiesDefinition} abilities - Ability category definitions
  * @property {SectionsDefinition} [sections] - Optional sections definitions
+ * @property {{groups: Array<{key: string, label: string, description?: string}>}} [unitLinks] - Optional groups of links to other unit cards
  * @property {UnitMetadataDefinition} metadata - Metadata flag definitions
  */
 
@@ -554,7 +560,10 @@ export const getPresetStepDefaults = (baseSystem, baseType) => {
     if (cardType.schema.sections) {
       defaults["sections"] = { sections: cardType.schema.sections };
     }
-    defaults["unit-metadata"] = { metadata: cardType.schema.metadata };
+    defaults["unit-metadata"] = {
+      metadata: cardType.schema.metadata,
+      ...(cardType.schema.unitLinks ? { unitLinks: cardType.schema.unitLinks } : {}),
+    };
   } else {
     defaults["fields"] = { fields: cardType.schema.fields };
     if (cardType.schema.rules) {
@@ -693,6 +702,7 @@ export const RESERVED_UNIT_FIELD_KEYS = [
   "weapons",
   "abilities",
   "sections",
+  "unitLinks",
   "styling",
   "variant",
   "isCustom",
@@ -961,6 +971,10 @@ const validateUnitSchema = (schema, path) => {
     }
   }
 
+  if (schema.unitLinks !== undefined) {
+    errors.push(...validateUnitLinksDefinition(schema.unitLinks, `${path}.unitLinks`));
+  }
+
   // Metadata
   if (!schema.metadata || typeof schema.metadata !== "object") {
     errors.push(`${path}.metadata: must be an object`);
@@ -987,6 +1001,41 @@ const validateUnitSchema = (schema, path) => {
     }
   }
 
+  return errors;
+};
+
+const validateUnitLinksDefinition = (unitLinks, path) => {
+  const errors = [];
+  if (!unitLinks || typeof unitLinks !== "object" || Array.isArray(unitLinks)) {
+    errors.push(`${path}: must be an object`);
+    return errors;
+  }
+  if (!Array.isArray(unitLinks.groups)) {
+    errors.push(`${path}.groups: must be an array`);
+    return errors;
+  }
+  const keys = new Set();
+  unitLinks.groups.forEach((group, i) => {
+    const gPath = `${path}.groups[${i}]`;
+    if (!group || typeof group !== "object") {
+      errors.push(`${gPath}: must be an object`);
+      return;
+    }
+    if (!group.key || typeof group.key !== "string") {
+      errors.push(`${gPath}: missing or invalid "key"`);
+    } else {
+      if (keys.has(group.key)) {
+        errors.push(`${gPath}: duplicate group key "${group.key}"`);
+      }
+      keys.add(group.key);
+    }
+    if (!group.label || typeof group.label !== "string") {
+      errors.push(`${gPath}: missing or invalid "label"`);
+    }
+    if (group.description !== undefined && typeof group.description !== "string") {
+      errors.push(`${gPath}: "description" must be a string`);
+    }
+  });
   return errors;
 };
 
@@ -1907,6 +1956,9 @@ export const create40kPreset = () => ({
             { key: "loadout", label: "Loadout", format: "richtext" },
           ],
         },
+        unitLinks: {
+          groups: [{ ...UNIT_LINK_PRESETS[0] }],
+        },
         metadata: {
           hasKeywords: true,
           hasFactionKeywords: true,
@@ -1991,8 +2043,24 @@ export const create40kPreset = () => ({
  * full 11e weapon + core-ability glossary with parameterized matching.
  * @returns {DatasourceSchema}
  */
-export const create40k11ePreset = () => ({
-  ...create40kPreset(),
-  baseSystem: "40k-11e",
-  keywordGlossary: getDefaultKeywordGlossary("40k-11e"),
-});
+export const create40k11ePreset = () => {
+  const preset = create40kPreset();
+  return {
+    ...preset,
+    baseSystem: "40k-11e",
+    keywordGlossary: getDefaultKeywordGlossary("40k-11e"),
+    cardTypes: preset.cardTypes.map((cardType) =>
+      cardType.baseType === "unit"
+        ? {
+            ...cardType,
+            schema: {
+              ...cardType.schema,
+              unitLinks: {
+                groups: UNIT_LINK_PRESETS.map((group) => ({ ...group })),
+              },
+            },
+          }
+        : cardType,
+    ),
+  };
+};

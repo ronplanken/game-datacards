@@ -21,6 +21,7 @@ vi.mock("lucide-react", () => ({
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
   Info: (props) => <svg data-testid="icon-info" {...props} />,
   Users: (props) => <svg data-testid="icon-users" {...props} />,
+  Link2: (props) => <svg data-testid="icon-link2" {...props} />,
 }));
 
 const mockUnitCardType = {
@@ -383,6 +384,42 @@ describe("SchemaTreeView", () => {
       // The "format" enum field should have a chevron-right icon (collapsed)
       const formatButton = screen.getByText("format").closest("button");
       expect(formatButton).toHaveAttribute("aria-expanded", "false");
+    });
+  });
+
+  describe("unit links", () => {
+    it("lists configured link groups", () => {
+      const cardType = {
+        ...mockUnitCardType,
+        schema: {
+          ...mockUnitCardType.schema,
+          unitLinks: {
+            groups: [
+              { key: "leads", label: "Leader" },
+              { key: "supports", label: "Support" },
+            ],
+          },
+        },
+      };
+      render(
+        <SchemaTreeView
+          selectedItem={{ type: "cardType", key: "infantry", data: cardType }}
+          activeDatasource={mockDatasource}
+        />,
+      );
+      expect(screen.getByText("Unit Links")).toBeInTheDocument();
+      expect(screen.getByText("leads")).toBeInTheDocument();
+      expect(screen.getByText("Support")).toBeInTheDocument();
+    });
+
+    it("hides the node when there are no groups", () => {
+      render(
+        <SchemaTreeView
+          selectedItem={{ type: "cardType", key: "infantry", data: mockUnitCardType }}
+          activeDatasource={mockDatasource}
+        />,
+      );
+      expect(screen.queryByText("Unit Links")).not.toBeInTheDocument();
     });
   });
 });

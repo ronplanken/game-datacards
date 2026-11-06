@@ -207,6 +207,12 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
         { key: "lore", label: "Lore", format: "richtext" },
       ],
     },
+    unitLinks: {
+      groups: [
+        { key: "leads", label: "Leader", description: "This unit can lead the following units:" },
+        { key: "supports", label: "Support", description: "This unit can support the following units:" },
+      ],
+    },
     metadata: {
       hasKeywords: true,
       hasFactionKeywords: true,
@@ -229,6 +235,7 @@ Units are the most complex card type. They define stat profiles, weapon tables, 
 | `weaponTypes` | Defines weapon categories, each with their own column definitions.      |
 | `abilities`   | Defines ability groupings and their display format.                     |
 | `sections`    | Defines optional content sections (e.g. transport, lore) with format.   |
+| `unitLinks`   | Defines optional groups of links to other unit cards (e.g. Leader, Support). |
 | `metadata`    | Flags for keywords, faction keywords, points, combat role, army slot and banner configuration, plus extra per-card `fields`. |
 
 ### Weapon type properties
@@ -357,6 +364,27 @@ Sections are optional content blocks rendered below weapons on unit cards. Each 
 | `key`    | string | Unique identifier for this section.                  |
 | `label`  | string | Display label.                                       |
 | `format` | string | `"list"` (bullet list of items), `"richtext"` (freeform HTML/markup), or `"modelsSupplyTiers"` (Starcraft TMG — tiered `[{ models, supply }, …]` rows rendered natively in the header). |
+
+### Unit links
+
+Unit links let a unit card point at other unit cards in the same datasource, for example the units a character can lead or support. The schema defines the groups; each card stores its own entries. See [unit-links.md](unit-links.md) for the full description.
+
+| Property      | Type   | Description                                                        |
+|---------------|--------|--------------------------------------------------------------------|
+| `key`         | string | Unique identifier for the group. Card data lives in `card.unitLinks[key]`. |
+| `label`       | string | Heading shown on the card and in the editors.                      |
+| `description` | string | Optional line shown above the linked units.                        |
+
+Card data for a group is an array of entries. An entry with `cardId` links to that card (by its `id`) and always shows the linked card's current name. An entry without `cardId` is a free-text unit name. `card.showUnitLinks[key] = false` hides a group on that card.
+
+```js
+unitLinks: {
+  leads: [{ cardId: "3f2a…", name: "Blood Claws" }, { name: "Wulfen" }],
+  supports: [{ cardId: "9c1d…", name: "Grey Hunters" }],
+}
+```
+
+The 40K 10th edition preset seeds a `leads` (Leader) group. The 40K 11th edition preset seeds `leads` (Leader) and `supports` (Support).
 
 ### Metadata properties
 

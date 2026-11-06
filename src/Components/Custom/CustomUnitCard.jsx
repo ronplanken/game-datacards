@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { CustomCardAbilities } from "./CustomCardAbilities";
 import { CustomCardStats } from "./CustomCardStats";
 import { CustomCardWeapons } from "./CustomCardWeapons";
+import { DsUnitLinks } from "../DatasourceEditor/cards/shared/DsUnitLinks";
 
 const HeaderContainer = styled.div`
   &:before {
@@ -82,6 +83,7 @@ export const CustomUnitCard = ({ unit, cardTypeDef, cardStyle, isMobile }) => {
             </div>
             <div className="extra">
               <CustomCardAbilities unit={unit} abilitiesSchema={schema.abilities} />
+              <DsUnitLinks card={unit} cardTypeDef={cardTypeDef} variant="custom" />
             </div>
           </div>
         </div>

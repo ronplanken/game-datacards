@@ -4,6 +4,7 @@ import { StarcraftHeader } from "./starcraft/StarcraftHeader";
 import { StarcraftAbility } from "./starcraft/StarcraftAbility";
 import { StarcraftWeaponTable } from "./starcraft/StarcraftWeaponTable";
 import { resolveStarcraftPhaseIcon } from "../../../Icons/StarcraftPhaseIcon";
+import { DsUnitLinks } from "./shared/DsUnitLinks";
 
 /**
  * Group abilities by category key. Accepts both shapes used by the editor:
@@ -301,6 +302,8 @@ export const DsStarcraftUnitCard = ({ card, cardTypeDef, cardStyle, faction, isM
           {/* Weapon types not consumed by a linked category — render their
               tables standalone after the ability-driven sections. */}
           {weaponTypes.filter((wt) => !consumedWeaponKeys.has(wt.key)).map((wt) => renderStandaloneWeaponSection(wt))}
+
+          <DsUnitLinks card={card} cardTypeDef={cardTypeDef} variant="starcraft" />
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ import { CustomUnitCard } from "./CustomUnitCard";
 import { resolveDatasourceRenderer } from "../DatasourceEditor/cards/resolveDatasourceRenderer";
 import { TemplateRenderer } from "../../Premium";
 import { applyBooleanDisplayValues, applyUnitFieldDefaults } from "../../Helpers/customSchemaBindings";
+import { ViewerUnitLinkProvider } from "../DatasourceEditor/cards/shared/UnitLinkContext";
 
 /**
  * Resolves the schema card type definition for a given card.
@@ -170,7 +171,7 @@ export const CustomCardDisplay = ({
   const scopeClass = NativeComponent ? null : "data-custom";
 
   return (
-    <>
+    <ViewerUnitLinkProvider factions={dataSource?.data} navigable={type !== "print"}>
       {!type && activeCard && (
         <Col span={24} style={{ display: "flex", justifyContent: "center" }}>
           {renderCard()}
@@ -188,6 +189,6 @@ export const CustomCardDisplay = ({
         </div>
       )}
       {type === "viewer" && <div className={scopeClass}>{renderCard()}</div>}
-    </>
+    </ViewerUnitLinkProvider>
   );
 };

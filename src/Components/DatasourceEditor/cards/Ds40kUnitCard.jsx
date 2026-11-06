@@ -103,7 +103,12 @@ export const Ds40kUnitCard = ({ card, cardTypeDef, cardStyle, isMobile, keywordG
                 sectionsSchema={schema.sections}
                 keywordGlossary={keywordGlossary}
               />
-              <Ds40kUnitExtra unit={card} abilitiesSchema={schema.abilities} keywordGlossary={keywordGlossary} />
+              <Ds40kUnitExtra
+                unit={card}
+                abilitiesSchema={schema.abilities}
+                keywordGlossary={keywordGlossary}
+                cardTypeDef={cardTypeDef}
+              />
             </div>
           </div>
           <div className="footer">

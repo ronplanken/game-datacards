@@ -32,6 +32,7 @@ vi.mock("lucide-react", () => ({
   Trash2: (props) => <svg data-testid="icon-trash" {...props} />,
   X: (props) => <svg data-testid="icon-x" {...props} />,
   LayoutList: (props) => <svg data-testid="icon-layout-list" {...props} />,
+  Link2: (props) => <svg data-testid="icon-link2" {...props} />,
   Palette: (props) => <svg data-testid="icon-palette" {...props} />,
   Users: (props) => <svg data-testid="icon-users" {...props} />,
   MoreHorizontal: (props) => <svg data-testid="icon-overflow" {...props} />,

@@ -228,6 +228,9 @@ export const useDatasourceWizard = ({ existingDatasource } = {}) => {
           categories: [],
         },
         ...(stepData["sections"]?.sections ? { sections: stepData["sections"].sections } : {}),
+        ...(stepData["unit-metadata"]?.unitLinks?.groups?.length
+          ? { unitLinks: stepData["unit-metadata"].unitLinks }
+          : {}),
         metadata: stepData["unit-metadata"]?.metadata || {
           hasKeywords: true,
           hasFactionKeywords: true,

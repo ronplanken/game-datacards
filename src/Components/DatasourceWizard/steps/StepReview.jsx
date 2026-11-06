@@ -212,6 +212,11 @@ export const StepReview = ({ wizard }) => {
                     Points ({cardType.schema.metadata.pointsFormat === "per-model" ? "per model" : "per unit"})
                   </span>
                 )}
+                {(cardType.schema.unitLinks?.groups || []).map((group) => (
+                  <span className="dsw-review-toggle-badge" key={`unit-link-${group.key}`}>
+                    {group.label} links
+                  </span>
+                ))}
               </div>
             )}
           </div>

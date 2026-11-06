@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { DatasourceCardPreview } from "../DatasourceCardPreview";
 
@@ -211,5 +211,41 @@ describe("DatasourceCardPreview", () => {
 
     expect(mockTemplateRenderer).not.toHaveBeenCalled();
     expect(container.querySelector(".custom-unit-card")).toBeTruthy();
+  });
+
+  describe("unit links", () => {
+    const linkedCardType = {
+      ...unitCardType,
+      schema: { ...unitCardType.schema, unitLinks: { groups: [{ key: "leads", label: "Leader" }] } },
+    };
+    const target = { id: "card-2", name: "Bodyguard", cardType: "unit", faction_id: "faction-1" };
+    const makeLinkedDatasource = (baseSystem) => {
+      const ds = makeDatasource([linkedCardType], baseSystem);
+      ds.data[0].datasheets = [target];
+      return ds;
+    };
+    const card = {
+      id: "card-1",
+      name: "Captain",
+      cardType: "unit",
+      faction_id: "faction-1",
+      unitLinks: { leads: [{ cardId: "card-2", name: "Bodyguard" }] },
+    };
+
+    it.each(["40k-10e", "40k-11e", "aos", "starcraft-tmg", "blank"])(
+      "selects the linked card when clicked (%s)",
+      (baseSystem) => {
+        const onSelectCard = vi.fn();
+        render(
+          <DatasourceCardPreview
+            card={card}
+            activeDatasource={makeLinkedDatasource(baseSystem)}
+            onSelectCard={onSelectCard}
+          />,
+        );
+        fireEvent.click(screen.getByTestId("ds-unit-link"));
+        expect(onSelectCard).toHaveBeenCalledWith(target);
+      },
+    );
   });
 });
