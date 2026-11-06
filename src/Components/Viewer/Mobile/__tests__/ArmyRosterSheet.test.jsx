@@ -128,3 +128,31 @@ describe("ArmyRosterSheet over-budget warning", () => {
     expect(screen.getByText("3/2 DP")).not.toHaveClass("army-roster-dp--over");
   });
 });
+
+describe("ArmyRosterSheet custom detachments", () => {
+  const wrath = {
+    id: "custom:f:wrath of the doomed",
+    name: "Wrath of the Doomed",
+    detachmentPoints: 2,
+    custom: true,
+  };
+
+  it("does not show a custom group when there are no custom detachments", () => {
+    renderSheet();
+    expect(screen.queryByText("Your detachments")).not.toBeInTheDocument();
+  });
+
+  it("lists custom detachments in their own group and selects them", () => {
+    const onChangeDetachments = vi.fn();
+    renderSheet({ detachments: [lions, shield, wrath], onChangeDetachments });
+    expect(screen.getByText("Your detachments")).toBeInTheDocument();
+    expect(screen.getByTestId("army-roster-custom-detachments")).toHaveTextContent("Wrath of the Doomed");
+    fireEvent.click(screen.getByText("Wrath of the Doomed"));
+    expect(onChangeDetachments).toHaveBeenCalledWith([wrath]);
+  });
+
+  it("disables a custom detachment the DP budget cannot pay for", () => {
+    renderSheet({ detachments: [lions, wrath], selectedDetachments: [lions] });
+    expect(screen.getByText("Wrath of the Doomed").closest("button")).toBeDisabled();
+  });
+});

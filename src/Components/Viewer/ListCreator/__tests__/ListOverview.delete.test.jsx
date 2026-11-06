@@ -38,6 +38,10 @@ vi.mock("../../MobileImporter", () => ({
 vi.mock("../../../../Hooks/useDataSourceStorage", () => ({
   useDataSourceStorage: () => ({ dataSource: { data: [] } }),
 }));
+vi.mock("../../../../Hooks/useFactionWithCustomContent", () => ({
+  useFactionWithCustomContent: (faction) => faction,
+}));
+
 vi.mock("../../../../Hooks/useSettingsStorage", () => ({
   useSettingsStorage: () => ({ settings: { selectedDataSource: "40k-10e" }, updateSettings: vi.fn() }),
 }));

@@ -129,4 +129,49 @@ describe("ArmyRosterModal", () => {
     fireEvent.click(screen.getByText("Done"));
     expect(onClose).toHaveBeenCalled();
   });
+
+  describe("custom detachments", () => {
+    const wrath = {
+      id: "custom:f:wrath of the doomed",
+      name: "Wrath of the Doomed",
+      detachmentPoints: 1,
+      forceDispositions: [{ name: "Purge the Foe" }],
+      custom: true,
+    };
+
+    it("does not show a custom group when there are no custom detachments", () => {
+      renderModal();
+      expect(screen.queryByText("Your detachments")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("arm-custom-detachments")).not.toBeInTheDocument();
+    });
+
+    it("lists custom detachments in their own group", () => {
+      renderModal({ detachments: [lions, shield, talons, wrath] });
+      expect(screen.getByText("Your detachments")).toBeInTheDocument();
+      const group = screen.getByTestId("arm-custom-detachments");
+      expect(group).toHaveTextContent("Wrath of the Doomed");
+      expect(group).toHaveTextContent("Purge the Foe");
+      expect(group).not.toHaveTextContent("Shield Host");
+    });
+
+    it("selects a custom detachment against the DP budget", () => {
+      const onChangeDetachments = vi.fn();
+      renderModal({ detachments: [lions, wrath], onChangeDetachments });
+      fireEvent.click(screen.getByText("Wrath of the Doomed"));
+      expect(onChangeDetachments).toHaveBeenCalledWith([wrath]);
+    });
+
+    it("shows only the custom group when the faction has no official detachments", () => {
+      renderModal({ detachments: [wrath] });
+      expect(screen.queryByText("This faction has no detachments.")).not.toBeInTheDocument();
+      expect(screen.getByText("Wrath of the Doomed")).toBeInTheDocument();
+    });
+
+    it("keeps a selected custom detachment whose card is gone so it can be removed", () => {
+      const onChangeDetachments = vi.fn();
+      renderModal({ detachments: [lions], selectedDetachments: [wrath], onChangeDetachments });
+      fireEvent.click(screen.getByText("Wrath of the Doomed"));
+      expect(onChangeDetachments).toHaveBeenCalledWith([]);
+    });
+  });
 });

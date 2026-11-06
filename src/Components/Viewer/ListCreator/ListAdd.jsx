@@ -4,6 +4,7 @@ import { message } from "../../Toast/message";
 import { useCardStorage } from "../../../Hooks/useCardStorage";
 import { useDataSourceStorage } from "../../../Hooks/useDataSourceStorage";
 import { useSettingsStorage } from "../../../Hooks/useSettingsStorage";
+import { useFactionWithCustomContent } from "../../../Hooks/useFactionWithCustomContent";
 import { getDetachmentName } from "../../../Helpers/faction.helpers";
 import {
   filterPointsTiersForArmy,
@@ -42,7 +43,9 @@ export const ListAdd = ({ isVisible, setIsVisible }) => {
   const { dataSource } = useDataSourceStorage();
   const { settings, updateSettings } = useSettingsStorage();
 
-  const cardFaction = dataSource.data.find((faction) => faction.id === activeCard?.faction_id);
+  const cardFaction = useFactionWithCustomContent(
+    dataSource.data.find((faction) => faction.id === activeCard?.faction_id),
+  );
   // 11e armies hold several detachments; enhancements from any of them are available.
   const armyDetachments = lists[selectedList]?.detachments;
   // The faction the list is built for, which its faction-scoped prices key off.

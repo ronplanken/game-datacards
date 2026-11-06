@@ -118,3 +118,12 @@
 html[data-theme="dark"] .army-roster-battle-size.selected {
   background: var(--bs-accent-light);
 }
+
+.army-roster-group-label {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--bs-text-secondary);
+}

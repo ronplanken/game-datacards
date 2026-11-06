@@ -77,3 +77,12 @@ html[data-theme="dark"] .arm-dp--over,
 html[data-theme="dark"] .arm-hint--over {
   color: var(--gdc-danger-text);
 }
+
+.arm-group-label {
+  margin: 14px 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}

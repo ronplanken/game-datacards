@@ -14,6 +14,7 @@ import {
   toggleDetachment,
 } from "../../Helpers/listRoster.helpers";
 import { localize } from "../../Helpers/localization.helpers";
+import { splitRosterDetachments } from "../../Helpers/customDetachments.helpers";
 // Reuses the unit config modal's glass shell (ucm-*); ArmyRosterModal.css layers
 // the battle size / DP bits on top.
 import "./UnitConfigModal.css";
@@ -56,6 +57,34 @@ export const ArmyRosterModal = ({
     onChangeDetachments(toggleDetachment(selectedDetachments, detachment, size.key));
   };
 
+  const { official, custom } = splitRosterDetachments(detachments, selectedDetachments);
+
+  const renderDetachment = (detachment) => {
+    const name = localize(detachment?.name, language);
+    const cost = getDetachmentCost(detachment);
+    const selected = isDetachmentSelected(selectedDetachments, detachment);
+    const disabled = !selected && !canAddDetachment(selectedDetachments, detachment, size.key);
+    const disposition = getDetachmentDispositionNames(detachment, language).join(", ");
+    return (
+      <div
+        key={detachment.id || name}
+        className={classNames("ucm-enhancement-option", { selected, disabled })}
+        onClick={!disabled ? () => handleToggle(detachment) : undefined}>
+        <div className={classNames("ucm-radio", { checked: selected })} />
+        <div className="ucm-enhancement-text">
+          <span className="ucm-enhancement-name">
+            {name}
+            {disposition && <span className="arm-disposition">{disposition}</span>}
+          </span>
+          <span className="ucm-enhancement-cost">
+            {cost} DP
+            {selected && <Check size={14} className="arm-check" />}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   const modalRoot = document.getElementById("modal-root");
 
   return ReactDOM.createPortal(
@@ -94,38 +123,20 @@ export const ArmyRosterModal = ({
                 {spent}/{size.dp} DP
               </span>
             </div>
-            {detachments.length === 0 ? (
+            {official.length === 0 && custom.length === 0 ? (
               <p className="arm-empty">This faction has no detachments.</p>
             ) : (
-              <div className="ucm-enhancement-list">
-                {detachments.map((detachment) => {
-                  const name = localize(detachment?.name, language);
-                  const cost = getDetachmentCost(detachment);
-                  const selected = isDetachmentSelected(selectedDetachments, detachment);
-                  // Unaffordable options stay visible but disabled so the DP
-                  // budget is obvious rather than silently hiding choices.
-                  const disabled = !selected && !canAddDetachment(selectedDetachments, detachment, size.key);
-                  const disposition = getDetachmentDispositionNames(detachment, language).join(", ");
-                  return (
-                    <div
-                      key={detachment.id || name}
-                      className={classNames("ucm-enhancement-option", { selected, disabled })}
-                      onClick={!disabled ? () => handleToggle(detachment) : undefined}>
-                      <div className={classNames("ucm-radio", { checked: selected })} />
-                      <div className="ucm-enhancement-text">
-                        <span className="ucm-enhancement-name">
-                          {name}
-                          {disposition && <span className="arm-disposition">{disposition}</span>}
-                        </span>
-                        <span className="ucm-enhancement-cost">
-                          {cost} DP
-                          {selected && <Check size={14} className="arm-check" />}
-                        </span>
-                      </div>
+              <>
+                {official.length > 0 && <div className="ucm-enhancement-list">{official.map(renderDetachment)}</div>}
+                {custom.length > 0 && (
+                  <>
+                    <div className="arm-group-label">Your detachments</div>
+                    <div className="ucm-enhancement-list" data-testid="arm-custom-detachments">
+                      {custom.map(renderDetachment)}
                     </div>
-                  );
-                })}
-              </div>
+                  </>
+                )}
+              </>
             )}
             {overBudget && (
               <p className="arm-hint arm-hint--over">
